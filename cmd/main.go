@@ -20,19 +20,6 @@ func init() {
 	zap.L().Debug("Init complete", zap.String("timeTaken", time.Since(start).String()))
 }
 
-/*
-func testQueue() {
-	cfg := map[string]string{
-		"url": "tcp://enveedu.mycontroller.org:2883",
-	}
-	c, err := mt.New(cfg)
-	if err != nil {
-		zap.L().Error("Error on creating client", zap.Error(err))
-	}
-	c.Subscribe("out_rfm69/#")
-	c.Subscribe("in_rfm69/#")
-}
-*/
 func main() {
 	defer zap.L().Sync()
 	// call shutdown handler
