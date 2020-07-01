@@ -15,8 +15,8 @@ type WebConfig struct {
 
 // Config of the system
 type Config struct {
-	Web       WebConfig           `yaml:"web"`
-	Database  Database            `yaml:"database"`
-	Databases []map[string]string `yaml:"databases"`
-	Logger    map[string]string   `yaml:"logger"`
+	Web       WebConfig                `yaml:"web"`
+	Database  Database                 `yaml:"database"`
+	Databases []map[string]interface{} `yaml:"databases"`
+	Logger    map[string]string        `yaml:"logger"`
 }

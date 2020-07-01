@@ -10,10 +10,11 @@ type Client interface {
 	Close() error
 	Ping() error
 	Write(variable *ml.SensorField) error
+	WriteBlocking(variable *ml.SensorField) error
 }
 
 // Init storage
-func Init(config map[string]string) (*Client, error) {
+func Init(config map[string]interface{}) (*Client, error) {
 	c, err := influx.NewClient(config)
 	if err != nil {
 		return nil, err

@@ -18,7 +18,7 @@ type Client interface {
 }
 
 // Init storage
-func Init(config map[string]string) (*Client, error) {
+func Init(config map[string]interface{}) (*Client, error) {
 	// Update this code, if we have more than one storage options
 
 	c, err := mongo.NewClient(config)

@@ -24,8 +24,8 @@ type Endpoint struct {
 // New mqtt driver
 func New(config map[string]interface{}, txQueue, rxQueue *q.BoundedQueue, gID string) (*Endpoint, error) {
 	start := time.Now()
-	var cfg ml.GatewayConfigMQTT
-	err := ut.MapToStruct(config, &cfg)
+	cfg := ml.GatewayConfigMQTT{}
+	err := ut.MapToStruct(ut.TagNameNone, config, &cfg)
 	if err != nil {
 		return nil, err
 	}

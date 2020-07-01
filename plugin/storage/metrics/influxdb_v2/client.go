@@ -2,40 +2,42 @@ package influx
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/influxdata/influxdb-client-go"
-	db "github.com/influxdata/influxdb-client-go"
-	m2s "github.com/mitchellh/mapstructure"
+	influxdb2 "github.com/influxdata/influxdb-client-go"
+	"github.com/influxdata/influxdb-client-go/api/write"
 	ml "github.com/mycontroller-org/mycontroller/pkg/model"
 	msg "github.com/mycontroller-org/mycontroller/pkg/model/message"
+	"github.com/mycontroller-org/mycontroller/pkg/util"
 	"go.uber.org/zap"
 )
 
 var ctx = context.TODO()
 
 const (
-	bulkInsertInterval = 1 * time.Second
+	defaultFlushInterval = 1 * time.Second
 )
 
 // Config of the influxdb_v2
 type Config struct {
-	Name         string
-	Organization string
-	Bucket       string
-	URI          string
-	Token        string
-	Username     string
-	Password     string
+	Name          string
+	Organization  string
+	Bucket        string
+	URI           string
+	Token         string
+	Username      string
+	Password      string
+	FlushInterval string `yaml:"flush_interval"`
 }
 
 // Client of the influxdb
 type Client struct {
-	Client  *influxdb.Client
+	Client  influxdb2.Client
 	Config  Config
 	stop    chan bool
 	buffer  []*ml.SensorField
@@ -43,24 +45,31 @@ type Client struct {
 }
 
 // NewClient of influxdb
-func NewClient(config map[string]string) (*Client, error) {
-	var cfg Config
-	err := m2s.Decode(config, &cfg)
+func NewClient(config map[string]interface{}) (*Client, error) {
+	cfg := Config{}
+	err := util.MapToStruct(util.TagNameYaml, config, &cfg)
 	if err != nil {
 		return nil, err
 	}
-	var ic *influxdb.Client
-	if cfg.Token != "" {
-		ic, err = influxdb.New(cfg.URI, cfg.Token)
-	} else {
-		ic, err = influxdb.New(cfg.URI, "", influxdb.WithUserAndPass(cfg.Username, cfg.Password))
+	token := cfg.Token
+	if token == "" {
+		token = fmt.Sprintf("%s:%s", cfg.Username, cfg.Password)
 	}
+	flushInterval, err := time.ParseDuration(cfg.FlushInterval)
 	if err != nil {
-		return nil, err
+		zap.L().Warn("Invalid flush interval", zap.String("flushInterval", cfg.FlushInterval))
+		flushInterval = defaultFlushInterval
 	}
+	if flushInterval.Milliseconds() < 1 {
+		zap.L().Warn("Minimum supported flush interval is 1ms, switching back to default", zap.String("flushInterval", cfg.FlushInterval))
+		flushInterval = defaultFlushInterval
+	}
+	opts := influxdb2.DefaultOptions()
+	opts.SetFlushInterval(uint(flushInterval.Milliseconds()))
+	iClient := influxdb2.NewClient(cfg.URI, cfg.Token)
 	c := &Client{
 		Config:  cfg,
-		Client:  ic,
+		Client:  iClient,
 		buffer:  make([]*ml.SensorField, 0),
 		stop:    make(chan bool),
 		rwMutex: &sync.RWMutex{},
@@ -69,110 +78,67 @@ func NewClient(config map[string]string) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	// start bulk writer
-	c.startBulkWriter()
 	return c, nil
 }
 
 // Ping to target database
 func (c *Client) Ping() error {
-	return c.Client.Ping(ctx)
+	s, err := c.Client.Ready(ctx)
+	if err != nil {
+		return err
+	}
+	if !s {
+		return errors.New("Influx server not ready yet")
+	}
+	return nil
 }
 
 // Close the influxdb connection
 func (c *Client) Close() error {
 	// close bulk insert
 	close(c.stop)
-	return c.Client.Close()
+	c.Client.Close()
+	return nil
 }
 
-// WriteOld definition
-func (c *Client) WriteOld(sf *ml.SensorField) error {
+// WriteBlocking implementation
+func (c *Client) WriteBlocking(sf *ml.SensorField) error {
+	p, err := getPoint(sf)
+	if err != nil {
+		return err
+	}
+	wb := c.Client.WriteApiBlocking(c.Config.Organization, c.Config.Bucket)
+	return wb.WritePoint(ctx, p)
+}
+
+func (c *Client) Write(sf *ml.SensorField) error {
+	p, err := getPoint(sf)
+	if err != nil {
+		return err
+	}
+	w := c.Client.WriteApi(c.Config.Organization, c.Config.Bucket)
+	w.WritePoint(p)
+	return nil
+}
+
+func getPoint(sf *ml.SensorField) (*write.Point, error) {
 	fields := make(map[string]interface{})
 	if sf.DataType == msg.DataTypeGeo {
 		_f, err := geoData(sf.Payload)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		fields = _f
 	} else {
 		fields["value"] = sf.Payload
 	}
-	metrics := []db.Metric{
-		db.NewRowMetric(
-			fields,
-			measurementName(sf.DataType),
-			// "gateway": sf.GatewayID, "node": sf.NodeID, "sensor": sf.SensorID,
-			map[string]string{"gateway": sf.GatewayID, "node": sf.NodeID, "sensor": sf.SensorID, "id": sf.ID},
-			sf.LastSeen,
-		),
-	}
-	_, err := c.Client.Write(ctx, c.Config.Bucket, c.Config.Organization, metrics...)
-	return err
-}
-
-func (c *Client) Write(sf *ml.SensorField) error {
-	//return c.WriteOld(sf)
-
-	c.rwMutex.Lock()
-	c.buffer = append(c.buffer, sf)
-	c.rwMutex.Unlock()
-	return nil
-
-}
-
-func (c *Client) startBulkWriter() {
-	ticker := time.NewTicker(bulkInsertInterval)
-	go func() {
-		for {
-			select {
-			case <-c.stop:
-				ticker.Stop()
-				return
-			case <-ticker.C:
-				c.rwMutex.Lock()
-				d := c.buffer
-				c.buffer = make([]*ml.SensorField, 0)
-				c.rwMutex.Unlock()
-				// if there is a data in buffer
-				if len(d) > 0 {
-					zap.L().Debug("Buffer size", zap.Int("size", len(d)))
-					metrics := make([]db.Metric, 0)
-					for _, sf := range d {
-						fields := make(map[string]interface{})
-						if sf.DataType == msg.DataTypeGeo {
-							_f, err := geoData(sf.Payload.Value)
-							if err != nil {
-								zap.L().Error("Failed to parse geo data", zap.Error(err), zap.Any("data", sf))
-							}
-							fields = _f
-						} else {
-							fields["value"] = sf.Payload.Value
-						}
-						metrics = append(metrics,
-							db.NewRowMetric(
-								fields,
-								measurementName(sf.DataType),
-								// "gateway": sf.GatewayID, "node": sf.NodeID, "sensor": sf.SensorID,
-								map[string]string{"gateway": sf.GatewayID, "node": sf.NodeID, "sensor": sf.SensorID, "id": sf.ID},
-								sf.LastSeen,
-							),
-						)
-					}
-
-					start := time.Now()
-					_, err := c.Client.Write(ctx, c.Config.Bucket, c.Config.Organization, metrics...)
-					if err != nil {
-						zap.L().Error("Failed to write into metrics store", zap.Error(err))
-					} else {
-						zap.L().Debug("Bulk metrics insert completed", zap.String("timeTaken", time.Since(start).String()))
-					}
-				}
-
-			}
-		}
-	}()
-
+	p := influxdb2.NewPoint(measurementName(sf.DataType),
+		// "gateway": sf.GatewayID, "node": sf.NodeID, "sensor": sf.SensorID,
+		map[string]string{"gateway": sf.GatewayID, "node": sf.NodeID, "sensor": sf.SensorID, "id": sf.ID},
+		fields,
+		sf.LastSeen,
+	)
+	return p, nil
 }
 
 func geoData(pl interface{}) (map[string]interface{}, error) {

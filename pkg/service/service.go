@@ -115,7 +115,7 @@ func initStorage() {
 	MTS = *ms
 }
 
-func getDatabaseConfig(name string) (map[string]string, error) {
+func getDatabaseConfig(name string) (map[string]interface{}, error) {
 	for _, d := range CFG.Databases {
 		if d["name"] == name {
 			return d, nil

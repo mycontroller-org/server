@@ -19,6 +19,7 @@ databases:
     password: password
     organization: mycontroller-org
     bucket: mycontroller
+    batch_size: 
 
 logger:
   level: DEBUG

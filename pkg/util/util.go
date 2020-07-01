@@ -9,7 +9,14 @@ import (
 	ml "github.com/mycontroller-org/mycontroller/pkg/model"
 )
 
-const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
+// contants
+const (
+	charset = "abcdefghijklmnopqrstuvwxyz0123456789"
+
+	TagNameYaml = "yaml"
+	TagNameJSON = "json"
+	TagNameNone = ""
+)
 
 var seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
@@ -38,7 +45,7 @@ func UpdatePagination(p *ml.Pagination) {
 		p = &ml.Pagination{}
 	}
 	if len(p.SortBy) == 0 {
-		p.SortBy = []ml.Sort{ml.Sort{Field: "ID", OrderBy: "ASC"}}
+		p.SortBy = []ml.Sort{{Field: "ID", OrderBy: "ASC"}}
 	}
 	if p.Limit == 0 {
 		p.Limit = -1
@@ -59,6 +66,14 @@ func JoinMap(p, o map[string]interface{}) {
 }
 
 // MapToStruct converts string to struct
-func MapToStruct(in map[string]interface{}, out interface{}) error {
-	return mapstructure.Decode(in, out)
+func MapToStruct(tagName string, in map[string]interface{}, out interface{}) error {
+	if tagName == "" {
+		return mapstructure.Decode(in, out)
+	}
+	cfg := &mapstructure.DecoderConfig{TagName: tagName, Result: out}
+	decoder, err := mapstructure.NewDecoder(cfg)
+	if err != nil {
+		return err
+	}
+	return decoder.Decode(in)
 }

@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"strings"
 
-	m2s "github.com/mitchellh/mapstructure"
 	ml "github.com/mycontroller-org/mycontroller/pkg/model"
+	"github.com/mycontroller-org/mycontroller/pkg/util"
 	ut "github.com/mycontroller-org/mycontroller/pkg/util"
 	"go.mongodb.org/mongo-driver/bson"
 	mg "go.mongodb.org/mongo-driver/mongo"
@@ -30,9 +30,9 @@ type Client struct {
 }
 
 // NewClient mongodb
-func NewClient(config map[string]string) (*Client, error) {
-	var cfg Config
-	err := m2s.Decode(config, &cfg)
+func NewClient(config map[string]interface{}) (*Client, error) {
+	cfg := Config{}
+	err := util.MapToStruct(util.TagNameNone, config, &cfg)
 	if err != nil {
 		return nil, err
 	}
