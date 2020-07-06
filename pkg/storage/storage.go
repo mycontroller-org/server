@@ -1,8 +1,8 @@
 package storage
 
 import (
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
-	"github.com/mycontroller-org/mycontroller/plugin/storage/mongo"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	"github.com/mycontroller-org/mycontroller-v2/plugin/storage/mongo"
 )
 
 // Client interface

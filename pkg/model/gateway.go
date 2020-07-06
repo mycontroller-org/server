@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	msg "github.com/mycontroller-org/mycontroller/pkg/model/message"
+	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
 )
 
 // Gateway Types

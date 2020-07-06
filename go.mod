@@ -1,4 +1,4 @@
-module github.com/mycontroller-org/mycontroller
+module github.com/mycontroller-org/mycontroller-v2
 
 go 1.13
 

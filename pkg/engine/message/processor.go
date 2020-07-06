@@ -7,10 +7,10 @@ import (
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mustafaturan/bus"
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
-	msg "github.com/mycontroller-org/mycontroller/pkg/model/message"
-	srv "github.com/mycontroller-org/mycontroller/pkg/service"
-	ut "github.com/mycontroller-org/mycontroller/pkg/util"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
+	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
+	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
 	"go.uber.org/zap"
 )
 

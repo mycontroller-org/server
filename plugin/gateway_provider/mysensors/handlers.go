@@ -4,8 +4,8 @@ import (
 	"strings"
 	"time"
 
-	nodeAPI "github.com/mycontroller-org/mycontroller/pkg/api/node"
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
+	nodeAPI "github.com/mycontroller-org/mycontroller-v2/pkg/api/node"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
 	"go.uber.org/zap"
 )
 

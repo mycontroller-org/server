@@ -1,8 +1,8 @@
 package metrics
 
 import (
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
-	influx "github.com/mycontroller-org/mycontroller/plugin/storage/metrics/influxdb_v2"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	influx "github.com/mycontroller-org/mycontroller-v2/plugin/storage/metrics/influxdb_v2"
 )
 
 // Client interface

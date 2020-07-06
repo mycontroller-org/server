@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/mustafaturan/bus"
-	srv "github.com/mycontroller-org/mycontroller/pkg/service"
+	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 	"go.uber.org/zap"
 )
 

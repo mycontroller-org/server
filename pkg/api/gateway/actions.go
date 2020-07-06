@@ -3,11 +3,11 @@ package gateway
 import (
 	"fmt"
 
-	gm "github.com/mycontroller-org/mycontroller/pkg/gateway"
-	gms "github.com/mycontroller-org/mycontroller/pkg/gateway/serial"
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
-	srv "github.com/mycontroller-org/mycontroller/pkg/service"
-	"github.com/mycontroller-org/mycontroller/plugin/gateway_provider/mysensors"
+	gm "github.com/mycontroller-org/mycontroller-v2/pkg/gateway"
+	gms "github.com/mycontroller-org/mycontroller-v2/pkg/gateway/serial"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
+	"github.com/mycontroller-org/mycontroller-v2/plugin/gateway_provider/mysensors"
 	"go.uber.org/zap"
 )
 

@@ -5,9 +5,9 @@ import (
 
 	paho "github.com/eclipse/paho.mqtt.golang"
 	q "github.com/jaegertracing/jaeger/pkg/queue"
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
-	msg "github.com/mycontroller-org/mycontroller/pkg/model/message"
-	ut "github.com/mycontroller-org/mycontroller/pkg/util"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
+	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
 
 	"go.uber.org/zap"
 )

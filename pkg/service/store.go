@@ -1,7 +1,7 @@
 package service
 
 import (
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
 )
 
 var gwService = map[string]*ml.GatewayService{}

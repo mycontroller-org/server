@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
 )
 
 func registerSensorFieldRoutes(router *mux.Router) {

@@ -8,10 +8,10 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/mycontroller-org/mycontroller/cmd/app/handler"
-	gwAPI "github.com/mycontroller-org/mycontroller/pkg/api/gateway"
-	msgPRO "github.com/mycontroller-org/mycontroller/pkg/engine/message"
-	srv "github.com/mycontroller-org/mycontroller/pkg/service"
+	"github.com/mycontroller-org/mycontroller-v2/cmd/app/handler"
+	gwAPI "github.com/mycontroller-org/mycontroller-v2/pkg/api/gateway"
+	msgPRO "github.com/mycontroller-org/mycontroller-v2/pkg/engine/message"
+	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 )
 
 func init() {

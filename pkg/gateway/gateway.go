@@ -6,12 +6,12 @@ import (
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mustafaturan/bus"
-	"github.com/mycontroller-org/mycontroller/pkg/gateway/mqtt"
-	"github.com/mycontroller-org/mycontroller/pkg/gateway/serial"
-	"github.com/mycontroller-org/mycontroller/pkg/mcbus"
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
-	msg "github.com/mycontroller-org/mycontroller/pkg/model/message"
-	srv "github.com/mycontroller-org/mycontroller/pkg/service"
+	"github.com/mycontroller-org/mycontroller-v2/pkg/gateway/mqtt"
+	"github.com/mycontroller-org/mycontroller-v2/pkg/gateway/serial"
+	"github.com/mycontroller-org/mycontroller-v2/pkg/mcbus"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
+	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 	"go.uber.org/zap"
 )
 

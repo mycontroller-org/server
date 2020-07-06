@@ -1,9 +1,9 @@
 package gateway
 
 import (
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
-	srv "github.com/mycontroller-org/mycontroller/pkg/service"
-	ut "github.com/mycontroller-org/mycontroller/pkg/util"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
+	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
 )
 
 // ListGateways by filter and pagination

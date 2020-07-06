@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
-	ut "github.com/mycontroller-org/mycontroller/pkg/util"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
 )
 
 func registerGatewayRoutes(router *mux.Router) {

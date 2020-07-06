@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
-	msg "github.com/mycontroller-org/mycontroller/pkg/model/message"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
 	"go.uber.org/zap"
 )
 

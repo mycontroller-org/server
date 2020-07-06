@@ -8,8 +8,8 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	ml "github.com/mycontroller-org/mycontroller/pkg/model"
-	srv "github.com/mycontroller-org/mycontroller/pkg/service"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 )
 
 func params(r *http.Request) ([]ml.Filter, *ml.Pagination, error) {

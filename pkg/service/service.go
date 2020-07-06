@@ -8,8 +8,8 @@ import (
 	"github.com/mustafaturan/bus"
 	"github.com/mustafaturan/monoton"
 	"github.com/mustafaturan/monoton/sequencer"
-	"github.com/mycontroller-org/mycontroller/pkg/storage"
-	ms "github.com/mycontroller-org/mycontroller/pkg/storage/metrics"
+	"github.com/mycontroller-org/mycontroller-v2/pkg/storage"
+	ms "github.com/mycontroller-org/mycontroller-v2/pkg/storage/metrics"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
