@@ -45,16 +45,21 @@ func handleRxMessages(s *ml.GatewayService, q *q.BoundedQueue) {
 		// if message not nil post it on main bus
 		if m != nil {
 			m.GatewayID = wm.GatewayID
+			nwm := &msg.Wrapper{
+				GatewayID:  wm.GatewayID,
+				IsReceived: true,
+				Message:    m,
+			}
 			// check is it ack message?
 			if m.IsAck {
-				_, err := mcbus.Publish(topicAckRx, m)
+				_, err := mcbus.Publish(topicAckRx, nwm)
 				if err != nil {
-					zap.L().Error("Failed to post ack message to global bus", zap.Error(err), zap.Any("ackMessage", m))
+					zap.L().Error("Failed to post ack message to global bus", zap.Error(err), zap.Any("ackMessage", nwm))
 				}
 			} else {
-				_, err := mcbus.Publish(topicRx, m)
+				_, err := mcbus.Publish(topicRx, nwm)
 				if err != nil {
-					zap.L().Error("Failed to post message to global bus", zap.Error(err), zap.Any("message", m))
+					zap.L().Error("Failed to post message to global bus", zap.Error(err), zap.Any("message", nwm))
 				}
 			}
 			// zap.L().Debug("Time taken", zap.Any("event", e), zap.String("timeTaken", time.Since(start).String()))
@@ -94,6 +99,8 @@ func handleTxMessages(s *ml.GatewayService, q *q.BoundedQueue) {
 			return
 		}
 		if s.Config.AckConfig.Enabled {
+			// get actual message
+
 			// wait for ack
 		} else {
 			sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.ID, Success: true})

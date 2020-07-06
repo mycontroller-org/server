@@ -30,21 +30,21 @@ func (p *Parser) ToRawMessage(wm *msg.Wrapper) (*msg.RawMessage, error) {
 		msMsg.Ack = "1"
 	}
 
-	if len(mcMsg.Fields) > 0 {
-		f := mcMsg.Fields[0]
+	if len(mcMsg.Payload) > 0 {
 		rm := &msg.RawMessage{
 			Timestamp: mcMsg.Timestamp,
 			Others:    map[string]interface{}{},
 		}
 		// get command
-		msMsg.Type = f.Others[keyCmdType].(string)
+		msMsg.Type = mcMsg.Others[keyCmdType].(string)
 
 		// create rawMessage
 		switch p.Gateway.Provider.GatewayType {
 		case ml.GatewayTypeSerial, ml.GatewayTypeEthernet:
 
 		case ml.GatewayTypeMQTT:
-			rm.Data = []byte(f.Payload)
+			rm.ID = msMsg.getID()
+			rm.Data = []byte(mcMsg.Payload)
 			rm.Others[msg.KeyTopic] = msMsg.toRaw(true)
 		}
 		return rm, nil
@@ -97,19 +97,23 @@ func (p *Parser) ToMessage(wm *msg.Wrapper) (*msg.Message, error) {
 		Payload:  payload,
 	}
 
-	fl := msg.Field{
-		Command: cmdMapIn[ms.Command],
-		Payload: ms.Payload,
-		Others:  map[string]interface{}{},
+	mcMsg := &msg.Message{
+		NodeID:     ms.NodeID,
+		SensorID:   ms.SensorID,
+		IsAck:      ms.Ack == "1",
+		IsReceived: true,
+		Timestamp:  rm.Timestamp,
+		Payload:    ms.Payload,
+		Command:    cmdMapIn[ms.Command],
 	}
 
 	switch ms.Command {
 	case CmdSet, CmdReq:
-		fl.Key = cmdSetReqTypeMapIn[ms.Type]
-		_tu := metricUnit[fl.Key]
-		fl.DataType = _tu.Type
-		fl.UnitID = _tu.Unit
-		fl.Others[keyCmdType] = ms.Type
+		mcMsg.SubCommand = cmdSetReqTypeMapIn[ms.Type]
+		_tu := metricUnit[mcMsg.SubCommand]
+		mcMsg.DataType = _tu.Type
+		mcMsg.UnitID = _tu.Unit
+		mcMsg.Others[keyCmdType] = ms.Type
 	case CmdInternal:
 		// check should I have to handle this locally?
 		if fn, ok := localHandlerMapIn[ms.Type]; ok {
@@ -119,7 +123,7 @@ func (p *Parser) ToMessage(wm *msg.Wrapper) (*msg.Message, error) {
 			}
 		}
 		if _type, ok := cmdInternalTypeMapIn[ms.Type]; ok {
-			fl.Key = _type
+			mcMsg.SubCommand = _type
 		} else {
 			// ignore to process this message
 			return nil, nil
@@ -128,27 +132,20 @@ func (p *Parser) ToMessage(wm *msg.Wrapper) (*msg.Message, error) {
 		if _type, ok := cmdPresentationTypeMapIn[ms.Type]; ok {
 			if _type == "S_ARDUINO_REPEATER_NODE" || _type == "S_ARDUINO_NODE" {
 				// this is a node data
-				fl.Command = msg.CommandNode
-				fl.Key = msg.KeyCmdNodeLibraryVersion
+				mcMsg.SubCommand = msg.CommandNode
+				mcMsg.Field = msg.KeyCmdNodeLibraryVersion
 				if _type == "S_ARDUINO_REPEATER_NODE" {
-					fl.Others[keyNodeType] = "Repeater"
+					mcMsg.Others[keyNodeType] = "Repeater"
 				}
 			} else {
-				fl.Key = msg.KeyName
-				fl.Others[keyCmdType] = ms.Type
-				fl.Others[keyCmdTypeString] = _type
+				mcMsg.Field = msg.KeyName
+				mcMsg.Others[keyCmdType] = ms.Type
+				mcMsg.Others[keyCmdTypeString] = _type
 			}
 		} else {
 			return nil, nil
 		}
 	}
 
-	return &msg.Message{
-		NodeID:     ms.NodeID,
-		SensorID:   ms.SensorID,
-		IsAck:      ms.Ack == "1",
-		IsReceived: true,
-		Timestamp:  rm.Timestamp,
-		Fields:     []msg.Field{fl},
-	}, nil
+	return mcMsg, nil
 }

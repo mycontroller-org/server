@@ -15,28 +15,24 @@ type Message struct {
 	GatewayID  string
 	NodeID     string
 	SensorID   string
-	Fields     []Field
 	IsAck      bool // Is this acknowledgement message
 	IsReceived bool // Is this received message
+	Command    string
+	SubCommand string
+	Field      string
+	Payload    string
+	DataType   string
+	UnitID     string
 	Timestamp  time.Time
 	Others     map[string]interface{}
 }
 
 // RawMessage from/to gateway media
 type RawMessage struct {
+	ID        string
 	Data      []byte
 	Timestamp time.Time
 	Others    map[string]interface{}
-}
-
-// Field definition
-type Field struct {
-	Key      string
-	Payload  string
-	Command  string
-	DataType string
-	UnitID   string
-	Others   map[string]interface{}
 }
 
 // DeliveryStatus definition

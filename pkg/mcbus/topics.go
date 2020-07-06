@@ -1,6 +1,6 @@
 package mcbus
 
-// global topics
+// global gateway topics
 const (
 	TopicGatewayMessageAckRx          = "gw_message_ack_rx_"
 	TopicGatewayMessageRx             = "gw_message_rx_"

@@ -47,47 +47,45 @@ func onMessageReceive(e *bus.Event) {
 	//srv.STG.Upsert(ml.EntityGateway,)
 	// srv.STG.Upsert(ml.EntityNode, nil, nil)
 
-	for _, fl := range m.Fields {
-		switch fl.Command {
-		case msg.CommandNode:
-			n := &ml.Node{
-				ID:        fmt.Sprintf("%s_%s", m.GatewayID, m.NodeID),
-				GatewayID: m.GatewayID,
-				ShortID:   m.NodeID,
-				LastSeen:  m.Timestamp,
-			}
-			nodeData(n, &fl)
-		case msg.CommandSensor:
-			s := &ml.Sensor{
-				ID:        fmt.Sprintf("%s_%s_%s", m.GatewayID, m.NodeID, m.SensorID),
-				GatewayID: m.GatewayID,
-				NodeID:    m.NodeID,
-				ShortID:   m.SensorID,
-				LastSeen:  m.Timestamp,
-			}
-			sensorData(s, &fl)
-		case msg.CommandSet:
-			sf := &ml.SensorField{
-				ID:             fmt.Sprintf("%s_%s_%s_%s", m.GatewayID, m.NodeID, m.SensorID, fl.Key),
-				ShortID:        fl.Key,
-				GatewayID:      m.GatewayID,
-				NodeID:         m.NodeID,
-				SensorID:       m.SensorID,
-				LastSeen:       m.Timestamp,
-				DataType:       fl.DataType,
-				UnitID:         fl.UnitID,
-				ProviderConfig: fl.Others,
-			}
-			sensorFieldData(sf, &fl)
-		case msg.CommandRequest:
-		case msg.CommandStream:
-		case msg.CommandNone:
+	switch m.Command {
+	case msg.CommandNode:
+		n := &ml.Node{
+			ID:        fmt.Sprintf("%s_%s", m.GatewayID, m.NodeID),
+			GatewayID: m.GatewayID,
+			ShortID:   m.NodeID,
+			LastSeen:  m.Timestamp,
 		}
+		nodeData(n, m)
+	case msg.CommandSensor:
+		s := &ml.Sensor{
+			ID:        fmt.Sprintf("%s_%s_%s", m.GatewayID, m.NodeID, m.SensorID),
+			GatewayID: m.GatewayID,
+			NodeID:    m.NodeID,
+			ShortID:   m.SensorID,
+			LastSeen:  m.Timestamp,
+		}
+		sensorData(s, m)
+	case msg.CommandSet:
+		sf := &ml.SensorField{
+			ID:             fmt.Sprintf("%s_%s_%s_%s", m.GatewayID, m.NodeID, m.SensorID, m.Field),
+			ShortID:        m.Field,
+			GatewayID:      m.GatewayID,
+			NodeID:         m.NodeID,
+			SensorID:       m.SensorID,
+			LastSeen:       m.Timestamp,
+			DataType:       m.DataType,
+			UnitID:         m.UnitID,
+			ProviderConfig: m.Others,
+		}
+		sensorFieldData(sf, m)
+	case msg.CommandRequest:
+	case msg.CommandStream:
+	case msg.CommandNone:
 	}
 	zap.L().Debug("Message process completed", zap.String("timeTaken", time.Since(m.Timestamp).String()), zap.Any("message", m))
 }
 
-func nodeData(n *ml.Node, fl *msg.Field) error {
+func nodeData(n *ml.Node, m *msg.Message) error {
 	f := []ml.Filter{
 		{Key: "id", Operator: "eq", Value: n.ID},
 	}
@@ -103,24 +101,24 @@ func nodeData(n *ml.Node, fl *msg.Field) error {
 	if node.Others == nil {
 		node.Others = map[string]interface{}{}
 	}
-	switch fl.Key {
+	switch m.SubCommand {
 	case msg.KeyCmdNodeName:
-		node.Name = fl.Payload
+		node.Name = m.Payload
 	case msg.KeyCmdNodeBatteryLevel:
 		// update battery level
-		bl, err := strconv.ParseFloat(fl.Payload, 64)
+		bl, err := strconv.ParseFloat(m.Payload, 64)
 		if err != nil {
 			zap.L().Error("Unable to parse batter level", zap.Error(err))
 		}
-		node.Others[fl.Key] = bl
+		node.Others[m.Field] = bl
 		// send it to metric store
 	case msg.KeyCmdNodeDiscover, msg.KeyCmdNodeHeartbeat, msg.KeyCmdNodePing:
 		// TODO:
 	default:
-		node.Others[fl.Key] = fl.Payload
+		node.Others[m.Field] = m.Payload
 	}
-	if len(fl.Others) > 0 {
-		ut.JoinMap(node.Others, fl.Others)
+	if len(m.Others) > 0 {
+		ut.JoinMap(node.Others, m.Others)
 	}
 	err = srv.STG.Upsert(ml.EntityNode, f, node)
 	if err != nil {
@@ -129,7 +127,7 @@ func nodeData(n *ml.Node, fl *msg.Field) error {
 	return nil
 }
 
-func sensorData(s *ml.Sensor, fl *msg.Field) error {
+func sensorData(s *ml.Sensor, m *msg.Message) error {
 	f := []ml.Filter{
 		{Key: "id", Operator: "eq", Value: s.ID},
 	}
@@ -147,11 +145,11 @@ func sensorData(s *ml.Sensor, fl *msg.Field) error {
 	}
 
 	// update sensor name
-	if fl.Key == msg.KeyName {
-		sensor.Name = fl.Payload
+	if m.SubCommand == msg.KeyName {
+		sensor.Name = m.Payload
 	}
-	if len(fl.Others) > 0 {
-		ut.JoinMap(sensor.ProviderConfig, fl.Others)
+	if len(m.Others) > 0 {
+		ut.JoinMap(sensor.ProviderConfig, m.Others)
 	}
 	err = srv.STG.Upsert(ml.EntitySensor, f, sensor)
 	if err != nil {
@@ -160,27 +158,27 @@ func sensorData(s *ml.Sensor, fl *msg.Field) error {
 	return nil
 }
 
-func sensorFieldData(sf *ml.SensorField, fl *msg.Field) error {
+func sensorFieldData(sf *ml.SensorField, m *msg.Message) error {
 	var err error
 	var pl interface{}
 	// convert payload to actual type
-	switch fl.DataType {
+	switch m.DataType {
 	case msg.DataTypeBoolean:
-		pl, err = strconv.ParseBool(fl.Payload)
+		pl, err = strconv.ParseBool(m.Payload)
 	case msg.DataTypeFloat:
-		pl, err = strconv.ParseFloat(fl.Payload, 64)
+		pl, err = strconv.ParseFloat(m.Payload, 64)
 	case msg.DataTypeInteger:
-		pl, err = strconv.ParseInt(fl.Payload, 10, 64)
+		pl, err = strconv.ParseInt(m.Payload, 10, 64)
 	case msg.DataTypeString:
-		pl = fl.Payload
+		pl = m.Payload
 	case msg.DataTypeGeo:
-		pl = fl.Payload
+		pl = m.Payload
 	default:
-		zap.L().Error("Unknown data type", zap.Any("sensorField", fl))
+		zap.L().Error("Unknown data type", zap.Any("sensorField", m))
 	}
 
 	if err != nil {
-		zap.L().Error("Unable to convert the payload to actual dataType", zap.Error(err), zap.Any("sensorField", fl))
+		zap.L().Error("Unable to convert the payload to actual dataType", zap.Error(err), zap.Any("sensorField", m))
 	}
 
 	// update payload
