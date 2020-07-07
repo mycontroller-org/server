@@ -44,10 +44,6 @@ type myMessage struct {
 	Payload  string
 }
 
-func (ms *myMessage) getID() string {
-	return fmt.Sprintf("%s%s%s%s", ms.NodeID, ms.SensorID, ms.Command, ms.Type)
-}
-
 func (ms *myMessage) toRaw(isMQTT bool) string {
 	// raw message format
 	// node-id;child-sensor-id;command;ack;type;payload

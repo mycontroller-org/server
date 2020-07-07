@@ -38,12 +38,12 @@ type GatewayProvider struct {
 
 // GatewayConfigMQTT data
 type GatewayConfigMQTT struct {
-	Broker    string
-	Subscribe string
-	Publish   string
-	QoS       int
-	Username  string
+	Broker    string `json:"broker"`
+	Username  string `json:""`
 	Password  string `json:"-"`
+	Subscribe string `json:"subscribe"`
+	Publish   string `json:"publish"`
+	QoS       int    `json:"qos"`
 }
 
 // GatewayConfig entity

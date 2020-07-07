@@ -42,7 +42,6 @@ func (p *Parser) ToRawMessage(mcMsg *msg.Message) (*msg.RawMessage, error) {
 		case ml.GatewayTypeSerial, ml.GatewayTypeEthernet:
 
 		case ml.GatewayTypeMQTT:
-			rm.ID = msMsg.getID()
 			rm.Data = []byte(mcMsg.Payload)
 			rm.Others[msg.KeyTopic] = msMsg.toRaw(true)
 		}
@@ -103,12 +102,13 @@ func (p *Parser) ToMessage(rm *msg.RawMessage) (*msg.Message, error) {
 		Timestamp:  rm.Timestamp,
 		Payload:    ms.Payload,
 		Command:    cmdMapIn[ms.Command],
+		Others:     make(map[string]interface{}),
 	}
 
 	switch ms.Command {
 	case CmdSet, CmdReq:
-		mcMsg.SubCommand = cmdSetReqTypeMapIn[ms.Type]
-		_tu := metricUnit[mcMsg.SubCommand]
+		mcMsg.Field = cmdSetReqTypeMapIn[ms.Type]
+		_tu := metricUnit[mcMsg.Field]
 		mcMsg.DataType = _tu.Type
 		mcMsg.UnitID = _tu.Unit
 		mcMsg.Others[keyCmdType] = ms.Type
@@ -144,6 +144,5 @@ func (p *Parser) ToMessage(rm *msg.RawMessage) (*msg.Message, error) {
 			return nil, nil
 		}
 	}
-
 	return mcMsg, nil
 }

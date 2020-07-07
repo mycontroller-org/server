@@ -55,10 +55,14 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 	if token == "" {
 		token = fmt.Sprintf("%s:%s", cfg.Username, cfg.Password)
 	}
-	flushInterval, err := time.ParseDuration(cfg.FlushInterval)
-	if err != nil {
-		zap.L().Warn("Invalid flush interval", zap.String("flushInterval", cfg.FlushInterval))
-		flushInterval = defaultFlushInterval
+	flushInterval := defaultFlushInterval
+
+	if cfg.FlushInterval != "" {
+		flushInterval, err = time.ParseDuration(cfg.FlushInterval)
+		if err != nil {
+			zap.L().Warn("Invalid flush interval", zap.String("flushInterval", cfg.FlushInterval))
+			flushInterval = defaultFlushInterval
+		}
 	}
 	if flushInterval.Milliseconds() < 1 {
 		zap.L().Warn("Minimum supported flush interval is 1ms, switching back to default", zap.String("flushInterval", cfg.FlushInterval))

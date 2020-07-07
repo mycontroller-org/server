@@ -1,6 +1,9 @@
 package message
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // Wrapper for queue
 type Wrapper struct {
@@ -11,7 +14,7 @@ type Wrapper struct {
 
 // Message definition
 type Message struct {
-	ID             string
+	//	ID             string
 	GatewayID      string
 	NodeID         string
 	SensorID       string
@@ -27,6 +30,11 @@ type Message struct {
 	Timestamp      time.Time
 	IsSleepingNode bool // Is this message for sleeping node?
 	Others         map[string]interface{}
+}
+
+//GetID returns unique ID for this message
+func (m *Message) GetID() string {
+	return fmt.Sprintf("%s-%s-%s-%s-%s", m.GatewayID, m.NodeID, m.SensorID, m.Command, m.Field)
 }
 
 // RawMessage from/to gateway media

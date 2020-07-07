@@ -28,7 +28,6 @@ func Init() {
 	initConfig()
 	initBus()
 	initStorage()
-	registerTopics()
 }
 
 // Close all the registries

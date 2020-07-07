@@ -7,6 +7,7 @@ import (
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mustafaturan/bus"
+	"github.com/mycontroller-org/mycontroller-v2/pkg/mcbus"
 	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
 	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
@@ -24,8 +25,8 @@ func Init() error {
 	mq = q.NewBoundedQueue(size, func(item interface{}) {
 		zap.L().Error("Dropping an item, queue full", zap.Int("size", size), zap.Any("item", item))
 	})
-	srv.BUS.RegisterHandler("primary_engine", &bus.Handler{
-		Matcher: srv.TopicGatewayMessageReceive,
+	srv.BUS.RegisterHandler(mcbus.TopicMsgFromGW, &bus.Handler{
+		Matcher: mcbus.TopicMsgFromGW,
 		Handle:  onMessageReceive,
 	})
 	return nil
@@ -39,8 +40,12 @@ func Close() error {
 
 // onMessageReceive from gateways
 func onMessageReceive(e *bus.Event) {
-	//zap.L().Debug("Received an item", zap.Any("item", e))
-	m := e.Data.(*msg.Message)
+	wm := e.Data.(*msg.Wrapper)
+	m := wm.Message.(*msg.Message)
+	if m == nil {
+		// invalid message
+		return
+	}
 	//zap.L().Debug("Message", zap.Any("message", m))
 
 	// store it into database

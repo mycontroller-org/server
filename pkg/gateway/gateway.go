@@ -33,9 +33,18 @@ func getQueue(name string, queueSize int) *q.BoundedQueue {
 // handle received messages from gateway
 func receiveMessageFunc(s *ml.GatewayService) func(rm *msg.RawMessage) error {
 	return func(rm *msg.RawMessage) error {
+		zap.L().Debug("rawMessage received", zap.Any("rawMessage", rm), zap.Any("payload", string(rm.Data)))
 		message, err := s.Parser.ToMessage(rm)
 		if err != nil {
 			return err
+		}
+		if message == nil {
+			zap.L().Debug("message not parsed", zap.Any("rawMessage", rm), zap.String("payload", string(rm.Data)))
+			return nil
+		}
+		// update gatewayID if not found
+		if message != nil && message.GatewayID == "" {
+			message.GatewayID = s.Config.ID
 		}
 		mw := &msg.Wrapper{
 			GatewayID:  s.Config.ID,
@@ -44,9 +53,9 @@ func receiveMessageFunc(s *ml.GatewayService) func(rm *msg.RawMessage) error {
 		}
 		var topic string
 		if message.IsAck {
-			topic = fmt.Sprintf("%s_%s", mcbus.TopicGatewayAcknowledgement, message.ID)
+			topic = fmt.Sprintf("%s_%s", mcbus.TopicGatewayAcknowledgement, message.GetID())
 		} else {
-			topic = fmt.Sprintf("%s_%s", mcbus.TopicMsgFromGW, s.Config.ID)
+			topic = mcbus.TopicMsgFromGW
 		}
 		_, err = mcbus.Publish(topic, mw)
 		return err
@@ -55,6 +64,10 @@ func receiveMessageFunc(s *ml.GatewayService) func(rm *msg.RawMessage) error {
 
 func writeMessageFunc(s *ml.GatewayService) func(mcMsg *msg.Message) {
 	return func(mcMsg *msg.Message) {
+		// update gatewayID if not found
+		if mcMsg != nil && mcMsg.GatewayID == "" {
+			mcMsg.GatewayID = s.Config.ID
+		}
 		// send delivery status
 		sendDeliveryStatus := func(status *msg.DeliveryStatus) {
 			_, err := mcbus.Publish(mcbus.TopicMsg2GWDelieverStatus, status)
@@ -65,7 +78,7 @@ func writeMessageFunc(s *ml.GatewayService) func(mcMsg *msg.Message) {
 		// parse message
 		rm, err := s.Parser.ToRawMessage(mcMsg)
 		if err != nil {
-			sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.ID, Success: false, Message: err.Error()})
+			sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.GetID(), Success: false, Message: err.Error()})
 			zap.L().Error("Failed to parse", zap.Error(err), zap.Any("message", mcMsg))
 			return
 		}
@@ -99,7 +112,7 @@ func writeMessageFunc(s *ml.GatewayService) func(mcMsg *msg.Message) {
 				err = s.Gateway.Write(rm)
 				if err != nil {
 					zap.L().Error("Failed to write message into gateway", zap.Error(err), zap.Any("message", mcMsg), zap.Any("raw", rm))
-					sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.ID, Success: false, Message: err.Error()})
+					sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.GetID(), Success: false, Message: err.Error()})
 					return
 				}
 				select {
@@ -113,9 +126,9 @@ func writeMessageFunc(s *ml.GatewayService) func(mcMsg *msg.Message) {
 				}
 			}
 			if messageSent {
-				sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.ID, Success: true})
+				sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.GetID(), Success: true})
 			} else {
-				sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.ID, Success: false, Message: "No acknowledgement received, tried maximum retries"})
+				sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.GetID(), Success: false, Message: "No acknowledgement received, tried maximum retries"})
 			}
 			return
 		}
@@ -124,10 +137,10 @@ func writeMessageFunc(s *ml.GatewayService) func(mcMsg *msg.Message) {
 		err = s.Gateway.Write(rm)
 		if err != nil {
 			zap.L().Error("Failed to write message into gateway", zap.Error(err), zap.Any("message", mcMsg), zap.Any("raw", rm))
-			sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.ID, Success: false, Message: err.Error()})
+			sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.GetID(), Success: false, Message: err.Error()})
 			return
 		}
-		sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.ID, Success: true})
+		sendDeliveryStatus(&msg.DeliveryStatus{ID: mcMsg.GetID(), Success: true})
 	}
 }
 
