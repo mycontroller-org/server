@@ -5,13 +5,6 @@ import (
 	"time"
 )
 
-// Wrapper for queue
-type Wrapper struct {
-	GatewayID  string
-	IsReceived bool
-	Message    interface{}
-}
-
 // Message definition
 type Message struct {
 	//	ID             string
@@ -21,14 +14,14 @@ type Message struct {
 	IsAck          bool // Is this acknowledgement message
 	IsReceived     bool // Is this received message
 	IsAckEnabled   bool // Is Acknowledge enabled?
+	IsSleepingNode bool // Is this message for sleeping node?
 	Command        string
 	SubCommand     string
 	Field          string
 	Payload        string
-	DataType       string
-	UnitID         string
+	PayloadType    string
+	PayloadUnitID  string
 	Timestamp      time.Time
-	IsSleepingNode bool // Is this message for sleeping node?
 	Others         map[string]interface{}
 }
 

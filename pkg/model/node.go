@@ -30,12 +30,13 @@ type Sensor struct {
 // SensorField model
 type SensorField struct {
 	ID              string                 `json:"id"`
+	Name            string                 `json:"name"`
 	ShortID         string                 `json:"shortId"`
 	GatewayID       string                 `json:"gatewayId"`
 	NodeID          string                 `json:"nodeId"`
 	SensorID        string                 `json:"sensorId"`
 	IsReadOnly      bool                   `json:"isReadOnly"`
-	DataType        string                 `json:"dataType"`
+	PayloadType     string                 `json:"payloadType"`
 	UnitID          string                 `json:"unitId"`
 	Payload         FieldValue             `json:"payload"`
 	PreviousPayload FieldValue             `json:"previousPayload"`

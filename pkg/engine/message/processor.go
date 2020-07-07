@@ -40,8 +40,7 @@ func Close() error {
 
 // onMessageReceive from gateways
 func onMessageReceive(e *bus.Event) {
-	wm := e.Data.(*msg.Wrapper)
-	m := wm.Message.(*msg.Message)
+	m := e.Data.(*msg.Message)
 	if m == nil {
 		// invalid message
 		return
@@ -78,8 +77,8 @@ func onMessageReceive(e *bus.Event) {
 			NodeID:         m.NodeID,
 			SensorID:       m.SensorID,
 			LastSeen:       m.Timestamp,
-			DataType:       m.DataType,
-			UnitID:         m.UnitID,
+			PayloadType:    m.PayloadType,
+			UnitID:         m.PayloadUnitID,
 			ProviderConfig: m.Others,
 		}
 		sensorFieldData(sf, m)
@@ -107,9 +106,9 @@ func nodeData(n *ml.Node, m *msg.Message) error {
 		node.Others = map[string]interface{}{}
 	}
 	switch m.SubCommand {
-	case msg.KeyCmdNodeName:
+	case msg.KeySubCmdName:
 		node.Name = m.Payload
-	case msg.KeyCmdNodeBatteryLevel:
+	case msg.KeySubCmdBatteryLevel:
 		// update battery level
 		bl, err := strconv.ParseFloat(m.Payload, 64)
 		if err != nil {
@@ -117,7 +116,7 @@ func nodeData(n *ml.Node, m *msg.Message) error {
 		}
 		node.Others[m.Field] = bl
 		// send it to metric store
-	case msg.KeyCmdNodeDiscover, msg.KeyCmdNodeHeartbeat, msg.KeyCmdNodePing:
+	case msg.KeySubCmdDiscover, msg.KeySubCmdHeartbeat, msg.KeySubCmdPing:
 		// TODO:
 	default:
 		node.Others[m.Field] = m.Payload
@@ -167,23 +166,23 @@ func sensorFieldData(sf *ml.SensorField, m *msg.Message) error {
 	var err error
 	var pl interface{}
 	// convert payload to actual type
-	switch m.DataType {
-	case msg.DataTypeBoolean:
+	switch m.PayloadType {
+	case msg.PayloadTypeBoolean:
 		pl, err = strconv.ParseBool(m.Payload)
-	case msg.DataTypeFloat:
+	case msg.PayloadTypeFloat:
 		pl, err = strconv.ParseFloat(m.Payload, 64)
-	case msg.DataTypeInteger:
+	case msg.PayloadTypeInteger:
 		pl, err = strconv.ParseInt(m.Payload, 10, 64)
-	case msg.DataTypeString:
+	case msg.PayloadTypeString:
 		pl = m.Payload
-	case msg.DataTypeGeo:
+	case msg.PayloadTypeGeo:
 		pl = m.Payload
 	default:
 		zap.L().Error("Unknown data type", zap.Any("sensorField", m))
 	}
 
 	if err != nil {
-		zap.L().Error("Unable to convert the payload to actual dataType", zap.Error(err), zap.Any("sensorField", m))
+		zap.L().Error("Unable to convert the payload to actual PayloadType", zap.Error(err), zap.Any("sensorField", m))
 	}
 
 	// update payload

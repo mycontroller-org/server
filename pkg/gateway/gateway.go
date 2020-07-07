@@ -46,18 +46,13 @@ func receiveMessageFunc(s *ml.GatewayService) func(rm *msg.RawMessage) error {
 		if message != nil && message.GatewayID == "" {
 			message.GatewayID = s.Config.ID
 		}
-		mw := &msg.Wrapper{
-			GatewayID:  s.Config.ID,
-			IsReceived: true,
-			Message:    message,
-		}
 		var topic string
 		if message.IsAck {
 			topic = fmt.Sprintf("%s_%s", mcbus.TopicGatewayAcknowledgement, message.GetID())
 		} else {
 			topic = mcbus.TopicMsgFromGW
 		}
-		_, err = mcbus.Publish(topic, mw)
+		_, err = mcbus.Publish(topic, message)
 		return err
 	}
 }

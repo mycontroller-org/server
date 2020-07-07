@@ -1,20 +1,20 @@
 package message
 
-// DataTypes of a payload
-var DataTypes = []string{
-	DataTypeFloat,
-	DataTypeInteger,
-	DataTypeString,
-	DataTypeBoolean,
+// PayloadTypes of a payload
+var PayloadTypes = []string{
+	PayloadTypeFloat,
+	PayloadTypeInteger,
+	PayloadTypeString,
+	PayloadTypeBoolean,
 }
 
-// Data type will be used for metrics
+// Payload type will be used for metrics
 const (
-	DataTypeFloat   = "float"
-	DataTypeInteger = "integer"
-	DataTypeString  = "string"
-	DataTypeBoolean = "boolean"
-	DataTypeGeo     = "geo"
+	PayloadTypeFloat   = "float"
+	PayloadTypeInteger = "integer"
+	PayloadTypeString  = "string"
+	PayloadTypeBoolean = "boolean"
+	PayloadTypeGeo     = "geo"
 )
 
 // Units of a payload
@@ -67,18 +67,18 @@ const (
 
 // Node command options
 const (
-	KeyCmdNodeName                  = "name"
-	KeyCmdNodeReboot                = "reboot"
-	KeyCmdNodeVersion               = "version"
-	KeyCmdNodeLibraryVersion        = "libraryVersion"
-	KeyCmdNodeParentID              = "parentId"
-	KeyCmdNodeDiscover              = "descover"
-	KeyCmdNodeHeartbeat             = "hearbeat"
-	KeyCmdNodePing                  = "ping"
-	KeyCmdNodeSignalStrength        = "signalStrength"
-	KeyCmdNodeBatteryLevel          = "batteryLevel"
-	KeyCmdNodePreSleepNotification  = "preSleep"
-	KeyCmdNodePostSleepNotification = "postSleep"
+	KeySubCmdName                  = "name"
+	KeySubCmdReboot                = "reboot"
+	KeySubCmdVersion               = "version"
+	KeySubCmdLibraryVersion        = "libraryVersion"
+	KeySubCmdParentID              = "parentId"
+	KeySubCmdDiscover              = "descover"
+	KeySubCmdHeartbeat             = "hearbeat"
+	KeySubCmdPing                  = "ping"
+	KeySubCmdSignalStrength        = "signalStrength"
+	KeySubCmdBatteryLevel          = "batteryLevel"
+	KeySubCmdPreSleepNotification  = "preSleep"
+	KeySubCmdPostSleepNotification = "postSleep"
 )
 
 // Others map known keys

@@ -109,8 +109,8 @@ func (p *Parser) ToMessage(rm *msg.RawMessage) (*msg.Message, error) {
 	case CmdSet, CmdReq:
 		mcMsg.Field = cmdSetReqTypeMapIn[ms.Type]
 		_tu := metricUnit[mcMsg.Field]
-		mcMsg.DataType = _tu.Type
-		mcMsg.UnitID = _tu.Unit
+		mcMsg.PayloadType = _tu.Type
+		mcMsg.PayloadUnitID = _tu.Unit
 		mcMsg.Others[keyCmdType] = ms.Type
 	case CmdInternal:
 		// check should I have to handle this locally?
@@ -131,14 +131,14 @@ func (p *Parser) ToMessage(rm *msg.RawMessage) (*msg.Message, error) {
 			if _type == "S_ARDUINO_REPEATER_NODE" || _type == "S_ARDUINO_NODE" {
 				// this is a node data
 				mcMsg.SubCommand = msg.CommandNode
-				mcMsg.Field = msg.KeyCmdNodeLibraryVersion
+				mcMsg.Field = msg.KeySubCmdLibraryVersion
 				if _type == "S_ARDUINO_REPEATER_NODE" {
 					mcMsg.Others[keyNodeType] = "Repeater"
 				}
 			} else {
 				mcMsg.Field = msg.KeyName
 				mcMsg.Others[keyCmdType] = ms.Type
-				mcMsg.Others[keyCmdTypeString] = _type
+				mcMsg.Others[KeyCmdTypeString] = _type
 			}
 		} else {
 			return nil, nil

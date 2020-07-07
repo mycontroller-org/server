@@ -127,7 +127,7 @@ func (c *Client) Write(sf *ml.SensorField) error {
 
 func getPoint(sf *ml.SensorField) (*write.Point, error) {
 	fields := make(map[string]interface{})
-	if sf.DataType == msg.DataTypeGeo {
+	if sf.PayloadType == msg.PayloadTypeGeo {
 		_f, err := geoData(sf.Payload)
 		if err != nil {
 			return nil, err
@@ -136,7 +136,7 @@ func getPoint(sf *ml.SensorField) (*write.Point, error) {
 	} else {
 		fields["value"] = sf.Payload
 	}
-	p := influxdb2.NewPoint(measurementName(sf.DataType),
+	p := influxdb2.NewPoint(measurementName(sf.PayloadType),
 		// "gateway": sf.GatewayID, "node": sf.NodeID, "sensor": sf.SensorID,
 		map[string]string{"gateway": sf.GatewayID, "node": sf.NodeID, "sensor": sf.SensorID, "id": sf.ID},
 		fields,
@@ -176,17 +176,17 @@ func geoData(pl interface{}) (map[string]interface{}, error) {
 	return d, nil
 }
 
-func measurementName(dataType string) string {
-	switch dataType {
-	case msg.DataTypeBoolean:
+func measurementName(payloadType string) string {
+	switch payloadType {
+	case msg.PayloadTypeBoolean:
 		return "binary_data"
-	case msg.DataTypeFloat:
+	case msg.PayloadTypeFloat:
 		return "float_data"
-	case msg.DataTypeInteger:
+	case msg.PayloadTypeInteger:
 		return "integer_data"
-	case msg.DataTypeString:
+	case msg.PayloadTypeString:
 		return "string_data"
-	case msg.DataTypeGeo:
+	case msg.PayloadTypeGeo:
 		return "geo_data"
 	default:
 		return "unknown_data_type"
