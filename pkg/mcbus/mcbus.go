@@ -27,3 +27,8 @@ func Publish(topicName string, data interface{}) (*bus.Event, error) {
 func Subscribe(key string, handler *bus.Handler) {
 	srv.BUS.RegisterHandler(key, handler)
 }
+
+// Unsubscribe a topic
+func Unsubscribe(key string) {
+	srv.BUS.DeregisterHandler(key)
+}

@@ -16,8 +16,7 @@ type Parser struct {
 }
 
 // ToRawMessage converts to gateway specific
-func (p *Parser) ToRawMessage(wm *msg.Wrapper) (*msg.RawMessage, error) {
-	mcMsg := wm.Message.(*msg.Message)
+func (p *Parser) ToRawMessage(mcMsg *msg.Message) (*msg.RawMessage, error) {
 	msMsg := myMessage{
 		NodeID:   mcMsg.NodeID,
 		SensorID: mcMsg.SensorID,
@@ -53,10 +52,9 @@ func (p *Parser) ToRawMessage(wm *msg.Wrapper) (*msg.RawMessage, error) {
 }
 
 // ToMessage converts to mc specific
-func (p *Parser) ToMessage(wm *msg.Wrapper) (*msg.Message, error) {
-	//zap.L().Debug("Raw message", zap.Any("rawMessage", wm))
+func (p *Parser) ToMessage(rm *msg.RawMessage) (*msg.Message, error) {
+	//zap.L().Debug("Raw message", zap.Any("rawMessage", rm))
 
-	rm := wm.Message.(*msg.RawMessage)
 	d := make([]string, 0)
 	payload := ""
 

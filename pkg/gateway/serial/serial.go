@@ -1,8 +1,8 @@
 package serial
 
 import (
-	q "github.com/jaegertracing/jaeger/pkg/queue"
 	m2s "github.com/mitchellh/mapstructure"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
 	s "github.com/tarm/serial"
 )
@@ -21,17 +21,16 @@ type Config struct {
 
 // Endpoint data
 type Endpoint struct {
-	Config    Config
-	Port      *s.Port
-	TxQueue   *q.BoundedQueue
-	RxQueue   *q.BoundedQueue
-	GatewayID string
+	GwCfg          *ml.GatewayConfig
+	Config         Config
+	receiveMsgFunc func(rm *msg.RawMessage) error
+	Port           *s.Port
 }
 
 // New serial client
-func New(config map[string]interface{}, txQueue, rxQueue *q.BoundedQueue, gID string) (*Endpoint, error) {
+func New(gwCfg *ml.GatewayConfig, rxMsgFunc func(rm *msg.RawMessage) error) (*Endpoint, error) {
 	var cfg Config
-	err := m2s.Decode(config, &cfg)
+	err := m2s.Decode(gwCfg.Provider.Config, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -41,11 +40,10 @@ func New(config map[string]interface{}, txQueue, rxQueue *q.BoundedQueue, gID st
 		return nil, err
 	}
 	d := &Endpoint{
-		Config:    cfg,
-		Port:      port,
-		TxQueue:   txQueue,
-		RxQueue:   rxQueue,
-		GatewayID: gID,
+		GwCfg:          gwCfg,
+		Config:         cfg,
+		receiveMsgFunc: rxMsgFunc,
+		Port:           port,
 	}
 	return d, nil
 }
@@ -57,8 +55,5 @@ func (d *Endpoint) Write(rm *msg.RawMessage) error {
 
 // Close the driver
 func (d *Endpoint) Close() error {
-	err := d.Port.Close()
-	d.TxQueue.Stop()
-	d.RxQueue.Stop()
-	return err
+	return d.Port.Close()
 }

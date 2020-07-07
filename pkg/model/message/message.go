@@ -11,20 +11,22 @@ type Wrapper struct {
 
 // Message definition
 type Message struct {
-	ID         string
-	GatewayID  string
-	NodeID     string
-	SensorID   string
-	IsAck      bool // Is this acknowledgement message
-	IsReceived bool // Is this received message
-	Command    string
-	SubCommand string
-	Field      string
-	Payload    string
-	DataType   string
-	UnitID     string
-	Timestamp  time.Time
-	Others     map[string]interface{}
+	ID             string
+	GatewayID      string
+	NodeID         string
+	SensorID       string
+	IsAck          bool // Is this acknowledgement message
+	IsReceived     bool // Is this received message
+	IsAckEnabled   bool // Is Acknowledge enabled?
+	Command        string
+	SubCommand     string
+	Field          string
+	Payload        string
+	DataType       string
+	UnitID         string
+	Timestamp      time.Time
+	IsSleepingNode bool // Is this message for sleeping node?
+	Others         map[string]interface{}
 }
 
 // RawMessage from/to gateway media

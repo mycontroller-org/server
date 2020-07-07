@@ -4,7 +4,6 @@ import (
 	"time"
 
 	paho "github.com/eclipse/paho.mqtt.golang"
-	q "github.com/jaegertracing/jaeger/pkg/queue"
 	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
 	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
@@ -14,18 +13,17 @@ import (
 
 // Endpoint data
 type Endpoint struct {
-	Config    ml.GatewayConfigMQTT
-	Client    paho.Client
-	RxQueue   *q.BoundedQueue
-	TxQueue   *q.BoundedQueue
-	GatewayID string
+	GwCfg          *ml.GatewayConfig
+	Config         ml.GatewayConfigMQTT
+	receiveMsgFunc func(rm *msg.RawMessage) error
+	Client         paho.Client
 }
 
 // New mqtt driver
-func New(config map[string]interface{}, txQueue, rxQueue *q.BoundedQueue, gID string) (*Endpoint, error) {
+func New(gwCfg *ml.GatewayConfig, rxMsgFunc func(rm *msg.RawMessage) error) (*Endpoint, error) {
 	start := time.Now()
 	cfg := ml.GatewayConfigMQTT{}
-	err := ut.MapToStruct(ut.TagNameNone, config, &cfg)
+	err := ut.MapToStruct(ut.TagNameNone, gwCfg.Provider.Config, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -49,11 +47,10 @@ func New(config map[string]interface{}, txQueue, rxQueue *q.BoundedQueue, gID st
 	}
 
 	d := &Endpoint{
-		Config:    cfg,
-		Client:    c,
-		TxQueue:   txQueue,
-		RxQueue:   rxQueue,
-		GatewayID: gID,
+		GwCfg:          gwCfg,
+		Config:         cfg,
+		Client:         c,
+		receiveMsgFunc: rxMsgFunc,
 	}
 
 	err = d.Subscribe(cfg.Subscribe)
@@ -92,27 +89,23 @@ func (d *Endpoint) Close() error {
 		d.Client.Disconnect(0)
 		zap.L().Debug("MQTT Client connection closed", zap.Any("endpoint", d.Config))
 	}
-	d.TxQueue.Stop()
-	d.RxQueue.Stop()
 	return nil
 }
 
 func (d *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 	return func(c paho.Client, message paho.Message) {
-		m := &msg.Wrapper{
-			GatewayID:  d.GatewayID,
-			IsReceived: true,
-			Message: &msg.RawMessage{
-				Data:      message.Payload(),
-				Timestamp: time.Now(),
-				Others: map[string]interface{}{
-					msg.KeyTopic: message.Topic(),
-					msg.KeyQoS:   int(message.Qos()),
-				},
+		m := &msg.RawMessage{
+			Data:      message.Payload(),
+			Timestamp: time.Now(),
+			Others: map[string]interface{}{
+				msg.KeyTopic: message.Topic(),
+				msg.KeyQoS:   int(message.Qos()),
 			},
 		}
-		d.RxQueue.Produce(m)
-		//	zap.L().Info("Received a message", zap.String("topic", msg.Topic()), zap.String("payload", string(msg.Payload())))
+		err := d.receiveMsgFunc(m)
+		if err != nil {
+			zap.L().Error("Failed to send message to queue", zap.Any("rawMessage", m), zap.Error(err))
+		}
 	}
 }
 

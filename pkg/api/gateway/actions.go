@@ -1,8 +1,6 @@
 package gateway
 
 import (
-	"fmt"
-
 	gm "github.com/mycontroller-org/mycontroller-v2/pkg/gateway"
 	gms "github.com/mycontroller-org/mycontroller-v2/pkg/gateway/serial"
 	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
@@ -27,10 +25,6 @@ func Start(g *ml.GatewayConfig) error {
 	}
 	s := &ml.GatewayService{
 		Config: g,
-		Topics: ml.GatewayProviderTopics{
-			PostMessage:         fmt.Sprintf("gw_message_%s", g.ID),
-			PostAcknowledgement: fmt.Sprintf("gw_ack_%s", g.ID),
-		},
 		Parser: parser,
 	}
 
