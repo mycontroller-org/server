@@ -1,0 +1,3 @@
+# ignore configurations files other than the template(config.yaml)
+/resources/*
+!/resources/config.yaml
