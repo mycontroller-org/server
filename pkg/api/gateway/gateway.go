@@ -2,21 +2,21 @@ package gateway
 
 import (
 	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
+	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
 )
 
 // ListGateways by filter and pagination
 func ListGateways(f []ml.Filter, p ml.Pagination) ([]ml.GatewayConfig, error) {
 	out := make([]ml.GatewayConfig, 0)
-	srv.STG.Find(ml.EntityGateway, f, p, &out)
+	svc.STG.Find(ml.EntityGateway, f, p, &out)
 	return out, nil
 }
 
 // GetGateway returns a gateway
 func GetGateway(f []ml.Filter) (ml.GatewayConfig, error) {
 	out := ml.GatewayConfig{}
-	err := srv.STG.FindOne(ml.EntityGateway, f, &out)
+	err := svc.STG.FindOne(ml.EntityGateway, f, &out)
 	return out, err
 }
 
@@ -25,7 +25,7 @@ func Save(g *ml.GatewayConfig) error {
 	if g.ID == "" {
 		g.ID = ut.RandID()
 	}
-	return srv.STG.Upsert(ml.EntityGateway, nil, g)
+	return svc.STG.Upsert(ml.EntityGateway, nil, g)
 }
 
 // SetState Updates state data

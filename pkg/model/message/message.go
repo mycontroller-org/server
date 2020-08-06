@@ -7,20 +7,20 @@ import (
 
 // Message definition
 type Message struct {
-	//	ID             string
+	ID             string
 	GatewayID      string
 	NodeID         string
 	SensorID       string
-	IsAck          bool // Is this acknowledgement message
-	IsReceived     bool // Is this received message
-	IsAckEnabled   bool // Is Acknowledge enabled?
-	IsSleepingNode bool // Is this message for sleeping node?
 	Command        string
 	SubCommand     string
 	Field          string
 	Payload        string
 	PayloadType    string
 	PayloadUnitID  string
+	IsAck          bool // Is this acknowledgement message
+	IsReceived     bool // Is this received message
+	IsAckEnabled   bool // Is Acknowledge enabled?
+	IsSleepingNode bool // Is this message for sleeping node?
 	Timestamp      time.Time
 	Others         map[string]interface{}
 }

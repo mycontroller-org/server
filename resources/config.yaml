@@ -3,6 +3,13 @@ web:
   port: 8080
   webDirectory: 
 
+logger:
+  encoding: console
+  level:
+    core: debug
+    storage: debug
+    metrics: debug
+
 database:
   storage: mongodb
   metrics: influxdb_v2
@@ -20,7 +27,3 @@ databases:
     organization: mycontroller-org
     bucket: mycontroller
     batch_size: 
-
-logger:
-  level: DEBUG
-  console: true

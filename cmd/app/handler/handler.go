@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
+	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
 )
@@ -21,7 +21,7 @@ func StartHandler() error {
 	registerSensorRoutes(router)
 	registerSensorFieldRoutes(router)
 
-	cfg := srv.CFG.Web
+	cfg := svc.CFG.Web
 
 	if cfg.WebDirectory != "" {
 		fs := http.FileServer(http.Dir(cfg.WebDirectory))

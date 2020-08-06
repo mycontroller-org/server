@@ -1,4 +1,4 @@
-package mongo
+package mongodb
 
 import (
 	"context"
@@ -45,7 +45,8 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 		Config: cfg,
 		Client: mc,
 	}
-	return c, nil
+	err = c.initIndex()
+	return c, err
 }
 
 // Close the connection

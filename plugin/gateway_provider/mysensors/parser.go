@@ -130,8 +130,8 @@ func (p *Parser) ToMessage(rm *msg.RawMessage) (*msg.Message, error) {
 		if _type, ok := cmdPresentationTypeMapIn[ms.Type]; ok {
 			if _type == "S_ARDUINO_REPEATER_NODE" || _type == "S_ARDUINO_NODE" {
 				// this is a node data
-				mcMsg.SubCommand = msg.CommandNode
-				mcMsg.Field = msg.KeySubCmdLibraryVersion
+				mcMsg.SubCommand = msg.CommandPresentation
+				mcMsg.Field = msg.SubCmdLibraryVersion
 				if _type == "S_ARDUINO_REPEATER_NODE" {
 					mcMsg.Others[keyNodeType] = "Repeater"
 				}

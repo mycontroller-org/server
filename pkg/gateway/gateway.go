@@ -12,7 +12,7 @@ import (
 	"github.com/mycontroller-org/mycontroller-v2/pkg/mcbus"
 	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
-	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
+	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 	"go.uber.org/zap"
 )
 
@@ -91,14 +91,14 @@ func writeMessageFunc(s *ml.GatewayService) func(mcMsg *msg.Message) {
 			})
 			defer mcbus.Unsubscribe(ackTopic)
 
-			waitTime, err := time.ParseDuration(s.Config.AckConfig.WaitTime)
+			timeout, err := time.ParseDuration(s.Config.AckConfig.Timeout)
 			if err != nil {
-				// failed to parse waitTime, update default
-				waitTime = time.Millisecond * 200
+				// failed to parse timeout, update default
+				timeout = time.Millisecond * 200
 			}
-			// minimum waittime
-			if waitTime.Microseconds() < 1 {
-				waitTime = time.Millisecond * 10
+			// minimum timeout
+			if timeout.Microseconds() < 1 {
+				timeout = time.Millisecond * 10
 			}
 
 			messageSent := false
@@ -113,8 +113,8 @@ func writeMessageFunc(s *ml.GatewayService) func(mcMsg *msg.Message) {
 				select {
 				case <-ackChannel:
 					messageSent = true
-				case <-time.After(waitTime):
-					// breaks this wait
+				case <-time.After(timeout):
+					// just wait till timeout
 				}
 				if messageSent {
 					break
@@ -222,8 +222,8 @@ func Start(s *ml.GatewayService) error {
 	}
 	if err != nil {
 		zap.L().Error("Error", zap.Error(err))
-		srv.BUS.DeregisterTopics(s.TopicMsg2GW)
-		srv.BUS.DeregisterTopics(s.TopicSleepingMsg2GW)
+		svc.BUS.DeregisterTopics(s.TopicMsg2GW)
+		svc.BUS.DeregisterTopics(s.TopicSleepingMsg2GW)
 		s.TxMsgQueue.Stop()
 	}
 	return nil
@@ -231,8 +231,8 @@ func Start(s *ml.GatewayService) error {
 
 // Stop the media
 func Stop(s *ml.GatewayService) error {
-	srv.BUS.DeregisterTopics(s.TopicMsg2GW)
-	srv.BUS.DeregisterTopics(s.TopicSleepingMsg2GW)
+	svc.BUS.DeregisterTopics(s.TopicMsg2GW)
+	svc.BUS.DeregisterTopics(s.TopicSleepingMsg2GW)
 	s.TxMsgQueue.Stop()
 	// stop media
 	err := s.Gateway.Close()

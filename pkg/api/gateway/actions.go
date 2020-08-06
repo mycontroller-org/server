@@ -4,7 +4,7 @@ import (
 	gm "github.com/mycontroller-org/mycontroller-v2/pkg/gateway"
 	gms "github.com/mycontroller-org/mycontroller-v2/pkg/gateway/serial"
 	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
+	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 	"github.com/mycontroller-org/mycontroller-v2/plugin/gateway_provider/mysensors"
 	"go.uber.org/zap"
 )
@@ -32,7 +32,7 @@ func Start(g *ml.GatewayConfig) error {
 	if err != nil {
 		zap.L().Info("Unable to start the gateway", zap.Any("gateway", g))
 	} else {
-		srv.AddGatewayService(s)
+		svc.AddGatewayService(s)
 	}
 
 	return nil
@@ -40,7 +40,7 @@ func Start(g *ml.GatewayConfig) error {
 
 // Stop gateway
 func Stop(g *ml.GatewayConfig) error {
-	gs := srv.GetGatewayService(g)
+	gs := svc.GetGatewayService(g)
 	if gs != nil {
 		err := gm.Stop(gs)
 		if err != nil {

@@ -10,7 +10,8 @@ import (
 	"github.com/mycontroller-org/mycontroller-v2/pkg/mcbus"
 	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
-	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
+	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
+	"github.com/mycontroller-org/mycontroller-v2/pkg/util"
 	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
 	"go.uber.org/zap"
 )
@@ -25,7 +26,7 @@ func Init() error {
 	mq = q.NewBoundedQueue(size, func(item interface{}) {
 		zap.L().Error("Dropping an item, queue full", zap.Int("size", size), zap.Any("item", item))
 	})
-	srv.BUS.RegisterHandler(mcbus.TopicMsgFromGW, &bus.Handler{
+	svc.BUS.RegisterHandler(mcbus.TopicMsgFromGW, &bus.Handler{
 		Matcher: mcbus.TopicMsgFromGW,
 		Handle:  onMessageReceive,
 	})
@@ -42,73 +43,77 @@ func Close() error {
 func onMessageReceive(e *bus.Event) {
 	m := e.Data.(*msg.Message)
 	if m == nil {
-		// invalid message
+		zap.L().Warn("Received a nil message", zap.Any("event", e))
 		return
 	}
-	//zap.L().Debug("Message", zap.Any("message", m))
 
-	// store it into database
-	//srv.STG.Upsert(ml.EntityGateway,)
-	// srv.STG.Upsert(ml.EntityNode, nil, nil)
+	updateNodeLastSeen := true
 
-	switch m.Command {
-	case msg.CommandNode:
-		n := &ml.Node{
-			ID:        fmt.Sprintf("%s_%s", m.GatewayID, m.NodeID),
-			GatewayID: m.GatewayID,
-			ShortID:   m.NodeID,
-			LastSeen:  m.Timestamp,
+	// update field value or sensor data
+	if m.SensorID != "" {
+		switch m.Command {
+		case msg.CommandSet:
+			updateSensorFieldData(m)
+		case msg.CommandRequest:
+			// requestSensorFieldData(s, m)
+		case msg.CommandPresentation:
+			// update sensor name or properties
+			updateSensorData(m)
+		default:
+			zap.L().Warn("Found not implemented command for sensor", zap.Any("message", m))
 		}
-		nodeData(n, m)
-	case msg.CommandSensor:
-		s := &ml.Sensor{
-			ID:        fmt.Sprintf("%s_%s_%s", m.GatewayID, m.NodeID, m.SensorID),
-			GatewayID: m.GatewayID,
-			NodeID:    m.NodeID,
-			ShortID:   m.SensorID,
-			LastSeen:  m.Timestamp,
-		}
-		sensorData(s, m)
-	case msg.CommandSet:
-		sf := &ml.SensorField{
-			ID:             fmt.Sprintf("%s_%s_%s_%s", m.GatewayID, m.NodeID, m.SensorID, m.Field),
-			ShortID:        m.Field,
-			GatewayID:      m.GatewayID,
-			NodeID:         m.NodeID,
-			SensorID:       m.SensorID,
-			LastSeen:       m.Timestamp,
-			PayloadType:    m.PayloadType,
-			UnitID:         m.PayloadUnitID,
-			ProviderConfig: m.Others,
-		}
-		sensorFieldData(sf, m)
-	case msg.CommandRequest:
-	case msg.CommandStream:
-	case msg.CommandNone:
 	}
+	// update node data
+	if m.NodeID != "" {
+		switch m.Command {
+		case msg.CommandSet:
+		case msg.CommandRequest:
+		case msg.CommandPresentation:
+			updateNodeData(m)
+		case msg.CommandInternal:
+		case msg.CommandStream:
+		default:
+		}
+		updateNodeLastSeen = false
+	}
+	// update node last seen
+	if updateNodeLastSeen {
+
+	}
+	// update gateway last message
+
 	zap.L().Debug("Message process completed", zap.String("timeTaken", time.Since(m.Timestamp).String()), zap.Any("message", m))
 }
 
-func nodeData(n *ml.Node, m *msg.Message) error {
+func updateNodeData(m *msg.Message) error {
+	n := &ml.Node{
+		ID:        fmt.Sprintf("%s_%s", m.GatewayID, m.NodeID),
+		GatewayID: m.GatewayID,
+		ShortID:   m.NodeID,
+		LastSeen:  m.Timestamp,
+	}
 	f := []ml.Filter{
 		{Key: "id", Operator: "eq", Value: n.ID},
 	}
 	node := &ml.Node{}
-	err := srv.STG.FindOne(ml.EntityNode, f, node)
+	err := svc.STG.FindOne(ml.EntityNode, f, node)
 	if err != nil {
 		node = n
-		err = srv.STG.Insert(ml.EntityNode, node)
+		err = svc.STG.Insert(ml.EntityNode, node)
 		if err != nil {
 			zap.L().Error("Unable to insert the node in to database", zap.Error(err), zap.Any("node", node))
+			return err
 		}
 	}
 	if node.Others == nil {
 		node.Others = map[string]interface{}{}
 	}
 	switch m.SubCommand {
-	case msg.KeySubCmdName:
-		node.Name = m.Payload
-	case msg.KeySubCmdBatteryLevel:
+	case msg.SubCmdName:
+		if util.GetMapValue(node.Config, ml.CfgUpdateName, true).(bool) {
+			node.Name = m.Payload
+		}
+	case msg.SubCmdBatteryLevel:
 		// update battery level
 		bl, err := strconv.ParseFloat(m.Payload, 64)
 		if err != nil {
@@ -116,7 +121,7 @@ func nodeData(n *ml.Node, m *msg.Message) error {
 		}
 		node.Others[m.Field] = bl
 		// send it to metric store
-	case msg.KeySubCmdDiscover, msg.KeySubCmdHeartbeat, msg.KeySubCmdPing:
+	case msg.SubCmdDiscover, msg.SubCmdHeartbeat, msg.SubCmdPing:
 		// TODO:
 	default:
 		node.Others[m.Field] = m.Payload
@@ -124,45 +129,56 @@ func nodeData(n *ml.Node, m *msg.Message) error {
 	if len(m.Others) > 0 {
 		ut.JoinMap(node.Others, m.Others)
 	}
-	err = srv.STG.Upsert(ml.EntityNode, f, node)
+	err = svc.STG.Upsert(ml.EntityNode, f, node)
 	if err != nil {
 		zap.L().Error("Unable to update the node in to database", zap.Error(err), zap.Any("node", node))
 	}
 	return nil
 }
 
-func sensorData(s *ml.Sensor, m *msg.Message) error {
+func updateSensorData(m *msg.Message) error {
+	s := &ml.Sensor{
+		ID:        fmt.Sprintf("%s_%s_%s", m.GatewayID, m.NodeID, m.SensorID),
+		GatewayID: m.GatewayID,
+		NodeID:    m.NodeID,
+		ShortID:   m.SensorID,
+		LastSeen:  m.Timestamp,
+	}
 	f := []ml.Filter{
 		{Key: "id", Operator: "eq", Value: s.ID},
 	}
 	sensor := &ml.Sensor{}
-	err := srv.STG.FindOne(ml.EntitySensor, f, sensor)
+	err := svc.STG.FindOne(ml.EntitySensor, f, sensor)
 	if err != nil {
 		sensor = s
-		err = srv.STG.Insert(ml.EntitySensor, sensor)
+		err = svc.STG.Insert(ml.EntitySensor, sensor)
 		if err != nil {
 			zap.L().Error("Unable to insert the sensor in to database", zap.Error(err), zap.Any("sensor", sensor))
+			return err
 		}
 	}
-	if sensor.ProviderConfig == nil {
-		sensor.ProviderConfig = map[string]interface{}{}
+	if sensor.Others == nil {
+		sensor.Others = map[string]interface{}{}
 	}
 
 	// update sensor name
-	if m.SubCommand == msg.KeyName {
-		sensor.Name = m.Payload
+	if m.SubCommand == msg.SubCmdName {
+		if util.GetMapValue(sensor.Config, ml.CfgUpdateName, true).(bool) {
+			sensor.Name = m.Payload
+		}
 	}
 	if len(m.Others) > 0 {
-		ut.JoinMap(sensor.ProviderConfig, m.Others)
+		ut.JoinMap(sensor.Others, m.Others)
 	}
-	err = srv.STG.Upsert(ml.EntitySensor, f, sensor)
+	err = svc.STG.Upsert(ml.EntitySensor, f, sensor)
 	if err != nil {
 		zap.L().Error("Unable to update the sensor in to database", zap.Error(err), zap.Any("sensor", sensor))
+		return err
 	}
 	return nil
 }
 
-func sensorFieldData(sf *ml.SensorField, m *msg.Message) error {
+func updateSensorFieldData(m *msg.Message) error {
 	var err error
 	var pl interface{}
 	// convert payload to actual type
@@ -186,7 +202,20 @@ func sensorFieldData(sf *ml.SensorField, m *msg.Message) error {
 	}
 
 	// update payload
-	sf.Payload = ml.FieldValue{Value: pl}
+	cFv := ml.FieldValue{Value: pl, IsReceived: m.IsReceived, Timestamp: m.Timestamp}
+
+	sf := &ml.SensorField{
+		ID:          fmt.Sprintf("%s_%s_%s_%s", m.GatewayID, m.NodeID, m.SensorID, m.Field),
+		ShortID:     m.Field,
+		GatewayID:   m.GatewayID,
+		NodeID:      m.NodeID,
+		SensorID:    m.SensorID,
+		LastSeen:    m.Timestamp,
+		PayloadType: m.PayloadType,
+		UnitID:      m.PayloadUnitID,
+		Others:      m.Others,
+		Payload:     cFv,
+	}
 
 	start := time.Now()
 	f := []ml.Filter{
@@ -195,7 +224,7 @@ func sensorFieldData(sf *ml.SensorField, m *msg.Message) error {
 		// {Key: "nodeId", Operator: "eq", Value: sf.NodeID},
 		// {Key: "sensorId", Operator: "eq", Value: sf.SensorID},
 	}
-	err = srv.STG.Upsert(ml.EntitySensorField, f, sf)
+	err = svc.STG.Upsert(ml.EntitySensorField, f, sf)
 	if err != nil {
 		zap.L().Error("Failed to update sensor field in to database", zap.Error(err), zap.Any("sensorField", sf))
 	} else {
@@ -203,12 +232,11 @@ func sensorFieldData(sf *ml.SensorField, m *msg.Message) error {
 	}
 
 	start = time.Now()
-	err = srv.MTS.Write(sf)
+	err = svc.MTS.Write(sf)
 	if err != nil {
 		zap.L().Error("Failed to write into metrics database", zap.Error(err), zap.Any("sensorField", sf))
 	} else {
 		zap.L().Debug("Inserted in to metric db", zap.String("timeTaken", time.Since(start).String()))
 	}
-
 	return nil
 }

@@ -8,15 +8,17 @@ import (
 	"github.com/mustafaturan/bus"
 	"github.com/mustafaturan/monoton"
 	"github.com/mustafaturan/monoton/sequencer"
+	"github.com/mycontroller-org/mycontroller-v2/pkg/model/config"
 	"github.com/mycontroller-org/mycontroller-v2/pkg/storage"
 	ms "github.com/mycontroller-org/mycontroller-v2/pkg/storage/metrics"
+	"github.com/mycontroller-org/mycontroller-v2/pkg/util"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
 
 // services
 var (
-	CFG *Config
+	CFG *config.Config
 	BUS *bus.Bus
 	STG storage.Client
 	MTS ms.Client
@@ -24,8 +26,8 @@ var (
 
 // Init all the supported registries
 func Init() {
-	initLogger()
 	initConfig()
+	initLogger()
 	initBus()
 	initStorage()
 }
@@ -40,26 +42,26 @@ func Close() error {
 	for _, t := range BUS.Topics() {
 		BUS.DeregisterTopics(t)
 	}
-
 	return nil
 }
 
 func initLogger() {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
+	logger := util.GetLogger(CFG.Logger.Level.Core, CFG.Logger.Encoding, false, 0)
 	zap.ReplaceGlobals(logger)
-	zap.L().Info("Welcome to MyController 2.x :)")
+	zap.L().Info("Welcome to MyController.org server :)")
+	zap.L().Debug("Logger settings", zap.Any("loggerConfig", CFG.Logger))
 }
 
 func initConfig() {
+	// init a temp logger
+	logger := util.GetLogger("error", "console", false, 0)
+	zap.ReplaceGlobals(logger)
+
 	cf := flag.String("config", "./config.yaml", "Configuration file")
 	flag.Parse()
 	if cf == nil {
 		zap.L().Fatal("Configuration file not supplied")
 	}
-	zap.L().Debug("Configuration file path:", zap.String("file", *cf))
 	d, err := ioutil.ReadFile(*cf)
 	if err != nil {
 		zap.L().Fatal("Error on reading configuration file", zap.Error(err))
@@ -100,18 +102,16 @@ func initStorage() {
 	}
 
 	// Init storage database
-	s, err := storage.Init(sCFG)
+	STG, err = storage.Init(sCFG)
 	if err != nil {
 		zap.L().Fatal("Error on storage db init", zap.Error(err))
 	}
-	STG = *s
 
 	// Init metrics database
-	ms, err := ms.Init(mCFG)
+	MTS, err = ms.Init(mCFG)
 	if err != nil {
 		zap.L().Fatal("Error on metrics db init", zap.Error(err))
 	}
-	MTS = *ms
 }
 
 func getDatabaseConfig(name string) (map[string]interface{}, error) {

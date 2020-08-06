@@ -57,28 +57,28 @@ var Commands = []string{
 
 // Commands
 const (
-	CommandNone    = ""
-	CommandSet     = "set"
-	CommandRequest = "request"
-	CommandNode    = "node"
-	CommandSensor  = "sensor"
-	CommandStream  = "stream"
+	CommandNone         = ""
+	CommandSet          = "set"
+	CommandRequest      = "request"
+	CommandPresentation = "presentation"
+	CommandInternal     = "internal"
+	CommandStream       = "stream"
 )
 
-// Node command options
+// Sub command options
 const (
-	KeySubCmdName                  = "name"
-	KeySubCmdReboot                = "reboot"
-	KeySubCmdVersion               = "version"
-	KeySubCmdLibraryVersion        = "libraryVersion"
-	KeySubCmdParentID              = "parentId"
-	KeySubCmdDiscover              = "descover"
-	KeySubCmdHeartbeat             = "hearbeat"
-	KeySubCmdPing                  = "ping"
-	KeySubCmdSignalStrength        = "signalStrength"
-	KeySubCmdBatteryLevel          = "batteryLevel"
-	KeySubCmdPreSleepNotification  = "preSleep"
-	KeySubCmdPostSleepNotification = "postSleep"
+	SubCmdName                  = "name"
+	SubCmdReboot                = "reboot"
+	SubCmdVersion               = "version"
+	SubCmdLibraryVersion        = "libraryVersion"
+	SubCmdParentID              = "parentId"
+	SubCmdDiscover              = "descover"
+	SubCmdHeartbeat             = "hearbeat"
+	SubCmdPing                  = "ping"
+	SubCmdSignalStrength        = "signalStrength"
+	SubCmdBatteryLevel          = "batteryLevel"
+	SubCmdPreSleepNotification  = "preSleep"
+	SubCmdPostSleepNotification = "postSleep"
 )
 
 // Others map known keys

@@ -9,7 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
+	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 )
 
 func params(r *http.Request) ([]ml.Filter, *ml.Pagination, error) {
@@ -94,7 +94,7 @@ func findOne(w http.ResponseWriter, r *http.Request, en string, e interface{}) {
 		return
 	}
 
-	err = srv.STG.FindOne(en, f, e)
+	err = svc.STG.FindOne(en, f, e)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -116,7 +116,7 @@ func distinct(w http.ResponseWriter, r *http.Request, e string, fn string) {
 		return
 	}
 
-	rs, err := srv.STG.Distinct(e, fn, f)
+	rs, err := svc.STG.Distinct(e, fn, f)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -138,7 +138,7 @@ func findMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 		return
 	}
 
-	err = srv.STG.Find(entityName, f, *p, entities)
+	err = svc.STG.Find(entityName, f, *p, entities)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -174,7 +174,7 @@ func saveEntity(w http.ResponseWriter, r *http.Request, en string, e interface{}
 		}
 	}
 
-	err = srv.STG.Upsert(en, f, e)
+	err = svc.STG.Upsert(en, f, e)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

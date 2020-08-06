@@ -61,20 +61,20 @@ func (ms *myMessage) toRaw(isMQTT bool) string {
 
 // Command in map
 var cmdMapIn = map[string]string{
-	"0": msg.CommandSensor,
+	"0": msg.CommandPresentation,
 	"1": msg.CommandSet,
 	"2": msg.CommandRequest,
-	"3": msg.CommandNode,
+	"3": msg.CommandInternal,
 	"4": msg.CommandStream,
 }
 
 // Command out map
 var cmdMapOut = map[string]string{
-	msg.CommandSensor:  "0",
-	msg.CommandSet:     "1",
-	msg.CommandRequest: "2",
-	msg.CommandNode:    "3",
-	msg.CommandStream:  "4",
+	msg.CommandPresentation: "0",
+	msg.CommandSet:          "1",
+	msg.CommandRequest:      "2",
+	msg.CommandInternal:     "3",
+	msg.CommandStream:       "4",
 }
 
 var cmdPresentationTypeMapIn = map[string]string{
@@ -256,27 +256,27 @@ var metricUnit = map[string]PayloadTypeUnit{
 }
 
 var cmdInternalTypeMapOut = map[string]string{
-	"0":  msg.KeySubCmdBatteryLevel,
-	"7":  msg.KeySubCmdParentID,
-	"13": msg.KeySubCmdReboot,
-	"18": msg.KeySubCmdHeartbeat,
-	"20": msg.KeySubCmdDiscover,
-	"24": msg.KeySubCmdPing,
+	"0":  msg.SubCmdBatteryLevel,
+	"7":  msg.SubCmdParentID,
+	"13": msg.SubCmdReboot,
+	"18": msg.SubCmdHeartbeat,
+	"20": msg.SubCmdDiscover,
+	"24": msg.SubCmdPing,
 }
 
 var cmdInternalTypeMapIn = map[string]string{
-	"0":  msg.KeySubCmdBatteryLevel,
-	"2":  msg.KeySubCmdLibraryVersion,
-	"8":  msg.KeySubCmdParentID,
-	"11": msg.KeySubCmdName,
-	"12": msg.KeySubCmdVersion,
-	"13": msg.KeySubCmdReboot,
-	"22": msg.KeySubCmdHeartbeat,
-	"21": msg.KeySubCmdDiscover,
-	"25": msg.KeySubCmdPing,
-	"31": msg.KeySubCmdSignalStrength,
-	"32": msg.KeySubCmdPreSleepNotification,
-	"33": msg.KeySubCmdPostSleepNotification,
+	"0":  msg.SubCmdBatteryLevel,
+	"2":  msg.SubCmdLibraryVersion,
+	"8":  msg.SubCmdParentID,
+	"11": msg.SubCmdName,
+	"12": msg.SubCmdVersion,
+	"13": msg.SubCmdReboot,
+	"22": msg.SubCmdHeartbeat,
+	"21": msg.SubCmdDiscover,
+	"25": msg.SubCmdPing,
+	"31": msg.SubCmdSignalStrength,
+	"32": msg.SubCmdPreSleepNotification,
+	"33": msg.SubCmdPostSleepNotification,
 }
 
 var localHandlerMapIn = map[string]func(gw *ml.GatewayConfig, ms myMessage) *myMessage{

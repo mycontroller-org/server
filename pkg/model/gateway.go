@@ -18,10 +18,10 @@ const (
 
 // AckConfig data
 type AckConfig struct {
-	Enabled       bool   `json:"enabled"`
-	StreamEnabled bool   `json:"streamEnabled"`
-	RetryCount    int    `json:"retryCount"`
-	WaitTime      string `json:"waitTime"`
+	Enabled          bool   `json:"enabled"`
+	StreamAckEnabled bool   `json:"streamAckEnabled"`
+	RetryCount       int    `json:"retryCount"`
+	Timeout          string `json:"timeout"`
 }
 
 // Gateway providers
@@ -39,7 +39,7 @@ type GatewayProvider struct {
 // GatewayConfigMQTT data
 type GatewayConfigMQTT struct {
 	Broker    string `json:"broker"`
-	Username  string `json:""`
+	Username  string `json:"username"`
 	Password  string `json:"-"`
 	Subscribe string `json:"subscribe"`
 	Publish   string `json:"publish"`
@@ -48,13 +48,14 @@ type GatewayConfigMQTT struct {
 
 // GatewayConfig entity
 type GatewayConfig struct {
-	ID        string          `json:"id"`
-	Name      string          `json:"name"`
-	Enabled   bool            `json:"enabled"`
-	AckConfig AckConfig       `json:"ackConfig"`
-	State     State           `json:"state"`
-	Provider  GatewayProvider `json:"providerConfig"`
-	LastSeen  time.Time       `json:"lastSeen"`
+	ID        string            `json:"id"`
+	Name      string            `json:"name"`
+	Enabled   bool              `json:"enabled"`
+	AckConfig AckConfig         `json:"ackConfig"`
+	State     State             `json:"state"`
+	Provider  GatewayProvider   `json:"providerConfig"`
+	LastSeen  time.Time         `json:"lastSeen"`
+	Labels    map[string]string `json:"labels"`
 }
 
 // GatewayMessageParser interface for provider

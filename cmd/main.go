@@ -11,12 +11,12 @@ import (
 	"github.com/mycontroller-org/mycontroller-v2/cmd/app/handler"
 	gwAPI "github.com/mycontroller-org/mycontroller-v2/pkg/api/gateway"
 	msgPRO "github.com/mycontroller-org/mycontroller-v2/pkg/engine/message"
-	srv "github.com/mycontroller-org/mycontroller-v2/pkg/service"
+	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 )
 
 func init() {
 	start := time.Now()
-	srv.Init()
+	svc.Init()
 	zap.L().Debug("Init complete", zap.String("timeTaken", time.Since(start).String()))
 }
 
@@ -51,22 +51,22 @@ func handleShutdown() {
 	zap.L().Info("Shutdown initiated..", zap.Any("signal", sig))
 
 	// unload gateways
+	zap.L().Debug("Unloading gateways")
 	gwAPI.UnloadGateways()
-	zap.L().Debug("Unload gateways done")
 
 	// stop engine
+	zap.L().Debug("Closing message process engine")
 	msgPRO.Close()
 
 	// close services
-	err := srv.Close()
+	zap.L().Debug("Closing all other services")
+	err := svc.Close()
 	if err != nil {
 		zap.L().Fatal("Error on closing services", zap.Error(err))
 	}
-	zap.L().Debug("Close services done")
-	zap.L().Debug("All services closed", zap.String("timeTaken", time.Since(start).String()))
+	zap.L().Debug("Close services are done", zap.String("timeTaken", time.Since(start).String()))
 	zap.L().Debug("Bye, See you soon :)")
 
 	// stop web/api service
 	os.Exit(0)
-
 }
