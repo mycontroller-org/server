@@ -4,18 +4,19 @@ import (
 	gm "github.com/mycontroller-org/mycontroller-v2/pkg/gateway"
 	gms "github.com/mycontroller-org/mycontroller-v2/pkg/gateway/serial"
 	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
 	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 	"github.com/mycontroller-org/mycontroller-v2/plugin/gateway_provider/mysensors"
 	"go.uber.org/zap"
 )
 
 // Start gateway
-func Start(g *ml.GatewayConfig) error {
+func Start(g *gwml.Config) error {
 
-	var parser ml.GatewayMessageParser
+	var parser gwml.MessageParser
 
 	switch g.Provider.Type {
-	case ml.GatewayProviderMySensors:
+	case gwml.ProviderMySensors:
 		parser = &mysensors.Parser{Gateway: g}
 		// update serial message splitter
 		g.Provider.Config[gms.KeyMessageSplitter] = mysensors.SerialMessageSplitter
@@ -23,7 +24,7 @@ func Start(g *ml.GatewayConfig) error {
 		zap.L().Info("Unknown provider", zap.Any("gateway", g))
 		return nil
 	}
-	s := &ml.GatewayService{
+	s := &gwml.Service{
 		Config: g,
 		Parser: parser,
 	}
@@ -39,7 +40,7 @@ func Start(g *ml.GatewayConfig) error {
 }
 
 // Stop gateway
-func Stop(g *ml.GatewayConfig) error {
+func Stop(g *gwml.Config) error {
 	gs := svc.GetGatewayService(g)
 	if gs != nil {
 		err := gm.Stop(gs)
@@ -51,7 +52,7 @@ func Stop(g *ml.GatewayConfig) error {
 }
 
 // Reload gateway
-func Reload(g *ml.GatewayConfig) error {
+func Reload(g *gwml.Config) error {
 	err := Stop(g)
 	if err != nil {
 		return err

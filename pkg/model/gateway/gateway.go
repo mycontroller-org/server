@@ -1,20 +1,37 @@
-package model
+package gateway
 
 import (
 	"sync"
 	"time"
 
 	"github.com/jaegertracing/jaeger/pkg/queue"
+	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
 	"go.uber.org/zap"
 )
 
-// Gateway Types
+// Global constants
 const (
-	GatewayTypeMQTT     = "mqtt"
-	GatewayTypeSerial   = "serial"
-	GatewayTypeEthernet = "ethernet"
+	// Gateway Types
+	TypeMQTT     = "mqtt"
+	TypeSerial   = "serial"
+	TypeEthernet = "ethernet"
+
+	// Gateway providers
+	ProviderMySensors = "MySensors"
 )
+
+// Config struct
+type Config struct {
+	ID        string            `json:"id"`
+	Name      string            `json:"name"`
+	Enabled   bool              `json:"enabled"`
+	AckConfig AckConfig         `json:"ackConfig"`
+	State     ml.State          `json:"state"`
+	Provider  Provider          `json:"providerConfig"`
+	LastSeen  time.Time         `json:"lastSeen"`
+	Labels    map[string]string `json:"labels"`
+}
 
 // AckConfig data
 type AckConfig struct {
@@ -24,20 +41,15 @@ type AckConfig struct {
 	Timeout          string `json:"timeout"`
 }
 
-// Gateway providers
-const (
-	GatewayProviderMySensors = "MySensors"
-)
-
-// GatewayProvider data
-type GatewayProvider struct {
+// Provider data
+type Provider struct {
 	Type        string                 `json:"type"`
 	GatewayType string                 `json:"gatewayType"`
 	Config      map[string]interface{} `json:"config"`
 }
 
-// GatewayConfigMQTT data
-type GatewayConfigMQTT struct {
+// ConfigMQTT data
+type ConfigMQTT struct {
 	Broker    string `json:"broker"`
 	Username  string `json:"username"`
 	Password  string `json:"-"`
@@ -46,20 +58,8 @@ type GatewayConfigMQTT struct {
 	QoS       int    `json:"qos"`
 }
 
-// GatewayConfig entity
-type GatewayConfig struct {
-	ID        string            `json:"id"`
-	Name      string            `json:"name"`
-	Enabled   bool              `json:"enabled"`
-	AckConfig AckConfig         `json:"ackConfig"`
-	State     State             `json:"state"`
-	Provider  GatewayProvider   `json:"providerConfig"`
-	LastSeen  time.Time         `json:"lastSeen"`
-	Labels    map[string]string `json:"labels"`
-}
-
-// GatewayMessageParser interface for provider
-type GatewayMessageParser interface {
+// MessageParser interface for provider
+type MessageParser interface {
 	ToRawMessage(message *msg.Message) (*msg.RawMessage, error)
 	ToMessage(rawMesage *msg.RawMessage) (*msg.Message, error)
 }
@@ -70,10 +70,10 @@ type Gateway interface {
 	Write(rawMessage *msg.RawMessage) error
 }
 
-// GatewayService details
-type GatewayService struct {
-	Config              *GatewayConfig
-	Parser              GatewayMessageParser
+// Service details
+type Service struct {
+	Config              *Config
+	Parser              MessageParser
 	Gateway             Gateway
 	TxMsgQueue          *queue.BoundedQueue
 	TopicMsg2GW         string
@@ -83,7 +83,7 @@ type GatewayService struct {
 }
 
 // AddSleepMsg into queue
-func (s *GatewayService) AddSleepMsg(mcMsg *msg.Message, limit int) {
+func (s *Service) AddSleepMsg(mcMsg *msg.Message, limit int) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	// add into sleeping queue
@@ -102,14 +102,14 @@ func (s *GatewayService) AddSleepMsg(mcMsg *msg.Message, limit int) {
 }
 
 // ClearSleepingQueue clears all the messages on the queue
-func (s *GatewayService) ClearSleepingQueue() {
+func (s *Service) ClearSleepingQueue() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	s.SleepMsgQueue = make(map[string][]*msg.Message)
 }
 
 // GetSleepingQueue returns message for a specific nodeID, also removes it from the queue
-func (s *GatewayService) GetSleepingQueue(nodeID string) []*msg.Message {
+func (s *Service) GetSleepingQueue(nodeID string) []*msg.Message {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	if queue, ok := s.SleepMsgQueue[nodeID]; ok {

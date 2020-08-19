@@ -10,9 +10,8 @@ import (
 	"github.com/mycontroller-org/mycontroller-v2/pkg/gateway/mqtt"
 	"github.com/mycontroller-org/mycontroller-v2/pkg/gateway/serial"
 	"github.com/mycontroller-org/mycontroller-v2/pkg/mcbus"
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
-	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 	"go.uber.org/zap"
 )
 
@@ -31,7 +30,7 @@ func getQueue(name string, queueSize int) *q.BoundedQueue {
 }
 
 // handle received messages from gateway
-func receiveMessageFunc(s *ml.GatewayService) func(rm *msg.RawMessage) error {
+func receiveMessageFunc(s *gwml.Service) func(rm *msg.RawMessage) error {
 	return func(rm *msg.RawMessage) error {
 		zap.L().Debug("rawMessage received", zap.Any("rawMessage", rm), zap.Any("payload", string(rm.Data)))
 		message, err := s.Parser.ToMessage(rm)
@@ -57,7 +56,7 @@ func receiveMessageFunc(s *ml.GatewayService) func(rm *msg.RawMessage) error {
 	}
 }
 
-func writeMessageFunc(s *ml.GatewayService) func(mcMsg *msg.Message) {
+func writeMessageFunc(s *gwml.Service) func(mcMsg *msg.Message) {
 	return func(mcMsg *msg.Message) {
 		// update gatewayID if not found
 		if mcMsg != nil && mcMsg.GatewayID == "" {
@@ -140,7 +139,7 @@ func writeMessageFunc(s *ml.GatewayService) func(mcMsg *msg.Message) {
 }
 
 // handle message to gateway
-func handleMessageToGateway(s *ml.GatewayService, writeFunc func(mcMsg *msg.Message)) {
+func handleMessageToGateway(s *gwml.Service, writeFunc func(mcMsg *msg.Message)) {
 	mcbus.Subscribe(s.TopicMsg2GW, &bus.Handler{
 		Matcher: s.TopicMsg2GW,
 		Handle: func(e *bus.Event) {
@@ -159,7 +158,7 @@ func handleMessageToGateway(s *ml.GatewayService, writeFunc func(mcMsg *msg.Mess
 	})
 }
 
-func handleSleepingMessage(s *ml.GatewayService, writeFunc func(mcMsg *msg.Message)) {
+func handleSleepingMessage(s *gwml.Service, writeFunc func(mcMsg *msg.Message)) {
 	handleSleepingmsgFunc := func(data interface{}) {
 		mcMsg := data.(*msg.Message)
 		queue := s.GetSleepingQueue(mcMsg.NodeID)
@@ -197,7 +196,7 @@ func handleSleepingMessage(s *ml.GatewayService, writeFunc func(mcMsg *msg.Messa
 }
 
 // Start gateway service
-func Start(s *ml.GatewayService) error {
+func Start(s *gwml.Service) error {
 	s.TopicMsg2GW = fmt.Sprintf("%s_%s", mcbus.TopicMsg2GW, s.Config.ID)
 	s.TopicSleepingMsg2GW = fmt.Sprintf("%s_%s", mcbus.TopicSleepingMsg2GW, s.Config.ID)
 	s.TxMsgQueue = getQueue("txQueue", txQueueLimit)
@@ -211,28 +210,28 @@ func Start(s *ml.GatewayService) error {
 
 	var err error
 	switch s.Config.Provider.GatewayType {
-	case ml.GatewayTypeMQTT:
+	case gwml.TypeMQTT:
 		ms, _err := mqtt.New(s.Config, rxMessageFunc)
 		err = _err
 		s.Gateway = ms
-	case ml.GatewayTypeSerial:
+	case gwml.TypeSerial:
 		ms, _err := serial.New(s.Config, rxMessageFunc)
 		err = _err
 		s.Gateway = ms
 	}
 	if err != nil {
 		zap.L().Error("Error", zap.Error(err))
-		svc.BUS.DeregisterTopics(s.TopicMsg2GW)
-		svc.BUS.DeregisterTopics(s.TopicSleepingMsg2GW)
+		mcbus.BUS.DeregisterTopics(s.TopicMsg2GW)
+		mcbus.BUS.DeregisterTopics(s.TopicSleepingMsg2GW)
 		s.TxMsgQueue.Stop()
 	}
 	return nil
 }
 
 // Stop the media
-func Stop(s *ml.GatewayService) error {
-	svc.BUS.DeregisterTopics(s.TopicMsg2GW)
-	svc.BUS.DeregisterTopics(s.TopicSleepingMsg2GW)
+func Stop(s *gwml.Service) error {
+	mcbus.BUS.DeregisterTopics(s.TopicMsg2GW)
+	mcbus.BUS.DeregisterTopics(s.TopicSleepingMsg2GW)
 	s.TxMsgQueue.Stop()
 	// stop media
 	err := s.Gateway.Close()

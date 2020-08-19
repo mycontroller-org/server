@@ -8,20 +8,6 @@ const (
 	EntitySensorField = "sensor_field"
 )
 
-// State
-const (
-	StateUp          = "up"
-	StateDown        = "down"
-	StateUnavailable = "unavailable"
-)
-
-// State data
-type State struct {
-	Status  string `json:"status"`
-	Message string `json:"message"`
-	Since   uint64 `json:"since"`
-}
-
 // Sort options
 type Sort struct {
 	Field   string `json:"f"`

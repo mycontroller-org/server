@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	sml "github.com/mycontroller-org/mycontroller-v2/pkg/model/sensor"
 	influx "github.com/mycontroller-org/mycontroller-v2/plugin/storage/metrics/influxdb_v2"
 	"github.com/mycontroller-org/mycontroller-v2/plugin/storage/metrics/voiddb"
 )
@@ -19,8 +19,8 @@ const (
 type Client interface {
 	Close() error
 	Ping() error
-	Write(variable *ml.SensorField) error
-	WriteBlocking(variable *ml.SensorField) error
+	Write(variable *sml.SensorField) error
+	WriteBlocking(variable *sml.SensorField) error
 }
 
 // Init metrics database
@@ -29,16 +29,9 @@ func Init(config map[string]interface{}) (Client, error) {
 	if available {
 		switch dbType {
 		case TypeInfluxdbV2:
-			c, err := influx.NewClient(config)
-			if err != nil {
-				return nil, err
-			}
-			var cl Client = c
-			return cl, nil
+			return influx.NewClient(config)
 		case TypeVoidDB:
-			c, err := voiddb.NewClient(config)
-			var cl Client = c
-			return cl, err
+			return voiddb.NewClient(config)
 		default:
 			return nil, fmt.Errorf("Specified database type not implemented. %s", dbType)
 		}

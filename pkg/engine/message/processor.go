@@ -10,6 +10,8 @@ import (
 	"github.com/mycontroller-org/mycontroller-v2/pkg/mcbus"
 	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
+	nml "github.com/mycontroller-org/mycontroller-v2/pkg/model/node"
+	sml "github.com/mycontroller-org/mycontroller-v2/pkg/model/sensor"
 	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 	"github.com/mycontroller-org/mycontroller-v2/pkg/util"
 	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
@@ -26,7 +28,7 @@ func Init() error {
 	mq = q.NewBoundedQueue(size, func(item interface{}) {
 		zap.L().Error("Dropping an item, queue full", zap.Int("size", size), zap.Any("item", item))
 	})
-	svc.BUS.RegisterHandler(mcbus.TopicMsgFromGW, &bus.Handler{
+	mcbus.Subscribe(mcbus.TopicMsgFromGW, &bus.Handler{
 		Matcher: mcbus.TopicMsgFromGW,
 		Handle:  onMessageReceive,
 	})
@@ -86,7 +88,7 @@ func onMessageReceive(e *bus.Event) {
 }
 
 func updateNodeData(m *msg.Message) error {
-	n := &ml.Node{
+	n := &nml.Node{
 		ID:        fmt.Sprintf("%s_%s", m.GatewayID, m.NodeID),
 		GatewayID: m.GatewayID,
 		ShortID:   m.NodeID,
@@ -95,7 +97,7 @@ func updateNodeData(m *msg.Message) error {
 	f := []ml.Filter{
 		{Key: "id", Operator: "eq", Value: n.ID},
 	}
-	node := &ml.Node{}
+	node := &nml.Node{}
 	err := svc.STG.FindOne(ml.EntityNode, f, node)
 	if err != nil {
 		node = n
@@ -110,7 +112,7 @@ func updateNodeData(m *msg.Message) error {
 	}
 	switch m.SubCommand {
 	case msg.SubCmdName:
-		if util.GetMapValue(node.Config, ml.CfgUpdateName, true).(bool) {
+		if util.GetMapValue(node.Config, ml.CFGUpdateName, true).(bool) {
 			node.Name = m.Payload
 		}
 	case msg.SubCmdBatteryLevel:
@@ -137,7 +139,7 @@ func updateNodeData(m *msg.Message) error {
 }
 
 func updateSensorData(m *msg.Message) error {
-	s := &ml.Sensor{
+	s := &sml.Sensor{
 		ID:        fmt.Sprintf("%s_%s_%s", m.GatewayID, m.NodeID, m.SensorID),
 		GatewayID: m.GatewayID,
 		NodeID:    m.NodeID,
@@ -147,7 +149,7 @@ func updateSensorData(m *msg.Message) error {
 	f := []ml.Filter{
 		{Key: "id", Operator: "eq", Value: s.ID},
 	}
-	sensor := &ml.Sensor{}
+	sensor := &sml.Sensor{}
 	err := svc.STG.FindOne(ml.EntitySensor, f, sensor)
 	if err != nil {
 		sensor = s
@@ -163,7 +165,7 @@ func updateSensorData(m *msg.Message) error {
 
 	// update sensor name
 	if m.SubCommand == msg.SubCmdName {
-		if util.GetMapValue(sensor.Config, ml.CfgUpdateName, true).(bool) {
+		if util.GetMapValue(sensor.Config, ml.CFGUpdateName, true).(bool) {
 			sensor.Name = m.Payload
 		}
 	}
@@ -202,9 +204,9 @@ func updateSensorFieldData(m *msg.Message) error {
 	}
 
 	// update payload
-	cFv := ml.FieldValue{Value: pl, IsReceived: m.IsReceived, Timestamp: m.Timestamp}
+	cFv := sml.FieldValue{Value: pl, IsReceived: m.IsReceived, Timestamp: m.Timestamp}
 
-	sf := &ml.SensorField{
+	sf := &sml.SensorField{
 		ID:          fmt.Sprintf("%s_%s_%s_%s", m.GatewayID, m.NodeID, m.SensorID, m.Field),
 		ShortID:     m.Field,
 		GatewayID:   m.GatewayID,

@@ -11,8 +11,8 @@ import (
 
 	influxdb2 "github.com/influxdata/influxdb-client-go"
 	"github.com/influxdata/influxdb-client-go/api/write"
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
+	sml "github.com/mycontroller-org/mycontroller-v2/pkg/model/sensor"
 	"github.com/mycontroller-org/mycontroller-v2/pkg/util"
 	"go.uber.org/zap"
 )
@@ -40,7 +40,7 @@ type Client struct {
 	Client  influxdb2.Client
 	Config  Config
 	stop    chan bool
-	buffer  []*ml.SensorField
+	buffer  []*sml.SensorField
 	rwMutex *sync.RWMutex
 }
 
@@ -74,7 +74,7 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 	c := &Client{
 		Config:  cfg,
 		Client:  iClient,
-		buffer:  make([]*ml.SensorField, 0),
+		buffer:  make([]*sml.SensorField, 0),
 		stop:    make(chan bool),
 		rwMutex: &sync.RWMutex{},
 	}
@@ -106,7 +106,7 @@ func (c *Client) Close() error {
 }
 
 // WriteBlocking implementation
-func (c *Client) WriteBlocking(sf *ml.SensorField) error {
+func (c *Client) WriteBlocking(sf *sml.SensorField) error {
 	p, err := getPoint(sf)
 	if err != nil {
 		return err
@@ -115,7 +115,7 @@ func (c *Client) WriteBlocking(sf *ml.SensorField) error {
 	return wb.WritePoint(ctx, p)
 }
 
-func (c *Client) Write(sf *ml.SensorField) error {
+func (c *Client) Write(sf *sml.SensorField) error {
 	p, err := getPoint(sf)
 	if err != nil {
 		return err
@@ -125,7 +125,7 @@ func (c *Client) Write(sf *ml.SensorField) error {
 	return nil
 }
 
-func getPoint(sf *ml.SensorField) (*write.Point, error) {
+func getPoint(sf *sml.SensorField) (*write.Point, error) {
 	fields := make(map[string]interface{})
 	if sf.PayloadType == msg.PayloadTypeGeo {
 		_f, err := geoData(sf.Payload)

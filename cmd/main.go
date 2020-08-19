@@ -11,12 +11,16 @@ import (
 	"github.com/mycontroller-org/mycontroller-v2/cmd/app/handler"
 	gwAPI "github.com/mycontroller-org/mycontroller-v2/pkg/api/gateway"
 	msgPRO "github.com/mycontroller-org/mycontroller-v2/pkg/engine/message"
+	"github.com/mycontroller-org/mycontroller-v2/pkg/mcbus"
 	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
 )
 
 func init() {
+	preInitFn := func() {
+		mcbus.Start()
+	}
 	start := time.Now()
-	svc.Init()
+	svc.Init(preInitFn, nil)
 	zap.L().Debug("Init complete", zap.String("timeTaken", time.Since(start).String()))
 }
 

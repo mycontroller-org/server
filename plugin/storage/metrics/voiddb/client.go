@@ -1,6 +1,8 @@
 package voiddb
 
-import ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+import (
+	sml "github.com/mycontroller-org/mycontroller-v2/pkg/model/sensor"
+)
 
 // Client for voiddb
 type Client struct {
@@ -18,7 +20,7 @@ func (c *Client) Close() error { return nil }
 func (c *Client) Ping() error { return nil }
 
 // Write function
-func (c *Client) Write(variable *ml.SensorField) error { return nil }
+func (c *Client) Write(variable *sml.SensorField) error { return nil }
 
 // WriteBlocking function
-func (c *Client) WriteBlocking(variable *ml.SensorField) error { return nil }
+func (c *Client) WriteBlocking(variable *sml.SensorField) error { return nil }

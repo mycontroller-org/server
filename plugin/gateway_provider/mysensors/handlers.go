@@ -6,17 +6,18 @@ import (
 
 	nodeAPI "github.com/mycontroller-org/mycontroller-v2/pkg/api/node"
 	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
 	"go.uber.org/zap"
 )
 
-func timeHandler(gw *ml.GatewayConfig, ms myMessage) *myMessage {
+func timeHandler(gw *gwml.Config, ms myMessage) *myMessage {
 	ms.Type = "1" // I_TIME
 	ms.Ack = "0"
 	ms.Payload = string(time.Now().Local().Unix())
 	return &ms
 }
 
-func idRequestHandler(gw *ml.GatewayConfig, ms myMessage) *myMessage {
+func idRequestHandler(gw *gwml.Config, ms myMessage) *myMessage {
 	ms.Type = "4" // I_ID_RESPONSE
 	ms.Ack = "0"
 	f := []ml.Filter{{Key: "gatewayID", Operator: "eq", Value: gw.ID}}
@@ -40,7 +41,7 @@ func idRequestHandler(gw *ml.GatewayConfig, ms myMessage) *myMessage {
 	return &ms
 }
 
-func configHandler(gw *ml.GatewayConfig, ms myMessage) *myMessage {
+func configHandler(gw *gwml.Config, ms myMessage) *myMessage {
 	ms.Type = "6" // I_CONFIG
 	ms.Ack = "0"
 	if uc, ok := gw.Provider.Config[KeyProviderUnitsConfig]; ok {

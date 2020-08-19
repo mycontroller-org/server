@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	nml "github.com/mycontroller-org/mycontroller-v2/pkg/model/node"
 )
 
 func registerNodeRoutes(router *mux.Router) {
@@ -16,16 +17,16 @@ func registerNodeRoutes(router *mux.Router) {
 }
 
 func listnodes(w http.ResponseWriter, r *http.Request) {
-	findMany(w, r, ml.EntityNode, &[]ml.Node{})
+	findMany(w, r, ml.EntityNode, &[]nml.Node{})
 }
 
 func getnode(w http.ResponseWriter, r *http.Request) {
-	findOne(w, r, ml.EntityNode, &ml.Node{})
+	findOne(w, r, ml.EntityNode, &nml.Node{})
 }
 
 func updatenode(w http.ResponseWriter, r *http.Request) {
 	bwFunc := func(d interface{}, f *[]ml.Filter) error {
-		e := d.(*ml.Node)
+		e := d.(*nml.Node)
 		if e.ID == "" {
 			if e.GatewayID == "" || e.ShortID == "" {
 				return errors.New("GatewayID or ShortID field should not be empty")
@@ -34,5 +35,5 @@ func updatenode(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	}
-	saveEntity(w, r, ml.EntityNode, &ml.Node{}, bwFunc)
+	saveEntity(w, r, ml.EntityNode, &nml.Node{}, bwFunc)
 }

@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"strings"
 
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
 	"go.uber.org/zap"
 )
 
 // Parser implementation
 type Parser struct {
-	Gateway *ml.GatewayConfig
+	Gateway *gwml.Config
 }
 
 // ToRawMessage converts to gateway specific
@@ -39,9 +39,9 @@ func (p *Parser) ToRawMessage(mcMsg *msg.Message) (*msg.RawMessage, error) {
 
 		// create rawMessage
 		switch p.Gateway.Provider.GatewayType {
-		case ml.GatewayTypeSerial, ml.GatewayTypeEthernet:
+		case gwml.TypeSerial, gwml.TypeEthernet:
 
-		case ml.GatewayTypeMQTT:
+		case gwml.TypeMQTT:
 			rm.Data = []byte(mcMsg.Payload)
 			rm.Others[msg.KeyTopic] = msMsg.toRaw(true)
 		}
@@ -59,7 +59,7 @@ func (p *Parser) ToMessage(rm *msg.RawMessage) (*msg.Message, error) {
 
 	// decode message from gateway
 	switch p.Gateway.Provider.GatewayType {
-	case ml.GatewayTypeMQTT:
+	case gwml.TypeMQTT:
 		// topic/node-id/child-sensor-id/command/ack/type
 		// out_rfm69/11/1/1/0/0
 		_d := strings.Split(string(rm.Others[msg.KeyTopic].(string)), "/")
@@ -69,7 +69,7 @@ func (p *Parser) ToMessage(rm *msg.RawMessage) (*msg.Message, error) {
 		}
 		d = _d[len(_d)-5:]
 		payload = string(rm.Data)
-	case ml.GatewayTypeSerial, ml.GatewayTypeEthernet:
+	case gwml.TypeSerial, gwml.TypeEthernet:
 		// node-id;child-sensor-id;command;ack;type;payload
 		_d := strings.Split(string(rm.Data), ";")
 		if len(_d) < 6 {

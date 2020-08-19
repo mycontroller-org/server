@@ -4,7 +4,7 @@ import (
 	"time"
 
 	paho "github.com/eclipse/paho.mqtt.golang"
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
 	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
 
@@ -13,16 +13,16 @@ import (
 
 // Endpoint data
 type Endpoint struct {
-	GwCfg          *ml.GatewayConfig
-	Config         ml.GatewayConfigMQTT
+	GwCfg          *gwml.Config
+	Config         gwml.ConfigMQTT
 	receiveMsgFunc func(rm *msg.RawMessage) error
 	Client         paho.Client
 }
 
 // New mqtt driver
-func New(gwCfg *ml.GatewayConfig, rxMsgFunc func(rm *msg.RawMessage) error) (*Endpoint, error) {
+func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msg.RawMessage) error) (*Endpoint, error) {
 	start := time.Now()
-	cfg := ml.GatewayConfigMQTT{}
+	cfg := gwml.ConfigMQTT{}
 	err := ut.MapToStruct(ut.TagNameNone, gwCfg.Provider.Config, &cfg)
 	if err != nil {
 		return nil, err

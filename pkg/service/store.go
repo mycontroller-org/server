@@ -1,22 +1,22 @@
 package service
 
 import (
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
 )
 
-var gwService = map[string]*ml.GatewayService{}
+var gwService = map[string]*gwml.Service{}
 
 // AddGatewayService add
-func AddGatewayService(s *ml.GatewayService) {
+func AddGatewayService(s *gwml.Service) {
 	gwService[s.Config.ID] = s
 }
 
 // RemoveGatewayService remove a service
-func RemoveGatewayService(g *ml.GatewayConfig) {
+func RemoveGatewayService(g *gwml.Config) {
 	delete(gwService, g.ID)
 }
 
 // GetGatewayService returns service
-func GetGatewayService(g *ml.GatewayConfig) *ml.GatewayService {
+func GetGatewayService(g *gwml.Config) *gwml.Service {
 	return gwService[g.ID]
 }

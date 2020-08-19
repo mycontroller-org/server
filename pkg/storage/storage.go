@@ -58,12 +58,7 @@ func Init(config map[string]interface{}) (Client, error) {
 					return &cl, nil
 		*/
 		case TypeMongoDB:
-			c, err := mongodb.NewClient(config)
-			if err != nil {
-				return nil, err
-			}
-			var cl Client = c
-			return cl, nil
+			return mongodb.NewClient(config)
 		default:
 			return nil, fmt.Errorf("Specified database type not implemented. %s", dbType)
 		}

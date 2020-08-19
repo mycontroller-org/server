@@ -2,7 +2,7 @@ package serial
 
 import (
 	m2s "github.com/mitchellh/mapstructure"
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
 	s "github.com/tarm/serial"
 )
@@ -21,14 +21,14 @@ type Config struct {
 
 // Endpoint data
 type Endpoint struct {
-	GwCfg          *ml.GatewayConfig
+	GwCfg          *gwml.Config
 	Config         Config
 	receiveMsgFunc func(rm *msg.RawMessage) error
 	Port           *s.Port
 }
 
 // New serial client
-func New(gwCfg *ml.GatewayConfig, rxMsgFunc func(rm *msg.RawMessage) error) (*Endpoint, error) {
+func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msg.RawMessage) error) (*Endpoint, error) {
 	var cfg Config
 	err := m2s.Decode(gwCfg.Provider.Config, &cfg)
 	if err != nil {

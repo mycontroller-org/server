@@ -5,10 +5,8 @@ import (
 	"flag"
 	"io/ioutil"
 
-	"github.com/mustafaturan/bus"
-	"github.com/mustafaturan/monoton"
-	"github.com/mustafaturan/monoton/sequencer"
 	"github.com/mycontroller-org/mycontroller-v2/pkg/model/config"
+	"github.com/mycontroller-org/mycontroller-v2/pkg/scheduler"
 	"github.com/mycontroller-org/mycontroller-v2/pkg/storage"
 	ms "github.com/mycontroller-org/mycontroller-v2/pkg/storage/metrics"
 	"github.com/mycontroller-org/mycontroller-v2/pkg/util"
@@ -19,28 +17,51 @@ import (
 // services
 var (
 	CFG *config.Config
-	BUS *bus.Bus
 	STG storage.Client
 	MTS ms.Client
+	SCH *scheduler.Scheduler
 )
 
 // Init all the supported registries
-func Init() {
+func Init(preInitFn func(), postInitFn func()) {
 	initConfig()
 	initLogger()
-	initBus()
+
+	// trigger pre init func
+	if preInitFn != nil {
+		preInitFn()
+	}
+
 	initStorage()
+	initScheduler()
+
+	// trigger post init func
+	if postInitFn != nil {
+		postInitFn()
+	}
 }
 
 // Close all the registries
 func Close() error {
-	// deregister handlers
-	for _, hk := range BUS.HandlerKeys() {
-		BUS.DeregisterHandler(hk)
+	// close scheduler
+	if SCH != nil {
+		SCH.Close()
 	}
-	// deregister topics
-	for _, t := range BUS.Topics() {
-		BUS.DeregisterTopics(t)
+
+	// Close storage and metric database
+	if STG != nil {
+		err := STG.Close()
+		if err != nil {
+			zap.L().Error("Failed to close storage database")
+		}
+	}
+	if MTS != nil {
+		if MTS != nil {
+			err := MTS.Close()
+			if err != nil {
+				zap.L().Error("Failed to close metrics database")
+			}
+		}
 	}
 	return nil
 }
@@ -48,46 +69,27 @@ func Close() error {
 func initLogger() {
 	logger := util.GetLogger(CFG.Logger.Level.Core, CFG.Logger.Encoding, false, 0)
 	zap.ReplaceGlobals(logger)
-	zap.L().Info("Welcome to MyController.org server :)")
-	zap.L().Debug("Logger settings", zap.Any("loggerConfig", CFG.Logger))
+	zap.L().Info("Welcome to MyController.org server :)", zap.Any("loggerConfig", CFG.Logger))
 }
 
 func initConfig() {
 	// init a temp logger
 	logger := util.GetLogger("error", "console", false, 0)
-	zap.ReplaceGlobals(logger)
 
 	cf := flag.String("config", "./config.yaml", "Configuration file")
 	flag.Parse()
 	if cf == nil {
-		zap.L().Fatal("Configuration file not supplied")
+		logger.Fatal("Configuration file not supplied")
 	}
 	d, err := ioutil.ReadFile(*cf)
 	if err != nil {
-		zap.L().Fatal("Error on reading configuration file", zap.Error(err))
+		logger.Fatal("Error on reading configuration file", zap.Error(err))
 	}
 
 	err = yaml.Unmarshal(d, &CFG)
 	if err != nil {
-		zap.L().Fatal("Failed to unmarshal yaml data", zap.Error(err))
+		logger.Fatal("Failed to unmarshal yaml data", zap.Error(err))
 	}
-}
-
-func initBus() {
-	node := uint64(1)
-	initialTime := uint64(1577865600000) // set 2020-01-01 PST as initial time
-	m, err := monoton.New(sequencer.NewMillisecond(), node, initialTime)
-	if err != nil {
-		zap.L().Fatal("Error on creating bus", zap.Error(err))
-	}
-	// init an id generator
-	var idGenerator bus.Next = (*m).Next
-	// create a new bus instance
-	b, err := bus.NewBus(idGenerator)
-	if err != nil {
-		zap.L().Fatal("Error on creating bus", zap.Error(err))
-	}
-	BUS = b
 }
 
 func initStorage() {
@@ -112,6 +114,11 @@ func initStorage() {
 	if err != nil {
 		zap.L().Fatal("Error on metrics db init", zap.Error(err))
 	}
+}
+
+func initScheduler() {
+	SCH = scheduler.Init()
+	SCH.Start()
 }
 
 func getDatabaseConfig(name string) (map[string]interface{}, error) {

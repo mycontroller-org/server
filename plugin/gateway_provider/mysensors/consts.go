@@ -3,7 +3,7 @@ package mysensors
 import (
 	"fmt"
 
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
 	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
 )
 
@@ -279,7 +279,7 @@ var cmdInternalTypeMapIn = map[string]string{
 	"33": msg.SubCmdPostSleepNotification,
 }
 
-var localHandlerMapIn = map[string]func(gw *ml.GatewayConfig, ms myMessage) *myMessage{
+var localHandlerMapIn = map[string]func(gw *gwml.Config, ms myMessage) *myMessage{
 	"1": timeHandler,      // I_TIME
 	"2": idRequestHandler, // I_ID_REQUEST
 	"6": configHandler,    // I_CONFIG
