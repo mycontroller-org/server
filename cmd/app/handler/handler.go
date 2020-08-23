@@ -14,14 +14,19 @@ import (
 func StartHandler() error {
 	router := mux.NewRouter()
 
+	cfg := svc.CFG.Web
+
+	// Enable Profiling, if enabled
+	if cfg.EnableProfiling {
+		registerPProfRoutes(router)
+	}
+
 	// register routes
 	registerStatusRoutes(router)
 	registerGatewayRoutes(router)
 	registerNodeRoutes(router)
 	registerSensorRoutes(router)
 	registerSensorFieldRoutes(router)
-
-	cfg := svc.CFG.Web
 
 	if cfg.WebDirectory != "" {
 		fs := http.FileServer(http.Dir(cfg.WebDirectory))

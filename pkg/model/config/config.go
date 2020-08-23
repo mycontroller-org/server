@@ -10,9 +10,10 @@ type Config struct {
 
 // WebConfig input
 type WebConfig struct {
-	BindAddress  string `yaml:"bindAddress"`
-	Port         uint   `yaml:"port"`
-	WebDirectory string `yaml:"webDirectory"`
+	BindAddress     string `yaml:"bindAddress"`
+	Port            uint   `yaml:"port"`
+	WebDirectory    string `yaml:"webDirectory"`
+	EnableProfiling bool   `yaml:"enable_profiling"`
 }
 
 // LoggerConfig input

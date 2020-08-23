@@ -19,23 +19,26 @@ func init() {
 	preInitFn := func() {
 		mcbus.Start()
 	}
+	postInitFn := func() {
+		// call shutdown handler
+		go handleShutdown()
+
+		// start engine
+		msgPRO.Init()
+
+		// load gateways
+		gwStart := time.Now()
+		gwAPI.LoadGateways()
+		zap.L().Debug("Load gateways done.", zap.String("timeTaken", time.Since(gwStart).String()))
+	}
+
 	start := time.Now()
-	svc.Init(preInitFn, nil)
+	svc.Init(preInitFn, postInitFn)
 	zap.L().Debug("Init complete", zap.String("timeTaken", time.Since(start).String()))
 }
 
 func main() {
 	defer zap.L().Sync()
-	// call shutdown handler
-	go handleShutdown()
-
-	// start engine
-	msgPRO.Init()
-
-	// load gateways
-	start := time.Now()
-	gwAPI.LoadGateways()
-	zap.L().Debug("Load gateways done.", zap.String("timeTaken", time.Since(start).String()))
 
 	err := handler.StartHandler()
 	if err != nil {
