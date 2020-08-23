@@ -8,14 +8,18 @@ var (
 	gitCommit string
 	version   string
 	buildDate string
+	platform  string
+	arch      string
 )
 
 // Version holds version data
 type Version struct {
-	GitCommit string `json:"gitCommit"`
 	Version   string `json:"version"`
+	GitCommit string `json:"gitCommit"`
 	BuildDate string `json:"buildDate"`
 	GoLang    string `json:"goLang"`
+	Platform  string `json:"platform"`
+	Arch      string `json:"arch"`
 }
 
 // Get returns the Version object
@@ -25,5 +29,7 @@ func Get() Version {
 		Version:   version,
 		BuildDate: buildDate,
 		GoLang:    runtime.Version(),
+		Platform:  runtime.GOOS,
+		Arch:      runtime.GOARCH,
 	}
 }
