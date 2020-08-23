@@ -39,13 +39,13 @@ type Command struct {
 	stopCh       chan bool
 }
 
-func add(cmd *Command) {
+func addToStore(cmd *Command) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	store[cmd.id] = cmd
 }
 
-func remove(id string) {
+func removeFromStore(id string) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	delete(store, id)
@@ -58,22 +58,27 @@ func (c *Command) IsRunning() bool {
 	return c.isRunning
 }
 
-// Start triggers the command
-func (c *Command) Start() error {
+func (c *Command) setRunning(status bool) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
+	c.isRunning = status
+}
+
+// Start triggers the command
+func (c *Command) Start() error {
 	if c.isRunning {
 		return errors.New("start of the command already triggered")
 	}
-	// generate an id and assign
-	id, err := uuid.NewUUID()
-	if err != nil {
-		return err
-	}
-	c.id = id.String()
-	c.isRunning = true
-	add(c)
 	go c.startFn()
+	return nil
+}
+
+// StartAndWait triggers the command and waits till it completes
+func (c *Command) StartAndWait() error {
+	if c.isRunning {
+		return errors.New("start of the command already triggered")
+	}
+	c.startFn()
 	return nil
 }
 
@@ -103,6 +108,16 @@ func StopAll() {
 }
 
 func (c *Command) startFn() {
+	// generate an id and assign
+	id, err := uuid.NewUUID()
+	if err != nil {
+		zap.L().Error("failed to generate UUID", zap.Error(err))
+		return
+	}
+	c.id = id.String()
+	c.setRunning(true)
+	addToStore(c)
+
 	c.cmd = cmd.NewCmd(c.Command, c.Args...)
 	if len(c.Env) > 0 {
 		c.cmd.Env = c.Env
@@ -112,36 +127,35 @@ func (c *Command) startFn() {
 	zap.L().Debug("command execution started", zap.String("command", c.Command), zap.Any("args", c.Args))
 
 	statusUpdate := c.StatusUpdate
-	if c.StatusUpdate.Seconds() < 2 {
-		statusUpdate = 5 * time.Second
+	if c.StatusUpdate.Seconds() < 1 {
+		statusUpdate = 1 * time.Second
 	}
 	timeout := c.Timeout
-	if c.Timeout.Seconds() < 2 {
-		timeout = 10 * time.Second
+	if c.Timeout.Seconds() < 1 {
+		timeout = 1 * time.Second
 	}
-	statusTicker := time.NewTicker(statusUpdate)
 	doneCh := make(chan bool)
+	defer close(doneCh)
 	// update on exit
 	onExitFn := func(exitType string, status cmd.Status) {
-		c.mutex.Lock()
-		defer c.mutex.Unlock()
-
 		// terminate status update goroutine
 		if c.StatusFn != nil {
 			doneCh <- true
 		}
-		statusTicker.Stop()
 		if c.ExitFn != nil {
 			c.ExitFn(exitType, status)
 		}
 		// update it the running status
-		c.isRunning = false
+		c.setRunning(false)
 		// remove it from the store
-		remove(c.id)
+		removeFromStore(c.id)
 	}
 
 	// status update function
 	if c.StatusFn != nil {
+		statusTicker := time.NewTicker(statusUpdate)
+		defer statusTicker.Stop()
+
 		go func(done <-chan bool) {
 			for {
 				select {
@@ -165,7 +179,7 @@ func (c *Command) startFn() {
 		onExitFn(ExitTypeStop, st)
 
 	case <-time.After(timeout): // timeout
-		zap.L().Info("timout", zap.String("command", c.Command), zap.Any("args", c.Args))
+		zap.L().Info("Timeout hits", zap.String("command", c.Command), zap.Any("args", c.Args))
 		err := c.cmd.Stop()
 		if err != nil {
 			zap.L().Error("Error on timout", zap.String("command", c.Command), zap.Any("args", c.Args))
