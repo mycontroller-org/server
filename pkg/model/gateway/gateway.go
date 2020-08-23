@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/jaegertracing/jaeger/pkg/queue"
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
+	ml "github.com/mycontroller-org/backend/pkg/model"
+	msg "github.com/mycontroller-org/backend/pkg/model/message"
 	"go.uber.org/zap"
 )
 

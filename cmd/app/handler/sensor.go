@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	sml "github.com/mycontroller-org/mycontroller-v2/pkg/model/sensor"
+	ml "github.com/mycontroller-org/backend/pkg/model"
+	sml "github.com/mycontroller-org/backend/pkg/model/sensor"
 )
 
 func registerSensorRoutes(router *mux.Router) {

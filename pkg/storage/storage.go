@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	"github.com/mycontroller-org/mycontroller-v2/plugin/storage/mongodb"
+	ml "github.com/mycontroller-org/backend/pkg/model"
+	"github.com/mycontroller-org/backend/plugin/storage/mongodb"
 )
 
 // Storage database types

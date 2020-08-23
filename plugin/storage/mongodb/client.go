@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"strings"
 
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	"github.com/mycontroller-org/mycontroller-v2/pkg/util"
-	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
+	ml "github.com/mycontroller-org/backend/pkg/model"
+	"github.com/mycontroller-org/backend/pkg/util"
+	ut "github.com/mycontroller-org/backend/pkg/util"
 	"go.mongodb.org/mongo-driver/bson"
 	mg "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

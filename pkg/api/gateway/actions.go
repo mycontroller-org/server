@@ -1,12 +1,12 @@
 package gateway
 
 import (
-	gm "github.com/mycontroller-org/mycontroller-v2/pkg/gateway"
-	gms "github.com/mycontroller-org/mycontroller-v2/pkg/gateway/serial"
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
-	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
-	"github.com/mycontroller-org/mycontroller-v2/plugin/gateway_provider/mysensors"
+	gm "github.com/mycontroller-org/backend/pkg/gateway"
+	gms "github.com/mycontroller-org/backend/pkg/gateway/serial"
+	ml "github.com/mycontroller-org/backend/pkg/model"
+	gwml "github.com/mycontroller-org/backend/pkg/model/gateway"
+	svc "github.com/mycontroller-org/backend/pkg/service"
+	"github.com/mycontroller-org/backend/plugin/gateway_provider/mysensors"
 	"go.uber.org/zap"
 )
 

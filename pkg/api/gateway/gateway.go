@@ -1,10 +1,10 @@
 package gateway
 
 import (
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
-	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
-	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
+	ml "github.com/mycontroller-org/backend/pkg/model"
+	gwml "github.com/mycontroller-org/backend/pkg/model/gateway"
+	svc "github.com/mycontroller-org/backend/pkg/service"
+	ut "github.com/mycontroller-org/backend/pkg/util"
 )
 
 // ListGateways by filter and pagination

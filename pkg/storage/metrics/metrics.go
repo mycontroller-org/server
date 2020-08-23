@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	sml "github.com/mycontroller-org/mycontroller-v2/pkg/model/sensor"
-	influx "github.com/mycontroller-org/mycontroller-v2/plugin/storage/metrics/influxdb_v2"
-	"github.com/mycontroller-org/mycontroller-v2/plugin/storage/metrics/voiddb"
+	sml "github.com/mycontroller-org/backend/pkg/model/sensor"
+	influx "github.com/mycontroller-org/backend/plugin/storage/metrics/influxdb_v2"
+	"github.com/mycontroller-org/backend/plugin/storage/metrics/voiddb"
 )
 
 // Metrics database types

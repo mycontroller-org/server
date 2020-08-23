@@ -1,10 +1,10 @@
 package node
 
 import (
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	nml "github.com/mycontroller-org/mycontroller-v2/pkg/model/node"
-	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
-	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
+	ml "github.com/mycontroller-org/backend/pkg/model"
+	nml "github.com/mycontroller-org/backend/pkg/model/node"
+	svc "github.com/mycontroller-org/backend/pkg/service"
+	ut "github.com/mycontroller-org/backend/pkg/util"
 )
 
 // ListNodes by filter and pagination

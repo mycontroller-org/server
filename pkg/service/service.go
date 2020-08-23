@@ -5,11 +5,12 @@ import (
 	"flag"
 	"io/ioutil"
 
-	"github.com/mycontroller-org/mycontroller-v2/pkg/model/config"
-	"github.com/mycontroller-org/mycontroller-v2/pkg/scheduler"
-	"github.com/mycontroller-org/mycontroller-v2/pkg/storage"
-	ms "github.com/mycontroller-org/mycontroller-v2/pkg/storage/metrics"
-	"github.com/mycontroller-org/mycontroller-v2/pkg/util"
+	"github.com/mycontroller-org/backend/pkg/model/config"
+	"github.com/mycontroller-org/backend/pkg/scheduler"
+	"github.com/mycontroller-org/backend/pkg/storage"
+	ms "github.com/mycontroller-org/backend/pkg/storage/metrics"
+	"github.com/mycontroller-org/backend/pkg/util"
+	"github.com/mycontroller-org/backend/pkg/version"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -69,7 +70,7 @@ func Close() error {
 func initLogger() {
 	logger := util.GetLogger(CFG.Logger.Level.Core, CFG.Logger.Encoding, false, 0)
 	zap.ReplaceGlobals(logger)
-	zap.L().Info("Welcome to MyController.org server :)", zap.Any("loggerConfig", CFG.Logger))
+	zap.L().Info("Welcome to MyController.org server :)", zap.Any("version", version.Get()), zap.Any("loggerConfig", CFG.Logger))
 }
 
 func initConfig() {

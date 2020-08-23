@@ -11,9 +11,9 @@ import (
 
 	influxdb2 "github.com/influxdata/influxdb-client-go"
 	"github.com/influxdata/influxdb-client-go/api/write"
-	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
-	sml "github.com/mycontroller-org/mycontroller-v2/pkg/model/sensor"
-	"github.com/mycontroller-org/mycontroller-v2/pkg/util"
+	msg "github.com/mycontroller-org/backend/pkg/model/message"
+	sml "github.com/mycontroller-org/backend/pkg/model/sensor"
+	"github.com/mycontroller-org/backend/pkg/util"
 	"go.uber.org/zap"
 )
 

@@ -2,8 +2,8 @@ package serial
 
 import (
 	m2s "github.com/mitchellh/mapstructure"
-	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
-	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
+	gwml "github.com/mycontroller-org/backend/pkg/model/gateway"
+	msg "github.com/mycontroller-org/backend/pkg/model/message"
 	s "github.com/tarm/serial"
 )
 

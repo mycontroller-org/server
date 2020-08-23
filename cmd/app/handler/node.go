@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	nml "github.com/mycontroller-org/mycontroller-v2/pkg/model/node"
+	ml "github.com/mycontroller-org/backend/pkg/model"
+	nml "github.com/mycontroller-org/backend/pkg/model/node"
 )
 
 func registerNodeRoutes(router *mux.Router) {

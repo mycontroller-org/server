@@ -4,9 +4,9 @@ import (
 	"time"
 
 	paho "github.com/eclipse/paho.mqtt.golang"
-	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
-	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
-	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
+	gwml "github.com/mycontroller-org/backend/pkg/model/gateway"
+	msg "github.com/mycontroller-org/backend/pkg/model/message"
+	ut "github.com/mycontroller-org/backend/pkg/util"
 
 	"go.uber.org/zap"
 )

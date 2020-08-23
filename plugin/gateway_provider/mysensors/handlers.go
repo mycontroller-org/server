@@ -4,9 +4,9 @@ import (
 	"strings"
 	"time"
 
-	nodeAPI "github.com/mycontroller-org/mycontroller-v2/pkg/api/node"
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	gwml "github.com/mycontroller-org/mycontroller-v2/pkg/model/gateway"
+	nodeAPI "github.com/mycontroller-org/backend/pkg/api/node"
+	ml "github.com/mycontroller-org/backend/pkg/model"
+	gwml "github.com/mycontroller-org/backend/pkg/model/gateway"
 	"go.uber.org/zap"
 )
 

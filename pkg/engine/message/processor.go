@@ -7,14 +7,14 @@ import (
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mustafaturan/bus"
-	"github.com/mycontroller-org/mycontroller-v2/pkg/mcbus"
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
-	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
-	nml "github.com/mycontroller-org/mycontroller-v2/pkg/model/node"
-	sml "github.com/mycontroller-org/mycontroller-v2/pkg/model/sensor"
-	svc "github.com/mycontroller-org/mycontroller-v2/pkg/service"
-	"github.com/mycontroller-org/mycontroller-v2/pkg/util"
-	ut "github.com/mycontroller-org/mycontroller-v2/pkg/util"
+	"github.com/mycontroller-org/backend/pkg/mcbus"
+	ml "github.com/mycontroller-org/backend/pkg/model"
+	msg "github.com/mycontroller-org/backend/pkg/model/message"
+	nml "github.com/mycontroller-org/backend/pkg/model/node"
+	sml "github.com/mycontroller-org/backend/pkg/model/sensor"
+	svc "github.com/mycontroller-org/backend/pkg/service"
+	"github.com/mycontroller-org/backend/pkg/util"
+	ut "github.com/mycontroller-org/backend/pkg/util"
 	"go.uber.org/zap"
 )
 

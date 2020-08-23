@@ -6,7 +6,7 @@ import (
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	m2s "github.com/mitchellh/mapstructure"
-	msg "github.com/mycontroller-org/mycontroller-v2/pkg/model/message"
+	msg "github.com/mycontroller-org/backend/pkg/model/message"
 )
 
 // Config details

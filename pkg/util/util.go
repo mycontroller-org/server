@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mitchellh/mapstructure"
-	ml "github.com/mycontroller-org/mycontroller-v2/pkg/model"
+	ml "github.com/mycontroller-org/backend/pkg/model"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

@@ -1,6 +1,6 @@
-module github.com/mycontroller-org/mycontroller-v2
+module github.com/mycontroller-org/backend
 
-go 1.13
+go 1.14
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.2.0

@@ -1,7 +1,7 @@
 package voiddb
 
 import (
-	sml "github.com/mycontroller-org/mycontroller-v2/pkg/model/sensor"
+	sml "github.com/mycontroller-org/backend/pkg/model/sensor"
 )
 
 // Client for voiddb
