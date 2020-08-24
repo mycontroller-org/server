@@ -1,6 +1,8 @@
 package gateway
 
 import (
+	"time"
+
 	gm "github.com/mycontroller-org/backend/pkg/gateway"
 	gms "github.com/mycontroller-org/backend/pkg/gateway/serial"
 	ml "github.com/mycontroller-org/backend/pkg/model"
@@ -70,9 +72,20 @@ func LoadGateways() {
 		zap.L().Error("Error getting list of gateways", zap.Error(err))
 	}
 	for _, gw := range gws {
+		state := ml.State{
+			Since:   time.Now(),
+			Status:  ml.StateUp,
+			Message: "Started successfully",
+		}
 		err = Start(&gw)
 		if err != nil {
+			state.Message = err.Error()
+			state.Status = ml.StateDown
 			zap.L().Error("Error loading a gateway", zap.Error(err), zap.Any("gateway", gw))
+		}
+		err = SetState(&gw, state)
+		if err != nil {
+			zap.L().Error("Failed to update gateway status")
 		}
 	}
 }

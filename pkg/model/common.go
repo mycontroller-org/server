@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 // config map keys
 const (
 	CFGUpdateName = "updateName"
@@ -14,7 +16,7 @@ const (
 
 // State data
 type State struct {
-	Status  string `json:"status"`
-	Message string `json:"message"`
-	Since   uint64 `json:"since"`
+	Status  string    `json:"status"`
+	Message string    `json:"message"`
+	Since   time.Time `json:"since"`
 }
