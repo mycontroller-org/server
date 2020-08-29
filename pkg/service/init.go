@@ -99,10 +99,15 @@ func initStorage() {
 	if err != nil {
 		zap.L().Fatal("Problem with storage database config", zap.String("name", CFG.Database.Storage), zap.Error(err))
 	}
+
 	mCFG, err := getDatabaseConfig(CFG.Database.Metrics)
 	if err != nil {
 		zap.L().Fatal("Problem with metrics database config", zap.String("name", CFG.Database.Metrics), zap.Error(err))
 	}
+
+	// include logger details
+	sCFG["logger"] = map[string]string{"mode": CFG.Logger.Mode, "encoding": CFG.Logger.Encoding, "level": CFG.Logger.Level.Storage}
+	mCFG["logger"] = map[string]string{"mode": CFG.Logger.Mode, "encoding": CFG.Logger.Encoding, "level": CFG.Logger.Level.Metrics}
 
 	// Init storage database
 	STG, err = storage.Init(sCFG)

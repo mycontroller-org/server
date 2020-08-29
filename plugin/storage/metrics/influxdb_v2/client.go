@@ -11,6 +11,7 @@ import (
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
+	influxdb2log "github.com/influxdata/influxdb-client-go/v2/log"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
 	"go.uber.org/zap"
@@ -31,16 +32,25 @@ type Config struct {
 	Token         string
 	Username      string
 	Password      string
-	FlushInterval string `yaml:"flush_interval"`
+	FlushInterval string       `yaml:"flush_interval"`
+	Logger        LoggerConfig `yaml:"logger"`
+}
+
+// LoggerConfig struct
+type LoggerConfig struct {
+	Mode     string `yaml:"mode"`
+	Encoding string `yaml:"encoding"`
+	Level    string `yaml:"level"`
 }
 
 // Client of the influxdb
 type Client struct {
-	Client  influxdb2.Client
-	Config  Config
-	stop    chan bool
-	buffer  []*fml.Field
-	rwMutex *sync.RWMutex
+	Client influxdb2.Client
+	Config Config
+	stop   chan bool
+	buffer []*fml.Field
+	logger *myLogger
+	mutex  *sync.RWMutex
 }
 
 // NewClient of influxdb
@@ -67,15 +77,21 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 		zap.L().Warn("Minimum supported flush interval is 1ms, switching back to default", zap.String("flushInterval", cfg.FlushInterval))
 		flushInterval = defaultFlushInterval
 	}
+
+	// replace influxdb2 logger with our custom logger
+	_logger := getLogger(cfg.Logger.Mode, cfg.Logger.Level, cfg.Logger.Encoding)
+	influxdb2log.Log = _logger
+
 	opts := influxdb2.DefaultOptions()
 	opts.SetFlushInterval(uint(flushInterval.Milliseconds()))
 	iClient := influxdb2.NewClient(cfg.URI, cfg.Token)
 	c := &Client{
-		Config:  cfg,
-		Client:  iClient,
-		buffer:  make([]*fml.Field, 0),
-		stop:    make(chan bool),
-		rwMutex: &sync.RWMutex{},
+		Config: cfg,
+		Client: iClient,
+		buffer: make([]*fml.Field, 0),
+		stop:   make(chan bool),
+		mutex:  &sync.RWMutex{},
+		logger: _logger,
 	}
 	err = c.Ping()
 	if err != nil {

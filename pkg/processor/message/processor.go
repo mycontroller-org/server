@@ -264,10 +264,6 @@ func setReqFieldData(msg *msgml.Message, isRequest bool) error {
 		field.Unit = msg.Unit
 	}
 
-	// update shift old payload and update current payload
-	field.PreviousPayload = field.Payload
-	field.Payload = cPL
-
 	// TODO: update labels and others
 	field.Labels.CopyFrom(msg.Labels)
 	field.Others.CopyFrom(msg.Others, field.Labels)
@@ -280,6 +276,10 @@ func setReqFieldData(msg *msgml.Message, isRequest bool) error {
 			clonedMsg.Type = msgml.TypeSet                             // change type to set
 			postMessage(clonedMsg)
 		}
+	} else {
+		// update shift old payload and update current payload
+		field.PreviousPayload = field.Payload
+		field.Payload = cPL
 	}
 
 	start := time.Now()

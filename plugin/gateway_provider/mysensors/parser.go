@@ -7,6 +7,7 @@ import (
 
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	"github.com/mycontroller-org/backend/v2/pkg/util"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway_protocol"
 	"go.uber.org/zap"
@@ -35,7 +36,7 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	msg.Labels = msg.Labels.Init()
 	msg.Others = msg.Others.Init()
 
-	if p.GWConfig.Ack.Enabled {
+	if msg.IsAckEnabled {
 		msMsg.Ack = "1"
 	}
 
@@ -86,7 +87,7 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 
 // ToMessage converts to mc specific
 func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
-
+	// init others map
 	rawMsg.Others = rawMsg.Others.Init()
 
 	d := make([]string, 0)
@@ -156,6 +157,64 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 	// set labels
 	msg.Labels.Set(keyType, msMsg.Type)
 
+	// internal functions
+	updateFieldData := func() error {
+		_field, ok := cmdSetReqFieldMapIn[msMsg.Type]
+		if ok {
+			msg.Labels.Set(KeyTypeString, _field)
+		} else {
+			_field = "V_CUSTOM"
+			zap.L().Warn("This set, req not found. update this. Setting as V_CUSTOM", zap.Any("msMsg", msMsg))
+		}
+
+		// get type and unit
+		if typeUnit, ok := metricTypeUnit[_field]; ok {
+			msg.FieldName = _field
+			msg.MetricType = typeUnit.Type
+			msg.Unit = typeUnit.Unit
+		} else {
+			// not supported? should I have to return from here?
+		}
+		return nil
+	}
+
+	if msg.IsReceived && msg.IsAck { // process acknowledgement message
+		// MySensors support ack message only for field/variable level, not for others
+		if msMsg.SensorID != idBroadcast && (msMsg.Command == CmdSet || msMsg.Command == CmdRequest) {
+			err := updateFieldData()
+			if err != nil {
+				return nil, err
+			}
+			return msg, nil
+		} else if msMsg.NodeID != idBroadcast && msMsg.Command == CmdInternal {
+			switch msMsg.Type { // valid only for this list
+			case TypeInternalConfigResponse:
+				msg.FieldName = "I_CONFIG"
+			case TypeInternalHeartBeatRequest:
+				msg.FieldName = nml.FuncHeartbeat
+			case TypeInternalIDResponse:
+				msg.FieldName = "I_ID_REQUEST"
+			case TypeInternalPresentation:
+				msg.FieldName = nml.FuncRefreshNodeInfo
+			case TypeInternalReboot:
+				msg.FieldName = nml.FuncReboot
+			case TypeInternalTime:
+				msg.FieldName = "I_TIME"
+			default:
+				// leave it, will fail at the end of root if
+			}
+			if msg.FieldName != "" {
+				return msg, nil
+			}
+		} else if msMsg.Command == CmdStream {
+			// TODO: for streaming
+			return nil, errors.New("Streaming ack support not implemented")
+		}
+
+		return msg, fmt.Errorf("For this message ack not implemented, rawMessage: %v", msMsg)
+	}
+
+	// entering into normal message processing
 	switch {
 
 	case msMsg.SensorID != idBroadcast: // perform sensor related stuff
@@ -173,21 +232,9 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 			}
 
 		case CmdSet, CmdRequest:
-			_field, ok := cmdSetReqFieldMapIn[msMsg.Type]
-			if ok {
-				msg.Labels.Set(KeyTypeString, _field)
-			} else {
-				_field = "V_CUSTOM"
-				zap.L().Warn("This set, req not found. update this. Setting as V_CUSTOM", zap.Any("msMsg", msMsg))
-			}
-
-			// get type and unit
-			if typeUnit, ok := metricTypeUnit[_field]; ok {
-				msg.FieldName = _field
-				msg.MetricType = typeUnit.Type
-				msg.Unit = typeUnit.Unit
-			} else {
-				// not supported? should I have to return from here?
+			err := updateFieldData()
+			if err != nil {
+				return nil, err
 			}
 
 		default:

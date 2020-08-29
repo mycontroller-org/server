@@ -16,22 +16,23 @@ import (
 func handleInternalFunctions(gwCfg *gwml.Config, fn string, msMsg *message) error {
 	switch fn {
 
-	case nml.FuncReboot, "I_REBOOT":
+	case nml.FuncReboot:
 		msMsg.Type = TypeInternalReboot
 		msMsg.Payload = payloadEmpty
 
 	case nml.FuncReset: // yet to implement
 		return fmt.Errorf("This function not implemented: %s", fn)
 
-	case nml.FuncDiscover, "I_DISCOVER_REQUEST":
+	case nml.FuncDiscover:
 		msMsg.Type = TypeInternalDiscoverRequest
 		msMsg.Payload = payloadEmpty
+		msMsg.NodeID = idBroadcast
 
-	case nml.FuncRefreshNodeInfo, "I_PRESENTATION":
+	case nml.FuncRefreshNodeInfo:
 		msMsg.Type = TypeInternalPresentation
 		msMsg.Payload = payloadEmpty
 
-	case nml.FuncHeartbeat, "I_HEARTBEAT_REQUEST":
+	case nml.FuncHeartbeat:
 		msMsg.Type = TypeInternalHeartBeatRequest
 		msMsg.Payload = payloadEmpty
 
