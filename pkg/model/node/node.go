@@ -6,6 +6,15 @@ import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 )
 
+// Node functions
+const (
+	FuncReboot          = "reboot"
+	FuncReset           = "reset"
+	FuncDiscover        = "discover"
+	FuncRefreshNodeInfo = "refresh_node_info"
+	FuncHeartbeat       = "heartbeat"
+)
+
 // Node model
 type Node struct {
 	ID        string             `json:"id"`

@@ -1,6 +1,7 @@
 package mqtt
 
 import (
+	"fmt"
 	"time"
 
 	paho "github.com/eclipse/paho.mqtt.golang"
@@ -85,10 +86,13 @@ func (d *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
 
 // Write publishes a payload
 func (d *Endpoint) Write(rawMsg *msgml.RawMessage) error {
+	zap.L().Debug("About to send this message", zap.Any("rawMessage", rawMsg))
 	topics := rawMsg.Others.Get(gwptcl.KeyTopic).([]string)
 	qos := byte(d.Config.QoS)
+
 	for _, t := range topics {
-		token := d.Client.Publish(t, qos, false, rawMsg.Data)
+		_topic := fmt.Sprintf("%s/%s", d.Config.Publish, t)
+		token := d.Client.Publish(_topic, qos, false, rawMsg.Data)
 		if token.Error() != nil {
 			return token.Error()
 		}
@@ -118,7 +122,7 @@ func (d *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 		}
 		err := d.receiveMsgFunc(rawMsg)
 		if err != nil {
-			zap.L().Error("Failed to send message to queue", zap.String("gateway", d.GwCfg.Name), zap.Any("rawMessage", rawMsg), zap.Error(err))
+			zap.L().Error("Failed to send a raw message to queue", zap.String("gateway", d.GwCfg.Name), zap.Any("rawMessage", rawMsg), zap.Error(err))
 		}
 	}
 }

@@ -7,6 +7,7 @@ import (
 
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	"github.com/mycontroller-org/backend/v2/pkg/util"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway_protocol"
 	"go.uber.org/zap"
 )
@@ -19,7 +20,15 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 		Command:  "",
 		Ack:      "0",
 		Type:     "",
-		Payload:  "",
+		Payload:  msg.Payload,
+	}
+
+	// update broadcast id
+	if msMsg.NodeID == "" {
+		msMsg.NodeID = idBroadcast
+	}
+	if msMsg.SensorID == "" {
+		msMsg.SensorID = idBroadcast
 	}
 
 	// init labels and others
@@ -34,7 +43,28 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	rawMsg.Others = rawMsg.Others.Init()
 
 	// get command
-	msMsg.Type = msg.Labels.Get(keyType)
+	switch msg.Type {
+
+	case msgml.TypeSet:
+		msMsg.Command = CmdSet
+		msMsg.Type = msg.Labels.Get(keyType)
+
+	case msgml.TypeRequest:
+		msMsg.Command = CmdRequest
+		msMsg.Type = msg.Labels.Get(keyType)
+
+	case msgml.TypeInternal:
+		msMsg.Command = CmdInternal
+		// call functions
+		err := handleInternalFunctions(p.GWConfig, msg.FieldName, &msMsg)
+		if err != nil {
+			return nil, err
+		}
+
+	default:
+		return nil, fmt.Errorf("This command not implemented: %s", msg.Type)
+	}
+
 	if msMsg.Type == "" {
 		return nil, errors.New("command type should not be empty")
 	}
@@ -42,10 +72,14 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	// create rawMessage
 	switch p.GWConfig.Provider.ProtocolType {
 	case gwpl.TypeSerial, gwpl.TypeEthernet:
+		rawMsg.Data = []byte(msMsg.toRaw(false))
 
 	case gwpl.TypeMQTT:
-		rawMsg.Data = []byte(msg.Payload)
-		rawMsg.Others.Set(gwpl.KeyTopic, msMsg.toRaw(true), nil)
+		rawMsg.Data = []byte(msMsg.Payload)
+		rawMsg.Others.Set(gwpl.KeyTopic, []string{msMsg.toRaw(true)}, nil)
+
+	default:
+		return nil, fmt.Errorf("This protocol not implemented: %s", p.GWConfig.Provider.ProtocolType)
 	}
 	return rawMsg, nil
 }
@@ -138,7 +172,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 				// not supported? should I have to return from here?
 			}
 
-		case CmdSet, CmdReq:
+		case CmdSet, CmdRequest:
 			_field, ok := cmdSetReqFieldMapIn[msMsg.Type]
 			if ok {
 				msg.Labels.Set(KeyTypeString, _field)
@@ -182,12 +216,22 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 			}
 		case CmdInternal:
 			if _type, ok := cmdInternalTypeMapIn[msMsg.Type]; ok {
-				if fieldName, ok := cmdInternalFieldMap[_type]; ok {
+				if fieldName, ok := internalValidFields[_type]; ok {
 					msg.FieldName = fieldName
 					msg.Type = msgml.TypeSet
-				} else { // this will be implemented properly with functions call
-					msg.FieldName = _type
+					if fieldName == fml.FieldLocked { // update locked reason
+						msg.Others.Set(keyLockedReason, msg.Payload, nil)
+						msg.Payload = "true"
+					}
+				} else {
 					msg.Type = msgml.TypeInternal
+					msg.FieldName = _type
+
+					// filter implemented requests
+					_, found := util.FindItem(internalValidRequests, _type)
+					if !found {
+						return nil, fmt.Errorf("This internal message handling not implemented: %s", _type)
+					}
 				}
 			} else {
 				// return?

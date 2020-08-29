@@ -15,7 +15,9 @@ type Provider struct {
 }
 
 // Post func
-func (p *Provider) Post(rawMessage *msgml.RawMessage) error { return nil }
+func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
+	return p.Gateway.Write(rawMsg)
+}
 
 // Start func
 func (p *Provider) Start(rxMessageFunc func(rawMsg *msgml.RawMessage) error) error {
@@ -36,4 +38,6 @@ func (p *Provider) Start(rxMessageFunc func(rawMsg *msgml.RawMessage) error) err
 }
 
 // Close func
-func (p *Provider) Close() error { return nil }
+func (p *Provider) Close() error {
+	return p.Gateway.Close()
+}

@@ -37,4 +37,5 @@ const (
 	FieldType           = "type"
 	FieldUnit           = "unit"
 	FieldLocked         = "locked"
+	FieldHeartbeat      = "heartbeat"
 )

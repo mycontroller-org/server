@@ -88,3 +88,13 @@ func GetMapValue(m map[string]interface{}, key string, defaultValue interface{})
 	}
 	return defaultValue
 }
+
+// FindItem returns the availability status and location
+func FindItem(slice []string, value string) (int, bool) {
+	for i, item := range slice {
+		if item == value {
+			return i, true
+		}
+	}
+	return -1, false
+}

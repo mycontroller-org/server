@@ -24,15 +24,15 @@ func getQueue(name string, queueSize int) *q.BoundedQueue {
 }
 
 // handle received messages from gateway
-func (s *Service) receiveMessageFunc() func(rm *msgml.RawMessage) error {
-	return func(rm *msgml.RawMessage) error {
-		zap.L().Debug("rawMessage received", zap.Any("rawMessage", rm), zap.Any("payload", string(rm.Data)))
-		message, err := s.Provider.ToMessage(rm)
+func (s *Service) receiveMessageFunc() func(rawMsg *msgml.RawMessage) error {
+	return func(rawMsg *msgml.RawMessage) error {
+		zap.L().Debug("RawMessage received", zap.String("gateway", s.Config.Name), zap.Any("rawMessage", rawMsg))
+		message, err := s.Provider.ToMessage(rawMsg)
 		if err != nil {
 			return err
 		}
 		if message == nil {
-			zap.L().Debug("message not parsed", zap.Any("rawMessage", rm), zap.String("payload", string(rm.Data)))
+			zap.L().Debug("Message not parsed", zap.String("gateway", s.Config.Name), zap.Any("RawMessage", rawMsg))
 			return nil
 		}
 		// update gatewayID if not found
@@ -57,16 +57,16 @@ func (s *Service) writeMessageFunc() func(mcMsg *msgml.Message) {
 			mcMsg.GatewayID = s.Config.ID
 		}
 		// send delivery status
-		sendDeliveryStatus := func(status *msgml.DeliveryStatus) {
+		postDeliveryStatus := func(status *msgml.DeliveryStatus) {
 			_, err := mcbus.Publish(mcbus.TopicMsg2GWDelieverStatus, status)
 			if err != nil {
 				zap.L().Error("Failed to send delivery status", zap.Error(err))
 			}
 		}
 		// parse message
-		rm, err := s.Provider.ToRawMessage(mcMsg)
+		rawMsg, err := s.Provider.ToRawMessage(mcMsg)
 		if err != nil {
-			sendDeliveryStatus(&msgml.DeliveryStatus{ID: mcMsg.GetID(), Success: false, Message: err.Error()})
+			postDeliveryStatus(&msgml.DeliveryStatus{ID: mcMsg.GetID(), Success: false, Message: err.Error()})
 			zap.L().Error("Failed to parse", zap.Error(err), zap.Any("message", mcMsg))
 			return
 		}
@@ -75,7 +75,7 @@ func (s *Service) writeMessageFunc() func(mcMsg *msgml.Message) {
 		if mcMsg.IsAckEnabled {
 			// wait for acknowledgement message
 			ackChannel := make(chan bool, 1)
-			ackTopic := fmt.Sprintf("%s_%s", mcbus.TopicGatewayAcknowledgement, rm.ID)
+			ackTopic := fmt.Sprintf("%s_%s", mcbus.TopicGatewayAcknowledgement, rawMsg.ID)
 			mcbus.Subscribe(ackTopic, &bus.Handler{
 				Matcher: ackTopic,
 				Handle: func(e *bus.Event) {
@@ -97,10 +97,10 @@ func (s *Service) writeMessageFunc() func(mcMsg *msgml.Message) {
 			messageSent := false
 			for retry := 1; retry <= s.Config.Ack.RetryCount; retry++ {
 				// write into gateway
-				err = s.Provider.Post(rm)
+				err = s.Provider.Post(rawMsg)
 				if err != nil {
-					zap.L().Error("Failed to write message into gateway", zap.Error(err), zap.Any("message", mcMsg), zap.Any("raw", rm))
-					sendDeliveryStatus(&msgml.DeliveryStatus{ID: mcMsg.GetID(), Success: false, Message: err.Error()})
+					zap.L().Error("Failed to post message into provider gw", zap.Error(err), zap.Any("message", mcMsg), zap.Any("rawMessage", rawMsg))
+					postDeliveryStatus(&msgml.DeliveryStatus{ID: mcMsg.GetID(), Success: false, Message: err.Error()})
 					return
 				}
 				select {
@@ -114,21 +114,21 @@ func (s *Service) writeMessageFunc() func(mcMsg *msgml.Message) {
 				}
 			}
 			if messageSent {
-				sendDeliveryStatus(&msgml.DeliveryStatus{ID: mcMsg.GetID(), Success: true})
+				postDeliveryStatus(&msgml.DeliveryStatus{ID: mcMsg.GetID(), Success: true})
 			} else {
-				sendDeliveryStatus(&msgml.DeliveryStatus{ID: mcMsg.GetID(), Success: false, Message: "No acknowledgement received, tried maximum retries"})
+				postDeliveryStatus(&msgml.DeliveryStatus{ID: mcMsg.GetID(), Success: false, Message: "No acknowledgement received, tried maximum retries"})
 			}
 			return
 		}
 
 		// message without acknowledgement
-		err = s.Provider.Post(rm)
+		err = s.Provider.Post(rawMsg)
 		if err != nil {
-			zap.L().Error("Failed to write message into gateway", zap.Error(err), zap.Any("message", mcMsg), zap.Any("raw", rm))
-			sendDeliveryStatus(&msgml.DeliveryStatus{ID: mcMsg.GetID(), Success: false, Message: err.Error()})
+			zap.L().Error("Failed to write message into gateway", zap.Error(err), zap.Any("message", mcMsg), zap.Any("raw", rawMsg))
+			postDeliveryStatus(&msgml.DeliveryStatus{ID: mcMsg.GetID(), Success: false, Message: err.Error()})
 			return
 		}
-		sendDeliveryStatus(&msgml.DeliveryStatus{ID: mcMsg.GetID(), Success: true})
+		postDeliveryStatus(&msgml.DeliveryStatus{ID: mcMsg.GetID(), Success: true})
 	}
 }
 

@@ -54,11 +54,9 @@ func onMessageReceive(e *bus.Event) {
 	switch {
 	case msg.SensorID != "":
 		switch msg.Type {
-		case msgml.TypeSet: // set a field
-			updateFieldData(msg)
-
-		case msgml.TypeRequest:
-			// requestSensorFieldData(s, m)
+		case msgml.TypeSet, msgml.TypeRequest: // set a field
+			isRequest := msg.Type == msgml.TypeRequest
+			setReqFieldData(msg, isRequest)
 
 		case msgml.TypePresentation: // update sensor data
 			// update sensor name or properties
@@ -75,7 +73,9 @@ func onMessageReceive(e *bus.Event) {
 
 		case msgml.TypeRequest: // request node specific data
 
-		case msgml.TypeInternal: // node commands
+		case msgml.TypeInternal: // node internal commands
+			clonedMsg := msg.Clone() // clone the message
+			postMessage(clonedMsg)
 
 		case msgml.TypeStream: // for stream data
 
@@ -188,39 +188,44 @@ func updateSensorDetail(msg *msgml.Message) error {
 	return nil
 }
 
-func updateFieldData(msg *msgml.Message) error {
-	var err error
-	var pl interface{}
-	// convert payload to actual type
-	switch msg.MetricType {
+func setReqFieldData(msg *msgml.Message, isRequest bool) error {
+	// current payload
+	cPL := fml.Payload{}
 
-	case fml.MetricTypeBinary:
-		pl, err = strconv.ParseBool(msg.Payload)
+	if !isRequest { // parse payload, only for set type
+		var err error
+		var pl interface{}
+		// convert payload to actual type
+		switch msg.MetricType {
 
-	case fml.MetricTypeGaugeFloat:
-		pl, err = strconv.ParseFloat(msg.Payload, 64)
+		case fml.MetricTypeBinary:
+			pl, err = strconv.ParseBool(msg.Payload)
 
-	case fml.MetricTypeGauge, fml.MetricTypeCounter:
-		pl, err = strconv.ParseInt(msg.Payload, 10, 64)
+		case fml.MetricTypeGaugeFloat:
+			pl, err = strconv.ParseFloat(msg.Payload, 64)
 
-	case fml.MetricTypeNone:
-		pl = msg.Payload
+		case fml.MetricTypeGauge, fml.MetricTypeCounter:
+			pl, err = strconv.ParseInt(msg.Payload, 10, 64)
 
-	case fml.MetricTypeGEO: // Implement geo
-		pl = msg.Payload
+		case fml.MetricTypeNone:
+			pl = msg.Payload
 
-	default:
-		zap.L().Error("Unknown data type on a field", zap.Any("message", msg))
-		return errors.New("Unknown data type on a field")
+		case fml.MetricTypeGEO: // Implement geo
+			pl = msg.Payload
+
+		default:
+			zap.L().Error("Unknown data type on a field", zap.Any("message", msg))
+			return errors.New("Unknown data type on a field")
+		}
+
+		if err != nil {
+			zap.L().Error("Unable to convert the payload to actual type", zap.Error(err), zap.Any("message", msg))
+			return err
+		}
+
+		// update payload
+		cPL = fml.Payload{Value: pl, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
 	}
-
-	if err != nil {
-		zap.L().Error("Unable to convert the payload to actual type", zap.Error(err), zap.Any("message", msg))
-		return err
-	}
-
-	// update payload
-	cPL := fml.Payload{Value: pl, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
 
 	fieldID := fmt.Sprintf("%s_%s_%s_%s", msg.GatewayID, msg.NodeID, msg.SensorID, msg.FieldName)
 
@@ -228,7 +233,7 @@ func updateFieldData(msg *msgml.Message) error {
 		{Key: "id", Operator: "eq", Value: fieldID},
 	}
 	field := &fml.Field{}
-	err = svc.STG.FindOne(ml.EntityField, f, field)
+	err := svc.STG.FindOne(ml.EntityField, f, field)
 	if err != nil { // TODO: check entry availability on error message
 		field = &fml.Field{
 			ID:        fieldID,
@@ -252,7 +257,7 @@ func updateFieldData(msg *msgml.Message) error {
 
 	// update type
 	if !field.Labels.GetBool(ml.GetIgnoreKey(fml.FieldType)) {
-		field.Type = msg.MetricType
+		field.MetricType = msg.MetricType
 	}
 	// update unit
 	if !field.Labels.GetBool(ml.GetIgnoreKey(fml.FieldUnit)) {
@@ -266,6 +271,16 @@ func updateFieldData(msg *msgml.Message) error {
 	// TODO: update labels and others
 	field.Labels.CopyFrom(msg.Labels)
 	field.Others.CopyFrom(msg.Others, field.Labels)
+
+	if isRequest { // execute for request message
+		if field.Payload.Value != nil {
+			clonedMsg := msg.Clone()                                   // clone the message
+			clonedMsg.Timestamp = time.Now()                           // set current timestamp
+			clonedMsg.Payload = fmt.Sprintf("%v", field.Payload.Value) // update payload
+			clonedMsg.Type = msgml.TypeSet                             // change type to set
+			postMessage(clonedMsg)
+		}
+	}
 
 	start := time.Now()
 	err = svc.STG.Upsert(ml.EntityField, f, field)
@@ -283,4 +298,11 @@ func updateFieldData(msg *msgml.Message) error {
 		zap.L().Debug("Inserted in to metric db", zap.String("timeTaken", time.Since(start).String()))
 	}
 	return nil
+}
+
+func postMessage(msg *msgml.Message) {
+	// topic to send message to gateway
+	topic := fmt.Sprintf("%s_%s", mcbus.TopicMsg2GW, msg.GatewayID)
+	msg.IsReceived = false
+	mcbus.Publish(topic, msg)
 }

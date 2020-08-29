@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
-	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 )
 
 // Config key, will be used in gateway provider config
 const (
-	KeyProviderUnitsConfig = "unitsConfig"
-	idBroadcast            = "255"
+	KeyIsImperialSystem = "is_imperial_system"
+	idBroadcast         = "255"
+	payloadEmpty        = ""
 
 	// Others data key
 	OthersKeyNodeID = "nodeID"
@@ -21,18 +21,30 @@ const (
 const (
 	CmdPresentation = "0"
 	CmdSet          = "1"
-	CmdReq          = "2"
+	CmdRequest      = "2"
 	CmdInternal     = "3"
 	CmdStream       = "4"
 )
 
+// Internal type details
+const (
+	TypeInternalTime             = "1"
+	TypeInternalIDResponse       = "4"
+	TypeInternalConfigResponse   = "6"
+	TypeInternalReboot           = "13"
+	TypeInternalHeartBeatRequest = "18"
+	TypeInternalPresentation     = "19"
+	TypeInternalDiscoverRequest  = "20"
+)
+
 // internal references
 const (
-	keyType       = "ms_type"
-	KeyTypeString = "ms_type_string"
-	keyNodeType   = "ms_node_type"
-	keyNodeID     = "ms_node_id"
-	keySensorID   = "ms_sensor_id"
+	keyType         = "ms_type"
+	KeyTypeString   = "ms_type_string"
+	keyNodeType     = "ms_node_type"
+	keyNodeID       = "ms_node_id"
+	keySensorID     = "ms_sensor_id"
+	keyLockedReason = "ms_locked_reason"
 )
 
 // Constants of MySensors
@@ -300,28 +312,19 @@ var cmdInternalTypeMapIn = map[string]string{
 	"33": "I_POST_SLEEP_NOTIFICATION",
 }
 
-var cmdInternalFieldMap = map[string]string{
+var internalValidFields = map[string]string{
 	"I_BATTERY_LEVEL":          fml.FieldBatteryLevel,
-	"I_VERSION":                fml.FieldLibraryVersion,
-	"I_FIND_PARENT_RESPONSE":   fml.FieldParentID,
-	"I_SKETCH_NAME":            fml.FieldName,
-	"I_SKETCH_VERSION":         fml.FieldVersion,
+	"I_DISCOVER_RESPONSE":      fml.FieldParentID,
+	"I_HEARTBEAT_RESPONSE":     fml.FieldHeartbeat,
 	"I_LOCKED":                 fml.FieldLocked,
 	"I_SIGNAL_REPORT_RESPONSE": fml.FieldSignalStrength,
+	"I_SKETCH_NAME":            fml.FieldName,
+	"I_SKETCH_VERSION":         fml.FieldVersion,
+	"I_VERSION":                fml.FieldLibraryVersion,
 }
 
-type nodeInternalCmd struct {
-	Field      string
-	callBackFn func() *msgml.RawMessage
-}
-
-const (
-	nodeIDRequest  = "node_id_request"
-	nodeIDResponse = "node_id_response"
-)
-
-var localHandlerMapIn = map[string]func(gw *gwml.Config, ms message) *message{
-	"1": timeHandler,      // I_TIME
-	"2": idRequestHandler, // I_ID_REQUEST
-	"6": configHandler,    // I_CONFIG
+var internalValidRequests = []string{
+	"I_CONFIG",
+	"I_ID_REQUEST",
+	"I_TIME",
 }

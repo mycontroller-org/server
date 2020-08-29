@@ -17,6 +17,15 @@ func (csm CustomStringMap) Init() CustomStringMap {
 	return csm
 }
 
+// Clone CustomMap
+func (csm CustomStringMap) Clone() CustomStringMap {
+	cloned := make(map[string]string)
+	for k, v := range csm {
+		cloned[k] = v
+	}
+	return CustomStringMap(cloned)
+}
+
 // Set a key, value pair
 func (csm CustomStringMap) Set(key, value string) {
 	m := map[string]string(csm)
@@ -89,6 +98,15 @@ func (cm CustomMap) Init() CustomMap {
 		return CustomMap(make(map[string]interface{}))
 	}
 	return cm
+}
+
+// Clone CustomMap
+func (cm CustomMap) Clone() CustomMap {
+	cloned := make(map[string]interface{})
+	for k, v := range cm {
+		cloned[k] = v
+	}
+	return CustomMap(cloned)
 }
 
 // Set a key, value pair

@@ -26,7 +26,7 @@ type AckConfig struct {
 
 // ProviderConfig data
 type ProviderConfig struct {
-	Type         string                 `json:"type"`
-	ProtocolType string                 `json:"protocolType"`
-	Config       map[string]interface{} `json:"config"`
+	Type         string       `json:"type"`
+	ProtocolType string       `json:"protocolType"`
+	Config       ml.CustomMap `json:"config"`
 }
