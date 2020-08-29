@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	ml "github.com/mycontroller-org/backend/pkg/model"
-	"github.com/mycontroller-org/backend/plugin/storage/mongodb"
+	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
+	"github.com/mycontroller-org/backend/v2/plugin/storage/mongodb"
 )
 
 // Storage database types
@@ -19,11 +19,11 @@ type Client interface {
 	Close() error
 	Ping() error
 	Insert(entity string, data interface{}) error
-	Update(entity string, filter []ml.Filter, data interface{}) error
-	Upsert(entityName string, filter []ml.Filter, d interface{}) error
-	FindOne(entityName string, filter []ml.Filter, out interface{}) error
-	Find(entityName string, filter []ml.Filter, pagination ml.Pagination, out interface{}) error
-	Distinct(entityName string, fieldName string, filter []ml.Filter) ([]interface{}, error)
+	Update(entity string, filter []pml.Filter, data interface{}) error
+	Upsert(entityName string, filter []pml.Filter, d interface{}) error
+	FindOne(entityName string, filter []pml.Filter, out interface{}) error
+	Find(entityName string, filter []pml.Filter, pagination pml.Pagination, out interface{}) error
+	Distinct(entityName string, fieldName string, filter []pml.Filter) ([]interface{}, error)
 }
 
 // Operators

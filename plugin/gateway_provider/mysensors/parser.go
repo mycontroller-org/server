@@ -5,87 +5,87 @@ import (
 	"fmt"
 	"strings"
 
-	gwml "github.com/mycontroller-org/backend/pkg/model/gateway"
-	msg "github.com/mycontroller-org/backend/pkg/model/message"
+	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway_protocol"
 	"go.uber.org/zap"
 )
 
-// Parser implementation
-type Parser struct {
-	Gateway *gwml.Config
-}
-
 // ToRawMessage converts to gateway specific
-func (p *Parser) ToRawMessage(mcMsg *msg.Message) (*msg.RawMessage, error) {
-	msMsg := myMessage{
-		NodeID:   mcMsg.NodeID,
-		SensorID: mcMsg.SensorID,
+func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
+	msMsg := message{
+		NodeID:   msg.NodeID,
+		SensorID: msg.SensorID,
 		Command:  "",
 		Ack:      "0",
 		Type:     "",
 		Payload:  "",
 	}
-	if p.Gateway.AckConfig.Enabled {
+
+	// init labels and others
+	msg.Labels = msg.Labels.Init()
+	msg.Others = msg.Others.Init()
+
+	if p.GWConfig.Ack.Enabled {
 		msMsg.Ack = "1"
 	}
 
-	if len(mcMsg.Payload) > 0 {
-		rm := &msg.RawMessage{
-			Timestamp: mcMsg.Timestamp,
-			Others:    map[string]interface{}{},
-		}
-		// get command
-		msMsg.Type = mcMsg.Others[keyCmdType].(string)
+	rawMsg := &msgml.RawMessage{Timestamp: msg.Timestamp}
+	rawMsg.Others = rawMsg.Others.Init()
 
-		// create rawMessage
-		switch p.Gateway.Provider.GatewayType {
-		case gwml.TypeSerial, gwml.TypeEthernet:
-
-		case gwml.TypeMQTT:
-			rm.Data = []byte(mcMsg.Payload)
-			rm.Others[msg.KeyTopic] = msMsg.toRaw(true)
-		}
-		return rm, nil
+	// get command
+	msMsg.Type = msg.Labels.Get(keyType)
+	if msMsg.Type == "" {
+		return nil, errors.New("command type should not be empty")
 	}
-	return nil, errors.New("No fields found in the given input")
+
+	// create rawMessage
+	switch p.GWConfig.Provider.ProtocolType {
+	case gwpl.TypeSerial, gwpl.TypeEthernet:
+
+	case gwpl.TypeMQTT:
+		rawMsg.Data = []byte(msg.Payload)
+		rawMsg.Others.Set(gwpl.KeyTopic, msMsg.toRaw(true), nil)
+	}
+	return rawMsg, nil
 }
 
 // ToMessage converts to mc specific
-func (p *Parser) ToMessage(rm *msg.RawMessage) (*msg.Message, error) {
-	//zap.L().Debug("Raw message", zap.Any("rawMessage", rm))
+func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
+
+	rawMsg.Others = rawMsg.Others.Init()
 
 	d := make([]string, 0)
 	payload := ""
 
 	// decode message from gateway
-	switch p.Gateway.Provider.GatewayType {
-	case gwml.TypeMQTT:
+	switch p.GWConfig.Provider.ProtocolType {
+	case gwpl.TypeMQTT:
 		// topic/node-id/child-sensor-id/command/ack/type
 		// out_rfm69/11/1/1/0/0
-		_d := strings.Split(string(rm.Others[msg.KeyTopic].(string)), "/")
-		if len(_d) < 5 {
-			zap.L().Error("Invalid message format", zap.Any("message", rm))
+		rData := strings.Split(string(rawMsg.Others[gwpl.KeyTopic].(string)), "/")
+		if len(rData) < 5 {
+			zap.L().Error("Invalid message format", zap.Any("rawMessage", rawMsg))
 			return nil, nil
 		}
-		d = _d[len(_d)-5:]
-		payload = string(rm.Data)
-	case gwml.TypeSerial, gwml.TypeEthernet:
+		d = rData[len(rData)-5:]
+		payload = string(rawMsg.Data)
+	case gwpl.TypeSerial, gwpl.TypeEthernet:
 		// node-id;child-sensor-id;command;ack;type;payload
-		_d := strings.Split(string(rm.Data), ";")
+		_d := strings.Split(string(rawMsg.Data), ";")
 		if len(_d) < 6 {
-			zap.L().Error("Invalid message format", zap.String("message", string(rm.Data)))
+			zap.L().Error("Invalid message format", zap.String("rawMessage", string(rawMsg.Data)))
 			return nil, nil
 		}
 		payload = _d[6]
 		d = _d[5:]
 	// implement this one
 	default:
-		return nil, fmt.Errorf("This gateway type not implements. gatewayType: %s", p.Gateway.Provider.GatewayType)
+		return nil, fmt.Errorf("This type not implements. protocol type: %s", p.GWConfig.Provider.ProtocolType)
 	}
 
-	//zap.L().Debug("message", zap.Any("slice", d))
-
-	ms := myMessage{
+	// MySensors message
+	msMsg := message{
 		NodeID:   d[0],
 		SensorID: d[1],
 		Command:  d[2],
@@ -94,55 +94,108 @@ func (p *Parser) ToMessage(rm *msg.RawMessage) (*msg.Message, error) {
 		Payload:  payload,
 	}
 
-	mcMsg := &msg.Message{
-		NodeID:     ms.NodeID,
-		SensorID:   ms.SensorID,
-		IsAck:      ms.Ack == "1",
+	// Message
+	msg := &msgml.Message{
+		NodeID:     msMsg.NodeID,
+		SensorID:   msMsg.SensorID,
+		IsAck:      msMsg.Ack == "1",
 		IsReceived: true,
-		Timestamp:  rm.Timestamp,
-		Payload:    ms.Payload,
-		Command:    cmdMapIn[ms.Command],
-		Others:     make(map[string]interface{}),
+		Timestamp:  rawMsg.Timestamp,
+		Payload:    msMsg.Payload,
+		Type:       cmdMapIn[msMsg.Command],
 	}
 
-	switch ms.Command {
-	case CmdSet, CmdReq:
-		mcMsg.Field = cmdSetReqTypeMapIn[ms.Type]
-		_tu := metricUnit[mcMsg.Field]
-		mcMsg.PayloadType = _tu.Type
-		mcMsg.PayloadUnitID = _tu.Unit
-		mcMsg.Others[keyCmdType] = ms.Type
-	case CmdInternal:
-		// check should I have to handle this locally?
-		if fn, ok := localHandlerMapIn[ms.Type]; ok {
-			nms := fn(p.Gateway, ms)
-			if nms != nil {
-				// TODO: send this message to node and update last seen
+	// init labels and others
+	msg.Labels = msg.Labels.Init()
+	msg.Others = msg.Others.Init()
+
+	// Remove sensor id, if it is a internal message
+	if msg.SensorID == idBroadcast {
+		msg.SensorID = ""
+	}
+
+	// Remove node id, if it is a broadcast message
+	if msg.NodeID == idBroadcast {
+		msg.NodeID = ""
+	}
+
+	// set labels
+	msg.Labels.Set(keyType, msMsg.Type)
+
+	switch {
+
+	case msMsg.SensorID != idBroadcast: // perform sensor related stuff
+		// update some stuffs as label
+		msg.Labels.Set(keyNodeID, msMsg.NodeID)
+		msg.Labels.Set(keySensorID, msMsg.SensorID)
+
+		switch msMsg.Command {
+		case CmdPresentation:
+			if _type, ok := cmdPresentationTypeMapIn[msMsg.Type]; ok {
+				msg.FieldName = fml.FieldName
+				msg.Labels.Set(KeyTypeString, _type)
+			} else {
+				// not supported? should I have to return from here?
 			}
+
+		case CmdSet, CmdReq:
+			_field, ok := cmdSetReqFieldMapIn[msMsg.Type]
+			if ok {
+				msg.Labels.Set(KeyTypeString, _field)
+			} else {
+				_field = "V_CUSTOM"
+				zap.L().Warn("This set, req not found. update this. Setting as V_CUSTOM", zap.Any("msMsg", msMsg))
+			}
+
+			// get type and unit
+			if typeUnit, ok := metricTypeUnit[_field]; ok {
+				msg.FieldName = _field
+				msg.MetricType = typeUnit.Type
+				msg.Unit = typeUnit.Unit
+			} else {
+				// not supported? should I have to return from here?
+			}
+
+		default:
+			// not supported? should I have to return from here?
 		}
-		if _type, ok := cmdInternalTypeMapIn[ms.Type]; ok {
-			mcMsg.SubCommand = _type
-		} else {
-			// ignore to process this message
-			return nil, nil
-		}
-	case CmdPresentation:
-		if _type, ok := cmdPresentationTypeMapIn[ms.Type]; ok {
-			if _type == "S_ARDUINO_REPEATER_NODE" || _type == "S_ARDUINO_NODE" {
-				// this is a node data
-				mcMsg.SubCommand = msg.CommandPresentation
-				mcMsg.Field = msg.SubCmdLibraryVersion
-				if _type == "S_ARDUINO_REPEATER_NODE" {
-					mcMsg.Others[keyNodeType] = "Repeater"
+
+	case msMsg.NodeID != idBroadcast: // perform node related stuff
+		// update some stuffs as label
+		msg.Labels.Set(keyNodeID, msMsg.NodeID)
+		switch msMsg.Command {
+
+		case CmdPresentation:
+			msg.Others.Set(fml.FieldLibraryVersion, msg.Payload, nil) // set lib version
+			if _type, ok := cmdPresentationTypeMapIn[msMsg.Type]; ok {
+				if _type == "S_ARDUINO_REPEATER_NODE" || _type == "S_ARDUINO_NODE" {
+					// this is a node data
+					msg.FieldName = fml.FieldName
+					if _type == "S_ARDUINO_REPEATER_NODE" {
+						msg.Labels.Set(keyNodeType, "repeater")
+					}
+				} else {
+					// return?
 				}
 			} else {
-				mcMsg.Field = msg.KeyName
-				mcMsg.Others[keyCmdType] = ms.Type
-				mcMsg.Others[KeyCmdTypeString] = _type
+				// return?
 			}
-		} else {
-			return nil, nil
+		case CmdInternal:
+			if _type, ok := cmdInternalTypeMapIn[msMsg.Type]; ok {
+				if fieldName, ok := cmdInternalFieldMap[_type]; ok {
+					msg.FieldName = fieldName
+					msg.Type = msgml.TypeSet
+				} else { // this will be implemented properly with functions call
+					msg.FieldName = _type
+					msg.Type = msgml.TypeInternal
+				}
+			} else {
+				// return?
+			}
 		}
+	default:
+		// if none of the above
 	}
-	return mcMsg, nil
+
+	return msg, nil
 }

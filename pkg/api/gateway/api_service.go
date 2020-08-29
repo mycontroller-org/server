@@ -1,51 +1,48 @@
 package gateway
 
 import (
+	"context"
 	"time"
 
-	gm "github.com/mycontroller-org/backend/pkg/gateway"
-	gms "github.com/mycontroller-org/backend/pkg/gateway/serial"
-	ml "github.com/mycontroller-org/backend/pkg/model"
-	gwml "github.com/mycontroller-org/backend/pkg/model/gateway"
-	svc "github.com/mycontroller-org/backend/pkg/service"
-	"github.com/mycontroller-org/backend/plugin/gateway_provider/mysensors"
+	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
+	gwpd "github.com/mycontroller-org/backend/v2/plugin/gateway_provider"
+	"github.com/mycontroller-org/backend/v2/plugin/gateway_provider/mysensors"
 	"go.uber.org/zap"
 )
 
 // Start gateway
-func Start(g *gwml.Config) error {
-
-	var parser gwml.MessageParser
-
-	switch g.Provider.Type {
-	case gwml.ProviderMySensors:
-		parser = &mysensors.Parser{Gateway: g}
-		// update serial message splitter
-		g.Provider.Config[gms.KeyMessageSplitter] = mysensors.SerialMessageSplitter
+func Start(gwCfg *gwml.Config) error {
+	var provider Provider
+	switch gwCfg.Provider.Type {
+	case gwpd.ProviderMySensors:
+		provider = &mysensors.Provider{GWConfig: gwCfg}
 	default:
-		zap.L().Info("Unknown provider", zap.Any("gateway", g))
+		zap.L().Info("Unknown provider", zap.Any("gateway", gwCfg))
 		return nil
 	}
-	s := &gwml.Service{
-		Config: g,
-		Parser: parser,
+	s := &Service{
+		Config:   gwCfg,
+		Provider: provider,
+		ctx:      context.TODO(),
 	}
 
-	err := gm.Start(s)
+	err := s.Start()
 	if err != nil {
-		zap.L().Info("Unable to start the gateway", zap.Any("gateway", g))
+		zap.L().Info("Unable to start the gateway", zap.Any("gateway", gwCfg))
 	} else {
-		svc.AddGatewayService(s)
+		AddGatewayService(s)
 	}
 
 	return nil
 }
 
 // Stop gateway
-func Stop(g *gwml.Config) error {
-	gs := svc.GetGatewayService(g)
+func Stop(gwCfg *gwml.Config) error {
+	gs := GetGatewayService(gwCfg)
 	if gs != nil {
-		err := gm.Stop(gs)
+		err := gs.Stop()
 		if err != nil {
 			zap.L().Error("Failed to stop media service", zap.Error(err))
 		}
@@ -54,20 +51,20 @@ func Stop(g *gwml.Config) error {
 }
 
 // Reload gateway
-func Reload(g *gwml.Config) error {
-	err := Stop(g)
+func Reload(gwCfg *gwml.Config) error {
+	err := Stop(gwCfg)
 	if err != nil {
 		return err
 	}
-	if g.Enabled {
-		err = Start(g)
+	if gwCfg.Enabled {
+		err = Start(gwCfg)
 	}
 	return err
 }
 
 // LoadGateways makes gateways alive
 func LoadGateways() {
-	gws, err := ListGateways(nil, ml.Pagination{})
+	gws, err := ListGateways(nil, pml.Pagination{})
 	if err != nil {
 		zap.L().Error("Error getting list of gateways", zap.Error(err))
 	}
@@ -92,7 +89,7 @@ func LoadGateways() {
 
 // UnloadGateways makes stop gateways
 func UnloadGateways() {
-	gws, err := ListGateways(nil, ml.Pagination{})
+	gws, err := ListGateways(nil, pml.Pagination{})
 	if err != nil {
 		zap.L().Error("Error getting list of gateways", zap.Error(err))
 	}

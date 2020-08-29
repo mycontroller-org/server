@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	svc "github.com/mycontroller-org/backend/pkg/service"
+	svc "github.com/mycontroller-org/backend/v2/pkg/service"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
 )

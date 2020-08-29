@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/mycontroller-org/backend/pkg/version"
+	"github.com/mycontroller-org/backend/v2/pkg/version"
 )
 
 func registerStatusRoutes(router *mux.Router) {

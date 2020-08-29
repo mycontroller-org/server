@@ -18,6 +18,7 @@ type WebConfig struct {
 
 // LoggerConfig input
 type LoggerConfig struct {
+	Mode     string         `yaml:"mode"`
 	Encoding string         `yaml:"encoding"`
 	Level    LogLevelConfig `yaml:"level"`
 }

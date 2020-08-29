@@ -1,13 +1,13 @@
-package service
+package gateway
 
 import (
-	gwml "github.com/mycontroller-org/backend/pkg/model/gateway"
+	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 )
 
-var gwService = map[string]*gwml.Service{}
+var gwService = map[string]*Service{}
 
 // AddGatewayService add
-func AddGatewayService(s *gwml.Service) {
+func AddGatewayService(s *Service) {
 	gwService[s.Config.ID] = s
 }
 
@@ -17,6 +17,6 @@ func RemoveGatewayService(g *gwml.Config) {
 }
 
 // GetGatewayService returns service
-func GetGatewayService(g *gwml.Config) *gwml.Service {
+func GetGatewayService(g *gwml.Config) *Service {
 	return gwService[g.ID]
 }

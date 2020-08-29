@@ -1,7 +1,7 @@
 package voiddb
 
 import (
-	sml "github.com/mycontroller-org/backend/pkg/model/sensor"
+	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 )
 
 // Client for voiddb
@@ -20,7 +20,7 @@ func (c *Client) Close() error { return nil }
 func (c *Client) Ping() error { return nil }
 
 // Write function
-func (c *Client) Write(variable *sml.SensorField) error { return nil }
+func (c *Client) Write(variable *fml.Field) error { return nil }
 
 // WriteBlocking function
-func (c *Client) WriteBlocking(variable *sml.SensorField) error { return nil }
+func (c *Client) WriteBlocking(variable *fml.Field) error { return nil }

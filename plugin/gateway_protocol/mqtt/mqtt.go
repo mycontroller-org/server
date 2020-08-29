@@ -4,28 +4,46 @@ import (
 	"time"
 
 	paho "github.com/eclipse/paho.mqtt.golang"
-	gwml "github.com/mycontroller-org/backend/pkg/model/gateway"
-	msg "github.com/mycontroller-org/backend/pkg/model/message"
-	ut "github.com/mycontroller-org/backend/pkg/util"
+	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	ut "github.com/mycontroller-org/backend/v2/pkg/util"
+	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gateway_protocol"
 
 	"go.uber.org/zap"
 )
 
+// Config data
+type Config struct {
+	Broker    string `json:"broker"`
+	Username  string `json:"username"`
+	Password  string `json:"-"`
+	Subscribe string `json:"subscribe"`
+	Publish   string `json:"publish"`
+	QoS       int    `json:"qos"`
+}
+
 // Endpoint data
 type Endpoint struct {
 	GwCfg          *gwml.Config
-	Config         gwml.ConfigMQTT
-	receiveMsgFunc func(rm *msg.RawMessage) error
+	Config         Config
+	receiveMsgFunc func(rm *msgml.RawMessage) error
 	Client         paho.Client
 }
 
 // New mqtt driver
-func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msg.RawMessage) error) (*Endpoint, error) {
+func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
 	start := time.Now()
-	cfg := gwml.ConfigMQTT{}
+	cfg := Config{}
 	err := ut.MapToStruct(ut.TagNameNone, gwCfg.Provider.Config, &cfg)
 	if err != nil {
 		return nil, err
+	}
+
+	// endpoint
+	d := &Endpoint{
+		GwCfg:          gwCfg,
+		Config:         cfg,
+		receiveMsgFunc: rxMsgFunc,
 	}
 
 	opts := paho.NewClientOptions()
@@ -35,8 +53,8 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msg.RawMessage) error) (*Endpoin
 	opts.SetClientID(ut.RandID())
 	opts.SetCleanSession(false)
 	opts.SetAutoReconnect(true)
-	opts.SetOnConnectHandler(onConnectionHandler)
-	opts.SetConnectionLostHandler(onConnectionLostHandler)
+	opts.SetOnConnectHandler(d.onConnectionHandler)
+	opts.SetConnectionLostHandler(d.onConnectionLostHandler)
 
 	c := paho.NewClient(opts)
 	token := c.Connect()
@@ -46,12 +64,8 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msg.RawMessage) error) (*Endpoin
 		return nil, err
 	}
 
-	d := &Endpoint{
-		GwCfg:          gwCfg,
-		Config:         cfg,
-		Client:         c,
-		receiveMsgFunc: rxMsgFunc,
-	}
+	// adding client
+	d.Client = c
 
 	err = d.Subscribe(cfg.Subscribe)
 	if err != nil {
@@ -61,20 +75,20 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msg.RawMessage) error) (*Endpoin
 	return d, nil
 }
 
-func onConnectionHandler(c paho.Client) {
-	zap.L().Debug("MQTT connection success")
+func (d *Endpoint) onConnectionHandler(c paho.Client) {
+	zap.L().Debug("MQTT connection success", zap.Any("gateway", d.GwCfg.Name))
 }
 
-func onConnectionLostHandler(c paho.Client, err error) {
-	zap.L().Error("MQTT connection lost", zap.Error(err))
+func (d *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
+	zap.L().Error("MQTT connection lost", zap.Any("gateway", d.GwCfg.Name), zap.Error(err))
 }
 
 // Write publishes a payload
-func (d *Endpoint) Write(rm *msg.RawMessage) error {
-	topics := rm.Others[msg.KeyTopic].([]string)
+func (d *Endpoint) Write(rawMsg *msgml.RawMessage) error {
+	topics := rawMsg.Others.Get(gwptcl.KeyTopic).([]string)
 	qos := byte(d.Config.QoS)
 	for _, t := range topics {
-		token := d.Client.Publish(t, qos, false, rm.Data)
+		token := d.Client.Publish(t, qos, false, rawMsg.Data)
 		if token.Error() != nil {
 			return token.Error()
 		}
@@ -87,24 +101,24 @@ func (d *Endpoint) Close() error {
 	if d.Client.IsConnected() {
 		d.Client.Unsubscribe(d.Config.Subscribe)
 		d.Client.Disconnect(0)
-		zap.L().Debug("MQTT Client connection closed", zap.Any("endpoint", d.Config))
+		zap.L().Debug("MQTT Client connection closed", zap.String("gateway", d.GwCfg.Name))
 	}
 	return nil
 }
 
 func (d *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 	return func(c paho.Client, message paho.Message) {
-		m := &msg.RawMessage{
+		rawMsg := &msgml.RawMessage{
 			Data:      message.Payload(),
 			Timestamp: time.Now(),
 			Others: map[string]interface{}{
-				msg.KeyTopic: message.Topic(),
-				msg.KeyQoS:   int(message.Qos()),
+				gwptcl.KeyTopic: message.Topic(),
+				gwptcl.KeyQoS:   int(message.Qos()),
 			},
 		}
-		err := d.receiveMsgFunc(m)
+		err := d.receiveMsgFunc(rawMsg)
 		if err != nil {
-			zap.L().Error("Failed to send message to queue", zap.Any("rawMessage", m), zap.Error(err))
+			zap.L().Error("Failed to send message to queue", zap.String("gateway", d.GwCfg.Name), zap.Any("rawMessage", rawMsg), zap.Error(err))
 		}
 	}
 }

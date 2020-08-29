@@ -2,12 +2,12 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	ml "github.com/mycontroller-org/backend/pkg/model"
-	sml "github.com/mycontroller-org/backend/pkg/model/sensor"
+	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
+	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 )
 
 func registerSensorRoutes(router *mux.Router) {
@@ -25,13 +25,10 @@ func getSensor(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateSensor(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]ml.Filter) error {
+	bwFunc := func(d interface{}, f *[]pml.Filter) error {
 		e := d.(*sml.Sensor)
 		if e.ID == "" {
-			if e.GatewayID == "" || e.NodeID == "" || e.ShortID == "" {
-				return errors.New("GatewayID, NodeId or ShortID field should not be empty")
-			}
-			e.ID = fmt.Sprintf("%s_%s_%s", e.GatewayID, e.NodeID, e.ShortID)
+			return errors.New("ID field should not be empty")
 		}
 		return nil
 	}

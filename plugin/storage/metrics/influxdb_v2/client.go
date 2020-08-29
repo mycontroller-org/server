@@ -9,11 +9,10 @@ import (
 	"sync"
 	"time"
 
-	influxdb2 "github.com/influxdata/influxdb-client-go"
-	"github.com/influxdata/influxdb-client-go/api/write"
-	msg "github.com/mycontroller-org/backend/pkg/model/message"
-	sml "github.com/mycontroller-org/backend/pkg/model/sensor"
-	"github.com/mycontroller-org/backend/pkg/util"
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api/write"
+	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	ut "github.com/mycontroller-org/backend/v2/pkg/util"
 	"go.uber.org/zap"
 )
 
@@ -40,14 +39,14 @@ type Client struct {
 	Client  influxdb2.Client
 	Config  Config
 	stop    chan bool
-	buffer  []*sml.SensorField
+	buffer  []*fml.Field
 	rwMutex *sync.RWMutex
 }
 
 // NewClient of influxdb
 func NewClient(config map[string]interface{}) (*Client, error) {
 	cfg := Config{}
-	err := util.MapToStruct(util.TagNameYaml, config, &cfg)
+	err := ut.MapToStruct(ut.TagNameYaml, config, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +73,7 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 	c := &Client{
 		Config:  cfg,
 		Client:  iClient,
-		buffer:  make([]*sml.SensorField, 0),
+		buffer:  make([]*fml.Field, 0),
 		stop:    make(chan bool),
 		rwMutex: &sync.RWMutex{},
 	}
@@ -106,41 +105,44 @@ func (c *Client) Close() error {
 }
 
 // WriteBlocking implementation
-func (c *Client) WriteBlocking(sf *sml.SensorField) error {
-	p, err := getPoint(sf)
+func (c *Client) WriteBlocking(field *fml.Field) error {
+	p, err := getPoint(field)
 	if err != nil {
 		return err
 	}
-	wb := c.Client.WriteApiBlocking(c.Config.Organization, c.Config.Bucket)
+	wb := c.Client.WriteAPIBlocking(c.Config.Organization, c.Config.Bucket)
 	return wb.WritePoint(ctx, p)
 }
 
-func (c *Client) Write(sf *sml.SensorField) error {
-	p, err := getPoint(sf)
+func (c *Client) Write(field *fml.Field) error {
+	p, err := getPoint(field)
 	if err != nil {
 		return err
 	}
-	w := c.Client.WriteApi(c.Config.Organization, c.Config.Bucket)
+	w := c.Client.WriteAPI(c.Config.Organization, c.Config.Bucket)
 	w.WritePoint(p)
 	return nil
 }
 
-func getPoint(sf *sml.SensorField) (*write.Point, error) {
+func getPoint(field *fml.Field) (*write.Point, error) {
 	fields := make(map[string]interface{})
-	if sf.PayloadType == msg.PayloadTypeGeo {
-		_f, err := geoData(sf.Payload)
+	if field.Type == fml.MetricTypeGEO {
+		_f, err := geoData(field.Payload)
 		if err != nil {
 			return nil, err
 		}
 		fields = _f
 	} else {
-		fields["value"] = sf.Payload
+		fields["value"] = field.Payload
 	}
-	p := influxdb2.NewPoint(measurementName(sf.PayloadType),
-		// "gateway": sf.GatewayID, "node": sf.NodeID, "sensor": sf.SensorID,
-		map[string]string{"gateway": sf.GatewayID, "node": sf.NodeID, "sensor": sf.SensorID, "id": sf.ID},
+	mt, err := measurementName(field.Type)
+	if err != nil {
+		return nil, err
+	}
+	p := influxdb2.NewPoint(mt,
+		map[string]string{"gateway": field.GatewayID, "node": field.NodeID, "sensor": field.SensorID, "id": field.ID},
 		fields,
-		sf.LastSeen,
+		field.LastSeen,
 	)
 	return p, nil
 }
@@ -176,19 +178,21 @@ func geoData(pl interface{}) (map[string]interface{}, error) {
 	return d, nil
 }
 
-func measurementName(payloadType string) string {
-	switch payloadType {
-	case msg.PayloadTypeBoolean:
-		return "binary_data"
-	case msg.PayloadTypeFloat:
-		return "float_data"
-	case msg.PayloadTypeInteger:
-		return "integer_data"
-	case msg.PayloadTypeString:
-		return "string_data"
-	case msg.PayloadTypeGeo:
-		return "geo_data"
+func measurementName(metricType string) (string, error) {
+	switch metricType {
+	case fml.MetricTypeBinary:
+		return "binary_data", nil
+	case fml.MetricTypeGauge:
+		return "gauge_int_data", nil
+	case fml.MetricTypeGaugeFloat:
+		return "gauge_float_data", nil
+	case fml.MetricTypeCounter:
+		return "counter_data", nil
+	case fml.MetricTypeNone:
+		return "string_data", nil
+	case fml.MetricTypeGEO:
+		return "geo_data", nil
 	default:
-		return "unknown_data_type"
+		return "", fmt.Errorf("Unknown metric type: %s", metricType)
 	}
 }

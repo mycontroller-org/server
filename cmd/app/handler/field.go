@@ -5,8 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	ml "github.com/mycontroller-org/backend/pkg/model"
-	sml "github.com/mycontroller-org/backend/pkg/model/sensor"
+	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 )
 
 func registerSensorFieldRoutes(router *mux.Router) {
@@ -16,20 +17,20 @@ func registerSensorFieldRoutes(router *mux.Router) {
 }
 
 func listSensorFields(w http.ResponseWriter, r *http.Request) {
-	findMany(w, r, ml.EntitySensorField, &[]sml.SensorField{})
+	findMany(w, r, ml.EntityField, &[]fml.Field{})
 }
 
 func getSensorField(w http.ResponseWriter, r *http.Request) {
-	findOne(w, r, ml.EntitySensorField, &sml.SensorField{})
+	findOne(w, r, ml.EntityField, &fml.Field{})
 }
 
 func updateSensorField(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]ml.Filter) error {
-		e := d.(*sml.SensorField)
+	bwFunc := func(d interface{}, f *[]pml.Filter) error {
+		e := d.(*fml.Field)
 		if e.ID == "" {
 			return errors.New("ID should not be an empty")
 		}
 		return nil
 	}
-	saveEntity(w, r, ml.EntitySensorField, &sml.SensorField{}, bwFunc)
+	saveEntity(w, r, ml.EntityField, &fml.Field{}, bwFunc)
 }

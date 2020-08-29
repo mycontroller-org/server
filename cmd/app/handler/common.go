@@ -8,11 +8,11 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	ml "github.com/mycontroller-org/backend/pkg/model"
-	svc "github.com/mycontroller-org/backend/pkg/service"
+	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
+	svc "github.com/mycontroller-org/backend/v2/pkg/service"
 )
 
-func params(r *http.Request) ([]ml.Filter, *ml.Pagination, error) {
+func params(r *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 	f := mux.Vars(r)
 	q := r.URL.Query()
 	for k, v := range q {
@@ -21,10 +21,10 @@ func params(r *http.Request) ([]ml.Filter, *ml.Pagination, error) {
 
 	// get Pagination arguments
 	// start with pagination default values
-	p := ml.Pagination{
+	p := pml.Pagination{
 		Limit:  50,
 		Offset: 0,
-		SortBy: []ml.Sort{},
+		SortBy: []pml.Sort{},
 	}
 
 	lFunc := func(k string) (int64, error) {
@@ -50,7 +50,7 @@ func params(r *http.Request) ([]ml.Filter, *ml.Pagination, error) {
 
 	// fetch sort options
 	if sr, ok := f["sortBy"]; ok {
-		s := &[]ml.Sort{}
+		s := &[]pml.Sort{}
 		err := json.Unmarshal([]byte(sr), s)
 		if err != nil {
 			return nil, nil, err
@@ -62,11 +62,11 @@ func params(r *http.Request) ([]ml.Filter, *ml.Pagination, error) {
 	delete(f, "offset")
 	delete(f, "sortBy")
 
-	filters := make([]ml.Filter, 0)
+	filters := make([]pml.Filter, 0)
 
 	for k, v := range f {
 		if k != "filter" {
-			filters = append(filters, ml.Filter{
+			filters = append(filters, pml.Filter{
 				Key:   k,
 				Value: v,
 			})
@@ -74,7 +74,7 @@ func params(r *http.Request) ([]ml.Filter, *ml.Pagination, error) {
 	}
 
 	if fj, ok := f["filter"]; ok {
-		fs := &[]ml.Filter{}
+		fs := &[]pml.Filter{}
 		err := json.Unmarshal([]byte(fj), fs)
 		if err != nil {
 			return nil, nil, err
@@ -151,7 +151,7 @@ func findMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 	w.Write(od)
 }
 
-func saveEntity(w http.ResponseWriter, r *http.Request, en string, e interface{}, bwFunc func(e interface{}, f *[]ml.Filter) error) {
+func saveEntity(w http.ResponseWriter, r *http.Request, en string, e interface{}, bwFunc func(e interface{}, f *[]pml.Filter) error) {
 	w.Header().Set("Content-Type", "application/json")
 
 	d, err := ioutil.ReadAll(r.Body)
@@ -165,7 +165,7 @@ func saveEntity(w http.ResponseWriter, r *http.Request, en string, e interface{}
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	f := make([]ml.Filter, 0)
+	f := make([]pml.Filter, 0)
 	if bwFunc != nil {
 		err = bwFunc(e, &f)
 		if err != nil {

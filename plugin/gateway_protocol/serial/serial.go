@@ -2,8 +2,8 @@ package serial
 
 import (
 	m2s "github.com/mitchellh/mapstructure"
-	gwml "github.com/mycontroller-org/backend/pkg/model/gateway"
-	msg "github.com/mycontroller-org/backend/pkg/model/message"
+	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	s "github.com/tarm/serial"
 )
 
@@ -23,12 +23,12 @@ type Config struct {
 type Endpoint struct {
 	GwCfg          *gwml.Config
 	Config         Config
-	receiveMsgFunc func(rm *msg.RawMessage) error
+	receiveMsgFunc func(rm *msgml.RawMessage) error
 	Port           *s.Port
 }
 
 // New serial client
-func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msg.RawMessage) error) (*Endpoint, error) {
+func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
 	var cfg Config
 	err := m2s.Decode(gwCfg.Provider.Config, &cfg)
 	if err != nil {
@@ -48,8 +48,8 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msg.RawMessage) error) (*Endpoin
 	return d, nil
 }
 
-func (d *Endpoint) Write(rm *msg.RawMessage) error {
-	_, err := d.Port.Write(rm.Data)
+func (d *Endpoint) Write(rawMsg *msgml.RawMessage) error {
+	_, err := d.Port.Write(rawMsg.Data)
 	return err
 }
 

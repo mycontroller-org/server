@@ -6,9 +6,8 @@ import (
 	"reflect"
 	"strings"
 
-	ml "github.com/mycontroller-org/backend/pkg/model"
-	"github.com/mycontroller-org/backend/pkg/util"
-	ut "github.com/mycontroller-org/backend/pkg/util"
+	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
+	ut "github.com/mycontroller-org/backend/v2/pkg/util"
 	"go.mongodb.org/mongo-driver/bson"
 	mg "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -32,7 +31,7 @@ type Client struct {
 // NewClient mongodb
 func NewClient(config map[string]interface{}) (*Client, error) {
 	cfg := Config{}
-	err := util.MapToStruct(util.TagNameNone, config, &cfg)
+	err := ut.MapToStruct(ut.TagNameNone, config, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +73,7 @@ func (c *Client) Insert(e string, d interface{}) error {
 }
 
 // Update the entity
-func (c *Client) Update(e string, f []ml.Filter, d interface{}) error {
+func (c *Client) Update(e string, f []pml.Filter, d interface{}) error {
 	if d == nil {
 		return errors.New("No data provided")
 	}
@@ -84,7 +83,7 @@ func (c *Client) Update(e string, f []ml.Filter, d interface{}) error {
 }
 
 // Upsert date into database
-func (c *Client) Upsert(e string, f []ml.Filter, d interface{}) error {
+func (c *Client) Upsert(e string, f []pml.Filter, d interface{}) error {
 	if d == nil {
 		return errors.New("No data provided")
 	}
@@ -106,7 +105,7 @@ func (c *Client) Upsert(e string, f []ml.Filter, d interface{}) error {
 }
 
 // FindOne returns data
-func (c *Client) FindOne(e string, f []ml.Filter, out interface{}) error {
+func (c *Client) FindOne(e string, f []pml.Filter, out interface{}) error {
 	cl := c.getCollection(e)
 	res := cl.FindOne(ctx, filter(f))
 	if res.Err() != nil {
@@ -116,7 +115,7 @@ func (c *Client) FindOne(e string, f []ml.Filter, out interface{}) error {
 }
 
 // Delete by filter
-func (c *Client) Delete(e string, f []ml.Filter) (int64, error) {
+func (c *Client) Delete(e string, f []pml.Filter) (int64, error) {
 	cl := c.getCollection(e)
 	fo := options.Delete()
 	dr, err := cl.DeleteMany(ctx, filter(f), fo)
@@ -127,14 +126,14 @@ func (c *Client) Delete(e string, f []ml.Filter) (int64, error) {
 }
 
 // Count returns available documents count from a collection
-func (c *Client) Count(e string, f []ml.Filter) (int64, error) {
+func (c *Client) Count(e string, f []pml.Filter) (int64, error) {
 	cl := c.getCollection(e)
 	bm := filter(f)
 	return cl.CountDocuments(ctx, bm)
 }
 
 // Distinct returns data
-func (c *Client) Distinct(e string, fn string, f []ml.Filter) ([]interface{}, error) {
+func (c *Client) Distinct(e string, fn string, f []pml.Filter) ([]interface{}, error) {
 	cl := c.getCollection(e)
 	rs, err := cl.Distinct(ctx, fn, filter(f))
 	if err != nil {
@@ -144,7 +143,7 @@ func (c *Client) Distinct(e string, fn string, f []ml.Filter) ([]interface{}, er
 }
 
 // Find returns data
-func (c *Client) Find(e string, f []ml.Filter, p ml.Pagination, out interface{}) error {
+func (c *Client) Find(e string, f []pml.Filter, p pml.Pagination, out interface{}) error {
 	ut.UpdatePagination(&p)
 	cl := c.getCollection(e)
 	sm := sort(p.SortBy)
@@ -171,14 +170,14 @@ func idFilter(d interface{}) *bson.M {
 	return &bson.M{"id": id}
 }
 
-func defaultFilter(f []ml.Filter, d interface{}) *bson.M {
+func defaultFilter(f []pml.Filter, d interface{}) *bson.M {
 	if f == nil || len(f) == 0 {
 		return idFilter(d)
 	}
 	return filter(f)
 }
 
-func filter(f []ml.Filter) *bson.M {
+func filter(f []pml.Filter) *bson.M {
 	bm := bson.M{}
 	if f == nil || len(f) == 0 {
 		return &bm
@@ -213,7 +212,7 @@ func filter(f []ml.Filter) *bson.M {
 	return &bm
 }
 
-func sort(s []ml.Sort) *bson.M {
+func sort(s []pml.Sort) *bson.M {
 	bm := bson.M{}
 	if s == nil || len(s) == 0 {
 		return &bm

@@ -4,9 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	ml "github.com/mycontroller-org/backend/pkg/model"
-	gwml "github.com/mycontroller-org/backend/pkg/model/gateway"
-	ut "github.com/mycontroller-org/backend/pkg/util"
+	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
+	ut "github.com/mycontroller-org/backend/v2/pkg/util"
 )
 
 func registerGatewayRoutes(router *mux.Router) {
@@ -24,7 +25,7 @@ func getGateway(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateGateway(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]ml.Filter) error {
+	bwFunc := func(d interface{}, f *[]pml.Filter) error {
 		e := d.(*gwml.Config)
 		if e.ID == "" {
 			e.ID = ut.RandID()

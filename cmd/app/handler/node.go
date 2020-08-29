@@ -2,12 +2,12 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	ml "github.com/mycontroller-org/backend/pkg/model"
-	nml "github.com/mycontroller-org/backend/pkg/model/node"
+	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 )
 
 func registerNodeRoutes(router *mux.Router) {
@@ -25,13 +25,10 @@ func getnode(w http.ResponseWriter, r *http.Request) {
 }
 
 func updatenode(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]ml.Filter) error {
+	bwFunc := func(d interface{}, f *[]pml.Filter) error {
 		e := d.(*nml.Node)
 		if e.ID == "" {
-			if e.GatewayID == "" || e.ShortID == "" {
-				return errors.New("GatewayID or ShortID field should not be empty")
-			}
-			e.ID = fmt.Sprintf("%s_%s", e.GatewayID, e.ShortID)
+			return errors.New("ID field should not be empty")
 		}
 		return nil
 	}

@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	sml "github.com/mycontroller-org/backend/pkg/model/sensor"
-	influx "github.com/mycontroller-org/backend/plugin/storage/metrics/influxdb_v2"
-	"github.com/mycontroller-org/backend/plugin/storage/metrics/voiddb"
+	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	influx "github.com/mycontroller-org/backend/v2/plugin/storage/metrics/influxdb_v2"
+	"github.com/mycontroller-org/backend/v2/plugin/storage/metrics/voiddb"
 )
 
 // Metrics database types
@@ -19,8 +19,8 @@ const (
 type Client interface {
 	Close() error
 	Ping() error
-	Write(variable *sml.SensorField) error
-	WriteBlocking(variable *sml.SensorField) error
+	Write(variable *fml.Field) error
+	WriteBlocking(variable *fml.Field) error
 }
 
 // Init metrics database

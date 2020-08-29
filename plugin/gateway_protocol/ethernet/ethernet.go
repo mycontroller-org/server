@@ -6,7 +6,7 @@ import (
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	m2s "github.com/mitchellh/mapstructure"
-	msg "github.com/mycontroller-org/backend/pkg/model/message"
+	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 )
 
 // Config details
@@ -50,8 +50,8 @@ func New(config map[string]interface{}, queue *q.BoundedQueue, gID string) (*End
 }
 
 // Write sends a payload
-func (d *Endpoint) Write(rm *msg.RawMessage) error {
-	_, err := d.Client.Write(rm.Data)
+func (d *Endpoint) Write(rawMsg *msgml.RawMessage) error {
+	_, err := d.Client.Write(rawMsg.Data)
 	return err
 }
 

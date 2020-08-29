@@ -5,19 +5,19 @@ import (
 	"flag"
 	"io/ioutil"
 
-	"github.com/mycontroller-org/backend/pkg/model/config"
-	"github.com/mycontroller-org/backend/pkg/scheduler"
-	"github.com/mycontroller-org/backend/pkg/storage"
-	ms "github.com/mycontroller-org/backend/pkg/storage/metrics"
-	"github.com/mycontroller-org/backend/pkg/util"
-	"github.com/mycontroller-org/backend/pkg/version"
+	cfgml "github.com/mycontroller-org/backend/v2/pkg/model/config"
+	"github.com/mycontroller-org/backend/v2/pkg/scheduler"
+	"github.com/mycontroller-org/backend/v2/pkg/storage"
+	ms "github.com/mycontroller-org/backend/v2/pkg/storage/metrics"
+	ut "github.com/mycontroller-org/backend/v2/pkg/util"
+	"github.com/mycontroller-org/backend/v2/pkg/version"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
 
 // services
 var (
-	CFG *config.Config
+	CFG *cfgml.Config
 	STG storage.Client
 	MTS ms.Client
 	SCH *scheduler.Scheduler
@@ -68,14 +68,14 @@ func Close() error {
 }
 
 func initLogger() {
-	logger := util.GetLogger(CFG.Logger.Level.Core, CFG.Logger.Encoding, false, 0)
+	logger := ut.GetLogger(CFG.Logger.Mode, CFG.Logger.Level.Core, CFG.Logger.Encoding, false, 0)
 	zap.ReplaceGlobals(logger)
 	zap.L().Info("Welcome to MyController.org server :)", zap.Any("version", version.Get()), zap.Any("loggerConfig", CFG.Logger))
 }
 
 func initConfig() {
 	// init a temp logger
-	logger := util.GetLogger("error", "console", false, 0)
+	logger := ut.GetLogger("development", "error", "console", false, 0)
 
 	cf := flag.String("config", "./config.yaml", "Configuration file")
 	flag.Parse()
