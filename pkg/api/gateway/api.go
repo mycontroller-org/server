@@ -8,15 +8,15 @@ import (
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
 )
 
-// ListGateways by filter and pagination
-func ListGateways(f []pml.Filter, p pml.Pagination) ([]gwml.Config, error) {
+// List by filter and pagination
+func List(f []pml.Filter, p pml.Pagination) ([]gwml.Config, error) {
 	out := make([]gwml.Config, 0)
 	svc.STG.Find(ml.EntityGateway, f, p, &out)
 	return out, nil
 }
 
-// GetGateway returns a gateway
-func GetGateway(f []pml.Filter) (gwml.Config, error) {
+// Get returns a gateway
+func Get(f []pml.Filter) (gwml.Config, error) {
 	out := gwml.Config{}
 	err := svc.STG.FindOne(ml.EntityGateway, f, &out)
 	return out, err

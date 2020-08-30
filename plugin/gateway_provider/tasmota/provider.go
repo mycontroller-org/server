@@ -1,11 +1,12 @@
-package mysensors
+package tasmota
 
 import (
+	"fmt"
+
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway_protocol"
 	"github.com/mycontroller-org/backend/v2/plugin/gateway_protocol/mqtt"
-	"github.com/mycontroller-org/backend/v2/plugin/gateway_protocol/serial"
 )
 
 // Provider implementation
@@ -27,12 +28,8 @@ func (p *Provider) Start(rxMessageFunc func(rawMsg *msgml.RawMessage) error) err
 		ms, _err := mqtt.New(p.GWConfig, rxMessageFunc)
 		err = _err
 		p.Gateway = ms
-	case gwpl.TypeSerial:
-		// update serial message splitter
-		p.GWConfig.Provider.Config[serial.KeyMessageSplitter] = serialMessageSplitter
-		ms, _err := serial.New(p.GWConfig, rxMessageFunc)
-		err = _err
-		p.Gateway = ms
+	default:
+		return fmt.Errorf("Protocol not implemented: %s", p.GWConfig.Provider.ProtocolType)
 	}
 	return err
 }

@@ -8,13 +8,15 @@ import (
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mustafaturan/bus"
+	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
+	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
+	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
 	"go.uber.org/zap"
@@ -74,11 +76,9 @@ func onMessageReceive(e *bus.Event) {
 
 		case msgml.TypeRequest: // request node specific data
 
-		case msgml.TypeInternal: // node internal commands
+		case msgml.TypeInternal, msgml.TypeStream: // providers will take care of internal and stream type messages
 			clonedMsg := msg.Clone() // clone the message
 			postMessage(clonedMsg)
-
-		case msgml.TypeStream: // for stream data
 
 		default:
 			zap.L().Warn("Message type not implemented for node", zap.String("type", msg.Type), zap.Any("message", msg))
@@ -91,15 +91,10 @@ func onMessageReceive(e *bus.Event) {
 
 // update node detail
 func updateNodeData(msg *msgml.Message) error {
-	nodeID := fmt.Sprintf("%s_%s", msg.GatewayID, msg.NodeID)
-	f := []pml.Filter{
-		{Key: "id", Operator: "eq", Value: nodeID},
-	}
-	node := &nml.Node{}
-	err := svc.STG.FindOne(ml.EntityNode, f, node)
+	node, err := nodeAPI.GetByIDs(msg.GatewayID, msg.NodeID)
 	if err != nil { // TODO: check entry availability on error message
 		node = &nml.Node{
-			ID:        nodeID,
+			ID:        nml.AssembleID(msg.GatewayID, msg.NodeID),
 			GatewayID: msg.GatewayID,
 		}
 	}
@@ -135,10 +130,10 @@ func updateNodeData(msg *msgml.Message) error {
 	node.Labels.CopyFrom(msg.Labels)
 	node.Others.CopyFrom(msg.Others, node.Labels)
 
-	// insert node data
-	err = svc.STG.Upsert(ml.EntityNode, f, node)
+	// save node data
+	nodeAPI.Save(node)
 	if err != nil {
-		zap.L().Error("Unable to update the node in to database", zap.Error(err), zap.Any("node", node))
+		zap.L().Error("Unable to update save the node data", zap.Error(err), zap.Any("node", node))
 		return err
 	}
 
@@ -146,15 +141,10 @@ func updateNodeData(msg *msgml.Message) error {
 }
 
 func updateSensorDetail(msg *msgml.Message) error {
-	sensorID := fmt.Sprintf("%s_%s_%s", msg.GatewayID, msg.NodeID, msg.SensorID)
-	f := []pml.Filter{
-		{Key: "id", Operator: "eq", Value: sensorID},
-	}
-	sensor := &sml.Sensor{}
-	err := svc.STG.FindOne(ml.EntitySensor, f, sensor)
+	sensor, err := sensorAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID)
 	if err != nil { // TODO: check entry availability on error message
 		sensor = &sml.Sensor{
-			ID:        sensorID,
+			ID:        sml.AssembleID(msg.GatewayID, msg.NodeID, msg.SensorID),
 			GatewayID: msg.GatewayID,
 			NodeID:    msg.NodeID,
 		}
@@ -181,7 +171,7 @@ func updateSensorDetail(msg *msgml.Message) error {
 	sensor.Labels.CopyFrom(msg.Labels)
 	sensor.Others.CopyFrom(msg.Others, sensor.Labels)
 
-	err = svc.STG.Upsert(ml.EntitySensor, f, sensor)
+	err = sensorAPI.Save(sensor)
 	if err != nil {
 		zap.L().Error("Unable to update the sensor in to database", zap.Error(err), zap.Any("sensor", sensor))
 		return err
@@ -228,16 +218,10 @@ func setReqFieldData(msg *msgml.Message, isRequest bool) error {
 		cPL = fml.Payload{Value: pl, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
 	}
 
-	fieldID := fmt.Sprintf("%s_%s_%s_%s", msg.GatewayID, msg.NodeID, msg.SensorID, msg.FieldName)
-
-	f := []pml.Filter{
-		{Key: "id", Operator: "eq", Value: fieldID},
-	}
-	field := &fml.Field{}
-	err := svc.STG.FindOne(ml.EntityField, f, field)
+	field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, msg.FieldName)
 	if err != nil { // TODO: check entry availability on error message
 		field = &fml.Field{
-			ID:        fieldID,
+			ID:        fml.AssembleID(msg.GatewayID, msg.NodeID, msg.SensorID, msg.FieldName),
 			GatewayID: msg.GatewayID,
 			NodeID:    msg.NodeID,
 			SensorID:  msg.SensorID,
@@ -284,7 +268,7 @@ func setReqFieldData(msg *msgml.Message, isRequest bool) error {
 	}
 
 	start := time.Now()
-	err = svc.STG.Upsert(ml.EntityField, f, field)
+	err = fieldAPI.Save(field)
 	if err != nil {
 		zap.L().Error("Failed to update field in to database", zap.Error(err), zap.Any("field", field))
 	} else {

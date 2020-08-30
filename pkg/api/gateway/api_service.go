@@ -64,7 +64,7 @@ func Reload(gwCfg *gwml.Config) error {
 
 // LoadGateways makes gateways alive
 func LoadGateways() {
-	gws, err := ListGateways(nil, pml.Pagination{})
+	gws, err := List(nil, pml.Pagination{})
 	if err != nil {
 		zap.L().Error("Error getting list of gateways", zap.Error(err))
 	}
@@ -89,7 +89,7 @@ func LoadGateways() {
 
 // UnloadGateways makes stop gateways
 func UnloadGateways() {
-	gws, err := ListGateways(nil, pml.Pagination{})
+	gws, err := List(nil, pml.Pagination{})
 	if err != nil {
 		zap.L().Error("Error getting list of gateways", zap.Error(err))
 	}

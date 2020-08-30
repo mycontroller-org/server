@@ -1,55 +1,51 @@
 package mysensors
 
 import (
-	"fmt"
-
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 )
 
-// Config key, will be used in gateway provider config
+// Labels used in this provider
 const (
-	KeyIsImperialSystem = "is_imperial_system"
-	idBroadcast         = "255"
-	payloadEmpty        = ""
-
-	// Others data key
-	OthersKeyNodeID = "nodeID"
-)
-
-// Command types and value
-const (
-	CmdPresentation = "0"
-	CmdSet          = "1"
-	CmdRequest      = "2"
-	CmdInternal     = "3"
-	CmdStream       = "4"
-)
-
-// Internal type details
-const (
-	TypeInternalTime             = "1"
-	TypeInternalIDResponse       = "4"
-	TypeInternalConfigResponse   = "6"
-	TypeInternalReboot           = "13"
-	TypeInternalHeartBeatRequest = "18"
-	TypeInternalPresentation     = "19"
-	TypeInternalDiscoverRequest  = "20"
+	LabelImperialSystem    = "ms_imperial_system"     // this is bool label, used to configure about the system metric or imperial
+	LabelNodeID            = "ms_node_id"             // MySensors node id
+	LabelSensorID          = "ms_sensor_id"           // MySensors sensor id
+	LabelType              = "ms_type"                // MySensors type reference, can be used for sensor fields
+	LabelTypeString        = "ms_type_string"         // MySensors type in string format
+	LabelNodeType          = "ms_node_type"           // MySensors node type
+	LabelLockedReason      = "ms_locked_reason"       // If the the node is locked, reason will be in this label
+	LabelEraseEEPROM       = "ms_erase_eeprom"        // Supports only for MYSBootloader, on a reboot of node, the node eeprom will be erased
+	LabelFirmwareTypeID    = "ms_firmware_type_id"    // MySensors firmware type id
+	LabelFirmwareVersionID = "ms_firmware_version_id" // MySensors firmware version id
 )
 
 // internal references
 const (
-	keyType         = "ms_type"
-	KeyTypeString   = "ms_type_string"
-	keyNodeType     = "ms_node_type"
-	keyNodeID       = "ms_node_id"
-	keySensorID     = "ms_sensor_id"
-	keyLockedReason = "ms_locked_reason"
-)
+	idBroadcast           = "255" // broadcast id in MySensors
+	payloadEmpty          = ""    // Empty payload
+	serialMessageSplitter = '\n'  // serial message spliter
 
-// Constants of MySensors
-const (
-	SerialMessageSplitter = '\n'
+	// Command types and value
+	cmdPresentation = "0"
+	cmdSet          = "1"
+	cmdRequest      = "2"
+	cmdInternal     = "3"
+	cmdStream       = "4"
+
+	// Internal type details
+	typeInternalTime             = "1"
+	typeInternalIDResponse       = "4"
+	typeInternalConfigResponse   = "6"
+	typeInternalReboot           = "13"
+	typeInternalHeartBeatRequest = "18"
+	typeInternalPresentation     = "19"
+	typeInternalDiscoverRequest  = "20"
+
+	// Stream type details
+	typeStreamFirmwareConfigRequest  = "0"
+	typeStreamFirmwareConfigResponse = "1"
+	typeStreamFirmwareRequest        = "2"
+	typeStreamFirmwareResponse       = "3"
 )
 
 // mysensors message data
@@ -63,23 +59,8 @@ type message struct {
 	Payload  string
 }
 
-func (ms *message) toRaw(isMQTT bool) string {
-	// raw message format
-	// node-id;child-sensor-id;command;ack;type;payload
-	if ms.NodeID == "" {
-		ms.NodeID = idBroadcast
-	}
-	if ms.SensorID == "" {
-		ms.SensorID = idBroadcast
-	}
-	if isMQTT {
-		return fmt.Sprintf("%s/%s/%s/%s/%s", ms.NodeID, ms.SensorID, ms.Command, ms.Ack, ms.Type)
-	}
-	return fmt.Sprintf("%s;%s;%s;%s;%s;%s\n", ms.NodeID, ms.SensorID, ms.Command, ms.Ack, ms.Type, ms.Payload)
-}
-
-// Command in map
-var cmdMapIn = map[string]string{
+// Command mapping on received messages
+var cmdMapForRx = map[string]string{
 	"0": msgml.TypePresentation,
 	"1": msgml.TypeSet,
 	"2": msgml.TypeRequest,
@@ -87,8 +68,8 @@ var cmdMapIn = map[string]string{
 	"4": msgml.TypeStream,
 }
 
-// Command out map
-var cmdMapOut = map[string]string{
+// Command mapping on transmit messages
+var cmdMapForTx = map[string]string{
 	msgml.TypePresentation: "0",
 	msgml.TypeSet:          "1",
 	msgml.TypeRequest:      "2",
@@ -96,7 +77,8 @@ var cmdMapOut = map[string]string{
 	msgml.TypeStream:       "4",
 }
 
-var cmdPresentationTypeMapIn = map[string]string{
+// Presentation type mapping for received messages
+var presentationTypeMapForRx = map[string]string{
 	"0":  "S_DOOR",
 	"1":  "S_MOTION",
 	"2":  "S_SMOKE",
@@ -139,7 +121,8 @@ var cmdPresentationTypeMapIn = map[string]string{
 	"39": "S_WATER_QUALITY",
 }
 
-var cmdSetReqFieldMapIn = map[string]string{
+// Set, Request type mapping for received messages
+var setReqFieldMapForRx = map[string]string{
 	"0":  "V_TEMP",
 	"1":  "V_HUM",
 	"2":  "V_STATUS",
@@ -199,13 +182,84 @@ var cmdSetReqFieldMapIn = map[string]string{
 	"56": "V_POWER_FACTOR",
 }
 
-// PayloadMetricTypeUnit struct
-type PayloadMetricTypeUnit struct{ Type, Unit string }
+// Stream message types mapping for received messages
+var streamTypeMapForRx = map[string]string{
+	"0": "ST_FIRMWARE_CONFIG_REQUEST",
+	"1": "ST_FIRMWARE_CONFIG_RESPONSE",
+	"2": "ST_FIRMWARE_REQUEST",
+	"3": "ST_FIRMWARE_RESPONSE",
+}
 
-// take unit details from
-// https://github.com/grafana/grafana/blob/v6.7.1/packages/grafana-data/src/valueFormats/categories.ts#L23
+// Internal message types mapping for received messages
+var internalTypeMapForRx = map[string]string{
+	"0":  "I_BATTERY_LEVEL",
+	"1":  "I_TIME",
+	"2":  "I_VERSION",
+	"3":  "I_ID_REQUEST",
+	"4":  "I_ID_RESPONSE",
+	"5":  "I_INCLUSION_MODE",
+	"6":  "I_CONFIG",
+	"7":  "I_FIND_PARENT",
+	"8":  "I_FIND_PARENT_RESPONSE",
+	"9":  "I_LOG_MESSAGE",
+	"10": "I_CHILDREN",
+	"11": "I_SKETCH_NAME",
+	"12": "I_SKETCH_VERSION",
+	"13": "I_REBOOT",
+	"14": "I_GATEWAY_READY",
+	"15": "I_SIGNING_PRESENTATION",
+	"16": "I_NONCE_REQUEST",
+	"17": "I_NONCE_RESPONSE",
+	"18": "I_HEARTBEAT_REQUEST",
+	"19": "I_PRESENTATION",
+	"20": "I_DISCOVER_REQUEST",
+	"21": "I_DISCOVER_RESPONSE",
+	"22": "I_HEARTBEAT_RESPONSE",
+	"23": "I_LOCKED",
+	"24": "I_PING",
+	"25": "I_PONG",
+	"26": "I_REGISTRATION_REQUEST",
+	"27": "I_REGISTRATION_RESPONSE",
+	"28": "I_DEBUG",
+	"29": "I_SIGNAL_REPORT_REQUEST",
+	"30": "I_SIGNAL_REPORT_REVERSE",
+	"31": "I_SIGNAL_REPORT_RESPONSE",
+	"32": "I_PRE_SLEEP_NOTIFICATION",
+	"33": "I_POST_SLEEP_NOTIFICATION",
+}
 
-// id map
+// messages received from this internal type considered as a field data on the node
+// Example battery level, isLocked?, RSSI, etc...
+var internalValidFields = map[string]string{
+	"I_BATTERY_LEVEL":          fml.FieldBatteryLevel,
+	"I_DISCOVER_RESPONSE":      fml.FieldParentID,
+	"I_HEARTBEAT_RESPONSE":     fml.FieldHeartbeat,
+	"I_LOCKED":                 fml.FieldLocked,
+	"I_SIGNAL_REPORT_RESPONSE": fml.FieldSignalStrength,
+	"I_SKETCH_NAME":            fml.FieldName,
+	"I_SKETCH_VERSION":         fml.FieldVersion,
+	"I_VERSION":                fml.FieldLibraryVersion,
+}
+
+// MySensors should implement globally defined features for the request
+// Some of the request could be very specific to MySensors
+// Those features should be filtered here and should be implemented
+// Other than this list all other requests will be ignored
+var internalValidRequests = []string{
+	// internal message type request
+	"I_CONFIG",
+	"I_ID_REQUEST",
+	"I_TIME",
+
+	// stream message type requests
+	"ST_FIRMWARE_CONFIG_REQUEST",
+}
+
+// this struct used to construct payload metric type and unit
+type payloadMetricTypeUnit struct{ Type, Unit string }
+
+// MyController follows unit details from grafana, take unit details from here
+// Source: https://github.com/grafana/grafana/blob/v6.7.1/packages/grafana-data/src/valueFormats/categories.ts#L23
 const (
 	unitNone     = "none"
 	unitCelsius  = "celsius"
@@ -215,7 +269,8 @@ const (
 	unitAmpere   = "amp"
 )
 
-var metricTypeUnit = map[string]PayloadMetricTypeUnit{
+// map default metric types unit types for the fields
+var metricTypeAndUnit = map[string]payloadMetricTypeUnit{
 	"V_TEMP":               {fml.MetricTypeGaugeFloat, unitCelsius},
 	"V_HUM":                {fml.MetricTypeGaugeFloat, unitHumidity},
 	"V_STATUS":             {fml.MetricTypeBinary, unitNone},
@@ -273,58 +328,4 @@ var metricTypeUnit = map[string]PayloadMetricTypeUnit{
 	"V_VAR":                {fml.MetricTypeGaugeFloat, unitNone},
 	"V_VA":                 {fml.MetricTypeGaugeFloat, unitNone},
 	"V_POWER_FACTOR":       {fml.MetricTypeGaugeFloat, unitNone},
-}
-
-var cmdInternalTypeMapIn = map[string]string{
-	"0":  "I_BATTERY_LEVEL",
-	"1":  "I_TIME",
-	"2":  "I_VERSION",
-	"3":  "I_ID_REQUEST",
-	"4":  "I_ID_RESPONSE",
-	"5":  "I_INCLUSION_MODE",
-	"6":  "I_CONFIG",
-	"7":  "I_FIND_PARENT",
-	"8":  "I_FIND_PARENT_RESPONSE",
-	"9":  "I_LOG_MESSAGE",
-	"10": "I_CHILDREN",
-	"11": "I_SKETCH_NAME",
-	"12": "I_SKETCH_VERSION",
-	"13": "I_REBOOT",
-	"14": "I_GATEWAY_READY",
-	"15": "I_SIGNING_PRESENTATION",
-	"16": "I_NONCE_REQUEST",
-	"17": "I_NONCE_RESPONSE",
-	"18": "I_HEARTBEAT_REQUEST",
-	"19": "I_PRESENTATION",
-	"20": "I_DISCOVER_REQUEST",
-	"21": "I_DISCOVER_RESPONSE",
-	"22": "I_HEARTBEAT_RESPONSE",
-	"23": "I_LOCKED",
-	"24": "I_PING",
-	"25": "I_PONG",
-	"26": "I_REGISTRATION_REQUEST",
-	"27": "I_REGISTRATION_RESPONSE",
-	"28": "I_DEBUG",
-	"29": "I_SIGNAL_REPORT_REQUEST",
-	"30": "I_SIGNAL_REPORT_REVERSE",
-	"31": "I_SIGNAL_REPORT_RESPONSE",
-	"32": "I_PRE_SLEEP_NOTIFICATION",
-	"33": "I_POST_SLEEP_NOTIFICATION",
-}
-
-var internalValidFields = map[string]string{
-	"I_BATTERY_LEVEL":          fml.FieldBatteryLevel,
-	"I_DISCOVER_RESPONSE":      fml.FieldParentID,
-	"I_HEARTBEAT_RESPONSE":     fml.FieldHeartbeat,
-	"I_LOCKED":                 fml.FieldLocked,
-	"I_SIGNAL_REPORT_RESPONSE": fml.FieldSignalStrength,
-	"I_SKETCH_NAME":            fml.FieldName,
-	"I_SKETCH_VERSION":         fml.FieldVersion,
-	"I_VERSION":                fml.FieldLibraryVersion,
-}
-
-var internalValidRequests = []string{
-	"I_CONFIG",
-	"I_ID_REQUEST",
-	"I_TIME",
 }

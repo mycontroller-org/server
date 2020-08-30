@@ -66,7 +66,7 @@ func (csm CustomStringMap) CopyFrom(another CustomStringMap) {
 func (csm CustomStringMap) GetBool(key string) bool {
 	v, err := strconv.ParseBool(strings.ToLower(csm.Get(key)))
 	if err != nil {
-		// TODO: needs tp passit to logger?
+		// TODO: needs to pass it to logger?
 	}
 	return v
 }
@@ -75,7 +75,7 @@ func (csm CustomStringMap) GetBool(key string) bool {
 func (csm CustomStringMap) GetInt(key string) int {
 	v, err := strconv.ParseInt(csm.Get(key), 10, 64)
 	if err != nil {
-		// TODO: needs tp passit to logger?
+		// TODO: needs to pass it to logger?
 	}
 	return int(v)
 }
@@ -84,7 +84,7 @@ func (csm CustomStringMap) GetInt(key string) int {
 func (csm CustomStringMap) GetFloat(key string) float64 {
 	v, err := strconv.ParseFloat(csm.Get(key), 64)
 	if err != nil {
-		// TODO: needs tp passit to logger?
+		// TODO: needs to pass it to logger?
 	}
 	return v
 }

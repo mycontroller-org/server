@@ -8,24 +8,38 @@ import (
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
 )
 
-// ListNodes by filter and pagination
-func ListNodes(f []pml.Filter, p pml.Pagination) ([]nml.Node, error) {
+// List by filter and pagination
+func List(f []pml.Filter, p pml.Pagination) ([]nml.Node, error) {
 	out := make([]nml.Node, 0)
 	svc.STG.Find(ml.EntityNode, f, p, &out)
 	return out, nil
 }
 
-// GetNode returns a Node
-func GetNode(f []pml.Filter) (nml.Node, error) {
+// Get returns a Node
+func Get(f []pml.Filter) (nml.Node, error) {
 	out := nml.Node{}
 	err := svc.STG.FindOne(ml.EntityNode, f, &out)
 	return out, err
 }
 
 // Save Node config into disk
-func Save(g *nml.Node) error {
-	if g.ID == "" {
-		g.ID = ut.RandID()
+func Save(node *nml.Node) error {
+	if node.ID == "" {
+		node.ID = ut.RandID()
 	}
-	return svc.STG.Upsert(ml.EntityNode, nil, g)
+	f := []pml.Filter{
+		{Key: "id", Operator: "eq", Value: node.ID},
+	}
+	return svc.STG.Upsert(ml.EntityNode, f, node)
+}
+
+// GetByIDs returns a node details by gatewayID and nodeId of a message
+func GetByIDs(gatewayID, nodeID string) (*nml.Node, error) {
+	id := nml.AssembleID(gatewayID, nodeID)
+	f := []pml.Filter{
+		{Key: "id", Operator: "eq", Value: id},
+	}
+	out := &nml.Node{}
+	err := svc.STG.FindOne(ml.EntityNode, f, out)
+	return out, err
 }

@@ -1,6 +1,7 @@
 package node
 
 import (
+	"fmt"
 	"time"
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
@@ -9,11 +10,17 @@ import (
 
 // Node functions
 const (
-	FuncReboot          = "reboot"
-	FuncReset           = "reset"
 	FuncDiscover        = "discover"
-	FuncRefreshNodeInfo = "refresh_node_info"
+	FuncFirmwareUpdate  = "firmware_update"
 	FuncHeartbeat       = "heartbeat"
+	FuncReboot          = "reboot"
+	FuncRefreshNodeInfo = "refresh_node_info"
+	FuncReset           = "reset"
+)
+
+// Known labels
+const (
+	LabelAssignedFirmware = "assigned_firmware" // id of the assigned firmware
 )
 
 // Node model
@@ -25,4 +32,9 @@ type Node struct {
 	Others    cmap.CustomMap       `json:"others"`
 	Status    ml.State             `json:"status"`
 	LastSeen  time.Time            `json:"lastSeen"`
+}
+
+// AssembleID forms actual ID using the supplied gatewayID and nodeID
+func AssembleID(gatewayID, nodeID string) string {
+	return fmt.Sprintf("%s_%s", gatewayID, nodeID)
 }

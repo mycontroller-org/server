@@ -17,3 +17,11 @@ type State struct {
 	Message string    `json:"message"`
 	Since   time.Time `json:"since"`
 }
+
+// File struct
+type File struct {
+	Name         string    `json:"name"`
+	Size         int64     `json:"size"`
+	ModifiedTime time.Time `json:"modifiedTime"`
+	Data         string    `json:"data"`
+}

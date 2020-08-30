@@ -47,17 +47,17 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	switch msg.Type {
 
 	case msgml.TypeSet:
-		msMsg.Command = CmdSet
-		msMsg.Type = msg.Labels.Get(keyType)
+		msMsg.Command = cmdSet
+		msMsg.Type = msg.Labels.Get(LabelType)
 
 	case msgml.TypeRequest:
-		msMsg.Command = CmdRequest
-		msMsg.Type = msg.Labels.Get(keyType)
+		msMsg.Command = cmdRequest
+		msMsg.Type = msg.Labels.Get(LabelType)
 
-	case msgml.TypeInternal:
-		msMsg.Command = CmdInternal
+	case msgml.TypeInternal, msgml.TypeStream:
+		msMsg.Command = cmdInternal
 		// call functions
-		err := handleInternalFunctions(p.GWConfig, msg.FieldName, &msMsg)
+		err := handleRequests(p.GWConfig, msg.FieldName, msg, &msMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -73,11 +73,11 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	// create rawMessage
 	switch p.GWConfig.Provider.ProtocolType {
 	case gwpl.TypeSerial, gwpl.TypeEthernet:
-		rawMsg.Data = []byte(msMsg.toRaw(false))
+		rawMsg.Data = []byte(msMsg.toMySensorsRaw(false))
 
 	case gwpl.TypeMQTT:
 		rawMsg.Data = []byte(msMsg.Payload)
-		rawMsg.Others.Set(gwpl.KeyTopic, []string{msMsg.toRaw(true)}, nil)
+		rawMsg.Others.Set(gwpl.KeyTopic, []string{msMsg.toMySensorsRaw(true)}, nil)
 
 	default:
 		return nil, fmt.Errorf("This protocol not implemented: %s", p.GWConfig.Provider.ProtocolType)
@@ -137,7 +137,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 		IsReceived: true,
 		Timestamp:  rawMsg.Timestamp,
 		Payload:    msMsg.Payload,
-		Type:       cmdMapIn[msMsg.Command],
+		Type:       cmdMapForRx[msMsg.Command],
 	}
 
 	// init labels and others
@@ -155,20 +155,26 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 	}
 
 	// set labels
-	msg.Labels.Set(keyType, msMsg.Type)
+	msg.Labels.Set(LabelType, msMsg.Type)
+	if msg.NodeID != "" { // set node id if available
+		msg.Labels.Set(LabelNodeID, msg.NodeID)
+	}
+	if msg.SensorID != "" { // set sensor id if available
+		msg.Labels.Set(LabelSensorID, msg.SensorID)
+	}
 
 	// internal functions
 	updateFieldData := func() error {
-		_field, ok := cmdSetReqFieldMapIn[msMsg.Type]
+		_field, ok := setReqFieldMapForRx[msMsg.Type]
 		if ok {
-			msg.Labels.Set(KeyTypeString, _field)
+			msg.Labels.Set(LabelTypeString, _field)
 		} else {
 			_field = "V_CUSTOM"
 			zap.L().Warn("This set, req not found. update this. Setting as V_CUSTOM", zap.Any("msMsg", msMsg))
 		}
 
 		// get type and unit
-		if typeUnit, ok := metricTypeUnit[_field]; ok {
+		if typeUnit, ok := metricTypeAndUnit[_field]; ok {
 			msg.FieldName = _field
 			msg.MetricType = typeUnit.Type
 			msg.Unit = typeUnit.Unit
@@ -180,25 +186,25 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 
 	if msg.IsReceived && msg.IsAck { // process acknowledgement message
 		// MySensors support ack message only for field/variable level, not for others
-		if msMsg.SensorID != idBroadcast && (msMsg.Command == CmdSet || msMsg.Command == CmdRequest) {
+		if msMsg.SensorID != idBroadcast && (msMsg.Command == cmdSet || msMsg.Command == cmdRequest) {
 			err := updateFieldData()
 			if err != nil {
 				return nil, err
 			}
 			return msg, nil
-		} else if msMsg.NodeID != idBroadcast && msMsg.Command == CmdInternal {
+		} else if msMsg.NodeID != idBroadcast && msMsg.Command == cmdInternal {
 			switch msMsg.Type { // valid only for this list
-			case TypeInternalConfigResponse:
+			case typeInternalConfigResponse:
 				msg.FieldName = "I_CONFIG"
-			case TypeInternalHeartBeatRequest:
+			case typeInternalHeartBeatRequest:
 				msg.FieldName = nml.FuncHeartbeat
-			case TypeInternalIDResponse:
+			case typeInternalIDResponse:
 				msg.FieldName = "I_ID_REQUEST"
-			case TypeInternalPresentation:
+			case typeInternalPresentation:
 				msg.FieldName = nml.FuncRefreshNodeInfo
-			case TypeInternalReboot:
+			case typeInternalReboot:
 				msg.FieldName = nml.FuncReboot
-			case TypeInternalTime:
+			case typeInternalTime:
 				msg.FieldName = "I_TIME"
 			default:
 				// leave it, will fail at the end of root if
@@ -206,7 +212,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 			if msg.FieldName != "" {
 				return msg, nil
 			}
-		} else if msMsg.Command == CmdStream {
+		} else if msMsg.Command == cmdStream {
 			// TODO: for streaming
 			return nil, errors.New("Streaming ack support not implemented")
 		}
@@ -218,20 +224,16 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 	switch {
 
 	case msMsg.SensorID != idBroadcast: // perform sensor related stuff
-		// update some stuffs as label
-		msg.Labels.Set(keyNodeID, msMsg.NodeID)
-		msg.Labels.Set(keySensorID, msMsg.SensorID)
-
 		switch msMsg.Command {
-		case CmdPresentation:
-			if _type, ok := cmdPresentationTypeMapIn[msMsg.Type]; ok {
+		case cmdPresentation:
+			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
 				msg.FieldName = fml.FieldName
-				msg.Labels.Set(KeyTypeString, _type)
+				msg.Labels.Set(LabelTypeString, _type)
 			} else {
 				// not supported? should I have to return from here?
 			}
 
-		case CmdSet, CmdRequest:
+		case cmdSet, cmdRequest:
 			err := updateFieldData()
 			if err != nil {
 				return nil, err
@@ -242,18 +244,16 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 		}
 
 	case msMsg.NodeID != idBroadcast: // perform node related stuff
-		// update some stuffs as label
-		msg.Labels.Set(keyNodeID, msMsg.NodeID)
 		switch msMsg.Command {
 
-		case CmdPresentation:
+		case cmdPresentation:
 			msg.Others.Set(fml.FieldLibraryVersion, msg.Payload, nil) // set lib version
-			if _type, ok := cmdPresentationTypeMapIn[msMsg.Type]; ok {
+			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
 				if _type == "S_ARDUINO_REPEATER_NODE" || _type == "S_ARDUINO_NODE" {
 					// this is a node data
 					msg.FieldName = fml.FieldName
 					if _type == "S_ARDUINO_REPEATER_NODE" {
-						msg.Labels.Set(keyNodeType, "repeater")
+						msg.Labels.Set(LabelNodeType, "repeater")
 					}
 				} else {
 					// return?
@@ -261,13 +261,13 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 			} else {
 				// return?
 			}
-		case CmdInternal:
-			if _type, ok := cmdInternalTypeMapIn[msMsg.Type]; ok {
+		case cmdInternal:
+			if _type, ok := internalTypeMapForRx[msMsg.Type]; ok {
 				if fieldName, ok := internalValidFields[_type]; ok {
 					msg.FieldName = fieldName
 					msg.Type = msgml.TypeSet
 					if fieldName == fml.FieldLocked { // update locked reason
-						msg.Others.Set(keyLockedReason, msg.Payload, nil)
+						msg.Others.Set(LabelLockedReason, msg.Payload, nil)
 						msg.Payload = "true"
 					}
 				} else {
@@ -281,7 +281,21 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 					}
 				}
 			} else {
-				// return?
+				return nil, fmt.Errorf("Message internal type not found: %s", msMsg.Type)
+			}
+
+		case cmdStream:
+			if _type, ok := streamTypeMapForRx[msMsg.Type]; ok {
+				msg.Type = msgml.TypeStream
+				msg.FieldName = _type
+
+				// filter implemented requests
+				_, found := util.FindItem(internalValidRequests, _type)
+				if !found {
+					return nil, fmt.Errorf("This stream message handling not implemented: %s", _type)
+				}
+			} else {
+				return nil, fmt.Errorf("Message stream type not found: %s", msMsg.Type)
 			}
 		}
 	default:
@@ -289,4 +303,20 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 	}
 
 	return msg, nil
+}
+
+// converts message to MySensors specific type
+func (ms *message) toMySensorsRaw(isMQTT bool) string {
+	// raw message format
+	// node-id;child-sensor-id;command;ack;type;payload
+	if ms.NodeID == "" {
+		ms.NodeID = idBroadcast
+	}
+	if ms.SensorID == "" {
+		ms.SensorID = idBroadcast
+	}
+	if isMQTT {
+		return fmt.Sprintf("%s/%s/%s/%s/%s", ms.NodeID, ms.SensorID, ms.Command, ms.Ack, ms.Type)
+	}
+	return fmt.Sprintf("%s;%s;%s;%s;%s;%s\n", ms.NodeID, ms.SensorID, ms.Command, ms.Ack, ms.Type, ms.Payload)
 }
