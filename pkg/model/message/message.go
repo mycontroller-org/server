@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
 
 // Message definition
@@ -24,8 +24,8 @@ type Message struct {
 	IsAckEnabled  bool   // Is Acknowledge enabled?
 	IsPassiveNode bool   // Is this message for passive node or sleeping node?
 	Timestamp     time.Time
-	Labels        ml.CustomStringMap
-	Others        ml.CustomMap
+	Labels        cmap.CustomStringMap
+	Others        cmap.CustomMap
 }
 
 // Clone a message
@@ -80,7 +80,7 @@ type RawMessage struct {
 	ID        string
 	Data      []byte
 	Timestamp time.Time
-	Others    ml.CustomMap
+	Others    cmap.CustomMap
 }
 
 // MarshalJSON for RawMessage, Data should be printed as string on the log

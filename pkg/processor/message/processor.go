@@ -10,6 +10,7 @@ import (
 	"github.com/mustafaturan/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
@@ -251,16 +252,16 @@ func setReqFieldData(msg *msgml.Message, isRequest bool) error {
 	field.Others = field.Others.Init()
 
 	// update name
-	if !field.Labels.GetBool(ml.GetIgnoreKey(fml.FieldName)) {
+	if !field.Labels.GetBool(cmap.GetIgnoreKey(fml.FieldName)) {
 		field.Name = msg.FieldName
 	}
 
 	// update type
-	if !field.Labels.GetBool(ml.GetIgnoreKey(fml.FieldType)) {
+	if !field.Labels.GetBool(cmap.GetIgnoreKey(fml.FieldType)) {
 		field.MetricType = msg.MetricType
 	}
 	// update unit
-	if !field.Labels.GetBool(ml.GetIgnoreKey(fml.FieldUnit)) {
+	if !field.Labels.GetBool(cmap.GetIgnoreKey(fml.FieldUnit)) {
 		field.Unit = msg.Unit
 	}
 

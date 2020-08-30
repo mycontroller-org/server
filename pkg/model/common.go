@@ -4,11 +4,6 @@ import (
 	"time"
 )
 
-// config map keys
-const (
-	CFGUpdateName = "updateName"
-)
-
 // State
 const (
 	StateUp          = "up"
