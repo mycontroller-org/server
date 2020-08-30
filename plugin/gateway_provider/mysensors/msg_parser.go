@@ -77,7 +77,7 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 
 	case gwpl.TypeMQTT:
 		rawMsg.Data = []byte(msMsg.Payload)
-		rawMsg.Others.Set(gwpl.KeyTopic, []string{msMsg.toMySensorsRaw(true)}, nil)
+		rawMsg.Others.Set(gwpl.KeyMqttTopic, []string{msMsg.toMySensorsRaw(true)}, nil)
 
 	default:
 		return nil, fmt.Errorf("This protocol not implemented: %s", p.GWConfig.Provider.ProtocolType)
@@ -98,7 +98,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 	case gwpl.TypeMQTT:
 		// topic/node-id/child-sensor-id/command/ack/type
 		// out_rfm69/11/1/1/0/0
-		rData := strings.Split(string(rawMsg.Others[gwpl.KeyTopic].(string)), "/")
+		rData := strings.Split(string(rawMsg.Others[gwpl.KeyMqttTopic].(string)), "/")
 		if len(rData) < 5 {
 			zap.L().Error("Invalid message format", zap.Any("rawMessage", rawMsg))
 			return nil, nil

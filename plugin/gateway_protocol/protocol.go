@@ -12,9 +12,8 @@ const (
 
 // Others map known keys
 const (
-	KeyTopic = "topic"
-	KeyQoS   = "qos"
-	KeyName  = "name"
+	KeyMqttTopic = "mqtt_topic"
+	KeyMqttQoS   = "mqtt_qos"
 )
 
 // Gateway protocol interface
