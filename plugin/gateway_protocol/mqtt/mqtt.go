@@ -86,7 +86,7 @@ func (d *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
 
 // Write publishes a payload
 func (d *Endpoint) Write(rawMsg *msgml.RawMessage) error {
-	zap.L().Debug("About to send this message", zap.Any("rawMessage", rawMsg))
+	zap.L().Debug("About to send a message", zap.Any("rawMessage", rawMsg))
 	topics := rawMsg.Others.Get(gwptcl.KeyMqttTopic).([]string)
 	qos := byte(d.Config.QoS)
 

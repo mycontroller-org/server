@@ -13,7 +13,7 @@ const (
 
 // Files, directory locations
 const (
-	DirectoryRoot     = "/tmp"      // root directory for all the files
+	DirectoryRoot     = "/tmp/myc"  // root directory for all the files
 	DirectoryFirmware = "/firmware" // location to keep firmware files
 )
 

@@ -24,15 +24,6 @@ func handleRequests(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *me
 		msMsg.Payload = payloadEmpty
 		msMsg.NodeID = idBroadcast
 
-	case nml.FuncFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST":
-		pl, err := executeFirmwareConfigRequest(msg)
-		if err != nil {
-			return err
-		}
-		msMsg.Command = cmdStream
-		msMsg.Type = typeStreamFirmwareConfigResponse
-		msMsg.Payload = pl
-
 	case nml.FuncHeartbeat:
 		msMsg.Type = typeInternalHeartBeatRequest
 		msMsg.Payload = payloadEmpty
@@ -67,6 +58,24 @@ func handleRequests(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *me
 	case "I_TIME":
 		msMsg.Type = typeInternalTime
 		msMsg.Payload = strconv.FormatInt(time.Now().Local().Unix(), 10)
+
+	case nml.FuncFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST":
+		pl, err := executeFirmwareConfigRequest(msg)
+		if err != nil {
+			return err
+		}
+		msMsg.Command = cmdStream
+		msMsg.Type = typeStreamFirmwareConfigResponse
+		msMsg.Payload = pl
+
+	case "ST_FIRMWARE_REQUEST":
+		pl, err := executeFirmwareRequest(msg)
+		if err != nil {
+			return err
+		}
+		msMsg.Command = cmdStream
+		msMsg.Type = typeStreamFirmwareResponse
+		msMsg.Payload = pl
 
 	default:
 		return fmt.Errorf("This function is not implemented: %s", fn)

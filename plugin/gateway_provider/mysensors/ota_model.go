@@ -1,8 +1,10 @@
 package mysensors
 
+import "time"
+
 // firmwareBlockSize for more detail
 // https://github.com/mysensors/MySensors/blob/2.3.2/core/MyOTAFirmwareUpdate.h#L68~L71
-const firmwareBlockSize = uint8(16)
+const firmwareBlockSize = 16
 
 // firmwareConfigRequest data
 type firmwareConfigRequest struct {
@@ -42,12 +44,15 @@ type firmwareResponse struct {
 	Type    uint16
 	Version uint16
 	Block   uint16
-	Data    []uint8
+	Data    [firmwareBlockSize]uint8
 }
 
-// firmware returns firmware details
-type firmware struct {
-	Data   []byte
-	Blocks int
-	CRC    int
+// firmwareRaw returns firmwareRaw details
+type firmwareRaw struct {
+	Type       uint16
+	Version    uint16
+	Data       []byte `json:"-"`
+	Blocks     uint16
+	CRC        uint16
+	LastAccess time.Time
 }

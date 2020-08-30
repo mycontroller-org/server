@@ -192,31 +192,35 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 				return nil, err
 			}
 			return msg, nil
-		} else if msMsg.NodeID != idBroadcast && msMsg.Command == cmdInternal {
-			switch msMsg.Type { // valid only for this list
-			case typeInternalConfigResponse:
-				msg.FieldName = "I_CONFIG"
-			case typeInternalHeartBeatRequest:
-				msg.FieldName = nml.FuncHeartbeat
-			case typeInternalIDResponse:
-				msg.FieldName = "I_ID_REQUEST"
-			case typeInternalPresentation:
-				msg.FieldName = nml.FuncRefreshNodeInfo
-			case typeInternalReboot:
-				msg.FieldName = nml.FuncReboot
-			case typeInternalTime:
-				msg.FieldName = "I_TIME"
-			default:
-				// leave it, will fail at the end of root if
+		} else if msMsg.NodeID != idBroadcast {
+			if msMsg.Command == cmdInternal {
+				switch msMsg.Type { // valid only for this list
+				case typeInternalConfigResponse:
+					msg.FieldName = "I_CONFIG"
+				case typeInternalHeartBeatRequest:
+					msg.FieldName = nml.FuncHeartbeat
+				case typeInternalIDResponse:
+					msg.FieldName = "I_ID_REQUEST"
+				case typeInternalPresentation:
+					msg.FieldName = nml.FuncRefreshNodeInfo
+				case typeInternalReboot:
+					msg.FieldName = nml.FuncReboot
+				case typeInternalTime:
+					msg.FieldName = "I_TIME"
+				default:
+					// leave it, will fail at the end of root if
+				}
+				if msg.FieldName != "" {
+					return msg, nil
+				}
+			} else if msMsg.Command == cmdStream {
+				if _type, ok := streamTypeMapForRx[msMsg.Type]; ok {
+					msg.Type = msgml.TypeStream
+					msg.FieldName = _type
+					return msg, nil
+				}
 			}
-			if msg.FieldName != "" {
-				return msg, nil
-			}
-		} else if msMsg.Command == cmdStream {
-			// TODO: for streaming
-			return nil, errors.New("Streaming ack support not implemented")
 		}
-
 		return msg, fmt.Errorf("For this message ack not implemented, rawMessage: %v", msMsg)
 	}
 

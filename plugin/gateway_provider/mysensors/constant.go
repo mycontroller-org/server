@@ -1,6 +1,8 @@
 package mysensors
 
 import (
+	"time"
+
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 )
@@ -21,9 +23,12 @@ const (
 
 // internal references
 const (
-	idBroadcast           = "255" // broadcast id in MySensors
-	payloadEmpty          = ""    // Empty payload
-	serialMessageSplitter = '\n'  // serial message spliter
+	idBroadcast               = "255"                      // broadcast id in MySensors
+	payloadEmpty              = ""                         // Empty payload
+	serialMessageSplitter     = '\n'                       // serial message splitter
+	firmwarePurgeJobName      = "mysensors_firmware_store" // firmware purge job name, append with gateway id
+	firmwarePurgeJobCron      = "0 */5 * * * *"            // purge loaded firmware, if not used for a while
+	firmwarePurgeInactiveTime = 15 * time.Minute           // firmware inactive time, eligible for purging
 
 	// Command types and value
 	cmdPresentation = "0"
@@ -253,6 +258,7 @@ var internalValidRequests = []string{
 
 	// stream message type requests
 	"ST_FIRMWARE_CONFIG_REQUEST",
+	"ST_FIRMWARE_REQUEST",
 }
 
 // this struct used to construct payload metric type and unit
