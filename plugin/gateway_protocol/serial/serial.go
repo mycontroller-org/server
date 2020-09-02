@@ -90,9 +90,9 @@ func (d *Endpoint) Write(rawMsg *msgml.RawMessage) error {
 	if d.txPreDelay != nil {
 		time.Sleep(*d.txPreDelay)
 	}
-	_rawMsg := rawMsg.Clone()
-	_rawMsg.Timestamp = time.Now()
-	d.rawMsgLogger.AsyncWrite(_rawMsg)
+	rawMsgCloned := rawMsg.Clone()
+	rawMsgCloned.Timestamp = time.Now()
+	d.rawMsgLogger.AsyncWrite(rawMsgCloned)
 
 	_, err := d.Port.Write(rawMsg.Data)
 	return err
@@ -132,15 +132,15 @@ func (d *Endpoint) dataListener() {
 				b := readBuf[index]
 				if b == d.Config.MessageSplitter {
 					// copy the received data
-					dataClone := make([]byte, len(data))
-					copy(dataClone, data)
+					dataCloned := make([]byte, len(data))
+					copy(dataCloned, data)
 					data = nil // reset local buffer
 					rawMsg := &msgml.RawMessage{
-						Data:       dataClone,
+						Data:       dataCloned,
 						Timestamp:  time.Now(),
 						IsReceived: true,
 					}
-					zap.L().Debug("new message received", zap.Any("rawMessage", rawMsg))
+					//	zap.L().Debug("new message received", zap.Any("rawMessage", rawMsg))
 					d.rawMsgLogger.AsyncWrite(rawMsg.Clone())
 					err := d.receiveMsgFunc(rawMsg)
 					if err != nil {

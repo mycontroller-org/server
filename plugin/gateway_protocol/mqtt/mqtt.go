@@ -122,10 +122,10 @@ func (d *Endpoint) Write(rawMsg *msgml.RawMessage) error {
 	}
 	for _, t := range topics {
 		_topic := fmt.Sprintf("%s/%s", d.Config.Publish, t)
-		_rawMsg := rawMsg.Clone()
-		_rawMsg.Others.Set(gwptcl.KeyMqttTopic, _topic, nil)
-		_rawMsg.Timestamp = time.Now()
-		d.rawMsgLogger.AsyncWrite(_rawMsg)
+		rawMsgCloned := rawMsg.Clone()
+		rawMsgCloned.Others.Set(gwptcl.KeyMqttTopic, _topic, nil)
+		rawMsgCloned.Timestamp = time.Now()
+		d.rawMsgLogger.AsyncWrite(rawMsgCloned)
 
 		token := d.Client.Publish(_topic, qos, false, rawMsg.Data)
 		if token.Error() != nil {
