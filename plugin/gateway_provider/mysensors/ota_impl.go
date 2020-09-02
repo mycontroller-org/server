@@ -46,6 +46,7 @@ func executeFirmwareConfigRequest(msg *msgml.Message) (string, error) {
 
 	// if erase eeprom set for this node, update erase eeprom command and clear the label on the node detail
 	if node.Labels.GetBool(LabelEraseEEPROM) {
+		zap.L().Debug("Erase EEPROM enabled, sending erase EEPROM command to the node", zap.String("nodeId", node.ID))
 		// set erase command
 		fwCfgRes.SetEraseEEPROM()
 		// remove erase config data from node
@@ -60,7 +61,7 @@ func executeFirmwareConfigRequest(msg *msgml.Message) (string, error) {
 		fwCfgRes.Blocks = fwRaw.Blocks
 		fwCfgRes.CRC = fwRaw.CRC
 	}
-	zap.L().Debug("Sending a firmware config respose", zap.Any("request", fwCfgReq), zap.Any("response", fwCfgRes), zap.String("timeTaken", time.Since(startTime).String()))
+	zap.L().Info("Sending a firmware config respose", zap.Any("request", fwCfgReq), zap.Any("response", fwCfgRes), zap.String("timeTaken", time.Since(startTime).String()))
 
 	// convert the struct to hex string and return
 	return toHex(fwCfgRes)
@@ -159,8 +160,8 @@ func fetchFirmware(node *nml.Node, typeID, versionID uint16, verifyID bool) (*fi
 	}
 	if verifyID { // verify firmware ids
 		if fwRaw.Type != typeID || fwRaw.Version != versionID {
-			return nil, fmt.Errorf("Requested firmware type id or version id not matching, TypeId:[%d=?%d], VersionId:[%d=?%d]",
-				typeID, versionID, fwRaw.Type, fwRaw.Version)
+			return nil, fmt.Errorf("Requested firmware type id or version id not matching[Req, Avl], TypeId:[%v, %v], VersionId:[%v, %v]",
+				typeID, fwRaw.Type, versionID, fwRaw.Version)
 		}
 	}
 
@@ -185,7 +186,6 @@ func hexByteToLocalFormat(typeID, versionID uint16, hexByte []byte, blockSize in
 	hexLines := strings.Split(hexString, "\n")          // split as separate lines
 
 	actualData := make([]byte, 0)
-
 	for _, line := range hexLines {
 		line = strings.TrimSpace(line) // remove spaces if any
 		if len(line) == 0 {

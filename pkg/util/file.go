@@ -39,6 +39,18 @@ func WriteFile(dir, filename string, data []byte) error {
 	return ioutil.WriteFile(fmt.Sprintf("%s/%s", dir, filename), data, os.ModePerm)
 }
 
+// AppendFile func
+func AppendFile(dir, filename string, data []byte) error {
+	CreateDir(dir)
+	f, err := os.OpenFile(fmt.Sprintf("%s/%s", dir, filename), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	_, err = f.Write(data)
+	return err
+}
+
 // ReadFile func
 func ReadFile(dir, filename string) ([]byte, error) {
 	CreateDir(dir)

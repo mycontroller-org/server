@@ -15,12 +15,13 @@ import (
 
 // Config data
 type Config struct {
-	Broker    string `json:"broker"`
-	Username  string `json:"username"`
-	Password  string `json:"-"`
-	Subscribe string `json:"subscribe"`
-	Publish   string `json:"publish"`
-	QoS       int    `json:"qos"`
+	Broker           string `json:"broker"`
+	Username         string `json:"username"`
+	Password         string `json:"-"`
+	Subscribe        string `json:"subscribe"`
+	Publish          string `json:"publish"`
+	QoS              int    `json:"qos"`
+	TransmitPreDelay string `json:"transmitPreDelay"`
 }
 
 // Endpoint data
@@ -29,6 +30,8 @@ type Endpoint struct {
 	Config         Config
 	receiveMsgFunc func(rm *msgml.RawMessage) error
 	Client         paho.Client
+	rawMsgLogger   *gwptcl.RawMessageLogger
+	txPreDelay     *time.Duration
 }
 
 // New mqtt driver
@@ -40,11 +43,31 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpo
 		return nil, err
 	}
 
+	var txPreDelay *time.Duration
+	// get transmit pre delay
+	if cfg.TransmitPreDelay != "" {
+		_txPreDelay, err := time.ParseDuration(cfg.TransmitPreDelay)
+		if err != nil {
+			zap.L().Error("Failed to parse transmit delay", zap.String("transmitPreDelay", cfg.TransmitPreDelay))
+		}
+		txPreDelay = &_txPreDelay
+	}
+
+	msgFormatterFn := func(rawMsg *msgml.RawMessage) string {
+		direction := "Tx"
+		if rawMsg.IsReceived {
+			direction = "Rx"
+		}
+		return fmt.Sprintf("%v\t%s\t%v\t\t%s\n", rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"), direction, rawMsg.Others.Get(gwptcl.KeyMqttTopic), string(rawMsg.Data))
+	}
+
 	// endpoint
 	d := &Endpoint{
 		GwCfg:          gwCfg,
 		Config:         cfg,
 		receiveMsgFunc: rxMsgFunc,
+		rawMsgLogger:   &gwptcl.RawMessageLogger{Config: gwCfg, MsgFormatterFn: msgFormatterFn},
+		txPreDelay:     txPreDelay,
 	}
 
 	opts := paho.NewClientOptions()
@@ -68,6 +91,9 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpo
 	// adding client
 	d.Client = c
 
+	// start raw message logger
+	d.rawMsgLogger.Start()
+
 	err = d.Subscribe(cfg.Subscribe)
 	if err != nil {
 		zap.L().Error("Failed to subscribe a topic", zap.String("topic", cfg.Subscribe), zap.Error(err))
@@ -89,9 +115,18 @@ func (d *Endpoint) Write(rawMsg *msgml.RawMessage) error {
 	zap.L().Debug("About to send a message", zap.Any("rawMessage", rawMsg))
 	topics := rawMsg.Others.Get(gwptcl.KeyMqttTopic).([]string)
 	qos := byte(d.Config.QoS)
-
+	rawMsg.IsReceived = false
+	// add transmit pre delay
+	if d.txPreDelay != nil {
+		time.Sleep(*d.txPreDelay)
+	}
 	for _, t := range topics {
 		_topic := fmt.Sprintf("%s/%s", d.Config.Publish, t)
+		_rawMsg := rawMsg.Clone()
+		_rawMsg.Others.Set(gwptcl.KeyMqttTopic, _topic, nil)
+		_rawMsg.Timestamp = time.Now()
+		d.rawMsgLogger.AsyncWrite(_rawMsg)
+
 		token := d.Client.Publish(_topic, qos, false, rawMsg.Data)
 		if token.Error() != nil {
 			return token.Error()
@@ -107,6 +142,7 @@ func (d *Endpoint) Close() error {
 		d.Client.Disconnect(0)
 		zap.L().Debug("MQTT Client connection closed", zap.String("gateway", d.GwCfg.Name))
 	}
+	d.rawMsgLogger.Close()
 	return nil
 }
 
@@ -120,6 +156,8 @@ func (d *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 				gwptcl.KeyMqttQoS:   int(message.Qos()),
 			},
 		}
+		rawMsg.IsReceived = true
+		d.rawMsgLogger.AsyncWrite(rawMsg.Clone())
 		err := d.receiveMsgFunc(rawMsg)
 		if err != nil {
 			zap.L().Error("Failed to send a raw message to queue", zap.String("gateway", d.GwCfg.Name), zap.Any("rawMessage", rawMsg), zap.Error(err))

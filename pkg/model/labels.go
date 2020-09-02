@@ -10,4 +10,6 @@ const (
 
 	LabelIsSleepingNode = "is_sleeping_node"
 	LabelIgnoreName     = "ignore_name"
+
+	LabelTimezone = "timezone"
 )

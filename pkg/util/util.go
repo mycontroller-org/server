@@ -40,9 +40,9 @@ func RandIDWithLength(length int) string {
 }
 
 // UpdatePagination updates if nil
-func UpdatePagination(p *pml.Pagination) {
+func UpdatePagination(p *pml.Pagination) *pml.Pagination {
 	if p == nil {
-		p = &pml.Pagination{}
+		p = &pml.Pagination{Limit: -1, Offset: -1}
 	}
 	if len(p.SortBy) == 0 {
 		p.SortBy = []pml.Sort{{Field: "ID", OrderBy: "ASC"}}
@@ -50,6 +50,10 @@ func UpdatePagination(p *pml.Pagination) {
 	if p.Limit == 0 {
 		p.Limit = -1
 	}
+	if p.Offset == 0 {
+		p.Offset = -1
+	}
+	return p
 }
 
 // JoinMap joins two maps. put all the values into 'p' map from 'o' map

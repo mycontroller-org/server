@@ -9,7 +9,7 @@ import (
 )
 
 // List by filter and pagination
-func List(f []pml.Filter, p pml.Pagination) ([]nml.Node, error) {
+func List(f []pml.Filter, p *pml.Pagination) ([]nml.Node, error) {
 	out := make([]nml.Node, 0)
 	svc.STG.Find(ml.EntityNode, f, p, &out)
 	return out, nil

@@ -5,10 +5,10 @@ import (
 	"flag"
 	"io/ioutil"
 
+	ms "github.com/mycontroller-org/backend/v2/pkg/metrics"
 	cfgml "github.com/mycontroller-org/backend/v2/pkg/model/config"
 	"github.com/mycontroller-org/backend/v2/pkg/scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/storage"
-	ms "github.com/mycontroller-org/backend/v2/pkg/storage/metrics"
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
 	"github.com/mycontroller-org/backend/v2/pkg/version"
 	"go.uber.org/zap"

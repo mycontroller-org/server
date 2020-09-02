@@ -9,7 +9,7 @@ import (
 )
 
 // List by filter and pagination
-func List(f []pml.Filter, p pml.Pagination) ([]sml.Sensor, error) {
+func List(f []pml.Filter, p *pml.Pagination) ([]sml.Sensor, error) {
 	out := make([]sml.Sensor, 0)
 	svc.STG.Find(ml.EntitySensor, f, p, &out)
 	return out, nil

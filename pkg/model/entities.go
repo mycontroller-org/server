@@ -13,8 +13,9 @@ const (
 
 // Files, directory locations
 const (
-	DirectoryRoot     = "/tmp/myc"  // root directory for all the files
-	DirectoryFirmware = "/firmware" // location to keep firmware files
+	DirectoryRoot           = "/tmp/myc"          // root directory for all the files
+	DirectoryFirmware       = "/firmware"         // location to keep firmware files
+	DirectoryGatewayRawLogs = "/gateway_raw_logs" // location to keep gateway raw logs
 )
 
 // DirectoryFullPath adds root dir and return full path

@@ -138,7 +138,7 @@ func findMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 		return
 	}
 
-	err = svc.STG.Find(entityName, f, *p, entities)
+	err = svc.STG.Find(entityName, f, p, entities)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

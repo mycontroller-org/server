@@ -51,7 +51,7 @@ type firmwareResponse struct {
 type firmwareRaw struct {
 	Type       uint16
 	Version    uint16
-	Data       []byte `json:"-"`
+	Data       []uint8 `json:"data"`
 	Blocks     uint16
 	CRC        uint16
 	LastAccess time.Time

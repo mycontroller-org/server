@@ -77,10 +77,11 @@ func (m *Message) GetID() string {
 
 // RawMessage from/to gateway media
 type RawMessage struct {
-	ID        string
-	Data      []byte
-	Timestamp time.Time
-	Others    cmap.CustomMap
+	ID         string
+	IsReceived bool
+	Data       []byte
+	Timestamp  time.Time
+	Others     cmap.CustomMap
 }
 
 // MarshalJSON for RawMessage, Data should be printed as string on the log
@@ -93,6 +94,17 @@ func (rm *RawMessage) MarshalJSON() ([]byte, error) {
 		Data:        string(rm.Data),
 		RawMsgAlias: (*RawMsgAlias)(rm),
 	})
+}
+
+// Clone func
+func (rm *RawMessage) Clone() *RawMessage {
+	return &RawMessage{
+		ID:         rm.ID,
+		IsReceived: rm.IsReceived,
+		Data:       rm.Data,
+		Timestamp:  rm.Timestamp,
+		Others:     rm.Others.Clone(),
+	}
 }
 
 // DeliveryStatus definition

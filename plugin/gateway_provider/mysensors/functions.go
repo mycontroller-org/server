@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
+	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
@@ -36,8 +38,19 @@ func handleRequests(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *me
 		msMsg.Type = typeInternalPresentation
 		msMsg.Payload = payloadEmpty
 
-	case nml.FuncReset: // yet to implement
-		return fmt.Errorf("This function is not implemented: %s", fn)
+	case nml.FuncReset:
+		// NOTE: This feature supports only for MySensorsBootloaderRF24
+		// set reset flag on the node labels
+		// reboot the node
+		// on a node reboot, bootloader asks the firmware details
+		// we pass erase EEPROM command.
+		// erase EEPROM possible only via bootloader
+		err := updateResetFlag(msg)
+		if err != nil {
+			return err
+		}
+		msMsg.Type = typeInternalReboot
+		msMsg.Payload = payloadEmpty
 
 	case "I_CONFIG":
 		msMsg.Type = typeInternalConfigResponse
@@ -56,8 +69,8 @@ func handleRequests(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *me
 		}
 
 	case "I_TIME":
+		msMsg.Payload = getTimestamp(gwCfg)
 		msMsg.Type = typeInternalTime
-		msMsg.Payload = strconv.FormatInt(time.Now().Local().Unix(), 10)
 
 	case nml.FuncFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST":
 		pl, err := executeFirmwareConfigRequest(msg)
@@ -66,7 +79,7 @@ func handleRequests(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *me
 		}
 		msMsg.Command = cmdStream
 		msMsg.Type = typeStreamFirmwareConfigResponse
-		msMsg.Payload = pl
+		msMsg.Payload = strings.ToUpper(pl)
 
 	case "ST_FIRMWARE_REQUEST":
 		pl, err := executeFirmwareRequest(msg)
@@ -75,7 +88,7 @@ func handleRequests(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *me
 		}
 		msMsg.Command = cmdStream
 		msMsg.Type = typeStreamFirmwareResponse
-		msMsg.Payload = pl
+		msMsg.Payload = strings.ToUpper(pl)
 
 	default:
 		return fmt.Errorf("This function is not implemented: %s", fn)
@@ -83,40 +96,79 @@ func handleRequests(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *me
 	return nil
 }
 
+// geTimestamp returns timestamp in seconds from 1970
+// adds zone offset to the actual timestamp
+// user can specify different timezone as a gateway label
+// if non set, take system timezone
+func getTimestamp(gwCfg *gwml.Config) string {
+	var loc *time.Location
+	// get user defined timezone from gateway label
+	tz := gwCfg.Labels.Get(ml.LabelTimezone)
+	if tz != "" {
+		_loc, err := time.LoadLocation(tz)
+		if err != nil {
+			zap.L().Error("Failed to parse used defined timezone, fallback to system time zone", zap.String("userDefinedTimezone", tz))
+			_loc = time.Now().Location()
+		}
+		loc = _loc
+	}
+
+	// set system location, if non set
+	if loc == nil {
+		loc = time.Now().Location()
+	}
+
+	// get zone offset and include it on the unix timestamp
+	_, offset := time.Now().In(loc).Zone()
+	timestamp := time.Now().Unix() + int64(offset)
+	return strconv.FormatInt(timestamp, 10)
+}
+
 // get node id
 func getNodeID(gwCfg *gwml.Config) string {
 	f := []pml.Filter{{Key: "gatewayID", Operator: "eq", Value: gwCfg.ID}}
-	nodes, err := nodeAPI.List(f, pml.Pagination{})
+	nodes, err := nodeAPI.List(f, nil)
 	if err != nil {
 		zap.L().Error("Failed to find list of nodes", zap.String("gateway", gwCfg.Name), zap.Error(err))
 		return ""
 	}
-	ids := make([]int, 0)
+	reservedIDs := make([]int, 0)
 	for _, n := range nodes {
 		if n.Labels.Get(LabelNodeID) != "" {
 			id := n.Labels.GetInt(LabelNodeID)
-			ids = append(ids, id)
+			reservedIDs = append(reservedIDs, id)
 		}
 	}
+
 	// find first available id
 	electedID := 1
 	for id := 1; id <= 255; id++ {
+		electedID = id
 		found := false
-		for _, rid := range ids {
+		for _, rid := range reservedIDs {
 			if rid == id {
 				found = true
 				break
 			}
 		}
 		if !found {
-			electedID = id
 			break
 		}
 	}
 
 	if electedID == 255 {
-		zap.L().Error("No space available on this network. Reached maximum node counts.", zap.String("gateway", gwCfg.Name))
+		zap.L().Error("No space left on this network. Reached maximum node counts.", zap.String("gateway", gwCfg.Name))
 		return ""
 	}
-	return string(electedID)
+	return strconv.Itoa(electedID)
+}
+
+func updateResetFlag(msg *msgml.Message) error {
+	// get the node details
+	node, err := nodeAPI.GetByIDs(msg.GatewayID, msg.NodeID)
+	if err != nil {
+		return err
+	}
+	node.Labels.Set(LabelEraseEEPROM, "true")
+	return nodeAPI.Save(node)
 }

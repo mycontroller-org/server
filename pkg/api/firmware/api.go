@@ -9,7 +9,7 @@ import (
 )
 
 // List by filter and pagination
-func List(f []pml.Filter, p pml.Pagination) ([]fml.Firmware, error) {
+func List(f []pml.Filter, p *pml.Pagination) ([]fml.Firmware, error) {
 	out := make([]fml.Firmware, 0)
 	svc.STG.Find(ml.EntityFirmware, f, p, &out)
 	return out, nil

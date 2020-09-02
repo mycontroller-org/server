@@ -84,6 +84,12 @@ func onMessageReceive(e *bus.Event) {
 			zap.L().Warn("Message type not implemented for node", zap.String("type", msg.Type), zap.Any("message", msg))
 		}
 
+	case msg.NodeID == "" && msg.Type == msgml.TypeInternal:
+		clonedMsg := msg.Clone() // clone the message
+		postMessage(clonedMsg)
+
+	default:
+		zap.L().Warn("This message not handled", zap.Any("message", msg))
 	}
 
 	zap.L().Debug("Message processed", zap.String("timeTaken", time.Since(msg.Timestamp).String()), zap.Any("message", msg))

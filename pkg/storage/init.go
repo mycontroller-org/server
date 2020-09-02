@@ -22,7 +22,7 @@ type Client interface {
 	Update(entity string, filter []pml.Filter, data interface{}) error
 	Upsert(entityName string, filter []pml.Filter, d interface{}) error
 	FindOne(entityName string, filter []pml.Filter, out interface{}) error
-	Find(entityName string, filter []pml.Filter, pagination pml.Pagination, out interface{}) error
+	Find(entityName string, filter []pml.Filter, pagination *pml.Pagination, out interface{}) error
 	Distinct(entityName string, fieldName string, filter []pml.Filter) ([]interface{}, error)
 }
 

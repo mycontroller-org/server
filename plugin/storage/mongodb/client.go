@@ -143,13 +143,17 @@ func (c *Client) Distinct(e string, fn string, f []pml.Filter) ([]interface{}, e
 }
 
 // Find returns data
-func (c *Client) Find(e string, f []pml.Filter, p pml.Pagination, out interface{}) error {
-	ut.UpdatePagination(&p)
+func (c *Client) Find(e string, f []pml.Filter, p *pml.Pagination, out interface{}) error {
+	p = ut.UpdatePagination(p)
 	cl := c.getCollection(e)
 	sm := sort(p.SortBy)
 	fo := options.Find()
-	fo.SetLimit(p.Limit)
-	fo.SetSkip(p.Offset)
+	if p.Limit != -1 {
+		fo.SetLimit(p.Limit)
+	}
+	if p.Offset != -1 {
+		fo.SetSkip(p.Offset)
+	}
 	fo.SetSort(sm)
 	cur, err := cl.Find(ctx, filter(f), fo)
 	if err != nil {

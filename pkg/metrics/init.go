@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
-	influx "github.com/mycontroller-org/backend/v2/plugin/storage/metrics/influxdb_v2"
-	"github.com/mycontroller-org/backend/v2/plugin/storage/metrics/voiddb"
+	influx "github.com/mycontroller-org/backend/v2/plugin/metrics/influxdb_v2"
+	"github.com/mycontroller-org/backend/v2/plugin/metrics/voiddb"
 )
 
 // Metrics database types

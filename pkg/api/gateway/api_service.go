@@ -6,7 +6,6 @@ import (
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	gwpd "github.com/mycontroller-org/backend/v2/plugin/gateway_provider"
 	"github.com/mycontroller-org/backend/v2/plugin/gateway_provider/mysensors"
 	"go.uber.org/zap"
@@ -64,36 +63,41 @@ func Reload(gwCfg *gwml.Config) error {
 
 // LoadGateways makes gateways alive
 func LoadGateways() {
-	gws, err := List(nil, pml.Pagination{})
+	gws, err := List(nil, nil)
 	if err != nil {
 		zap.L().Error("Error getting list of gateways", zap.Error(err))
 	}
-	for _, gw := range gws {
-		state := ml.State{
-			Since:   time.Now(),
-			Status:  ml.StateUp,
-			Message: "Started successfully",
-		}
-		err = Start(&gw)
-		if err != nil {
-			state.Message = err.Error()
-			state.Status = ml.StateDown
-			zap.L().Error("Error loading a gateway", zap.Error(err), zap.Any("gateway", gw))
-		}
-		err = SetState(&gw, state)
-		if err != nil {
-			zap.L().Error("Failed to update gateway status")
+	for index := 0; index < len(gws); index++ {
+		gw := gws[index]
+		if gw.Enabled {
+			zap.L().Debug("Loading gateway", zap.Any("gateway", gw))
+			state := ml.State{
+				Since:   time.Now(),
+				Status:  ml.StateUp,
+				Message: "Started successfully",
+			}
+			err = Start(&gw)
+			if err != nil {
+				state.Message = err.Error()
+				state.Status = ml.StateDown
+				zap.L().Error("Error loading a gateway", zap.Error(err), zap.Any("gateway", gw))
+			}
+			err = SetState(&gw, state)
+			if err != nil {
+				zap.L().Error("Failed to update gateway status")
+			}
 		}
 	}
 }
 
 // UnloadGateways makes stop gateways
 func UnloadGateways() {
-	gws, err := List(nil, pml.Pagination{})
+	gws, err := List(nil, nil)
 	if err != nil {
 		zap.L().Error("Error getting list of gateways", zap.Error(err))
 	}
-	for _, gw := range gws {
+	for index := 0; index < len(gws); index++ {
+		gw := gws[index]
 		err = Stop(&gw)
 		if err != nil {
 			zap.L().Error("Error unloading a gateway", zap.Error(err), zap.Any("gateway", gw))

@@ -112,8 +112,8 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 			zap.L().Error("Invalid message format", zap.String("rawMessage", string(rawMsg.Data)))
 			return nil, nil
 		}
-		payload = _d[6]
-		d = _d[5:]
+		payload = _d[5]
+		d = _d
 	// implement this one
 	default:
 		return nil, fmt.Errorf("This type not implements. protocol type: %s", p.GWConfig.Provider.ProtocolType)
@@ -302,6 +302,21 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 				return nil, fmt.Errorf("Message stream type not found: %s", msMsg.Type)
 			}
 		}
+
+	case msMsg.NodeID == idBroadcast:
+		if _type, ok := internalTypeMapForRx[msMsg.Type]; ok {
+			msg.Type = msgml.TypeInternal
+			msg.FieldName = _type
+
+			// filter implemented requests
+			_, found := util.FindItem(internalValidRequests, _type)
+			if !found {
+				return nil, fmt.Errorf("This internal message handling not implemented: %s", _type)
+			}
+		} else {
+			return nil, fmt.Errorf("Message internal type not found: %s", msMsg.Type)
+		}
+
 	default:
 		// if none of the above
 	}
