@@ -50,9 +50,9 @@ func UpdatePagination(p *pml.Pagination) *pml.Pagination {
 	if p.Limit == 0 {
 		p.Limit = -1
 	}
-	if p.Offset == 0 {
-		p.Offset = -1
-	}
+	//if p.Offset == 0 {
+	//	p.Offset = -1
+	//}
 	return p
 }
 

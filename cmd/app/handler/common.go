@@ -138,12 +138,12 @@ func findMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 		return
 	}
 
-	err = svc.STG.Find(entityName, f, p, entities)
+	result, err := svc.STG.Find(entityName, f, p, entities)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	od, err := json.Marshal(entities)
+	od, err := json.Marshal(result)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

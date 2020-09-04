@@ -143,7 +143,7 @@ func (c *Client) Distinct(e string, fn string, f []pml.Filter) ([]interface{}, e
 }
 
 // Find returns data
-func (c *Client) Find(e string, f []pml.Filter, p *pml.Pagination, out interface{}) error {
+func (c *Client) Find(e string, f []pml.Filter, p *pml.Pagination, out interface{}) (*pml.Result, error) {
 	p = ut.UpdatePagination(p)
 	cl := c.getCollection(e)
 	sm := sort(p.SortBy)
@@ -157,9 +157,24 @@ func (c *Client) Find(e string, f []pml.Filter, p *pml.Pagination, out interface
 	fo.SetSort(sm)
 	cur, err := cl.Find(ctx, filter(f), fo)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return cur.All(ctx, out)
+	err = cur.All(ctx, out)
+	if err != nil {
+		return nil, err
+	}
+
+	count, err := c.Count(e, f)
+	if err != nil {
+		return nil, err
+	}
+	result := &pml.Result{
+		Count:  count,
+		Limit:  p.Limit,
+		Offset: p.Offset,
+		Data:   out,
+	}
+	return result, nil
 }
 
 func idFilter(d interface{}) *bson.M {

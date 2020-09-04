@@ -19,3 +19,11 @@ type Filter struct {
 	Operator string      `json:"o"`
 	Value    interface{} `json:"v"`
 }
+
+// Result returns a list of data
+type Result struct {
+	Count  int64       `json:"count"`
+	Limit  int64       `json:"limit"`
+	Offset int64       `json:"offset"`
+	Data   interface{} `json:"data"`
+}
