@@ -1,7 +1,6 @@
 package node
 
 import (
-	"fmt"
 	"time"
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
@@ -10,12 +9,12 @@ import (
 
 // Node functions
 const (
-	FuncDiscover        = "discover"
-	FuncFirmwareUpdate  = "firmware_update"
-	FuncHeartbeat       = "heartbeat"
-	FuncReboot          = "reboot"
-	FuncRefreshNodeInfo = "refresh_node_info"
-	FuncReset           = "reset"
+	FuncDiscover         = "discover"
+	FuncFirmwareUpdate   = "firmware_update"
+	FuncHeartbeatRequest = "heartbeat_request"
+	FuncReboot           = "reboot"
+	FuncRefreshNodeInfo  = "refresh_node_info"
+	FuncReset            = "reset"
 )
 
 // Known labels
@@ -27,14 +26,10 @@ const (
 type Node struct {
 	ID        string               `json:"id"`
 	GatewayID string               `json:"gatewayId"`
+	NodeID    string               `json:"nodeId"`
 	Name      string               `json:"name"`
 	Labels    cmap.CustomStringMap `json:"labels"`
 	Others    cmap.CustomMap       `json:"others"`
 	Status    ml.State             `json:"status"`
 	LastSeen  time.Time            `json:"lastSeen"`
-}
-
-// AssembleID forms actual ID using the supplied gatewayID and nodeID
-func AssembleID(gatewayID, nodeID string) string {
-	return fmt.Sprintf("%s_%s", gatewayID, nodeID)
 }

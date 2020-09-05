@@ -5,6 +5,7 @@ import (
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	"github.com/mycontroller-org/backend/v2/pkg/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
 )
 
@@ -25,21 +26,28 @@ func Get(f []pml.Filter) (nml.Node, error) {
 // Save Node config into disk
 func Save(node *nml.Node) error {
 	if node.ID == "" {
-		node.ID = ut.RandID()
+		node.ID = ut.RandUUID()
 	}
 	f := []pml.Filter{
-		{Key: "id", Operator: "eq", Value: node.ID},
+		{Key: ml.KeyID, Value: node.ID},
 	}
 	return svc.STG.Upsert(ml.EntityNode, f, node)
 }
 
 // GetByIDs returns a node details by gatewayID and nodeId of a message
 func GetByIDs(gatewayID, nodeID string) (*nml.Node, error) {
-	id := nml.AssembleID(gatewayID, nodeID)
 	f := []pml.Filter{
-		{Key: "id", Operator: "eq", Value: id},
+		{Key: ml.KeyGatewayID, Value: gatewayID},
+		{Key: ml.KeyNodeID, Value: nodeID},
 	}
 	out := &nml.Node{}
 	err := svc.STG.FindOne(ml.EntityNode, f, out)
 	return out, err
+}
+
+// Delete node
+func Delete(IDs []string) error {
+	f := []pml.Filter{{Key: ml.KeyID, Operator: storage.OperatorIn, Value: IDs}}
+	svc.STG.Delete(ml.EntityNode, f)
+	return nil
 }

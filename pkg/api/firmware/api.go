@@ -25,7 +25,7 @@ func Get(f []pml.Filter) (fml.Firmware, error) {
 // GetByID returns a firmware details by ID
 func GetByID(id string) (fml.Firmware, error) {
 	f := []pml.Filter{
-		{Key: "id", Operator: "eq", Value: id},
+		{Key: ml.KeyID, Value: id},
 	}
 	out := fml.Firmware{}
 	err := svc.STG.FindOne(ml.EntityFirmware, f, &out)
@@ -38,7 +38,7 @@ func Save(fw *fml.Firmware) error {
 		fw.ID = ut.RandID()
 	}
 	f := []pml.Filter{
-		{Key: "id", Operator: "eq", Value: fw.ID},
+		{Key: ml.KeyID, Value: fw.ID},
 	}
 	return svc.STG.Upsert(ml.EntityFirmware, f, fw)
 }

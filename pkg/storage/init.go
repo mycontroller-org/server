@@ -24,6 +24,7 @@ type Client interface {
 	FindOne(entityName string, filter []pml.Filter, out interface{}) error
 	Find(entityName string, filter []pml.Filter, pagination *pml.Pagination, out interface{}) (*pml.Result, error)
 	Distinct(entityName string, fieldName string, filter []pml.Filter) ([]interface{}, error)
+	Delete(entityName string, filter []pml.Filter) (int64, error)
 }
 
 // Operators

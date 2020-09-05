@@ -198,7 +198,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 				case typeInternalConfigResponse:
 					msg.FieldName = "I_CONFIG"
 				case typeInternalHeartBeatRequest:
-					msg.FieldName = nml.FuncHeartbeat
+					msg.FieldName = nml.FuncHeartbeatRequest
 				case typeInternalIDResponse:
 					msg.FieldName = "I_ID_REQUEST"
 				case typeInternalPresentation:

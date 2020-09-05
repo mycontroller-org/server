@@ -5,6 +5,7 @@ import (
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	"github.com/mycontroller-org/backend/v2/pkg/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
 )
 
@@ -34,4 +35,11 @@ func Save(gwCfg *gwml.Config) error {
 func SetState(gwCfg *gwml.Config, s ml.State) error {
 	gwCfg.State = s
 	return Save(gwCfg)
+}
+
+// Delete gateway
+func Delete(IDs []string) error {
+	f := []pml.Filter{{Key: ml.KeyID, Operator: storage.OperatorIn, Value: IDs}}
+	svc.STG.Delete(ml.EntityGateway, f)
+	return nil
 }

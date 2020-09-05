@@ -5,6 +5,7 @@ import (
 	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	"github.com/mycontroller-org/backend/v2/pkg/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
 )
 
@@ -25,21 +26,29 @@ func Get(f []pml.Filter) (*sml.Sensor, error) {
 // Save a Sensor details
 func Save(sensor *sml.Sensor) error {
 	if sensor.ID == "" {
-		sensor.ID = ut.RandID()
+		sensor.ID = ut.RandUUID()
 	}
 	f := []pml.Filter{
-		{Key: "id", Operator: "eq", Value: sensor.ID},
+		{Key: ml.KeyID, Value: sensor.ID},
 	}
 	return svc.STG.Upsert(ml.EntitySensor, f, sensor)
 }
 
 // GetByIDs returns a sensor details by gatewayID, nodeId and sensorID of a message
 func GetByIDs(gatewayID, nodeID, sensorID string) (*sml.Sensor, error) {
-	id := sml.AssembleID(gatewayID, nodeID, sensorID)
 	f := []pml.Filter{
-		{Key: "id", Operator: "eq", Value: id},
+		{Key: ml.KeyGatewayID, Value: gatewayID},
+		{Key: ml.KeyNodeID, Value: nodeID},
+		{Key: ml.KeySensorID, Value: sensorID},
 	}
 	out := &sml.Sensor{}
 	err := svc.STG.FindOne(ml.EntitySensor, f, out)
 	return out, err
+}
+
+// Delete sensor
+func Delete(IDs []string) error {
+	f := []pml.Filter{{Key: ml.KeyID, Operator: storage.OperatorIn, Value: IDs}}
+	svc.STG.Delete(ml.EntitySensor, f)
+	return nil
 }

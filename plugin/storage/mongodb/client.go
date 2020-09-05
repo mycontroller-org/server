@@ -116,6 +116,9 @@ func (c *Client) FindOne(e string, f []pml.Filter, out interface{}) error {
 
 // Delete by filter
 func (c *Client) Delete(e string, f []pml.Filter) (int64, error) {
+	if f == nil {
+		return -1, errors.New("Filter should not be nil")
+	}
 	cl := c.getCollection(e)
 	fo := options.Delete()
 	dr, err := cl.DeleteMany(ctx, filter(f), fo)

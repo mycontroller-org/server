@@ -100,8 +100,8 @@ func updateNodeData(msg *msgml.Message) error {
 	node, err := nodeAPI.GetByIDs(msg.GatewayID, msg.NodeID)
 	if err != nil { // TODO: check entry availability on error message
 		node = &nml.Node{
-			ID:        nml.AssembleID(msg.GatewayID, msg.NodeID),
 			GatewayID: msg.GatewayID,
+			NodeID:    msg.NodeID,
 		}
 	}
 
@@ -150,9 +150,9 @@ func updateSensorDetail(msg *msgml.Message) error {
 	sensor, err := sensorAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID)
 	if err != nil { // TODO: check entry availability on error message
 		sensor = &sml.Sensor{
-			ID:        sml.AssembleID(msg.GatewayID, msg.NodeID, msg.SensorID),
 			GatewayID: msg.GatewayID,
 			NodeID:    msg.NodeID,
+			SensorID:  msg.SensorID,
 		}
 	}
 
@@ -227,10 +227,10 @@ func setReqFieldData(msg *msgml.Message, isRequest bool) error {
 	field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, msg.FieldName)
 	if err != nil { // TODO: check entry availability on error message
 		field = &fml.Field{
-			ID:        fml.AssembleID(msg.GatewayID, msg.NodeID, msg.SensorID, msg.FieldName),
 			GatewayID: msg.GatewayID,
 			NodeID:    msg.NodeID,
 			SensorID:  msg.SensorID,
+			FieldID:   msg.FieldName,
 		}
 	}
 

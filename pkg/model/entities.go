@@ -4,11 +4,20 @@ import "fmt"
 
 // Entities
 const (
-	EntityGateway  = "gateway"  // keeps gateway config details
-	EntityNode     = "node"     // keeps node details
-	EntitySensor   = "sensor"   // keeps sensor details
-	EntityField    = "field"    // keeps sensor field details and fields from node, like battery, rssi, etc.,
-	EntityFirmware = "firmware" // keeps firmware details
+	EntityGateway     = "gateway"      // keeps gateway config details
+	EntityNode        = "node"         // keeps node details
+	EntitySensor      = "sensor"       // keeps sensor details
+	EntitySensorField = "sensor_field" // keeps sensor field details and fields from node, like battery, rssi, etc.,
+	EntityFirmware    = "firmware"     // keeps firmware details
+)
+
+// Entity field keys
+const (
+	KeyID        = "ID"
+	KeyGatewayID = "GatewayID"
+	KeyNodeID    = "NodeID"
+	KeySensorID  = "SensorID"
+	KeyFieldID   = "FieldID"
 )
 
 // Files, directory locations

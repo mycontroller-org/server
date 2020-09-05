@@ -17,11 +17,11 @@ func registerSensorFieldRoutes(router *mux.Router) {
 }
 
 func listSensorFields(w http.ResponseWriter, r *http.Request) {
-	findMany(w, r, ml.EntityField, &[]fml.Field{})
+	findMany(w, r, ml.EntitySensorField, &[]fml.Field{})
 }
 
 func getSensorField(w http.ResponseWriter, r *http.Request) {
-	findOne(w, r, ml.EntityField, &fml.Field{})
+	findOne(w, r, ml.EntitySensorField, &fml.Field{})
 }
 
 func updateSensorField(w http.ResponseWriter, r *http.Request) {
@@ -32,5 +32,5 @@ func updateSensorField(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	}
-	saveEntity(w, r, ml.EntityField, &fml.Field{}, bwFunc)
+	saveEntity(w, r, ml.EntitySensorField, &fml.Field{}, bwFunc)
 }

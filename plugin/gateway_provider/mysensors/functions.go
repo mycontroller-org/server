@@ -26,7 +26,7 @@ func handleRequests(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *me
 		msMsg.Payload = payloadEmpty
 		msMsg.NodeID = idBroadcast
 
-	case nml.FuncHeartbeat:
+	case nml.FuncHeartbeatRequest:
 		msMsg.Type = typeInternalHeartBeatRequest
 		msMsg.Payload = payloadEmpty
 
