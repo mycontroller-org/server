@@ -19,10 +19,9 @@ type Config struct {
 
 // AckConfig data
 type AckConfig struct {
-	Enabled          bool   `json:"enabled"`
-	StreamAckEnabled bool   `json:"streamAckEnabled"`
-	RetryCount       int    `json:"retryCount"`
-	Timeout          string `json:"timeout"`
+	Enabled    bool   `json:"enabled"`
+	RetryCount int    `json:"retryCount"`
+	Timeout    string `json:"timeout"`
 }
 
 // ProviderConfig data

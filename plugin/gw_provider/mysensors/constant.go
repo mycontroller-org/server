@@ -3,8 +3,9 @@ package mysensors
 import (
 	"time"
 
-	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metric"
 )
 
 // Labels used in this provider
@@ -23,6 +24,7 @@ const (
 
 // internal references
 const (
+	idBroadcastInt            = 255                        // broadcast id in MySensors
 	idBroadcast               = "255"                      // broadcast id in MySensors
 	payloadEmpty              = ""                         // Empty payload
 	serialMessageSplitter     = '\n'                       // serial message splitter
@@ -69,17 +71,8 @@ var cmdMapForRx = map[string]string{
 	"0": msgml.TypePresentation,
 	"1": msgml.TypeSet,
 	"2": msgml.TypeRequest,
-	"3": msgml.TypeInternal,
-	"4": msgml.TypeStream,
-}
-
-// Command mapping on transmit messages
-var cmdMapForTx = map[string]string{
-	msgml.TypePresentation: "0",
-	msgml.TypeSet:          "1",
-	msgml.TypeRequest:      "2",
-	msgml.TypeInternal:     "3",
-	msgml.TypeStream:       "4",
+	"3": msgml.TypeAction,
+	"4": msgml.TypeAction,
 }
 
 // Presentation type mapping for received messages
@@ -236,21 +229,21 @@ var internalTypeMapForRx = map[string]string{
 // messages received from this internal type considered as a field data on the node
 // Example battery level, isLocked?, RSSI, etc...
 var internalValidFields = map[string]string{
-	"I_BATTERY_LEVEL":          fml.FieldBatteryLevel,
-	"I_DISCOVER_RESPONSE":      fml.FieldParentID,
-	"I_HEARTBEAT_RESPONSE":     fml.FieldHeartbeat,
-	"I_LOCKED":                 fml.FieldLocked,
-	"I_SIGNAL_REPORT_RESPONSE": fml.FieldSignalStrength,
-	"I_SKETCH_NAME":            fml.FieldName,
-	"I_SKETCH_VERSION":         fml.FieldVersion,
-	"I_VERSION":                fml.FieldLibraryVersion,
+	"I_BATTERY_LEVEL":          ml.FieldBatteryLevel,
+	"I_DISCOVER_RESPONSE":      ml.FieldParentID,
+	"I_HEARTBEAT_RESPONSE":     ml.FieldHeartbeat,
+	"I_LOCKED":                 ml.FieldLocked,
+	"I_SIGNAL_REPORT_RESPONSE": ml.FieldSignalStrength,
+	"I_SKETCH_NAME":            ml.FieldName,
+	"I_SKETCH_VERSION":         ml.LabelNodeVersion,
+	"I_VERSION":                ml.LabelNodeLibraryVersion,
 }
 
 // MySensors should implement globally defined features for the request
 // Some of the request could be very specific to MySensors
 // Those features should be filtered here and should be implemented
 // Other than this list all other requests will be ignored
-var internalValidRequests = []string{
+var customValidActions = []string{
 	// internal message type request
 	"I_CONFIG",
 	"I_ID_REQUEST",
@@ -264,74 +257,63 @@ var internalValidRequests = []string{
 // this struct used to construct payload metric type and unit
 type payloadMetricTypeUnit struct{ Type, Unit string }
 
-// MyController follows unit details from grafana, take unit details from here
-// Source: https://github.com/grafana/grafana/blob/v6.7.1/packages/grafana-data/src/valueFormats/categories.ts#L23
-const (
-	unitNone     = "none"
-	unitCelsius  = "celsius"
-	unitHumidity = "humidity"
-	unitPercent  = "percent"
-	unitVoltage  = "volt"
-	unitAmpere   = "amp"
-)
-
 // map default metric types unit types for the fields
 var metricTypeAndUnit = map[string]payloadMetricTypeUnit{
-	"V_TEMP":               {fml.MetricTypeGaugeFloat, unitCelsius},
-	"V_HUM":                {fml.MetricTypeGaugeFloat, unitHumidity},
-	"V_STATUS":             {fml.MetricTypeBinary, unitNone},
-	"V_PERCENTAGE":         {fml.MetricTypeGaugeFloat, unitPercent},
-	"V_PRESSURE":           {fml.MetricTypeGaugeFloat, unitNone},
-	"V_FORECAST":           {fml.MetricTypeGaugeFloat, unitNone},
-	"V_RAIN":               {fml.MetricTypeGaugeFloat, unitNone},
-	"V_RAINRATE":           {fml.MetricTypeGaugeFloat, unitNone},
-	"V_WIND":               {fml.MetricTypeGaugeFloat, unitNone},
-	"V_GUST":               {fml.MetricTypeGaugeFloat, unitNone},
-	"V_DIRECTION":          {fml.MetricTypeGaugeFloat, unitNone},
-	"V_UV":                 {fml.MetricTypeGaugeFloat, unitNone},
-	"V_WEIGHT":             {fml.MetricTypeGaugeFloat, unitNone},
-	"V_DISTANCE":           {fml.MetricTypeGaugeFloat, unitNone},
-	"V_IMPEDANCE":          {fml.MetricTypeGaugeFloat, unitNone},
-	"V_ARMED":              {fml.MetricTypeBinary, unitNone},
-	"V_TRIPPED":            {fml.MetricTypeBinary, unitNone},
-	"V_WATT":               {fml.MetricTypeGaugeFloat, unitNone},
-	"V_KWH":                {fml.MetricTypeGaugeFloat, unitNone},
-	"V_SCENE_ON":           {fml.MetricTypeNone, unitNone},
-	"V_SCENE_OFF":          {fml.MetricTypeNone, unitNone},
-	"V_HVAC_FLOW_STATE":    {fml.MetricTypeGaugeFloat, unitNone},
-	"V_HVAC_SPEED":         {fml.MetricTypeGaugeFloat, unitNone},
-	"V_LIGHT_LEVEL":        {fml.MetricTypeGaugeFloat, unitPercent},
-	"V_VAR1":               {fml.MetricTypeNone, unitNone},
-	"V_VAR2":               {fml.MetricTypeNone, unitNone},
-	"V_VAR3":               {fml.MetricTypeNone, unitNone},
-	"V_VAR4":               {fml.MetricTypeNone, unitNone},
-	"V_VAR5":               {fml.MetricTypeNone, unitNone},
-	"V_UP":                 {fml.MetricTypeBinary, unitNone},
-	"V_DOWN":               {fml.MetricTypeBinary, unitNone},
-	"V_STOP":               {fml.MetricTypeBinary, unitNone},
-	"V_IR_SEND":            {fml.MetricTypeNone, unitNone},
-	"V_IR_RECEIVE":         {fml.MetricTypeNone, unitNone},
-	"V_FLOW":               {fml.MetricTypeGaugeFloat, unitNone},
-	"V_VOLUME":             {fml.MetricTypeGaugeFloat, unitNone},
-	"V_LOCK_STATUS":        {fml.MetricTypeBinary, unitNone},
-	"V_LEVEL":              {fml.MetricTypeGaugeFloat, unitNone},
-	"V_VOLTAGE":            {fml.MetricTypeGaugeFloat, unitVoltage},
-	"V_CURRENT":            {fml.MetricTypeGaugeFloat, unitAmpere},
-	"V_RGB":                {fml.MetricTypeNone, unitNone},
-	"V_RGBW":               {fml.MetricTypeNone, unitNone},
-	"V_ID":                 {fml.MetricTypeNone, unitNone},
-	"V_UNIT_PREFIX":        {fml.MetricTypeNone, unitNone},
-	"V_HVAC_SETPOINT_COOL": {fml.MetricTypeGaugeFloat, unitNone},
-	"V_HVAC_SETPOINT_HEAT": {fml.MetricTypeGaugeFloat, unitNone},
-	"V_HVAC_FLOW_MODE":     {fml.MetricTypeNone, unitNone},
-	"V_TEXT":               {fml.MetricTypeNone, unitNone},
-	"V_CUSTOM":             {fml.MetricTypeNone, unitNone},
-	"V_POSITION":           {fml.MetricTypeNone, unitNone},
-	"V_IR_RECORD":          {fml.MetricTypeNone, unitNone},
-	"V_PH":                 {fml.MetricTypeGaugeFloat, unitNone},
-	"V_ORP":                {fml.MetricTypeGaugeFloat, unitNone},
-	"V_EC":                 {fml.MetricTypeGaugeFloat, unitNone},
-	"V_VAR":                {fml.MetricTypeGaugeFloat, unitNone},
-	"V_VA":                 {fml.MetricTypeGaugeFloat, unitNone},
-	"V_POWER_FACTOR":       {fml.MetricTypeGaugeFloat, unitNone},
+	"V_TEMP":               {mtrml.MetricTypeGaugeFloat, mtrml.UnitCelsius},
+	"V_HUM":                {mtrml.MetricTypeGaugeFloat, mtrml.UnitHumidity},
+	"V_STATUS":             {mtrml.MetricTypeBinary, mtrml.UnitNone},
+	"V_PERCENTAGE":         {mtrml.MetricTypeGaugeFloat, mtrml.UnitPercent},
+	"V_PRESSURE":           {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_FORECAST":           {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_RAIN":               {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_RAINRATE":           {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_WIND":               {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_GUST":               {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_DIRECTION":          {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_UV":                 {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_WEIGHT":             {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_DISTANCE":           {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_IMPEDANCE":          {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_ARMED":              {mtrml.MetricTypeBinary, mtrml.UnitNone},
+	"V_TRIPPED":            {mtrml.MetricTypeBinary, mtrml.UnitNone},
+	"V_WATT":               {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_KWH":                {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_SCENE_ON":           {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_SCENE_OFF":          {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_HVAC_FLOW_STATE":    {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_HVAC_SPEED":         {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_LIGHT_LEVEL":        {mtrml.MetricTypeGaugeFloat, mtrml.UnitPercent},
+	"V_VAR1":               {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_VAR2":               {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_VAR3":               {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_VAR4":               {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_VAR5":               {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_UP":                 {mtrml.MetricTypeBinary, mtrml.UnitNone},
+	"V_DOWN":               {mtrml.MetricTypeBinary, mtrml.UnitNone},
+	"V_STOP":               {mtrml.MetricTypeBinary, mtrml.UnitNone},
+	"V_IR_SEND":            {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_IR_RECEIVE":         {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_FLOW":               {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_VOLUME":             {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_LOCK_STATUS":        {mtrml.MetricTypeBinary, mtrml.UnitNone},
+	"V_LEVEL":              {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_VOLTAGE":            {mtrml.MetricTypeGaugeFloat, mtrml.UnitVoltage},
+	"V_CURRENT":            {mtrml.MetricTypeGaugeFloat, mtrml.UnitAmpere},
+	"V_RGB":                {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_RGBW":               {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_ID":                 {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_UNIT_PREFIX":        {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_HVAC_SETPOINT_COOL": {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_HVAC_SETPOINT_HEAT": {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_HVAC_FLOW_MODE":     {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_TEXT":               {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_CUSTOM":             {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_POSITION":           {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_IR_RECORD":          {mtrml.MetricTypeNone, mtrml.UnitNone},
+	"V_PH":                 {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_ORP":                {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_EC":                 {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_VAR":                {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_VA":                 {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	"V_POWER_FACTOR":       {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
 }

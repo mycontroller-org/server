@@ -5,8 +5,8 @@ import (
 
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway_protocol"
-	"github.com/mycontroller-org/backend/v2/plugin/gateway_protocol/mqtt"
+	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
+	"github.com/mycontroller-org/backend/v2/plugin/gw_protocol/mqtt"
 )
 
 // Provider implementation
@@ -25,6 +25,7 @@ func (p *Provider) Start(rxMessageFunc func(rawMsg *msgml.RawMessage) error) err
 	var err error
 	switch p.GWConfig.Provider.ProtocolType {
 	case gwpl.TypeMQTT:
+		// update subscription topics
 		ms, _err := mqtt.New(p.GWConfig, rxMessageFunc)
 		err = _err
 		p.Gateway = ms

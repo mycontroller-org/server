@@ -1,4 +1,4 @@
-package gatewayprotocol
+package gwprotocol
 
 import (
 	"fmt"

@@ -3,25 +3,32 @@ package mysensors
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
-	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	"github.com/mycontroller-org/backend/v2/pkg/util"
-	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway_protocol"
+	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
 	"go.uber.org/zap"
 )
 
 // ToRawMessage converts to gateway specific
 func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
+	if len(msg.Payloads) == 0 {
+		return nil, errors.New("There is no payload details on the message")
+	}
+
+	payload := msg.Payloads[0]
+
 	msMsg := message{
 		NodeID:   msg.NodeID,
 		SensorID: msg.SensorID,
 		Command:  "",
 		Ack:      "0",
 		Type:     "",
-		Payload:  msg.Payload,
+		Payload:  payload.Value,
 	}
 
 	// update broadcast id
@@ -33,8 +40,8 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	}
 
 	// init labels and others
-	msg.Labels = msg.Labels.Init()
-	msg.Others = msg.Others.Init()
+	payload.Labels = payload.Labels.Init()
+	payload.Others = payload.Others.Init()
 
 	if msg.IsAckEnabled {
 		msMsg.Ack = "1"
@@ -48,16 +55,16 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 
 	case msgml.TypeSet:
 		msMsg.Command = cmdSet
-		msMsg.Type = msg.Labels.Get(LabelType)
+		msMsg.Type = payload.Labels.Get(LabelType)
 
 	case msgml.TypeRequest:
 		msMsg.Command = cmdRequest
-		msMsg.Type = msg.Labels.Get(LabelType)
+		msMsg.Type = payload.Labels.Get(LabelType)
 
-	case msgml.TypeInternal, msgml.TypeStream:
+	case msgml.TypeAction:
 		msMsg.Command = cmdInternal
 		// call functions
-		err := handleRequests(p.GWConfig, msg.FieldName, msg, &msMsg)
+		err := handleActions(p.GWConfig, payload.Name, msg, &msMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -86,9 +93,9 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 }
 
 // ToMessage converts to mc specific
-func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
-	// init others map
-	rawMsg.Others = rawMsg.Others.Init()
+func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
+
+	messages := make([]*msgml.Message, 0)
 
 	d := make([]string, 0)
 	payload := ""
@@ -98,7 +105,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 	case gwpl.TypeMQTT:
 		// topic/node-id/child-sensor-id/command/ack/type
 		// out_rfm69/11/1/1/0/0
-		rData := strings.Split(string(rawMsg.Others[gwpl.KeyMqttTopic].(string)), "/")
+		rData := strings.Split(string(rawMsg.Others.Get(gwpl.KeyMqttTopic).(string)), "/")
 		if len(rData) < 5 {
 			zap.L().Error("Invalid message format", zap.Any("rawMessage", rawMsg))
 			return nil, nil
@@ -136,13 +143,31 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 		IsAck:      msMsg.Ack == "1",
 		IsReceived: true,
 		Timestamp:  rawMsg.Timestamp,
-		Payload:    msMsg.Payload,
 		Type:       cmdMapForRx[msMsg.Command],
 	}
+	msgPL := msgml.NewData()
+	msgPL.Value = payload
 
-	// init labels and others
-	msg.Labels = msg.Labels.Init()
-	msg.Others = msg.Others.Init()
+	messages = append(messages, msg)
+
+	// update the payload details on return
+	defer func() { msg.Payloads = []msgml.Data{msgPL} }()
+
+	// verify node and sensor ids
+	nID, err := strconv.ParseUint(msg.NodeID, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("Invalid node id: %s", msg.NodeID)
+	}
+	if nID > idBroadcastInt {
+		return nil, fmt.Errorf("Invalid node id: %s", msg.NodeID)
+	}
+	sID, err := strconv.ParseUint(msg.SensorID, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("Invalid sensor id: %s", msg.SensorID)
+	}
+	if sID > idBroadcastInt {
+		return nil, fmt.Errorf("Invalid sensor id: %s", msg.SensorID)
+	}
 
 	// Remove sensor id, if it is a internal message
 	if msg.SensorID == idBroadcast {
@@ -155,19 +180,19 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 	}
 
 	// set labels
-	msg.Labels.Set(LabelType, msMsg.Type)
+	msgPL.Labels.Set(LabelType, msMsg.Type)
 	if msg.NodeID != "" { // set node id if available
-		msg.Labels.Set(LabelNodeID, msg.NodeID)
+		msgPL.Labels.Set(LabelNodeID, msg.NodeID)
 	}
 	if msg.SensorID != "" { // set sensor id if available
-		msg.Labels.Set(LabelSensorID, msg.SensorID)
+		msgPL.Labels.Set(LabelSensorID, msg.SensorID)
 	}
 
 	// internal functions
 	updateFieldData := func() error {
 		_field, ok := setReqFieldMapForRx[msMsg.Type]
 		if ok {
-			msg.Labels.Set(LabelTypeString, _field)
+			msgPL.Labels.Set(LabelTypeString, _field)
 		} else {
 			_field = "V_CUSTOM"
 			zap.L().Warn("This set, req not found. update this. Setting as V_CUSTOM", zap.Any("msMsg", msMsg))
@@ -175,9 +200,9 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 
 		// get type and unit
 		if typeUnit, ok := metricTypeAndUnit[_field]; ok {
-			msg.FieldName = _field
-			msg.MetricType = typeUnit.Type
-			msg.Unit = typeUnit.Unit
+			msgPL.Name = _field
+			msgPL.MetricType = typeUnit.Type
+			msgPL.Unit = typeUnit.Unit
 		} else {
 			// not supported? should I have to return from here?
 		}
@@ -191,37 +216,37 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 			if err != nil {
 				return nil, err
 			}
-			return msg, nil
+			return messages, nil
 		} else if msMsg.NodeID != idBroadcast {
 			if msMsg.Command == cmdInternal {
 				switch msMsg.Type { // valid only for this list
 				case typeInternalConfigResponse:
-					msg.FieldName = "I_CONFIG"
+					msgPL.Name = "I_CONFIG"
 				case typeInternalHeartBeatRequest:
-					msg.FieldName = nml.FuncHeartbeatRequest
+					msgPL.Name = nml.ActionHeartbeatRequest
 				case typeInternalIDResponse:
-					msg.FieldName = "I_ID_REQUEST"
+					msgPL.Name = "I_ID_REQUEST"
 				case typeInternalPresentation:
-					msg.FieldName = nml.FuncRefreshNodeInfo
+					msgPL.Name = nml.ActionRefreshNodeInfo
 				case typeInternalReboot:
-					msg.FieldName = nml.FuncReboot
+					msgPL.Name = nml.ActionReboot
 				case typeInternalTime:
-					msg.FieldName = "I_TIME"
+					msgPL.Name = "I_TIME"
 				default:
 					// leave it, will fail at the end of root if
 				}
-				if msg.FieldName != "" {
-					return msg, nil
+				if msgPL.Name != "" {
+					return messages, nil
 				}
 			} else if msMsg.Command == cmdStream {
 				if _type, ok := streamTypeMapForRx[msMsg.Type]; ok {
-					msg.Type = msgml.TypeStream
-					msg.FieldName = _type
-					return msg, nil
+					msg.Type = msgml.TypeAction
+					msgPL.Name = _type
+					return messages, nil
 				}
 			}
 		}
-		return msg, fmt.Errorf("For this message ack not implemented, rawMessage: %v", msMsg)
+		return messages, fmt.Errorf("For this message ack not implemented, rawMessage: %v", msMsg)
 	}
 
 	// entering into normal message processing
@@ -231,8 +256,8 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 		switch msMsg.Command {
 		case cmdPresentation:
 			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
-				msg.FieldName = fml.FieldName
-				msg.Labels.Set(LabelTypeString, _type)
+				msgPL.Name = ml.FieldName
+				msgPL.Labels.Set(LabelTypeString, _type)
 			} else {
 				// not supported? should I have to return from here?
 			}
@@ -251,13 +276,13 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 		switch msMsg.Command {
 
 		case cmdPresentation:
-			msg.Others.Set(fml.FieldLibraryVersion, msg.Payload, nil) // set lib version
+			msgPL.Labels.Set(ml.LabelNodeLibraryVersion, payload)
 			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
 				if _type == "S_ARDUINO_REPEATER_NODE" || _type == "S_ARDUINO_NODE" {
-					// this is a node data
-					msg.FieldName = fml.FieldName
+					// this is a node lib version data
+					msgPL.Name = ml.FieldNone
 					if _type == "S_ARDUINO_REPEATER_NODE" {
-						msg.Labels.Set(LabelNodeType, "repeater")
+						msgPL.Labels.Set(LabelNodeType, "repeater")
 					}
 				} else {
 					// return?
@@ -268,18 +293,23 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 		case cmdInternal:
 			if _type, ok := internalTypeMapForRx[msMsg.Type]; ok {
 				if fieldName, ok := internalValidFields[_type]; ok {
-					msg.FieldName = fieldName
+					msgPL.Name = fieldName
 					msg.Type = msgml.TypeSet
-					if fieldName == fml.FieldLocked { // update locked reason
-						msg.Others.Set(LabelLockedReason, msg.Payload, nil)
-						msg.Payload = "true"
+
+					if fieldName == ml.LabelNodeVersion {
+						msgPL.Labels.Set(ml.LabelNodeVersion, payload)
+					}
+
+					if fieldName == ml.FieldLocked { // update locked reason
+						msgPL.Others.Set(LabelLockedReason, payload, nil)
+						msgPL.Value = "true"
 					}
 				} else {
-					msg.Type = msgml.TypeInternal
-					msg.FieldName = _type
+					msg.Type = msgml.TypeAction
+					msgPL.Name = _type
 
 					// filter implemented requests
-					_, found := util.FindItem(internalValidRequests, _type)
+					_, found := util.FindItem(customValidActions, _type)
 					if !found {
 						return nil, fmt.Errorf("This internal message handling not implemented: %s", _type)
 					}
@@ -290,11 +320,11 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 
 		case cmdStream:
 			if _type, ok := streamTypeMapForRx[msMsg.Type]; ok {
-				msg.Type = msgml.TypeStream
-				msg.FieldName = _type
+				msg.Type = msgml.TypeAction
+				msgPL.Name = _type
 
 				// filter implemented requests
-				_, found := util.FindItem(internalValidRequests, _type)
+				_, found := util.FindItem(customValidActions, _type)
 				if !found {
 					return nil, fmt.Errorf("This stream message handling not implemented: %s", _type)
 				}
@@ -305,11 +335,11 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 
 	case msMsg.NodeID == idBroadcast:
 		if _type, ok := internalTypeMapForRx[msMsg.Type]; ok {
-			msg.Type = msgml.TypeInternal
-			msg.FieldName = _type
+			msg.Type = msgml.TypeAction
+			msgPL.Name = _type
 
 			// filter implemented requests
-			_, found := util.FindItem(internalValidRequests, _type)
+			_, found := util.FindItem(customValidActions, _type)
 			if !found {
 				return nil, fmt.Errorf("This internal message handling not implemented: %s", _type)
 			}
@@ -321,7 +351,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) (*msgml.Message, error) {
 		// if none of the above
 	}
 
-	return msg, nil
+	return messages, nil
 }
 
 // converts message to MySensors specific type

@@ -8,6 +8,37 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
 
+// Data definition
+type Data struct {
+	Name       string               // name of the field only for field data, for node, senor can be any thing
+	Value      string               // 1, true, 99.45, started, 72.345,45.333, any...
+	MetricType string               // none, binary, gauge, counter, geo ...
+	Unit       string               // volt, milli_volt, etc...
+	Labels     cmap.CustomStringMap // labels for this field or data
+	Others     cmap.CustomMap       // can be used to store other details
+}
+
+// NewData returns empty data
+func NewData() Data {
+	data := Data{}
+	data.Labels = data.Labels.Init()
+	data.Others = data.Others.Init()
+	return data
+}
+
+// Clone a data
+func (d *Data) Clone() Data {
+	cd := Data{
+		Name:       d.Name,
+		Value:      d.Value,
+		MetricType: d.MetricType,
+		Unit:       d.Unit,
+		Labels:     d.Labels.Clone(),
+		Others:     d.Others.Clone(),
+	}
+	return cd
+}
+
 // Message definition
 type Message struct {
 	ID            string
@@ -15,38 +46,38 @@ type Message struct {
 	NodeID        string
 	SensorID      string
 	Type          string // Message type: set, request, ...
-	FieldName     string // name of the field only for field data, for node, senor can be any thing
-	MetricType    string // none, binary, gauge, counter, geo ...
-	Payload       string // 1, true, 99.45, started, 72.345,45.333, any...
-	Unit          string // volt, milli_volt, etc...
+	Payloads      []Data // payloads
 	IsAck         bool   // Is this acknowledgement message
 	IsReceived    bool   // Is this received message
 	IsAckEnabled  bool   // Is Acknowledge enabled?
 	IsPassiveNode bool   // Is this message for passive node or sleeping node?
 	Timestamp     time.Time
-	Labels        cmap.CustomStringMap
-	Others        cmap.CustomMap
+}
+
+// NewMessage returns empty message
+func NewMessage(isReceived bool) Message {
+	return Message{IsReceived: isReceived, Payloads: make([]Data, 0)}
 }
 
 // Clone a message
 func (m *Message) Clone() *Message {
+	// clone data slice
+	clonedData := make([]Data, 0)
+	for _, d := range m.Payloads {
+		clonedData = append(clonedData, d.Clone())
+	}
 	cm := &Message{
 		ID:            m.ID,
 		GatewayID:     m.GatewayID,
 		NodeID:        m.NodeID,
 		SensorID:      m.SensorID,
 		Type:          m.Type,
-		FieldName:     m.FieldName,
-		MetricType:    m.MetricType,
-		Payload:       m.Payload,
-		Unit:          m.Unit,
+		Payloads:      clonedData,
 		IsAck:         m.IsAck,
 		IsReceived:    m.IsReceived,
 		IsAckEnabled:  m.IsAckEnabled,
 		IsPassiveNode: m.IsPassiveNode,
 		Timestamp:     m.Timestamp,
-		Labels:        m.Labels.Clone(),
-		Others:        m.Others.Clone(),
 	}
 	return cm
 }
@@ -64,10 +95,15 @@ func (m *Message) GetID() string {
 		buffer.WriteString("-")
 		buffer.WriteString(m.SensorID)
 	}
-	if m.FieldName != "" {
-		buffer.WriteString("-")
-		buffer.WriteString(m.FieldName)
+	if len(m.Payloads) > 0 {
+		for _, d := range m.Payloads {
+			if d.Name != "" {
+				buffer.WriteString("-")
+				buffer.WriteString(d.Name)
+			}
+		}
 	}
+
 	if m.Type != "" {
 		buffer.WriteString("-")
 		buffer.WriteString(m.Type)
@@ -82,6 +118,17 @@ type RawMessage struct {
 	Data       []byte
 	Timestamp  time.Time
 	Others     cmap.CustomMap
+}
+
+// NewRawMessage returns empty message
+func NewRawMessage(isReceived bool, data []byte) *RawMessage {
+	rawMsg := &RawMessage{
+		Timestamp:  time.Now(),
+		IsReceived: isReceived,
+		Data:       data,
+	}
+	rawMsg.Others = rawMsg.Others.Init()
+	return rawMsg
 }
 
 // MarshalJSON for RawMessage, Data should be printed as string on the log

@@ -8,7 +8,7 @@ import (
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
-	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gateway_protocol"
+	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
 
 	"go.uber.org/zap"
 )
@@ -148,15 +148,10 @@ func (d *Endpoint) Close() error {
 
 func (d *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 	return func(c paho.Client, message paho.Message) {
-		rawMsg := &msgml.RawMessage{
-			Data:      message.Payload(),
-			Timestamp: time.Now(),
-			Others: map[string]interface{}{
-				gwptcl.KeyMqttTopic: message.Topic(),
-				gwptcl.KeyMqttQoS:   int(message.Qos()),
-			},
-		}
-		rawMsg.IsReceived = true
+		rawMsg := msgml.NewRawMessage(true, message.Payload())
+		rawMsg.Others.Set(gwptcl.KeyMqttTopic, message.Topic(), nil)
+		rawMsg.Others.Set(gwptcl.KeyMqttQoS, int(message.Qos()), nil)
+
 		d.rawMsgLogger.AsyncWrite(rawMsg.Clone())
 		err := d.receiveMsgFunc(rawMsg)
 		if err != nil {

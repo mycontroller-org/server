@@ -102,3 +102,13 @@ func FindItem(slice []string, value string) (int, bool) {
 	}
 	return -1, false
 }
+
+// IsExists func
+func IsExists(items []string, item string) bool {
+	for _, i := range items {
+		if i == item {
+			return true
+		}
+	}
+	return false
+}

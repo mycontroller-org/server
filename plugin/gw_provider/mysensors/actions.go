@@ -18,27 +18,27 @@ import (
 
 // This function is like route for globally defined features for the request like reboot, discover, etc.,
 // And this should have addition request implementation defined in "internalValidRequests" map on constants.go file
-func handleRequests(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *message) error {
+func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *message) error {
 	switch fn {
 
-	case nml.FuncDiscover:
+	case nml.ActionDiscover:
 		msMsg.Type = typeInternalDiscoverRequest
 		msMsg.Payload = payloadEmpty
 		msMsg.NodeID = idBroadcast
 
-	case nml.FuncHeartbeatRequest:
+	case nml.ActionHeartbeatRequest:
 		msMsg.Type = typeInternalHeartBeatRequest
 		msMsg.Payload = payloadEmpty
 
-	case nml.FuncReboot:
+	case nml.ActionReboot:
 		msMsg.Type = typeInternalReboot
 		msMsg.Payload = payloadEmpty
 
-	case nml.FuncRefreshNodeInfo:
+	case nml.ActionRefreshNodeInfo:
 		msMsg.Type = typeInternalPresentation
 		msMsg.Payload = payloadEmpty
 
-	case nml.FuncReset:
+	case nml.ActionReset:
 		// NOTE: This feature supports only for MySensorsBootloaderRF24
 		// set reset flag on the node labels
 		// reboot the node
@@ -72,7 +72,7 @@ func handleRequests(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *me
 		msMsg.Payload = getTimestamp(gwCfg)
 		msMsg.Type = typeInternalTime
 
-	case nml.FuncFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST":
+	case nml.ActionFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST":
 		pl, err := executeFirmwareConfigRequest(msg)
 		if err != nil {
 			return err

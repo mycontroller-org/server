@@ -10,10 +10,9 @@ import (
 )
 
 // List by filter and pagination
-func List(f []pml.Filter, p *pml.Pagination) ([]gwml.Config, error) {
+func List(f []pml.Filter, p *pml.Pagination) (*pml.Result, error) {
 	out := make([]gwml.Config, 0)
-	svc.STG.Find(ml.EntityGateway, f, p, &out)
-	return out, nil
+	return svc.STG.Find(ml.EntityGateway, f, p, &out)
 }
 
 // Get returns a gateway

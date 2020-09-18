@@ -12,9 +12,9 @@ import (
 // Provider instance
 type Provider interface {
 	ToRawMessage(message *msgml.Message) (*msgml.RawMessage, error)
-	ToMessage(rawMesage *msgml.RawMessage) (*msgml.Message, error)
+	ToMessage(rawMesage *msgml.RawMessage) ([]*msgml.Message, error)
 	Post(rawMessage *msgml.RawMessage) error
-	Start(rxMessageFunc func(rawMsg *msgml.RawMessage) error) error
+	Start(messageReceiveFunc func(rawMsg *msgml.RawMessage) error) error
 	Close() error
 }
 

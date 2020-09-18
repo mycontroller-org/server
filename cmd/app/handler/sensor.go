@@ -2,9 +2,11 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
@@ -14,14 +16,15 @@ func registerSensorRoutes(router *mux.Router) {
 	router.HandleFunc("/api/sensor", listSensors).Methods(http.MethodGet)
 	router.HandleFunc("/api/sensor/{id}", getSensor).Methods(http.MethodGet)
 	router.HandleFunc("/api/sensor", updateSensor).Methods(http.MethodPost)
+	router.HandleFunc("/api/sensor", deleteSensors).Methods(http.MethodDelete)
 }
 
 func listSensors(w http.ResponseWriter, r *http.Request) {
-	findMany(w, r, ml.EntitySensor, &[]sml.Sensor{})
+	FindMany(w, r, ml.EntitySensor, &[]sml.Sensor{})
 }
 
 func getSensor(w http.ResponseWriter, r *http.Request) {
-	findOne(w, r, ml.EntitySensor, &sml.Sensor{})
+	FindOne(w, r, ml.EntitySensor, &sml.Sensor{})
 }
 
 func updateSensor(w http.ResponseWriter, r *http.Request) {
@@ -32,5 +35,20 @@ func updateSensor(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	}
-	saveEntity(w, r, ml.EntitySensor, &sml.Sensor{}, bwFunc)
+	SaveEntity(w, r, ml.EntitySensor, &sml.Sensor{}, bwFunc)
+}
+
+func deleteSensors(w http.ResponseWriter, r *http.Request) {
+	IDs := []string{}
+	updateFn := func(f []pml.Filter, p *pml.Pagination, d []byte) (interface{}, error) {
+		if len(IDs) > 0 {
+			count, err := sensorAPI.Delete(IDs)
+			if err != nil {
+				return nil, err
+			}
+			return fmt.Sprintf("Deleted: %d", count), nil
+		}
+		return nil, errors.New("Supply a sensor id(s)")
+	}
+	UpdateData(w, r, &IDs, updateFn)
 }

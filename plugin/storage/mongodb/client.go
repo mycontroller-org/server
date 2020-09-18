@@ -240,11 +240,12 @@ func sort(s []pml.Sort) *bson.M {
 		return &bm
 	}
 	for _, _s := range s {
+		filed := strings.ToLower(_s.Field)
 		switch strings.ToLower(_s.OrderBy) {
 		case "", "asc":
-			bm[_s.Field] = 1
+			bm[filed] = 1
 		case "desc":
-			bm[_s.Field] = -1
+			bm[filed] = -1
 		}
 	}
 	return &bm

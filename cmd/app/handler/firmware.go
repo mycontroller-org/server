@@ -17,11 +17,11 @@ func registerFirmwareRoutes(router *mux.Router) {
 }
 
 func listFirmwares(w http.ResponseWriter, r *http.Request) {
-	findMany(w, r, ml.EntityFirmware, &[]fwml.Firmware{})
+	FindMany(w, r, ml.EntityFirmware, &[]fwml.Firmware{})
 }
 
 func getFirmware(w http.ResponseWriter, r *http.Request) {
-	findOne(w, r, ml.EntityFirmware, &fwml.Firmware{})
+	FindOne(w, r, ml.EntityFirmware, &fwml.Firmware{})
 }
 
 func updateFirmware(w http.ResponseWriter, r *http.Request) {
@@ -32,5 +32,5 @@ func updateFirmware(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	}
-	saveEntity(w, r, ml.EntityFirmware, &fwml.Firmware{}, bwFunc)
+	SaveEntity(w, r, ml.EntityFirmware, &fwml.Firmware{}, bwFunc)
 }

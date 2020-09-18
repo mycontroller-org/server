@@ -4,4 +4,5 @@ package gatewayprovider
 const (
 	// Gateway providers
 	ProviderMySensors = "MySensors"
+	ProviderTasmota   = "Tasmota"
 )

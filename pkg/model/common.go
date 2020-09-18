@@ -8,6 +8,7 @@ import (
 const (
 	StateUp          = "up"
 	StateDown        = "down"
+	StateError       = "error"
 	StateUnavailable = "unavailable"
 )
 

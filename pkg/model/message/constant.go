@@ -6,6 +6,5 @@ const (
 	TypeSet          = "set"
 	TypeRequest      = "request"
 	TypePresentation = "presentation"
-	TypeInternal     = "internal"
-	TypeStream       = "stream"
+	TypeAction       = "action"
 )

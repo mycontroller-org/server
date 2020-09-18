@@ -10,9 +10,11 @@ import (
 	"github.com/gorilla/mux"
 	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	"go.uber.org/zap"
 )
 
-func params(r *http.Request) ([]pml.Filter, *pml.Pagination, error) {
+// Params func
+func Params(r *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 	f := mux.Vars(r)
 	q := r.URL.Query()
 	for k, v := range q {
@@ -50,6 +52,7 @@ func params(r *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 
 	// fetch sort options
 	if sr, ok := f["sortBy"]; ok {
+		zap.L().Debug("test", zap.Any("sortBy", sr))
 		s := &[]pml.Sort{}
 		err := json.Unmarshal([]byte(sr), s)
 		if err != nil {
@@ -74,6 +77,7 @@ func params(r *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 	}
 
 	if fj, ok := f["filter"]; ok {
+		zap.L().Debug("test", zap.Any("filter", fj))
 		fs := &[]pml.Filter{}
 		err := json.Unmarshal([]byte(fj), fs)
 		if err != nil {
@@ -82,13 +86,16 @@ func params(r *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 		filters = append(filters, *fs...)
 	}
 
+	zap.L().Debug("test-final", zap.Any("filter", filters), zap.Any("pagination", p))
+
 	return filters, &p, nil
 }
 
-func findOne(w http.ResponseWriter, r *http.Request, en string, e interface{}) {
+// FindOne func
+func FindOne(w http.ResponseWriter, r *http.Request, en string, e interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 
-	f, _, err := params(r)
+	f, _, err := Params(r)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -107,10 +114,11 @@ func findOne(w http.ResponseWriter, r *http.Request, en string, e interface{}) {
 	w.Write(od)
 }
 
-func distinct(w http.ResponseWriter, r *http.Request, e string, fn string) {
+// Distinct func
+func Distinct(w http.ResponseWriter, r *http.Request, e string, fn string) {
 	w.Header().Set("Content-Type", "application/json")
 
-	f, _, err := params(r)
+	f, _, err := Params(r)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -129,10 +137,70 @@ func distinct(w http.ResponseWriter, r *http.Request, e string, fn string) {
 	w.Write(od)
 }
 
-func findMany(w http.ResponseWriter, r *http.Request, entityName string, entities interface{}) {
+// LoadData loads data
+func LoadData(w http.ResponseWriter, r *http.Request, entityFn func(f []pml.Filter, p *pml.Pagination) (interface{}, error)) {
 	w.Header().Set("Content-Type", "application/json")
 
-	f, p, err := params(r)
+	f, p, err := Params(r)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	result, err := entityFn(f, p)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	od, err := json.Marshal(result)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	w.Write(od)
+}
+
+// UpdateData loads data
+func UpdateData(w http.ResponseWriter, r *http.Request, entity interface{}, updateFn func(f []pml.Filter, p *pml.Pagination, d []byte) (interface{}, error)) {
+	w.Header().Set("Content-Type", "application/json")
+
+	f, p, err := Params(r)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	d, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	err = json.Unmarshal(d, entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	result, err := updateFn(f, p, d)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	od, err := json.Marshal(result)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	w.Write(od)
+}
+
+// FindMany func
+func FindMany(w http.ResponseWriter, r *http.Request, entityName string, entities interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+
+	f, p, err := Params(r)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -151,7 +219,8 @@ func findMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 	w.Write(od)
 }
 
-func saveEntity(w http.ResponseWriter, r *http.Request, en string, e interface{}, bwFunc func(e interface{}, f *[]pml.Filter) error) {
+// SaveEntity func
+func SaveEntity(w http.ResponseWriter, r *http.Request, en string, e interface{}, bwFunc func(e interface{}, f *[]pml.Filter) error) {
 	w.Header().Set("Content-Type", "application/json")
 
 	d, err := ioutil.ReadAll(r.Body)

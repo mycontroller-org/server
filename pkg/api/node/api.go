@@ -46,8 +46,7 @@ func GetByIDs(gatewayID, nodeID string) (*nml.Node, error) {
 }
 
 // Delete node
-func Delete(IDs []string) error {
+func Delete(IDs []string) (int64, error) {
 	f := []pml.Filter{{Key: ml.KeyID, Operator: storage.OperatorIn, Value: IDs}}
-	svc.STG.Delete(ml.EntityNode, f)
-	return nil
+	return svc.STG.Delete(ml.EntityNode, f)
 }

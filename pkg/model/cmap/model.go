@@ -71,6 +71,15 @@ func (csm CustomStringMap) GetBool(key string) bool {
 	return v
 }
 
+// GetIgnoreBool a value by ignore key
+func (csm CustomStringMap) GetIgnoreBool(key string) bool {
+	v, err := strconv.ParseBool(strings.ToLower(csm.Get(GetIgnoreKey(key))))
+	if err != nil {
+		// TODO: needs to pass it to logger?
+	}
+	return v
+}
+
 // GetInt a value by key
 func (csm CustomStringMap) GetInt(key string) int {
 	v, err := strconv.ParseInt(csm.Get(key), 10, 64)

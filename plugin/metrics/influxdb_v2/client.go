@@ -13,6 +13,7 @@ import (
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	influxdb2log "github.com/influxdata/influxdb-client-go/v2/log"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metric"
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
 	"go.uber.org/zap"
 )
@@ -142,7 +143,7 @@ func (c *Client) Write(field *fml.Field) error {
 
 func getPoint(field *fml.Field) (*write.Point, error) {
 	fields := make(map[string]interface{})
-	if field.MetricType == fml.MetricTypeGEO {
+	if field.MetricType == mtrml.MetricTypeGEO {
 		_f, err := geoData(field.Payload.Value)
 		if err != nil {
 			return nil, err
@@ -196,17 +197,17 @@ func geoData(pl interface{}) (map[string]interface{}, error) {
 
 func measurementName(metricType string) (string, error) {
 	switch metricType {
-	case fml.MetricTypeBinary:
+	case mtrml.MetricTypeBinary:
 		return "binary_data", nil
-	case fml.MetricTypeGauge:
+	case mtrml.MetricTypeGauge:
 		return "gauge_int_data", nil
-	case fml.MetricTypeGaugeFloat:
+	case mtrml.MetricTypeGaugeFloat:
 		return "gauge_float_data", nil
-	case fml.MetricTypeCounter:
+	case mtrml.MetricTypeCounter:
 		return "counter_data", nil
-	case fml.MetricTypeNone:
+	case mtrml.MetricTypeNone:
 		return "string_data", nil
-	case fml.MetricTypeGEO:
+	case mtrml.MetricTypeGEO:
 		return "geo_data", nil
 	default:
 		return "", fmt.Errorf("Unknown metric type: %s", metricType)

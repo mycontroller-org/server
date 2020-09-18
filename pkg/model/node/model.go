@@ -9,17 +9,12 @@ import (
 
 // Node functions
 const (
-	FuncDiscover         = "discover"
-	FuncFirmwareUpdate   = "firmware_update"
-	FuncHeartbeatRequest = "heartbeat_request"
-	FuncReboot           = "reboot"
-	FuncRefreshNodeInfo  = "refresh_node_info"
-	FuncReset            = "reset"
-)
-
-// Known labels
-const (
-	LabelAssignedFirmware = "assigned_firmware" // id of the assigned firmware
+	ActionDiscover         = "discover"
+	ActionFirmwareUpdate   = "firmware_update"
+	ActionHeartbeatRequest = "heartbeat_request"
+	ActionReboot           = "reboot"
+	ActionRefreshNodeInfo  = "refresh_node_info"
+	ActionReset            = "reset"
 )
 
 // Node model
@@ -30,6 +25,6 @@ type Node struct {
 	Name      string               `json:"name"`
 	Labels    cmap.CustomStringMap `json:"labels"`
 	Others    cmap.CustomMap       `json:"others"`
-	Status    ml.State             `json:"status"`
+	State     ml.State             `json:"state"`
 	LastSeen  time.Time            `json:"lastSeen"`
 }

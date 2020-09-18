@@ -20,10 +20,11 @@ import (
 // executeFirmwareConfigRequest executes firmware config request and response with hex payload
 func executeFirmwareConfigRequest(msg *msgml.Message) (string, error) {
 	startTime := time.Now()
+	rxPL := msg.Payloads[0].Value
 
 	// convert the received hex to matching struct format
 	fwCfgReq := &firmwareConfigRequest{}
-	err := toStruct(msg.Payload, fwCfgReq)
+	err := toStruct(rxPL, fwCfgReq)
 	if err != nil {
 		return "", err
 	}
@@ -69,11 +70,12 @@ func executeFirmwareConfigRequest(msg *msgml.Message) (string, error) {
 
 // executeFirmwareRequest executes firmware request and response with hex payload
 func executeFirmwareRequest(msg *msgml.Message) (string, error) {
+	rxPL := msg.Payloads[0].Value
 	startTime := time.Now()
 
 	// convert the received hex to matching struct format
 	fwReq := &firmwareRequest{}
-	err := toStruct(msg.Payload, fwReq)
+	err := toStruct(rxPL, fwReq)
 	if err != nil {
 		return "", err
 	}
@@ -111,7 +113,7 @@ func executeFirmwareRequest(msg *msgml.Message) (string, error) {
 // if not available, loads it from disk
 func fetchFirmware(node *nml.Node, typeID, versionID uint16, verifyID bool) (*firmwareRaw, error) {
 	// get mapped firmware by id
-	fwID := node.Labels.Get(nml.LabelAssignedFirmware)
+	fwID := node.Labels.Get(ml.LabelNodeAssignedFirmware)
 	if fwID == "" {
 		return nil, errors.New("Firmware not assigned for this node")
 	}

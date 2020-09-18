@@ -27,26 +27,34 @@ func getQueue(name string, queueSize int) *q.BoundedQueue {
 func (s *Service) receiveMessageFunc() func(rawMsg *msgml.RawMessage) error {
 	return func(rawMsg *msgml.RawMessage) error {
 		zap.L().Debug("RawMessage received", zap.String("gateway", s.Config.Name), zap.Any("rawMessage", rawMsg))
-		msg, err := s.Provider.ToMessage(rawMsg)
+		messages, err := s.Provider.ToMessage(rawMsg)
 		if err != nil {
 			return err
 		}
-		if msg == nil {
-			zap.L().Debug("Message not parsed", zap.String("gateway", s.Config.Name), zap.Any("RawMessage", rawMsg))
+		if len(messages) == 0 {
+			zap.L().Debug("Messages not parsed", zap.String("gateway", s.Config.Name), zap.Any("RawMessage", rawMsg))
 			return nil
 		}
 		// update gatewayID if not found
-		if msg != nil && msg.GatewayID == "" {
-			msg.GatewayID = s.Config.ID
+		for index := 0; index < len(messages); index++ {
+			msg := messages[index]
+			if msg != nil {
+				if msg != nil && msg.GatewayID == "" {
+					msg.GatewayID = s.Config.ID
+				}
+				var topic string
+				if msg.IsAck {
+					topic = fmt.Sprintf("%s_%s", mcbus.TopicGatewayAcknowledgement, msg.GetID())
+				} else {
+					topic = mcbus.TopicMsgFromGW
+				}
+				_, err = mcbus.Publish(topic, msg)
+				if err != nil {
+					return err
+				}
+			}
 		}
-		var topic string
-		if msg.IsAck {
-			topic = fmt.Sprintf("%s_%s", mcbus.TopicGatewayAcknowledgement, msg.GetID())
-		} else {
-			topic = mcbus.TopicMsgFromGW
-		}
-		_, err = mcbus.Publish(topic, msg)
-		return err
+		return nil
 	}
 }
 
@@ -69,8 +77,6 @@ func (s *Service) writeMessageFunc() func(msg *msgml.Message) {
 		if msg.IsPassiveNode {
 			msg.IsAckEnabled = false
 		} else if s.Config.Ack.Enabled && msg.NodeID != "" {
-			msg.IsAckEnabled = true
-		} else if s.Config.Ack.StreamAckEnabled && msg.Type == msgml.TypeStream {
 			msg.IsAckEnabled = true
 		} else {
 			msg.IsAckEnabled = false
@@ -229,7 +235,7 @@ func (s *Service) Start() error {
 		mcbus.BUS.DeregisterTopics(s.TopicSleepingMsg2Provider)
 		s.OutMsgQueue.Stop()
 	}
-	return nil
+	return err
 }
 
 // Stop the media

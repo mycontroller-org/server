@@ -7,7 +7,7 @@ import (
 	m2s "github.com/mitchellh/mapstructure"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gateway_protocol"
+	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
 	s "github.com/tarm/serial"
 	"go.uber.org/zap"
 )
@@ -135,11 +135,7 @@ func (d *Endpoint) dataListener() {
 					dataCloned := make([]byte, len(data))
 					copy(dataCloned, data)
 					data = nil // reset local buffer
-					rawMsg := &msgml.RawMessage{
-						Data:       dataCloned,
-						Timestamp:  time.Now(),
-						IsReceived: true,
-					}
+					rawMsg := msgml.NewRawMessage(true, dataCloned)
 					//	zap.L().Debug("new message received", zap.Any("rawMessage", rawMsg))
 					d.rawMsgLogger.AsyncWrite(rawMsg.Clone())
 					err := d.receiveMsgFunc(rawMsg)
