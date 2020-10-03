@@ -2,6 +2,7 @@ package voiddb
 
 import (
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metric"
 )
 
 // Client for voiddb
@@ -24,3 +25,8 @@ func (c *Client) Write(variable *fml.Field) error { return nil }
 
 // WriteBlocking function
 func (c *Client) WriteBlocking(variable *fml.Field) error { return nil }
+
+// Query function
+func (c *Client) Query(queryConfig *mtrml.QueryConfig) (map[string][]mtrml.Data, error) {
+	return nil, nil
+}

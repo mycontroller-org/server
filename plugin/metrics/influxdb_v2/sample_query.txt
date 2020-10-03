@@ -1,0 +1,45 @@
+#-------------------------------------------------------------------------------
+# sample query for gauge_float
+#-------------------------------------------------------------------------------
+data = from(bucket: "mcbkt")
+  |> range(start: -10m)
+  |> filter(fn: (r) => r["_measurement"] == "mc_gauge_float_data")
+  |> filter(fn: (r) => r["gateway"] == "zh38puit5i")
+  |> filter(fn: (r) => r["node"] == "13")
+  |> filter(fn: (r) => r["sensor"] == "1")
+  |> filter(fn: (r) => r["field"] == "V_VOLTAGE")
+  |> filter(fn: (r) => r["_field"] == "value")
+
+median = data |> aggregateWindow(every: 5m, fn: median) |> set(key: "aggType", value: "median") |> toFloat()
+mean = data |> aggregateWindow(every: 5m, fn: mean) |> set(key: "aggType", value: "mean") |> toFloat()
+count = data |> aggregateWindow(every: 5m, fn: count) |> set(key: "aggType", value: "count") |> toFloat()
+sum = data |> aggregateWindow(every: 5m, fn: sum) |> set(key: "aggType", value: "sum") |> toFloat()
+min = data |> aggregateWindow(every: 5m, fn: min) |> set(key: "aggType", value: "min") |> toFloat()
+max = data |> aggregateWindow(every: 5m, fn: max) |> set(key: "aggType", value: "max") |> toFloat()
+percentile = data 
+  |> aggregateWindow(every: 5m, fn: (column, tables=<-) => tables 
+  |> quantile(q: 0.99, column:column,method: "estimate_tdigest", compression: 1000.0)) 
+  |> set(key: "aggType", value: "percentile")
+  |> toFloat()
+
+aColumns = ["_time", "median", "mean", "sum", "count", "min", "max"]
+
+union(tables: [median, mean, percentile,sum, count, min, max])
+|> pivot(rowKey:["_time"], columnKey: ["aggType"], valueColumn: "_value")
+|> drop(fn: (column) => not contains(value: column, set: aColumns) and not column =~ /percentile*/)
+|> yield(name: "test")
+
+#-------------------------------------------------------------------------------
+# sample query for binary
+#-------------------------------------------------------------------------------
+data = from(bucket: "mcbkt") 
+  |> range(start: -2h) 
+  |> filter(fn: (r) => r["id"] == "207eb378-e7b9-4935-a49a-340dde9fc4dd") 
+  |> filter(fn: (r) => r["_field"] == "value") 
+  |> filter(fn: (r) => r["_measurement"] == "mc_binary_data")
+
+data 
+  |> toFloat()
+  |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
+  |> drop(fn: (column) => not contains(value: column, set: ["_time", "value"]))
+  |> yield(name: "field_graph")

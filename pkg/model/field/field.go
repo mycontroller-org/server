@@ -14,7 +14,7 @@ type Field struct {
 	SensorID        string               `json:"sensorId"`
 	FieldID         string               `json:"fieldId"`
 	Name            string               `json:"name"`
-	MetricType      string               `json:"type"`
+	MetricType      string               `json:"metricType"`
 	Payload         Payload              `json:"payload"`
 	PreviousPayload Payload              `json:"previousPayload"`
 	Unit            string               `json:"unit"`

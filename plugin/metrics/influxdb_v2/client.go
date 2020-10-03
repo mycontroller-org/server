@@ -54,6 +54,27 @@ type Client struct {
 	mutex  *sync.RWMutex
 }
 
+// global constants
+const (
+	TagGateway = "gateway"
+	TagNode    = "node"
+	TagSensor  = "sensor"
+	TagField   = "field"
+	TagID      = "id"
+
+	FieldValue     = "value"
+	FieldLatitude  = "latitude"
+	FieldLongitude = "longitude"
+	FieldAltitude  = "altitude"
+
+	MeasurementBinary       = "mc_binary_data"
+	MeasurementGaugeInteger = "mc_gauge_int_data"
+	MeasurementGaugeFloat   = "mc_gauge_float_data"
+	MeasurementCounter      = "mc_counter_data"
+	MeasurementString       = "mc_string_data"
+	MeasurementGeo          = "mc_geo_data"
+)
+
 // NewClient of influxdb
 func NewClient(config map[string]interface{}) (*Client, error) {
 	cfg := Config{}
@@ -150,14 +171,20 @@ func getPoint(field *fml.Field) (*write.Point, error) {
 		}
 		fields = _f
 	} else {
-		fields["value"] = field.Payload.Value
+		fields[FieldValue] = field.Payload.Value
 	}
 	mt, err := measurementName(field.MetricType)
 	if err != nil {
 		return nil, err
 	}
 	p := influxdb2.NewPoint(mt,
-		map[string]string{"gateway": field.GatewayID, "node": field.NodeID, "sensor": field.SensorID, "id": field.ID},
+		map[string]string{
+			TagGateway: field.GatewayID,
+			TagNode:    field.NodeID,
+			TagSensor:  field.SensorID,
+			TagField:   field.FieldID,
+			TagID:      field.ID,
+		},
 		fields,
 		field.LastSeen,
 	)
@@ -188,9 +215,9 @@ func geoData(pl interface{}) (map[string]interface{}, error) {
 		}
 	}
 
-	d["latitude"] = lat
-	d["longitude"] = lon
-	d["altitude"] = alt
+	d[FieldLatitude] = lat
+	d[FieldLongitude] = lon
+	d[FieldAltitude] = alt
 
 	return d, nil
 }
@@ -198,17 +225,17 @@ func geoData(pl interface{}) (map[string]interface{}, error) {
 func measurementName(metricType string) (string, error) {
 	switch metricType {
 	case mtrml.MetricTypeBinary:
-		return "binary_data", nil
+		return MeasurementBinary, nil
 	case mtrml.MetricTypeGauge:
-		return "gauge_int_data", nil
+		return MeasurementGaugeInteger, nil
 	case mtrml.MetricTypeGaugeFloat:
-		return "gauge_float_data", nil
+		return MeasurementGaugeFloat, nil
 	case mtrml.MetricTypeCounter:
-		return "counter_data", nil
+		return MeasurementCounter, nil
 	case mtrml.MetricTypeNone:
-		return "string_data", nil
+		return MeasurementString, nil
 	case mtrml.MetricTypeGEO:
-		return "geo_data", nil
+		return MeasurementGeo, nil
 	default:
 		return "", fmt.Errorf("Unknown metric type: %s", metricType)
 	}

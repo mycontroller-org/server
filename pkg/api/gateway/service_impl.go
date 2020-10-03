@@ -64,6 +64,7 @@ func (s *Service) writeMessageFunc() func(msg *msgml.Message) {
 		if msg != nil && msg.GatewayID == "" {
 			msg.GatewayID = s.Config.ID
 		}
+
 		// send delivery status
 		postDeliveryStatus := func(status *msgml.DeliveryStatus) {
 			_, err := mcbus.Publish(mcbus.TopicMsg2GWDelieverStatus, status)
@@ -72,14 +73,13 @@ func (s *Service) writeMessageFunc() func(msg *msgml.Message) {
 			}
 		}
 
-		// set ack enabled status
-		// enable ack only for sensor fields and stream messages
-		if msg.IsPassiveNode {
-			msg.IsAckEnabled = false
-		} else if s.Config.Ack.Enabled && msg.NodeID != "" {
+		// check acknowledgement status and enable if required
+		// enable ack only for sensor fields
+		// set to false default
+		msg.IsAckEnabled = false
+		// is ack enabled?, is node id available?, is active node?
+		if s.Config.Ack.Enabled && msg.NodeID != "" && !msg.IsPassiveNode {
 			msg.IsAckEnabled = true
-		} else {
-			msg.IsAckEnabled = false
 		}
 
 		// parse message
@@ -98,6 +98,8 @@ func (s *Service) writeMessageFunc() func(msg *msgml.Message) {
 			mcbus.Subscribe(ackTopic, &bus.Handler{
 				Matcher: ackTopic,
 				Handle: func(e *bus.Event) {
+					zap.L().Debug("channel close issue", zap.Any("event", e))
+					// TODO: facing issue, closed channel. Fix this
 					ackChannel <- true
 				},
 			})
