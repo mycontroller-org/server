@@ -13,6 +13,24 @@ import (
 	"go.uber.org/zap"
 )
 
+// ReceivedQueryMap returns all the user query and url input
+func ReceivedQueryMap(r *http.Request) (map[string][]string, error) {
+	data := make(map[string][]string, 0)
+	// url parameters
+	f := mux.Vars(r)
+	for k, v := range f {
+		data[k] = []string{v}
+	}
+
+	// query perameters
+	q := r.URL.Query()
+	for k, v := range q {
+		data[k] = v
+	}
+
+	return data, nil
+}
+
 // Params func
 func Params(r *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 	f := mux.Vars(r)
@@ -52,7 +70,6 @@ func Params(r *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 
 	// fetch sort options
 	if sr, ok := f["sortBy"]; ok {
-		zap.L().Debug("test", zap.Any("sortBy", sr))
 		s := &[]pml.Sort{}
 		err := json.Unmarshal([]byte(sr), s)
 		if err != nil {
@@ -77,7 +94,6 @@ func Params(r *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 	}
 
 	if fj, ok := f["filter"]; ok {
-		zap.L().Debug("test", zap.Any("filter", fj))
 		fs := &[]pml.Filter{}
 		err := json.Unmarshal([]byte(fj), fs)
 		if err != nil {
@@ -86,7 +102,7 @@ func Params(r *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 		filters = append(filters, *fs...)
 	}
 
-	zap.L().Debug("test-final", zap.Any("filter", filters), zap.Any("pagination", p))
+	zap.L().Debug("received filters and pagination", zap.Any("filter", filters), zap.Any("pagination", p))
 
 	return filters, &p, nil
 }

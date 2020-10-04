@@ -12,17 +12,15 @@ const (
 	MetricTypeGEO        = "geo" // Geo Coordinates or GPS
 )
 
-// MyController follows unit details from grafana, take unit details from here
-// Source: https://github.com/grafana/grafana/blob/v6.7.1/packages/grafana-data/src/valueFormats/categories.ts#L23
+// Metric query input parameters
 const (
-	UnitNone       = "none"
-	UnitCelsius    = "celsius"
-	UnitFahrenheit = "fahrenheit"
-	UnitKelvin     = "kelvin"
-	UnitHumidity   = "humidity"
-	UnitPercent    = "percent"
-	UnitVoltage    = "volt"
-	UnitAmpere     = "amp"
+	QueryKeyName       = "name"
+	QueryKeyMetricType = "metric_type"
+	QueryKeyStart      = "start"
+	QueryKeyStop       = "stop"
+	QueryKeyWindow     = "window"
+	QueryKeyTags       = "tags"
+	QueryKeyFunctions  = "functions"
 )
 
 // QueryConfig parameters
