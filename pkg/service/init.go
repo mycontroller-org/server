@@ -70,7 +70,8 @@ func Close() error {
 func initLogger() {
 	logger := ut.GetLogger(CFG.Logger.Mode, CFG.Logger.Level.Core, CFG.Logger.Encoding, false, 0)
 	zap.ReplaceGlobals(logger)
-	zap.L().Info("Welcome to MyController.org server :)", zap.Any("version", version.Get()), zap.Any("loggerConfig", CFG.Logger))
+	zap.L().Info("Welcome to MyController.org server :)")
+	zap.L().Info("Server detail", zap.Any("version", version.Get()), zap.Any("loggerConfig", CFG.Logger))
 }
 
 func initConfig() {

@@ -22,17 +22,16 @@ const (
 	// Field specific labels
 	LabelMetricType = "metric_type"
 	LabelUnit       = "unit"
+
+	// Widget label
+	LabelWideget = "wideget"
 )
 
-// Field names
+// UI widegets
 const (
-	FieldNone           = ""
-	FieldName           = "name"
-	FieldParentID       = "parent_id"
-	FieldSignalStrength = "signal_strength"
-	FieldBatteryLevel   = "battery_level"
-	FieldLocked         = "locked"
-	FieldHeartbeat      = "heartbeat"
-	FieldIPAddress      = "ip_address"
-	FieldNodeWebURL     = "node_web_url"
+	WidegetSwitch = "switch"
+	WidgetGauge   = "gauge"
+	WidegetRGB    = "rgb"
+	WidegetRGBW   = "rgbw"
+	WidegetRGBWC  = "rgbwc"
 )

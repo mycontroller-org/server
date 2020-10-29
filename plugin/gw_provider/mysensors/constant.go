@@ -32,6 +32,9 @@ const (
 	firmwarePurgeJobCron      = "0 */5 * * * *"            // purge loaded firmware, if not used for a while
 	firmwarePurgeInactiveTime = 15 * time.Minute           // firmware inactive time, eligible for purging
 
+	payloadON  = "1"
+	payloadOFF = "0"
+
 	// Command types and value
 	cmdPresentation = "0"
 	cmdSet          = "1"

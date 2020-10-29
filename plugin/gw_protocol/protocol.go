@@ -12,8 +12,13 @@ const (
 
 // Others map known keys
 const (
+	// mqtt requirements
 	KeyMqttTopic = "mqtt_topic"
 	KeyMqttQoS   = "mqtt_qos"
+
+	// http requirements
+	KeyHTTPRequestConf  = "http_request_conf"
+	KeyHTTPResponseConf = "http_response_conf"
 )
 
 // Gateway protocol interface

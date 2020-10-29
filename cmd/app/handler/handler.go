@@ -29,6 +29,8 @@ func StartHandler() error {
 	registerSensorFieldRoutes(router)
 	registerFirmwareRoutes(router)
 	registerMetricRoutes(router)
+	registerWebsocketRoutes(router)
+	registerActionRoutes(router)
 
 	if cfg.WebDirectory != "" {
 		fs := http.FileServer(http.Dir(cfg.WebDirectory))

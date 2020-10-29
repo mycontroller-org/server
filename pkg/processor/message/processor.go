@@ -19,6 +19,7 @@ import (
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	"github.com/robertkrimen/otto"
 	"go.uber.org/zap"
 )
 
@@ -248,9 +249,6 @@ func setFieldData(msg *msgml.Message) error {
 			return err
 		}
 
-		// update payload
-		cPL = fml.Payload{Value: pl, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
-
 		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, d.Name)
 		if err != nil { // TODO: check entry availability on error message
 			field = &fml.Field{
@@ -259,6 +257,30 @@ func setFieldData(msg *msgml.Message) error {
 				SensorID:  msg.SensorID,
 				FieldID:   d.Name,
 			}
+		}
+
+		// update payload
+		cPL = fml.Payload{Value: pl, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
+
+		// if custom payload formatter supplied
+		if formatter := field.PayloadFormatter.OnReceive; msg.IsReceived && formatter != "" {
+			st := time.Now()
+			vm := otto.New()
+			vm.Set("value", cPL.Value)
+
+			ov, err := vm.Run(formatter)
+			if err != nil {
+				zap.L().Error("Failure on payload formatter", zap.String("formatter", formatter), zap.Error(err))
+				return err
+			}
+			value, err := ov.ToString()
+			if err != nil {
+				zap.L().Error("Failed to get value", zap.String("formatter", formatter), zap.Error(err))
+				return err
+			}
+			// update the formatted value
+			cPL.Value = value
+			zap.L().Debug("Formatting done", zap.Any("oldValue", cPL.Value), zap.String("newValue", value), zap.String("timeTaken", time.Since(st).String()))
 		}
 
 		// update last seen
@@ -286,6 +308,13 @@ func setFieldData(msg *msgml.Message) error {
 		field.Labels.CopyFrom(d.Labels)               // copy labels
 		field.Others.CopyFrom(d.Others, field.Labels) // copy other fields
 
+		// update no change since
+		oldValue := fmt.Sprintf("%v", field.Payload.Value)
+		newValue := fmt.Sprintf("%v", cPL.Value)
+		if oldValue != newValue {
+			field.NoChangeSince = cPL.Timestamp
+		}
+
 		// update shift old payload and update current payload
 		field.PreviousPayload = field.Payload
 		field.Payload = cPL
@@ -299,12 +328,22 @@ func setFieldData(msg *msgml.Message) error {
 		}
 
 		start = time.Now()
-		err = svc.MTS.Write(field)
-		if err != nil {
-			zap.L().Error("Failed to write into metrics database", zap.Error(err), zap.Any("field", field))
-		} else {
-			zap.L().Debug("Inserted in to metric db", zap.String("timeTaken", time.Since(start).String()))
+		updateMetric := true
+		// for binary do not update duplicate values
+		if field.MetricType == mtrml.MetricTypeBinary {
+			updateMetric = field.Payload.Timestamp.Equal(field.NoChangeSince)
 		}
+		if updateMetric {
+			err = svc.MTS.Write(field)
+			if err != nil {
+				zap.L().Error("Failed to write into metrics database", zap.Error(err), zap.Any("field", field))
+			} else {
+				zap.L().Debug("Inserted in to metric db", zap.String("timeTaken", time.Since(start).String()))
+			}
+		} else {
+			zap.L().Debug("Skipped metric update", zap.Any("field", field))
+		}
+
 	}
 	return nil
 }

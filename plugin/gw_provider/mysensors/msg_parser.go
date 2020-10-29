@@ -8,6 +8,7 @@ import (
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metric"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	"github.com/mycontroller-org/backend/v2/pkg/util"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
@@ -56,6 +57,24 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	case msgml.TypeSet:
 		msMsg.Command = cmdSet
 		msMsg.Type = payload.Labels.Get(LabelType)
+		if msMsg.Type == "" {
+			for k, v := range setReqFieldMapForRx {
+				if v == payload.Name {
+					msMsg.Type = k
+					break
+				}
+			}
+		}
+		if mt, ok := metricTypeAndUnit[payload.Name]; ok {
+			if mt.Type == mtrml.MetricTypeBinary {
+				switch strings.ToLower(payload.Value) {
+				case "true", "on":
+					msMsg.Payload = payloadON
+				case "false", "off":
+					msMsg.Payload = payloadOFF
+				}
+			}
+		}
 
 	case msgml.TypeRequest:
 		msMsg.Command = cmdRequest

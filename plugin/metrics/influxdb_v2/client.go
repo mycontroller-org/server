@@ -12,6 +12,7 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	influxdb2log "github.com/influxdata/influxdb-client-go/v2/log"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metric"
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
@@ -56,12 +57,6 @@ type Client struct {
 
 // global constants
 const (
-	TagGateway = "gateway"
-	TagNode    = "node"
-	TagSensor  = "sensor"
-	TagField   = "field"
-	TagID      = "id"
-
 	FieldValue     = "value"
 	FieldLatitude  = "latitude"
 	FieldLongitude = "longitude"
@@ -73,6 +68,15 @@ const (
 	MeasurementCounter      = "mc_counter_data"
 	MeasurementString       = "mc_string_data"
 	MeasurementGeo          = "mc_geo_data"
+)
+
+// variables
+var (
+	TagGateway = strings.ToLower(model.KeyGatewayID)
+	TagNode    = strings.ToLower(model.KeyNodeID)
+	TagSensor  = strings.ToLower(model.KeySensorID)
+	TagField   = strings.ToLower(model.KeyFieldID)
+	TagID      = strings.ToLower(model.KeyID)
 )
 
 // NewClient of influxdb

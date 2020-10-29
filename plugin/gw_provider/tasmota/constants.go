@@ -1,6 +1,8 @@
 package tasmota
 
 import (
+	"fmt"
+
 	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metric"
 )
 
@@ -10,9 +12,10 @@ import (
 // prefix can be one of: cmnd, stat, tele
 // command examples: STARUS, POWER1, POWER2, etc.,
 type message struct {
-	NodeID  string
 	Topic   string
+	NodeID  string
 	Command string
+	Payload string
 }
 
 // example: jktasmota/stat/tasmota_49C88D/STATUS11
@@ -20,18 +23,66 @@ func (m *message) toMessage(topic string) {
 
 }
 
-var cmdMapForRx = map[string]string{}
+func (m *message) toString() string {
+	return fmt.Sprintf("%s/%s/%s", m.Topic, m.NodeID, m.Command)
+}
 
 const (
 	topicTele = "tele"
 	topicStat = "stat"
 	topicCmnd = "cmnd"
+
+	emptyPayload = ""
 )
 
+// static sensors
 const (
-	sensorIDNone = ""
+	sensorIDNone  = ""
+	sensorControl = "Control"
+	sensorWiFi    = "WiFi"
+	sensorNetwork = "Network"
+	sensorMemory  = "Memory"
+	sensorTime    = "Time"
+	sensorLogging = "Logging"
+	sensorCounter = "Counter"
+	sensorAnalog  = "Analog"
 )
 
+// tele state ignore fields
+var teleStateFieldsIgnore = []string{
+	"time",
+	"uptime",
+	"uptimesec",
+	"sleepmode",
+	"sleep",
+	"mqttcount",
+	"channel",
+	"ledtable",
+}
+
+// WiFi sensor fields ignore
+var wiFiFieldsIgnore = []string{"ap", "linkcount"}
+
+// supported status
+var statusSupported = []string{
+	cmdStatus,
+	cmdStatus1,
+	cmdStatus2,
+	cmdStatus3,
+	cmdStatus4,
+	cmdStatus5,
+	cmdStatus6,
+	cmdStatus7,
+	cmdStatus8,
+	cmdStatus9,
+	cmdStatus10,
+	cmdStatus11,
+}
+
+// logging ignore fields
+var loggingFieldsIgnore = []string{"ssid", "resolution", "setoption"}
+
+// command status types
 const (
 	cmdStatus   = "STATUS"
 	cmdStatus1  = "STATUS1"
@@ -48,22 +99,11 @@ const (
 
 	cmdState  = "STATE"
 	cmdSensor = "SENSOR"
-)
+	cmdResult = "RESULT"
 
-var cmdWithHeader = []string{
-	cmdStatus,
-	cmdStatus1,
-	cmdStatus2,
-	cmdStatus3,
-	cmdStatus4,
-	cmdStatus5,
-	cmdStatus6,
-	cmdStatus7,
-	cmdStatus8,
-	cmdStatus9,
-	cmdStatus10,
-	cmdStatus11,
-}
+	cmdRestart = "Restart"
+	cmdReset   = "Reset"
+)
 
 const (
 	headerDeviceParameters = "StatusPRM"
@@ -78,40 +118,40 @@ const (
 	headerStatus           = "Status"
 )
 
-// static sensors
-
 const (
-	sensorLogging = "Logging"
-	sensorMemory  = "Memory"
-	sensorCounter = "Counter"
-	sensorAnalog  = "Analog"
-	sensorPower   = "Power"
-)
-
-const (
-	keyFriendlyName    = "FriendlyName"
-	keyCounter         = "COUNTER"
-	keyAnalog          = "ANALOG"
-	keyTemperature     = "Temperature"
-	keyHumidity        = "Humidity"
-	keyDeWPoint        = "DewPoint"
-	keyTemperatureUnit = "TempUnit"
-	keyON              = "ON"
-	keyOFF             = "OFF"
-	keyHeap            = "Heap"
-	keyRSSI            = "RSSI"
-	keySignal          = "Signal"
-	keyDimmer          = "Dimmer"
-	keyIPAddress       = "IPAddress"
-	keyVersion         = "Version"
-	keyCore            = "Core"
-	keySDK             = "SDK"
-	keyBuildDateTime   = "BuildDateTime"
-	keyCPUFrequency    = "CpuFrequency"
-	keyHardware        = "Hardware"
-	keyOtaURL          = "OtaUrl"
-	keyHostname        = "Hostname"
-	keyMAC             = "Mac"
+	keyFriendlyName     = "FriendlyName"
+	keyCounter          = "COUNTER"
+	keyAnalog           = "ANALOG"
+	keyTemperature      = "Temperature"
+	keyHumidity         = "Humidity"
+	keyDeWPoint         = "DewPoint"
+	keyTemperatureUnit  = "TempUnit"
+	keyON               = "ON"
+	keyOFF              = "OFF"
+	keyHeap             = "Heap"
+	keyRSSI             = "RSSI"
+	keySignal           = "Signal"
+	keyDimmer           = "Dimmer"
+	keyIPAddress        = "IPAddress"
+	keyVersion          = "Version"
+	keyCore             = "Core"
+	keySDK              = "SDK"
+	keyBuildDateTime    = "BuildDateTime"
+	keyCPUFrequency     = "CpuFrequency"
+	keyHardware         = "Hardware"
+	keyOtaURL           = "OtaUrl"
+	keyHostname         = "Hostname"
+	keyMAC              = "Mac"
+	keyProgramSize      = "ProgramSize"
+	keyFlashChipID      = "FlashChipId"
+	keyFlashFrequency   = "FlashFrequency"
+	keyFlashSize        = "FlashSize"
+	keyProgramFlashSize = "ProgramFlashSize"
+	keyPower            = "POWER"
+	keyFade             = "Fade"
+	keyWifi             = "Wifi"
+	keyVoltage          = "Voltage"
+	keyCurrent          = "Current"
 )
 
 // this struct used to construct payload metric type and unit
@@ -123,6 +163,12 @@ var metricTypeAndUnit = map[string]payloadMetricTypeUnit{
 	keyHumidity:    {mtrml.MetricTypeGaugeFloat, mtrml.UnitHumidity},
 	keyDeWPoint:    {mtrml.MetricTypeGaugeFloat, mtrml.UnitCelsius},
 	keyHeap:        {mtrml.MetricTypeGauge, mtrml.UnitNone},
+	keyPower:       {mtrml.MetricTypeBinary, mtrml.UnitNone},
+	keyFade:        {mtrml.MetricTypeBinary, mtrml.UnitNone},
+	keyRSSI:        {mtrml.MetricTypeGauge, mtrml.UnitNone},
+	keySignal:      {mtrml.MetricTypeGauge, mtrml.UnitNone},
+	keyVoltage:     {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	keyCurrent:     {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
 }
 
 // Labels used on this provider

@@ -17,6 +17,7 @@ const (
 )
 
 func filter(name, value string) string {
+	name = strings.ToLower(name)
 	return fmt.Sprintf(` |> filter(fn: (r) => r["%s"] == "%s")`, name, value)
 }
 
@@ -71,8 +72,11 @@ func buildQuery(metricType, name, bucket, start, stop, window string, filters ma
 		query += filter(n, v)
 	}
 
+	// convert to float
+	query += `  |> toFloat()`
+
 	switch metricType {
-	case mtrml.MetricTypeGaugeFloat:
+	case mtrml.MetricTypeGaugeFloat, mtrml.MetricTypeGauge:
 		// add default functions, if none available
 		if len(functions) == 0 {
 			functions = []string{"mean", "min", "max"}

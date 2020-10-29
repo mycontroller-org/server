@@ -158,7 +158,7 @@ func (cm CustomMap) Get(key string) interface{} {
 	if ok {
 		return value
 	}
-	return ""
+	return nil
 }
 
 // GetIgnoreKey of a key

@@ -105,8 +105,12 @@ func (s *Service) writeMessageFunc() func(msg *msgml.Message) {
 			})
 
 			// on exit unsubscribe and close the channel
-			defer mcbus.Unsubscribe(ackTopic)
-			defer close(ackChannel)
+
+			onExitFn := func() {
+				mcbus.Unsubscribe(ackTopic)
+				close(ackChannel)
+			}
+			defer onExitFn()
 
 			timeout, err := time.ParseDuration(s.Config.Ack.Timeout)
 			if err != nil {

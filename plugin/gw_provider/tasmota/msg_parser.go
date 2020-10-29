@@ -1,6 +1,7 @@
 package tasmota
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -15,7 +16,44 @@ import (
 
 // ToRawMessage func implementation
 func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
-	return nil, nil
+	if len(msg.Payloads) == 0 {
+		return nil, errors.New("There is no payload details on the message")
+	}
+
+	payload := msg.Payloads[0]
+
+	tmMsg := &message{
+		Topic:   topicCmnd,
+		NodeID:  msg.NodeID,
+		Command: payload.Name,
+	}
+
+	rawMsg := msgml.NewRawMessage(false, nil)
+
+	// get command
+	switch msg.Type {
+
+	case msgml.TypeSet:
+		tmMsg.Payload = payload.Value
+
+	case msgml.TypeRequest:
+		tmMsg.Payload = emptyPayload
+
+	case msgml.TypeAction:
+		err := handleActions(p.GWConfig, payload.Name, msg, tmMsg)
+		if err != nil {
+			return nil, err
+		}
+
+	default:
+		return nil, fmt.Errorf("This command not implemented: %s", msg.Type)
+	}
+
+	// update payload and mqtt topic
+	rawMsg.Data = []byte(tmMsg.Payload)
+	rawMsg.Others.Set(gwpl.KeyMqttTopic, []string{tmMsg.toString()}, nil)
+
+	return rawMsg, nil
 }
 
 // ToMessage implementation
@@ -25,7 +63,11 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	d := make([]string, 0)
 	// topic/node-id/command
 	// jktasmota/stat/tasmota_49C88D/STATUS11
-	rData := strings.Split(string(rawMsg.Others.Get(gwpl.KeyMqttTopic).(string)), "/")
+	topic, ok := rawMsg.Others.Get(gwpl.KeyMqttTopic).(string)
+	if !ok {
+		return nil, fmt.Errorf("unable to get mqtt topic:%v", rawMsg.Others.Get(gwpl.KeyMqttTopic))
+	}
+	rData := strings.Split(topic, "/")
 	if len(rData) < 3 {
 		zap.L().Error("Invalid message format", zap.Any("rawMessage", rawMsg))
 		return nil, nil
@@ -38,12 +80,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 		Command: d[2],
 	}
 
-	isJSONData := false
-
-	if tmMsg.Topic == topicTele || tmMsg.Topic == topicStat {
-		isJSONData = true
-	}
-
+	// helper functions
 	createMsgFn := func(sensorID, msgType string, pls ...msgml.Data) *msgml.Message {
 		msg := msgml.NewMessage(true)
 		msg.GatewayID = p.GWConfig.ID
@@ -73,217 +110,371 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 		}
 	}
 
-	if isJSONData {
-		switch {
+	addSensorPresentationMessage := func(sensorID string) {
+		pl := createSensorPresentationPL(sensorID)
+		msg := createMsgFn(sensorID, msgml.TypePresentation, *pl)
+		addIntoMessages(msg)
+	}
 
-		case ut.IsExists(cmdWithHeader, tmMsg.Command):
-			// get mesage type
-			out := make(map[string]map[string]interface{})
-			err := toStruct(rawMsg.Data, &out)
+	// update metric type and unit
+	updateMetricTypeAndUnit := func(key string, pl *msgml.Data) {
+		mu, found := metricTypeAndUnit[key]
+		if found {
+			pl.MetricType = mu.Type
+			pl.Unit = mu.Unit
+		} else {
+			pl.MetricType = mtrml.MetricTypeNone
+			pl.Unit = mtrml.UnitNone
+		}
+		if pl.MetricType == mtrml.MetricTypeBinary {
+			v := strings.ToLower(pl.Value)
+			if v == "on" || v == "1" || v == "true" {
+				pl.Value = "1"
+			} else {
+				pl.Value = "0"
+			}
+		}
+	}
+
+	switch tmMsg.Topic {
+
+	case topicTele:
+		data := make(map[string]interface{})
+		err := ut.ToStruct(rawMsg.Data, &data)
+		if err != nil {
+			return nil, err
+		}
+		switch tmMsg.Command {
+		case cmdResult: // control sensor messages
+			msg := createMsgFn(sensorControl, msgml.TypeSet)
+			addSensorPresentationMessage(sensorControl)
+
+			for key, v := range data {
+				// create new payload data
+				pl := msgml.NewData()
+				pl.Name = key
+				pl.Value = ut.ToString(v)
+				updateMetricTypeAndUnit(key, &pl)
+				msg.Payloads = append(msg.Payloads, pl)
+			}
+			addIntoMessages(msg)
+
+		case cmdState:
+			senControl := createMsgFn(sensorControl, msgml.TypeSet)
+			addSensorPresentationMessage(sensorControl)
+
+			senMemory := createMsgFn(sensorMemory, msgml.TypeSet)
+			addSensorPresentationMessage(sensorMemory)
+
+			for key, v := range data {
+				_, ignore := ut.FindItem(teleStateFieldsIgnore, strings.ToLower(key))
+				if ignore {
+					continue
+				}
+				if key == keyWifi {
+					wiFiData, ok := v.(map[string]interface{})
+					if ok {
+						senWiFi := createMsgFn(sensorWiFi, msgml.TypeSet)
+						addSensorPresentationMessage(sensorWiFi)
+						for wKey, wValue := range wiFiData {
+							_, ignore := ut.FindItem(wiFiFieldsIgnore, strings.ToLower(wKey))
+							if ignore {
+								continue
+							}
+							pl := msgml.NewData()
+							pl.Name = wKey
+							pl.Value = ut.ToString(wValue)
+							updateMetricTypeAndUnit(wKey, &pl)
+							senWiFi.Payloads = append(senWiFi.Payloads, pl)
+						}
+						addIntoMessages(senWiFi)
+					}
+				} else {
+					pl := msgml.NewData()
+					pl.Name = key
+					pl.Value = ut.ToString(v)
+					updateMetricTypeAndUnit(key, &pl)
+					if key == keyHeap {
+						senMemory.Payloads = append(senMemory.Payloads, pl)
+					} else {
+						senControl.Payloads = append(senControl.Payloads, pl)
+					}
+				}
+
+			}
+			addIntoMessages(senControl)
+			addIntoMessages(senMemory)
+
+		case cmdSensor:
+			for k, v := range data {
+				dataMap, ok := v.(map[string]interface{})
+				if ok {
+					msg := createMsgFn(k, msgml.TypeSet)
+					addSensorPresentationMessage(k)
+
+					for sK, sV := range dataMap {
+						// create new payload data
+						pl := msgml.NewData()
+						pl.Name = sK
+						pl.Value = ut.ToString(sV)
+						updateMetricTypeAndUnit(sK, &pl)
+						msg.Payloads = append(msg.Payloads, pl)
+					}
+					addIntoMessages(msg)
+				}
+			}
+
+		default:
+			// no action
+
+		}
+
+	case topicStat:
+		switch tmMsg.Command {
+		case cmdResult:
+			data := make(map[string]interface{})
+			err := ut.ToStruct(rawMsg.Data, &data)
 			if err != nil {
 				return nil, err
 			}
-
-			header := ""
-			var data map[string]interface{}
-			for k, v := range out {
-				header = k
-				data = v
+			msg := createMsgFn(sensorControl, msgml.TypeSet)
+			addSensorPresentationMessage(sensorControl)
+			for key, v := range data {
+				// create new payload data
+				pl := msgml.NewData()
+				pl.Name = key
+				pl.Value = ut.ToString(v)
+				updateMetricTypeAndUnit(key, &pl)
+				msg.Payloads = append(msg.Payloads, pl)
 			}
+			addIntoMessages(msg)
 
-			switch header {
+		default:
+			_, found := ut.FindItem(statusSupported, tmMsg.Command)
+			if found {
+				// get mesage type
+				rawData := make(map[string]map[string]interface{})
+				err := ut.ToStruct(rawMsg.Data, &rawData)
+				if err != nil {
+					return nil, err
+				}
 
-			case headerStatus, headerDeviceParameters, headerFirmware, headerNetwork:
-				msg := createMsgFn(sensorIDNone, msgml.TypePresentation)
-				for key, v := range data {
-					value := fmt.Sprintf("%v", v)
+				header := ""
+				var data map[string]interface{}
+				for k, v := range rawData {
+					header = k
+					data = v
+				}
 
-					// create new payload data
-					pl := msgml.NewData()
-					pl.Name = key
-					pl.Value = value
-					include := true
+				switch header {
 
-					switch key {
-					case keyFriendlyName:
-						pl.Name = ml.FieldName
-						names := v.([]interface{})
-						if len(names) > 0 {
-							pl.Value = fmt.Sprintf("%v", names[0])
+				case headerStatus, headerDeviceParameters, headerFirmware, headerNetwork:
+					msg := createMsgFn(sensorIDNone, msgml.TypePresentation)
+					for key, v := range data {
+						value := ut.ToString(v)
+
+						// create new payload data
+						pl := msgml.NewData()
+						pl.Name = key
+						pl.Value = value
+						include := true
+
+						switch key {
+						case keyFriendlyName:
+							pl.Name = ml.FieldName
+							names, ok := v.([]interface{})
+							if ok {
+								if len(names) > 0 {
+									pl.Value = ut.ToString(names[0])
+								}
+							}
+
+						case keyVersion:
+							pl.Labels.Set(ml.LabelNodeVersion, value)
+
+						case keyCore:
+							pl.Labels.Set(ml.LabelNodeLibraryVersion, value)
+
+						case keyIPAddress:
+							pl.Name = ml.FieldIPAddress
+							urlPL := msgml.Data{
+								Name:  ml.FieldNodeWebURL,
+								Value: fmt.Sprintf("http://%s", value),
+							}
+							urlPL.Labels = urlPL.Labels.Init()
+							msg.Payloads = append(msg.Payloads, urlPL)
+
+						case keyOtaURL, keySDK, keyBuildDateTime, keyCPUFrequency, keyHostname, keyMAC:
+							// will be included
+
+						default:
+							include = false
 						}
 
-					case keyVersion:
-						pl.Labels.Set(ml.LabelNodeVersion, value)
-
-					case keyCore:
-						pl.Labels.Set(ml.LabelNodeLibraryVersion, value)
-
-					case keyIPAddress:
-						pl.Name = ml.FieldIPAddress
-						urlPL := msgml.Data{
-							Name:  ml.FieldNodeWebURL,
-							Value: fmt.Sprintf("http://%s", value),
+						if include {
+							msg.Payloads = append(msg.Payloads, pl)
 						}
-						urlPL.Labels = urlPL.Labels.Init()
-						msg.Payloads = append(msg.Payloads, urlPL)
-
-					case keyOtaURL, keySDK, keyBuildDateTime, keyCPUFrequency, keyHostname, keyMAC:
-						// will be included
-
-					default:
-						include = false
 					}
+					addIntoMessages(msg)
 
-					if include {
+				case headerLogging: // add all the fields
+					msg := createMsgFn(sensorLogging, msgml.TypeSet)
+					for k, v := range data {
+						_, ignore := ut.FindItem(loggingFieldsIgnore, strings.ToLower(k))
+						if ignore {
+							continue
+						}
+						pl := msgml.Data{
+							Name:       k,
+							Value:      ut.ToString(v),
+							MetricType: mtrml.MetricTypeNone,
+						}
 						msg.Payloads = append(msg.Payloads, pl)
 					}
-				}
-				addIntoMessages(msg)
+					addIntoMessages(msg)
 
-			case headerLogging: // add all the fields
-				msg := createMsgFn(sensorLogging, msgml.TypeSet)
-				for k, v := range data {
-					pl := msgml.Data{
-						Name:       k,
-						Value:      fmt.Sprintf("%v", v),
-						MetricType: mtrml.MetricTypeNone,
-					}
-					msg.Payloads = append(msg.Payloads, pl)
-				}
-				addIntoMessages(msg)
+					// presentation message
+					addSensorPresentationMessage(sensorLogging)
 
-				// presentation message
-				prsPL := createSensorPresentationPL(sensorLogging)
-				prsMsg := createMsgFn(sensorLogging, msgml.TypePresentation, *prsPL)
-				addIntoMessages(prsMsg)
+				case headerMemory: // update only heap
+					msg := createMsgFn(sensorMemory, msgml.TypeSet)
+					heap, found := data[keyHeap]
+					if found {
+						pl := msgml.Data{
+							Name:       keyHeap,
+							Value:      ut.ToString(heap),
+							MetricType: mtrml.MetricTypeGauge,
+						}
+						msg.Payloads = append(msg.Payloads, pl)
+					}
+					addIntoMessages(msg)
+					// presentation message
+					addSensorPresentationMessage(sensorMemory)
 
-			case headerMemory: // update only heap
-				msg := createMsgFn(sensorMemory, msgml.TypeSet)
-				heap, found := data[keyHeap]
-				if found {
-					pl := msgml.Data{
-						Name:       keyHeap,
-						Value:      fmt.Sprintf("%v", heap),
-						MetricType: mtrml.MetricTypeGauge,
-					}
-					msg.Payloads = append(msg.Payloads, pl)
-				}
-				addIntoMessages(msg)
-				// presentation message
-				prsPL := createSensorPresentationPL(sensorMemory)
-				prsMsg := createMsgFn(sensorMemory, msgml.TypePresentation, *prsPL)
-				addIntoMessages(prsMsg)
+				case headerTime:
+					msg := createMsgFn(sensorTime, msgml.TypeSet)
+					addSensorPresentationMessage(sensorTime)
 
-			case headerSensor:
-				getMapFn := func(data interface{}) map[string]interface{} {
-					d, ok := data.(map[string]interface{})
-					if ok {
-						return d
+					for k, v := range data {
+						pl := msgml.NewData()
+						pl.Name = k
+						pl.Value = ut.ToString(v)
+						updateMetricTypeAndUnit(k, &pl)
+						msg.Payloads = append(msg.Payloads, pl)
 					}
-					return nil
-				}
-				// Update temperature unit
-				temperatureUnit := mtrml.UnitCelsius
-				if tu, ok := data[keyTemperatureUnit]; ok {
-					if tu == "F" {
-						temperatureUnit = mtrml.UnitFahrenheit
+					addIntoMessages(msg)
+
+				case headerSensor:
+					getMapFn := func(data interface{}) map[string]interface{} {
+						d, ok := data.(map[string]interface{})
+						if ok {
+							return d
+						}
+						return nil
 					}
-				}
-				for k, v := range data {
-					//	value := fmt.Sprintf("%v", v)
-					switch k {
-					case keyAnalog:
-						d := getMapFn(v)
-						pls := make([]msgml.Data, 0)
-						for fName, fValue := range d {
-							pl := msgml.Data{
-								Name:       fName,
-								Value:      fmt.Sprintf("%v", fValue),
-								MetricType: mtrml.MetricTypeNone,
-								Unit:       mtrml.UnitNone,
+					// Update temperature unit
+					temperatureUnit := mtrml.UnitCelsius
+					if tu, ok := data[keyTemperatureUnit]; ok {
+						if tu == "F" {
+							temperatureUnit = mtrml.UnitFahrenheit
+						}
+					}
+					for k, v := range data {
+						//	value := ut.ToString( v)
+						switch k {
+						case keyAnalog:
+							d := getMapFn(v)
+							pls := make([]msgml.Data, 0)
+							for fName, fValue := range d {
+								pl := msgml.Data{
+									Name:       fName,
+									Value:      ut.ToString(fValue),
+									MetricType: mtrml.MetricTypeNone,
+									Unit:       mtrml.UnitNone,
+								}
+								pl.Labels = pl.Labels.Init()
+								pls = append(pls, pl)
 							}
-							pl.Labels = pl.Labels.Init()
-							pls = append(pls, pl)
+
+							// field message
+							fieldMsg := createMsgFn(sensorAnalog, msgml.TypeSet)
+							fieldMsg.Payloads = pls
+							addIntoMessages(fieldMsg)
+
+							// presentation message
+							addSensorPresentationMessage(sensorAnalog)
+
+						case keyCounter:
+							d := getMapFn(v)
+							pls := make([]msgml.Data, 0)
+							for fName, fValue := range d {
+								pl := msgml.Data{
+									Name:       fName,
+									Value:      ut.ToString(fValue),
+									MetricType: mtrml.MetricTypeCounter,
+									Unit:       mtrml.UnitNone,
+								}
+								pl.Labels = pl.Labels.Init()
+								pls = append(pls, pl)
+							}
+							// field message
+							fieldMsg := createMsgFn(sensorCounter, msgml.TypeSet)
+							fieldMsg.Payloads = pls
+							addIntoMessages(fieldMsg)
+
+							// presentation message
+							addSensorPresentationMessage(sensorCounter)
+
+						case keyTemperatureUnit:
+							// ignore this
+
+						default:
+							d := getMapFn(v)
+							pls := make([]msgml.Data, 0)
+							for fName, fValue := range d {
+								if fValue == nil {
+									continue
+								}
+								mt, ok := metricTypeAndUnit[fName]
+								if !ok {
+									mt = payloadMetricTypeUnit{Type: mtrml.MetricTypeNone, Unit: mtrml.UnitNone}
+								}
+
+								// update temperature unit
+								if fName == keyTemperature {
+									mt.Unit = temperatureUnit
+								}
+
+								pl := msgml.NewData()
+								pl.Name = fName
+								pl.Value = ut.ToString(fValue)
+								pl.MetricType = mt.Type
+								pl.Unit = mt.Unit
+								pls = append(pls, pl)
+							}
+							// field message
+							fieldMsg := createMsgFn(k, msgml.TypeSet, pls...)
+							addIntoMessages(fieldMsg)
+
+							// presentation message
+							addSensorPresentationMessage(k)
 						}
 
-						// field message
-						fieldMsg := createMsgFn(sensorAnalog, msgml.TypeSet)
-						fieldMsg.Payloads = pls
-						addIntoMessages(fieldMsg)
-
-						// presentation message
-						prsPL := createSensorPresentationPL(sensorAnalog)
-						prsMsg := createMsgFn(sensorAnalog, msgml.TypePresentation, *prsPL)
-						addIntoMessages(prsMsg)
-
-					case keyCounter:
-						d := getMapFn(v)
-						pls := make([]msgml.Data, 0)
-						for fName, fValue := range d {
-							pl := msgml.Data{
-								Name:       fName,
-								Value:      fmt.Sprintf("%v", fValue),
-								MetricType: mtrml.MetricTypeCounter,
-								Unit:       mtrml.UnitNone,
-							}
-							pl.Labels = pl.Labels.Init()
-							pls = append(pls, pl)
-						}
-						// field message
-						fieldMsg := createMsgFn(sensorCounter, msgml.TypeSet)
-						fieldMsg.Payloads = pls
-						addIntoMessages(fieldMsg)
-
-						// presentation message
-						prsPL := createSensorPresentationPL(sensorCounter)
-						prsMsg := createMsgFn(sensorCounter, msgml.TypePresentation, *prsPL)
-						addIntoMessages(prsMsg)
-
-					case keyTemperatureUnit:
-						// ignore this
-
-					default:
-						d := getMapFn(v)
-						pls := make([]msgml.Data, 0)
-						for fName, fValue := range d {
-							if fValue == nil {
-								continue
-							}
-							mt, ok := metricTypeAndUnit[fName]
-							if !ok {
-								mt = payloadMetricTypeUnit{Type: mtrml.MetricTypeNone, Unit: mtrml.UnitNone}
-							}
-
-							// update temperature unit
-							if fName == keyTemperature {
-								mt.Unit = temperatureUnit
-							}
-
-							pl := msgml.NewData()
-							pl.Name = fName
-							pl.Value = fmt.Sprintf("%v", fValue)
-							pl.MetricType = mt.Type
-							pl.Unit = mt.Unit
-							pls = append(pls, pl)
-						}
-						// field message
-						fieldMsg := createMsgFn(k, msgml.TypeSet, pls...)
-						addIntoMessages(fieldMsg)
-
-						// presentation message
-						prsPL := createSensorPresentationPL(k)
-						prsMsg := createMsgFn(k, msgml.TypePresentation, *prsPL)
-						addIntoMessages(prsMsg)
 					}
 
+				default:
+					// print and exit
+					zap.L().Debug("no action don for this message", zap.String("header", header), zap.Any("data", data))
 				}
-
-			default:
-				// print and exit
-				zap.L().Debug("*** no action don for this message", zap.String("header", header), zap.Any("data", data))
 			}
+
 		}
 
+	case topicCmnd:
+		// ignore
+
+	default:
+		// no action
 	}
 
 	defer func() {
@@ -292,60 +483,3 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 
 	return messages, nil
 }
-
-// {"Time":"2020-09-10T12:18:55","COUNTER":{"C1":0,"C3":0},"ANALOG":{"A0":4},"DHT11-00":{"Temperature":null,"Humidity":null,"DewPoint":null},"AM2301-01":{"Temperature":null,"Humidity":null,"DewPoint":null},"TempUnit":"C"}
-// topic : jktasmota/tele/tasmota_49C88D/SENSOR
-
-// {"Time":"2020-09-10T12:18:55","Uptime":"0T06:15:09","UptimeSec":22509,"Heap":25,"SleepMode":"Dynamic","Sleep":50,"LoadAvg":24,"MqttCount":1,"POWER1":"OFF","POWER2":"OFF","Dimmer":0,"Fade":"OFF","Speed":1,"LedTable":"ON","Wifi":{"AP":1,"SSId":"jee","BSSId":"C4:E9:84:5A:DD:CC","Channel":5,"RSSI":74,"Signal":-63,"LinkCount":1,"Downtime":"0T00:00:03"}}
-// topic : jktasmota/tele/tasmota_49C88D/STATE
-
-// {"StatusSTS":{"Time":"2020-09-10T12:18:02","Uptime":"0T06:14:16","UptimeSec":22456,"Heap":21,"SleepMode":"Dynamic","Sleep":50,"LoadAvg":23,"MqttCount":1,"POWER1":"OFF","POWER2":"OFF","Dimmer":0,"Fade":"OFF","Speed":1,"LedTable":"ON","Wifi":{"AP":1,"SSId":"jee","BSSId":"C4:E9:84:5A:DD:CC","Channel":5,"RSSI":80,"Signal":-60,"LinkCount":1,"Downtime":"0T00:00:03"}}}
-// topic : jktasmota/stat/tasmota_49C88D/STATUS11
-
-// {"StatusSNS":{"Time":"2020-09-10T12:18:02","COUNTER":{"C1":0,"C3":0},"ANALOG":{"A0":4},"DHT11-00":{"Temperature":null,"Humidity":null,"DewPoint":null},"AM2301-01":{"Temperature":null,"Humidity":null,"DewPoint":null},"TempUnit":"C"}}
-// topic : jktasmota/stat/tasmota_49C88D/STATUS10
-
-// {"StatusTIM":{"UTC":"2020-09-10T11:18:02","Local":"2020-09-10T12:18:02","StartDST":"2020-03-29T02:00:00","EndDST":"2020-10-25T03:00:00","Timezone":"+01:00","Sunrise":"06:20","Sunset":"19:13"}}
-// topic : jktasmota/stat/tasmota_49C88D/STATUS7
-
-// {"StatusMQT":{"MqttHost":"enveedu.mycontroller.org","MqttPort":2883,"MqttClientMask":"DVES_%06X","MqttClient":"DVES_49C88D","MqttUser":"DVES_USER","MqttCount":1,"MAX_PACKET_SIZE":1200,"KEEPALIVE":30}}
-// topic : jktasmota/stat/tasmota_49C88D/STATUS6
-
-// {"StatusNET":{"Hostname":"tasmota_49C88D-2189","IPAddress":"192.168.21.113","Gateway":"192.168.21.1","Subnetmask":"255.255.255.0","DNSServer":"192.168.21.1","Mac":"60:01:94:49:C8:8D","Webserver":2,"WifiConfig":4,"WifiPower":17.0}}
-// topic : jktasmota/stat/tasmota_49C88D/STATUS5
-
-// {"StatusMEM":{"ProgramSize":595,"Free":408,"Heap":22,"ProgramFlashSize":4096,"FlashSize":4096,"FlashChipId":"1640EF","FlashFrequency":40,"FlashMode":3,"Features":["00000809","8FDAE797","04368001","000000CD","010013C0","C000F981","00004004","00000000"],"Drivers":"1,2,3,4,5,6,7,8,9,10,12,16,18,19,20,21,22,24,26,27,29,30,35,37","Sensors":"1,2,3,4,5,6"}}
-// topic : jktasmota/stat/tasmota_49C88D/STATUS4
-
-// {"StatusLOG":{"SerialLog":0,"WebLog":2,"MqttLog":0,"SysLog":0,"LogHost":"","LogPort":514,"SSId":["jee",""],"TelePeriod":300,"Resolution":"558180C0","SetOption":["00008009","2805C8000100060000005A00000000000000","00000000","00006000","00000000"]}}
-// topic : jktasmota/stat/tasmota_49C88D/STATUS3
-
-// {"StatusFWR":{"Version":"8.5.0(tasmota)","BuildDateTime":"2020-09-09T11:41:02","Boot":31,"Core":"2_7_4_1","SDK":"2.2.2-dev(38a443e)","CpuFrequency":80,"Hardware":"ESP8266EX","CR":"366/699"}}
-// topic : jktasmota/stat/tasmota_49C88D/STATUS2
-
-// {"StatusPRM":{"Baudrate":115200,"SerialConfig":"8N1","GroupTopic":"tasmotas","OtaUrl":"http://ota.tasmota.com/tasmota/release/tasmota.bin","RestartReason":"External System","Uptime":"0T06:14:15","StartupUTC":"2020-09-10T05:03:46","Sleep":50,"CfgHolder":4617,"BootCount":25,"BCResetTime":"2020-09-09T18:01:31","SaveCount":86,"SaveAddress":"F6000"}}
-// topic : jktasmota/stat/tasmota_49C88D/STATUS1
-
-// {"Status":{"Module":0,"DeviceName":"Tasmota","FriendlyName":["Tasmota","Tasmota2"],"Topic":"tasmota_49C88D","ButtonTopic":"0","Power":0,"PowerOnState":3,"LedState":1,"LedMask":"FFFF","SaveData":1,"SaveState":1,"SwitchTopic":"0","SwitchMode":[0,0,0,0,0,0,0,0],"ButtonRetain":0,"SwitchRetain":0,"SensorRetain":0,"PowerRetain":0}}
-// topic : jktasmota/stat/tasmota_49C88D/STATUS
-
-// 0
-// topic : jktasmota/cmnd/tasmota_49C88D/Status
-
-// OFF
-// topic : jktasmota/stat/tasmota_49C88D/POWER1
-
-// {"POWER1":"OFF"}
-// topic : jktasmota/stat/tasmota_49C88D/RESULT
-
-// 0
-// topic : jktasmota/cmnd/tasmota_49C88D/Power1
-
-// ON
-// topic : jktasmota/stat/tasmota_49C88D/POWER1
-
-// {"POWER1":"ON"}
-// topic : jktasmota/stat/tasmota_49C88D/RESULT
-
-// 1
-// topic : jktasmota/cmnd/tasmota_49C88D/Power1

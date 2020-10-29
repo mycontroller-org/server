@@ -1,7 +1,11 @@
 package gateway
 
 import (
+	"fmt"
+
+	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 )
 
 var gwService = map[string]*Service{}
@@ -18,5 +22,21 @@ func RemoveGatewayService(g *gwml.Config) {
 
 // GetGatewayService returns service
 func GetGatewayService(g *gwml.Config) *Service {
-	return gwService[g.ID]
+	return GetGatewayServiceByID(g.ID)
+}
+
+// GetGatewayServiceByID returns service
+func GetGatewayServiceByID(ID string) *Service {
+	return gwService[ID]
+}
+
+// Post a message to gateway
+func Post(msg *msgml.Message) error {
+	gwSRV := GetGatewayServiceByID(msg.GatewayID)
+	if gwSRV == nil {
+		return fmt.Errorf("Gateway service not found for %s", msg.GatewayID)
+	}
+	topic := gwSRV.TopicMsg2Provider
+	_, err := mcbus.Publish(topic, msg)
+	return err
 }
