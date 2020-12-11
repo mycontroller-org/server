@@ -80,6 +80,7 @@ func LoadGateways() {
 	gwsResult, err := List(nil, nil)
 	if err != nil {
 		zap.L().Error("Error getting list of gateways", zap.Error(err))
+		return
 	}
 	gws := *gwsResult.Data.(*[]gwml.Config)
 	for index := 0; index < len(gws); index++ {

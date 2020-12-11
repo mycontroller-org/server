@@ -1,6 +1,8 @@
 package util
 
 import (
+	"bytes"
+	"encoding/gob"
 	"encoding/json"
 	"fmt"
 
@@ -28,4 +30,32 @@ func ToString(data interface{}) string {
 // ToStruct converts bytes to target struct
 func ToStruct(data []byte, out interface{}) error {
 	return json.Unmarshal(data, out)
+}
+
+// StructToByte converts interface to []byte
+func StructToByte(data interface{}) ([]byte, error) {
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	err := enc.Encode(data)
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+// ByteToStruct converts []byte to interface
+func ByteToStruct(data []byte, out interface{}) error {
+	var buf bytes.Buffer
+	_, err := buf.Write(data)
+	if err != nil {
+		return err
+	}
+	dec := gob.NewDecoder(&buf)
+	return dec.Decode(out)
+}
+
+// ByteToMap converts []byte map[string]interface{}
+func ByteToMap(data []byte) (map[string]interface{}, error) {
+	out := make(map[string]interface{})
+	return out, ByteToStruct(data, out)
 }

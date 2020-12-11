@@ -23,6 +23,7 @@ type Field struct {
 	NoChangeSince    time.Time            `json:"noChangeSince"`
 	PayloadFormatter PayloadFormatter     `json:"payloadFormatter"`
 	LastSeen         time.Time            `json:"lastSeen"`
+	LastModifiedOn   time.Time            `json:"lastModifiedOn"`
 }
 
 // Payload model

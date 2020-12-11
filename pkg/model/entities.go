@@ -9,6 +9,7 @@ const (
 	EntitySensor      = "sensor"       // keeps sensor details
 	EntitySensorField = "sensor_field" // keeps sensor field details and fields from node, like battery, rssi, etc.,
 	EntityFirmware    = "firmware"     // keeps firmware details
+	EntityKind        = "kind"         // keeps configurations, job details, rules, operations, etc..,
 )
 
 // Entity field keys
@@ -18,6 +19,8 @@ const (
 	KeyNodeID    = "NodeID"
 	KeySensorID  = "SensorID"
 	KeyFieldID   = "FieldID"
+	KeyKindType  = "Type"
+	KeyKindName  = "Name"
 )
 
 // Files, directory locations

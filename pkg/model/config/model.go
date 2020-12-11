@@ -2,10 +2,12 @@ package config
 
 // Config of the system
 type Config struct {
-	Web       WebConfig                `yaml:"web"`
-	Logger    LoggerConfig             `yaml:"logger"`
-	Database  Database                 `yaml:"database"`
-	Databases []map[string]interface{} `yaml:"databases"`
+	Web         WebConfig                `yaml:"web"`
+	Logger      LoggerConfig             `yaml:"logger"`
+	Secret      string                   `yaml:"secret"` // secret used to encrypt sensitive data
+	Database    Database                 `yaml:"database"`
+	Databases   []map[string]interface{} `yaml:"databases"`
+	StartupJobs Startup                  `yaml:"startup_jobs"`
 }
 
 // WebConfig input
@@ -34,4 +36,17 @@ type LogLevelConfig struct {
 type Database struct {
 	Storage string `yaml:"storage"`
 	Metrics string `yaml:"metrics"`
+}
+
+// Startup jobs
+type Startup struct {
+	Importer StartupImporter `yaml:"importer"`
+}
+
+// StartupImporter loads data on startup
+type StartupImporter struct {
+	Enabled         bool   `yaml:"enabled"`
+	TargetDirectory string `yaml:"target_directory"`
+	Type            string `yaml:"type"`
+	ClearDatabase   bool   `yaml:"clean_database"`
 }

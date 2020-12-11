@@ -9,16 +9,15 @@ import (
 )
 
 // List by filter and pagination
-func List(f []pml.Filter, p *pml.Pagination) ([]fml.Firmware, error) {
+func List(f []pml.Filter, p *pml.Pagination) (*pml.Result, error) {
 	out := make([]fml.Firmware, 0)
-	svc.STG.Find(ml.EntityFirmware, f, p, &out)
-	return out, nil
+	return svc.STG.Find(ml.EntityFirmware, &out, f, p)
 }
 
 // Get returns a item
 func Get(f []pml.Filter) (fml.Firmware, error) {
 	out := fml.Firmware{}
-	err := svc.STG.FindOne(ml.EntityFirmware, f, &out)
+	err := svc.STG.FindOne(ml.EntityFirmware, &out, f)
 	return out, err
 }
 
@@ -28,7 +27,7 @@ func GetByID(id string) (fml.Firmware, error) {
 		{Key: ml.KeyID, Value: id},
 	}
 	out := fml.Firmware{}
-	err := svc.STG.FindOne(ml.EntityFirmware, f, &out)
+	err := svc.STG.FindOne(ml.EntityFirmware, &out, f)
 	return out, err
 }
 
@@ -40,5 +39,5 @@ func Save(fw *fml.Firmware) error {
 	f := []pml.Filter{
 		{Key: ml.KeyID, Value: fw.ID},
 	}
-	return svc.STG.Upsert(ml.EntityFirmware, f, fw)
+	return svc.STG.Upsert(ml.EntityFirmware, fw, f)
 }

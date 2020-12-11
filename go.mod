@@ -3,7 +3,6 @@ module github.com/mycontroller-org/backend/v2
 go 1.14
 
 require (
-	github.com/HouzuoGuo/tiedot v0.0.0-20200330175510-6fb216206052
 	github.com/eclipse/paho.mqtt.golang v1.2.0
 	github.com/go-cmd/cmd v1.2.1
 	github.com/google/uuid v1.1.1

@@ -87,7 +87,7 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 		return nil, err
 	}
 	token := cfg.Token
-	if token == "" {
+	if token == "" && cfg.Username != "" {
 		token = fmt.Sprintf("%s:%s", cfg.Username, cfg.Password)
 	}
 	flushInterval := defaultFlushInterval

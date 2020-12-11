@@ -11,17 +11,22 @@ import (
 	"github.com/mycontroller-org/backend/v2/cmd/app/handler"
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
+	"github.com/mycontroller-org/backend/v2/pkg/model/config"
 	msgPRO "github.com/mycontroller-org/backend/v2/pkg/processor/message"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	"github.com/mycontroller-org/backend/v2/pkg/storage/export"
 )
 
 func init() {
 	preInitFn := func() {
 		mcbus.Start()
 	}
-	postInitFn := func() {
+	postInitFn := func(cfg *config.Config) {
 		// call shutdown handler
 		go handleShutdown()
+
+		// startup jobs
+		startupJobs(&cfg.StartupJobs)
 
 		// start engine
 		msgPRO.Init()
@@ -35,6 +40,15 @@ func init() {
 	start := time.Now()
 	svc.Init(preInitFn, postInitFn)
 	zap.L().Debug("Init complete", zap.String("timeTaken", time.Since(start).String()))
+}
+
+func startupJobs(cfg *config.Startup) {
+	if cfg.Importer.Enabled {
+		err := export.ExecuteImport(cfg.Importer.TargetDirectory, cfg.Importer.Type)
+		if err != nil {
+			zap.L().Error("Failed to load exported files", zap.Error(err))
+		}
+	}
 }
 
 func main() {

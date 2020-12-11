@@ -14,29 +14,29 @@ import (
 )
 
 // ReceivedQueryMap returns all the user query and url input
-func ReceivedQueryMap(r *http.Request) (map[string][]string, error) {
+func ReceivedQueryMap(request *http.Request) (map[string][]string, error) {
 	data := make(map[string][]string, 0)
 	// url parameters
-	f := mux.Vars(r)
-	for k, v := range f {
-		data[k] = []string{v}
+	filters := mux.Vars(request)
+	for key, value := range filters {
+		data[key] = []string{value}
 	}
 
 	// query perameters
-	q := r.URL.Query()
-	for k, v := range q {
-		data[k] = v
+	query := request.URL.Query()
+	for key, value := range query {
+		data[key] = value
 	}
 
 	return data, nil
 }
 
 // Params func
-func Params(r *http.Request) ([]pml.Filter, *pml.Pagination, error) {
-	f := mux.Vars(r)
-	q := r.URL.Query()
-	for k, v := range q {
-		f[k] = v[0] // TODO: FIX this to fetch all the values
+func Params(request *http.Request) ([]pml.Filter, *pml.Pagination, error) {
+	f := mux.Vars(request)
+	q := request.URL.Query()
+	for key, value := range q {
+		f[key] = value[0] // TODO: FIX this to fetch all the values
 	}
 
 	// get Pagination arguments
@@ -47,15 +47,15 @@ func Params(r *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 		SortBy: []pml.Sort{},
 	}
 
-	lFunc := func(k string) (int64, error) {
-		if v, ok := f[k]; ok {
-			vi, err := strconv.Atoi(v)
+	lFunc := func(key string) (int64, error) {
+		if value, ok := f[key]; ok {
+			intValue, err := strconv.Atoi(value)
 			if err != nil {
 				return 0, err
 			}
-			return int64(vi), nil
+			return int64(intValue), nil
 		}
-		return 0, fmt.Errorf("Key '%s' not found in the map", k)
+		return 0, fmt.Errorf("Key '%s' not found in the map", key)
 	}
 
 	v, err := lFunc("limit")
@@ -117,35 +117,12 @@ func FindOne(w http.ResponseWriter, r *http.Request, en string, e interface{}) {
 		return
 	}
 
-	err = svc.STG.FindOne(en, f, e)
+	err = svc.STG.FindOne(en, e, f)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 	od, err := json.Marshal(e)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	w.Write(od)
-}
-
-// Distinct func
-func Distinct(w http.ResponseWriter, r *http.Request, e string, fn string) {
-	w.Header().Set("Content-Type", "application/json")
-
-	f, _, err := Params(r)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	rs, err := svc.STG.Distinct(e, fn, f)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	od, err := json.Marshal(rs)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -222,7 +199,7 @@ func FindMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 		return
 	}
 
-	result, err := svc.STG.Find(entityName, f, p, entities)
+	result, err := svc.STG.Find(entityName, entities, f, p)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -259,7 +236,7 @@ func SaveEntity(w http.ResponseWriter, r *http.Request, en string, e interface{}
 		}
 	}
 
-	err = svc.STG.Upsert(en, f, e)
+	err = svc.STG.Upsert(en, e, f)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

@@ -7,6 +7,7 @@ import (
 
 	ms "github.com/mycontroller-org/backend/v2/pkg/metrics"
 	cfgml "github.com/mycontroller-org/backend/v2/pkg/model/config"
+	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
@@ -18,13 +19,13 @@ import (
 // services
 var (
 	CFG *cfgml.Config
-	STG storage.Client
+	STG stgml.Client
 	MTS ms.Client
 	SCH *scheduler.Scheduler
 )
 
 // Init all the supported registries
-func Init(preInitFn func(), postInitFn func()) {
+func Init(preInitFn func(), postInitFn func(cfg *cfgml.Config)) {
 	initConfig()
 	initLogger()
 
@@ -33,12 +34,12 @@ func Init(preInitFn func(), postInitFn func()) {
 		preInitFn()
 	}
 
-	initStorage()
 	initScheduler()
+	initStorage()
 
 	// trigger post init func
 	if postInitFn != nil {
-		postInitFn()
+		postInitFn(CFG)
 	}
 }
 
@@ -94,6 +95,11 @@ func initConfig() {
 	}
 }
 
+func initScheduler() {
+	SCH = scheduler.Init()
+	SCH.Start()
+}
+
 func initStorage() {
 	// Get storage and metric database config
 	sCFG, err := getDatabaseConfig(CFG.Database.Storage)
@@ -111,7 +117,7 @@ func initStorage() {
 	mCFG["logger"] = map[string]string{"mode": CFG.Logger.Mode, "encoding": CFG.Logger.Encoding, "level": CFG.Logger.Level.Metrics}
 
 	// Init storage database
-	STG, err = storage.Init(sCFG)
+	STG, err = storage.Init(sCFG, SCH)
 	if err != nil {
 		zap.L().Fatal("Error on storage db init", zap.Error(err))
 	}
@@ -121,11 +127,6 @@ func initStorage() {
 	if err != nil {
 		zap.L().Fatal("Error on metrics db init", zap.Error(err))
 	}
-}
-
-func initScheduler() {
-	SCH = scheduler.Init()
-	SCH.Start()
 }
 
 func getDatabaseConfig(name string) (map[string]interface{}, error) {

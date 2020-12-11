@@ -4,46 +4,14 @@ import (
 	"errors"
 	"fmt"
 
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
+	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
+	"github.com/mycontroller-org/backend/v2/pkg/scheduler"
+	"github.com/mycontroller-org/backend/v2/plugin/storage/memory"
 	"github.com/mycontroller-org/backend/v2/plugin/storage/mongodb"
 )
 
-// Storage database types
-const (
-	TypeMongoDB = "mongodb"
-	TypeSqllite = "sqllite"
-)
-
-// Client interface
-type Client interface {
-	Close() error
-	Ping() error
-	Insert(entity string, data interface{}) error
-	Update(entity string, filter []pml.Filter, data interface{}) error
-	Upsert(entityName string, filter []pml.Filter, d interface{}) error
-	FindOne(entityName string, filter []pml.Filter, out interface{}) error
-	Find(entityName string, filter []pml.Filter, pagination *pml.Pagination, out interface{}) (*pml.Result, error)
-	Distinct(entityName string, fieldName string, filter []pml.Filter) ([]interface{}, error)
-	Delete(entityName string, filter []pml.Filter) (int64, error)
-}
-
-// Operators
-const (
-	OperatorNone             = ""
-	OperatorEqual            = "eq"
-	OperatorNotEqual         = "ne"
-	OperatorIn               = "in"
-	OperatorNotIn            = "nin"
-	OperatorGreaterThan      = "gt"
-	OperatorLessThan         = "lt"
-	OperatorGreaterThanEqual = "gte"
-	OperatorLessThanEqual    = "lte"
-	OperatorExists           = "exists"
-	OperatorRegex            = "regex"
-)
-
 // Init storage
-func Init(config map[string]interface{}) (Client, error) {
+func Init(config map[string]interface{}, sch *scheduler.Scheduler) (stgml.Client, error) {
 	dbType, available := config["type"]
 	if available {
 		switch dbType {
@@ -58,8 +26,12 @@ func Init(config map[string]interface{}) (Client, error) {
 					var cl Client = c
 					return &cl, nil
 		*/
-		case TypeMongoDB:
+		case stgml.TypeMemory:
+			return memory.NewClient(config, sch)
+		case stgml.TypeMongoDB:
 			return mongodb.NewClient(config)
+		//case stgml.TypeSqlite:
+		//	return sqlite.NewClient(config)
 		default:
 			return nil, fmt.Errorf("Specified database type not implemented. %s", dbType)
 		}

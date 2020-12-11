@@ -11,6 +11,7 @@ import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	"github.com/mycontroller-org/backend/v2/pkg/model/node"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	"go.uber.org/zap"
@@ -127,16 +128,21 @@ func getTimestamp(gwCfg *gwml.Config) string {
 // get node id
 func getNodeID(gwCfg *gwml.Config) string {
 	f := []pml.Filter{{Key: "gatewayID", Operator: "eq", Value: gwCfg.ID}}
-	nodes, err := nodeAPI.List(f, nil)
+	response, err := nodeAPI.List(f, nil)
 	if err != nil {
 		zap.L().Error("Failed to find list of nodes", zap.String("gateway", gwCfg.Name), zap.Error(err))
 		return ""
 	}
+
 	reservedIDs := make([]int, 0)
-	for _, n := range nodes {
-		if n.Labels.Get(LabelNodeID) != "" {
-			id := n.Labels.GetInt(LabelNodeID)
-			reservedIDs = append(reservedIDs, id)
+	if response.Data != nil {
+		if nodes, ok := response.Data.([]node.Node); ok {
+			for _, n := range nodes {
+				if n.Labels.Get(LabelNodeID) != "" {
+					id := n.Labels.GetInt(LabelNodeID)
+					reservedIDs = append(reservedIDs, id)
+				}
+			}
 		}
 	}
 

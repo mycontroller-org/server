@@ -25,4 +25,5 @@ type File struct {
 	Size         int64     `json:"size"`
 	ModifiedTime time.Time `json:"modifiedTime"`
 	Data         string    `json:"data"`
+	IsDir        bool      `json:"isDir"`
 }

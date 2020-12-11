@@ -72,6 +72,30 @@ func ListFiles(dir string) ([]ml.File, error) {
 				Name:         file.Name(),
 				Size:         file.Size(),
 				ModifiedTime: file.ModTime(),
+				IsDir:        false,
+			}
+			items = append(items, f)
+		}
+	}
+	return items, nil
+}
+
+// ListDirs func
+func ListDirs(dir string) ([]ml.File, error) {
+	CreateDir(dir)
+	files, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	items := make([]ml.File, 0)
+	for _, file := range files {
+		if file.IsDir() {
+			f := ml.File{
+				Name:         file.Name(),
+				Size:         file.Size(),
+				ModifiedTime: file.ModTime(),
+				IsDir:        true,
 			}
 			items = append(items, f)
 		}

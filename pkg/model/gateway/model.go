@@ -1,20 +1,23 @@
 package gateway
 
 import (
+	"time"
+
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
 
 // Config struct
 type Config struct {
-	ID       string               `json:"id"`
-	Name     string               `json:"name"`
-	Enabled  bool                 `json:"enabled"`
-	Ack      AckConfig            `json:"ack"`
-	Provider ProviderConfig       `json:"provider"`
-	Labels   cmap.CustomStringMap `json:"labels"`
-	Others   cmap.CustomMap       `json:"others"`
-	State    ml.State             `json:"state"`
+	ID             string               `json:"id"`
+	Name           string               `json:"name"`
+	Enabled        bool                 `json:"enabled"`
+	Ack            AckConfig            `json:"ack"`
+	Provider       ProviderConfig       `json:"provider"`
+	Labels         cmap.CustomStringMap `json:"labels"`
+	Others         cmap.CustomMap       `json:"others"`
+	State          ml.State             `json:"state"`
+	LastModifiedOn time.Time            `json:"lastModifiedOn"`
 }
 
 // AckConfig data
