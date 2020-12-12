@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 
 	ms "github.com/mycontroller-org/backend/v2/pkg/metrics"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	cfgml "github.com/mycontroller-org/backend/v2/pkg/model/config"
 	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
@@ -137,4 +138,20 @@ func getDatabaseConfig(name string) (map[string]interface{}, error) {
 		}
 	}
 	return nil, errors.New("Config not found")
+}
+
+// GetDirDataRoot returns data root location
+func GetDirDataRoot() string {
+	if CFG.Directories.Data == "" {
+		return model.DefaultDirDataRoot
+	}
+	return CFG.Directories.Data
+}
+
+// GetDirLogsRoot returns logs root location
+func GetDirLogsRoot() string {
+	if CFG.Directories.Logs == "" {
+		return model.DefaultDirLogsRoot
+	}
+	return CFG.Directories.Logs
 }

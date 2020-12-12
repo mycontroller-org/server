@@ -134,7 +134,7 @@ func fetchFirmware(node *nml.Node, typeID, versionID uint16, verifyID bool) (*fi
 		fwVersionID := uint16(fw.Labels.GetInt(LabelFirmwareVersionID))
 
 		// get firmware hex file
-		hexFile, err := ut.ReadFile(ml.DirectoryFullPath(ml.DirectoryFirmware), fw.File.Name)
+		hexFile, err := ut.ReadFile(ml.GetDirectoryFirmware(), fw.File.Name)
 		if err != nil {
 			return nil, err
 		}

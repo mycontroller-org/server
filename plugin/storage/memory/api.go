@@ -7,7 +7,6 @@ import (
 
 	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	"github.com/mycontroller-org/backend/v2/plugin/storage/helper"
-	"go.uber.org/zap"
 )
 
 // Close Implementation
@@ -158,7 +157,7 @@ func (s *Store) addEntity(entityName string, entity interface{}) {
 }
 
 func (s *Store) updateEntity(entityName string, entity interface{}, filters []pml.Filter, forceUpdate bool) error {
-	zap.L().Info("received data for update", zap.String("entity", entityName), zap.Any("data", entity))
+	//zap.L().Info("received data for update", zap.String("entity", entityName), zap.Any("data", entity))
 	sourceID := ""
 	suppliedID := helper.GetID(entity)
 	if suppliedID != "" {
@@ -182,14 +181,14 @@ func (s *Store) updateEntity(entityName string, entity interface{}, filters []pm
 			eID := helper.GetID(entry)
 			if sourceID == eID {
 				s.data[entityName][index] = entity
-				zap.L().Info("Updated on the existing entity", zap.Any("old", entry), zap.Any("new", entity))
+				//	zap.L().Info("Updated on the existing entity", zap.Any("old", entry), zap.Any("new", entity))
 				return nil
 			}
 		}
 	}
 	if forceUpdate {
 		s.data[entityName] = append(s.data[entityName], entity)
-		zap.L().Info("Entity not available, added", zap.Any("new", entity))
+		//	zap.L().Info("Entity not available, added", zap.Any("new", entity))
 		return nil
 	}
 	return errors.New("Entity not available")

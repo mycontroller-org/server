@@ -9,6 +9,7 @@ import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
+	msglogger "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/message_logger"
 
 	"go.uber.org/zap"
 )
@@ -30,7 +31,7 @@ type Endpoint struct {
 	Config         Config
 	receiveMsgFunc func(rm *msgml.RawMessage) error
 	Client         paho.Client
-	rawMsgLogger   *gwptcl.RawMessageLogger
+	messageLogger  msglogger.MessageLogger
 	txPreDelay     *time.Duration
 }
 
@@ -53,22 +54,27 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpo
 		txPreDelay = &_txPreDelay
 	}
 
-	msgFormatterFn := func(rawMsg *msgml.RawMessage) string {
-		direction := "Tx"
-		if rawMsg.IsReceived {
-			direction = "Rx"
-		}
-		return fmt.Sprintf("%v\t%s\t%v\t\t%s\n", rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"), direction, rawMsg.Others.Get(gwptcl.KeyMqttTopic), string(rawMsg.Data))
-	}
-
 	// endpoint
 	d := &Endpoint{
 		GwCfg:          gwCfg,
 		Config:         cfg,
 		receiveMsgFunc: rxMsgFunc,
-		rawMsgLogger:   &gwptcl.RawMessageLogger{Config: gwCfg, MsgFormatterFn: msgFormatterFn},
 		txPreDelay:     txPreDelay,
 	}
+
+	// init message message logger
+	switch gwCfg.MessageLogger.Type {
+	case msglogger.TypeFileLogger:
+		fileMsgLogger, err := msglogger.InitFileMessageLogger(gwCfg, messageFormatter)
+		if err != nil {
+			return nil, err
+		}
+		d.messageLogger = fileMsgLogger
+	default:
+		d.messageLogger = &msglogger.VoidMessageLogger{}
+	}
+	// start the logger
+	d.messageLogger.Start()
 
 	opts := paho.NewClientOptions()
 	opts.AddBroker(cfg.Broker)
@@ -91,15 +97,27 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpo
 	// adding client
 	d.Client = c
 
-	// start raw message logger
-	d.rawMsgLogger.Start()
-
 	err = d.Subscribe(cfg.Subscribe)
 	if err != nil {
 		zap.L().Error("Failed to subscribe a topic", zap.String("topic", cfg.Subscribe), zap.Error(err))
 	}
 	zap.L().Debug("MQTT client connected successfully", zap.String("timeTaken", time.Since(start).String()), zap.Any("clientConfig", cfg))
 	return d, nil
+}
+
+// messageFormatter returns the message as string format
+func messageFormatter(rawMsg *msgml.RawMessage) string {
+	direction := "Tx"
+	if rawMsg.IsReceived {
+		direction = "Rx"
+	}
+	return fmt.Sprintf(
+		"%v\t%s\t%v\t\t\t%s\n",
+		rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"),
+		direction,
+		rawMsg.Others.Get(gwptcl.KeyMqttTopic),
+		string(rawMsg.Data),
+	)
 }
 
 func (d *Endpoint) onConnectionHandler(c paho.Client) {
@@ -125,7 +143,7 @@ func (d *Endpoint) Write(rawMsg *msgml.RawMessage) error {
 		rawMsgCloned := rawMsg.Clone()
 		rawMsgCloned.Others.Set(gwptcl.KeyMqttTopic, _topic, nil)
 		rawMsgCloned.Timestamp = time.Now()
-		d.rawMsgLogger.AsyncWrite(rawMsgCloned)
+		d.messageLogger.AsyncWrite(rawMsgCloned)
 
 		token := d.Client.Publish(_topic, qos, false, rawMsg.Data)
 		if token.Error() != nil {
@@ -142,7 +160,7 @@ func (d *Endpoint) Close() error {
 		d.Client.Disconnect(0)
 		zap.L().Debug("MQTT Client connection closed", zap.String("gateway", d.GwCfg.Name))
 	}
-	d.rawMsgLogger.Close()
+	d.messageLogger.Close()
 	return nil
 }
 
@@ -152,7 +170,7 @@ func (d *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 		rawMsg.Others.Set(gwptcl.KeyMqttTopic, message.Topic(), nil)
 		rawMsg.Others.Set(gwptcl.KeyMqttQoS, int(message.Qos()), nil)
 
-		d.rawMsgLogger.AsyncWrite(rawMsg.Clone())
+		d.messageLogger.AsyncWrite(rawMsg)
 		err := d.receiveMsgFunc(rawMsg)
 		if err != nil {
 			zap.L().Error("Failed to send a raw message to queue", zap.String("gateway", d.GwCfg.Name), zap.Any("rawMessage", rawMsg), zap.Error(err))

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	httpProtocol "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/http"
+	httpProtocol "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/protocol_http"
 )
 
 // global constants

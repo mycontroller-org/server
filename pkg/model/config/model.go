@@ -3,6 +3,7 @@ package config
 // Config of the system
 type Config struct {
 	Web         WebConfig                `yaml:"web"`
+	Directories Directories              `yaml:"directories"`
 	Logger      LoggerConfig             `yaml:"logger"`
 	Secret      string                   `yaml:"secret"` // secret used to encrypt sensitive data
 	Database    Database                 `yaml:"database"`
@@ -16,6 +17,12 @@ type WebConfig struct {
 	Port            uint   `yaml:"port"`
 	WebDirectory    string `yaml:"webDirectory"`
 	EnableProfiling bool   `yaml:"enable_profiling"`
+}
+
+// Directories for data and logs
+type Directories struct {
+	Data string `yaml:"data"`
+	Logs string `yaml:"logs"`
 }
 
 // LoggerConfig input

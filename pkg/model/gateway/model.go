@@ -14,6 +14,7 @@ type Config struct {
 	Enabled        bool                 `json:"enabled"`
 	Ack            AckConfig            `json:"ack"`
 	Provider       ProviderConfig       `json:"provider"`
+	MessageLogger  MessageLogger        `json:"messageLogger"`
 	Labels         cmap.CustomStringMap `json:"labels"`
 	Others         cmap.CustomMap       `json:"others"`
 	State          ml.State             `json:"state"`
@@ -32,4 +33,10 @@ type ProviderConfig struct {
 	Type         string         `json:"type"`
 	ProtocolType string         `json:"protocolType"`
 	Config       cmap.CustomMap `json:"config"`
+}
+
+// MessageLogger details
+type MessageLogger struct {
+	Type   string         `json:"type"`
+	Config cmap.CustomMap `json:"config"`
 }

@@ -2,11 +2,11 @@ package memory
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"sync"
 	"time"
 
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	"github.com/mycontroller-org/backend/v2/pkg/scheduler"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -18,6 +18,7 @@ const (
 	defaultSyncInterval = "1m"
 	syncJobName         = "in-memory-db-sync-to-disk"
 
+	defaultDumpDir    = "memory_db"
 	defaultDumpFormat = exportml.TypeJSON
 )
 
@@ -53,7 +54,7 @@ func NewClient(config map[string]interface{}, sch *scheduler.Scheduler) (*Store,
 
 	if cfg.DumpEnabled {
 		if cfg.DumpDir == "" {
-			return nil, errors.New("dump_dir not defined, but memory database dump enabled")
+			cfg.DumpDir = defaultDumpDir
 		}
 		// update default dump format, if none supplied
 		if len(cfg.DumpFormat) == 0 {
@@ -124,7 +125,7 @@ func (s *Store) dump(entityName string, index int, data interface{}, provider st
 	}
 
 	filename := fmt.Sprintf("%s%s%d.%s", entityName, exportml.EntityNameIndexSplit, index, provider)
-	dir := fmt.Sprintf("%s/%s", s.Config.DumpDir, provider)
+	dir := fmt.Sprintf("%s/%s/%s", model.GetDirectoryExport(), s.Config.DumpDir, provider)
 	err = ut.WriteFile(dir, filename, dataBytes)
 	if err != nil {
 		zap.L().Error("failed to write data to disk", zap.String("directory", dir), zap.String("filename", filename), zap.Error(err))

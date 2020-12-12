@@ -6,7 +6,7 @@ import (
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
-	"github.com/mycontroller-org/backend/v2/plugin/gw_protocol/mqtt"
+	mqtt "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/protocol_mqtt"
 )
 
 // Provider implementation

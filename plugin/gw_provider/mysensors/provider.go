@@ -7,8 +7,8 @@ import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
-	"github.com/mycontroller-org/backend/v2/plugin/gw_protocol/mqtt"
-	"github.com/mycontroller-org/backend/v2/plugin/gw_protocol/serial"
+	mqtt "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/protocol_mqtt"
+	serial "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/protocol_serial"
 )
 
 // Provider implementation
