@@ -1,9 +1,5 @@
 package export
 
-// ExporterConfig data
-type ExporterConfig struct {
-}
-
 // global export/import contants
 const (
 	TypeJSON = "json"
@@ -26,4 +22,11 @@ type Config struct {
 	UseDateSuffix bool     `json:"useDateSuffix"`
 	ExportType    []string `json:"exportType"`
 	Exporter      []string `json:"exporter"`
+}
+
+// ExporterConfig data
+type ExporterConfig struct {
+	Type    string                 `json:"type"`
+	Enabled bool                   `json:"enabled"`
+	Config  map[string]interface{} `json:"config"`
 }
