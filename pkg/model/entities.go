@@ -12,6 +12,12 @@ const (
 	EntityKind        = "kind"         // keeps configurations, job details, rules, operations, etc..,
 )
 
+// Kind types
+const (
+	KindExportConfig   = "ExportConfig"
+	KindExporterConfig = "ExporterConfig"
+)
+
 // Entity field keys
 const (
 	KeyID        = "ID"

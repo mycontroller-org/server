@@ -24,24 +24,24 @@ import (
 )
 
 var (
-	mq   *q.BoundedQueue
-	size = int(1000)
+	msgQueue  *q.BoundedQueue
+	queueSize = int(1000)
 )
 
 // Init message process engine
 func Init() error {
-	mq = q.NewBoundedQueue(size, func(item interface{}) {
-		zap.L().Error("Dropping an item, queue full", zap.Int("size", size), zap.Any("item", item))
+	msgQueue = q.NewBoundedQueue(queueSize, func(item interface{}) {
+		zap.L().Error("Dropping an item, queue full", zap.Int("size", queueSize), zap.Any("item", item))
 	})
 
-	onMessageReceive := func(e *bus.Event) {
-		msg := e.Data.(*msgml.Message)
+	onMessageReceive := func(event *bus.Event) {
+		msg := event.Data.(*msgml.Message)
 		if msg == nil {
-			zap.L().Warn("Received a nil message", zap.Any("event", e))
+			zap.L().Warn("Received a nil message", zap.Any("event", event))
 			return
 		}
 		zap.L().Debug("Message added into processing queue", zap.Any("message", msg))
-		status := mq.Produce(msg)
+		status := msgQueue.Produce(msg)
 		if !status {
 			zap.L().Warn("Failed to store the message into queue", zap.Any("message", msg))
 		}
@@ -53,13 +53,13 @@ func Init() error {
 		Handle:  onMessageReceive,
 	})
 
-	mq.StartConsumers(1, processMessage)
+	msgQueue.StartConsumers(1, processMessage)
 	return nil
 }
 
 // Close message process engine
 func Close() error {
-	mq.Stop()
+	msgQueue.Stop()
 	return nil
 }
 
@@ -187,23 +187,23 @@ func updateSensorDetail(msg *msgml.Message) error {
 	sensor.Labels = sensor.Labels.Init()
 	sensor.Others = sensor.Others.Init()
 
-	for _, d := range msg.Payloads {
-		switch d.Name {
+	for _, payload := range msg.Payloads {
+		switch payload.Name {
 		case ml.FieldName: // set name
 			if !sensor.Labels.GetIgnoreBool(ml.LabelName) {
-				sensor.Name = d.Value
+				sensor.Name = payload.Value
 			}
 
 		default: // set other variables
-			if d.Name != ml.FieldNone {
-				sensor.Others.Set(d.Name, d.Value, sensor.Labels)
+			if payload.Name != ml.FieldNone {
+				sensor.Others.Set(payload.Name, payload.Value, sensor.Labels)
 				// TODO: Do we need to report to metric strore?
 			}
 		}
 
 		// update labels and Others
-		sensor.Labels.CopyFrom(d.Labels)
-		sensor.Others.CopyFrom(d.Others, sensor.Labels)
+		sensor.Labels.CopyFrom(payload.Labels)
+		sensor.Others.CopyFrom(payload.Others, sensor.Labels)
 	}
 
 	err = sensorAPI.Save(sensor)
@@ -215,29 +215,29 @@ func updateSensorDetail(msg *msgml.Message) error {
 }
 
 func setFieldData(msg *msgml.Message) error {
-	for _, d := range msg.Payloads {
+	for _, payload := range msg.Payloads {
 		// current payload
-		cPL := fml.Payload{}
+		currentPayload := fml.Payload{}
 		var err error
 		var pl interface{}
 
 		// convert payload to actual type
-		switch d.MetricType {
+		switch payload.MetricType {
 
 		case mtrml.MetricTypeBinary:
-			pl, err = strconv.ParseBool(d.Value)
+			pl, err = strconv.ParseBool(payload.Value)
 
 		case mtrml.MetricTypeGaugeFloat:
-			pl, err = strconv.ParseFloat(d.Value, 64)
+			pl, err = strconv.ParseFloat(payload.Value, 64)
 
 		case mtrml.MetricTypeGauge, mtrml.MetricTypeCounter:
-			pl, err = strconv.ParseInt(d.Value, 10, 64)
+			pl, err = strconv.ParseInt(payload.Value, 10, 64)
 
 		case mtrml.MetricTypeNone:
-			pl = d.Value
+			pl = payload.Value
 
 		case mtrml.MetricTypeGEO: // Implement geo
-			pl = d.Value
+			pl = payload.Value
 
 		default:
 			zap.L().Error("Unknown data type on a field", zap.Any("message", msg))
@@ -249,38 +249,38 @@ func setFieldData(msg *msgml.Message) error {
 			return err
 		}
 
-		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, d.Name)
+		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, payload.Name)
 		if err != nil { // TODO: check entry availability on error message
 			field = &fml.Field{
 				GatewayID: msg.GatewayID,
 				NodeID:    msg.NodeID,
 				SensorID:  msg.SensorID,
-				FieldID:   d.Name,
+				FieldID:   payload.Name,
 			}
 		}
 
 		// update payload
-		cPL = fml.Payload{Value: pl, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
+		currentPayload = fml.Payload{Value: pl, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
 
 		// if custom payload formatter supplied
 		if formatter := field.PayloadFormatter.OnReceive; msg.IsReceived && formatter != "" {
-			st := time.Now()
-			vm := otto.New()
-			vm.Set("value", cPL.Value)
+			startTime := time.Now()
+			ottoVM := otto.New()
+			ottoVM.Set("value", currentPayload.Value)
 
-			ov, err := vm.Run(formatter)
+			ottoValue, err := ottoVM.Run(formatter)
 			if err != nil {
 				zap.L().Error("Failure on payload formatter", zap.String("formatter", formatter), zap.Error(err))
 				return err
 			}
-			value, err := ov.ToString()
+			value, err := ottoValue.ToString()
 			if err != nil {
 				zap.L().Error("Failed to get value", zap.String("formatter", formatter), zap.Error(err))
 				return err
 			}
 			// update the formatted value
-			cPL.Value = value
-			zap.L().Debug("Formatting done", zap.Any("oldValue", cPL.Value), zap.String("newValue", value), zap.String("timeTaken", time.Since(st).String()))
+			currentPayload.Value = value
+			zap.L().Debug("Formatting done", zap.Any("oldValue", currentPayload.Value), zap.String("newValue", value), zap.String("timeTaken", time.Since(startTime).String()))
 		}
 
 		// update last seen
@@ -292,42 +292,42 @@ func setFieldData(msg *msgml.Message) error {
 
 		// update name
 		if !field.Labels.GetIgnoreBool(ml.LabelName) {
-			field.Name = d.Name
+			field.Name = payload.Name
 		}
 
 		// update type
 		if !field.Labels.GetIgnoreBool(ml.LabelMetricType) {
-			field.MetricType = d.MetricType
+			field.MetricType = payload.MetricType
 		}
 		// update unit
 		if !field.Labels.GetIgnoreBool(ml.LabelUnit) {
-			field.Unit = d.Unit
+			field.Unit = payload.Unit
 		}
 
 		// update labels and others
-		field.Labels.CopyFrom(d.Labels)               // copy labels
-		field.Others.CopyFrom(d.Others, field.Labels) // copy other fields
+		field.Labels.CopyFrom(payload.Labels)               // copy labels
+		field.Others.CopyFrom(payload.Others, field.Labels) // copy other fields
 
 		// update no change since
 		oldValue := fmt.Sprintf("%v", field.Payload.Value)
-		newValue := fmt.Sprintf("%v", cPL.Value)
+		newValue := fmt.Sprintf("%v", currentPayload.Value)
 		if oldValue != newValue {
-			field.NoChangeSince = cPL.Timestamp
+			field.NoChangeSince = currentPayload.Timestamp
 		}
 
 		// update shift old payload and update current payload
 		field.PreviousPayload = field.Payload
-		field.Payload = cPL
+		field.Payload = currentPayload
 
-		start := time.Now()
+		startTime := time.Now()
 		err = fieldAPI.Save(field)
 		if err != nil {
 			zap.L().Error("Failed to update field in to database", zap.Error(err), zap.Any("field", field))
 		} else {
-			zap.L().Debug("Inserted in to storage db", zap.String("timeTaken", time.Since(start).String()))
+			zap.L().Debug("Inserted in to storage db", zap.String("timeTaken", time.Since(startTime).String()))
 		}
 
-		start = time.Now()
+		startTime = time.Now()
 		updateMetric := true
 		// for binary do not update duplicate values
 		if field.MetricType == mtrml.MetricTypeBinary {
@@ -338,7 +338,7 @@ func setFieldData(msg *msgml.Message) error {
 			if err != nil {
 				zap.L().Error("Failed to write into metrics database", zap.Error(err), zap.Any("field", field))
 			} else {
-				zap.L().Debug("Inserted in to metric db", zap.String("timeTaken", time.Since(start).String()))
+				zap.L().Debug("Inserted in to metric db", zap.String("timeTaken", time.Since(startTime).String()))
 			}
 		} else {
 			zap.L().Debug("Skipped metric update", zap.Any("field", field))
@@ -350,16 +350,16 @@ func setFieldData(msg *msgml.Message) error {
 
 func requestFieldData(msg *msgml.Message) error {
 	payloads := make([]msgml.Data, 0)
-	for _, d := range msg.Payloads {
-		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, d.Name)
+	for _, payload := range msg.Payloads {
+		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, payload.Name)
 		if err != nil { // TODO: check entry availability on error message
 			continue
 		}
 
 		if field.Payload.Value != nil {
-			clonedData := d.Clone()                          // clone the message
-			d.Value = fmt.Sprintf("%v", field.Payload.Value) // update payload
-			d.Labels = field.Labels.Clone()
+			clonedData := payload.Clone()                          // clone the message
+			payload.Value = fmt.Sprintf("%v", field.Payload.Value) // update payload
+			payload.Labels = field.Labels.Clone()
 			payloads = append(payloads, clonedData)
 		}
 	}

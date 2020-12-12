@@ -2,10 +2,12 @@ package memory
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
 
+	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	"github.com/mycontroller-org/backend/v2/pkg/scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/util"
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
@@ -15,16 +17,17 @@ import (
 
 const (
 	defaultSyncInterval = "1m"
-	syncJobName         = "memory_db_sync"
+	syncJobName         = "in-memory-db-sync-to-disk"
 
-	defaultDumpFormat = "json"
+	defaultDumpFormat = exportml.TypeJSON
 )
 
 // Config of the memory storage
 type Config struct {
-	DiskLocation string   `yaml:"disk_location"`
+	DumpEnabled  bool     `yaml:"dump_enabled"`
+	DumpInterval string   `yaml:"dump_interval"`
+	DumpDir      string   `yaml:"dump_dir"`
 	DumpFormat   []string `yaml:"dump_format"`
-	SyncInterval string   `yaml:"sync_interval"`
 }
 
 // Store to keep all the entities
@@ -49,26 +52,27 @@ func NewClient(config map[string]interface{}, sch *scheduler.Scheduler) (*Store,
 		lastSync: time.Now(),
 	}
 
-	if cfg.DiskLocation != "" {
+	if cfg.DumpEnabled {
+		if cfg.DumpDir == "" {
+			return nil, errors.New("dump_dir not defined, but memory database dump enabled")
+		}
 		// update default dump format, if none supplied
 		if len(cfg.DumpFormat) == 0 {
 			cfg.DumpFormat = []string{defaultDumpFormat}
 		}
-		// load data from disk
-		err = store.loadFromDisk()
 		if err != nil {
 			return nil, err
 		}
 		// add sync job
-		if cfg.SyncInterval == "" {
-			cfg.SyncInterval = defaultSyncInterval
+		if cfg.DumpInterval == "" {
+			cfg.DumpInterval = defaultSyncInterval
 		}
-		err = sch.AddFunc(syncJobName, fmt.Sprintf("@every %s", cfg.SyncInterval), store.writeToDisk)
+		err = sch.AddFunc(syncJobName, fmt.Sprintf("@every %s", cfg.DumpInterval), store.writeToDisk)
 		if err != nil {
 			return nil, err
 		}
+		zap.L().Debug("Memory database dump job scheduled", zap.Any("config", cfg))
 	}
-
 	return store, nil
 }
 
@@ -83,9 +87,9 @@ func (s *Store) writeToDisk() {
 				if dataLength == 0 {
 					break
 				}
-				positionStart := index * 50
+				positionStart := index * exportml.LimitPerFile
 				index++
-				positionEnd := (index * 50)
+				positionEnd := (index * exportml.LimitPerFile)
 
 				if positionEnd < dataLength {
 					s.dump(entityName, index, data[positionStart:positionEnd-1], format)
@@ -102,47 +106,28 @@ func (s *Store) dump(entityName string, index int, data interface{}, provider st
 	var dataBytes []byte
 	var err error
 	switch provider {
-	case "json":
+	case exportml.TypeJSON:
 		dataBytes, err = json.Marshal(data)
 		if err != nil {
 			zap.L().Error("failed to convert to target format", zap.String("format", provider), zap.Error(err))
 			return
 		}
-	case "yaml":
+	case exportml.TypeYAML:
 		dataBytes, err = yaml.Marshal(data)
 		if err != nil {
 			zap.L().Error("failed to convert to target format", zap.String("format", provider), zap.Error(err))
 			return
 		}
+
 	default:
 		zap.L().Error("This format not supported", zap.String("format", provider), zap.Error(err))
 		return
 	}
 
-	filename := fmt.Sprintf("%s%s%d.%s", entityName, "__", index, provider)
-	dir := fmt.Sprintf("%s/%s", s.Config.DiskLocation, provider)
+	filename := fmt.Sprintf("%s%s%d.%s", entityName, exportml.EntityNameIndexSplit, index, provider)
+	dir := fmt.Sprintf("%s/%s", s.Config.DumpDir, provider)
 	err = util.WriteFile(dir, filename, dataBytes)
 	if err != nil {
 		zap.L().Error("failed to write data to disk", zap.String("directory", dir), zap.String("filename", filename), zap.Error(err))
 	}
-}
-
-func (s *Store) loadFromDisk() error {
-	s.RWMutex.Lock()
-	defer s.RWMutex.Unlock()
-	zap.L().Debug("Loading data from disk", zap.String("location", s.Config.DiskLocation))
-	dirs, err := util.ListDirs(s.Config.DiskLocation)
-	if err != nil {
-		return err
-	}
-	for _, dir := range dirs {
-		switch dir.Name {
-		case "json", "yaml":
-			//targetDir := fmt.Sprintf("%s/%s", s.Config.DiskLocation, dir.Name)
-			//return export.ImportEntities(targetDir, dir.Name)
-		default:
-			continue
-		}
-	}
-	return nil
 }

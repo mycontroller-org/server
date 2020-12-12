@@ -13,6 +13,7 @@ import (
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	mlfl "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	mlfw "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	mlgw "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
@@ -150,12 +151,12 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 
 func unmarshal(provider string, fileBytes []byte, entities interface{}) error {
 	switch provider {
-	case TypeJSON:
+	case exportml.TypeJSON:
 		err := json.Unmarshal(fileBytes, entities)
 		if err != nil {
 			return err
 		}
-	case TypeYAML:
+	case exportml.TypeYAML:
 		err := yaml.Unmarshal(fileBytes, entities)
 		if err != nil {
 			return err
@@ -167,7 +168,7 @@ func unmarshal(provider string, fileBytes []byte, entities interface{}) error {
 }
 
 func getEntityName(filename string) string {
-	entity := strings.Split(filename, EntityNameIndexSplit)
+	entity := strings.Split(filename, exportml.EntityNameIndexSplit)
 	if len(entity) > 0 {
 		return entity[0]
 	}
