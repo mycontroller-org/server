@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mycontroller-org/backend/v2/pkg/api/field"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metric"
+	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
 )
 
@@ -50,8 +50,8 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 		return nil
 	}
 
-	queryConfig := &mtrml.QueryConfig{}
-	queryConfig.Individual = []mtrml.Query{{Name: QuickID, Tags: map[string]string{}}}
+	queryConfig := &mtsml.QueryConfig{}
+	queryConfig.Individual = []mtsml.Query{{Name: QuickID, Tags: map[string]string{}}}
 
 	if quickID, ok := params[QuickID]; ok {
 		if len(quickID) > 0 {
@@ -86,16 +86,16 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// update optional parameters
-	if value := getValue(mtrml.QueryKeyStart); value != "" {
+	if value := getValue(mtsml.QueryKeyStart); value != "" {
 		queryConfig.Global.Start = value
 	}
-	if value := getValue(mtrml.QueryKeyStop); value != "" {
+	if value := getValue(mtsml.QueryKeyStop); value != "" {
 		queryConfig.Global.Stop = value
 	}
-	if value := getValue(mtrml.QueryKeyWindow); value != "" {
+	if value := getValue(mtsml.QueryKeyWindow); value != "" {
 		queryConfig.Global.Window = value
 	}
-	if values := getValues(mtrml.QueryKeyFunctions); values != nil {
+	if values := getValues(mtsml.QueryKeyFunctions); values != nil {
 		queryConfig.Global.Functions = values
 	}
 
@@ -122,7 +122,7 @@ func getMetricList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	queryConfig := &mtrml.QueryConfig{}
+	queryConfig := &mtsml.QueryConfig{}
 
 	err = json.Unmarshal(d, queryConfig)
 	if err != nil {

@@ -6,9 +6,9 @@ import (
 
 // Scheduler struct
 type Scheduler struct {
-	cron  *cron.Cron
-	jobs  map[string]int
-	funcs map[string]int
+	cron      *cron.Cron
+	jobs      map[string]int
+	functions map[string]int
 }
 
 // Close scheduler
@@ -19,9 +19,9 @@ func (s *Scheduler) Close() {
 // Init cron scheduler
 func Init() *Scheduler {
 	return &Scheduler{
-		cron:  cron.New(cron.WithSeconds()),
-		jobs:  map[string]int{},
-		funcs: map[string]int{},
+		cron:      cron.New(cron.WithSeconds()),
+		jobs:      map[string]int{},
+		functions: map[string]int{},
 	}
 }
 
@@ -31,18 +31,18 @@ func (s *Scheduler) Start() {
 }
 
 // AddFunc function
-func (s *Scheduler) AddFunc(name, cron string, fn func()) error {
-	id, err := s.cron.AddFunc(cron, fn)
+func (s *Scheduler) AddFunc(name, cron string, targetFunc func()) error {
+	id, err := s.cron.AddFunc(cron, targetFunc)
 	if err != nil {
 		return err
 	}
-	s.funcs[name] = int(id)
+	s.functions[name] = int(id)
 	return nil
 }
 
 // RemoveFunc function
 func (s *Scheduler) RemoveFunc(name string) {
-	id, ok := s.funcs[name]
+	id, ok := s.functions[name]
 	if ok {
 		s.cron.Remove(cron.EntryID(id))
 	}

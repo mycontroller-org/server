@@ -15,7 +15,7 @@ import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metric"
+	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
@@ -224,19 +224,19 @@ func setFieldData(msg *msgml.Message) error {
 		// convert payload to actual type
 		switch payload.MetricType {
 
-		case mtrml.MetricTypeBinary:
+		case mtsml.MetricTypeBinary:
 			pl, err = strconv.ParseBool(payload.Value)
 
-		case mtrml.MetricTypeGaugeFloat:
+		case mtsml.MetricTypeGaugeFloat:
 			pl, err = strconv.ParseFloat(payload.Value, 64)
 
-		case mtrml.MetricTypeGauge, mtrml.MetricTypeCounter:
+		case mtsml.MetricTypeGauge, mtsml.MetricTypeCounter:
 			pl, err = strconv.ParseInt(payload.Value, 10, 64)
 
-		case mtrml.MetricTypeNone:
+		case mtsml.MetricTypeNone:
 			pl = payload.Value
 
-		case mtrml.MetricTypeGEO: // Implement geo
+		case mtsml.MetricTypeGEO: // Implement geo
 			pl = payload.Value
 
 		default:
@@ -330,7 +330,7 @@ func setFieldData(msg *msgml.Message) error {
 		startTime = time.Now()
 		updateMetric := true
 		// for binary do not update duplicate values
-		if field.MetricType == mtrml.MetricTypeBinary {
+		if field.MetricType == mtsml.MetricTypeBinary {
 			updateMetric = field.Payload.Timestamp.Equal(field.NoChangeSince)
 		}
 		if updateMetric {

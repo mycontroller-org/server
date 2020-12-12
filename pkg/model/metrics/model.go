@@ -1,4 +1,4 @@
-package metric
+package metrics
 
 import "time"
 
@@ -38,6 +38,13 @@ type Query struct {
 	Window     string            `json:"window"`
 	Tags       map[string]string `json:"tags"`
 	Functions  []string          `json:"functions"`
+}
+
+// Data struct
+type Data struct {
+	Time       time.Time              `json:"timestamp"`
+	MetricType string                 `json:"metricType"`
+	Metric     map[string]interface{} `json:"metric"`
 }
 
 // Clone a query
@@ -109,11 +116,4 @@ func (q *Query) Merge(new *Query) {
 			}
 		}
 	}
-}
-
-// Data struct
-type Data struct {
-	Time       time.Time              `json:"timestamp"`
-	MetricType string                 `json:"metricType"`
-	Metric     map[string]interface{} `json:"metric"`
 }

@@ -18,9 +18,8 @@ type Client interface {
 
 // Storage database types
 const (
-	TypeMemory  = "memory"
-	TypeMongoDB = "mongodb"
-	TypeSqlite  = "sqlite"
+	DBTypeMemory  = "memory"
+	DBTypeMongoDB = "mongodb"
 )
 
 // Operators

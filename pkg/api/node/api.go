@@ -10,16 +10,16 @@ import (
 )
 
 // List by filter and pagination
-func List(f []pml.Filter, p *pml.Pagination) (*pml.Result, error) {
-	out := make([]nml.Node, 0)
-	return svc.STG.Find(ml.EntityNode, &out, f, p)
+func List(filters []pml.Filter, pagination *pml.Pagination) (*pml.Result, error) {
+	result := make([]nml.Node, 0)
+	return svc.STG.Find(ml.EntityNode, &result, filters, pagination)
 }
 
 // Get returns a Node
-func Get(f []pml.Filter) (nml.Node, error) {
-	out := nml.Node{}
-	err := svc.STG.FindOne(ml.EntityNode, &out, f)
-	return out, err
+func Get(filters []pml.Filter) (nml.Node, error) {
+	result := nml.Node{}
+	err := svc.STG.FindOne(ml.EntityNode, &result, filters)
+	return result, err
 }
 
 // Save Node config into disk
@@ -27,10 +27,10 @@ func Save(node *nml.Node) error {
 	if node.ID == "" {
 		node.ID = ut.RandUUID()
 	}
-	f := []pml.Filter{
+	filters := []pml.Filter{
 		{Key: ml.KeyID, Value: node.ID},
 	}
-	return svc.STG.Upsert(ml.EntityNode, node, f)
+	return svc.STG.Upsert(ml.EntityNode, node, filters)
 }
 
 // GetByIDs returns a node details by gatewayID and nodeId of a message
@@ -39,13 +39,13 @@ func GetByIDs(gatewayID, nodeID string) (*nml.Node, error) {
 		{Key: ml.KeyGatewayID, Value: gatewayID},
 		{Key: ml.KeyNodeID, Value: nodeID},
 	}
-	out := &nml.Node{}
-	err := svc.STG.FindOne(ml.EntityNode, out, f)
-	return out, err
+	result := &nml.Node{}
+	err := svc.STG.FindOne(ml.EntityNode, result, f)
+	return result, err
 }
 
 // Delete node
 func Delete(IDs []string) (int64, error) {
-	f := []pml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
-	return svc.STG.Delete(ml.EntityNode, f)
+	filters := []pml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
+	return svc.STG.Delete(ml.EntityNode, filters)
 }

@@ -6,7 +6,7 @@ import (
 
 // AsyncRunner func
 // executes given func on the specified interval
-func AsyncRunner(customFn func(), execInterval time.Duration, stop chan bool) {
+func AsyncRunner(customFunc func(), execInterval time.Duration, stop chan bool) {
 	ticker := time.NewTicker(execInterval)
 	defer ticker.Stop()
 	// now enter into "repeatedly at regular intervals"
@@ -15,7 +15,7 @@ func AsyncRunner(customFn func(), execInterval time.Duration, stop chan bool) {
 		case <-stop:
 			return
 		case <-ticker.C:
-			customFn()
+			customFunc()
 		}
 	}
 }

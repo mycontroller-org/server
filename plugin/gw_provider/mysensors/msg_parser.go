@@ -8,7 +8,7 @@ import (
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metric"
+	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	"github.com/mycontroller-org/backend/v2/pkg/util"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
@@ -66,7 +66,7 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 			}
 		}
 		if mt, ok := metricTypeAndUnit[payload.Name]; ok {
-			if mt.Type == mtrml.MetricTypeBinary {
+			if mt.Type == mtsml.MetricTypeBinary {
 				switch strings.ToLower(payload.Value) {
 				case "true", "on":
 					msMsg.Payload = payloadON

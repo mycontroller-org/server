@@ -8,7 +8,7 @@ import (
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metric"
+	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 	ut "github.com/mycontroller-org/backend/v2/pkg/util"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
 	"go.uber.org/zap"
@@ -99,8 +99,8 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 		pl := msgml.NewData()
 		pl.Name = ml.FieldName
 		pl.Value = value
-		pl.MetricType = mtrml.MetricTypeNone
-		pl.Unit = mtrml.UnitNone
+		pl.MetricType = mtsml.MetricTypeNone
+		pl.Unit = mtsml.UnitNone
 		return &pl
 	}
 
@@ -123,10 +123,10 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 			pl.MetricType = mu.Type
 			pl.Unit = mu.Unit
 		} else {
-			pl.MetricType = mtrml.MetricTypeNone
-			pl.Unit = mtrml.UnitNone
+			pl.MetricType = mtsml.MetricTypeNone
+			pl.Unit = mtsml.UnitNone
 		}
-		if pl.MetricType == mtrml.MetricTypeBinary {
+		if pl.MetricType == mtsml.MetricTypeBinary {
 			v := strings.ToLower(pl.Value)
 			if v == "on" || v == "1" || v == "true" {
 				pl.Value = "1"
@@ -327,7 +327,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 						pl := msgml.Data{
 							Name:       k,
 							Value:      ut.ToString(v),
-							MetricType: mtrml.MetricTypeNone,
+							MetricType: mtsml.MetricTypeNone,
 						}
 						msg.Payloads = append(msg.Payloads, pl)
 					}
@@ -343,7 +343,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 						pl := msgml.Data{
 							Name:       keyHeap,
 							Value:      ut.ToString(heap),
-							MetricType: mtrml.MetricTypeGauge,
+							MetricType: mtsml.MetricTypeGauge,
 						}
 						msg.Payloads = append(msg.Payloads, pl)
 					}
@@ -373,10 +373,10 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 						return nil
 					}
 					// Update temperature unit
-					temperatureUnit := mtrml.UnitCelsius
+					temperatureUnit := mtsml.UnitCelsius
 					if tu, ok := data[keyTemperatureUnit]; ok {
 						if tu == "F" {
-							temperatureUnit = mtrml.UnitFahrenheit
+							temperatureUnit = mtsml.UnitFahrenheit
 						}
 					}
 					for k, v := range data {
@@ -389,8 +389,8 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 								pl := msgml.Data{
 									Name:       fName,
 									Value:      ut.ToString(fValue),
-									MetricType: mtrml.MetricTypeNone,
-									Unit:       mtrml.UnitNone,
+									MetricType: mtsml.MetricTypeNone,
+									Unit:       mtsml.UnitNone,
 								}
 								pl.Labels = pl.Labels.Init()
 								pls = append(pls, pl)
@@ -411,8 +411,8 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 								pl := msgml.Data{
 									Name:       fName,
 									Value:      ut.ToString(fValue),
-									MetricType: mtrml.MetricTypeCounter,
-									Unit:       mtrml.UnitNone,
+									MetricType: mtsml.MetricTypeCounter,
+									Unit:       mtsml.UnitNone,
 								}
 								pl.Labels = pl.Labels.Init()
 								pls = append(pls, pl)
@@ -437,7 +437,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 								}
 								mt, ok := metricTypeAndUnit[fName]
 								if !ok {
-									mt = payloadMetricTypeUnit{Type: mtrml.MetricTypeNone, Unit: mtrml.UnitNone}
+									mt = payloadMetricTypeUnit{Type: mtsml.MetricTypeNone, Unit: mtsml.UnitNone}
 								}
 
 								// update temperature unit

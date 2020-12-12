@@ -11,18 +11,18 @@ import (
 var gwService = map[string]*Service{}
 
 // AddGatewayService add
-func AddGatewayService(s *Service) {
-	gwService[s.Config.ID] = s
+func AddGatewayService(service *Service) {
+	gwService[service.Config.ID] = service
 }
 
 // RemoveGatewayService remove a service
-func RemoveGatewayService(g *gwml.Config) {
-	delete(gwService, g.ID)
+func RemoveGatewayService(gatewayCfg *gwml.Config) {
+	delete(gwService, gatewayCfg.ID)
 }
 
 // GetGatewayService returns service
-func GetGatewayService(g *gwml.Config) *Service {
-	return GetGatewayServiceByID(g.ID)
+func GetGatewayService(gatewayCfg *gwml.Config) *Service {
+	return GetGatewayServiceByID(gatewayCfg.ID)
 }
 
 // GetGatewayServiceByID returns service
@@ -32,11 +32,11 @@ func GetGatewayServiceByID(ID string) *Service {
 
 // Post a message to gateway
 func Post(msg *msgml.Message) error {
-	gwSRV := GetGatewayServiceByID(msg.GatewayID)
-	if gwSRV == nil {
+	gatewayService := GetGatewayServiceByID(msg.GatewayID)
+	if gatewayService == nil {
 		return fmt.Errorf("Gateway service not found for %s", msg.GatewayID)
 	}
-	topic := gwSRV.TopicMsg2Provider
+	topic := gatewayService.TopicMsg2Provider
 	_, err := mcbus.Publish(topic, msg)
 	return err
 }

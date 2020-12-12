@@ -31,13 +31,13 @@ func Start(gwCfg *gwml.Config) error {
 		zap.L().Info("Unknown provider", zap.Any("gateway", gwCfg))
 		return nil
 	}
-	s := &Service{
+	service := &Service{
 		Config:   gwCfg,
 		Provider: provider,
 		ctx:      context.TODO(),
 	}
 
-	err := s.Start()
+	err := service.Start()
 	if err != nil {
 		zap.L().Error("Unable to start the gateway", zap.Any("gateway", gwCfg), zap.Error(err))
 		state.Message = err.Error()
@@ -45,7 +45,7 @@ func Start(gwCfg *gwml.Config) error {
 	} else {
 		state.Message = "Started successfully"
 		state.Status = ml.StateUp
-		AddGatewayService(s)
+		AddGatewayService(service)
 	}
 
 	if err := SetState(gwCfg, state); err != nil {
@@ -56,9 +56,9 @@ func Start(gwCfg *gwml.Config) error {
 
 // Stop gateway
 func Stop(gwCfg *gwml.Config) error {
-	gs := GetGatewayService(gwCfg)
-	if gs != nil {
-		err := gs.Stop()
+	gatewayService := GetGatewayService(gwCfg)
+	if gatewayService != nil {
+		err := gatewayService.Stop()
 		state := ml.State{
 			Status: ml.StateDown,
 			Since:  time.Now(),
@@ -82,11 +82,11 @@ func LoadGateways() {
 		zap.L().Error("Error getting list of gateways", zap.Error(err))
 		return
 	}
-	gws := *gwsResult.Data.(*[]gwml.Config)
-	for index := 0; index < len(gws); index++ {
-		gw := gws[index]
-		if gw.Enabled {
-			Start(&gw)
+	gateways := *gwsResult.Data.(*[]gwml.Config)
+	for index := 0; index < len(gateways); index++ {
+		gateway := gateways[index]
+		if gateway.Enabled {
+			Start(&gateway)
 		}
 	}
 }
@@ -97,13 +97,13 @@ func UnloadGateways() {
 	if err != nil {
 		zap.L().Error("Error getting list of gateways", zap.Error(err))
 	}
-	gws := *gwsResult.Data.(*[]gwml.Config)
-	for index := 0; index < len(gws); index++ {
-		gw := gws[index]
-		if gw.Enabled {
-			err = Stop(&gw)
+	gateways := *gwsResult.Data.(*[]gwml.Config)
+	for index := 0; index < len(gateways); index++ {
+		gateway := gateways[index]
+		if gateway.Enabled {
+			err = Stop(&gateway)
 			if err != nil {
-				zap.L().Error("Error unloading a gateway", zap.Error(err), zap.Any("gateway", gw))
+				zap.L().Error("Error unloading a gateway", zap.Error(err), zap.Any("gateway", gateway))
 			}
 		}
 	}

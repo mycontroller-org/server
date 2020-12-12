@@ -3,7 +3,7 @@ package tasmota
 import (
 	"fmt"
 
-	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metric"
+	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 )
 
 // tasmota message data
@@ -159,16 +159,16 @@ type payloadMetricTypeUnit struct{ Type, Unit string }
 
 // map default metric types unit types for the fields
 var metricTypeAndUnit = map[string]payloadMetricTypeUnit{
-	keyTemperature: {mtrml.MetricTypeGaugeFloat, mtrml.UnitCelsius},
-	keyHumidity:    {mtrml.MetricTypeGaugeFloat, mtrml.UnitHumidity},
-	keyDeWPoint:    {mtrml.MetricTypeGaugeFloat, mtrml.UnitCelsius},
-	keyHeap:        {mtrml.MetricTypeGauge, mtrml.UnitNone},
-	keyPower:       {mtrml.MetricTypeBinary, mtrml.UnitNone},
-	keyFade:        {mtrml.MetricTypeBinary, mtrml.UnitNone},
-	keyRSSI:        {mtrml.MetricTypeGauge, mtrml.UnitNone},
-	keySignal:      {mtrml.MetricTypeGauge, mtrml.UnitNone},
-	keyVoltage:     {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
-	keyCurrent:     {mtrml.MetricTypeGaugeFloat, mtrml.UnitNone},
+	keyTemperature: {mtsml.MetricTypeGaugeFloat, mtsml.UnitCelsius},
+	keyHumidity:    {mtsml.MetricTypeGaugeFloat, mtsml.UnitHumidity},
+	keyDeWPoint:    {mtsml.MetricTypeGaugeFloat, mtsml.UnitCelsius},
+	keyHeap:        {mtsml.MetricTypeGauge, mtsml.UnitNone},
+	keyPower:       {mtsml.MetricTypeBinary, mtsml.UnitNone},
+	keyFade:        {mtsml.MetricTypeBinary, mtsml.UnitNone},
+	keyRSSI:        {mtsml.MetricTypeGauge, mtsml.UnitNone},
+	keySignal:      {mtsml.MetricTypeGauge, mtsml.UnitNone},
+	keyVoltage:     {mtsml.MetricTypeGaugeFloat, mtsml.UnitNone},
+	keyCurrent:     {mtsml.MetricTypeGaugeFloat, mtsml.UnitNone},
 }
 
 // Labels used on this provider

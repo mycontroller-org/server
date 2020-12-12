@@ -95,14 +95,14 @@ func (c *Command) Stop() error {
 
 // StopAll terminates all the running commands
 func StopAll() {
-	for id, c := range store {
-		err := c.Stop()
+	for id, command := range store {
+		err := command.Stop()
 		if err != nil {
-			zap.L().Error("Error on stopping a command", zap.String("id", id), zap.String("Name", c.Name), zap.String("cmd", c.Command), zap.Any("args", c.Args), zap.Error(err))
+			zap.L().Error("Error on stopping a command", zap.String("id", id), zap.String("Name", command.Name), zap.String("cmd", command.Command), zap.Any("args", command.Args), zap.Error(err))
 		}
-		if c.ExitFn != nil {
-			st := c.cmd.Status()
-			c.ExitFn(ExitTypeStop, st)
+		if command.ExitFn != nil {
+			st := command.cmd.Status()
+			command.ExitFn(ExitTypeStop, st)
 		}
 	}
 }

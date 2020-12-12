@@ -40,32 +40,32 @@ func RandIDWithLength(length int) string {
 }
 
 // UpdatePagination updates if nil
-func UpdatePagination(p *pml.Pagination) *pml.Pagination {
-	if p == nil {
-		p = &pml.Pagination{Limit: -1, Offset: -1}
+func UpdatePagination(pagination *pml.Pagination) *pml.Pagination {
+	if pagination == nil {
+		pagination = &pml.Pagination{Limit: -1, Offset: -1}
 	}
-	if len(p.SortBy) == 0 {
-		p.SortBy = []pml.Sort{{Field: "ID", OrderBy: "ASC"}}
+	if len(pagination.SortBy) == 0 {
+		pagination.SortBy = []pml.Sort{{Field: "ID", OrderBy: "ASC"}}
 	}
-	if p.Limit == 0 {
-		p.Limit = -1
+	if pagination.Limit == 0 {
+		pagination.Limit = -1
 	}
 	//if p.Offset == 0 {
 	//	p.Offset = -1
 	//}
-	return p
+	return pagination
 }
 
-// JoinMap joins two maps. put all the values into 'p' map from 'o' map
-func JoinMap(p, o map[string]interface{}) {
-	if o == nil {
+// JoinMap joins two maps. put all the values into 'dst' map from 'src' map
+func JoinMap(dst, src map[string]interface{}) {
+	if src == nil {
 		return
 	}
-	if p == nil {
-		p = map[string]interface{}{}
+	if dst == nil {
+		dst = map[string]interface{}{}
 	}
-	for k, v := range o {
-		p[k] = v
+	for k, v := range src {
+		dst[k] = v
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 
 	ms "github.com/mycontroller-org/backend/v2/pkg/metrics"
 	cfgml "github.com/mycontroller-org/backend/v2/pkg/model/config"
+	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/storage"
@@ -20,26 +21,26 @@ import (
 var (
 	CFG *cfgml.Config
 	STG stgml.Client
-	MTS ms.Client
+	MTS mtsml.Client
 	SCH *scheduler.Scheduler
 )
 
 // Init all the supported registries
-func Init(preInitFn func(), postInitFn func(cfg *cfgml.Config)) {
+func Init(preInitFunc func(), postInitFunc func(cfg *cfgml.Config)) {
 	initConfig()
 	initLogger()
 
 	// trigger pre init func
-	if preInitFn != nil {
-		preInitFn()
+	if preInitFunc != nil {
+		preInitFunc()
 	}
 
 	initScheduler()
 	initStorage()
 
 	// trigger post init func
-	if postInitFn != nil {
-		postInitFn(CFG)
+	if postInitFunc != nil {
+		postInitFunc(CFG)
 	}
 }
 
@@ -102,28 +103,28 @@ func initScheduler() {
 
 func initStorage() {
 	// Get storage and metric database config
-	sCFG, err := getDatabaseConfig(CFG.Database.Storage)
+	storageCfg, err := getDatabaseConfig(CFG.Database.Storage)
 	if err != nil {
 		zap.L().Fatal("Problem with storage database config", zap.String("name", CFG.Database.Storage), zap.Error(err))
 	}
 
-	mCFG, err := getDatabaseConfig(CFG.Database.Metrics)
+	metricsCfg, err := getDatabaseConfig(CFG.Database.Metrics)
 	if err != nil {
 		zap.L().Fatal("Problem with metrics database config", zap.String("name", CFG.Database.Metrics), zap.Error(err))
 	}
 
 	// include logger details
-	sCFG["logger"] = map[string]string{"mode": CFG.Logger.Mode, "encoding": CFG.Logger.Encoding, "level": CFG.Logger.Level.Storage}
-	mCFG["logger"] = map[string]string{"mode": CFG.Logger.Mode, "encoding": CFG.Logger.Encoding, "level": CFG.Logger.Level.Metrics}
+	storageCfg["logger"] = map[string]string{"mode": CFG.Logger.Mode, "encoding": CFG.Logger.Encoding, "level": CFG.Logger.Level.Storage}
+	metricsCfg["logger"] = map[string]string{"mode": CFG.Logger.Mode, "encoding": CFG.Logger.Encoding, "level": CFG.Logger.Level.Metrics}
 
 	// Init storage database
-	STG, err = storage.Init(sCFG, SCH)
+	STG, err = storage.Init(storageCfg, SCH)
 	if err != nil {
 		zap.L().Fatal("Error on storage db init", zap.Error(err))
 	}
 
 	// Init metrics database
-	MTS, err = ms.Init(mCFG)
+	MTS, err = ms.Init(metricsCfg)
 	if err != nil {
 		zap.L().Fatal("Error on metrics db init", zap.Error(err))
 	}
