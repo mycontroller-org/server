@@ -6,7 +6,7 @@ import (
 	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
-	ut "github.com/mycontroller-org/backend/v2/pkg/util"
+	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 )
 
 // List by filter and pagination

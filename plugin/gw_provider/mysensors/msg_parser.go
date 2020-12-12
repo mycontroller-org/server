@@ -10,7 +10,7 @@ import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	"github.com/mycontroller-org/backend/v2/pkg/util"
+	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
 	"go.uber.org/zap"
 )
@@ -328,7 +328,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 					msgPL.Name = _type
 
 					// filter implemented requests
-					_, found := util.FindItem(customValidActions, _type)
+					_, found := ut.FindItem(customValidActions, _type)
 					if !found {
 						return nil, fmt.Errorf("This internal message handling not implemented: %s", _type)
 					}
@@ -343,7 +343,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 				msgPL.Name = _type
 
 				// filter implemented requests
-				_, found := util.FindItem(customValidActions, _type)
+				_, found := ut.FindItem(customValidActions, _type)
 				if !found {
 					return nil, fmt.Errorf("This stream message handling not implemented: %s", _type)
 				}
@@ -358,7 +358,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 			msgPL.Name = _type
 
 			// filter implemented requests
-			_, found := util.FindItem(customValidActions, _type)
+			_, found := ut.FindItem(customValidActions, _type)
 			if !found {
 				return nil, fmt.Errorf("This internal message handling not implemented: %s", _type)
 			}

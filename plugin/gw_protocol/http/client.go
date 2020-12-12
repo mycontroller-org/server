@@ -9,7 +9,7 @@ import (
 
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	ut "github.com/mycontroller-org/backend/v2/pkg/util"
+	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
 )
 

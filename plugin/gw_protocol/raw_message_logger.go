@@ -8,7 +8,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	"github.com/mycontroller-org/backend/v2/pkg/util"
+	util "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 

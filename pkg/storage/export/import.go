@@ -20,7 +20,7 @@ import (
 	mlkd "github.com/mycontroller-org/backend/v2/pkg/model/kind"
 	mlnd "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	mlsr "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
-	ut "github.com/mycontroller-org/backend/v2/pkg/util"
+	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )

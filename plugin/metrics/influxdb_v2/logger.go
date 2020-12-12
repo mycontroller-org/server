@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mycontroller-org/backend/v2/pkg/util"
+	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 
@@ -15,7 +15,7 @@ type myLogger struct {
 }
 
 func getLogger(mode, level, encoding string) *myLogger {
-	return &myLogger{logger: util.GetLogger(mode, level, encoding, false, callerSkipLevel)}
+	return &myLogger{logger: ut.GetLogger(mode, level, encoding, false, callerSkipLevel)}
 }
 
 func (ml *myLogger) Sync() { ml.Sync() }

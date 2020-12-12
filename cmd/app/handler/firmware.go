@@ -7,7 +7,7 @@ import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	fwml "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
-	ut "github.com/mycontroller-org/backend/v2/pkg/util"
+	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 )
 
 func registerFirmwareRoutes(router *mux.Router) {

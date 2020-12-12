@@ -9,7 +9,7 @@ import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
-	ut "github.com/mycontroller-org/backend/v2/pkg/util"
+	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 )
 
 func registerGatewayRoutes(router *mux.Router) {

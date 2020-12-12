@@ -9,8 +9,7 @@ import (
 
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	"github.com/mycontroller-org/backend/v2/pkg/scheduler"
-	"github.com/mycontroller-org/backend/v2/pkg/util"
-	ut "github.com/mycontroller-org/backend/v2/pkg/util"
+	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -126,7 +125,7 @@ func (s *Store) dump(entityName string, index int, data interface{}, provider st
 
 	filename := fmt.Sprintf("%s%s%d.%s", entityName, exportml.EntityNameIndexSplit, index, provider)
 	dir := fmt.Sprintf("%s/%s", s.Config.DumpDir, provider)
-	err = util.WriteFile(dir, filename, dataBytes)
+	err = ut.WriteFile(dir, filename, dataBytes)
 	if err != nil {
 		zap.L().Error("failed to write data to disk", zap.String("directory", dir), zap.String("filename", filename), zap.Error(err))
 	}

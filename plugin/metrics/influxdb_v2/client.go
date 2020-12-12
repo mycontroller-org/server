@@ -15,7 +15,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
-	ut "github.com/mycontroller-org/backend/v2/pkg/util"
+	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 

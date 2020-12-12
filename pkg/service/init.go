@@ -11,7 +11,7 @@ import (
 	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/storage"
-	ut "github.com/mycontroller-org/backend/v2/pkg/util"
+	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/version"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"

@@ -5,7 +5,7 @@ import (
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
-	ut "github.com/mycontroller-org/backend/v2/pkg/util"
+	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 )
 
 // List by filter and pagination

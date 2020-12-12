@@ -16,7 +16,7 @@ import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
-	"github.com/mycontroller-org/backend/v2/pkg/util"
+	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -108,7 +108,7 @@ func dump(targetDir, entityName string, index int, data interface{}, exportType 
 
 	filename := fmt.Sprintf("%s%s%d.%s", entityName, "__", index, exportType)
 	dir := fmt.Sprintf("%s/%s", targetDir, exportType)
-	err = util.WriteFile(targetDir, filename, dataBytes)
+	err = ut.WriteFile(targetDir, filename, dataBytes)
 	if err != nil {
 		zap.L().Error("failed to write data to disk", zap.String("directory", dir), zap.String("filename", filename), zap.Error(err))
 	}
