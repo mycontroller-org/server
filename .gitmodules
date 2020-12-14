@@ -1,4 +1,5 @@
-[submodule "console"]
+[submodule "console-web"]
 	path = console-web
 	url = https://github.com/mycontroller-org/console-web
-        branch = master
+[console-web]
+	branch = master
