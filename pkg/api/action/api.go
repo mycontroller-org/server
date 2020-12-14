@@ -1,11 +1,13 @@
 package action
 
 import (
+	"errors"
 	"fmt"
 
-	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
+	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	gwpd "github.com/mycontroller-org/backend/v2/plugin/gw_provider"
 )
 
 // Execute the given request
@@ -30,10 +32,20 @@ func Execute(quickID, payload string) error {
 		pl.Value = payload
 		msg.Payloads = append(msg.Payloads, pl)
 		msg.Type = msgml.TypeSet
-		return gwAPI.Post(&msg)
+		return Post(&msg)
 
 	default:
 		return fmt.Errorf("Unknown resource type: %s", resource)
 	}
 	return nil
+}
+
+// Post a message to gateway
+func Post(msg *msgml.Message) error {
+	if msg.GatewayID == "" {
+		return errors.New("gateway id can not be empty")
+	}
+	topic := gwpd.GetTopicListenFromProcessor(msg.GatewayID)
+	_, err := mcbus.Publish(topic, msg)
+	return err
 }

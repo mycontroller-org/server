@@ -14,7 +14,7 @@ import (
 // common vars
 var (
 	ctx       = context.TODO()
-	BUS       *bus.Bus
+	localBus  *bus.Bus
 	isRunning = false
 	mutex     sync.RWMutex
 )
@@ -40,42 +40,42 @@ func Start() {
 	if err != nil {
 		zap.L().Fatal("Error on creating bus", zap.Error(err))
 	}
-	BUS = b
+	localBus = b
 	isRunning = true
 }
 
 // Close func
 func Close() {
-	if BUS != nil {
+	if localBus != nil {
 		// deregister handlers
-		for _, hk := range BUS.HandlerKeys() {
-			BUS.DeregisterHandler(hk)
+		for _, hk := range localBus.HandlerKeys() {
+			localBus.DeregisterHandler(hk)
 		}
 		// deregister topics
-		for _, t := range BUS.Topics() {
-			BUS.DeregisterTopics(t)
+		for _, t := range localBus.Topics() {
+			localBus.DeregisterTopics(t)
 		}
 	}
 }
 
 // Publish a data to a topic
 func Publish(topicName string, data interface{}) (*bus.Event, error) {
-	ev, err := BUS.Emit(ctx, topicName, data)
+	ev, err := localBus.Emit(ctx, topicName, data)
 	if err != nil && strings.Contains(err.Error(), "not found") {
 		zap.L().Debug("Topic not registered. Registering now", zap.String("topic", topicName), zap.Any("data", data))
 		// register a topic
-		BUS.RegisterTopics(topicName)
-		return BUS.Emit(ctx, topicName, data)
+		localBus.RegisterTopics(topicName)
+		return localBus.Emit(ctx, topicName, data)
 	}
 	return ev, err
 }
 
 // Subscribe a topic
 func Subscribe(key string, handler *bus.Handler) {
-	BUS.RegisterHandler(key, handler)
+	localBus.RegisterHandler(key, handler)
 }
 
 // Unsubscribe a topic
 func Unsubscribe(key string) {
-	BUS.DeregisterHandler(key)
+	localBus.DeregisterHandler(key)
 }

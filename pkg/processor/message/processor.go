@@ -18,6 +18,7 @@ import (
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	gwpd "github.com/mycontroller-org/backend/v2/plugin/gw_provider"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"github.com/robertkrimen/otto"
 	"go.uber.org/zap"
@@ -34,27 +35,30 @@ func Init() error {
 		zap.L().Error("Dropping an item, queue full", zap.Int("size", queueSize), zap.Any("item", item))
 	})
 
-	onMessageReceive := func(event *bus.Event) {
-		msg := event.Data.(*msgml.Message)
-		if msg == nil {
-			zap.L().Warn("Received a nil message", zap.Any("event", event))
-			return
-		}
-		zap.L().Debug("Message added into processing queue", zap.Any("message", msg))
-		status := msgQueue.Produce(msg)
-		if !status {
-			zap.L().Warn("Failed to store the message into queue", zap.Any("message", msg))
-		}
-	}
-
 	// on message receive add it in to our local queue
-	mcbus.Subscribe(mcbus.TopicMessageFromGateway, &bus.Handler{
-		Matcher: mcbus.TopicMessageFromGateway,
+	mcbus.Subscribe(gwpd.TopicMessagePostToCore, &bus.Handler{
+		Matcher: gwpd.TopicMessagePostToCore,
 		Handle:  onMessageReceive,
 	})
 
 	msgQueue.StartConsumers(1, processMessage)
 	return nil
+}
+
+func onMessageReceive(event *bus.Event) {
+	msg, ok := event.Data.(*msgml.Message)
+	if !ok {
+		zap.L().Warn("Received invalid type", zap.Any("event", event))
+	}
+	if msg == nil {
+		zap.L().Warn("Received a nil message", zap.Any("event", event))
+		return
+	}
+	zap.L().Debug("Message added into processing queue", zap.Any("message", msg))
+	status := msgQueue.Produce(msg)
+	if !status {
+		zap.L().Warn("Failed to store the message into queue", zap.Any("message", msg))
+	}
 }
 
 // Close message process engine

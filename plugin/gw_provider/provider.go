@@ -1,6 +1,8 @@
-package gatewayprovider
+package provider
 
 import (
+	"fmt"
+
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 )
 
@@ -18,3 +20,14 @@ const (
 	TypeMySensors = "mysensors"
 	TypeTasmota   = "tasmota"
 )
+
+// Topics used across provide componenet
+const (
+	TopicMessagePostToCore     = "message_to_core"   // posts message in to core component
+	TopicMessageListenFromCore = "message_from_core" // receives messages from core component
+)
+
+// GetTopicListenFromProcessor returns listen topic
+func GetTopicListenFromProcessor(gatewayID string) string {
+	return fmt.Sprintf("%s_%s", TopicMessageListenFromCore, gatewayID)
+}

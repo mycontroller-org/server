@@ -1,4 +1,4 @@
-package gwprotocol
+package protocol
 
 import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
