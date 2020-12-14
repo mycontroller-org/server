@@ -171,8 +171,8 @@ func fetchFirmware(node *nml.Node, typeID, versionID uint16, verifyID bool) (*fi
 }
 
 // Source: https://en.wikipedia.org/wiki/Intel_HEX
-//				 https://github.com/mycontroller-org/mycontroller-v1-legacy/blob/1.5.0.Final/modules/core/src/main/java/org/mycontroller/standalone/firmware/FirmwareUtils.java#L118
-// 				 https://github.com/mysensors/MySensorsSampleController/blob/9dbae76081a9c080d5fdd68fba9870626025343f/NodeJsController.js#L172
+// https://github.com/mycontroller-org/mycontroller-v1-legacy/blob/1.5.0.Final/modules/core/src/main/java/org/mycontroller/standalone/firmware/FirmwareUtils.java#L118
+// https://github.com/mysensors/MySensorsSampleController/blob/9dbae76081a9c080d5fdd68fba9870626025343f/NodeJsController.js#L172
 // I8HEX files use only record types 00 and 01 (16-bit addresses)
 // 00 - data, 01 - End
 // Example,
