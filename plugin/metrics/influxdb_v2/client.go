@@ -14,8 +14,8 @@ import (
 	influxdb2log "github.com/influxdata/influxdb-client-go/v2/log"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
-	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	mtrml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"go.uber.org/zap"
 )
 

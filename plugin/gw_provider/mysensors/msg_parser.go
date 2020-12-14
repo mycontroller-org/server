@@ -6,12 +6,13 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
+	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"go.uber.org/zap"
 )
 
@@ -53,7 +54,6 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 
 	// get command
 	switch msg.Type {
-
 	case msgml.TypeSet:
 		msMsg.Command = cmdSet
 		msMsg.Type = payload.Labels.Get(LabelType)
@@ -83,7 +83,7 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	case msgml.TypeAction:
 		msMsg.Command = cmdInternal
 		// call functions
-		err := handleActions(p.GWConfig, payload.Name, msg, &msMsg)
+		err := handleActions(p.GatewayConfig, payload.Name, msg, &msMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -96,8 +96,11 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 		return nil, errors.New("command type should not be empty")
 	}
 
+	// enable or disable acknowledgement
+	msMsg.Ack = p.getAcknowledgementStatus(&msMsg)
+
 	// create rawMessage
-	switch p.GWConfig.Provider.ProtocolType {
+	switch p.ProtocolType {
 	case gwpl.TypeSerial, gwpl.TypeEthernet:
 		rawMsg.Data = []byte(msMsg.toMySensorsRaw(false))
 
@@ -106,21 +109,29 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 		rawMsg.Others.Set(gwpl.KeyMqttTopic, []string{msMsg.toMySensorsRaw(true)}, nil)
 
 	default:
-		return nil, fmt.Errorf("This protocol not implemented: %s", p.GWConfig.Provider.ProtocolType)
+		return nil, fmt.Errorf("protocol type not implemented: %s", p.ProtocolType)
 	}
+
+	// set acknowledgement request status
+	if msMsg.Ack == "1" {
+		rawMsg.AcknowledgeEnabled = true
+	}
+
+	// set id for raw message
+	rawMsg.ID = generateMessageID(&msMsg)
+
 	return rawMsg, nil
 }
 
 // ToMessage converts to mc specific
 func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
-
 	messages := make([]*msgml.Message, 0)
 
 	d := make([]string, 0)
 	payload := ""
 
 	// decode message from gateway
-	switch p.GWConfig.Provider.ProtocolType {
+	switch p.ProtocolType {
 	case gwpl.TypeMQTT:
 		// topic/node-id/child-sensor-id/command/ack/type
 		// out_rfm69/11/1/1/0/0
@@ -142,7 +153,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 		d = _d
 	// implement this one
 	default:
-		return nil, fmt.Errorf("This type not implements. protocol type: %s", p.GWConfig.Provider.ProtocolType)
+		return nil, fmt.Errorf("This type not implements. protocol type: %s", p.ProtocolType)
 	}
 
 	// MySensors message
@@ -153,6 +164,16 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 		Ack:      d[3],
 		Type:     d[4],
 		Payload:  payload,
+	}
+
+	// if it is a acknowledgement message send it to acknowledgement topic
+	if msMsg.Ack == "1" {
+		msgID := generateMessageID(&msMsg)
+		topicAck := getAcknowledgementTopic(p.GatewayConfig.ID, msgID)
+		_, err := mcbus.Publish(topicAck, "acknowledgement received.")
+		if err != nil {
+			zap.L().Error("failed post acknowledgement status", zap.String("gateway", p.GatewayConfig.Name), zap.String("topic", topicAck))
+		}
 	}
 
 	// Message
@@ -387,4 +408,31 @@ func (ms *message) toMySensorsRaw(isMQTT bool) string {
 		return fmt.Sprintf("%s/%s/%s/%s/%s", ms.NodeID, ms.SensorID, ms.Command, ms.Ack, ms.Type)
 	}
 	return fmt.Sprintf("%s;%s;%s;%s;%s;%s\n", ms.NodeID, ms.SensorID, ms.Command, ms.Ack, ms.Type, ms.Payload)
+}
+
+func (p *Provider) getAcknowledgementStatus(msMsg *message) string {
+	if msMsg.NodeID == idBroadcast {
+		return "0"
+	}
+	switch msMsg.Command {
+	case cmdStream:
+		if !p.Config.EnableStreamMessageAck {
+			return "0"
+		}
+	case cmdInternal:
+		if !p.Config.EnableInternalMessageAck {
+			return "0"
+		}
+	default:
+		return "1"
+	}
+	return "1"
+}
+
+func generateMessageID(msMsg *message) string {
+	return fmt.Sprintf("%s-%s-%s-%s-%s", msMsg.NodeID, msMsg.SensorID, msMsg.Command, msMsg.Ack, msMsg.Type)
+}
+
+func getAcknowledgementTopic(gatewayID, msgID string) string {
+	return fmt.Sprintf("%s_%s_%s", mcbus.TopicGatewayAcknowledgement, gatewayID, msgID)
 }

@@ -8,8 +8,8 @@ import (
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 func registerGatewayRoutes(router *mux.Router) {
@@ -22,7 +22,7 @@ func registerGatewayRoutes(router *mux.Router) {
 }
 
 func listGateways(w http.ResponseWriter, r *http.Request) {
-	entityFn := func(f []pml.Filter, p *pml.Pagination) (interface{}, error) {
+	entityFn := func(f []stgml.Filter, p *stgml.Pagination) (interface{}, error) {
 		return gwAPI.List(f, p)
 	}
 	LoadData(w, r, entityFn)
@@ -33,7 +33,7 @@ func getGateway(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateGateway(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]pml.Filter) error {
+	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
 		e := d.(*gwml.Config)
 		if e.ID == "" {
 			e.ID = ut.RandID()
@@ -45,7 +45,7 @@ func updateGateway(w http.ResponseWriter, r *http.Request) {
 
 func enableGateway(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []pml.Filter, p *pml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			err := gwAPI.Enable(IDs[0])
 			if err != nil {
@@ -60,7 +60,7 @@ func enableGateway(w http.ResponseWriter, r *http.Request) {
 
 func disableGateway(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []pml.Filter, p *pml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			err := gwAPI.Disable(IDs[0])
 			if err != nil {
@@ -75,7 +75,7 @@ func disableGateway(w http.ResponseWriter, r *http.Request) {
 
 func reloadGateway(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []pml.Filter, p *pml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			err := gwAPI.Reload(IDs[0])
 			if err != nil {

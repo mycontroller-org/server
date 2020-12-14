@@ -2,9 +2,9 @@ package mcbus
 
 // global gateway topics
 const (
-	TopicMsg2GW                 = "msg_to_gw"                 // append gateway id
-	TopicSleepingMsg2GW         = "sleeping_msg_to_gw"        // append gateway id
-	TopicGatewayAcknowledgement = "gw_ack"                    // append with message id
-	TopicMsgFromGW              = "msg_from_gw"               //
-	TopicMsg2GWDelieverStatus   = "msg_to_gw_deliever_status" // append with message id
+	TopicMessageToGateway               = "message_to_gateway"                 // append gateway id
+	TopicSleepingMessageToGateway       = "sleeping_message_to_gateway"        // append gateway id
+	TopicGatewayAcknowledgement         = "provider_acknowledgement"           // append with gateway id and message id
+	TopicMessageFromGateway             = "message_from_gateway"               //
+	TopicMessageToGatewayDelieverStatus = "message_to_gateway_deliever_status" // append with message id
 )

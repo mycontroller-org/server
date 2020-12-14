@@ -9,7 +9,7 @@ import (
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 func registerNodeRoutes(router *mux.Router) {
@@ -28,7 +28,7 @@ func getnode(w http.ResponseWriter, r *http.Request) {
 }
 
 func updatenode(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]pml.Filter) error {
+	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
 		e := d.(*nml.Node)
 		if e.ID == "" {
 			return errors.New("ID field should not be empty")
@@ -40,7 +40,7 @@ func updatenode(w http.ResponseWriter, r *http.Request) {
 
 func deleteNodes(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []pml.Filter, p *pml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := nodeAPI.Delete(IDs)
 			if err != nil {

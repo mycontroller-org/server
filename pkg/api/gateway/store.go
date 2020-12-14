@@ -12,7 +12,7 @@ var gwService = map[string]*Service{}
 
 // AddGatewayService add
 func AddGatewayService(service *Service) {
-	gwService[service.Config.ID] = service
+	gwService[service.GatewayConfig.ID] = service
 }
 
 // RemoveGatewayService remove a service
@@ -34,9 +34,9 @@ func GetGatewayServiceByID(ID string) *Service {
 func Post(msg *msgml.Message) error {
 	gatewayService := GetGatewayServiceByID(msg.GatewayID)
 	if gatewayService == nil {
-		return fmt.Errorf("Gateway service not found for %s", msg.GatewayID)
+		return fmt.Errorf("'%s' gateway is not running", msg.GatewayID)
 	}
-	topic := gatewayService.TopicMsg2Provider
+	topic := gatewayService.topicMessageToProvider
 	_, err := mcbus.Publish(topic, msg)
 	return err
 }

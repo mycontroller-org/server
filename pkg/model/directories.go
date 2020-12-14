@@ -33,6 +33,16 @@ func UpdateDirecotries(cfg config.Directories) {
 	}
 }
 
+// GetDirectoryDataRoot location
+func GetDirectoryDataRoot() string {
+	return dir.Data
+}
+
+// GetDirectoryLogsRoot location
+func GetDirectoryLogsRoot() string {
+	return dir.Logs
+}
+
 // GetDirectoryFirmware location
 func GetDirectoryFirmware() string {
 	return getDirectoryFullPath(dir.Data, DirectoryFirmwares)

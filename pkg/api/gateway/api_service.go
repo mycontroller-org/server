@@ -6,40 +6,40 @@ import (
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	gwpd "github.com/mycontroller-org/backend/v2/plugin/gw_provider"
 	"github.com/mycontroller-org/backend/v2/plugin/gw_provider/mysensors"
 	"github.com/mycontroller-org/backend/v2/plugin/gw_provider/tasmota"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
 // Start gateway
-func Start(gwCfg *gwml.Config) error {
-	zap.L().Debug("Loading gateway", zap.Any("gateway", gwCfg))
+func Start(gatewayCfg *gwml.Config) error {
+	zap.L().Debug("Starting a gateway", zap.Any("name", gatewayCfg.Name))
 	state := ml.State{Since: time.Now()}
 
-	var provider Provider
-	switch gwCfg.Provider.Type {
+	var provider gwpd.Provider
+	switch gatewayCfg.Provider.GetString(ml.NameType) {
 
-	case gwpd.ProviderMySensors:
-		provider = &mysensors.Provider{GWConfig: gwCfg}
+	case gwpd.TypeMySensors:
+		provider = mysensors.Init(gatewayCfg)
 
-	case gwpd.ProviderTasmota:
-		provider = &tasmota.Provider{GWConfig: gwCfg}
+	case gwpd.TypeTasmota:
+		provider = tasmota.Init(gatewayCfg)
 
 	default:
-		zap.L().Info("Unknown provider", zap.Any("gateway", gwCfg))
+		zap.L().Info("Unknown provider", zap.Any("name", gatewayCfg.Name))
 		return nil
 	}
 	service := &Service{
-		Config:   gwCfg,
-		Provider: provider,
-		ctx:      context.TODO(),
+		GatewayConfig: gatewayCfg,
+		provider:      provider,
+		ctx:           context.TODO(),
 	}
 
 	err := service.Start()
 	if err != nil {
-		zap.L().Error("Unable to start the gateway", zap.Any("gateway", gwCfg), zap.Error(err))
+		zap.L().Error("Unable to start the gateway", zap.Any("name", gatewayCfg.Name), zap.Error(err))
 		state.Message = err.Error()
 		state.Status = ml.StateDown
 	} else {
@@ -48,38 +48,41 @@ func Start(gwCfg *gwml.Config) error {
 		AddGatewayService(service)
 	}
 
-	if err := SetState(gwCfg, state); err != nil {
-		zap.L().Error("Failed to update gateway state", zap.Error(err))
+	if err := SetState(gatewayCfg, state); err != nil {
+		zap.L().Error("Failed to update gateway state", zap.String("name", gatewayCfg.Name), zap.Error(err))
 	}
 	return err
 }
 
 // Stop gateway
-func Stop(gwCfg *gwml.Config) error {
-	gatewayService := GetGatewayService(gwCfg)
-	if gatewayService != nil {
-		err := gatewayService.Stop()
+func Stop(gatewayCfg *gwml.Config) error {
+	zap.L().Debug("Stopping a gateway", zap.Any("name", gatewayCfg.Name))
+	service := GetGatewayService(gatewayCfg)
+	if service != nil {
+		err := service.Stop()
 		state := ml.State{
-			Status: ml.StateDown,
-			Since:  time.Now(),
+			Status:  ml.StateDown,
+			Since:   time.Now(),
+			Message: "Stopped by request",
 		}
 		if err != nil {
-			zap.L().Error("Failed to stop media service", zap.Error(err))
+			zap.L().Error("Failed to stop gateway service", zap.String("name", gatewayCfg.Name), zap.Error(err))
 			state.Message = err.Error()
 		}
-		err = SetState(gwCfg, state)
+		err = SetState(gatewayCfg, state)
 		if err != nil {
-			zap.L().Error("Failed to update gateway state", zap.Error(err))
+			zap.L().Error("Failed to update gateway state", zap.String("name", gatewayCfg.Name), zap.Error(err))
 		}
+		RemoveGatewayService(gatewayCfg)
 	}
 	return nil
 }
 
-// LoadGateways makes gateways alive
-func LoadGateways() {
+// LoadAll makes gateways alive
+func LoadAll() {
 	gwsResult, err := List(nil, nil)
 	if err != nil {
-		zap.L().Error("Error getting list of gateways", zap.Error(err))
+		zap.L().Error("Failed to get list of gateways", zap.Error(err))
 		return
 	}
 	gateways := *gwsResult.Data.(*[]gwml.Config)
@@ -91,11 +94,11 @@ func LoadGateways() {
 	}
 }
 
-// UnloadGateways makes stop gateways
-func UnloadGateways() {
+// UnloadAll makes stop gateways
+func UnloadAll() {
 	gwsResult, err := List(nil, nil)
 	if err != nil {
-		zap.L().Error("Error getting list of gateways", zap.Error(err))
+		zap.L().Error("Failed to get list of gateways", zap.Error(err))
 	}
 	gateways := *gwsResult.Data.(*[]gwml.Config)
 	for index := 0; index < len(gateways); index++ {
@@ -103,7 +106,7 @@ func UnloadGateways() {
 		if gateway.Enabled {
 			err = Stop(&gateway)
 			if err != nil {
-				zap.L().Error("Error unloading a gateway", zap.Error(err), zap.Any("gateway", gateway))
+				zap.L().Error("Failed to unload a gateway", zap.Any("name", gateway.Name), zap.Error(err))
 			}
 		}
 	}
@@ -111,7 +114,7 @@ func UnloadGateways() {
 
 // Enable gateway
 func Enable(ID string) error {
-	gwCfg, err := Get([]pml.Filter{{Key: ml.KeyID, Value: ID}})
+	gwCfg, err := Get([]stgml.Filter{{Key: ml.KeyID, Value: ID}})
 	if err != nil {
 		return err
 	}
@@ -128,24 +131,24 @@ func Enable(ID string) error {
 
 // Disable gateway
 func Disable(ID string) error {
-	gwCfg, err := Get([]pml.Filter{{Key: ml.KeyID, Value: ID}})
+	gatewayCfg, err := Get([]stgml.Filter{{Key: ml.KeyID, Value: ID}})
 	if err != nil {
 		return err
 	}
-	if gwCfg.Enabled {
-		gwCfg.Enabled = false
-		err = Save(&gwCfg)
+	if gatewayCfg.Enabled {
+		gatewayCfg.Enabled = false
+		err = Save(&gatewayCfg)
 		if err != nil {
 			return err
 		}
-		return Stop(&gwCfg)
+		return Stop(&gatewayCfg)
 	}
 	return nil
 }
 
 // Reload gateway
 func Reload(ID string) error {
-	gwCfg, err := Get([]pml.Filter{{Key: ml.KeyID, Value: ID}})
+	gwCfg, err := Get([]stgml.Filter{{Key: ml.KeyID, Value: ID}})
 	if err != nil {
 		return err
 	}

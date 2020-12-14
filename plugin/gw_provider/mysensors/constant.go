@@ -5,7 +5,7 @@ import (
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
+	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 )
 
 // Labels used in this provider

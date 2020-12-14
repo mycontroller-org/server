@@ -8,9 +8,9 @@ import (
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
+	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"go.uber.org/zap"
 )
 
@@ -40,7 +40,7 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 		tmMsg.Payload = emptyPayload
 
 	case msgml.TypeAction:
-		err := handleActions(p.GWConfig, payload.Name, msg, tmMsg)
+		err := handleActions(p.GatewayConfig, payload.Name, msg, tmMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -83,7 +83,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	// helper functions
 	createMsgFn := func(sensorID, msgType string, pls ...msgml.Data) *msgml.Message {
 		msg := msgml.NewMessage(true)
-		msg.GatewayID = p.GWConfig.ID
+		msg.GatewayID = p.GatewayConfig.ID
 		msg.NodeID = tmMsg.NodeID
 		msg.IsAck = false
 		msg.Timestamp = time.Now()

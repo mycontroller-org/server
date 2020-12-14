@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
+	mtrml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"go.uber.org/zap"
 )
 

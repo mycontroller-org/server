@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	utils "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
@@ -24,20 +24,24 @@ type FileMessageLogger struct {
 
 // fileMessageLoggerConfig definition
 type fileMessageLoggerConfig struct {
-	FlushInterval string
+	Type          string // type of the message logger
+	FlushInterval string // flush interval, how long once data to be dumped into disk
 }
 
-const defaultFlushInterval = 1 * time.Second
+const (
+	defaultFlushInterval = 1 * time.Second
+	fileNamePrefix       = "gateway_logs"
+)
 
 // InitFileMessageLogger file logger
-func InitFileMessageLogger(gwCfg *gwml.Config, formatterFunc func(rawMsg *msgml.RawMessage) string) (*FileMessageLogger, error) {
+func InitFileMessageLogger(gatewayID string, config cmap.CustomMap, formatterFunc func(rawMsg *msgml.RawMessage) string) (*FileMessageLogger, error) {
 	cfg := fileMessageLoggerConfig{}
-	err := utils.MapToStruct(utils.TagNameNone, gwCfg.MessageLogger.Config, &cfg)
+	err := utils.MapToStruct(utils.TagNameNone, config, &cfg)
 	if err != nil {
 		return nil, err
 	}
 	fileLogger := &FileMessageLogger{
-		GatewayID:        gwCfg.ID,
+		GatewayID:        gatewayID,
 		MsgFormatterFunc: formatterFunc,
 		stopCh:           make(chan bool),
 		msgQueue:         make([]*msgml.RawMessage, 0),
@@ -86,7 +90,7 @@ func (rml *FileMessageLogger) write() {
 	defer rml.mutex.Unlock()
 	if len(rml.msgQueue) > 0 {
 		// generate filename to store log data
-		logFilename := fmt.Sprintf("gw_%s.log", rml.GatewayID)
+		logFilename := fmt.Sprintf("%s_%s.log", fileNamePrefix, rml.GatewayID)
 		for _, rawMsg := range rml.msgQueue {
 			msgStr := rml.MsgFormatterFunc(rawMsg)
 			err := utils.AppendFile(model.GetDirectoryGatewayLog(), logFilename, []byte(msgStr))

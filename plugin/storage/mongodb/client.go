@@ -5,9 +5,8 @@ import (
 	"errors"
 	"strings"
 
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
-	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"github.com/mycontroller-org/backend/v2/plugin/storage/helper"
 	"go.mongodb.org/mongo-driver/bson"
 	mg "go.mongodb.org/mongo-driver/mongo"
@@ -75,7 +74,7 @@ func (c *Client) Insert(entityName string, data interface{}) error {
 }
 
 // Update the entity
-func (c *Client) Update(entityName string, data interface{}, filters []pml.Filter) error {
+func (c *Client) Update(entityName string, data interface{}, filters []stgml.Filter) error {
 	if data == nil {
 		return errors.New("No data provided")
 	}
@@ -85,7 +84,7 @@ func (c *Client) Update(entityName string, data interface{}, filters []pml.Filte
 }
 
 // Upsert date into database
-func (c *Client) Upsert(entityName string, data interface{}, filters []pml.Filter) error {
+func (c *Client) Upsert(entityName string, data interface{}, filters []stgml.Filter) error {
 	if data == nil {
 		return errors.New("No data provided")
 	}
@@ -106,7 +105,7 @@ func (c *Client) Upsert(entityName string, data interface{}, filters []pml.Filte
 }
 
 // FindOne returns data
-func (c *Client) FindOne(entityName string, out interface{}, filters []pml.Filter) error {
+func (c *Client) FindOne(entityName string, out interface{}, filters []stgml.Filter) error {
 	cl := c.getCollection(entityName)
 	result := cl.FindOne(ctx, filter(filters))
 	if result.Err() != nil {
@@ -116,7 +115,7 @@ func (c *Client) FindOne(entityName string, out interface{}, filters []pml.Filte
 }
 
 // Delete by filter
-func (c *Client) Delete(entityName string, filters []pml.Filter) (int64, error) {
+func (c *Client) Delete(entityName string, filters []stgml.Filter) (int64, error) {
 	if filters == nil {
 		return -1, errors.New("Filter should not be nil")
 	}
@@ -130,14 +129,14 @@ func (c *Client) Delete(entityName string, filters []pml.Filter) (int64, error) 
 }
 
 // Count returns available documents count from a collection
-func (c *Client) Count(entityName string, filters []pml.Filter) (int64, error) {
+func (c *Client) Count(entityName string, filters []stgml.Filter) (int64, error) {
 	collection := c.getCollection(entityName)
 	filterOption := filter(filters)
 	return collection.CountDocuments(ctx, filterOption)
 }
 
 // Find returns data
-func (c *Client) Find(entityName string, out interface{}, filters []pml.Filter, pagination *pml.Pagination) (*pml.Result, error) {
+func (c *Client) Find(entityName string, out interface{}, filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
 	pagination = ut.UpdatePagination(pagination)
 	collection := c.getCollection(entityName)
 	sortOption := sort(pagination.SortBy)
@@ -162,7 +161,7 @@ func (c *Client) Find(entityName string, out interface{}, filters []pml.Filter, 
 	if err != nil {
 		return nil, err
 	}
-	result := &pml.Result{
+	result := &stgml.Result{
 		Count:  count,
 		Limit:  pagination.Limit,
 		Offset: pagination.Offset,
@@ -179,14 +178,14 @@ func idFilter(data interface{}) *bson.M {
 	return &bson.M{"id": id}
 }
 
-func defaultFilter(filters []pml.Filter, data interface{}) *bson.M {
+func defaultFilter(filters []stgml.Filter, data interface{}) *bson.M {
 	if filters == nil || len(filters) == 0 {
 		return idFilter(data)
 	}
 	return filter(filters)
 }
 
-func filter(filters []pml.Filter) *bson.M {
+func filter(filters []stgml.Filter) *bson.M {
 	bm := bson.M{}
 	if filters == nil || len(filters) == 0 {
 		return &bm
@@ -231,7 +230,7 @@ func filter(filters []pml.Filter) *bson.M {
 	return &bm
 }
 
-func sort(sort []pml.Sort) *bson.M {
+func sort(sort []stgml.Sort) *bson.M {
 	bm := bson.M{}
 	if sort == nil || len(sort) == 0 {
 		return &bm

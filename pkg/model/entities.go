@@ -26,3 +26,8 @@ const (
 	KeyKindType  = "Type"
 	KeyKindName  = "Name"
 )
+
+// Field names used in entities
+const (
+	NameType = "type"
+)

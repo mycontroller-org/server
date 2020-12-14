@@ -40,7 +40,7 @@ type Endpoint struct {
 // New serial client
 func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
 	var cfg Config
-	err := m2s.Decode(gwCfg.Provider.Config, &cfg)
+	err := m2s.Decode(gwCfg.Provider, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -69,16 +69,8 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpo
 	}
 
 	// init message message logger
-	switch gwCfg.MessageLogger.Type {
-	case msglogger.TypeFileLogger:
-		fileMsgLogger, err := msglogger.InitFileMessageLogger(gwCfg, messageFormatter)
-		if err != nil {
-			return nil, err
-		}
-		d.messageLogger = fileMsgLogger
-	default:
-		d.messageLogger = &msglogger.VoidMessageLogger{}
-	}
+	d.messageLogger = msglogger.Init(gwCfg.ID, gwCfg.MessageLogger, messageFormatter)
+
 	// start the logger
 	d.messageLogger.Start()
 
@@ -88,9 +80,9 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpo
 }
 
 func messageFormatter(rawMsg *msgml.RawMessage) string {
-	direction := "Tx"
+	direction := "Sent"
 	if rawMsg.IsReceived {
-		direction = "Rx"
+		direction = "Recd"
 	}
 	return fmt.Sprintf("%v\t%v\t%s\n", rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"), direction, string(rawMsg.Data))
 }

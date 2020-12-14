@@ -2,9 +2,9 @@ package message
 
 import (
 	"bytes"
-	"encoding/json"
 	"time"
 
+	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
 
@@ -113,11 +113,12 @@ func (m *Message) GetID() string {
 
 // RawMessage from/to gateway media
 type RawMessage struct {
-	ID         string
-	IsReceived bool
-	Data       []byte
-	Timestamp  time.Time
-	Others     cmap.CustomMap
+	ID                 string
+	IsReceived         bool
+	AcknowledgeEnabled bool
+	Data               []byte
+	Timestamp          time.Time
+	Others             cmap.CustomMap
 }
 
 // NewRawMessage returns empty message

@@ -1,15 +1,15 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
+	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
@@ -32,7 +32,7 @@ func ReceivedQueryMap(request *http.Request) (map[string][]string, error) {
 }
 
 // Params func
-func Params(request *http.Request) ([]pml.Filter, *pml.Pagination, error) {
+func Params(request *http.Request) ([]stgml.Filter, *stgml.Pagination, error) {
 	f := mux.Vars(request)
 	q := request.URL.Query()
 	for key, value := range q {
@@ -41,10 +41,10 @@ func Params(request *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 
 	// get Pagination arguments
 	// start with pagination default values
-	p := pml.Pagination{
+	p := stgml.Pagination{
 		Limit:  50,
 		Offset: 0,
-		SortBy: []pml.Sort{},
+		SortBy: []stgml.Sort{},
 	}
 
 	lFunc := func(key string) (int64, error) {
@@ -70,7 +70,7 @@ func Params(request *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 
 	// fetch sort options
 	if sr, ok := f["sortBy"]; ok {
-		s := &[]pml.Sort{}
+		s := &[]stgml.Sort{}
 		err := json.Unmarshal([]byte(sr), s)
 		if err != nil {
 			return nil, nil, err
@@ -82,11 +82,11 @@ func Params(request *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 	delete(f, "offset")
 	delete(f, "sortBy")
 
-	filters := make([]pml.Filter, 0)
+	filters := make([]stgml.Filter, 0)
 
 	for k, v := range f {
 		if k != "filter" {
-			filters = append(filters, pml.Filter{
+			filters = append(filters, stgml.Filter{
 				Key:   k,
 				Value: v,
 			})
@@ -94,7 +94,7 @@ func Params(request *http.Request) ([]pml.Filter, *pml.Pagination, error) {
 	}
 
 	if fj, ok := f["filter"]; ok {
-		fs := &[]pml.Filter{}
+		fs := &[]stgml.Filter{}
 		err := json.Unmarshal([]byte(fj), fs)
 		if err != nil {
 			return nil, nil, err
@@ -122,6 +122,7 @@ func FindOne(w http.ResponseWriter, r *http.Request, en string, e interface{}) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+
 	od, err := json.Marshal(e)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -131,7 +132,7 @@ func FindOne(w http.ResponseWriter, r *http.Request, en string, e interface{}) {
 }
 
 // LoadData loads data
-func LoadData(w http.ResponseWriter, r *http.Request, entityFn func(f []pml.Filter, p *pml.Pagination) (interface{}, error)) {
+func LoadData(w http.ResponseWriter, r *http.Request, entityFn func(f []stgml.Filter, p *stgml.Pagination) (interface{}, error)) {
 	w.Header().Set("Content-Type", "application/json")
 
 	f, p, err := Params(r)
@@ -154,7 +155,7 @@ func LoadData(w http.ResponseWriter, r *http.Request, entityFn func(f []pml.Filt
 }
 
 // UpdateData loads data
-func UpdateData(w http.ResponseWriter, r *http.Request, entity interface{}, updateFn func(f []pml.Filter, p *pml.Pagination, d []byte) (interface{}, error)) {
+func UpdateData(w http.ResponseWriter, r *http.Request, entity interface{}, updateFn func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error)) {
 	w.Header().Set("Content-Type", "application/json")
 
 	f, p, err := Params(r)
@@ -213,7 +214,7 @@ func FindMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 }
 
 // SaveEntity func
-func SaveEntity(w http.ResponseWriter, r *http.Request, en string, e interface{}, bwFunc func(e interface{}, f *[]pml.Filter) error) {
+func SaveEntity(w http.ResponseWriter, r *http.Request, en string, e interface{}, bwFunc func(e interface{}, f *[]stgml.Filter) error) {
 	w.Header().Set("Content-Type", "application/json")
 
 	d, err := ioutil.ReadAll(r.Body)
@@ -227,7 +228,7 @@ func SaveEntity(w http.ResponseWriter, r *http.Request, en string, e interface{}
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	f := make([]pml.Filter, 0)
+	f := make([]stgml.Filter, 0)
 	if bwFunc != nil {
 		err = bwFunc(e, &f)
 		if err != nil {

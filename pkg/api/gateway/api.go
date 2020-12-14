@@ -3,20 +3,19 @@ package gateway
 import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
-	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // List by filter and pagination
-func List(filters []pml.Filter, pagination *pml.Pagination) (*pml.Result, error) {
+func List(filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
 	result := make([]gwml.Config, 0)
 	return svc.STG.Find(ml.EntityGateway, &result, filters, pagination)
 }
 
 // Get returns a gateway
-func Get(filters []pml.Filter) (gwml.Config, error) {
+func Get(filters []stgml.Filter) (gwml.Config, error) {
 	result := gwml.Config{}
 	err := svc.STG.FindOne(ml.EntityGateway, &result, filters)
 	return result, err
@@ -38,7 +37,7 @@ func SetState(gwCfg *gwml.Config, state ml.State) error {
 
 // Delete gateway
 func Delete(IDs []string) error {
-	filters := []pml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
+	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
 	svc.STG.Delete(ml.EntityGateway, filters)
 	return nil
 }

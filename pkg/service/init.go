@@ -5,15 +5,13 @@ import (
 	"flag"
 	"io/ioutil"
 
-	ms "github.com/mycontroller-org/backend/v2/pkg/metrics"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	cfgml "github.com/mycontroller-org/backend/v2/pkg/model/config"
-	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
-	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/scheduler"
-	"github.com/mycontroller-org/backend/v2/pkg/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/version"
+	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -119,13 +117,13 @@ func initStorage() {
 	metricsCfg["logger"] = map[string]string{"mode": CFG.Logger.Mode, "encoding": CFG.Logger.Encoding, "level": CFG.Logger.Level.Metrics}
 
 	// Init storage database
-	STG, err = storage.Init(storageCfg, SCH)
+	STG, err = InitStorageDatabase(storageCfg, SCH)
 	if err != nil {
 		zap.L().Fatal("Error on storage db init", zap.Error(err))
 	}
 
 	// Init metrics database
-	MTS, err = ms.Init(metricsCfg)
+	MTS, err = InitMetricsDatabase(metricsCfg)
 	if err != nil {
 		zap.L().Fatal("Error on metrics db init", zap.Error(err))
 	}

@@ -1,6 +1,25 @@
 package metrics
 
-import "time"
+import (
+	"time"
+
+	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
+)
+
+// Client interface
+type Client interface {
+	Close() error
+	Ping() error
+	Write(field *fml.Field) error
+	WriteBlocking(field *fml.Field) error
+	Query(queryConfig *QueryConfig) (map[string][]Data, error)
+}
+
+// Metrics database types
+const (
+	TypeInfluxdbV2 = "influxdb_v2"
+	TypeVoidDB     = "void_db"
+)
 
 // Metric types
 const (

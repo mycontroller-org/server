@@ -15,10 +15,10 @@ import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"github.com/robertkrimen/otto"
 	"go.uber.org/zap"
 )
@@ -48,8 +48,8 @@ func Init() error {
 	}
 
 	// on message receive add it in to our local queue
-	mcbus.Subscribe(mcbus.TopicMsgFromGW, &bus.Handler{
-		Matcher: mcbus.TopicMsgFromGW,
+	mcbus.Subscribe(mcbus.TopicMessageFromGateway, &bus.Handler{
+		Matcher: mcbus.TopicMessageFromGateway,
 		Handle:  onMessageReceive,
 	})
 
@@ -161,7 +161,7 @@ func updateNodeData(msg *msgml.Message) error {
 	}
 
 	// save node data
-	nodeAPI.Save(node)
+	err = nodeAPI.Save(node)
 	if err != nil {
 		zap.L().Error("Unable to update save the node data", zap.Error(err), zap.Any("node", node))
 		return err
@@ -378,7 +378,7 @@ func requestFieldData(msg *msgml.Message) error {
 
 func postMessage(msg *msgml.Message) {
 	// topic to send message to gateway
-	topic := fmt.Sprintf("%s_%s", mcbus.TopicMsg2GW, msg.GatewayID)
+	topic := fmt.Sprintf("%s_%s", mcbus.TopicMessageToGateway, msg.GatewayID)
 	msg.IsReceived = false
 	mcbus.Publish(topic, msg)
 }

@@ -1,11 +1,11 @@
-package util
+package utils
 
 import (
 	"bytes"
 	"encoding/gob"
-	"encoding/json"
 	"fmt"
 
+	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"go.uber.org/zap"
 )
 

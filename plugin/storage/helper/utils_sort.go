@@ -5,12 +5,11 @@ import (
 	"sort"
 	"time"
 
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
-	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // Sort given slice
-func Sort(entities []interface{}, pagination *pml.Pagination) ([]interface{}, int64) {
+func Sort(entities []interface{}, pagination *stgml.Pagination) ([]interface{}, int64) {
 	entitiesCount := int64(len(entities))
 	if pagination == nil {
 		return entities, entitiesCount

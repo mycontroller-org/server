@@ -1,7 +1,6 @@
 package export
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	kindAPI "github.com/mycontroller-org/backend/v2/pkg/api/kind"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
+	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	mlfl "github.com/mycontroller-org/backend/v2/pkg/model/field"
@@ -36,6 +36,10 @@ func ExecuteImport(targetDir, fileType string) error {
 	defer func() { isImportJobRunning = false }()
 
 	zap.L().Debug("Executing import job", zap.String("targetDir", targetDir), zap.String("fileType", fileType))
+	// check directory availability
+	if !ut.IsDirExists(targetDir) {
+		return fmt.Errorf("Specified directory not available. targetDir:%s", targetDir)
+	}
 	files, err := ut.ListFiles(targetDir)
 	if err != nil {
 		return err

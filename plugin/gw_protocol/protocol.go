@@ -1,16 +1,17 @@
 package gwprotocol
 
-import msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+import (
+	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+)
 
-// Gateway protocol interface
-type Gateway interface {
-	Write(rawMsg *msgml.RawMessage) error // write a message to gateway
-	Close() error                         // close the gateway connection
+// Protocol interface
+type Protocol interface {
+	Write(rawMsg *msgml.RawMessage) error // write a message on a specified protocol
+	Close() error                         // close the protocol connection
 }
 
-// Global constants
+// Protocol Types
 const (
-	// Gateway Types
 	TypeMQTT     = "mqtt"
 	TypeSerial   = "serial"
 	TypeEthernet = "ethernet"

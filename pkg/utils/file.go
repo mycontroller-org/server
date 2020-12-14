@@ -1,4 +1,4 @@
-package util
+package utils
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"os"
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	"go.uber.org/zap"
 )
 
 // IsFileExists checks the file availability
@@ -27,10 +28,15 @@ func IsDirExists(dirname string) bool {
 }
 
 // CreateDir func
-func CreateDir(dir string) {
+func CreateDir(dir string) error {
 	if !IsDirExists(dir) {
-		os.MkdirAll(dir, os.ModePerm)
+		err := os.MkdirAll(dir, os.ModePerm)
+		if err != nil {
+			zap.L().Error("failed to create a directory", zap.String("dir", dir))
+			return err
+		}
 	}
+	return nil
 }
 
 // WriteFile func

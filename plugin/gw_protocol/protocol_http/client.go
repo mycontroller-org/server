@@ -51,7 +51,7 @@ type ResponseConfig struct {
 // New ethernet driver
 func New(gwCfg *gwml.Config, apiPrefix string) (*Endpoint, error) {
 	cfg := Config{}
-	err := ut.MapToStruct(ut.TagNameNone, gwCfg.Provider.Config, &cfg)
+	err := ut.MapToStruct(ut.TagNameNone, gwCfg.Provider, &cfg)
 	if err != nil {
 		return nil, err
 	}

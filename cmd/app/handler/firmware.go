@@ -6,8 +6,8 @@ import (
 	"github.com/gorilla/mux"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	fwml "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 func registerFirmwareRoutes(router *mux.Router) {
@@ -25,7 +25,7 @@ func getFirmware(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateFirmware(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]pml.Filter) error {
+	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
 		e := d.(*fwml.Firmware)
 		if e.ID == "" {
 			e.ID = ut.RandID()

@@ -1,23 +1,23 @@
-package storage
+package service
 
 import (
 	"errors"
 	"fmt"
 
-	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
 	sch "github.com/mycontroller-org/backend/v2/pkg/scheduler"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"github.com/mycontroller-org/backend/v2/plugin/storage/memory"
 	"github.com/mycontroller-org/backend/v2/plugin/storage/mongodb"
 )
 
-// Init storage
-func Init(config map[string]interface{}, scheduler *sch.Scheduler) (stgml.Client, error) {
+// InitStorageDatabase storage
+func InitStorageDatabase(config map[string]interface{}, scheduler *sch.Scheduler) (stgml.Client, error) {
 	dbType, available := config["type"]
 	if available {
 		switch dbType {
-		case stgml.DBTypeMemory:
+		case stgml.TypeMemory:
 			return memory.NewClient(config, scheduler)
-		case stgml.DBTypeMongoDB:
+		case stgml.TypeMongoDB:
 			return mongodb.NewClient(config)
 		default:
 			return nil, fmt.Errorf("Specified database type not implemented. %s", dbType)

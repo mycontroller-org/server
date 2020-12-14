@@ -15,7 +15,8 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/config"
 	msgPRO "github.com/mycontroller-org/backend/v2/pkg/processor/message"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
-	"github.com/mycontroller-org/backend/v2/pkg/storage/export"
+	"github.com/mycontroller-org/backend/v2/pkg/export"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 )
 
 func init() {
@@ -34,6 +35,15 @@ func postInitFunc(cfg *config.Config) {
 
 	// load root directories
 	model.UpdateDirecotries(cfg.Directories)
+	// create root directories
+	err := utils.CreateDir(model.GetDirectoryDataRoot())
+	if err != nil {
+		zap.L().Fatal("Failed to create root directory")
+	}
+	err = utils.CreateDir(model.GetDirectoryLogsRoot())
+	if err != nil {
+		zap.L().Fatal("Failed to create root directory")
+	}
 
 	// startup jobs
 	startupJobs(&cfg.StartupJobs)
@@ -43,7 +53,7 @@ func postInitFunc(cfg *config.Config) {
 
 	// load gateways
 	gwStart := time.Now()
-	gwAPI.LoadGateways()
+	gwAPI.LoadAll()
 	zap.L().Debug("Load gateways done.", zap.String("timeTaken", time.Since(gwStart).String()))
 }
 
@@ -78,7 +88,7 @@ func handleShutdown() {
 
 	// unload gateways
 	zap.L().Debug("Unloading gateways")
-	gwAPI.UnloadGateways()
+	gwAPI.UnloadAll()
 
 	// stop engine
 	zap.L().Debug("Closing message process engine")

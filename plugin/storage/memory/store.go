@@ -1,11 +1,11 @@
 package memory
 
 import (
-	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
 
+	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	"github.com/mycontroller-org/backend/v2/pkg/scheduler"

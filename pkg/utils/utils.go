@@ -1,4 +1,4 @@
-package util
+package utils
 
 import (
 	"math/rand"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mitchellh/mapstructure"
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // contants
@@ -40,12 +40,12 @@ func RandIDWithLength(length int) string {
 }
 
 // UpdatePagination updates if nil
-func UpdatePagination(pagination *pml.Pagination) *pml.Pagination {
+func UpdatePagination(pagination *stgml.Pagination) *stgml.Pagination {
 	if pagination == nil {
-		pagination = &pml.Pagination{Limit: -1, Offset: -1}
+		pagination = &stgml.Pagination{Limit: -1, Offset: -1}
 	}
 	if len(pagination.SortBy) == 0 {
-		pagination.SortBy = []pml.Sort{{Field: "ID", OrderBy: "ASC"}}
+		pagination.SortBy = []stgml.Sort{{Field: "ID", OrderBy: "ASC"}}
 	}
 	if pagination.Limit == 0 {
 		pagination.Limit = -1

@@ -1,16 +1,16 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/mycontroller-org/backend/v2/pkg/api/field"
+	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 )
 
 // global constants

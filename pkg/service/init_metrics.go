@@ -1,22 +1,22 @@
-package metrics
+package service
 
 import (
 	"errors"
 	"fmt"
 
-	mtsml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
+	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	influx "github.com/mycontroller-org/backend/v2/plugin/metrics/influxdb_v2"
 	"github.com/mycontroller-org/backend/v2/plugin/metrics/voiddb"
 )
 
-// Init metrics database
-func Init(config map[string]interface{}) (mtsml.Client, error) {
+// InitMetricsDatabase metrics database
+func InitMetricsDatabase(config map[string]interface{}) (mtsml.Client, error) {
 	dbType, available := config["type"]
 	if available {
 		switch dbType {
-		case mtsml.DBTypeInfluxdbV2:
+		case mtsml.TypeInfluxdbV2:
 			return influx.NewClient(config)
-		case mtsml.DBTypeVoidDB:
+		case mtsml.TypeVoidDB:
 			return voiddb.NewClient(config)
 		default:
 			return nil, fmt.Errorf("Specified database type not implemented. %s", dbType)

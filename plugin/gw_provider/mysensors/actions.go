@@ -13,7 +13,7 @@ import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/model/node"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
@@ -127,7 +127,7 @@ func getTimestamp(gwCfg *gwml.Config) string {
 
 // get node id
 func getNodeID(gwCfg *gwml.Config) string {
-	f := []pml.Filter{{Key: "gatewayID", Operator: "eq", Value: gwCfg.ID}}
+	f := []stgml.Filter{{Key: "gatewayID", Operator: "eq", Value: gwCfg.ID}}
 	response, err := nodeAPI.List(f, nil)
 	if err != nil {
 		zap.L().Error("Failed to find list of nodes", zap.String("gateway", gwCfg.Name), zap.Error(err))

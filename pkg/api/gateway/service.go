@@ -7,25 +7,17 @@ import (
 	"github.com/jaegertracing/jaeger/pkg/queue"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	gwpd "github.com/mycontroller-org/backend/v2/plugin/gw_provider"
 )
-
-// Provider instance
-type Provider interface {
-	ToRawMessage(message *msgml.Message) (*msgml.RawMessage, error)
-	ToMessage(rawMesage *msgml.RawMessage) ([]*msgml.Message, error)
-	Post(rawMessage *msgml.RawMessage) error
-	Start(messageReceiveFunc func(rawMsg *msgml.RawMessage) error) error
-	Close() error
-}
 
 // Service details
 type Service struct {
-	Config                    *gwml.Config
-	Provider                  Provider
-	OutMsgQueue               *queue.BoundedQueue
-	TopicMsg2Provider         string
-	TopicSleepingMsg2Provider string
-	SleepingNodeMsgQueue      map[string][]*msgml.Message
-	mutex                     sync.RWMutex
-	ctx                       context.Context
+	GatewayConfig                  *gwml.Config
+	provider                       gwpd.Provider
+	messageToProviderQueue         *queue.BoundedQueue
+	topicMessageToProvider         string
+	topicSleepingMessageToProvider string
+	sleepingNodeMessageQueue       map[string][]*msgml.Message
+	mutex                          sync.RWMutex
+	ctx                            context.Context
 }

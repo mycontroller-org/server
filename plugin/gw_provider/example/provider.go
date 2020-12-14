@@ -1,20 +1,15 @@
-package tasmota
+package sample
 
 import (
-	"fmt"
-
-	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	utils "github.com/mycontroller-org/backend/v2/pkg/utils"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
-	mqtt "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/protocol_mqtt"
 )
 
-// Config of tasmota provider
+// Config of provider
 type Config struct {
-	Type     string
 	Protocol cmap.CustomMap `json:"protocol"`
 	// add provider configurations, if any
 }
@@ -24,7 +19,6 @@ type Provider struct {
 	Config        *Config
 	GatewayConfig *gwml.Config
 	Protocol      gwpl.Protocol
-	ProtocolType  string
 }
 
 // Init MySensors provider
@@ -34,28 +28,19 @@ func Init(gatewayConfig *gwml.Config) *Provider {
 	provider := &Provider{
 		Config:        cfg,
 		GatewayConfig: gatewayConfig,
-		ProtocolType:  cfg.Protocol.GetString(model.NameType),
 	}
 	return provider
 }
 
 // Start func
-func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgml.RawMessage) error) error {
-	var err error
-	switch p.ProtocolType {
-	case gwpl.TypeMQTT:
-		// update subscription topics
-		protocol, _err := mqtt.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
-		err = _err
-		p.Protocol = protocol
-	default:
-		return fmt.Errorf("Protocol not implemented: %s", p.ProtocolType)
-	}
-	return err
+func (p *Provider) Start(rxMessageFunc func(rawMsg *msgml.RawMessage) error) error {
+	return nil
 }
 
 // Close func
 func (p *Provider) Close() error {
+	// do internal works
+	// close gateway
 	return p.Protocol.Close()
 }
 

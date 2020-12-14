@@ -5,12 +5,11 @@ import (
 	"reflect"
 	"regexp"
 
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
-	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // Filter filters the given slice
-func Filter(entities []interface{}, filters []pml.Filter, returnSingle bool) []interface{} {
+func Filter(entities []interface{}, filters []stgml.Filter, returnSingle bool) []interface{} {
 	filteredEntities := make([]interface{}, 0)
 	if len(filters) == 0 {
 		return entities

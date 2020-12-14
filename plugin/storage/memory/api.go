@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"github.com/mycontroller-org/backend/v2/plugin/storage/helper"
 )
 
@@ -33,21 +33,21 @@ func (s *Store) Insert(entityName string, data interface{}) error {
 }
 
 // Upsert Implementation
-func (s *Store) Upsert(entityName string, data interface{}, f []pml.Filter) error {
+func (s *Store) Upsert(entityName string, data interface{}, f []stgml.Filter) error {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 	return s.updateEntity(entityName, data, f, true)
 }
 
 // Update Implementation
-func (s *Store) Update(entityName string, data interface{}, f []pml.Filter) error {
+func (s *Store) Update(entityName string, data interface{}, f []stgml.Filter) error {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 	return s.updateEntity(entityName, data, f, false)
 }
 
 // Find Implementation
-func (s *Store) Find(entityName string, out interface{}, f []pml.Filter, p *pml.Pagination) (*pml.Result, error) {
+func (s *Store) Find(entityName string, out interface{}, f []stgml.Filter, p *stgml.Pagination) (*stgml.Result, error) {
 	s.RWMutex.RLock()
 	defer s.RWMutex.RUnlock()
 
@@ -59,6 +59,7 @@ func (s *Store) Find(entityName string, out interface{}, f []pml.Filter, p *pml.
 	sliceVal := outVal.Elem()
 	elementType := sliceVal.Type().Elem()
 	entities := s.getEntities(entityName)
+
 	entitiesCloned, err := helper.CloneSlice(entities)
 	if err != nil {
 		return nil, err
@@ -87,7 +88,7 @@ func (s *Store) Find(entityName string, out interface{}, f []pml.Filter, p *pml.
 
 	outVal.Elem().Set(sliceVal.Slice(0, len(entitiesCloned)))
 
-	result := &pml.Result{
+	result := &stgml.Result{
 		Offset: 0,
 		Count:  count,
 		Data:   out,
@@ -99,7 +100,7 @@ func (s *Store) Find(entityName string, out interface{}, f []pml.Filter, p *pml.
 }
 
 // FindOne Implementation
-func (s *Store) FindOne(entityName string, out interface{}, f []pml.Filter) error {
+func (s *Store) FindOne(entityName string, out interface{}, f []stgml.Filter) error {
 	s.RWMutex.RLock()
 	defer s.RWMutex.RUnlock()
 	entities := s.getEntities(entityName)
@@ -114,7 +115,7 @@ func (s *Store) FindOne(entityName string, out interface{}, f []pml.Filter) erro
 }
 
 // Delete Implementation
-func (s *Store) Delete(entityName string, filters []pml.Filter) (int64, error) {
+func (s *Store) Delete(entityName string, filters []stgml.Filter) (int64, error) {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 	entities := s.getEntities(entityName)
@@ -156,7 +157,7 @@ func (s *Store) addEntity(entityName string, entity interface{}) {
 	s.data[entityName] = append(s.data[entityName], entity)
 }
 
-func (s *Store) updateEntity(entityName string, entity interface{}, filters []pml.Filter, forceUpdate bool) error {
+func (s *Store) updateEntity(entityName string, entity interface{}, filters []stgml.Filter, forceUpdate bool) error {
 	//zap.L().Info("received data for update", zap.String("entity", entityName), zap.Any("data", entity))
 	sourceID := ""
 	suppliedID := helper.GetID(entity)

@@ -33,7 +33,7 @@ func Execute(quickID, payload string) error {
 		return gwAPI.Post(&msg)
 
 	default:
-		return fmt.Errorf("This resource type not supported: %s", resource)
+		return fmt.Errorf("Unknown resource type: %s", resource)
 	}
 	return nil
 }

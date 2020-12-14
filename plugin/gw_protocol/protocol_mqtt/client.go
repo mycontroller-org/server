@@ -5,6 +5,7 @@ import (
 	"time"
 
 	paho "github.com/eclipse/paho.mqtt.golang"
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -16,6 +17,7 @@ import (
 
 // Config data
 type Config struct {
+	Type             string `json:"type"`
 	Broker           string `json:"broker"`
 	Username         string `json:"username"`
 	Password         string `json:"-"`
@@ -27,7 +29,7 @@ type Config struct {
 
 // Endpoint data
 type Endpoint struct {
-	GwCfg          *gwml.Config
+	GatewayCfg     *gwml.Config
 	Config         Config
 	receiveMsgFunc func(rm *msgml.RawMessage) error
 	Client         paho.Client
@@ -36,10 +38,10 @@ type Endpoint struct {
 }
 
 // New mqtt driver
-func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
+func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
 	start := time.Now()
 	cfg := Config{}
-	err := ut.MapToStruct(ut.TagNameNone, gwCfg.Provider.Config, &cfg)
+	err := ut.MapToStruct(ut.TagNameNone, protocol, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -56,23 +58,15 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpo
 
 	// endpoint
 	d := &Endpoint{
-		GwCfg:          gwCfg,
+		GatewayCfg:     gwCfg,
 		Config:         cfg,
 		receiveMsgFunc: rxMsgFunc,
 		txPreDelay:     txPreDelay,
 	}
 
 	// init message message logger
-	switch gwCfg.MessageLogger.Type {
-	case msglogger.TypeFileLogger:
-		fileMsgLogger, err := msglogger.InitFileMessageLogger(gwCfg, messageFormatter)
-		if err != nil {
-			return nil, err
-		}
-		d.messageLogger = fileMsgLogger
-	default:
-		d.messageLogger = &msglogger.VoidMessageLogger{}
-	}
+	d.messageLogger = msglogger.Init(gwCfg.ID, gwCfg.MessageLogger, messageFormatter)
+
 	// start the logger
 	d.messageLogger.Start()
 
@@ -107,9 +101,9 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpo
 
 // messageFormatter returns the message as string format
 func messageFormatter(rawMsg *msgml.RawMessage) string {
-	direction := "Tx"
+	direction := "Sent"
 	if rawMsg.IsReceived {
-		direction = "Rx"
+		direction = "Recd"
 	}
 	return fmt.Sprintf(
 		"%v\t%s\t%v\t\t\t%s\n",
@@ -121,11 +115,11 @@ func messageFormatter(rawMsg *msgml.RawMessage) string {
 }
 
 func (d *Endpoint) onConnectionHandler(c paho.Client) {
-	zap.L().Debug("MQTT connection success", zap.Any("gateway", d.GwCfg.Name))
+	zap.L().Debug("MQTT connection success", zap.Any("gateway", d.GatewayCfg.Name))
 }
 
 func (d *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
-	zap.L().Error("MQTT connection lost", zap.Any("gateway", d.GwCfg.Name), zap.Error(err))
+	zap.L().Error("MQTT connection lost", zap.Any("gateway", d.GatewayCfg.Name), zap.Error(err))
 }
 
 // Write publishes a payload
@@ -158,7 +152,7 @@ func (d *Endpoint) Close() error {
 	if d.Client.IsConnected() {
 		d.Client.Unsubscribe(d.Config.Subscribe)
 		d.Client.Disconnect(0)
-		zap.L().Debug("MQTT Client connection closed", zap.String("gateway", d.GwCfg.Name))
+		zap.L().Debug("MQTT Client connection closed", zap.String("gateway", d.GatewayCfg.Name))
 	}
 	d.messageLogger.Close()
 	return nil
@@ -173,7 +167,7 @@ func (d *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 		d.messageLogger.AsyncWrite(rawMsg)
 		err := d.receiveMsgFunc(rawMsg)
 		if err != nil {
-			zap.L().Error("Failed to send a raw message to queue", zap.String("gateway", d.GwCfg.Name), zap.Any("rawMessage", rawMsg), zap.Error(err))
+			zap.L().Error("Failed to process", zap.String("gateway", d.GatewayCfg.Name), zap.Any("rawMessage", rawMsg), zap.Error(err))
 		}
 	}
 }

@@ -2,12 +2,13 @@ package http
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+
+	json "github.com/mycontroller-org/backend/v2/pkg/json"
 )
 
 func (ep *Endpoint) newRequest(cfg RequestConfig, body interface{}) (*ResponseConfig, []byte, error) {

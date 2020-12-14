@@ -154,11 +154,80 @@ func (cm CustomMap) CopyFrom(another CustomMap, labels CustomStringMap) {
 // Get a value by key
 func (cm CustomMap) Get(key string) interface{} {
 	m := map[string]interface{}(cm)
-	value, ok := m[strings.ToLower(key)]
-	if ok {
-		return value
+	lKey := strings.ToLower(key)
+	for k, v := range m {
+		lk := strings.ToLower(k)
+		if lKey == lk {
+			return v
+		}
 	}
 	return nil
+}
+
+// GetString a value by key
+func (cm CustomMap) GetString(key string) string {
+	originalValue := cm.Get(key)
+	if originalValue == nil {
+		return ""
+	}
+	finalValue, ok := originalValue.(string)
+	if ok {
+		return finalValue
+	}
+	return fmt.Sprintf("%v", originalValue)
+}
+
+// GetBool a value by key
+func (cm CustomMap) GetBool(key string) bool {
+	originalValue := cm.Get(key)
+	if originalValue == nil {
+		return false
+	}
+
+	finalValue, ok := originalValue.(bool)
+	if ok {
+		return finalValue
+	}
+
+	finalValue, err := strconv.ParseBool(fmt.Sprintf("%v", originalValue))
+	if err != nil {
+		return false
+	}
+	return finalValue
+}
+
+// GetInt64 a value by key
+func (cm CustomMap) GetInt64(key string) int64 {
+	originalValue := cm.Get(key)
+	if originalValue == nil {
+		return 0
+	}
+	finalValue, ok := originalValue.(int64)
+	if ok {
+		return finalValue
+	}
+	finalValue, err := strconv.ParseInt(fmt.Sprintf("%v", originalValue), 10, 64)
+	if err != nil {
+		return 0
+	}
+	return finalValue
+}
+
+// GetFloat64 a value by key
+func (cm CustomMap) GetFloat64(key string) float64 {
+	originalValue := cm.Get(key)
+	if originalValue == nil {
+		return 0
+	}
+	finalValue, ok := originalValue.(float64)
+	if ok {
+		return finalValue
+	}
+	finalValue, err := strconv.ParseFloat(fmt.Sprintf("%v", originalValue), 64)
+	if err != nil {
+		return 0
+	}
+	return finalValue
 }
 
 // GetIgnoreKey of a key

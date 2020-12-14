@@ -2,7 +2,7 @@ package voiddb
 
 import (
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
-	mtrml "github.com/mycontroller-org/backend/v2/pkg/model/metrics"
+	mtrml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 )
 
 // Client for voiddb

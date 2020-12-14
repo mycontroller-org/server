@@ -8,8 +8,8 @@ import (
 	"github.com/gorilla/mux"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 func registerSensorRoutes(router *mux.Router) {
@@ -28,7 +28,7 @@ func getSensor(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateSensor(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]pml.Filter) error {
+	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
 		e := d.(*sml.Sensor)
 		if e.ID == "" {
 			return errors.New("ID field should not be empty")
@@ -40,7 +40,7 @@ func updateSensor(w http.ResponseWriter, r *http.Request) {
 
 func deleteSensors(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []pml.Filter, p *pml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := sensorAPI.Delete(IDs)
 			if err != nil {

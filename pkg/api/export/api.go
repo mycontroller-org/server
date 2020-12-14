@@ -3,20 +3,19 @@ package export
 import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	pml "github.com/mycontroller-org/backend/v2/pkg/model/pagination"
-	stgml "github.com/mycontroller-org/backend/v2/pkg/model/storage"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // List by filter and pagination
-func List(f []pml.Filter, p *pml.Pagination) (*pml.Result, error) {
+func List(f []stgml.Filter, p *stgml.Pagination) (*stgml.Result, error) {
 	out := make([]nml.Node, 0)
 	return svc.STG.Find(ml.EntityNode, &out, f, p)
 }
 
 // Get returns a Node
-func Get(f []pml.Filter) (nml.Node, error) {
+func Get(f []stgml.Filter) (nml.Node, error) {
 	out := nml.Node{}
 	err := svc.STG.FindOne(ml.EntityNode, &out, f)
 	return out, err
@@ -27,7 +26,7 @@ func Save(node *nml.Node) error {
 	if node.ID == "" {
 		node.ID = ut.RandUUID()
 	}
-	f := []pml.Filter{
+	f := []stgml.Filter{
 		{Key: ml.KeyID, Value: node.ID},
 	}
 	return svc.STG.Upsert(ml.EntityNode, node, f)
@@ -35,7 +34,7 @@ func Save(node *nml.Node) error {
 
 // GetByIDs returns a node details by gatewayID and nodeId of a message
 func GetByIDs(gatewayID, nodeID string) (*nml.Node, error) {
-	f := []pml.Filter{
+	f := []stgml.Filter{
 		{Key: ml.KeyGatewayID, Value: gatewayID},
 		{Key: ml.KeyNodeID, Value: nodeID},
 	}
@@ -46,6 +45,6 @@ func GetByIDs(gatewayID, nodeID string) (*nml.Node, error) {
 
 // Delete node
 func Delete(IDs []string) (int64, error) {
-	f := []pml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
+	f := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
 	return svc.STG.Delete(ml.EntityNode, f)
 }

@@ -2,7 +2,6 @@ package gateway
 
 import (
 	"fmt"
-	"time"
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mustafaturan/bus"
@@ -12,9 +11,9 @@ import (
 )
 
 const (
-	txQueueLimit          = 1000 // number of messages can in the queue, will be on the RAM
-	txQueueWorks          = 1    // this should be always 1 for most of the case
-	sleepingMsgQueueLimit = 50   // number of messages per node can be hold
+	messageToProviderQueueLimit = 1000 // number of messages can in the queue, will be in memory
+	messageToProviderWorkers    = 1    // number of parallel workers, this should be always 1 for most of the case
+	sleepingMsgQueueLimit       = 50   // number of sleeping messages per node can be hold
 )
 
 func getQueue(name string, queueSize int) *q.BoundedQueue {
@@ -23,188 +22,89 @@ func getQueue(name string, queueSize int) *q.BoundedQueue {
 	})
 }
 
-// handle received messages from gateway
-func (s *Service) receiveMessageFunc() func(rawMsg *msgml.RawMessage) error {
-	return func(rawMsg *msgml.RawMessage) error {
-		zap.L().Debug("RawMessage received", zap.String("gateway", s.Config.Name), zap.Any("rawMessage", rawMsg))
-		messages, err := s.Provider.ToMessage(rawMsg)
-		if err != nil {
-			return err
-		}
-		if len(messages) == 0 {
-			zap.L().Debug("Messages not parsed", zap.String("gateway", s.Config.Name), zap.Any("RawMessage", rawMsg))
-			return nil
-		}
-		// update gatewayID if not found
-		for index := 0; index < len(messages); index++ {
-			msg := messages[index]
-			if msg != nil {
-				if msg != nil && msg.GatewayID == "" {
-					msg.GatewayID = s.Config.ID
-				}
-				var topic string
-				if msg.IsAck {
-					topic = fmt.Sprintf("%s_%s", mcbus.TopicGatewayAcknowledgement, msg.GetID())
-				} else {
-					topic = mcbus.TopicMsgFromGW
-				}
-				_, err = mcbus.Publish(topic, msg)
-				if err != nil {
-					return err
-				}
-			}
-		}
-		return nil
+// Start gateway service
+func (s *Service) Start() error {
+	zap.L().Debug("Starting a gateway service", zap.String("name", s.GatewayConfig.Name))
+
+	// update topics
+	s.topicMessageToProvider = fmt.Sprintf("%s_%s", mcbus.TopicMessageToGateway, s.GatewayConfig.ID)
+	s.topicSleepingMessageToProvider = fmt.Sprintf("%s_%s", mcbus.TopicSleepingMessageToGateway, s.GatewayConfig.ID)
+
+	s.messageToProviderQueue = getQueue("txQueue", messageToProviderQueueLimit)
+	s.sleepingNodeMessageQueue = make(map[string][]*msgml.Message)
+
+	// start handlers
+	s.startMessageToProviderHandler()
+	s.startSleepingMessageToProviderHandler()
+
+	// start provider
+	err := s.provider.Start(s.messageFromProviderHandlerFunc())
+	if err != nil {
+		zap.L().Error("Error", zap.Error(err))
+		mcbus.BUS.DeregisterTopics(s.topicMessageToProvider)
+		mcbus.BUS.DeregisterTopics(s.topicSleepingMessageToProvider)
+		s.messageToProviderQueue.Stop()
 	}
+	return err
 }
 
-func (s *Service) writeMessageFunc() func(msg *msgml.Message) {
-	return func(msg *msgml.Message) {
-		// update gatewayID if not found
-		if msg != nil && msg.GatewayID == "" {
-			msg.GatewayID = s.Config.ID
-		}
-
-		// send delivery status
-		postDeliveryStatus := func(status *msgml.DeliveryStatus) {
-			_, err := mcbus.Publish(mcbus.TopicMsg2GWDelieverStatus, status)
-			if err != nil {
-				zap.L().Error("Failed to send delivery status", zap.Error(err))
-			}
-		}
-
-		// check acknowledgement status and enable if required
-		// enable ack only for sensor fields
-		// set to false default
-		msg.IsAckEnabled = false
-		// is ack enabled?, is node id available?, is active node?
-		if s.Config.Ack.Enabled && msg.NodeID != "" && !msg.IsPassiveNode {
-			msg.IsAckEnabled = true
-		}
-
-		// parse message
-		rawMsg, err := s.Provider.ToRawMessage(msg)
-		if err != nil {
-			postDeliveryStatus(&msgml.DeliveryStatus{ID: msg.GetID(), Success: false, Message: err.Error()})
-			zap.L().Error("Message failed to parse", zap.Any("message", msg), zap.Error(err))
-			return
-		}
-
-		// write logic
-		if msg.IsAckEnabled {
-			// wait for acknowledgement message
-			ackChannel := make(chan bool, 1)
-			ackTopic := fmt.Sprintf("%s_%s", mcbus.TopicGatewayAcknowledgement, rawMsg.ID)
-			mcbus.Subscribe(ackTopic, &bus.Handler{
-				Matcher: ackTopic,
-				Handle: func(e *bus.Event) {
-					zap.L().Debug("channel close issue", zap.Any("event", e))
-					// TODO: facing issue, closed channel. Fix this
-					ackChannel <- true
-				},
-			})
-
-			// on exit unsubscribe and close the channel
-
-			onExitFn := func() {
-				mcbus.Unsubscribe(ackTopic)
-				close(ackChannel)
-			}
-			defer onExitFn()
-
-			timeout, err := time.ParseDuration(s.Config.Ack.Timeout)
-			if err != nil {
-				// failed to parse timeout, running with default
-				timeout = time.Millisecond * 200
-				zap.L().Warn("Failed to parse timeout, running with default timeout", zap.String("timeout", s.Config.Ack.Timeout), zap.Error(err))
-			}
-
-			// minimum timeout
-			if timeout.Microseconds() < 1 {
-				timeout = time.Millisecond * 10
-			}
-
-			messageSent := false
-			for retry := 1; retry <= s.Config.Ack.RetryCount; retry++ {
-				// write into gateway
-				err = s.Provider.Post(rawMsg)
-				if err != nil {
-					zap.L().Error("Failed to post message into provider gw", zap.Error(err), zap.Any("message", msg), zap.Any("rawMessage", rawMsg))
-					postDeliveryStatus(&msgml.DeliveryStatus{ID: msg.GetID(), Success: false, Message: err.Error()})
-					return
-				}
-				select {
-				case <-ackChannel:
-					messageSent = true
-				case <-time.After(timeout):
-					// just wait till timeout
-				}
-				if messageSent {
-					break
-				}
-			}
-			if messageSent {
-				postDeliveryStatus(&msgml.DeliveryStatus{ID: msg.GetID(), Success: true})
-			} else {
-				postDeliveryStatus(&msgml.DeliveryStatus{ID: msg.GetID(), Success: false, Message: "No acknowledgement received, tried maximum retries"})
-			}
-			return
-		}
-
-		// message without acknowledgement
-		err = s.Provider.Post(rawMsg)
-		if err != nil {
-			zap.L().Error("Failed to write message into gateway", zap.Error(err), zap.Any("message", msg), zap.Any("raw", rawMsg))
-			postDeliveryStatus(&msgml.DeliveryStatus{ID: msg.GetID(), Success: false, Message: err.Error()})
-			return
-		}
-		postDeliveryStatus(&msgml.DeliveryStatus{ID: msg.GetID(), Success: true})
+// Stop the media
+func (s *Service) Stop() error {
+	mcbus.BUS.DeregisterTopics(s.topicMessageToProvider)
+	mcbus.BUS.DeregisterTopics(s.topicSleepingMessageToProvider)
+	s.messageToProviderQueue.Stop()
+	// stop media
+	err := s.provider.Close()
+	if err != nil {
+		zap.L().Debug("Error", zap.Error(err))
 	}
+	return nil
 }
 
-// handle message to gateway
-func (s *Service) handleMessageToGateway(writeFunc func(msg *msgml.Message)) {
-	mcbus.Subscribe(s.TopicMsg2Provider, &bus.Handler{
-		Matcher: s.TopicMsg2Provider,
+// handler to send messages to gateway
+func (s *Service) startMessageToProviderHandler() {
+	mcbus.Subscribe(s.topicMessageToProvider, &bus.Handler{
+		Matcher: s.topicMessageToProvider,
 		Handle: func(e *bus.Event) {
-			s.OutMsgQueue.Produce(e.Data)
+			s.messageToProviderQueue.Produce(e.Data)
 		},
 	})
-	s.OutMsgQueue.StartConsumers(txQueueWorks, func(data interface{}) {
+	s.messageToProviderQueue.StartConsumers(messageToProviderWorkers, func(data interface{}) {
 		msg := data.(*msgml.Message)
 		if msg.IsPassiveNode {
-			// disable ack for sleeping node messages
-			msg.IsAckEnabled = false
-			s.AddSleepMsg(msg, sleepingMsgQueueLimit)
+			s.addMessageInToSleepingQueue(msg, sleepingMsgQueueLimit)
 		} else {
-			writeFunc(msg)
+			s.postMessageToProvider(msg)
 		}
 	})
 }
 
-func (s *Service) handleSleepingMessage(writeFunc func(msg *msgml.Message)) {
-	handleSleepingmsgFunc := func(data interface{}) {
-		msg := data.(*msgml.Message)
-		queue := s.GetSleepingQueue(msg.NodeID)
-		for _, _msg := range queue {
-			writeFunc(_msg)
-		}
-	}
-
-	mcbus.Subscribe(s.TopicSleepingMsg2Provider, &bus.Handler{
-		Matcher: s.TopicSleepingMsg2Provider,
+func (s *Service) startSleepingMessageToProviderHandler() {
+	// subscribe sleeping message
+	mcbus.Subscribe(s.topicSleepingMessageToProvider, &bus.Handler{
+		Matcher: s.topicSleepingMessageToProvider,
 		Handle: func(e *bus.Event) {
-			handleSleepingmsgFunc(e.Data)
+			msg, ok := e.Data.(*msgml.Message)
+			if !ok {
+				zap.L().Error("received invalid data type", zap.Any("event", e))
+				return
+			}
+			queueMessages := s.GetSleepingMessageQueue(msg.NodeID)
+			for _, queueMsg := range queueMessages {
+				s.postMessageToProvider(queueMsg)
+			}
 		},
 	})
-	s.OutMsgQueue.StartConsumers(txQueueWorks, func(data interface{}) {
+
+	// consume messages on the queue and send it provider
+	s.messageToProviderQueue.StartConsumers(messageToProviderWorkers, func(data interface{}) {
 		msg := data.(*msgml.Message)
 		if msg.IsPassiveNode {
 			// add into sleeping queue
-			queue, ok := s.SleepingNodeMsgQueue[msg.NodeID]
+			queue, ok := s.sleepingNodeMessageQueue[msg.NodeID]
 			if !ok {
 				queue = make([]*msgml.Message, 0)
-				s.SleepingNodeMsgQueue[msg.NodeID] = queue
+				s.sleepingNodeMessageQueue[msg.NodeID] = queue
 			}
 			queue = append(queue, msg)
 			// if queue size exceeds maximum defined size, do resize
@@ -214,58 +114,20 @@ func (s *Service) handleSleepingMessage(writeFunc func(msg *msgml.Message)) {
 				zap.L().Debug("Dropped messags from sleeping queue", zap.Int("oldSize", oldSize), zap.Int("newSize", len(queue)))
 			}
 		} else {
-			writeFunc(msg)
+			s.postMessageToProvider(msg)
 		}
 	})
 }
 
-// Start gateway service
-func (s *Service) Start() error {
-	zap.L().Debug("gateway config", zap.Any("gw", s.Config))
-
-	s.TopicMsg2Provider = fmt.Sprintf("%s_%s", mcbus.TopicMsg2GW, s.Config.ID)
-	s.TopicSleepingMsg2Provider = fmt.Sprintf("%s_%s", mcbus.TopicSleepingMsg2GW, s.Config.ID)
-	s.OutMsgQueue = getQueue("txQueue", txQueueLimit)
-	s.SleepingNodeMsgQueue = make(map[string][]*msgml.Message)
-
-	txMessageFunc := s.writeMessageFunc()
-	rxMessageFunc := s.receiveMessageFunc()
-
-	s.handleMessageToGateway(txMessageFunc)
-	s.handleSleepingMessage(txMessageFunc)
-
-	err := s.Provider.Start(rxMessageFunc)
-	if err != nil {
-		zap.L().Error("Error", zap.Error(err))
-		mcbus.BUS.DeregisterTopics(s.TopicMsg2Provider)
-		mcbus.BUS.DeregisterTopics(s.TopicSleepingMsg2Provider)
-		s.OutMsgQueue.Stop()
-	}
-	return err
-}
-
-// Stop the media
-func (s *Service) Stop() error {
-	mcbus.BUS.DeregisterTopics(s.TopicMsg2Provider)
-	mcbus.BUS.DeregisterTopics(s.TopicSleepingMsg2Provider)
-	s.OutMsgQueue.Stop()
-	// stop media
-	err := s.Provider.Close()
-	if err != nil {
-		zap.L().Debug("Error", zap.Error(err))
-	}
-	return nil
-}
-
-// AddSleepMsg into queue
-func (s *Service) AddSleepMsg(msg *msgml.Message, limit int) {
+// AddMessageToSleepingQueue into queue
+func (s *Service) addMessageInToSleepingQueue(msg *msgml.Message, limit int) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	// add into sleeping queue
-	queue, ok := s.SleepingNodeMsgQueue[msg.NodeID]
+	queue, ok := s.sleepingNodeMessageQueue[msg.NodeID]
 	if !ok {
 		queue = make([]*msgml.Message, 0)
-		s.SleepingNodeMsgQueue[msg.NodeID] = queue
+		s.sleepingNodeMessageQueue[msg.NodeID] = queue
 	}
 	queue = append(queue, msg)
 	// if queue size exceeds maximum defined size, do resize
@@ -276,20 +138,88 @@ func (s *Service) AddSleepMsg(msg *msgml.Message, limit int) {
 	}
 }
 
-// ClearSleepingQueue clears all the messages on the queue
-func (s *Service) ClearSleepingQueue() {
+// ClearSleepingMessageQueue clears all the messages on the queue
+func (s *Service) ClearSleepingMessageQueue() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	s.SleepingNodeMsgQueue = make(map[string][]*msgml.Message)
+	s.sleepingNodeMessageQueue = make(map[string][]*msgml.Message)
 }
 
-// GetSleepingQueue returns message for a specific nodeID, also removes it from the queue
-func (s *Service) GetSleepingQueue(nodeID string) []*msgml.Message {
+// GetSleepingMessageQueue returns message for a specific nodeID, also removes it from the queue
+func (s *Service) GetSleepingMessageQueue(nodeID string) []*msgml.Message {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	if queue, ok := s.SleepingNodeMsgQueue[nodeID]; ok {
-		s.SleepingNodeMsgQueue[nodeID] = make([]*msgml.Message, 0)
+	if queue, ok := s.sleepingNodeMessageQueue[nodeID]; ok {
+		s.sleepingNodeMessageQueue[nodeID] = make([]*msgml.Message, 0)
 		return queue
 	}
 	return nil
+}
+
+func (s *Service) postMessageToProvider(msg *msgml.Message) {
+	// update gatewayID if not found
+	if msg != nil && msg.GatewayID == "" {
+		msg.GatewayID = s.GatewayConfig.ID
+	}
+
+	// parse message
+	rawMsg, err := s.provider.ToRawMessage(msg)
+	if err != nil {
+		postMessageDeliveryStatus(&msgml.DeliveryStatus{ID: msg.GetID(), Success: false, Message: err.Error()})
+		zap.L().Error("Message failed to parse", zap.Any("message", msg), zap.Error(err))
+		return
+	}
+
+	// post message
+	err = s.provider.Post(rawMsg)
+	if err != nil {
+		zap.L().Error("Failed to post message", zap.Any("message", msg), zap.Any("rawMessage", rawMsg), zap.Error(err))
+		postMessageDeliveryStatus(&msgml.DeliveryStatus{ID: msg.GetID(), Success: false, Message: err.Error()})
+		return
+	}
+	postMessageDeliveryStatus(&msgml.DeliveryStatus{ID: msg.GetID(), Success: true, Message: "message sent successfully"})
+	return
+}
+
+// post message delivery status
+func postMessageDeliveryStatus(status *msgml.DeliveryStatus) {
+	_, err := mcbus.Publish(mcbus.TopicMessageToGatewayDelieverStatus, status)
+	if err != nil {
+		zap.L().Error("Failed to send delivery status", zap.Error(err))
+	}
+}
+
+// handle messages from provider
+func (s *Service) messageFromProviderHandlerFunc() func(rawMsg *msgml.RawMessage) error {
+	return func(rawMsg *msgml.RawMessage) error {
+		zap.L().Debug("RawMessage received", zap.String("gateway", s.GatewayConfig.Name), zap.Any("rawMessage", rawMsg))
+		messages, err := s.provider.ToMessage(rawMsg)
+		if err != nil {
+			return err
+		}
+		if len(messages) == 0 {
+			zap.L().Debug("Messages not parsed", zap.String("gateway", s.GatewayConfig.Name), zap.Any("RawMessage", rawMsg))
+			return nil
+		}
+		// update gatewayID if not found
+		for index := 0; index < len(messages); index++ {
+			msg := messages[index]
+			if msg != nil {
+				if msg != nil && msg.GatewayID == "" {
+					msg.GatewayID = s.GatewayConfig.ID
+				}
+				var topic string
+				if msg.IsAck {
+					topic = fmt.Sprintf("%s_%s", mcbus.TopicGatewayAcknowledgement, msg.GetID())
+				} else {
+					topic = mcbus.TopicMessageFromGateway
+				}
+				_, err = mcbus.Publish(topic, msg)
+				if err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	}
 }
