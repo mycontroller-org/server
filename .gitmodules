@@ -1,0 +1,3 @@
+[submodule "console"]
+	path = console-web
+	url = https://github.com/mycontroller-org/console-web
