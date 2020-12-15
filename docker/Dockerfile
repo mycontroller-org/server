@@ -19,8 +19,8 @@ COPY ./mycontroller ${APP_HOME}/mycontroller
 RUN chmod +x ${APP_HOME}/mycontroller
 
 # copy default files
-COPY ./resources/default.yaml ${DATA_HOME}/mycontroller.yaml
+COPY ./resources/default.yaml ${APP_HOME}/mycontroller.yaml
 
 WORKDIR ${APP_HOME}
 
-CMD ["/app/mycontroller", "-config", "/mc_home/mycontroller.yaml"]
+CMD ["/app/mycontroller", "-config", "/app/mycontroller.yaml"]

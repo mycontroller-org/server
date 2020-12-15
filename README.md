@@ -1,8 +1,33 @@
 # MyController
 
-Version 2.x development started here.
+MyController.org version 2.x is in early development stage.
 
-# WARNING: version 2 is in initial development phase. huge change will be expected on each commit.
+**WARNING:** Huge change will be expected on each commit. At this moment this version is not ready for the production environment.
 
-## Legacy Version 1.x
-* https://github.com/mycontroller-org/mycontroller-v1-legacy
+### configuration example files
+* [resources/](resources/)
+
+### To run
+```
+# pull the image
+$ docker pull quay.io/mycontroller-org/mycontroller:2.0-master
+
+# run with default configuration
+docker run  -d --name mycontroller \
+    -p 8080:8080 \
+    quay.io/mycontroller-org/mycontroller:2.0-master
+
+# run with advanced options with custom data mount point
+docker run  --rm --name mycontroller \
+    -p 8080:8080 \
+    -v $PWD/mc:/mc_home \
+    quay.io/mycontroller-org/mycontroller:2.0-master
+
+# run with advanced options with custom data mount point and custom configuration options
+docker run  --rm --name mycontroller \
+    -p 8080:8080 \
+    -v $PWD/mc:/mc_home \
+    -v $PWD/mc/mycontroller.yaml:/app/mycontroller.yaml \
+    quay.io/mycontroller-org/mycontroller:2.0-master
+```
+
