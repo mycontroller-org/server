@@ -8,9 +8,9 @@ MyController.org version 2.x is in early development stage.
 * [resources/](resources/)
 
 ### To run
-```
+```bash
 # pull the image
-$ docker pull quay.io/mycontroller-org/mycontroller:2.0-master
+docker pull quay.io/mycontroller-org/mycontroller:2.0-master
 
 # run with default configuration
 docker run  -d --name mycontroller \
