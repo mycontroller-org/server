@@ -18,35 +18,23 @@ git branch
 # build go project
 # go build ../main.go
 docker run --rm -v \
-    "$PWD"/..:/usr/src/mycontroller -w /usr/src/mycontroller \
+    "$PWD"/:/usr/src/mycontroller -w /usr/src/mycontroller \
     golang:${GOLANG_BUILDER_TAG} \
-    go build -v -o docker/mycontroller cmd/main.go
+    go build -v -o mycontroller cmd/main.go
 
 # change permission
 chmod +x ./mycontroller
 
-# copy default templates
-cp ../resources/default.yaml ./default.yaml
-
 # build web console
-cd ../
 git submodule update --init --recursive
 git submodule update --remote
 cd console-web
 yarn install
 yarn build
-cd ../docker
-
-# copy UI files
-cp ../console-web/build ./ui -r
+cd ../
 
 # build image
 docker build -t ${DOCKER_REPO}:${TAG} .
 
 # push image to registry
 docker push ${DOCKER_REPO}:${TAG}
-
-# remove application bin file and UI files
-rm ./mycontroller -rf
-rm ./default.config -rf
-rm ./ui -rf
