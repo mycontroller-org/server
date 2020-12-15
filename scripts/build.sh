@@ -10,6 +10,11 @@ GOLANG_BUILDER_TAG="1.15.0-alpine3.12"
 # tag version
 TAG="2.0-master"
 
+# debug lines
+echo $PWD
+ls -alh
+git branch
+
 # build go project
 # go build ../main.go
 docker run --rm -v \
