@@ -23,4 +23,4 @@ COPY ./resources/default.yaml ${DATA_HOME}/mycontroller.yaml
 
 WORKDIR ${APP_HOME}
 
-CMD ["/app/mycontroller", "-config", "${DATA_HOME}/mycontroller.yaml"]
+CMD ["/app/mycontroller", "-config", "/mc_home/mycontroller.yaml"]
