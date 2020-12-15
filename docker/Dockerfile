@@ -16,6 +16,8 @@ COPY ./console-web/build /ui
 # copy application bin file
 COPY ./mycontroller ${APP_HOME}/mycontroller
 
+RUN chmod +x ${APP_HOME}/mycontroller
+
 # copy default files
 COPY ./resources/default.yaml ${DATA_HOME}/mycontroller.yaml
 

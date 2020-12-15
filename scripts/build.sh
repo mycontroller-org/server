@@ -30,11 +30,11 @@ git submodule update --init --recursive
 git submodule update --remote
 cd console-web
 yarn install
-yarn build
+CI=false yarn build
 cd ../
 
 # build image
-docker build -t ${DOCKER_REPO}:${TAG} .
+docker build -f docker/Dockerfile -t ${DOCKER_REPO}:${TAG} .
 
 # push image to registry
 docker push ${DOCKER_REPO}:${TAG}
