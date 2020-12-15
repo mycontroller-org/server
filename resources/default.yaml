@@ -1,0 +1,42 @@
+web:
+  bindAddress: "0.0.0.0"
+  port: 8080
+  webDirectory: /ui
+  enable_profiling: false
+
+secret: abcd
+
+directories:
+  data: /mc_data/data
+  logs: /mc_data/logs
+
+logger:
+  mode: development
+  # mode: production
+  encoding: console
+  level:
+    core: info
+    storage: info
+    metrics: warn
+
+startup_jobs:
+  importer:
+    enabled: true
+    target_directory: /mc_data/data/exports/memory_db/yaml
+    type: yaml
+    clean_database: true
+
+database:
+  storage: memory_db
+  metrics: void_database
+
+databases:
+  - name: memory_db
+    type: memory
+    dump_enabled: true
+    dump_interval: 1m
+    dump_dir: "memory_db"
+    dump_format: ["yaml", "json"]
+
+  - name: void_database
+    type: void_db
