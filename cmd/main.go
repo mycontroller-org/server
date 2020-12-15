@@ -10,13 +10,16 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/cmd/app/handler"
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
+	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
+	"github.com/mycontroller-org/backend/v2/pkg/export"
 	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/config"
+	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	msgPRO "github.com/mycontroller-org/backend/v2/pkg/processor/message"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
-	"github.com/mycontroller-org/backend/v2/pkg/export"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 func init() {
@@ -48,6 +51,9 @@ func postInitFunc(cfg *config.Config) {
 	// startup jobs
 	startupJobs(&cfg.StartupJobs)
 
+	// add default admin user
+	updateInitialUser()
+
 	// start engine
 	msgPRO.Init()
 
@@ -55,6 +61,28 @@ func postInitFunc(cfg *config.Config) {
 	gwStart := time.Now()
 	gwAPI.LoadAll()
 	zap.L().Debug("Load gateways done.", zap.String("timeTaken", time.Since(gwStart).String()))
+}
+
+func updateInitialUser() {
+	pagination := &stgml.Pagination{
+		Limit: 1,
+	}
+	users, err := userAPI.List(nil, pagination)
+	if err != nil {
+		zap.L().Error("failed to users", zap.Error(err))
+	}
+	if users.Count == 0 {
+		adminUser := &userML.User{
+			Username: "admin",
+			Password: "admin",
+			FullName: "Admin User",
+			Email:    "admin@example.com",
+		}
+		err = userAPI.Save(adminUser)
+		if err != nil {
+			zap.L().Error("failed to create default admin user", zap.Error(err))
+		}
+	}
 }
 
 func startupJobs(cfg *config.Startup) {

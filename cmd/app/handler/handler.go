@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	json "github.com/mycontroller-org/backend/v2/pkg/json"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
@@ -22,6 +24,7 @@ func StartHandler() error {
 	}
 
 	// register routes
+	registerAuthRoutes(router)
 	registerStatusRoutes(router)
 	registerGatewayRoutes(router)
 	registerNodeRoutes(router)
@@ -54,9 +57,32 @@ func StartHandler() error {
 
 	// Insert the middleware
 	handler := c.Handler(router)
+	handler = middlewareAuthenticationVerification(handler)
 
 	addr := fmt.Sprintf("%s:%d", cfg.BindAddress, cfg.Port)
 
 	zap.L().Info("Listening HTTP service on", zap.String("address", addr), zap.String("webDirectory", cfg.WebDirectory))
 	return http.ListenAndServe(addr, handler)
+}
+
+func postErrorResponse(w http.ResponseWriter, message string, code int) {
+	response := &handlerML.Response{
+		Success: false,
+		Message: message,
+	}
+	out, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	http.Error(w, string(out), code)
+}
+
+func postSuccessResponse(w http.ResponseWriter, data interface{}) {
+	out, err := json.Marshal(data)
+	if err != nil {
+		postErrorResponse(w, err.Error(), 500)
+		return
+	}
+	w.Write(out)
 }

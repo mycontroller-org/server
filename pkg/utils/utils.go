@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mitchellh/mapstructure"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -67,19 +66,6 @@ func JoinMap(dst, src map[string]interface{}) {
 	for k, v := range src {
 		dst[k] = v
 	}
-}
-
-// MapToStruct converts string to struct
-func MapToStruct(tagName string, in map[string]interface{}, out interface{}) error {
-	if tagName == "" {
-		return mapstructure.Decode(in, out)
-	}
-	cfg := &mapstructure.DecoderConfig{TagName: tagName, Result: out}
-	decoder, err := mapstructure.NewDecoder(cfg)
-	if err != nil {
-		return err
-	}
-	return decoder.Decode(in)
 }
 
 // GetMapValue returns fetch and returns with a key. if not available returns default value

@@ -5,6 +5,8 @@ import (
 	"encoding/gob"
 	"fmt"
 
+	"github.com/fatih/structs"
+	"github.com/mitchellh/mapstructure"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"go.uber.org/zap"
 )
@@ -58,4 +60,22 @@ func ByteToStruct(data []byte, out interface{}) error {
 func ByteToMap(data []byte) (map[string]interface{}, error) {
 	out := make(map[string]interface{})
 	return out, ByteToStruct(data, out)
+}
+
+// MapToStruct converts string to struct
+func MapToStruct(tagName string, in map[string]interface{}, out interface{}) error {
+	if tagName == "" {
+		return mapstructure.Decode(in, out)
+	}
+	cfg := &mapstructure.DecoderConfig{TagName: tagName, Result: out}
+	decoder, err := mapstructure.NewDecoder(cfg)
+	if err != nil {
+		return err
+	}
+	return decoder.Decode(in)
+}
+
+// StructToMap converts struct to a map
+func StructToMap(data interface{}) map[string]interface{} {
+	return structs.Map(data)
 }

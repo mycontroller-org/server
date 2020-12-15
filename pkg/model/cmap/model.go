@@ -118,6 +118,11 @@ func (cm CustomMap) Clone() CustomMap {
 	return CustomMap(cloned)
 }
 
+// ToMap returns as map
+func (cm CustomMap) ToMap() map[string]interface{} {
+	return map[string]interface{}(cm)
+}
+
 // Set a key, value pair
 func (cm CustomMap) Set(key string, value interface{}, labels CustomStringMap) {
 	if labels != nil {

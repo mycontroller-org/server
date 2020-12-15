@@ -11,6 +11,7 @@ import (
 	kindAPI "github.com/mycontroller-org/backend/v2/pkg/api/kind"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
+	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
@@ -20,6 +21,7 @@ import (
 	mlkd "github.com/mycontroller-org/backend/v2/pkg/model/kind"
 	mlnd "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	mlsr "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
+	mlus "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
@@ -128,6 +130,19 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 		}
 		for index := 0; index < len(entities); index++ {
 			err = fwAPI.Save(&entities[index])
+			if err != nil {
+				return err
+			}
+		}
+
+	case ml.EntityUser:
+		entities := make([]mlus.User, 0)
+		err := unmarshal(fileFormat, fileBytes, &entities)
+		if err != nil {
+			return err
+		}
+		for index := 0; index < len(entities); index++ {
+			err = userAPI.Save(&entities[index])
 			if err != nil {
 				return err
 			}

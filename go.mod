@@ -3,7 +3,9 @@ module github.com/mycontroller-org/backend/v2
 go 1.15
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/eclipse/paho.mqtt.golang v1.3.0
+	github.com/fatih/structs v1.1.0
 	github.com/go-cmd/cmd v1.3.0
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/mux v1.8.0
