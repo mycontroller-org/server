@@ -7,8 +7,8 @@ web:
 secret: abcd
 
 directories:
-  data: /mc_data/data
-  logs: /mc_data/logs
+  data: /mc_home/data
+  logs: /mc_home/logs
 
 logger:
   mode: development
@@ -22,7 +22,7 @@ logger:
 startup_jobs:
   importer:
     enabled: true
-    target_directory: /mc_data/data/exports/memory_db/yaml
+    target_directory: /mc_home/data/exports/memory_db/yaml
     type: yaml
     clean_database: true
 
