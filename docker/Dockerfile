@@ -7,6 +7,9 @@ ENV APP_HOME="/app" \
 
 EXPOSE 8080
 
+# install timzone utils
+RUN apk --no-cache add tzdata
+
 # create a user and give permission for the locations
 RUN mkdir -p ${APP_HOME} && mkdir -p ${DATA_HOME}
 

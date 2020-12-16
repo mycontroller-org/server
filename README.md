@@ -35,4 +35,3 @@ docker run  --rm --name mycontroller \
     -v $PWD/mc/mycontroller.yaml:/app/mycontroller.yaml \
     quay.io/mycontroller-org/mycontroller:2.0-master
 ```
-
