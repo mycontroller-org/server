@@ -4,6 +4,11 @@ MyController.org version 2.x is in early development stage.
 
 **WARNING:** Huge change will be expected on each commit. At this moment this version is not ready for the production environment.
 
+### Quick demo
+* https://demo-v2.mycontroller.org (no data available at this moment)
+* username: `admin`
+* password: `admin`
+
 ### configuration example files
 * [resources/](resources/)
 
