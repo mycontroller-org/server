@@ -28,15 +28,15 @@ const (
 
 // Service component of the provider
 type Service struct {
-	GatewayConfig            *gwml.Config
-	provider                 Provider
-	messageQueue             *queue.BoundedQueue
-	rawMessageQueue          *queue.BoundedQueue
-	topicListenFromProcessor string
-	topicPostToProcessor     string
-	sleepingMessageQueue     map[string][]*msgml.Message
-	mutex                    sync.RWMutex
-	ctx                      context.Context
+	GatewayConfig        *gwml.Config
+	provider             Provider
+	messageQueue         *queue.BoundedQueue
+	rawMessageQueue      *queue.BoundedQueue
+	topicListenFromCore  string
+	topicPostToCore      string
+	sleepingMessageQueue map[string][]*msgml.Message
+	mutex                sync.RWMutex
+	ctx                  context.Context
 }
 
 // GetService returns service instance
@@ -65,8 +65,8 @@ func (s *Service) Start() error {
 	zap.L().Debug("Starting a provider service", zap.String("name", s.GatewayConfig.Name), zap.String("provider", s.GatewayConfig.Provider.GetString(model.NameType)))
 
 	// update topics
-	s.topicListenFromProcessor = GetTopicListenFromProcessor(s.GatewayConfig.ID)
-	s.topicPostToProcessor = GetTopicListenFromProcessor("")
+	s.topicListenFromCore = GetTopicListenFromCore(s.GatewayConfig.ID)
+	s.topicPostToCore = GetTopicListenFromCore(TopicMessagePostToCore)
 
 	s.messageQueue = utils.GetQueue(fmt.Sprintf("queue_provider_message_%s", s.GatewayConfig.ID), messageQueueSize)
 	s.rawMessageQueue = utils.GetQueue(fmt.Sprintf("queue_provider_raw_message_%s", s.GatewayConfig.ID), rawMessageQueueSize)
@@ -82,8 +82,8 @@ func (s *Service) Start() error {
 	err := s.provider.Start(s.addRawMessageToQueueFunc)
 	if err != nil {
 		zap.L().Error("Error", zap.Error(err))
-		mcbus.Unsubscribe(s.topicListenFromProcessor)
-		mcbus.Unsubscribe(s.topicPostToProcessor)
+		mcbus.Unsubscribe(s.topicListenFromCore)
+		mcbus.Unsubscribe(s.topicPostToCore)
 
 		s.messageQueue.Stop()
 		s.rawMessageQueue.Stop()
@@ -93,8 +93,8 @@ func (s *Service) Start() error {
 
 // unsubscribe and stop queues
 func (s *Service) stopService() {
-	mcbus.Unsubscribe(s.topicListenFromProcessor)
-	mcbus.Unsubscribe(s.topicPostToProcessor)
+	mcbus.Unsubscribe(s.topicListenFromCore)
+	mcbus.Unsubscribe(s.topicPostToCore)
 	s.messageQueue.Stop()
 	s.rawMessageQueue.Stop()
 }
@@ -121,8 +121,8 @@ func (s *Service) addRawMessageToQueueFunc(rawMsg *msgml.RawMessage) error {
 
 // listens messages from core componenet
 func (s *Service) startMessageListener() {
-	mcbus.Subscribe(s.topicListenFromProcessor, &bus.Handler{
-		Matcher: s.topicListenFromProcessor,
+	mcbus.Subscribe(s.topicListenFromCore, &bus.Handler{
+		Matcher: s.topicListenFromCore,
 		Handle: func(e *bus.Event) {
 			msg, ok := e.Data.(*msgml.Message)
 			if ok {
@@ -200,9 +200,9 @@ func (s *Service) startRawMessageProcessor() {
 				if msg != nil && msg.GatewayID == "" {
 					msg.GatewayID = s.GatewayConfig.ID
 				}
-				_, err = mcbus.Publish(s.topicPostToProcessor, msg)
+				_, err = mcbus.Publish(s.topicPostToCore, msg)
 				if err != nil {
-					zap.L().Debug("Messages failed to post on topic", zap.String("topic", s.topicPostToProcessor), zap.String("gateway", s.GatewayConfig.Name), zap.Any("message", msg), zap.Error(err))
+					zap.L().Debug("Messages failed to post on topic", zap.String("topic", s.topicPostToCore), zap.String("gateway", s.GatewayConfig.Name), zap.Any("message", msg), zap.Error(err))
 					return
 				}
 			}

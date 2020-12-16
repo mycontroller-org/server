@@ -27,7 +27,7 @@ const (
 	TopicMessageListenFromCore = "message_from_core" // receives messages from core component
 )
 
-// GetTopicListenFromProcessor returns listen topic
-func GetTopicListenFromProcessor(gatewayID string) string {
+// GetTopicListenFromCore returns listen topic
+func GetTopicListenFromCore(gatewayID string) string {
 	return fmt.Sprintf("%s_%s", TopicMessageListenFromCore, gatewayID)
 }

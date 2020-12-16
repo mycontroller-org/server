@@ -45,7 +45,7 @@ func Post(msg *msgml.Message) error {
 	if msg.GatewayID == "" {
 		return errors.New("gateway id can not be empty")
 	}
-	topic := gwpd.GetTopicListenFromProcessor(msg.GatewayID)
+	topic := gwpd.GetTopicListenFromCore(msg.GatewayID)
 	_, err := mcbus.Publish(topic, msg)
 	return err
 }
