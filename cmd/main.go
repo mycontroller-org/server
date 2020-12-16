@@ -89,7 +89,7 @@ func startupJobs(cfg *config.Startup) {
 	if cfg.Importer.Enabled {
 		err := export.ExecuteImport(cfg.Importer.TargetDirectory, cfg.Importer.Type)
 		if err != nil {
-			zap.L().Error("Failed to load exported files", zap.Error(err))
+			zap.L().WithOptions(zap.AddCallerSkip(10)).Error("Failed to load exported files", zap.String("error", err.Error()))
 		}
 	}
 }

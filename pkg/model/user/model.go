@@ -3,6 +3,7 @@ package user
 import (
 	"time"
 
+	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
 
@@ -15,4 +16,12 @@ type User struct {
 	FullName       string               `json:"fullName"`
 	Labels         cmap.CustomStringMap `json:"labels"`
 	LastModifiedOn time.Time            `json:"lastModifiedOn"`
+}
+
+// MarshalJSON implementation
+func (u *User) MarshalJSON() ([]byte, error) {
+	type user User // prevent recursion
+	x := user(*u)
+	x.Password = ""
+	return json.Marshal(x)
 }

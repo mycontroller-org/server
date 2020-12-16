@@ -2,13 +2,24 @@ package handler
 
 // global constants
 const (
-	KeyUserID = "user_id"
+	KeyUserID     = "userID"
+	KeyFullName   = "fullName"
+	KeyAuthorized = "authorized"
+	KeyExpiration = "expiration"
+
+	EnvJwtAccessSecret = "JWT_ACCESS_SECRET" // environment variable to set secret for JWT token
+
+	HeaderAuthorization = "Authorization"
+	HeaderUserID        = "mc_userid"
+
+	DefaultExpiration = "168h" // 24 * 7 days
 )
 
 // UserLogin struct
 type UserLogin struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	Expiration string `json:"expiration"`
 }
 
 // JwtToken struct

@@ -12,6 +12,7 @@ import (
 
 func registerAuthRoutes(router *mux.Router) {
 	router.HandleFunc("/api/user/login", login).Methods(http.MethodPost)
+	router.HandleFunc("/api/user/profile", profile).Methods(http.MethodGet)
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +45,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		postErrorResponse(w, "Please provide valid login details", 401)
 		return
 	}
-	token, err := createToken(userDB)
+	token, err := createToken(userDB, userLogin.Expiration)
 	if err != nil {
 		postErrorResponse(w, err.Error(), 500)
 		return
@@ -63,4 +64,19 @@ func login(w http.ResponseWriter, r *http.Request) {
 		Token:    token,
 	}
 	postSuccessResponse(w, tokenResponse)
+}
+
+func profile(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	userID := getUserID(r)
+	if userID == "" {
+		postErrorResponse(w, "UserID missing in the request", 400)
+		return
+	}
+
+	user, err := userAPI.GetByID(userID)
+	if err != nil {
+		postErrorResponse(w, err.Error(), 400)
+	}
+	postSuccessResponse(w, &user)
 }

@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
@@ -17,6 +18,10 @@ func StartHandler() error {
 	router := mux.NewRouter()
 
 	cfg := svc.CFG.Web
+
+	// set JWT access secret in environment
+	// TODO: this should be updated dynamically
+	os.Setenv(handlerML.EnvJwtAccessSecret, "add2a90d-c7c5-4d93-96e2-e70eca62400d")
 
 	// Enable Profiling, if enabled
 	if cfg.EnableProfiling {
