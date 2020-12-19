@@ -20,7 +20,7 @@ git branch
 docker run --rm -v \
     "$PWD"/:/usr/src/mycontroller -w /usr/src/mycontroller \
     golang:${GOLANG_BUILDER_TAG} \
-    go build -v -o mycontroller cmd/main.go
+    source scripts/generate_bin.sh
 
 # change permission
 chmod +x ./mycontroller
