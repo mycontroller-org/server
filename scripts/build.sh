@@ -1,26 +1,24 @@
 #!/bin/bash
 
-# docker registry
-DOCKER_ORG='quay.io/mycontroller-org'
-DOCKER_REPO="${DOCKER_ORG}/mycontroller"
+# container registry
+REGISTRY='quay.io/mycontroller-org'
+IMAGE_NAME="${REGISTRY}/mycontroller"
+IMAGE_TAG="2.0-master"  # application tag
 
-# alpine golang builder image tag
-GOLANG_BUILDER_TAG="1.15.0-alpine3.12"
-
-# tag version
-TAG="2.0-master"
+# alpine golang builder image
+GOLANG_BUILDER_IMAGE="quay.io/mycontroller-org/golang"
+GOLANG_BUILDER_TAG="1.15.6-alpine3.12"
 
 # debug lines
 echo $PWD
 ls -alh
 git branch
 
-# build go project
-# go build ../main.go
-docker run --rm -v \
-    "$PWD"/:/usr/src/mycontroller -w /usr/src/mycontroller \
-    golang:${GOLANG_BUILDER_TAG} \
-    source scripts/generate_bin.sh
+# build application inside continer
+docker run --rm \
+    -v "$PWD"/:/usr/src/mycontroller -w /usr/src/mycontroller \
+    ${GOLANG_BUILDER_IMAGE}:${GOLANG_BUILDER_TAG} \
+    /bin/sh scripts/generate_bin.sh
 
 # change permission
 chmod +x ./mycontroller
@@ -33,8 +31,8 @@ yarn install
 CI=false yarn build
 cd ../
 
-# build image
-docker build -f docker/Dockerfile -t ${DOCKER_REPO}:${TAG} .
+# build conatiner image
+docker build -f docker/Dockerfile -t ${IMAGE_NAME}:${IMAGE_TAG} .
 
 # push image to registry
-docker push ${DOCKER_REPO}:${TAG}
+docker push ${IMAGE_NAME}:${IMAGE_TAG}
