@@ -21,8 +21,17 @@ func Get(filters []stgml.Filter) (gwml.Config, error) {
 	return result, err
 }
 
-// Save gateway config into disk
+// Save gateway config and reload
 func Save(gwCfg *gwml.Config) error {
+	err := save(gwCfg)
+	if err != nil {
+		return err
+	}
+	return Reload(gwCfg.ID)
+}
+
+// saves gateway config
+func save(gwCfg *gwml.Config) error {
 	if gwCfg.ID == "" {
 		gwCfg.ID = ut.RandID()
 	}
@@ -32,12 +41,17 @@ func Save(gwCfg *gwml.Config) error {
 // SetState Updates state data
 func SetState(gwCfg *gwml.Config, state ml.State) error {
 	gwCfg.State = state
-	return Save(gwCfg)
+	return save(gwCfg)
 }
 
 // Delete gateway
-func Delete(IDs []string) error {
+func Delete(IDs []string) (int64, error) {
+	for _, id := range IDs {
+		err := Disable(id)
+		if err != nil {
+			return 0, err
+		}
+	}
 	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
-	svc.STG.Delete(ml.EntityGateway, filters)
-	return nil
+	return svc.STG.Delete(ml.EntityGateway, filters)
 }

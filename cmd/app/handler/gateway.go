@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -19,6 +20,7 @@ func registerGatewayRoutes(router *mux.Router) {
 	router.HandleFunc("/api/gateway/enable", enableGateway).Methods(http.MethodPost)
 	router.HandleFunc("/api/gateway/disable", disableGateway).Methods(http.MethodPost)
 	router.HandleFunc("/api/gateway/reload", reloadGateway).Methods(http.MethodPost)
+	router.HandleFunc("/api/gateway", deleteGateways).Methods(http.MethodDelete)
 }
 
 func listGateways(w http.ResponseWriter, r *http.Request) {
@@ -84,6 +86,21 @@ func reloadGateway(w http.ResponseWriter, r *http.Request) {
 			return "Reloaded", nil
 		}
 		return nil, errors.New("Supply a gateway id")
+	}
+	UpdateData(w, r, &IDs, updateFn)
+}
+
+func deleteGateways(w http.ResponseWriter, r *http.Request) {
+	IDs := []string{}
+	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+		if len(IDs) > 0 {
+			count, err := gwAPI.Delete(IDs)
+			if err != nil {
+				return nil, err
+			}
+			return fmt.Sprintf("Deleted: %d", count), nil
+		}
+		return nil, errors.New("Supply id(s)")
 	}
 	UpdateData(w, r, &IDs, updateFn)
 }
