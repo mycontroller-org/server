@@ -120,6 +120,7 @@ func (s *Store) Delete(entityName string, filters []stgml.Filter) (int64, error)
 	defer s.RWMutex.Unlock()
 	entities := s.getEntities(entityName)
 	filteredEntities := helper.Filter(entities, filters, false)
+
 	if len(filteredEntities) > 0 {
 		for _, entity := range filteredEntities {
 			id := helper.GetID(entity)

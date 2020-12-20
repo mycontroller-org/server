@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"strings"
 
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
@@ -29,15 +30,14 @@ func Filter(entities []interface{}, filters []stgml.Filter, returnSingle bool) [
 
 			switch valKind {
 			case reflect.String:
-				filterValue := fmt.Sprintf("%v", filter.Value)
-				match = CompareString(filterValue, filter.Operator, value)
+				availableValue, ok := value.(string)
+				if !ok {
+					availableValue = fmt.Sprintf("%v", value)
+				}
+				match = CompareString(availableValue, filter.Operator, filter.Value)
 
 			case reflect.Bool:
-				if filterValue, ok := filter.Value.(bool); ok {
-					match = CompareBool(filterValue, filter.Operator, value)
-				} else {
-					match = false
-				}
+				match = CompareBool(value, filter.Operator, filter.Value)
 			default:
 				match = false
 			}
@@ -72,29 +72,28 @@ func VerifyStringSlice(data interface{}, expected bool, verifyFn func(value stri
 }
 
 // CompareString compares strings
-func CompareString(value1 string, operator string, value2 interface{}) bool {
-	value2string := fmt.Sprintf("%v", value2)
+func CompareString(value string, operator string, filterValue interface{}) bool {
 	switch operator {
 	case stgml.OperatorEqual, stgml.OperatorNone:
-		return value1 == value2string
+		return toString(filterValue) == value
 	case stgml.OperatorNotEqual:
-		return value1 == value2string
+		return toString(filterValue) != value
 	case stgml.OperatorRegex:
-		expression := fmt.Sprintf("(?i)%s", value1)
+		expression := fmt.Sprintf("(?i)%s", toString(filterValue))
 		compiled, err := regexp.Compile(expression)
 		if err != nil {
 			return false
 		}
-		return compiled.MatchString(value2string)
+		return compiled.MatchString(value)
 	case stgml.OperatorExists:
-		return value2string != ""
+		return value != ""
 	case stgml.OperatorIn:
-		VerifyStringSlice(value2, true, func(value string) bool {
-			return value1 == value2
+		return VerifyStringSlice(filterValue, true, func(fValue string) bool {
+			return fValue == value
 		})
 	case stgml.OperatorNotIn:
-		VerifyStringSlice(value2, false, func(value string) bool {
-			return value1 != value2
+		return VerifyStringSlice(filterValue, false, func(fValue string) bool {
+			return fValue != value
 		})
 	}
 	return false
@@ -115,23 +114,40 @@ func VerifyBoolSlice(data interface{}, expected bool, verifyFn func(value bool) 
 }
 
 // CompareBool compares strings
-func CompareBool(value1 bool, operator string, value2 interface{}) bool {
-	value2bool, ok := value2.(bool)
+func CompareBool(value interface{}, operator string, filterValue interface{}) bool {
 	switch operator {
 	case stgml.OperatorEqual, stgml.OperatorNone:
-		return ok && value1 == value2bool
+		return toBool(value) == toBool(filterValue)
 	case stgml.OperatorNotEqual:
-		return ok && value1 != value2bool
+		return toBool(value) != toBool(filterValue)
 	case stgml.OperatorExists:
-		return ok
+		return len(toString(value)) > 0
 	case stgml.OperatorIn:
-		VerifyBoolSlice(value2, true, func(value bool) bool {
-			return value1 == value2
+		boolValue := toBool(value)
+		return VerifyBoolSlice(filterValue, true, func(fValue bool) bool {
+			return fValue == boolValue
 		})
 	case stgml.OperatorNotIn:
-		VerifyBoolSlice(value2, false, func(value bool) bool {
-			return value1 != value2
+		boolValue := toBool(value)
+		return VerifyBoolSlice(filterValue, false, func(fValue bool) bool {
+			return fValue != boolValue
 		})
 	}
 	return false
+}
+
+func toString(data interface{}) string {
+	value, ok := data.(string)
+	if !ok {
+		value = fmt.Sprintf("%v", data)
+	}
+	return value
+}
+
+func toBool(data interface{}) bool {
+	value, ok := data.(bool)
+	if !ok {
+		value = strings.ToLower(fmt.Sprintf("%v", data)) == "true"
+	}
+	return value
 }
