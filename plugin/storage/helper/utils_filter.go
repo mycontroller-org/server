@@ -30,11 +30,7 @@ func Filter(entities []interface{}, filters []stgml.Filter, returnSingle bool) [
 
 			switch valKind {
 			case reflect.String:
-				availableValue, ok := value.(string)
-				if !ok {
-					availableValue = fmt.Sprintf("%v", value)
-				}
-				match = CompareString(availableValue, filter.Operator, filter.Value)
+				match = CompareString(toString(value), filter.Operator, filter.Value)
 
 			case reflect.Bool:
 				match = CompareBool(value, filter.Operator, filter.Value)
@@ -58,15 +54,25 @@ func Filter(entities []interface{}, filters []stgml.Filter, returnSingle bool) [
 }
 
 // VerifyStringSlice implementation
-func VerifyStringSlice(data interface{}, expected bool, verifyFn func(value string) bool) bool {
-	stringSlice, ok := data.([]string)
+func VerifyStringSlice(value string, operator string, filterValue interface{}) bool {
+	stringSlice, ok := filterValue.([]string)
 	if !ok {
 		return false
 	}
-	for _, value := range stringSlice {
-		if verifyFn(value) == expected {
-			return true
+	switch operator {
+	case stgml.OperatorIn:
+		for _, fValue := range stringSlice {
+			if value == fValue {
+				return true
+			}
 		}
+	case stgml.OperatorNotIn:
+		for _, fValue := range stringSlice {
+			if value == fValue {
+				return false
+			}
+		}
+		return true
 	}
 	return false
 }
@@ -87,28 +93,32 @@ func CompareString(value string, operator string, filterValue interface{}) bool 
 		return compiled.MatchString(value)
 	case stgml.OperatorExists:
 		return value != ""
-	case stgml.OperatorIn:
-		return VerifyStringSlice(filterValue, true, func(fValue string) bool {
-			return fValue == value
-		})
-	case stgml.OperatorNotIn:
-		return VerifyStringSlice(filterValue, false, func(fValue string) bool {
-			return fValue != value
-		})
+	case stgml.OperatorIn, stgml.OperatorNotIn:
+		return VerifyStringSlice(value, operator, filterValue)
 	}
 	return false
 }
 
 // VerifyBoolSlice implementation
-func VerifyBoolSlice(data interface{}, expected bool, verifyFn func(value bool) bool) bool {
-	boolSlice, ok := data.([]bool)
+func VerifyBoolSlice(value bool, operator string, filterValue interface{}) bool {
+	boolSlice, ok := filterValue.([]bool)
 	if !ok {
 		return false
 	}
-	for _, value := range boolSlice {
-		if verifyFn(value) == expected {
-			return true
+	switch operator {
+	case stgml.OperatorIn:
+		for _, fValue := range boolSlice {
+			if value == fValue {
+				return true
+			}
 		}
+	case stgml.OperatorNotIn:
+		for _, fValue := range boolSlice {
+			if value == fValue {
+				return false
+			}
+		}
+		return true
 	}
 	return false
 }
@@ -122,16 +132,8 @@ func CompareBool(value interface{}, operator string, filterValue interface{}) bo
 		return toBool(value) != toBool(filterValue)
 	case stgml.OperatorExists:
 		return len(toString(value)) > 0
-	case stgml.OperatorIn:
-		boolValue := toBool(value)
-		return VerifyBoolSlice(filterValue, true, func(fValue bool) bool {
-			return fValue == boolValue
-		})
-	case stgml.OperatorNotIn:
-		boolValue := toBool(value)
-		return VerifyBoolSlice(filterValue, false, func(fValue bool) bool {
-			return fValue != boolValue
-		})
+	case stgml.OperatorIn, stgml.OperatorNotIn:
+		return VerifyBoolSlice(toBool(value), operator, filterValue)
 	}
 	return false
 }
