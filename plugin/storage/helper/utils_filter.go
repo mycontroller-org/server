@@ -55,10 +55,15 @@ func Filter(entities []interface{}, filters []stgml.Filter, returnSingle bool) [
 
 // VerifyStringSlice implementation
 func VerifyStringSlice(value string, operator string, filterValue interface{}) bool {
-	stringSlice, ok := filterValue.([]string)
+	genericSlice, ok := filterValue.([]interface{})
 	if !ok {
 		return false
 	}
+	stringSlice := make([]string, 0)
+	for _, val := range genericSlice {
+		stringSlice = append(stringSlice, toString(val))
+	}
+
 	switch operator {
 	case stgml.OperatorIn:
 		for _, fValue := range stringSlice {
@@ -101,10 +106,15 @@ func CompareString(value string, operator string, filterValue interface{}) bool 
 
 // VerifyBoolSlice implementation
 func VerifyBoolSlice(value bool, operator string, filterValue interface{}) bool {
-	boolSlice, ok := filterValue.([]bool)
+	genericSlice, ok := filterValue.([]interface{})
 	if !ok {
 		return false
 	}
+	boolSlice := make([]bool, 0)
+	for _, val := range genericSlice {
+		boolSlice = append(boolSlice, toBool(val))
+	}
+
 	switch operator {
 	case stgml.OperatorIn:
 		for _, fValue := range boolSlice {

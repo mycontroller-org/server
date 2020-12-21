@@ -47,7 +47,7 @@ func (s *Store) Update(entityName string, data interface{}, f []stgml.Filter) er
 }
 
 // Find Implementation
-func (s *Store) Find(entityName string, out interface{}, f []stgml.Filter, p *stgml.Pagination) (*stgml.Result, error) {
+func (s *Store) Find(entityName string, out interface{}, filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
 	s.RWMutex.RLock()
 	defer s.RWMutex.RUnlock()
 
@@ -64,8 +64,8 @@ func (s *Store) Find(entityName string, out interface{}, f []stgml.Filter, p *st
 	if err != nil {
 		return nil, err
 	}
-	filteredEntities := helper.Filter(entitiesCloned, f, false)
-	entitiesCloned, count := helper.Sort(filteredEntities, p)
+	filteredEntities := helper.Filter(entitiesCloned, filters, false)
+	entitiesCloned, count := helper.Sort(filteredEntities, pagination)
 
 	for index, en := range entitiesCloned {
 		if sliceVal.Len() == index {
@@ -93,8 +93,8 @@ func (s *Store) Find(entityName string, out interface{}, f []stgml.Filter, p *st
 		Count:  count,
 		Data:   out,
 	}
-	if p != nil {
-		result.Limit = p.Limit
+	if pagination != nil {
+		result.Limit = pagination.Limit
 	}
 	return result, nil
 }
