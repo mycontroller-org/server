@@ -1,6 +1,7 @@
 package mqtt
 
 import (
+	"crypto/tls"
 	"fmt"
 	"time"
 
@@ -17,14 +18,15 @@ import (
 
 // Config data
 type Config struct {
-	Type             string `json:"type"`
-	Broker           string `json:"broker"`
-	Username         string `json:"username"`
-	Password         string `json:"-"`
-	Subscribe        string `json:"subscribe"`
-	Publish          string `json:"publish"`
-	QoS              int    `json:"qos"`
-	TransmitPreDelay string `json:"transmitPreDelay"`
+	Type               string `json:"type"`
+	Broker             string `json:"broker"`
+	Username           string `json:"username"`
+	Password           string `json:"-"`
+	Subscribe          string `json:"subscribe"`
+	Publish            string `json:"publish"`
+	QoS                int    `json:"qos"`
+	TransmitPreDelay   string `json:"transmitPreDelay"`
+	InsecureSkipVerify bool   `json:"insecureSkipVerify"`
 }
 
 // Endpoint data
@@ -79,6 +81,10 @@ func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.R
 	opts.SetAutoReconnect(true)
 	opts.SetOnConnectHandler(d.onConnectionHandler)
 	opts.SetConnectionLostHandler(d.onConnectionLostHandler)
+
+	// update tls config
+	tlsConfig := &tls.Config{InsecureSkipVerify: cfg.InsecureSkipVerify}
+	opts.SetTLSConfig(tlsConfig)
 
 	c := paho.NewClient(opts)
 	token := c.Connect()
