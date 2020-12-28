@@ -16,11 +16,11 @@ func Publish(topic string, data interface{}) error {
 }
 
 // Subscribe a topic
-func Subscribe(topic string, handler func(event *busml.Event)) error {
+func Subscribe(topic string, handler func(event *busml.Event)) (int64, error) {
 	return busClient.Subscribe(topic, handler)
 }
 
 // Unsubscribe a topic
-func Unsubscribe(topic string) error {
-	return busClient.Unsubscribe(topic)
+func Unsubscribe(topic string, subscriptionID int64) error {
+	return busClient.Unsubscribe(topic, subscriptionID)
 }

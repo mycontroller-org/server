@@ -7,7 +7,6 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	gwpd "github.com/mycontroller-org/backend/v2/plugin/gw_provider"
 )
 
 // Execute the given request
@@ -45,6 +44,6 @@ func Post(msg *msgml.Message) error {
 	if msg.GatewayID == "" {
 		return errors.New("gateway id can not be empty")
 	}
-	topic := gwpd.GetTopicListenFromCore(msg.GatewayID)
+	topic := mcbus.GetTopicPostMessageToProvider(msg.GatewayID)
 	return mcbus.Publish(topic, msg)
 }

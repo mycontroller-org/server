@@ -1,91 +1,125 @@
 package embedded
 
 import (
-	"context"
-	"strings"
+	"sync"
 
-	mbus "github.com/mustafaturan/bus"
 	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
-
-	"github.com/mustafaturan/monoton"
-	"github.com/mustafaturan/monoton/sequencer"
 	"go.uber.org/zap"
 )
 
 // Client struct
 type Client struct {
-	ctx       context.Context
-	busObject *mbus.Bus
+	topics              map[string][]int64
+	subscriptions       map[int64]busml.CallBackFunc
+	subscriptionCounter int64
+	mutex               sync.RWMutex
 }
 
 // Init func
 func Init() (busml.Client, error) {
-	node := uint64(1)
-	initialTime := uint64(1577865600000) // set 2020-01-01 PST as initial time
-	m, err := monoton.New(sequencer.NewMillisecond(), node, initialTime)
-	if err != nil {
-		return nil, err
-	}
-	// init an id generator
-	var idGenerator mbus.Next = (*m).Next
-	// create a new bus instance
-	b, err := mbus.NewBus(idGenerator)
-	if err != nil {
-		return nil, err
-	}
 	client := &Client{
-		ctx:       context.TODO(),
-		busObject: b,
+		topics:              make(map[string][]int64),
+		subscriptions:       make(map[int64]busml.CallBackFunc),
+		subscriptionCounter: 0,
 	}
 	return client, nil
 }
 
 // Close implementation
 func (c *Client) Close() error {
-	if c.busObject != nil {
-		// deregister handlers
-		for _, hk := range c.busObject.HandlerKeys() {
-			c.busObject.DeregisterHandler(hk)
-		}
-		// deregister topics
-		for _, t := range c.busObject.Topics() {
-			c.busObject.DeregisterTopics(t)
-		}
-	}
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
+	// clear all the call backs and topics
+	c.subscriptionCounter = 0
+	c.topics = make(map[string][]int64)
+	c.subscriptions = make(map[int64]busml.CallBackFunc)
 	return nil
 }
 
 // Publish a data to a topic
 func (c *Client) Publish(topic string, data interface{}) error {
-	_, err := c.busObject.Emit(c.ctx, topic, data)
-	if err != nil && strings.Contains(err.Error(), "not found") {
-		zap.L().Debug("[BUS:EMBEDDED] Topic not registered. Registering now", zap.String("topic", topic), zap.Any("data", data))
-		// register a topic
-		c.busObject.RegisterTopics(topic)
-		_, err = c.busObject.Emit(c.ctx, topic, data)
-		return err
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
+	PrintDebug("Posting message", zap.String("topic", topic))
+
+	if subscriptionIDs, found := c.topics[topic]; found {
+		for _, subscriptionID := range subscriptionIDs {
+			if callBack, ok := c.subscriptions[subscriptionID]; ok {
+				event := &busml.Event{
+					Data: data,
+				}
+				go callBack(event)
+			}
+		}
 	}
-	return err
+
+	return nil
 }
 
 // Subscribe a topic
-func (c *Client) Subscribe(topic string, handler func(event *busml.Event)) error {
-	wrappedHandler := &mbus.Handler{
-		Matcher: topic,
-		Handle:  c.handlerWrapper(handler),
-	}
-	c.busObject.RegisterHandler(topic, wrappedHandler)
-	return nil
-}
+func (c *Client) Subscribe(topic string, handler busml.CallBackFunc) (int64, error) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 
-func (c *Client) handlerWrapper(handler func(event *busml.Event)) func(mbusEvent *mbus.Event) {
-	return func(mbusEvent *mbus.Event) {
-		handler(&busml.Event{Data: mbusEvent.Data})
+	subscriptionIDs, found := c.topics[topic]
+	if !found {
+		subscriptionIDs = make([]int64, 0)
 	}
+
+	newSubscriptionID := c.generateSubscriptionID()
+	c.subscriptions[newSubscriptionID] = handler
+	subscriptionIDs = append(subscriptionIDs, newSubscriptionID)
+	c.topics[topic] = subscriptionIDs
+	PrintDebug("Subscription created", zap.String("topic", topic), zap.Int64("subscriptionID", newSubscriptionID))
+
+	return newSubscriptionID, nil
 }
 
 // Unsubscribe a topic
-func (c *Client) Unsubscribe(topic string) error {
-	c.busObject.DeregisterHandler(topic)
+func (c *Client) Unsubscribe(topic string, subscriptionID int64) error {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
+	// remove subscription id
+	if subscriptionIDs, found := c.topics[topic]; found {
+		for index, id := range subscriptionIDs {
+			if id == subscriptionID {
+				c.topics[topic] = append(subscriptionIDs[:index], subscriptionIDs[index+1:]...)
+				PrintDebug("Subscription removed", zap.String("topic", topic), zap.Int64("subscriptionID", subscriptionID))
+				break
+			}
+		}
+	}
+
+	// remove call back
+	delete(c.subscriptions, subscriptionID)
+
 	return nil
+}
+
+// UnsubscribeAll topics
+func (c *Client) UnsubscribeAll(topic string) error {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
+	// remove subscription id
+	if subscriptionIDs, found := c.topics[topic]; found {
+		for _, subscriptionID := range subscriptionIDs {
+			// remove call back
+			delete(c.subscriptions, subscriptionID)
+		}
+		// delete topic
+		delete(c.topics, topic)
+	}
+
+	return nil
+}
+
+func (c *Client) generateSubscriptionID() int64 {
+	// increment counter id
+	c.subscriptionCounter++
+
+	return c.subscriptionCounter
 }

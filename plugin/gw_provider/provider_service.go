@@ -28,15 +28,20 @@ const (
 
 // Service component of the provider
 type Service struct {
-	GatewayConfig        *gwml.Config
-	provider             Provider
-	messageQueue         *queue.BoundedQueue
-	rawMessageQueue      *queue.BoundedQueue
-	topicListenFromCore  string
-	topicPostToCore      string
-	sleepingMessageQueue map[string][]*msgml.Message
-	mutex                sync.RWMutex
-	ctx                  context.Context
+	GatewayConfig                     *gwml.Config
+	provider                          Provider
+	messageQueue                      *queue.BoundedQueue
+	rawMessageQueue                   *queue.BoundedQueue
+	topicListenFromCore               string
+	topicPostToCore                   string
+	topicListenFromCoreSubscriptionID int64
+	sleepingMessageQueue              map[string][]*msgml.Message
+	mutex                             sync.RWMutex
+	ctx                               context.Context
+}
+
+// SubscriptionID of topics
+type SubscriptionID struct {
 }
 
 // GetService returns service instance
@@ -65,8 +70,8 @@ func (s *Service) Start() error {
 	zap.L().Debug("Starting a provider service", zap.String("name", s.GatewayConfig.Name), zap.String("provider", s.GatewayConfig.Provider.GetString(model.NameType)))
 
 	// update topics
-	s.topicListenFromCore = GetTopicListenFromCore(s.GatewayConfig.ID)
-	s.topicPostToCore = TopicMessagePostToCore
+	s.topicListenFromCore = mcbus.GetTopicPostMessageToProvider(s.GatewayConfig.ID)
+	s.topicPostToCore = mcbus.GetTopicPostMessageToCore()
 
 	s.messageQueue = utils.GetQueue(fmt.Sprintf("queue_provider_message_%s", s.GatewayConfig.ID), messageQueueSize)
 	s.rawMessageQueue = utils.GetQueue(fmt.Sprintf("queue_provider_raw_message_%s", s.GatewayConfig.ID), rawMessageQueueSize)
@@ -82,8 +87,7 @@ func (s *Service) Start() error {
 	err := s.provider.Start(s.addRawMessageToQueueFunc)
 	if err != nil {
 		zap.L().Error("Error", zap.Error(err))
-		mcbus.Unsubscribe(s.topicListenFromCore)
-		mcbus.Unsubscribe(s.topicPostToCore)
+		mcbus.Unsubscribe(s.topicListenFromCore, s.topicListenFromCoreSubscriptionID)
 
 		s.messageQueue.Stop()
 		s.rawMessageQueue.Stop()
@@ -93,8 +97,7 @@ func (s *Service) Start() error {
 
 // unsubscribe and stop queues
 func (s *Service) stopService() {
-	mcbus.Unsubscribe(s.topicListenFromCore)
-	mcbus.Unsubscribe(s.topicPostToCore)
+	mcbus.Unsubscribe(s.topicListenFromCore, s.topicListenFromCoreSubscriptionID)
 	s.messageQueue.Stop()
 	s.rawMessageQueue.Stop()
 }
@@ -121,7 +124,7 @@ func (s *Service) addRawMessageToQueueFunc(rawMsg *msgml.RawMessage) error {
 
 // listens messages from core componenet
 func (s *Service) startMessageListener() {
-	mcbus.Subscribe(s.topicListenFromCore, func(event *busml.Event) {
+	subscriptionID, err := mcbus.Subscribe(s.topicListenFromCore, func(event *busml.Event) {
 		msg, ok := event.Data.(*msgml.Message)
 		if !ok {
 			// convert bytes to struct
@@ -144,6 +147,11 @@ func (s *Service) startMessageListener() {
 		}
 	},
 	)
+	if err != nil {
+		zap.L().Error("Failed to subscribe", zap.String("topic", s.topicListenFromCore), zap.Error(err))
+	} else {
+		s.topicListenFromCoreSubscriptionID = subscriptionID
+	}
 	s.messageQueue.StartConsumers(numberOfWorkers, s.messageConsumer)
 }
 

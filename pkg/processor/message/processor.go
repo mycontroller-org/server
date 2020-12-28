@@ -19,7 +19,6 @@ import (
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
-	gwpd "github.com/mycontroller-org/backend/v2/plugin/gw_provider"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"github.com/robertkrimen/otto"
 	"go.uber.org/zap"
@@ -37,7 +36,10 @@ func Init() error {
 	})
 
 	// on message receive add it in to our local queue
-	mcbus.Subscribe(gwpd.TopicMessagePostToCore, onMessageReceive)
+	_, err := mcbus.Subscribe(mcbus.GetTopicPostMessageToCore(), onMessageReceive)
+	if err != nil {
+		return err
+	}
 
 	msgQueue.StartConsumers(1, processMessage)
 	return nil
@@ -391,9 +393,12 @@ func requestFieldData(msg *msgml.Message) error {
 	return nil
 }
 
+// topic to send message to provider gateway
 func postMessage(msg *msgml.Message) {
-	// topic to send message to gateway
-	topic := fmt.Sprintf("%s_%s", mcbus.TopicMessageToGateway, msg.GatewayID)
+	if msg.IsAck {
+		return // do not respond for ack message
+	}
+	topic := mcbus.GetTopicPostMessageToProvider(msg.GatewayID)
 	msg.IsReceived = false
 	mcbus.Publish(topic, msg)
 }

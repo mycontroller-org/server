@@ -167,9 +167,9 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	}
 
 	// if it is a acknowledgement message send it to acknowledgement topic
-	if msMsg.Ack == "1" {
+	if msMsg.Ack == "1" { // TODO: do send all the messaged to ack topic, verify ack enabled status
 		msgID := generateMessageID(&msMsg)
-		topicAck := getAcknowledgementTopic(p.GatewayConfig.ID, msgID)
+		topicAck := mcbus.GetTopicPostRawMessageAcknowledgement(p.GatewayConfig.ID, msgID)
 		err := mcbus.Publish(topicAck, "acknowledgement received.")
 		if err != nil {
 			zap.L().Error("failed post acknowledgement status", zap.String("gateway", p.GatewayConfig.Name), zap.String("topic", topicAck), zap.Error(err))
@@ -431,8 +431,4 @@ func (p *Provider) getAcknowledgementStatus(msMsg *message) string {
 
 func generateMessageID(msMsg *message) string {
 	return fmt.Sprintf("%s-%s-%s-%s-%s", msMsg.NodeID, msMsg.SensorID, msMsg.Command, msMsg.Ack, msMsg.Type)
-}
-
-func getAcknowledgementTopic(gatewayID, msgID string) string {
-	return fmt.Sprintf("%s_%s_%s", mcbus.TopicGatewayAcknowledgement, gatewayID, msgID)
 }

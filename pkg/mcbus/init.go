@@ -14,6 +14,10 @@ var busClient busml.Client
 
 // InitBus function
 func InitBus(config cmap.CustomMap) error {
+	// update topic prefix
+	topicPrefix = config.GetString(keyTopicPrefix)
+
+	// update client
 	client, err := initBusImpl(config)
 	if err != nil {
 		return err

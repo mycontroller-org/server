@@ -2,6 +2,7 @@ package natsio
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/url"
 	"sync"
@@ -127,26 +128,26 @@ func (c *Client) Publish(topic string, data interface{}) error {
 }
 
 // Subscribe a topic
-func (c *Client) Subscribe(topic string, handler func(event *busml.Event)) error {
+func (c *Client) Subscribe(topic string, handler busml.CallBackFunc) (int64, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
 	_, found := c.subscriptions[topic]
 	if found {
-		return nil // needs to return error?
+		return -1, nil // needs to return error?
 	}
 
 	wrappedHandler := c.handlerWrapper(handler)
 	subscription, err := c.natConn.Subscribe(topic, wrappedHandler)
 	if err != nil {
-		return err
+		return -1, err
 	}
 	c.subscriptions[topic] = subscription
 	PrintDebug("Subscription created", zap.String("topic", subscription.Subject))
-	return nil
+	return -1, nil
 }
 
-func (c *Client) handlerWrapper(handler func(event *busml.Event)) func(natsMsg *nats.Msg) {
+func (c *Client) handlerWrapper(handler busml.CallBackFunc) func(natsMsg *nats.Msg) {
 	return func(natsMsg *nats.Msg) {
 		PrintDebug("Receiving message", zap.String("topic", natsMsg.Sub.Subject))
 		handler(&busml.Event{Data: natsMsg.Data})
@@ -154,7 +155,7 @@ func (c *Client) handlerWrapper(handler func(event *busml.Event)) func(natsMsg *
 }
 
 // Unsubscribe a topic
-func (c *Client) Unsubscribe(topic string) error {
+func (c *Client) Unsubscribe(topic string, subscriptionID int64) error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -164,6 +165,11 @@ func (c *Client) Unsubscribe(topic string) error {
 	}
 
 	return nil
+}
+
+// UnsubscribeAll topics
+func (c *Client) UnsubscribeAll(topic string) error {
+	return errors.New("not implemented")
 }
 
 // call back functions
