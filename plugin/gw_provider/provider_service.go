@@ -7,12 +7,12 @@ import (
 	"sync"
 
 	"github.com/jaegertracing/jaeger/pkg/queue"
-	"github.com/mustafaturan/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	"github.com/mycontroller-org/backend/v2/plugin/gw_provider/mysensors"
 	"github.com/mycontroller-org/backend/v2/plugin/gw_provider/tasmota"
 	"go.uber.org/zap"
@@ -66,7 +66,7 @@ func (s *Service) Start() error {
 
 	// update topics
 	s.topicListenFromCore = GetTopicListenFromCore(s.GatewayConfig.ID)
-	s.topicPostToCore = GetTopicListenFromCore(TopicMessagePostToCore)
+	s.topicPostToCore = TopicMessagePostToCore
 
 	s.messageQueue = utils.GetQueue(fmt.Sprintf("queue_provider_message_%s", s.GatewayConfig.ID), messageQueueSize)
 	s.rawMessageQueue = utils.GetQueue(fmt.Sprintf("queue_provider_raw_message_%s", s.GatewayConfig.ID), rawMessageQueueSize)
@@ -121,17 +121,29 @@ func (s *Service) addRawMessageToQueueFunc(rawMsg *msgml.RawMessage) error {
 
 // listens messages from core componenet
 func (s *Service) startMessageListener() {
-	mcbus.Subscribe(s.topicListenFromCore, &bus.Handler{
-		Matcher: s.topicListenFromCore,
-		Handle: func(e *bus.Event) {
-			msg, ok := e.Data.(*msgml.Message)
-			if ok {
-				s.messageQueue.Produce(msg)
-			} else {
-				zap.L().Warn("Received invalid type", zap.Any("event", e))
+	mcbus.Subscribe(s.topicListenFromCore, func(event *busml.Event) {
+		msg, ok := event.Data.(*msgml.Message)
+		if !ok {
+			// convert bytes to struct
+			bytes, isBytes := event.Data.([]byte)
+			if !isBytes {
+				zap.L().Warn("Received invalid type", zap.Any("event", event))
+				return
 			}
-		},
-	})
+			message := &msgml.Message{}
+			err := utils.ByteToStruct(bytes, message)
+			if err != nil {
+				zap.L().Warn("Failed to convet to target type", zap.Error(err))
+				return
+			}
+			msg = message
+		}
+
+		if msg != nil {
+			s.messageQueue.Produce(msg)
+		}
+	},
+	)
 	s.messageQueue.StartConsumers(numberOfWorkers, s.messageConsumer)
 }
 
@@ -200,7 +212,7 @@ func (s *Service) startRawMessageProcessor() {
 				if msg != nil && msg.GatewayID == "" {
 					msg.GatewayID = s.GatewayConfig.ID
 				}
-				_, err = mcbus.Publish(s.topicPostToCore, msg)
+				err = mcbus.Publish(s.topicPostToCore, msg)
 				if err != nil {
 					zap.L().Debug("Messages failed to post on topic", zap.String("topic", s.topicPostToCore), zap.String("gateway", s.GatewayConfig.Name), zap.Any("message", msg), zap.Error(err))
 					return

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"time"
 
 	"github.com/fatih/structs"
 	"github.com/mitchellh/mapstructure"
@@ -78,4 +79,13 @@ func MapToStruct(tagName string, in map[string]interface{}, out interface{}) err
 // StructToMap converts struct to a map
 func StructToMap(data interface{}) map[string]interface{} {
 	return structs.Map(data)
+}
+
+// ToDuration converts the string duration to time.Duration, if failed returns the default
+func ToDuration(duration string, defaultDuration time.Duration) time.Duration {
+	parsedDuration, err := time.ParseDuration(duration)
+	if err != nil {
+		return defaultDuration
+	}
+	return parsedDuration
 }

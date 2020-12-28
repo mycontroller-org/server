@@ -1,11 +1,14 @@
 package config
 
+import "github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+
 // Config of the system
 type Config struct {
 	Web         WebConfig                `yaml:"web"`
 	Directories Directories              `yaml:"directories"`
 	Logger      LoggerConfig             `yaml:"logger"`
 	Secret      string                   `yaml:"secret"` // secret used to encrypt sensitive data
+	Bus         cmap.CustomMap           `yaml:"bus"`
 	Database    Database                 `yaml:"database"`
 	Databases   []map[string]interface{} `yaml:"databases"`
 	StartupJobs Startup                  `yaml:"startup_jobs"`

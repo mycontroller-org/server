@@ -170,9 +170,9 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	if msMsg.Ack == "1" {
 		msgID := generateMessageID(&msMsg)
 		topicAck := getAcknowledgementTopic(p.GatewayConfig.ID, msgID)
-		_, err := mcbus.Publish(topicAck, "acknowledgement received.")
+		err := mcbus.Publish(topicAck, "acknowledgement received.")
 		if err != nil {
-			zap.L().Error("failed post acknowledgement status", zap.String("gateway", p.GatewayConfig.Name), zap.String("topic", topicAck))
+			zap.L().Error("failed post acknowledgement status", zap.String("gateway", p.GatewayConfig.Name), zap.String("topic", topicAck), zap.Error(err))
 		}
 	}
 

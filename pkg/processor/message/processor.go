@@ -7,7 +7,6 @@ import (
 	"time"
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
-	"github.com/mustafaturan/bus"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
@@ -18,6 +17,8 @@ import (
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	gwpd "github.com/mycontroller-org/backend/v2/plugin/gw_provider"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"github.com/robertkrimen/otto"
@@ -36,19 +37,29 @@ func Init() error {
 	})
 
 	// on message receive add it in to our local queue
-	mcbus.Subscribe(gwpd.TopicMessagePostToCore, &bus.Handler{
-		Matcher: gwpd.TopicMessagePostToCore,
-		Handle:  onMessageReceive,
-	})
+	mcbus.Subscribe(gwpd.TopicMessagePostToCore, onMessageReceive)
 
 	msgQueue.StartConsumers(1, processMessage)
 	return nil
 }
 
-func onMessageReceive(event *bus.Event) {
+func onMessageReceive(event *busml.Event) {
 	msg, ok := event.Data.(*msgml.Message)
 	if !ok {
-		zap.L().Warn("Received invalid type", zap.Any("event", event))
+		// convert bytes to struct
+		bytes, isBytes := event.Data.([]byte)
+		if isBytes {
+			message := &msgml.Message{}
+			err := utils.ByteToStruct(bytes, message)
+			if err != nil {
+				zap.L().Warn("Failed to convet to target type", zap.Error(err))
+				return
+			}
+			msg = message
+		} else {
+			zap.L().Warn("Received invalid type", zap.Any("event", event))
+			return
+		}
 	}
 	if msg == nil {
 		zap.L().Warn("Received a nil message", zap.Any("event", event))

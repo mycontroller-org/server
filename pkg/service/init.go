@@ -24,14 +24,17 @@ var (
 	SCH *scheduler.Scheduler
 )
 
+// InitFunc definition
+type InitFunc func(cfg *cfgml.Config)
+
 // Init all the supported registries
-func Init(preInitFunc func(), postInitFunc func(cfg *cfgml.Config)) {
+func Init(preInitFunc, postInitFunc InitFunc) {
 	initConfig()
 	initLogger()
 
 	// trigger pre init func
 	if preInitFunc != nil {
-		preInitFunc()
+		preInitFunc(CFG)
 	}
 
 	initScheduler()

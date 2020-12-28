@@ -28,8 +28,12 @@ func init() {
 	zap.L().Debug("Init complete", zap.String("timeTaken", time.Since(start).String()))
 }
 
-func preInitFunc() {
-	mcbus.Start()
+func preInitFunc(cfg *config.Config) {
+	// init bus
+	err := mcbus.InitBus(cfg.Bus)
+	if err != nil {
+		zap.L().Fatal("Failed to init bus client", zap.Error(err))
+	}
 }
 
 func postInitFunc(cfg *config.Config) {

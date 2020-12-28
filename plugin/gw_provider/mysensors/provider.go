@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mustafaturan/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
@@ -12,6 +11,7 @@ import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
 	utils "github.com/mycontroller-org/backend/v2/pkg/utils"
+	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
 	mqtt "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/protocol_mqtt"
 	serial "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/protocol_serial"
@@ -104,14 +104,14 @@ func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
 	// wait for acknowledgement message
 	ackChannel := make(chan bool, 1)
 	ackTopic := getAcknowledgementTopic(p.GatewayConfig.ID, rawMsg.ID)
-	mcbus.Subscribe(ackTopic, &bus.Handler{
-		Matcher: ackTopic,
-		Handle: func(e *bus.Event) {
-			zap.L().Debug("acknowledgement status", zap.Any("event", e))
+	mcbus.Subscribe(
+		ackTopic,
+		func(event *busml.Event) {
+			zap.L().Debug("acknowledgement status", zap.Any("event", event))
 			// TODO: facing issue, closed channel. Fix this
 			ackChannel <- true
 		},
-	})
+	)
 
 	// on exit unsubscribe and close the channel
 	defer func() {
