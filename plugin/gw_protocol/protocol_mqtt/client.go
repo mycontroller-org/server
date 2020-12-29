@@ -41,6 +41,7 @@ type Endpoint struct {
 
 // New mqtt driver
 func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
+	zap.L().Info("Initi gateway", zap.String("gateway", gwCfg.ID))
 	start := time.Now()
 	cfg := Config{}
 	err := ut.MapToStruct(ut.TagNameNone, protocol, &cfg)
@@ -66,11 +67,8 @@ func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.R
 		txPreDelay:     txPreDelay,
 	}
 
-	// init message message logger
-	d.messageLogger = msglogger.Init(gwCfg.ID, gwCfg.MessageLogger, messageFormatter)
-
-	// start the logger
-	d.messageLogger.Start()
+	// add void logger to avoid nill exception, till er get successful connection
+	d.messageLogger = msglogger.GetVoidLogger()
 
 	opts := paho.NewClientOptions()
 	opts.AddBroker(cfg.Broker)
@@ -93,6 +91,10 @@ func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.R
 	if err := token.Error(); err != nil {
 		return nil, err
 	}
+
+	// init and start actual message message logger
+	d.messageLogger = msglogger.Init(gwCfg.ID, gwCfg.MessageLogger, messageFormatter)
+	d.messageLogger.Start()
 
 	// adding client
 	d.Client = c

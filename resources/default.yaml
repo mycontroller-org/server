@@ -40,3 +40,7 @@ databases:
 
   - name: void_database
     type: void_db
+
+bus:
+  type: embedded
+  topic_prefix:

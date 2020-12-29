@@ -38,3 +38,8 @@ func Init(gatewayID string, config cmap.CustomMap, formatterFunc func(rawMsg *ms
 	}
 	return messageLogger
 }
+
+// GetVoidLogger can be used for pre stage
+func GetVoidLogger() MessageLogger {
+	return &VoidMessageLogger{}
+}

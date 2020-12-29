@@ -21,17 +21,17 @@ func Get(filters []stgml.Filter) (gwml.Config, error) {
 	return result, err
 }
 
-// Save gateway config and reload
-func Save(gwCfg *gwml.Config) error {
-	err := save(gwCfg)
+// SaveAndReload gateway
+func SaveAndReload(gwCfg *gwml.Config) error {
+	err := Save(gwCfg)
 	if err != nil {
 		return err
 	}
 	return Reload(gwCfg.ID)
 }
 
-// saves gateway config
-func save(gwCfg *gwml.Config) error {
+// Save gateway config
+func Save(gwCfg *gwml.Config) error {
 	if gwCfg.ID == "" {
 		gwCfg.ID = ut.RandID()
 	}
@@ -41,7 +41,7 @@ func save(gwCfg *gwml.Config) error {
 // SetState Updates state data
 func SetState(gwCfg *gwml.Config, state ml.State) error {
 	gwCfg.State = state
-	return save(gwCfg)
+	return Save(gwCfg)
 }
 
 // Delete gateway

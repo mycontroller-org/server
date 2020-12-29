@@ -44,6 +44,7 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpo
 	if err != nil {
 		return nil, err
 	}
+
 	c := &s.Config{Name: cfg.Portname, Baud: cfg.BaudRate}
 	port, err := s.OpenPort(c)
 	if err != nil {
@@ -68,10 +69,8 @@ func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpo
 		txPreDelay:     txPreDelay,
 	}
 
-	// init message message logger
+	// init and start message logger
 	d.messageLogger = msglogger.Init(gwCfg.ID, gwCfg.MessageLogger, messageFormatter)
-
-	// start the logger
 	d.messageLogger.Start()
 
 	// start serail read listener

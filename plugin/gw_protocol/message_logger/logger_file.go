@@ -2,6 +2,9 @@ package msglogger
 
 import (
 	"fmt"
+	"os"
+	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -14,23 +17,37 @@ import (
 
 // FileMessageLogger struct
 type FileMessageLogger struct {
-	GatewayID        string                                // Gateway id
-	MsgFormatterFunc func(rawMsg *msgml.RawMessage) string // should supply a func to return parsed message
-	stopCh           chan bool                             // this channel used to terminate the serial port listener
-	msgQueue         []*msgml.RawMessage                   // Messages will be added in to this queue and dump into the file N seconds once
-	mutex            sync.Mutex                            // lock to access the queue
-	Config           fileMessageLoggerConfig               // self configurations
+	GatewayID           string                                // Gateway id
+	MsgFormatterFunc    func(rawMsg *msgml.RawMessage) string // should supply a func to return parsed message
+	stopLogFlushWorker  chan bool                             // this channel used to terminate the flush interval worker
+	stopLogRotateWorker chan bool                             // this channel used to terminate the logrotate worker
+	msgQueue            []*msgml.RawMessage                   // Messages will be added in to this queue and dump into the file N seconds once
+	mutex               sync.Mutex                            // lock to access the queue
+	Config              fileMessageLoggerConfig               // self configurations
+	maxSize             int64                                 // maximum size of the file in bytes
+	maxAge              time.Duration                         // maximum age of the file in duration
+	maxBackup           int                                   // maximum number of backups, 0 or negative - no limit
+	isRunning           bool                                  // start called
 }
 
 // fileMessageLoggerConfig definition
 type fileMessageLoggerConfig struct {
-	Type          string // type of the message logger
-	FlushInterval string // flush interval, how long once data to be dumped into disk
+	Type              string // type of the message logger
+	FlushInterval     string // flush interval, how long once data to be dumped into disk
+	LogRotateInterval string // how long once log rotate utils would be triggered
+	MaxSize           string
+	MaxAge            string
+	MaxBackup         int
 }
 
 const (
-	defaultFlushInterval = 1 * time.Second
-	fileNamePrefix       = "gateway_logs"
+	filenamePrefix                 = "gw"
+	filenameFormatBackup           = "20060106_150405"
+	defaultLogRotateWorkerInterval = time.Minute * 10
+	defaultFlushWorkerInterval     = time.Second * 1
+	defaultMaxSize                 = utils.MiB * 2
+	defaultMaxAge                  = time.Hour * 24 * 3 // 3 days
+	defaultMaxBackup               = 5
 )
 
 // InitFileMessageLogger file logger
@@ -40,12 +57,14 @@ func InitFileMessageLogger(gatewayID string, config cmap.CustomMap, formatterFun
 	if err != nil {
 		return nil, err
 	}
+
 	fileLogger := &FileMessageLogger{
-		GatewayID:        gatewayID,
-		MsgFormatterFunc: formatterFunc,
-		stopCh:           make(chan bool),
-		msgQueue:         make([]*msgml.RawMessage, 0),
-		Config:           cfg,
+		GatewayID:           gatewayID,
+		MsgFormatterFunc:    formatterFunc,
+		stopLogFlushWorker:  make(chan bool),
+		stopLogRotateWorker: make(chan bool),
+		msgQueue:            make([]*msgml.RawMessage, 0),
+		Config:              cfg,
 	}
 	return fileLogger, nil
 }
@@ -55,21 +74,45 @@ func InitFileMessageLogger(gatewayID string, config cmap.CustomMap, formatterFun
 func (rml *FileMessageLogger) Start() {
 	rml.mutex.Lock()
 	rml.mutex.Unlock()
-	flushInterval, err := time.ParseDuration(rml.Config.FlushInterval)
-	if err != nil {
-		flushInterval = defaultFlushInterval
+
+	if rml.isRunning {
+		zap.L().Warn("this instance is in running state, close it and re initialize then start")
+		return
 	}
-	go utils.AsyncRunner(rml.write, flushInterval, rml.stopCh)
+	rml.isRunning = true
+
+	// update values
+	rml.maxSize = utils.ParseSizeWithDefault(rml.Config.MaxSize, defaultMaxSize)
+	rml.maxAge = utils.ToDuration(rml.Config.MaxAge, defaultMaxAge)
+	rml.maxBackup = rml.Config.MaxBackup
+
+	flushWorkerInterval := utils.ToDuration(rml.Config.FlushInterval, defaultFlushWorkerInterval)
+	logRotateWorkerInterval := utils.ToDuration(rml.Config.LogRotateInterval, defaultLogRotateWorkerInterval)
+
+	zap.L().Debug("starting message logger", zap.Int64("maxSize", rml.maxSize), zap.String("maxAge", rml.maxAge.String()),
+		zap.Int("maxBackup", rml.maxBackup), zap.Duration("flushInterval", flushWorkerInterval),
+		zap.Duration("logRotateInterval", logRotateWorkerInterval), zap.String("gateway", rml.GatewayID))
+
+	go utils.AsyncRunner(rml.logFlushWorker, flushWorkerInterval, rml.stopLogFlushWorker)
+	go utils.AsyncRunner(rml.logRotateWorker, logRotateWorkerInterval, rml.stopLogRotateWorker)
 }
 
 // Close terminates the async runner
 func (rml *FileMessageLogger) Close() {
 	rml.mutex.Lock()
 	defer rml.mutex.Unlock()
-	if rml.stopCh != nil {
-		rml.stopCh <- true
-		close(rml.stopCh)
-		rml.stopCh = nil
+
+	stopWorker(rml.stopLogFlushWorker)
+	rml.stopLogFlushWorker = nil
+
+	stopWorker(rml.stopLogRotateWorker)
+	rml.stopLogRotateWorker = nil
+}
+
+func stopWorker(workerStopChan chan bool) {
+	if workerStopChan != nil {
+		workerStopChan <- true
+		close(workerStopChan)
 	}
 }
 
@@ -84,20 +127,89 @@ func (rml *FileMessageLogger) AsyncWrite(rawMsg *msgml.RawMessage) {
 	rml.msgQueue = append(rml.msgQueue, cloned)
 }
 
-// write dumps the queue data into disk on a file
-func (rml *FileMessageLogger) write() {
+// logFlushWorker dumps the queue data into disk on a file
+func (rml *FileMessageLogger) logFlushWorker() {
 	rml.mutex.Lock()
 	defer rml.mutex.Unlock()
 	if len(rml.msgQueue) > 0 {
-		// generate filename to store log data
-		logFilename := fmt.Sprintf("%s_%s.log", fileNamePrefix, rml.GatewayID)
 		for _, rawMsg := range rml.msgQueue {
 			msgStr := rml.MsgFormatterFunc(rawMsg)
-			err := utils.AppendFile(model.GetDirectoryGatewayLog(), logFilename, []byte(msgStr))
+			err := utils.AppendFile(model.GetDirectoryGatewayLog(), rml.getFilename(), []byte(msgStr))
 			if err != nil {
-				zap.L().Error("Failed to write", zap.Error(err))
+				zap.L().Error("Failed to write", zap.Error(err), zap.String("gateway", rml.GatewayID))
 			}
 		}
 	}
 	rml.msgQueue = nil
+}
+
+func (rml *FileMessageLogger) logRotateWorker() {
+	rml.mutex.Lock()
+	defer rml.mutex.Unlock()
+
+	files, err := utils.ListFiles(model.GetDirectoryGatewayLog())
+	if err != nil {
+		zap.L().Error("Failed to get log files", zap.Error(err), zap.String("gateway", rml.GatewayID), zap.String("directory", model.GetDirectoryGatewayLog()))
+		return
+	}
+
+	liveFilename := rml.getFilename()
+
+	// check live file size
+	for _, file := range files {
+		if file.Name == liveFilename {
+			if file.Size >= rml.maxSize {
+				newFilenameFull := fmt.Sprintf("%s/%s.%s", model.GetDirectoryGatewayLog(), liveFilename, time.Now().Format(filenameFormatBackup))
+				liveFilenameFull := fmt.Sprintf("%s/%s", model.GetDirectoryGatewayLog(), liveFilename)
+				zap.L().Debug("Renaming file", zap.Any("size", file.Size), zap.Any("new name", newFilenameFull))
+				err = os.Rename(liveFilenameFull, newFilenameFull)
+				if err != nil {
+					zap.L().Error("Failed to rename log file", zap.Error(err), zap.String("gateway", rml.GatewayID), zap.String("currentPath", liveFilenameFull), zap.String("newPath", newFilenameFull))
+				}
+			}
+			break
+		}
+	}
+
+	// check max age
+	maxAgeTime := time.Now().Add(-1 * rml.maxAge)
+	for _, file := range files {
+		if strings.HasPrefix(file.Name, liveFilename+".") && file.ModifiedTime.Before(maxAgeTime) {
+			filenameFull := fmt.Sprintf("%s/%s", model.GetDirectoryGatewayLog(), file.Name)
+			zap.L().Debug("Files for deletion, max age", zap.Any("filename", file.Name))
+			err = os.Remove(filenameFull)
+			if err != nil {
+				zap.L().Error("Failed to remove log file", zap.Error(err), zap.String("gateway", rml.GatewayID), zap.String("filename", filenameFull))
+			}
+		}
+	}
+
+	// check maximum backup
+	// get file names
+	if rml.maxBackup > 0 {
+		filenames := []string{}
+		backupFilesCount := 0
+		for _, file := range files {
+			if strings.HasPrefix(file.Name, liveFilename+".") {
+				filenames = append(filenames, file.Name)
+				backupFilesCount++
+			}
+		}
+		sort.Strings(filenames)
+		if backupFilesCount > rml.maxBackup {
+			deletionFilenames := filenames[:len(filenames)-rml.maxBackup]
+			zap.L().Debug("Log files for deletion", zap.Any("all", filenames), zap.Any("deletion", deletionFilenames))
+			for _, filename := range deletionFilenames {
+				filenameFull := fmt.Sprintf("%s/%s", model.GetDirectoryGatewayLog(), filename)
+				err = os.Remove(filenameFull)
+				if err != nil {
+					zap.L().Error("Failed to delete log file", zap.Error(err), zap.String("gateway", rml.GatewayID), zap.String("filename", filenameFull))
+				}
+			}
+		}
+	}
+}
+
+func (rml *FileMessageLogger) getFilename() string {
+	return fmt.Sprintf("%s_%s.log", filenamePrefix, rml.GatewayID)
 }

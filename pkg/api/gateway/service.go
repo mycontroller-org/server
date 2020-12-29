@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"fmt"
 	"time"
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
@@ -12,6 +13,9 @@ import (
 
 // Start gateway
 func Start(gatewayCfg *gwml.Config) error {
+	if gwService.Get(gatewayCfg) != nil {
+		return fmt.Errorf("A service is in running state. gateway:%s", gatewayCfg.ID)
+	}
 	zap.L().Debug("Starting a gateway", zap.Any("name", gatewayCfg.Name))
 	state := ml.State{Since: time.Now()}
 
@@ -27,7 +31,7 @@ func Start(gatewayCfg *gwml.Config) error {
 	} else {
 		state.Message = "Started successfully"
 		state.Status = ml.StateUp
-		AddGatewayService(service)
+		gwService.Add(service)
 	}
 
 	if err := SetState(gatewayCfg, state); err != nil {
@@ -39,7 +43,7 @@ func Start(gatewayCfg *gwml.Config) error {
 // Stop gateway
 func Stop(gatewayCfg *gwml.Config) error {
 	zap.L().Debug("Stopping a gateway", zap.Any("name", gatewayCfg.Name))
-	service := GetGatewayService(gatewayCfg)
+	service := gwService.Get(gatewayCfg)
 	if service != nil {
 		err := service.Stop()
 		state := ml.State{
@@ -55,7 +59,7 @@ func Stop(gatewayCfg *gwml.Config) error {
 		if err != nil {
 			zap.L().Error("Failed to update gateway state", zap.String("name", gatewayCfg.Name), zap.Error(err))
 		}
-		RemoveGatewayService(gatewayCfg)
+		gwService.Remove(gatewayCfg)
 	}
 	return nil
 }

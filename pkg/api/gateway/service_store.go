@@ -1,28 +1,49 @@
 package gateway
 
 import (
+	"sync"
+
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	gwpd "github.com/mycontroller-org/backend/v2/plugin/gw_provider"
 )
 
-var gwService = map[string]*gwpd.Service{}
-
-// AddGatewayService add
-func AddGatewayService(service *gwpd.Service) {
-	gwService[service.GatewayConfig.ID] = service
+type gatewayService struct {
+	services map[string]*gwpd.Service
+	mutex    sync.Mutex
 }
 
-// RemoveGatewayService remove a service
-func RemoveGatewayService(gatewayCfg *gwml.Config) {
-	delete(gwService, gatewayCfg.ID)
+var gwService = gatewayService{
+	services: make(map[string]*gwpd.Service),
 }
 
-// GetGatewayService returns service
-func GetGatewayService(gatewayCfg *gwml.Config) *gwpd.Service {
-	return GetGatewayServiceByID(gatewayCfg.ID)
+// Add a service
+func (gs *gatewayService) Add(service *gwpd.Service) {
+	gs.mutex.Lock()
+	defer gs.mutex.Unlock()
+
+	gs.services[service.GatewayConfig.ID] = service
 }
 
-// GetGatewayServiceByID returns service
-func GetGatewayServiceByID(ID string) *gwpd.Service {
-	return gwService[ID]
+// Remove a service
+func (gs *gatewayService) Remove(gatewayCfg *gwml.Config) {
+	gs.mutex.Lock()
+	defer gs.mutex.Unlock()
+
+	delete(gs.services, gatewayCfg.ID)
+}
+
+// Get returns a service
+func (gs *gatewayService) Get(gatewayCfg *gwml.Config) *gwpd.Service {
+	gs.mutex.Lock()
+	defer gs.mutex.Unlock()
+
+	return gs.services[gatewayCfg.ID]
+}
+
+// GetByID returns service by id
+func (gs *gatewayService) GetByID(ID string) *gwpd.Service {
+	gs.mutex.Lock()
+	defer gs.mutex.Unlock()
+
+	return gs.services[ID]
 }

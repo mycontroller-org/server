@@ -23,6 +23,7 @@ type State struct {
 type File struct {
 	Name         string    `json:"name"`
 	Size         int64     `json:"size"`
+	CreationTime time.Time `json:"creationTime"`
 	ModifiedTime time.Time `json:"modifiedTime"`
 	Data         string    `json:"data"`
 	IsDir        bool      `json:"isDir"`
