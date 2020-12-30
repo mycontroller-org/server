@@ -13,8 +13,8 @@ import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
-	"github.com/mycontroller-org/backend/v2/plugin/gw_provider/mysensors"
-	"github.com/mycontroller-org/backend/v2/plugin/gw_provider/tasmota"
+	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/mysensors"
+	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/tasmota"
 	"go.uber.org/zap"
 )
 
@@ -125,26 +125,18 @@ func (s *Service) addRawMessageToQueueFunc(rawMsg *msgml.RawMessage) error {
 // listens messages from core componenet
 func (s *Service) startMessageListener() {
 	subscriptionID, err := mcbus.Subscribe(s.topicListenFromCore, func(event *busml.Event) {
-		msg, ok := event.Data.(*msgml.Message)
-		if !ok {
-			// convert bytes to struct
-			bytes, isBytes := event.Data.([]byte)
-			if !isBytes {
-				zap.L().Warn("Received invalid type", zap.Any("event", event))
-				return
-			}
-			message := &msgml.Message{}
-			err := utils.ByteToStruct(bytes, message)
-			if err != nil {
-				zap.L().Warn("Failed to convet to target type", zap.Error(err))
-				return
-			}
-			msg = message
+		msg := &msgml.Message{}
+		err := event.ToStruct(msg)
+		if err != nil {
+			zap.L().Warn("Received invalid type", zap.Any("event", event))
+			return
 		}
+		if msg == nil {
+			zap.L().Warn("received a nil message")
+			return
+		}
+		s.messageQueue.Produce(msg)
 
-		if msg != nil {
-			s.messageQueue.Produce(msg)
-		}
 	},
 	)
 	if err != nil {

@@ -4,7 +4,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
+	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
 )
 
 // Config of this provider

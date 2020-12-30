@@ -15,9 +15,19 @@ func List(filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, 
 }
 
 // Get returns a gateway
-func Get(filters []stgml.Filter) (gwml.Config, error) {
-	result := gwml.Config{}
-	err := svc.STG.FindOne(ml.EntityGateway, &result, filters)
+func Get(filters []stgml.Filter) (*gwml.Config, error) {
+	result := &gwml.Config{}
+	err := svc.STG.FindOne(ml.EntityGateway, result, filters)
+	return result, err
+}
+
+// GetByID returns a gateway details
+func GetByID(id string) (*gwml.Config, error) {
+	filters := []stgml.Filter{
+		{Key: ml.KeyID, Value: id},
+	}
+	result := &gwml.Config{}
+	err := svc.STG.FindOne(ml.EntityGateway, result, filters)
 	return result, err
 }
 
@@ -39,7 +49,11 @@ func Save(gwCfg *gwml.Config) error {
 }
 
 // SetState Updates state data
-func SetState(gwCfg *gwml.Config, state ml.State) error {
+func SetState(id string, state ml.State) error {
+	gwCfg, err := GetByID(id)
+	if err != nil {
+		return err
+	}
 	gwCfg.State = state
 	return Save(gwCfg)
 }

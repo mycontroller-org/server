@@ -9,7 +9,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/mycontroller-org/backend/v2/cmd/app/handler"
-	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	"github.com/mycontroller-org/backend/v2/pkg/export"
 	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
@@ -17,8 +16,10 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/config"
 	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	msgPRO "github.com/mycontroller-org/backend/v2/pkg/processor/message"
+	resourceSVC "github.com/mycontroller-org/backend/v2/pkg/resource_service"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	gwService "github.com/mycontroller-org/backend/v2/plugin/gateway/service"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -45,11 +46,11 @@ func postInitFunc(cfg *config.Config) {
 	// create root directories
 	err := utils.CreateDir(model.GetDirectoryDataRoot())
 	if err != nil {
-		zap.L().Fatal("Failed to create root directory")
+		zap.L().Fatal("Failed to create root directory", zap.Error(err))
 	}
 	err = utils.CreateDir(model.GetDirectoryLogsRoot())
 	if err != nil {
-		zap.L().Fatal("Failed to create root directory")
+		zap.L().Fatal("Failed to create root directory", zap.Error(err))
 	}
 
 	// startup jobs
@@ -61,10 +62,16 @@ func postInitFunc(cfg *config.Config) {
 	// start engine
 	msgPRO.Init()
 
-	// load gateways
-	gwStart := time.Now()
-	gwAPI.LoadAll()
-	zap.L().Debug("Load gateways done.", zap.String("timeTaken", time.Since(gwStart).String()))
+	// init resource server
+	err = resourceSVC.Init()
+	if err != nil {
+		zap.L().Fatal("Failed to init resource service listener", zap.Error(err))
+	}
+	// init gateway listener
+	err = gwService.Init(cfg.Gateway)
+	if err != nil {
+		zap.L().Fatal("Failed to init gateway service listener", zap.Error(err))
+	}
 }
 
 func updateInitialUser() {
@@ -118,9 +125,11 @@ func handleShutdown() {
 	start := time.Now()
 	zap.L().Info("Shutdown initiated..", zap.Any("signal", sig))
 
-	// unload gateways
-	zap.L().Debug("Unloading gateways")
-	gwAPI.UnloadAll()
+	// close gateway service
+	gwService.Close()
+
+	// close resource service
+	resourceSVC.Close()
 
 	// stop engine
 	zap.L().Debug("Closing message process engine")

@@ -6,8 +6,8 @@ import (
 
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
-	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
-	http "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/protocol_http"
+	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
+	http "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/protocol_http"
 )
 
 // implement message parser

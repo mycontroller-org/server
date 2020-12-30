@@ -47,10 +47,13 @@ func (c *Client) Publish(topic string, data interface{}) error {
 	if subscriptionIDs, found := c.topics[topic]; found {
 		for _, subscriptionID := range subscriptionIDs {
 			if callBack, ok := c.subscriptions[subscriptionID]; ok {
-				event := &busml.Event{
-					Data: data,
+				event := &busml.Event{}
+				err := event.SetData(data)
+				if err != nil {
+					zap.L().Error("data conversion failed", zap.Error(err))
+				} else {
+					go callBack(event)
 				}
-				go callBack(event)
 			}
 		}
 	}

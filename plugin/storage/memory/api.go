@@ -11,6 +11,8 @@ import (
 
 // Close Implementation
 func (s *Store) Close() error {
+	// sync memory entities to disk
+	s.writeToDisk()
 	return nil
 }
 

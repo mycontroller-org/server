@@ -12,9 +12,9 @@ import (
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
 	utils "github.com/mycontroller-org/backend/v2/pkg/utils"
 	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
-	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
-	mqtt "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/protocol_mqtt"
-	serial "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/protocol_serial"
+	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
+	mqtt "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/protocol_mqtt"
+	serial "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/protocol_serial"
 	"go.uber.org/zap"
 )
 

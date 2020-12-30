@@ -1,67 +1,22 @@
 package gateway
 
 import (
-	"fmt"
-	"time"
-
+	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	gwpd "github.com/mycontroller-org/backend/v2/plugin/gw_provider"
+	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
 // Start gateway
-func Start(gatewayCfg *gwml.Config) error {
-	if gwService.Get(gatewayCfg) != nil {
-		return fmt.Errorf("A service is in running state. gateway:%s", gatewayCfg.ID)
-	}
-	zap.L().Debug("Starting a gateway", zap.Any("name", gatewayCfg.Name))
-	state := ml.State{Since: time.Now()}
-
-	service, err := gwpd.GetService(gatewayCfg)
-	if err != nil {
-		return err
-	}
-	err = service.Start()
-	if err != nil {
-		zap.L().Error("Unable to start a gateway service", zap.Any("name", gatewayCfg.Name), zap.Error(err))
-		state.Message = err.Error()
-		state.Status = ml.StateDown
-	} else {
-		state.Message = "Started successfully"
-		state.Status = ml.StateUp
-		gwService.Add(service)
-	}
-
-	if err := SetState(gatewayCfg, state); err != nil {
-		zap.L().Error("Failed to update gateway state", zap.String("name", gatewayCfg.Name), zap.Error(err))
-	}
-	return err
+func Start(gwCfg *gwml.Config) error {
+	return postGatewayCommand(gwCfg, rsml.CommandStart)
 }
 
 // Stop gateway
-func Stop(gatewayCfg *gwml.Config) error {
-	zap.L().Debug("Stopping a gateway", zap.Any("name", gatewayCfg.Name))
-	service := gwService.Get(gatewayCfg)
-	if service != nil {
-		err := service.Stop()
-		state := ml.State{
-			Status:  ml.StateDown,
-			Since:   time.Now(),
-			Message: "Stopped by request",
-		}
-		if err != nil {
-			zap.L().Error("Failed to stop gateway service", zap.String("name", gatewayCfg.Name), zap.Error(err))
-			state.Message = err.Error()
-		}
-		err = SetState(gatewayCfg, state)
-		if err != nil {
-			zap.L().Error("Failed to update gateway state", zap.String("name", gatewayCfg.Name), zap.Error(err))
-		}
-		gwService.Remove(gatewayCfg)
-	}
-	return nil
+func Stop(gwCfg *gwml.Config) error {
+	return postGatewayCommand(gwCfg, rsml.CommandStop)
 }
 
 // LoadAll makes gateways alive
@@ -75,26 +30,19 @@ func LoadAll() {
 	for index := 0; index < len(gateways); index++ {
 		gateway := gateways[index]
 		if gateway.Enabled {
-			Start(&gateway)
+			err = Start(&gateway)
+			if err != nil {
+				zap.L().Error("Failed to load a gateway", zap.Error(err), zap.String("gateway", gateway.ID))
+			}
 		}
 	}
 }
 
-// UnloadAll makes stop gateways
+// UnloadAll makes stop all gateways
 func UnloadAll() {
-	gwsResult, err := List(nil, nil)
+	err := postGatewayCommand(nil, rsml.CommandUnloadAll)
 	if err != nil {
-		zap.L().Error("Failed to get list of gateways", zap.Error(err))
-	}
-	gateways := *gwsResult.Data.(*[]gwml.Config)
-	for index := 0; index < len(gateways); index++ {
-		gateway := gateways[index]
-		if gateway.Enabled {
-			err = Stop(&gateway)
-			if err != nil {
-				zap.L().Error("Failed to unload a gateway", zap.Any("name", gateway.Name), zap.Error(err))
-			}
-		}
+		zap.L().Error("error on unload gateways command", zap.Error(err))
 	}
 }
 
@@ -106,28 +54,28 @@ func Enable(ID string) error {
 	}
 	if !gwCfg.Enabled {
 		gwCfg.Enabled = true
-		err = Save(&gwCfg)
+		err = Save(gwCfg)
 		if err != nil {
 			return err
 		}
-		return Start(&gwCfg)
+		return postGatewayCommand(gwCfg, rsml.CommandStart)
 	}
 	return nil
 }
 
 // Disable gateway
 func Disable(ID string) error {
-	gatewayCfg, err := Get([]stgml.Filter{{Key: ml.KeyID, Value: ID}})
+	gwCfg, err := Get([]stgml.Filter{{Key: ml.KeyID, Value: ID}})
 	if err != nil {
 		return err
 	}
-	if gatewayCfg.Enabled {
-		gatewayCfg.Enabled = false
-		err = Save(&gatewayCfg)
+	if gwCfg.Enabled {
+		gwCfg.Enabled = false
+		err = Save(gwCfg)
 		if err != nil {
 			return err
 		}
-		return Stop(&gatewayCfg)
+		return postGatewayCommand(gwCfg, rsml.CommandStop)
 	}
 	return nil
 }
@@ -138,12 +86,21 @@ func Reload(ID string) error {
 	if err != nil {
 		return err
 	}
-	err = Stop(&gwCfg)
-	if err != nil {
-		return err
+	return postGatewayCommand(gwCfg, rsml.CommandReload)
+}
+
+func postGatewayCommand(gwCfg *gwml.Config, command string) error {
+	reqEvent := rsml.Event{
+		Type:    rsml.TypeGateway,
+		Command: command,
 	}
-	if gwCfg.Enabled {
-		err = Start(&gwCfg)
+	if gwCfg != nil {
+		reqEvent.ID = gwCfg.ID
+		err := reqEvent.SetData(gwCfg)
+		if err != nil {
+			return err
+		}
 	}
-	return err
+	topic := mcbus.FormatTopic(mcbus.TopicServiceGateway)
+	return mcbus.Publish(topic, reqEvent)
 }

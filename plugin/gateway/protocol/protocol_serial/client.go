@@ -7,7 +7,7 @@ import (
 	m2s "github.com/mitchellh/mapstructure"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	msglogger "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/message_logger"
+	msglogger "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/message_logger"
 	s "github.com/tarm/serial"
 	"go.uber.org/zap"
 )

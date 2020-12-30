@@ -9,6 +9,7 @@ type Config struct {
 	Logger      LoggerConfig             `yaml:"logger"`
 	Secret      string                   `yaml:"secret"` // secret used to encrypt sensitive data
 	Bus         cmap.CustomMap           `yaml:"bus"`
+	Gateway     cmap.CustomMap           `yaml:"gateway"`
 	Database    Database                 `yaml:"database"`
 	Databases   []map[string]interface{} `yaml:"databases"`
 	StartupJobs Startup                  `yaml:"startup_jobs"`

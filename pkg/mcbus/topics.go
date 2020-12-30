@@ -7,6 +7,8 @@ const (
 	TopicPostMessageToCore             = "message_to_core"             // processor listens. posts message in to core component
 	TopicPostMessageToProvider         = "message_to_provider"         // provider listens. append gateway id
 	TopicPostRawMessageAcknowledgement = "raw_message_acknowledgement" // raw message acknowledge
+	TopicResourceServer                = "resource_server"             // a server listens on this topic, and serves the request
+	TopicServiceGateway                = "service_gateway"             // gateways listen this topic and perform actions like load, reload, stop, start, etc.,
 )
 
 const keyTopicPrefix = "topic_prefix"

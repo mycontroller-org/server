@@ -9,7 +9,7 @@ import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
-	gwpl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
+	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"go.uber.org/zap"
 )

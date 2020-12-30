@@ -10,8 +10,8 @@ import (
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
-	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gw_protocol"
-	msglogger "github.com/mycontroller-org/backend/v2/plugin/gw_protocol/message_logger"
+	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
+	msglogger "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/message_logger"
 
 	"go.uber.org/zap"
 )

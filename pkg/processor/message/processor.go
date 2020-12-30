@@ -17,7 +17,6 @@ import (
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	svc "github.com/mycontroller-org/backend/v2/pkg/service"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"github.com/robertkrimen/otto"
@@ -46,23 +45,13 @@ func Init() error {
 }
 
 func onMessageReceive(event *busml.Event) {
-	msg, ok := event.Data.(*msgml.Message)
-	if !ok {
-		// convert bytes to struct
-		bytes, isBytes := event.Data.([]byte)
-		if isBytes {
-			message := &msgml.Message{}
-			err := utils.ByteToStruct(bytes, message)
-			if err != nil {
-				zap.L().Warn("Failed to convet to target type", zap.Error(err))
-				return
-			}
-			msg = message
-		} else {
-			zap.L().Warn("Received invalid type", zap.Any("event", event))
-			return
-		}
+	msg := &msgml.Message{}
+	err := event.ToStruct(msg)
+	if err != nil {
+		zap.L().Warn("Failed to convet to target type", zap.Error(err))
+		return
 	}
+
 	if msg == nil {
 		zap.L().Warn("Received a nil message", zap.Any("event", event))
 		return

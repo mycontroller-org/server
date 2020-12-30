@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/fatih/structs"
@@ -11,6 +12,14 @@ import (
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"go.uber.org/zap"
 )
+
+// call registerTypes func only once
+var registerTypesInitOnce sync.Once
+
+func registerTypes() {
+	gob.Register(map[string]interface{}{})
+	gob.Register(map[interface{}]interface{}{})
+}
 
 // ToString converts interface to string
 func ToString(data interface{}) string {
@@ -37,6 +46,7 @@ func ToStruct(data []byte, out interface{}) error {
 
 // StructToByte converts interface to []byte
 func StructToByte(data interface{}) ([]byte, error) {
+	registerTypesInitOnce.Do(registerTypes)
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)
 	err := enc.Encode(data)
@@ -48,6 +58,7 @@ func StructToByte(data interface{}) ([]byte, error) {
 
 // ByteToStruct converts []byte to interface
 func ByteToStruct(data []byte, out interface{}) error {
+	registerTypesInitOnce.Do(registerTypes)
 	var buf bytes.Buffer
 	_, err := buf.Write(data)
 	if err != nil {
