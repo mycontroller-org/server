@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # container registry
-REGISTRY='quay.io/mycontroller'
+REGISTRY='quay.io/mycontroller-org'
 IMAGE_ALL_IN_ONE="${REGISTRY}/all-in-one"
 IMAGE_CORE="${REGISTRY}/core"
 IMAGE_GATEWAY="${REGISTRY}/gateway"
