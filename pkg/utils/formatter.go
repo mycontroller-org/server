@@ -10,6 +10,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/mitchellh/mapstructure"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	"go.uber.org/zap"
 )
 
@@ -19,6 +20,8 @@ var registerTypesInitOnce sync.Once
 func registerTypes() {
 	gob.Register(map[string]interface{}{})
 	gob.Register(map[interface{}]interface{}{})
+	gob.Register(cmap.CustomMap{})
+	gob.Register(cmap.CustomStringMap{})
 }
 
 // ToString converts interface to string
