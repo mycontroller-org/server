@@ -8,22 +8,22 @@ import (
 	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	embedBus "github.com/mycontroller-org/backend/v2/plugin/bus/embedded"
 	"github.com/mycontroller-org/backend/v2/plugin/bus/natsio"
+	"go.uber.org/zap"
 )
 
 var busClient busml.Client
 
 // InitBus function
-func InitBus(config cmap.CustomMap) error {
+func InitBus(config cmap.CustomMap) {
 	// update topic prefix
 	topicPrefix = config.GetString(keyTopicPrefix)
 
 	// update client
 	client, err := initBusImpl(config)
 	if err != nil {
-		return err
+		zap.L().Fatal("Failed to init bus client", zap.Error(err))
 	}
 	busClient = client
-	return nil
 }
 
 func initBusImpl(config cmap.CustomMap) (busml.Client, error) {

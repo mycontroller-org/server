@@ -16,7 +16,7 @@ import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
-	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"github.com/robertkrimen/otto"
@@ -340,7 +340,7 @@ func setFieldData(msg *msgml.Message) error {
 			updateMetric = field.Payload.Timestamp.Equal(field.NoChangeSince)
 		}
 		if updateMetric {
-			err = svc.MTS.Write(field)
+			err = mts.SVC.Write(field)
 			if err != nil {
 				zap.L().Error("Failed to write into metrics database", zap.Error(err), zap.Any("field", field))
 			} else {

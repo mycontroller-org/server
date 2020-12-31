@@ -4,6 +4,11 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+// Scheduler service
+var (
+	SVC *Scheduler
+)
+
 // Scheduler struct
 type Scheduler struct {
 	cron      *cron.Cron
@@ -17,11 +22,14 @@ func (s *Scheduler) Close() {
 }
 
 // Init cron scheduler
-func Init() *Scheduler {
-	return &Scheduler{
-		cron:      cron.New(cron.WithSeconds()),
-		jobs:      map[string]int{},
-		functions: map[string]int{},
+func Init() {
+	if SVC == nil {
+		SVC = &Scheduler{
+			cron:      cron.New(cron.WithSeconds()),
+			jobs:      map[string]int{},
+			functions: map[string]int{},
+		}
+		SVC.Start()
 	}
 }
 

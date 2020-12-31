@@ -9,7 +9,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/api/field"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 )
 
@@ -99,7 +99,7 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 		queryConfig.Global.Functions = values
 	}
 
-	result, err := svc.MTS.Query(queryConfig)
+	result, err := mts.SVC.Query(queryConfig)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -130,7 +130,7 @@ func getMetricList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := svc.MTS.Query(queryConfig)
+	result, err := mts.SVC.Query(queryConfig)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

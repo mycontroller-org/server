@@ -8,7 +8,7 @@ import (
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
-	"github.com/mycontroller-org/backend/v2/pkg/scheduler"
+	sch "github.com/mycontroller-org/backend/v2/pkg/service/scheduler"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
@@ -39,7 +39,7 @@ type Store struct {
 }
 
 // NewClient in-memory database
-func NewClient(config map[string]interface{}, sch *scheduler.Scheduler) (*Store, error) {
+func NewClient(config map[string]interface{}) (*Store, error) {
 	cfg := Config{}
 	err := ut.MapToStruct(ut.TagNameYaml, config, &cfg)
 	if err != nil {
@@ -67,7 +67,7 @@ func NewClient(config map[string]interface{}, sch *scheduler.Scheduler) (*Store,
 		if cfg.DumpInterval == "" {
 			cfg.DumpInterval = defaultSyncInterval
 		}
-		err = sch.AddFunc(syncJobName, fmt.Sprintf("@every %s", cfg.DumpInterval), store.writeToDisk)
+		err = sch.SVC.AddFunc(syncJobName, fmt.Sprintf("@every %s", cfg.DumpInterval), store.writeToDisk)
 		if err != nil {
 			return nil, err
 		}

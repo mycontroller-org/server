@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
 )
@@ -17,7 +17,7 @@ import (
 func StartHandler() error {
 	router := mux.NewRouter()
 
-	cfg := svc.CFG.Web
+	cfg := cfg.CFG.Web
 
 	// set JWT access secret in environment
 	// TODO: this should be updated dynamically

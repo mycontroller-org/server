@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
-	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
@@ -117,7 +117,7 @@ func FindOne(w http.ResponseWriter, r *http.Request, en string, e interface{}) {
 		return
 	}
 
-	err = svc.STG.FindOne(en, e, f)
+	err = stg.SVC.FindOne(en, e, f)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -200,7 +200,7 @@ func FindMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 		return
 	}
 
-	result, err := svc.STG.Find(entityName, entities, f, p)
+	result, err := stg.SVC.Find(entityName, entities, f, p)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -237,7 +237,7 @@ func SaveEntity(w http.ResponseWriter, r *http.Request, en string, e interface{}
 		}
 	}
 
-	err = svc.STG.Upsert(en, e, f)
+	err = stg.SVC.Upsert(en, e, f)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

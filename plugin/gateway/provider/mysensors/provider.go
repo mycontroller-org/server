@@ -9,7 +9,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	sch "github.com/mycontroller-org/backend/v2/pkg/service/scheduler"
 	utils "github.com/mycontroller-org/backend/v2/pkg/utils"
 	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
@@ -75,14 +75,14 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgml.RawMessage) e
 
 	// load firmware purge job
 	firmwarePurgeJobName := fmt.Sprintf("%s_%s", firmwarePurgeJobName, p.GatewayConfig.ID)
-	return svc.SCH.AddFunc(firmwarePurgeJobName, firmwarePurgeJobCron, fwStore.purge)
+	return sch.SVC.AddFunc(firmwarePurgeJobName, firmwarePurgeJobCron, fwStore.purge)
 }
 
 // Close func
 func (p *Provider) Close() error {
 	// remove firmware purge job
 	fwPurgeJobName := fmt.Sprintf("%s_%s", firmwarePurgeJobName, p.GatewayConfig.ID)
-	svc.SCH.RemoveFunc(fwPurgeJobName)
+	sch.SVC.RemoveFunc(fwPurgeJobName)
 	// close gateway
 	return p.Protocol.Close()
 }

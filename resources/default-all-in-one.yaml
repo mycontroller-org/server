@@ -4,20 +4,26 @@ web:
   webDirectory: /ui
   enable_profiling: false
 
-secret: abcd
+secret: 5a2f6ff25b0025aeae12ae096363b51a
 
 directories:
   data: /mc_home/data
   logs: /mc_home/logs
 
 logger:
-  mode: development
-  # mode: production
+  mode: production # other option: development
   encoding: console
   level:
     core: info
     storage: info
     metrics: warn
+
+bus:
+  type: embedded # other option: nats_io
+  topic_prefix:
+  # server_url: <nats_url>
+  # tls_insecure_skip_verify: false
+  # connection_timeout: 10s
 
 startup_jobs:
   importer:
@@ -41,6 +47,6 @@ databases:
   - name: void_database
     type: void_db
 
-bus:
-  type: embedded
-  topic_prefix:
+gateway:
+  ids: []
+  labels: {}

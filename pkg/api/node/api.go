@@ -3,7 +3,7 @@ package node
 import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	svc "github.com/mycontroller-org/backend/v2/pkg/service"
+	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
@@ -11,13 +11,13 @@ import (
 // List by filter and pagination
 func List(filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
 	result := make([]nml.Node, 0)
-	return svc.STG.Find(ml.EntityNode, &result, filters, pagination)
+	return stg.SVC.Find(ml.EntityNode, &result, filters, pagination)
 }
 
 // Get returns a Node
 func Get(filters []stgml.Filter) (nml.Node, error) {
 	result := nml.Node{}
-	err := svc.STG.FindOne(ml.EntityNode, &result, filters)
+	err := stg.SVC.FindOne(ml.EntityNode, &result, filters)
 	return result, err
 }
 
@@ -29,7 +29,7 @@ func Save(node *nml.Node) error {
 	filters := []stgml.Filter{
 		{Key: ml.KeyID, Value: node.ID},
 	}
-	return svc.STG.Upsert(ml.EntityNode, node, filters)
+	return stg.SVC.Upsert(ml.EntityNode, node, filters)
 }
 
 // GetByIDs returns a node details by gatewayID and nodeId of a message
@@ -39,12 +39,12 @@ func GetByIDs(gatewayID, nodeID string) (*nml.Node, error) {
 		{Key: ml.KeyNodeID, Value: nodeID},
 	}
 	result := &nml.Node{}
-	err := svc.STG.FindOne(ml.EntityNode, result, f)
+	err := stg.SVC.FindOne(ml.EntityNode, result, f)
 	return result, err
 }
 
 // Delete node
 func Delete(IDs []string) (int64, error) {
 	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
-	return svc.STG.Delete(ml.EntityNode, filters)
+	return stg.SVC.Delete(ml.EntityNode, filters)
 }

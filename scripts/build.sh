@@ -1,9 +1,12 @@
 #!/bin/bash
 
 # container registry
-REGISTRY='quay.io/mycontroller-org'
-IMAGE_NAME="${REGISTRY}/mycontroller"
-IMAGE_TAG="2.0-master"  # application tag
+REGISTRY='quay.io/mycontroller'
+IMAGE_ALL_IN_ONE="${REGISTRY}/all-in-one"
+IMAGE_CORE="${REGISTRY}/core"
+IMAGE_GATEWAY="${REGISTRY}/gateway"
+#IMAGE_TAG="master"  # application tag
+IMAGE_TAG=`git rev-parse --abbrev-ref HEAD`
 
 # alpine golang builder image
 GOLANG_BUILDER_IMAGE="quay.io/mycontroller-org/golang"
@@ -35,8 +38,12 @@ yarn install
 CI=false yarn build
 cd ../
 
-# build conatiner image
-docker build -f docker/Dockerfile -t ${IMAGE_NAME}:${IMAGE_TAG} .
+# build conatiner images
+docker build -f docker/all-in-one.Dockerfile -t ${IMAGE_ALL_IN_ONE}:${IMAGE_TAG} .
+docker build -f docker/core.Dockerfile -t ${IMAGE_CORE}:${IMAGE_TAG} .
+docker build -f docker/gateway.Dockerfile -t ${IMAGE_GATEWAY}:${IMAGE_TAG} .
 
-# push image to registry
-docker push ${IMAGE_NAME}:${IMAGE_TAG}
+# push images to registry
+docker push ${IMAGE_ALL_IN_ONE}:${IMAGE_TAG}
+docker push ${IMAGE_CORE}:${IMAGE_TAG}
+docker push ${IMAGE_GATEWAY}:${IMAGE_TAG}

@@ -17,13 +17,13 @@ RUN mkdir -p ${APP_HOME} && mkdir -p ${DATA_HOME}
 COPY ./console-web/build /ui
 
 # copy application bin file
-COPY ./mycontroller ${APP_HOME}/mycontroller
+COPY ./mycontroller-core ${APP_HOME}/mycontroller-core
 
-RUN chmod +x ${APP_HOME}/mycontroller
+RUN chmod +x ${APP_HOME}/mycontroller-core
 
 # copy default files
-COPY ./resources/default.yaml ${APP_HOME}/mycontroller.yaml
+COPY ./resources/default-core.yaml ${APP_HOME}/mycontroller.yaml
 
 WORKDIR ${APP_HOME}
 
-CMD ["/app/mycontroller", "-config", "/app/mycontroller.yaml"]
+CMD ["/app/mycontroller-core", "-config", "/app/mycontroller.yaml"]

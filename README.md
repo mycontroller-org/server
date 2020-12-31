@@ -15,23 +15,23 @@ MyController.org version 2.x is in early development stage.
 ### To run
 ```bash
 # pull the image
-docker pull quay.io/mycontroller-org/mycontroller:2.0-master
+docker pull quay.io/mycontroller/all-in-one:master
 
 # run with default configuration
 docker run  -d --name mycontroller \
     -p 8080:8080 \
-    quay.io/mycontroller-org/mycontroller:2.0-master
+    quay.io/mycontroller/all-in-one:master
 
 # run with advanced options with custom data mount point
 docker run  --rm --name mycontroller \
     -p 8080:8080 \
     -v $PWD/mc:/mc_home \
-    quay.io/mycontroller-org/mycontroller:2.0-master
+    quay.io/mycontroller/all-in-one:master
 
 # run with advanced options with custom data mount point and custom configuration options
 docker run  --rm --name mycontroller \
     -p 8080:8080 \
     -v $PWD/mc:/mc_home \
     -v $PWD/mc/mycontroller.yaml:/app/mycontroller.yaml \
-    quay.io/mycontroller-org/mycontroller:2.0-master
+    quay.io/mycontroller/all-in-one:master
 ```
