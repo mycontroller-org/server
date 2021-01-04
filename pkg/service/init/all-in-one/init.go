@@ -1,10 +1,10 @@
 package allinone
 
 import (
-	msgPRO "github.com/mycontroller-org/backend/v2/pkg/processor/message"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	"github.com/mycontroller-org/backend/v2/pkg/service/init/common"
 	"github.com/mycontroller-org/backend/v2/pkg/service/init/core"
+	msgProcessor "github.com/mycontroller-org/backend/v2/pkg/service/message_processor"
 	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	resourceSVC "github.com/mycontroller-org/backend/v2/pkg/service/resource"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
@@ -25,7 +25,7 @@ func initServices() {
 	core.UpdateInitialUser()
 
 	// start message processing engine
-	msgPRO.Init()
+	msgProcessor.Init()
 
 	// init resource server
 	err := resourceSVC.Init()
@@ -58,7 +58,7 @@ func closeServices() {
 
 	// stop engine
 	zap.L().Debug("Closing message process engine")
-	msgPRO.Close()
+	msgProcessor.Close()
 
 	// Close storage and metric database
 	if stg.SVC != nil {

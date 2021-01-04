@@ -17,6 +17,7 @@ import (
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"github.com/robertkrimen/otto"
@@ -30,9 +31,7 @@ var (
 
 // Init message process engine
 func Init() error {
-	msgQueue = q.NewBoundedQueue(queueSize, func(item interface{}) {
-		zap.L().Error("Dropping an item, queue full", zap.Int("size", queueSize), zap.Any("item", item))
-	})
+	msgQueue = utils.GetQueue("message_processor", queueSize)
 
 	// on message receive add it in to our local queue
 	_, err := mcbus.Subscribe(mcbus.GetTopicPostMessageToCore(), onMessageReceive)

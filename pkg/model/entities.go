@@ -8,6 +8,7 @@ const (
 	EntitySensorField = "sensor_field" // keeps sensor field details and fields from node, like battery, rssi, etc.,
 	EntityFirmware    = "firmware"     // keeps firmware details
 	EntityUser        = "user"         // keeps user details
+	EntityDashboard   = "dashboard"    // keeps dashboard details
 	EntityKind        = "kind"         // keeps configurations, job details, rules, operations, etc..,
 )
 

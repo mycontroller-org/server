@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mycontroller-org/backend/v2/pkg/api/dashboard"
 	"github.com/mycontroller-org/backend/v2/pkg/api/field"
 	"github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	"github.com/mycontroller-org/backend/v2/pkg/api/gateway"
@@ -29,6 +30,7 @@ var (
 		ml.EntitySensor:      sensor.List,
 		ml.EntitySensorField: field.List,
 		ml.EntityFirmware:    firmware.List,
+		ml.EntityDashboard:   dashboard.List,
 		ml.EntityKind:        kind.List,
 	}
 )

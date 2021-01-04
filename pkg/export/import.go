@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	dashboardAPI "github.com/mycontroller-org/backend/v2/pkg/api/dashboard"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	fwAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
@@ -14,6 +15,7 @@ import (
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	mldb "github.com/mycontroller-org/backend/v2/pkg/model/dashboard"
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	mlfl "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	mlfw "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
@@ -143,6 +145,19 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 		}
 		for index := 0; index < len(entities); index++ {
 			err = userAPI.Save(&entities[index])
+			if err != nil {
+				return err
+			}
+		}
+
+	case ml.EntityDashboard:
+		entities := make([]mldb.Config, 0)
+		err := unmarshal(fileFormat, fileBytes, &entities)
+		if err != nil {
+			return err
+		}
+		for index := 0; index < len(entities); index++ {
+			err = dashboardAPI.Save(&entities[index])
 			if err != nil {
 				return err
 			}
