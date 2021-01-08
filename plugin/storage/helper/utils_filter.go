@@ -34,6 +34,7 @@ func Filter(entities []interface{}, filters []stgml.Filter, returnSingle bool) [
 
 			case reflect.Bool:
 				match = CompareBool(value, filter.Operator, filter.Value)
+
 			default:
 				match = false
 			}
@@ -55,13 +56,17 @@ func Filter(entities []interface{}, filters []stgml.Filter, returnSingle bool) [
 
 // VerifyStringSlice implementation
 func VerifyStringSlice(value string, operator string, filterValue interface{}) bool {
-	genericSlice, ok := filterValue.([]interface{})
+	stringSlice, ok := filterValue.([]string)
 	if !ok {
-		return false
-	}
-	stringSlice := make([]string, 0)
-	for _, val := range genericSlice {
-		stringSlice = append(stringSlice, toString(val))
+		genericSlice, genericOk := filterValue.([]interface{})
+		if !genericOk {
+			return false
+		}
+		_stringSlice := make([]string, 0)
+		for _, val := range genericSlice {
+			_stringSlice = append(_stringSlice, toString(val))
+		}
+		stringSlice = _stringSlice
 	}
 
 	switch operator {
