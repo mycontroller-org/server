@@ -9,6 +9,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
 	msglogger "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/message_logger"
@@ -16,17 +17,24 @@ import (
 	"go.uber.org/zap"
 )
 
+// Constants in serial gateway
+const (
+	transmitPreDelayDefault = time.Microsecond * 1 // 1 micro second
+	reconnectDelayDefault   = time.Second * 10     // 10 seconds
+)
+
 // Config data
 type Config struct {
-	Type               string `json:"type"`
-	Broker             string `json:"broker"`
-	Username           string `json:"username"`
-	Password           string `json:"-"`
-	Subscribe          string `json:"subscribe"`
-	Publish            string `json:"publish"`
-	QoS                int    `json:"qos"`
-	TransmitPreDelay   string `json:"transmitPreDelay"`
-	InsecureSkipVerify bool   `json:"insecureSkipVerify"`
+	Type               string
+	Broker             string
+	Username           string
+	Password           string
+	Subscribe          string
+	Publish            string
+	QoS                int
+	TransmitPreDelay   string
+	ReconnectDelay     string
+	InsecureSkipVerify bool
 }
 
 // Endpoint data
@@ -36,7 +44,7 @@ type Endpoint struct {
 	receiveMsgFunc func(rm *msgml.RawMessage) error
 	Client         paho.Client
 	messageLogger  msglogger.MessageLogger
-	txPreDelay     *time.Duration
+	txPreDelay     time.Duration
 }
 
 // New mqtt driver
@@ -49,22 +57,12 @@ func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.R
 		return nil, err
 	}
 
-	var txPreDelay *time.Duration
-	// get transmit pre delay
-	if cfg.TransmitPreDelay != "" {
-		_txPreDelay, err := time.ParseDuration(cfg.TransmitPreDelay)
-		if err != nil {
-			zap.L().Error("Failed to parse transmit delay", zap.String("transmitPreDelay", cfg.TransmitPreDelay))
-		}
-		txPreDelay = &_txPreDelay
-	}
-
 	// endpoint
 	d := &Endpoint{
 		GatewayCfg:     gwCfg,
 		Config:         cfg,
 		receiveMsgFunc: rxMsgFunc,
-		txPreDelay:     txPreDelay,
+		txPreDelay:     utils.ToDuration(cfg.TransmitPreDelay, transmitPreDelayDefault),
 	}
 
 	// add void logger to avoid nill exception, till er get successful connection
@@ -77,6 +75,7 @@ func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.R
 	opts.SetClientID(ut.RandID())
 	opts.SetCleanSession(false)
 	opts.SetAutoReconnect(true)
+	opts.SetConnectRetryInterval(utils.ToDuration(cfg.ReconnectDelay, reconnectDelayDefault))
 	opts.SetOnConnectHandler(d.onConnectionHandler)
 	opts.SetConnectionLostHandler(d.onConnectionLostHandler)
 
@@ -136,10 +135,9 @@ func (d *Endpoint) Write(rawMsg *msgml.RawMessage) error {
 	topics := rawMsg.Others.Get(gwptcl.KeyMqttTopic).([]string)
 	qos := byte(d.Config.QoS)
 	rawMsg.IsReceived = false
-	// add transmit pre delay
-	if d.txPreDelay != nil {
-		time.Sleep(*d.txPreDelay)
-	}
+
+	time.Sleep(d.txPreDelay) // transmit pre delay
+
 	for _, t := range topics {
 		_topic := fmt.Sprintf("%s/%s", d.Config.Publish, t)
 		rawMsgCloned := rawMsg.Clone()
