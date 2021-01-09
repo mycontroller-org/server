@@ -9,13 +9,14 @@ const (
 
 // Config for dashboard
 type Config struct {
-	ID         string               `json:"id"`
-	Type       string               `json:"type"`
-	Title      string               `json:"title"`
-	Bookmarked bool                 `json:"bookmarked"`
-	Disabled   bool                 `json:"disabled"`
-	Labels     cmap.CustomStringMap `json:"labels"`
-	Widgets    []Widget             `json:"widgets"`
+	ID          string               `json:"id"`
+	Type        string               `json:"type"`
+	Title       string               `json:"title"`
+	Description string               `json:"description"`
+	Bookmarked  bool                 `json:"bookmarked"`
+	Disabled    bool                 `json:"disabled"`
+	Labels      cmap.CustomStringMap `json:"labels"`
+	Widgets     []Widget             `json:"widgets"`
 }
 
 // Widget details
