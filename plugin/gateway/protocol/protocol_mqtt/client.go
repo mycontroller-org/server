@@ -41,7 +41,7 @@ type Endpoint struct {
 
 // New mqtt driver
 func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
-	zap.L().Info("Initi gateway", zap.String("gateway", gwCfg.ID))
+	zap.L().Info("Init protocol", zap.String("gateway", gwCfg.ID))
 	start := time.Now()
 	cfg := Config{}
 	err := ut.MapToStruct(ut.TagNameNone, protocol, &cfg)

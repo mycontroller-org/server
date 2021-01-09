@@ -64,8 +64,8 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgml.RawMessage) e
 		p.Protocol = protocol
 	case gwpl.TypeSerial:
 		// update serial message splitter
-		p.GatewayConfig.Provider.Set(serial.KeyMessageSplitter, serialMessageSplitter, nil)
-		protocol, _err := serial.New(p.GatewayConfig, receivedMessageHandler)
+		p.Config.Protocol.Set(serial.KeyMessageSplitter, serialMessageSplitter, nil)
+		protocol, _err := serial.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
 		err = _err
 		p.Protocol = protocol
 	}

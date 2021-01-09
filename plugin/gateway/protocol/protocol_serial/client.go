@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	m2s "github.com/mitchellh/mapstructure"
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	msglogger "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/message_logger"
 	s "github.com/tarm/serial"
 	"go.uber.org/zap"
@@ -38,14 +39,17 @@ type Endpoint struct {
 }
 
 // New serial client
-func New(gwCfg *gwml.Config, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
+func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
+	zap.L().Info("Init protocol", zap.String("gateway", gwCfg.ID))
 	var cfg Config
-	err := m2s.Decode(gwCfg.Provider, &cfg)
+	err := utils.MapToStruct(utils.TagNameNone, protocol, &cfg)
 	if err != nil {
 		return nil, err
 	}
+	zap.L().Debug("config:", zap.Any("converted", cfg))
 
 	c := &s.Config{Name: cfg.Portname, Baud: cfg.BaudRate}
+
 	port, err := s.OpenPort(c)
 	if err != nil {
 		return nil, err
