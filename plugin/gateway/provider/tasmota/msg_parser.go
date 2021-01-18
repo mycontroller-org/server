@@ -14,12 +14,13 @@ import (
 	"go.uber.org/zap"
 )
 
-// ToRawMessage func implementation
+// ToRawMessage converts the message into raw message
 func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	if len(msg.Payloads) == 0 {
 		return nil, errors.New("There is no payload details on the message")
 	}
 
+	// converts exactly the first payload. other payloads are ignored.
 	payload := msg.Payloads[0]
 
 	tmMsg := &message{
@@ -33,10 +34,10 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	// get command
 	switch msg.Type {
 
-	case msgml.TypeSet:
+	case msgml.TypeSet: // set payload
 		tmMsg.Payload = payload.Value
 
-	case msgml.TypeRequest:
+	case msgml.TypeRequest: // set empty payload for request type
 		tmMsg.Payload = emptyPayload
 
 	case msgml.TypeAction:
@@ -56,53 +57,32 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	return rawMsg, nil
 }
 
-// ToMessage implementation
+// ToMessage converts raw message into message
 func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
+	// one raw message can contain multiple messages
 	messages := make([]*msgml.Message, 0)
 
-	d := make([]string, 0)
+	topicSlice := make([]string, 0)
 	// topic/node-id/command
 	// jktasmota/stat/tasmota_49C88D/STATUS11
 	topic, ok := rawMsg.Others.Get(gwpl.KeyMqttTopic).(string)
 	if !ok {
 		return nil, fmt.Errorf("unable to get mqtt topic:%v", rawMsg.Others.Get(gwpl.KeyMqttTopic))
 	}
-	rData := strings.Split(topic, "/")
-	if len(rData) < 3 {
+	tSlice := strings.Split(topic, "/")
+	if len(tSlice) < 3 {
 		zap.L().Error("Invalid message format", zap.Any("rawMessage", rawMsg))
 		return nil, nil
 	}
-	d = rData[len(rData)-3:]
+	topicSlice = tSlice[len(tSlice)-3:]
 
 	tmMsg := message{
-		Topic:   d[0],
-		NodeID:  d[1],
-		Command: d[2],
+		Topic:   topicSlice[0],
+		NodeID:  topicSlice[1],
+		Command: topicSlice[2],
 	}
 
 	// helper functions
-	createMsgFn := func(sensorID, msgType string, pls ...msgml.Data) *msgml.Message {
-		msg := msgml.NewMessage(true)
-		msg.GatewayID = p.GatewayConfig.ID
-		msg.NodeID = tmMsg.NodeID
-		msg.IsAck = false
-		msg.Timestamp = time.Now()
-		msg.SensorID = sensorID
-		msg.Type = msgType
-		if len(pls) > 0 {
-			msg.Payloads = append(msg.Payloads, pls...)
-		}
-		return &msg
-	}
-
-	createSensorPresentationPL := func(value string) *msgml.Data {
-		pl := msgml.NewData()
-		pl.Name = ml.FieldName
-		pl.Value = value
-		pl.MetricType = mtsml.MetricTypeNone
-		pl.Unit = mtsml.UnitNone
-		return &pl
-	}
 
 	addIntoMessages := func(msg *msgml.Message) {
 		if len(msg.Payloads) > 0 {
@@ -111,8 +91,8 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	}
 
 	addSensorPresentationMessage := func(sensorID string) {
-		pl := createSensorPresentationPL(sensorID)
-		msg := createMsgFn(sensorID, msgml.TypePresentation, *pl)
+		pl := p.createSensorPresentationPL(sensorID)
+		msg := p.createMessage(tmMsg.NodeID, sensorID, msgml.TypePresentation, *pl)
 		addIntoMessages(msg)
 	}
 
@@ -146,7 +126,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 		}
 		switch tmMsg.Command {
 		case cmdResult: // control sensor messages
-			msg := createMsgFn(sensorControl, msgml.TypeSet)
+			msg := p.createMessage(tmMsg.NodeID, sensorControl, msgml.TypeSet)
 			addSensorPresentationMessage(sensorControl)
 
 			for key, v := range data {
@@ -160,10 +140,10 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 			addIntoMessages(msg)
 
 		case cmdState:
-			senControl := createMsgFn(sensorControl, msgml.TypeSet)
+			senControl := p.createMessage(tmMsg.NodeID, sensorControl, msgml.TypeSet)
 			addSensorPresentationMessage(sensorControl)
 
-			senMemory := createMsgFn(sensorMemory, msgml.TypeSet)
+			senMemory := p.createMessage(tmMsg.NodeID, sensorMemory, msgml.TypeSet)
 			addSensorPresentationMessage(sensorMemory)
 
 			for key, v := range data {
@@ -174,7 +154,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 				if key == keyWifi {
 					wiFiData, ok := v.(map[string]interface{})
 					if ok {
-						senWiFi := createMsgFn(sensorWiFi, msgml.TypeSet)
+						senWiFi := p.createMessage(tmMsg.NodeID, sensorWiFi, msgml.TypeSet)
 						addSensorPresentationMessage(sensorWiFi)
 						for wKey, wValue := range wiFiData {
 							_, ignore := ut.FindItem(wiFiFieldsIgnore, strings.ToLower(wKey))
@@ -209,7 +189,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 			for k, v := range data {
 				dataMap, ok := v.(map[string]interface{})
 				if ok {
-					msg := createMsgFn(k, msgml.TypeSet)
+					msg := p.createMessage(tmMsg.NodeID, k, msgml.TypeSet)
 					addSensorPresentationMessage(k)
 
 					for sK, sV := range dataMap {
@@ -237,7 +217,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 			if err != nil {
 				return nil, err
 			}
-			msg := createMsgFn(sensorControl, msgml.TypeSet)
+			msg := p.createMessage(tmMsg.NodeID, sensorControl, msgml.TypeSet)
 			addSensorPresentationMessage(sensorControl)
 			for key, v := range data {
 				// create new payload data
@@ -269,7 +249,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 				switch header {
 
 				case headerStatus, headerDeviceParameters, headerFirmware, headerNetwork:
-					msg := createMsgFn(sensorIDNone, msgml.TypePresentation)
+					msg := p.createMessage(tmMsg.NodeID, sensorIDNone, msgml.TypePresentation)
 					for key, v := range data {
 						value := ut.ToString(v)
 
@@ -318,7 +298,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 					addIntoMessages(msg)
 
 				case headerLogging: // add all the fields
-					msg := createMsgFn(sensorLogging, msgml.TypeSet)
+					msg := p.createMessage(tmMsg.NodeID, sensorLogging, msgml.TypeSet)
 					for k, v := range data {
 						_, ignore := ut.FindItem(loggingFieldsIgnore, strings.ToLower(k))
 						if ignore {
@@ -337,7 +317,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 					addSensorPresentationMessage(sensorLogging)
 
 				case headerMemory: // update only heap
-					msg := createMsgFn(sensorMemory, msgml.TypeSet)
+					msg := p.createMessage(tmMsg.NodeID, sensorMemory, msgml.TypeSet)
 					heap, found := data[keyHeap]
 					if found {
 						pl := msgml.Data{
@@ -352,7 +332,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 					addSensorPresentationMessage(sensorMemory)
 
 				case headerTime:
-					msg := createMsgFn(sensorTime, msgml.TypeSet)
+					msg := p.createMessage(tmMsg.NodeID, sensorTime, msgml.TypeSet)
 					addSensorPresentationMessage(sensorTime)
 
 					for k, v := range data {
@@ -397,7 +377,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 							}
 
 							// field message
-							fieldMsg := createMsgFn(sensorAnalog, msgml.TypeSet)
+							fieldMsg := p.createMessage(tmMsg.NodeID, sensorAnalog, msgml.TypeSet)
 							fieldMsg.Payloads = pls
 							addIntoMessages(fieldMsg)
 
@@ -418,7 +398,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 								pls = append(pls, pl)
 							}
 							// field message
-							fieldMsg := createMsgFn(sensorCounter, msgml.TypeSet)
+							fieldMsg := p.createMessage(tmMsg.NodeID, sensorCounter, msgml.TypeSet)
 							fieldMsg.Payloads = pls
 							addIntoMessages(fieldMsg)
 
@@ -453,7 +433,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 								pls = append(pls, pl)
 							}
 							// field message
-							fieldMsg := createMsgFn(k, msgml.TypeSet, pls...)
+							fieldMsg := p.createMessage(tmMsg.NodeID, k, msgml.TypeSet, pls...)
 							addIntoMessages(fieldMsg)
 
 							// presentation message
@@ -482,4 +462,28 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	}()
 
 	return messages, nil
+}
+
+// helper functions
+func (p *Provider) createMessage(nodeID, sensorID, msgType string, pls ...msgml.Data) *msgml.Message {
+	msg := msgml.NewMessage(true)
+	msg.GatewayID = p.GatewayConfig.ID
+	msg.NodeID = nodeID
+	msg.IsAck = false
+	msg.Timestamp = time.Now()
+	msg.SensorID = sensorID
+	msg.Type = msgType
+	if len(pls) > 0 {
+		msg.Payloads = append(msg.Payloads, pls...)
+	}
+	return &msg
+}
+
+func (p *Provider) createSensorPresentationPL(value string) *msgml.Data {
+	pl := msgml.NewData()
+	pl.Name = ml.FieldName
+	pl.Value = value
+	pl.MetricType = mtsml.MetricTypeNone
+	pl.Unit = mtsml.UnitNone
+	return &pl
 }

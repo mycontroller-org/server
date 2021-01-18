@@ -1,9 +1,9 @@
 package gateway
 
 import (
+	"github.com/mycontroller-org/backend/v2/pkg/init/common"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
-	"github.com/mycontroller-org/backend/v2/pkg/service/init/common"
-	gwService "github.com/mycontroller-org/backend/v2/plugin/gateway/service"
+	gwService "github.com/mycontroller-org/backend/v2/pkg/service/gateway"
 	"go.uber.org/zap"
 )
 

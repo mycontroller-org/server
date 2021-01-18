@@ -4,7 +4,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/mycontroller-org/backend/v2/cmd/core/app/handler"
-	allinone "github.com/mycontroller-org/backend/v2/pkg/service/init/all-in-one"
+	allinone "github.com/mycontroller-org/backend/v2/pkg/init/all-in-one"
 )
 
 func main() {

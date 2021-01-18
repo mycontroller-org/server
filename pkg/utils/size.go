@@ -85,7 +85,6 @@ func ParseSize(sizeStr string) (int64, error) {
 	if len(matches) != 4 {
 		return -1, fmt.Errorf("invalid size: '%s'", sizeStr)
 	}
-	fmt.Println("matches", matches)
 	size, err := strconv.ParseFloat(matches[1], 64)
 	if err != nil {
 		return -1, err

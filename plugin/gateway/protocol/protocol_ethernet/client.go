@@ -40,22 +40,22 @@ func New(config map[string]interface{}, queue *q.BoundedQueue, gID string) (*End
 		return nil, err
 	}
 
-	d := &Endpoint{
+	endpoint := &Endpoint{
 		Config:    cfg,
 		Client:    c,
 		Queue:     queue,
 		GatewayID: gID,
 	}
-	return d, nil
+	return endpoint, nil
 }
 
 // Write sends a payload
-func (d *Endpoint) Write(rawMsg *msgml.RawMessage) error {
-	_, err := d.Client.Write(rawMsg.Data)
+func (ep *Endpoint) Write(rawMsg *msgml.RawMessage) error {
+	_, err := ep.Client.Write(rawMsg.Data)
 	return err
 }
 
 // Close the connection
-func (d *Endpoint) Close() error {
-	return d.Close()
+func (ep *Endpoint) Close() error {
+	return ep.Close()
 }

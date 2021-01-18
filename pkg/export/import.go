@@ -9,9 +9,9 @@ import (
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	fwAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
-	kindAPI "github.com/mycontroller-org/backend/v2/pkg/api/kind"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
+	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notification_handler"
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
@@ -20,8 +20,8 @@ import (
 	mlfl "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	mlfw "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	mlgw "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	mlkd "github.com/mycontroller-org/backend/v2/pkg/model/kind"
 	mlnd "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	mlnh "github.com/mycontroller-org/backend/v2/pkg/model/notification_handler"
 	mlsr "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	mlus "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -163,14 +163,14 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case ml.EntityKind:
-		entities := make([]mlkd.Kind, 0)
+	case ml.EntityNotificationHandlers:
+		entities := make([]mlnh.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
 		}
 		for index := 0; index < len(entities); index++ {
-			err = kindAPI.Save(&entities[index])
+			err = notificationHandlerAPI.Save(&entities[index])
 			if err != nil {
 				return err
 			}

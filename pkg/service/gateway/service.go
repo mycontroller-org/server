@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	raml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	statusUtils "github.com/mycontroller-org/backend/v2/pkg/utils/status"
 	gwpd "github.com/mycontroller-org/backend/v2/plugin/gateway/provider"
 	"go.uber.org/zap"
 )
@@ -38,7 +37,7 @@ func Start(gatewayCfg *gwml.Config) error {
 		gwService.Add(service)
 	}
 
-	setState(gatewayCfg.ID, state)
+	statusUtils.SetGatewayState(gatewayCfg.ID, state)
 	return nil
 }
 
@@ -57,7 +56,7 @@ func Stop(id string) error {
 			zap.L().Error("Failed to stop gateway service", zap.String("id", id), zap.Error(err))
 			state.Message = err.Error()
 		}
-		setState(id, state)
+		statusUtils.SetGatewayState(id, state)
 		gwService.Remove(id)
 	}
 	return nil
@@ -80,19 +79,5 @@ func UnloadAll() {
 		if err != nil {
 			zap.L().Error("error on stopping a gateway", zap.String("id", id))
 		}
-	}
-}
-
-func setState(id string, state ml.State) {
-	event := &raml.Event{
-		Type:    raml.TypeGateway,
-		Command: raml.CommandUpdateState,
-		ID:      id,
-	}
-	event.SetData(state)
-	topic := mcbus.FormatTopic(mcbus.TopicResourceServer)
-	err := mcbus.Publish(topic, event)
-	if err != nil {
-		zap.L().Error("failed to post an event", zap.String("topic", topic), zap.Any("event", event))
 	}
 }

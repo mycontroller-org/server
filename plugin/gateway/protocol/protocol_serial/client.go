@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	statusUtils "github.com/mycontroller-org/backend/v2/pkg/utils/status"
 	msglogger "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/message_logger"
 	ser "github.com/tarm/serial"
 	"go.uber.org/zap"
@@ -123,6 +125,12 @@ func (ep *Endpoint) dataListener() {
 			rxLength, err := ep.Port.Read(readBuf)
 			if err != nil {
 				zap.L().Error("Error on reading data from a serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
+				state := model.State{
+					Status:  model.StateDown,
+					Message: err.Error(),
+					Since:   time.Now(),
+				}
+				statusUtils.SetGatewayState(ep.GwCfg.ID, state)
 				go ep.reconnect()
 				return
 			}
@@ -176,9 +184,21 @@ func (ep *Endpoint) reconnect() {
 				zap.L().Debug("serial port reconnected successfully", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name))
 				ep.Port = port
 				go ep.dataListener() // if connection success, start read listener
+				state := model.State{
+					Status:  model.StateUp,
+					Message: "Reconnected successfully",
+					Since:   time.Now(),
+				}
+				statusUtils.SetGatewayState(ep.GwCfg.ID, state)
 				return
 			}
 			zap.L().Error("Error on opening a port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
+			state := model.State{
+				Status:  model.StateDown,
+				Message: err.Error(),
+				Since:   time.Now(),
+			}
+			statusUtils.SetGatewayState(ep.GwCfg.ID, state)
 		}
 	}
 

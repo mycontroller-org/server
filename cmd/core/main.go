@@ -4,7 +4,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/mycontroller-org/backend/v2/cmd/core/app/handler"
-	"github.com/mycontroller-org/backend/v2/pkg/service/init/core"
+	"github.com/mycontroller-org/backend/v2/pkg/init/core"
 )
 
 func main() {

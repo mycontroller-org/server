@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/service/init/gateway"
+	"github.com/mycontroller-org/backend/v2/pkg/init/gateway"
 )
 
 func main() {

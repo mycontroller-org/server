@@ -10,8 +10,8 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/api/field"
 	"github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	"github.com/mycontroller-org/backend/v2/pkg/api/gateway"
-	"github.com/mycontroller-org/backend/v2/pkg/api/kind"
 	"github.com/mycontroller-org/backend/v2/pkg/api/node"
+	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notification_handler"
 	"github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
@@ -25,13 +25,13 @@ import (
 var (
 	isRunning    = false
 	entitiesList = map[string]func(f []pml.Filter, p *pml.Pagination) (*pml.Result, error){
-		ml.EntityGateway:     gateway.List,
-		ml.EntityNode:        node.List,
-		ml.EntitySensor:      sensor.List,
-		ml.EntitySensorField: field.List,
-		ml.EntityFirmware:    firmware.List,
-		ml.EntityDashboard:   dashboard.List,
-		ml.EntityKind:        kind.List,
+		ml.EntityGateway:              gateway.List,
+		ml.EntityNode:                 node.List,
+		ml.EntitySensor:               sensor.List,
+		ml.EntitySensorField:          field.List,
+		ml.EntityFirmware:             firmware.List,
+		ml.EntityDashboard:            dashboard.List,
+		ml.EntityNotificationHandlers: notificationHandlerAPI.List,
 	}
 )
 

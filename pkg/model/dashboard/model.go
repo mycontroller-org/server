@@ -13,7 +13,7 @@ type Config struct {
 	Type        string               `json:"type"`
 	Title       string               `json:"title"`
 	Description string               `json:"description"`
-	Bookmarked  bool                 `json:"bookmarked"`
+	Favorite    bool                 `json:"favorite"`
 	Disabled    bool                 `json:"disabled"`
 	Labels      cmap.CustomStringMap `json:"labels"`
 	Widgets     []Widget             `json:"widgets"`

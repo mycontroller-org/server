@@ -3,7 +3,8 @@ package cmap
 import (
 	"fmt"
 	"strconv"
-	"strings"
+
+	"github.com/mycontroller-org/backend/v2/pkg/utils/normalize"
 )
 
 // CustomStringMap data
@@ -26,18 +27,30 @@ func (csm CustomStringMap) Clone() CustomStringMap {
 	return CustomStringMap(cloned)
 }
 
+// NormalizeKeys of the map
+func (csm CustomStringMap) NormalizeKeys() CustomStringMap {
+	newMap := make(map[string]string)
+	for k, v := range csm {
+		k = normalize.Key(k)
+		newMap[k] = v
+	}
+	return newMap
+}
+
 // Set a key, value pair
 func (csm CustomStringMap) Set(key, value string) {
+	key = normalize.Key(key)
 	m := map[string]string(csm)
 	if !csm.GetBool(GetIgnoreKey(key)) { // update only if not ignored
-		m[strings.ToLower(key)] = value
+		m[key] = value
 	}
 }
 
 // Get a value by key
 func (csm CustomStringMap) Get(key string) string {
+	key = normalize.Key(key)
 	m := map[string]string(csm)
-	value, ok := m[strings.ToLower(key)]
+	value, ok := m[key]
 	if ok {
 		return value
 	}
@@ -48,7 +61,8 @@ func (csm CustomStringMap) Get(key string) string {
 func (csm CustomStringMap) Remove(keys ...string) {
 	m := map[string]string(csm)
 	for _, key := range keys {
-		delete(m, strings.ToLower(key))
+		key = normalize.Key(key)
+		delete(m, key)
 	}
 }
 
@@ -56,15 +70,17 @@ func (csm CustomStringMap) Remove(keys ...string) {
 func (csm CustomStringMap) CopyFrom(another CustomStringMap) {
 	m := map[string]string(csm)
 	for k, v := range another {
+		k = normalize.Key(k)
 		if !csm.GetBool(GetIgnoreKey(k)) { // update only if not ignored
-			m[strings.ToLower(k)] = v
+			m[k] = v
 		}
 	}
 }
 
 // GetBool a value by key
 func (csm CustomStringMap) GetBool(key string) bool {
-	v, err := strconv.ParseBool(strings.ToLower(csm.Get(key)))
+	key = normalize.Key(key)
+	v, err := strconv.ParseBool(csm.Get(key))
 	if err != nil {
 		// TODO: needs to pass it to logger?
 	}
@@ -73,7 +89,8 @@ func (csm CustomStringMap) GetBool(key string) bool {
 
 // GetIgnoreBool a value by ignore key
 func (csm CustomStringMap) GetIgnoreBool(key string) bool {
-	v, err := strconv.ParseBool(strings.ToLower(csm.Get(GetIgnoreKey(key))))
+	key = normalize.Key(key)
+	v, err := strconv.ParseBool(csm.Get(GetIgnoreKey(key)))
 	if err != nil {
 		// TODO: needs to pass it to logger?
 	}
@@ -82,6 +99,7 @@ func (csm CustomStringMap) GetIgnoreBool(key string) bool {
 
 // GetInt a value by key
 func (csm CustomStringMap) GetInt(key string) int {
+	key = normalize.Key(key)
 	v, err := strconv.ParseInt(csm.Get(key), 10, 64)
 	if err != nil {
 		// TODO: needs to pass it to logger?
@@ -91,6 +109,7 @@ func (csm CustomStringMap) GetInt(key string) int {
 
 // GetFloat a value by key
 func (csm CustomStringMap) GetFloat(key string) float64 {
+	key = normalize.Key(key)
 	v, err := strconv.ParseFloat(csm.Get(key), 64)
 	if err != nil {
 		// TODO: needs to pass it to logger?
@@ -118,6 +137,16 @@ func (cm CustomMap) Clone() CustomMap {
 	return CustomMap(cloned)
 }
 
+// NormalizeKeys of the map
+func (cm CustomMap) NormalizeKeys() CustomMap {
+	newMap := make(map[string]interface{})
+	for k, v := range cm {
+		k = normalize.Key(k)
+		newMap[k] = v
+	}
+	return newMap
+}
+
 // ToMap returns as map
 func (cm CustomMap) ToMap() map[string]interface{} {
 	return map[string]interface{}(cm)
@@ -125,6 +154,7 @@ func (cm CustomMap) ToMap() map[string]interface{} {
 
 // Set a key, value pair
 func (cm CustomMap) Set(key string, value interface{}, labels CustomStringMap) {
+	key = normalize.Key(key)
 	if labels != nil {
 		if labels.GetBool(GetIgnoreKey(key)) { // if ignored, do not update
 			return
@@ -132,14 +162,15 @@ func (cm CustomMap) Set(key string, value interface{}, labels CustomStringMap) {
 	}
 	// update value
 	m := map[string]interface{}(cm)
-	m[strings.ToLower(key)] = value
+	m[key] = value
 }
 
 // Remove a key
 func (cm CustomMap) Remove(keys ...string) {
 	m := map[string]interface{}(cm)
 	for _, key := range keys {
-		delete(m, strings.ToLower(key))
+		key = normalize.Key(key)
+		delete(m, key)
 	}
 }
 
@@ -147,22 +178,23 @@ func (cm CustomMap) Remove(keys ...string) {
 func (cm CustomMap) CopyFrom(another CustomMap, labels CustomStringMap) {
 	m := map[string]interface{}(cm)
 	for k, v := range another {
+		k = normalize.Key(k)
 		if labels != nil {
 			if labels.GetBool(GetIgnoreKey(k)) { // if ignored, do not update
 				continue
 			}
 		}
-		m[strings.ToLower(k)] = v
+		m[k] = v
 	}
 }
 
 // Get a value by key
 func (cm CustomMap) Get(key string) interface{} {
+	key = normalize.Key(key)
 	m := map[string]interface{}(cm)
-	lKey := strings.ToLower(key)
 	for k, v := range m {
-		lk := strings.ToLower(k)
-		if lKey == lk {
+		k = normalize.Key(k)
+		if key == k {
 			return v
 		}
 	}
@@ -171,6 +203,7 @@ func (cm CustomMap) Get(key string) interface{} {
 
 // GetString a value by key
 func (cm CustomMap) GetString(key string) string {
+	key = normalize.Key(key)
 	originalValue := cm.Get(key)
 	if originalValue == nil {
 		return ""
@@ -184,6 +217,7 @@ func (cm CustomMap) GetString(key string) string {
 
 // GetBool a value by key
 func (cm CustomMap) GetBool(key string) bool {
+	key = normalize.Key(key)
 	originalValue := cm.Get(key)
 	if originalValue == nil {
 		return false
@@ -203,6 +237,7 @@ func (cm CustomMap) GetBool(key string) bool {
 
 // GetInt64 a value by key
 func (cm CustomMap) GetInt64(key string) int64 {
+	key = normalize.Key(key)
 	originalValue := cm.Get(key)
 	if originalValue == nil {
 		return 0
@@ -220,6 +255,7 @@ func (cm CustomMap) GetInt64(key string) int64 {
 
 // GetFloat64 a value by key
 func (cm CustomMap) GetFloat64(key string) float64 {
+	key = normalize.Key(key)
 	originalValue := cm.Get(key)
 	if originalValue == nil {
 		return 0
