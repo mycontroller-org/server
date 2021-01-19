@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"

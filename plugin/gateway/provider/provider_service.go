@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/jaegertracing/jaeger/pkg/queue"
-	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"

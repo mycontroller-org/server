@@ -2,10 +2,10 @@ package service
 
 import (
 	q "github.com/jaegertracing/jaeger/pkg/queue"
-	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	"go.uber.org/zap"

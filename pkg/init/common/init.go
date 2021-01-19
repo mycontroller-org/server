@@ -6,7 +6,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	"github.com/mycontroller-org/backend/v2/pkg/service/logger"

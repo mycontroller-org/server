@@ -6,7 +6,7 @@ import (
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
-	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"

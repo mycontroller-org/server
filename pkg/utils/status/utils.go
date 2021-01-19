@@ -1,7 +1,7 @@
 package status
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"go.uber.org/zap"

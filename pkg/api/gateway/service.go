@@ -1,7 +1,7 @@
 package gateway
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"

@@ -10,7 +10,7 @@ import (
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
-	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"

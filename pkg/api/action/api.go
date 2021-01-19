@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mycontroller-org/backend/v2/pkg/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 )
 
 // Execute the given request
