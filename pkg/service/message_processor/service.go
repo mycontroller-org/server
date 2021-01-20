@@ -10,15 +10,15 @@ import (
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model/event"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"github.com/robertkrimen/otto"
 	"go.uber.org/zap"
@@ -43,7 +43,7 @@ func Init() error {
 	return nil
 }
 
-func onMessageReceive(event *busml.Event) {
+func onMessageReceive(event *event.Event) {
 	msg := &msgml.Message{}
 	err := event.ToStruct(msg)
 	if err != nil {

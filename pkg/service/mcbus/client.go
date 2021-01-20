@@ -1,6 +1,6 @@
 package mcbus
 
-import busml "github.com/mycontroller-org/backend/v2/plugin/bus"
+import "github.com/mycontroller-org/backend/v2/pkg/model/event"
 
 // Close func
 func Close() error {
@@ -16,7 +16,7 @@ func Publish(topic string, data interface{}) error {
 }
 
 // Subscribe a topic
-func Subscribe(topic string, handler func(event *busml.Event)) (int64, error) {
+func Subscribe(topic string, handler func(event *event.Event)) (int64, error) {
 	return busClient.Subscribe(topic, handler)
 }
 

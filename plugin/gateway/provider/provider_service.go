@@ -7,12 +7,12 @@ import (
 	"sync"
 
 	"github.com/jaegertracing/jaeger/pkg/queue"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model/event"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/mysensors"
 	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/tasmota"
 	"go.uber.org/zap"
@@ -124,7 +124,7 @@ func (s *Service) addRawMessageToQueueFunc(rawMsg *msgml.RawMessage) error {
 
 // listens messages from core componenet
 func (s *Service) startMessageListener() {
-	subscriptionID, err := mcbus.Subscribe(s.topicListenFromCore, func(event *busml.Event) {
+	subscriptionID, err := mcbus.Subscribe(s.topicListenFromCore, func(event *event.Event) {
 		msg := &msgml.Message{}
 		err := event.ToStruct(msg)
 		if err != nil {

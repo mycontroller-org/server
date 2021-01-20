@@ -9,6 +9,11 @@ const (
 	TopicPostRawMessageAcknowledgement = "raw_message_acknowledgement" // raw message acknowledge
 	TopicResourceServer                = "resource_server"             // a server listens on this topic, and serves the request
 	TopicServiceGateway                = "service_gateway"             // gateways listen this topic and perform actions like load, reload, stop, start, etc.,
+	TopicEvent                         = "event"                       // events
+	TopicEventGateway                  = "event/gateway"               // gateway events
+	TopicEventNode                     = "event/node"                  // node events
+	TopicEventSensor                   = "event/sensor"                // sensor events
+	TopicEventSensorField              = "event/sensor_field"          // sensor field events
 )
 
 const keyTopicPrefix = "topic_prefix"

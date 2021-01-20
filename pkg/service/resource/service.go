@@ -6,12 +6,12 @@ import (
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/backend/v2/pkg/model/event"
 	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
@@ -40,7 +40,7 @@ func Close() {
 	eventQueue.Stop()
 }
 
-func onEvent(event *busml.Event) {
+func onEvent(event *event.Event) {
 	reqEvent := &rsModel.Event{}
 	err := event.ToStruct(reqEvent)
 	if err != nil {

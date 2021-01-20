@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/backend/v2/pkg/model/event"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	sch "github.com/mycontroller-org/backend/v2/pkg/service/scheduler"
 	utils "github.com/mycontroller-org/backend/v2/pkg/utils"
-	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
 	mqtt "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/protocol_mqtt"
 	serial "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/protocol_serial"
@@ -106,7 +106,7 @@ func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
 	ackTopic := mcbus.GetTopicPostRawMessageAcknowledgement(p.GatewayConfig.ID, rawMsg.ID)
 	ackSubscriptionID, err := mcbus.Subscribe(
 		ackTopic,
-		func(event *busml.Event) {
+		func(event *event.Event) {
 			zap.L().Debug("acknowledgement status", zap.Any("event", event))
 			ackChannel <- true
 		},

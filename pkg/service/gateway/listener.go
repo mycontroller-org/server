@@ -3,11 +3,11 @@ package service
 import (
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/backend/v2/pkg/model/event"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	"go.uber.org/zap"
 )
 
@@ -56,7 +56,7 @@ func Close() {
 	eventQueue.Stop()
 }
 
-func onEvent(event *busml.Event) {
+func onEvent(event *event.Event) {
 	reqEvent := &rsml.Event{}
 	err := event.ToStruct(reqEvent)
 	if err != nil {
