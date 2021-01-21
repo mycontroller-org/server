@@ -46,10 +46,10 @@ func updateGateway(w http.ResponseWriter, r *http.Request) {
 }
 
 func enableGateway(w http.ResponseWriter, r *http.Request) {
-	IDs := []string{}
+	ids := []string{}
 	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
-		if len(IDs) > 0 {
-			err := gwAPI.Enable(IDs[0])
+		if len(ids) > 0 {
+			err := gwAPI.Enable(ids)
 			if err != nil {
 				return nil, err
 			}
@@ -57,14 +57,14 @@ func enableGateway(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("Supply a gateway id")
 	}
-	UpdateData(w, r, &IDs, updateFn)
+	UpdateData(w, r, &ids, updateFn)
 }
 
 func disableGateway(w http.ResponseWriter, r *http.Request) {
-	IDs := []string{}
+	ids := []string{}
 	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
-		if len(IDs) > 0 {
-			err := gwAPI.Disable(IDs[0])
+		if len(ids) > 0 {
+			err := gwAPI.Disable(ids)
 			if err != nil {
 				return nil, err
 			}
@@ -72,14 +72,14 @@ func disableGateway(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("Supply a gateway id")
 	}
-	UpdateData(w, r, &IDs, updateFn)
+	UpdateData(w, r, &ids, updateFn)
 }
 
 func reloadGateway(w http.ResponseWriter, r *http.Request) {
-	IDs := []string{}
+	ids := []string{}
 	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
-		if len(IDs) > 0 {
-			err := gwAPI.Reload(IDs[0])
+		if len(ids) > 0 {
+			err := gwAPI.Reload(ids)
 			if err != nil {
 				return nil, err
 			}
@@ -87,7 +87,7 @@ func reloadGateway(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("Supply a gateway id")
 	}
-	UpdateData(w, r, &IDs, updateFn)
+	UpdateData(w, r, &ids, updateFn)
 }
 
 func deleteGateways(w http.ResponseWriter, r *http.Request) {

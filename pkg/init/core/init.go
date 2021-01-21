@@ -7,6 +7,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/config"
 	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
+	fwdplSVC "github.com/mycontroller-org/backend/v2/pkg/service/forward_payload"
 	msgProcessor "github.com/mycontroller-org/backend/v2/pkg/service/message_processor"
 	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	resourceSVC "github.com/mycontroller-org/backend/v2/pkg/service/resource"
@@ -33,7 +34,13 @@ func initServices() {
 	// init resource server
 	err := resourceSVC.Init()
 	if err != nil {
-		zap.L().Fatal("Failed to init resource service listener", zap.Error(err))
+		zap.L().Fatal("Error on init resource service listener", zap.Error(err))
+	}
+
+	// init payload forward service
+	err = fwdplSVC.Init()
+	if err != nil {
+		zap.L().Fatal("Error on init forward payload service", zap.Error(err))
 	}
 }
 
@@ -80,6 +87,9 @@ func UpdateInitialUser() {
 }
 
 func closeServices() {
+
+	// close forward payload service
+	fwdplSVC.Close()
 
 	// close resource service
 	resourceSVC.Close()

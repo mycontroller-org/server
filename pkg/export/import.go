@@ -8,10 +8,11 @@ import (
 	dashboardAPI "github.com/mycontroller-org/backend/v2/pkg/api/dashboard"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	fwAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
+	fpAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notification_handler"
+	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
@@ -19,6 +20,7 @@ import (
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	mlfl "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	mlfw "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
+	mlfp "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
 	mlgw "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	mlnd "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	mlnh "github.com/mycontroller-org/backend/v2/pkg/model/notification_handler"
@@ -131,7 +133,7 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			return err
 		}
 		for index := 0; index < len(entities); index++ {
-			err = fwAPI.Save(&entities[index])
+			err = fwAPI.Save(&entities[index], false)
 			if err != nil {
 				return err
 			}
@@ -171,6 +173,19 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 		}
 		for index := 0; index < len(entities); index++ {
 			err = notificationHandlerAPI.Save(&entities[index])
+			if err != nil {
+				return err
+			}
+		}
+
+	case ml.EntityForwardPayload:
+		entities := make([]mlfp.Mapping, 0)
+		err := unmarshal(fileFormat, fileBytes, &entities)
+		if err != nil {
+			return err
+		}
+		for index := 0; index < len(entities); index++ {
+			err = fpAPI.Save(&entities[index])
 			if err != nil {
 				return err
 			}

@@ -9,6 +9,7 @@ const (
 	EntityFirmware             = "firmware"              // keeps firmware details
 	EntityUser                 = "user"                  // keeps user details
 	EntityDashboard            = "dashboard"             // keeps dashboard details
+	EntityForwardPayload       = "forward_payload"       // keeps forward payload mapping details
 	EntityNotificationHandlers = "notification_handlers" // keeps configurations for notification handlers
 )
 
@@ -29,6 +30,8 @@ const (
 	KeyEmail       = "Email"
 	KeyServiceType = "Type"
 	KeyServiceName = "Name"
+	KeySourceID    = "SourceID"
+	KeyEnabled     = "Enabled"
 )
 
 // Field names used in entities

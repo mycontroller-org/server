@@ -10,16 +10,16 @@ import (
 
 // Labels used in this provider
 const (
-	LabelImperialSystem    = "ms_imperial_system"     // this is bool label, used to configure about the system metric or imperial
-	LabelNodeID            = "ms_node_id"             // MySensors node id
-	LabelSensorID          = "ms_sensor_id"           // MySensors sensor id
-	LabelType              = "ms_type"                // MySensors type reference, can be used for sensor fields
-	LabelTypeString        = "ms_type_string"         // MySensors type in string format
-	LabelNodeType          = "ms_node_type"           // MySensors node type
-	LabelLockedReason      = "ms_locked_reason"       // If the the node is locked, reason will be in this label
-	LabelEraseEEPROM       = "ms_erase_eeprom"        // Supports only for MYSBootloader, on a reboot of node, the node eeprom will be erased
-	LabelFirmwareTypeID    = "ms_firmware_type_id"    // MySensors firmware type id
-	LabelFirmwareVersionID = "ms_firmware_version_id" // MySensors firmware version id
+	LabelImperialSystem    = "ms_imperial_system" // this is bool label, used to configure about the system metric or imperial
+	LabelNodeID            = "ms_node_id"         // MySensors node id
+	LabelSensorID          = "ms_sensor_id"       // MySensors sensor id
+	LabelType              = "ms_type"            // MySensors type reference, can be used for sensor fields
+	LabelTypeString        = "ms_type_string"     // MySensors type in string format
+	LabelNodeType          = "ms_node_type"       // MySensors node type
+	LabelLockedReason      = "ms_locked_reason"   // If the the node is locked, reason will be in this label
+	LabelEraseEEPROM       = "ms_erase_eeprom"    // Supports only for MYSBootloader, on a reboot of node, the node eeprom will be erased
+	LabelFirmwareTypeID    = "ms_type_id"         // MySensors firmware type id
+	LabelFirmwareVersionID = "ms_version_id"      // MySensors firmware version id
 )
 
 // internal references

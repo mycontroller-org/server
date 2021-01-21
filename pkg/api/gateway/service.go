@@ -1,10 +1,10 @@
 package gateway
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
@@ -47,46 +47,66 @@ func UnloadAll() {
 }
 
 // Enable gateway
-func Enable(ID string) error {
-	gwCfg, err := Get([]stgml.Filter{{Key: ml.KeyID, Value: ID}})
+func Enable(ids []string) error {
+	gateways, err := getGatewayEntries(ids)
 	if err != nil {
 		return err
 	}
-	if !gwCfg.Enabled {
-		gwCfg.Enabled = true
-		err = Save(gwCfg)
-		if err != nil {
-			return err
+
+	for index := 0; index < len(gateways); index++ {
+		gwCfg := gateways[index]
+		if !gwCfg.Enabled {
+			gwCfg.Enabled = true
+			err = Save(&gwCfg)
+			if err != nil {
+				return err
+			}
+			return postGatewayCommand(&gwCfg, rsml.CommandStart)
 		}
-		return postGatewayCommand(gwCfg, rsml.CommandStart)
 	}
 	return nil
 }
 
 // Disable gateway
-func Disable(ID string) error {
-	gwCfg, err := Get([]stgml.Filter{{Key: ml.KeyID, Value: ID}})
+func Disable(ids []string) error {
+	gateways, err := getGatewayEntries(ids)
 	if err != nil {
 		return err
 	}
-	if gwCfg.Enabled {
-		gwCfg.Enabled = false
-		err = Save(gwCfg)
-		if err != nil {
-			return err
+
+	for index := 0; index < len(gateways); index++ {
+		gwCfg := gateways[index]
+		if gwCfg.Enabled {
+			gwCfg.Enabled = false
+			err = Save(&gwCfg)
+			if err != nil {
+				return err
+			}
+			err = postGatewayCommand(&gwCfg, rsml.CommandStop)
+			if err != nil {
+				return err
+			}
 		}
-		return postGatewayCommand(gwCfg, rsml.CommandStop)
 	}
 	return nil
 }
 
 // Reload gateway
-func Reload(ID string) error {
-	gwCfg, err := Get([]stgml.Filter{{Key: ml.KeyID, Value: ID}})
+func Reload(ids []string) error {
+	gateways, err := getGatewayEntries(ids)
 	if err != nil {
 		return err
 	}
-	return postGatewayCommand(gwCfg, rsml.CommandReload)
+	for index := 0; index < len(gateways); index++ {
+		gateway := gateways[index]
+		if gateway.Enabled {
+			err = postGatewayCommand(&gateway, rsml.CommandReload)
+			if err != nil {
+				zap.L().Error("error on posting gateway reload command", zap.Error(err), zap.String("gateway", gateway.ID))
+			}
+		}
+	}
+	return nil
 }
 
 func postGatewayCommand(gwCfg *gwml.Config, command string) error {
@@ -103,4 +123,14 @@ func postGatewayCommand(gwCfg *gwml.Config, command string) error {
 	}
 	topic := mcbus.FormatTopic(mcbus.TopicServiceGateway)
 	return mcbus.Publish(topic, reqEvent)
+}
+
+func getGatewayEntries(ids []string) ([]gwml.Config, error) {
+	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
+	pagination := &stgml.Pagination{Limit: 100}
+	gwsResult, err := List(filters, pagination)
+	if err != nil {
+		return nil, err
+	}
+	return *gwsResult.Data.(*[]gwml.Config), nil
 }

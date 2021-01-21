@@ -103,6 +103,8 @@ const (
 
 	cmdRestart = "Restart"
 	cmdReset   = "Reset"
+
+	cmdLWT = "LWT"
 )
 
 const (

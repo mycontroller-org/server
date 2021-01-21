@@ -37,7 +37,7 @@ func SaveAndReload(gwCfg *gwml.Config) error {
 	if err != nil {
 		return err
 	}
-	return Reload(gwCfg.ID)
+	return Reload([]string{gwCfg.ID})
 }
 
 // Save gateway config
@@ -59,13 +59,11 @@ func SetState(id string, state ml.State) error {
 }
 
 // Delete gateway
-func Delete(IDs []string) (int64, error) {
-	for _, id := range IDs {
-		err := Disable(id)
-		if err != nil {
-			return 0, err
-		}
+func Delete(ids []string) (int64, error) {
+	err := Disable(ids)
+	if err != nil {
+		return 0, err
 	}
-	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
+	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
 	return stg.SVC.Delete(ml.EntityGateway, filters)
 }

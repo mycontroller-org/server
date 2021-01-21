@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 
+	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // Execute the given request
@@ -37,6 +39,27 @@ func Execute(quickID, payload string) error {
 		return fmt.Errorf("Unknown resource type: %s", resource)
 	}
 	return nil
+}
+
+// PostToSensorField sends the payload to the given sensorfiled
+func PostToSensorField(id string, payload string) error {
+	filters := []stgml.Filter{{Key: ml.KeyID, Value: id}}
+	field, err := fieldAPI.Get(filters)
+	if err != nil {
+		return err
+	}
+
+	// send payload
+	msg := msgml.NewMessage(false)
+	msg.GatewayID = field.GatewayID
+	msg.NodeID = field.NodeID
+	msg.SensorID = field.SensorID
+	pl := msgml.NewData()
+	pl.Name = field.FieldID
+	pl.Value = payload
+	msg.Payloads = append(msg.Payloads, pl)
+	msg.Type = msgml.TypeSet
+	return Post(&msg)
 }
 
 // Post a message to gateway

@@ -24,6 +24,8 @@ type Firmware struct {
 // FileConfig struct
 type FileConfig struct {
 	Name         string    `json:"name"`
+	InternalName string    `json:"internalName"`
+	Checksum     string    `json:"checksum"`
 	Size         int       `json:"size"`
 	ModifiedTime time.Time `json:"modifiedTime"`
 }

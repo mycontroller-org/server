@@ -40,6 +40,7 @@ func StartHandler() error {
 	registerWebsocketRoutes(router)
 	registerActionRoutes(router)
 	registerDashboardRoutes(router)
+	registerForwardPayloadRoutes(router)
 
 	if cfg.WebDirectory != "" {
 		fs := http.FileServer(http.Dir(cfg.WebDirectory))

@@ -172,6 +172,9 @@ func updateNodeData(msg *msgml.Message) error {
 		return err
 	}
 
+	// post field data to event listeners
+	postEvent(mcbus.TopicEventNode, node)
+
 	return nil
 }
 
@@ -216,6 +219,8 @@ func updateSensorDetail(msg *msgml.Message) error {
 		zap.L().Error("Unable to update the sensor in to database", zap.Error(err), zap.Any("sensor", sensor))
 		return err
 	}
+	// post field data to event listeners
+	postEvent(mcbus.TopicEventSensor, sensor)
 	return nil
 }
 
@@ -332,6 +337,9 @@ func setFieldData(msg *msgml.Message) error {
 			zap.L().Debug("Inserted in to storage db", zap.String("timeTaken", time.Since(startTime).String()))
 		}
 
+		// post field data to event listeners
+		postEvent(mcbus.TopicEventSensorFieldSet, field)
+
 		startTime = time.Now()
 		updateMetric := true
 		// for binary do not update duplicate values
@@ -367,6 +375,8 @@ func requestFieldData(msg *msgml.Message) error {
 			payload.Labels = field.Labels.Clone()
 			payloads = append(payloads, clonedData)
 		}
+		// post field data to event listeners
+		postEvent(mcbus.TopicEventSensorFieldRequest, field)
 	}
 
 	if len(payloads) > 0 {
@@ -388,5 +398,16 @@ func postMessage(msg *msgml.Message) {
 	}
 	topic := mcbus.GetTopicPostMessageToProvider(msg.GatewayID)
 	msg.IsReceived = false
-	mcbus.Publish(topic, msg)
+	err := mcbus.Publish(topic, msg)
+	if err != nil {
+		zap.L().Error("Error on posting message", zap.String("topic", topic), zap.Any("message", msg), zap.Error(err))
+	}
+}
+
+// sends updated resource as event.
+func postEvent(eventTopic string, resource interface{}) {
+	err := mcbus.Publish(eventTopic, resource)
+	if err != nil {
+		zap.L().Error("Error on posting resource data", zap.String("topic", eventTopic), zap.Any("resource", resource), zap.Error(err))
+	}
 }

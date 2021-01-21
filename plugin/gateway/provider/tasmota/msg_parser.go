@@ -119,6 +119,12 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	switch tmMsg.Topic {
 
 	case topicTele:
+
+		// ignore LWT commands
+		if tmMsg.Command == cmdLWT {
+			return nil, nil
+		}
+
 		data := make(map[string]interface{})
 		err := ut.ToStruct(rawMsg.Data, &data)
 		if err != nil {
