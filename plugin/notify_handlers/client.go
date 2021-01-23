@@ -1,4 +1,4 @@
-package operation
+package handler
 
 // Client interface details for operation
 type Client interface {

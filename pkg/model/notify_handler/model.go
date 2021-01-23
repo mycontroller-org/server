@@ -1,4 +1,4 @@
-package notificationhandler
+package notifyhandler
 
 import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"

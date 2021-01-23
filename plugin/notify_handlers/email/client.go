@@ -44,13 +44,13 @@ func Init(config cmap.CustomMap) (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	zap.L().Debug("Email client config", zap.Any("config", cfg))
+	zap.L().Debug("Email client", zap.Any("config", cfg))
 
 	switch cfg.Type {
 	case TypeSMTP, TypeNone:
 		return initSMTP(cfg)
 
 	default:
-		return nil, fmt.Errorf("Unknow email client:%s", cfg.Type)
+		return nil, fmt.Errorf("Unknown email client:%s", cfg.Type)
 	}
 }

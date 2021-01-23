@@ -23,7 +23,7 @@ import (
 	mlfp "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
 	mlgw "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	mlnd "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	mlnh "github.com/mycontroller-org/backend/v2/pkg/model/notification_handler"
+	mlnh "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	mlsr "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	mlus "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"

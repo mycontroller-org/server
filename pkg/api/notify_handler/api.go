@@ -2,7 +2,7 @@ package services
 
 import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	nthlml "github.com/mycontroller-org/backend/v2/pkg/model/notification_handler"
+	nthlml "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
