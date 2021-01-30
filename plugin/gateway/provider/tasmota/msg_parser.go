@@ -175,6 +175,10 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 						}
 						addIntoMessages(senWiFi)
 					}
+				} else if key == keyHSBColor {
+					plValue := ut.ToString(v)
+					pls := p.getHsbColor(plValue)
+					senControl.Payloads = append(senControl.Payloads, pls...)
 				} else {
 					pl := msgml.NewData()
 					pl.Name = key
@@ -226,12 +230,18 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 			msg := p.createMessage(tmMsg.NodeID, sensorControl, msgml.TypeSet)
 			addSensorPresentationMessage(sensorControl)
 			for key, v := range data {
-				// create new payload data
-				pl := msgml.NewData()
-				pl.Name = key
-				pl.Value = ut.ToString(v)
-				updateMetricTypeAndUnit(key, &pl)
-				msg.Payloads = append(msg.Payloads, pl)
+				plValue := ut.ToString(v)
+				if key == keyHSBColor {
+					pls := p.getHsbColor(plValue)
+					msg.Payloads = append(msg.Payloads, pls...)
+				} else {
+					// create new payload data
+					pl := msgml.NewData()
+					pl.Name = key
+					pl.Value = plValue
+					updateMetricTypeAndUnit(key, &pl)
+					msg.Payloads = append(msg.Payloads, pl)
+				}
 			}
 			addIntoMessages(msg)
 
@@ -471,6 +481,23 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 }
 
 // helper functions
+
+// get HsbColor to HsbColor1, HsbColor2, HsbColor3
+// input: "HSBColor":"249,0,0"(HsbColor1,2,3)
+func (p *Provider) getHsbColor(value string) []msgml.Data {
+	pls := make([]msgml.Data, 0)
+	pls = append(pls, msgml.Data{Name: keyHSBColor, Value: value, MetricType: mtsml.MetricTypeNone, Unit: mtsml.UnitNone})
+	if value != "" && strings.Contains(value, ",") {
+		values := strings.Split(value, ",")
+		if len(values) == 3 {
+			pls = append(pls, msgml.Data{Name: keyHSBColor1, Value: values[0], MetricType: mtsml.MetricTypeNone, Unit: mtsml.UnitNone})
+			pls = append(pls, msgml.Data{Name: keyHSBColor2, Value: values[1], MetricType: mtsml.MetricTypeNone, Unit: mtsml.UnitNone})
+			pls = append(pls, msgml.Data{Name: keyHSBColor3, Value: values[2], MetricType: mtsml.MetricTypeNone, Unit: mtsml.UnitNone})
+		}
+	}
+	return pls
+}
+
 func (p *Provider) createMessage(nodeID, sensorID, msgType string, pls ...msgml.Data) *msgml.Message {
 	msg := msgml.NewMessage(true)
 	msg.GatewayID = p.GatewayConfig.ID

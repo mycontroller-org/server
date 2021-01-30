@@ -154,6 +154,10 @@ const (
 	keyWifi             = "Wifi"
 	keyVoltage          = "Voltage"
 	keyCurrent          = "Current"
+	keyHSBColor         = "HSBColor"
+	keyHSBColor1        = "HSBColor1"
+	keyHSBColor2        = "HSBColor2"
+	keyHSBColor3        = "HSBColor3"
 )
 
 // this struct used to construct payload metric type and unit
