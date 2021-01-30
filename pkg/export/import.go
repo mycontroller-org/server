@@ -11,7 +11,7 @@ import (
 	fpAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notification_handler"
+	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"

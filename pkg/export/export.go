@@ -11,7 +11,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	"github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	"github.com/mycontroller-org/backend/v2/pkg/api/node"
-	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notification_handler"
+	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
 	"github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"

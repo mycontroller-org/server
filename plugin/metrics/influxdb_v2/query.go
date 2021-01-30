@@ -10,10 +10,10 @@ import (
 	"go.uber.org/zap"
 )
 
-// global contants
+// contants
 const (
-	DefaultWindow = "5m"
-	DefaultStart  = "-1h"
+	defaultWindow = "5m"
+	defaultStart  = "-1h"
 )
 
 func filter(name, value string) string {
@@ -113,7 +113,7 @@ func buildQuery(metricType, name, bucket, start, stop, window string, filters ma
 
 func (c *Client) executeQuery(q mtrml.Query) ([]mtrml.Data, error) {
 	// add range
-	start := DefaultStart
+	start := defaultStart
 	if q.Start != "" {
 		start = q.Start
 	}
@@ -136,7 +136,7 @@ func (c *Client) executeQuery(q mtrml.Query) ([]mtrml.Data, error) {
 	filters["_field"] = FieldValue
 
 	// add aggregateWindow
-	window := DefaultWindow
+	window := defaultWindow
 	if q.Window != "" {
 		window = q.Window
 	}
