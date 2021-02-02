@@ -104,6 +104,10 @@ const (
 	cmdRestart = "Restart"
 	cmdReset   = "Reset"
 
+	cmdInfo1 = "INFO1"
+	cmdInfo2 = "INFO2"
+	cmdInfo3 = "INFO3"
+
 	cmdLWT = "LWT"
 )
 
@@ -158,6 +162,12 @@ const (
 	keyHSBColor1        = "HSBColor1"
 	keyHSBColor2        = "HSBColor2"
 	keyHSBColor3        = "HSBColor3"
+	keyRestartReason    = "RestartReason"
+	keyModule           = "Module"
+	keyFallbackTopic    = "FallbackTopic"
+	keyGroupTopic       = "GroupTopic"
+	keyWebServerMode    = "WebServerMode"
+	keyBoot             = "boot"
 )
 
 // this struct used to construct payload metric type and unit

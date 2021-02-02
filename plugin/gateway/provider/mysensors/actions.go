@@ -171,7 +171,7 @@ func getNodeID(gwCfg *gwml.Config) string {
 
 func updateResetFlag(msg *msgml.Message) error {
 	// get the node details
-	node, err := nodeAPI.GetByIDs(msg.GatewayID, msg.NodeID)
+	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
 	if err != nil {
 		return err
 	}

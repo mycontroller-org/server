@@ -9,6 +9,7 @@ import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/normalize"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"go.uber.org/zap"
@@ -214,6 +215,10 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 				}
 			}
 
+		case cmdInfo1, cmdInfo2, cmdInfo3: // node message
+			msg := p.getNodeMessage(tmMsg.NodeID, data)
+			addIntoMessages(msg)
+
 		default:
 			// no action
 
@@ -265,52 +270,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 				switch header {
 
 				case headerStatus, headerDeviceParameters, headerFirmware, headerNetwork:
-					msg := p.createMessage(tmMsg.NodeID, sensorIDNone, msgml.TypePresentation)
-					for key, v := range data {
-						value := ut.ToString(v)
-
-						// create new payload data
-						pl := msgml.NewData()
-						pl.Name = key
-						pl.Value = value
-						include := true
-
-						switch key {
-						case keyFriendlyName:
-							pl.Name = ml.FieldName
-							names, ok := v.([]interface{})
-							if ok {
-								if len(names) > 0 {
-									pl.Value = ut.ToString(names[0])
-								}
-							}
-
-						case keyVersion:
-							pl.Labels.Set(ml.LabelNodeVersion, value)
-
-						case keyCore:
-							pl.Labels.Set(ml.LabelNodeLibraryVersion, value)
-
-						case keyIPAddress:
-							pl.Name = ml.FieldIPAddress
-							urlPL := msgml.Data{
-								Name:  ml.FieldNodeWebURL,
-								Value: fmt.Sprintf("http://%s", value),
-							}
-							urlPL.Labels = urlPL.Labels.Init()
-							msg.Payloads = append(msg.Payloads, urlPL)
-
-						case keyOtaURL, keySDK, keyBuildDateTime, keyCPUFrequency, keyHostname, keyMAC:
-							// will be included
-
-						default:
-							include = false
-						}
-
-						if include {
-							msg.Payloads = append(msg.Payloads, pl)
-						}
-					}
+					msg := p.getNodeMessage(tmMsg.NodeID, data)
 					addIntoMessages(msg)
 
 				case headerLogging: // add all the fields
@@ -496,6 +456,64 @@ func (p *Provider) getHsbColor(value string) []msgml.Data {
 		}
 	}
 	return pls
+}
+
+// get node details as payload
+func (p *Provider) getNodeMessage(nodeID string, data map[string]interface{}) *msgml.Message {
+	payloads := make([]msgml.Data, 0)
+	for key, v := range data {
+		value := ut.ToString(v)
+
+		// create new payload data
+		pl := msgml.NewData()
+		pl.Name = normalize.ToSnakeCase(key)
+		pl.Value = value
+		include := true
+
+		switch key {
+		case keyFriendlyName:
+			pl.Name = ml.FieldName
+			names, ok := v.([]interface{})
+			if ok {
+				if len(names) > 0 {
+					pl.Value = ut.ToString(names[0])
+				}
+			}
+
+		case keyVersion:
+			pl.Labels.Set(ml.LabelNodeVersion, value)
+
+		case keyCore:
+			pl.Labels.Set(ml.LabelNodeLibraryVersion, value)
+
+		case keyIPAddress:
+			pl.Name = ml.FieldIPAddress
+			// add host url
+			urlPL := msgml.NewData()
+			urlPL.Name = ml.FieldNodeWebURL
+			urlPL.Value = fmt.Sprintf("http://%s", value)
+			payloads = append(payloads, urlPL)
+
+		case keyOtaURL, keySDK, keyBuildDateTime, keyCPUFrequency,
+			keyHostname, keyMAC, keyRestartReason, keyModule,
+			keyFallbackTopic, keyGroupTopic, keyBoot, keyHardware:
+			// will be included
+
+		default:
+			include = false
+		}
+
+		if include {
+			payloads = append(payloads, pl)
+		}
+	}
+
+	if len(payloads) > 0 {
+		msg := p.createMessage(nodeID, sensorIDNone, msgml.TypePresentation)
+		msg.Payloads = payloads
+		return msg
+	}
+	return nil
 }
 
 func (p *Provider) createMessage(nodeID, sensorID, msgType string, pls ...msgml.Data) *msgml.Message {

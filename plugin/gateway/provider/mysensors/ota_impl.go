@@ -30,7 +30,7 @@ func executeFirmwareConfigRequest(msg *msgml.Message) (string, error) {
 	}
 
 	// get the node details
-	node, err := nodeAPI.GetByIDs(msg.GatewayID, msg.NodeID)
+	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
 	if err != nil {
 		return "", err
 	}
@@ -81,7 +81,7 @@ func executeFirmwareRequest(msg *msgml.Message) (string, error) {
 	}
 
 	// get the node details
-	node, err := nodeAPI.GetByIDs(msg.GatewayID, msg.NodeID)
+	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
 	if err != nil {
 		return "", err
 	}

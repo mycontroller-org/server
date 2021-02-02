@@ -5,11 +5,50 @@ import (
 	"fmt"
 
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
+	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	nodeml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
+
+// ExecuteNodeAction for a node
+func ExecuteNodeAction(action string, nodeIDs []string) error {
+	// verify is a valid action?
+	switch action {
+	case nodeml.ActionDiscover,
+		nodeml.ActionFirmwareUpdate,
+		nodeml.ActionHeartbeatRequest,
+		nodeml.ActionReboot,
+		nodeml.ActionRefreshNodeInfo,
+		nodeml.ActionReset:
+		// nothing to do, just continue
+	default:
+		return fmt.Errorf("invalid node action:%s", action)
+	}
+
+	nodes, err := nodeAPI.GetByeIDs(nodeIDs)
+	if err != nil {
+		return err
+	}
+	for index := 0; index < len(nodes); index++ {
+		node := nodes[index]
+		msg := msgml.NewMessage(false)
+		msg.GatewayID = node.GatewayID
+		msg.NodeID = node.NodeID
+		msg.Type = msgml.TypeAction
+		pl := msgml.NewData()
+		pl.Name = action
+		pl.Value = ""
+		msg.Payloads = append(msg.Payloads, pl)
+		err = Post(&msg)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 // Execute the given request
 func Execute(quickID, payload string) error {

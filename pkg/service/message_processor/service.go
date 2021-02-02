@@ -117,7 +117,7 @@ func processMessage(item interface{}) {
 
 // update node detail
 func updateNodeData(msg *msgml.Message) error {
-	node, err := nodeAPI.GetByIDs(msg.GatewayID, msg.NodeID)
+	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
 	if err != nil { // TODO: check entry availability on error message
 		node = &nml.Node{
 			GatewayID: msg.GatewayID,

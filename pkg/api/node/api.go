@@ -32,8 +32,8 @@ func Save(node *nml.Node) error {
 	return stg.SVC.Upsert(ml.EntityNode, node, filters)
 }
 
-// GetByIDs returns a node details by gatewayID and nodeId of a message
-func GetByIDs(gatewayID, nodeID string) (*nml.Node, error) {
+// GetByGatewayAndNodeID returns a node details by gatewayID and nodeId of a message
+func GetByGatewayAndNodeID(gatewayID, nodeID string) (*nml.Node, error) {
 	f := []stgml.Filter{
 		{Key: ml.KeyGatewayID, Value: gatewayID},
 		{Key: ml.KeyNodeID, Value: nodeID},
@@ -41,6 +41,27 @@ func GetByIDs(gatewayID, nodeID string) (*nml.Node, error) {
 	result := &nml.Node{}
 	err := stg.SVC.FindOne(ml.EntityNode, result, f)
 	return result, err
+}
+
+// GetByeID returns a node details by id
+func GetByeID(id string) (*nml.Node, error) {
+	f := []stgml.Filter{
+		{Key: ml.KeyID, Value: id},
+	}
+	result := &nml.Node{}
+	err := stg.SVC.FindOne(ml.EntityNode, result, f)
+	return result, err
+}
+
+// GetByeIDs returns a node details by id
+func GetByeIDs(ids []string) ([]nml.Node, error) {
+	filters := []stgml.Filter{
+		{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids},
+	}
+	pagination := &stgml.Pagination{Limit: int64(len(ids))}
+	nodes := make([]nml.Node, 0)
+	_, err := stg.SVC.Find(ml.EntityNode, &nodes, filters, pagination)
+	return nodes, err
 }
 
 // Delete node
