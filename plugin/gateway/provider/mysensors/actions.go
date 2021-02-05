@@ -23,20 +23,20 @@ func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *mes
 	switch fn {
 
 	case nml.ActionDiscover:
-		msMsg.Type = typeInternalDiscoverRequest
+		msMsg.Type = actionDiscoverRequest
 		msMsg.Payload = payloadEmpty
 		msMsg.NodeID = idBroadcast
 
 	case nml.ActionHeartbeatRequest:
-		msMsg.Type = typeInternalHeartBeatRequest
+		msMsg.Type = actionHeartBeatRequest
 		msMsg.Payload = payloadEmpty
 
 	case nml.ActionReboot:
-		msMsg.Type = typeInternalReboot
+		msMsg.Type = actionReboot
 		msMsg.Payload = payloadEmpty
 
 	case nml.ActionRefreshNodeInfo:
-		msMsg.Type = typeInternalPresentation
+		msMsg.Type = actionRequestPresentation
 		msMsg.Payload = payloadEmpty
 
 	case nml.ActionReset:
@@ -50,11 +50,11 @@ func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *mes
 		if err != nil {
 			return err
 		}
-		msMsg.Type = typeInternalReboot
+		msMsg.Type = actionReboot
 		msMsg.Payload = payloadEmpty
 
 	case "I_CONFIG":
-		msMsg.Type = typeInternalConfigResponse
+		msMsg.Type = actionConfig
 		isImperial := gwCfg.Labels.GetBool(LabelImperialSystem)
 		if isImperial {
 			msMsg.Payload = "I"
@@ -63,7 +63,7 @@ func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *mes
 		}
 
 	case "I_ID_REQUEST":
-		msMsg.Type = typeInternalIDResponse
+		msMsg.Type = actionIDResponse
 		msMsg.Payload = getNodeID(gwCfg)
 		if msMsg.Payload == "" {
 			return errors.New("Failed to get node ID")
@@ -71,7 +71,7 @@ func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *mes
 
 	case "I_TIME":
 		msMsg.Payload = getTimestamp(gwCfg)
-		msMsg.Type = typeInternalTime
+		msMsg.Type = actionTime
 
 	case nml.ActionFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST":
 		pl, err := executeFirmwareConfigRequest(msg)
@@ -79,7 +79,7 @@ func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *mes
 			return err
 		}
 		msMsg.Command = cmdStream
-		msMsg.Type = typeStreamFirmwareConfigResponse
+		msMsg.Type = actionFirmwareConfigResponse
 		msMsg.Payload = strings.ToUpper(pl)
 
 	case "ST_FIRMWARE_REQUEST":
@@ -88,7 +88,7 @@ func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *mes
 			return err
 		}
 		msMsg.Command = cmdStream
-		msMsg.Type = typeStreamFirmwareResponse
+		msMsg.Type = actionFirmwareResponse
 		msMsg.Payload = strings.ToUpper(pl)
 
 	default:

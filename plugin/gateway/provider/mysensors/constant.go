@@ -42,20 +42,17 @@ const (
 	cmdInternal     = "3"
 	cmdStream       = "4"
 
-	// Internal type details
-	typeInternalTime             = "1"
-	typeInternalIDResponse       = "4"
-	typeInternalConfigResponse   = "6"
-	typeInternalReboot           = "13"
-	typeInternalHeartBeatRequest = "18"
-	typeInternalPresentation     = "19"
-	typeInternalDiscoverRequest  = "20"
-
+	// Internal action type details
+	actionTime                = "1"
+	actionIDResponse          = "4"
+	actionConfig              = "6"
+	actionReboot              = "13"
+	actionHeartBeatRequest    = "18"
+	actionRequestPresentation = "19"
+	actionDiscoverRequest     = "20"
 	// Stream type details
-	typeStreamFirmwareConfigRequest  = "0"
-	typeStreamFirmwareConfigResponse = "1"
-	typeStreamFirmwareRequest        = "2"
-	typeStreamFirmwareResponse       = "3"
+	actionFirmwareConfigResponse = "1"
+	actionFirmwareResponse       = "3"
 )
 
 // mysensors message data

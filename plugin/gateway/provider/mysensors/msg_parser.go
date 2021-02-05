@@ -6,10 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
@@ -123,10 +122,134 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	return rawMsg, nil
 }
 
-// ToMessage converts to mc specific
+// ToMessage converts to mycontroller specific
 func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
 	messages := make([]*msgml.Message, 0)
 
+	msMsg, err := p.decodeRawMessage(rawMsg)
+	if err != nil {
+		return nil, err
+	}
+
+	// if it is a acknowledgement message send it to acknowledgement topic and proceed further
+	if msMsg.Ack == "1" && rawMsg.IsReceived {
+		msgID := generateMessageID(msMsg)
+		topicAck := mcbus.GetTopicPostRawMessageAcknowledgement(p.GatewayConfig.ID, msgID)
+		err := mcbus.Publish(topicAck, "acknowledgement received.")
+		if err != nil {
+			zap.L().Error("failed post acknowledgement status", zap.String("gateway", p.GatewayConfig.Name), zap.String("topic", topicAck), zap.Error(err))
+		}
+	}
+
+	// Message
+	msg := &msgml.Message{
+		NodeID:     msMsg.NodeID,
+		SensorID:   msMsg.SensorID,
+		IsAck:      msMsg.Ack == "1",
+		IsReceived: true,
+		Timestamp:  rawMsg.Timestamp,
+		Type:       cmdMapForRx[msMsg.Command],
+	}
+	msgPL := msgml.NewData()
+	msgPL.Value = msMsg.Payload
+
+	messages = append(messages, msg)
+
+	// update the payload details on return
+	includePayloads := func() { msg.Payloads = []msgml.Data{msgPL} }
+	defer includePayloads()
+
+	err = verifyAndUpdateNodeSensorIDs(msMsg)
+	if err != nil {
+		return nil, err
+	}
+
+	// set labels
+	msgPL.Labels.Set(LabelType, msMsg.Type)
+	if msg.NodeID != "" { // set node id if available
+		msgPL.Labels.Set(LabelNodeID, msg.NodeID)
+	}
+	if msg.SensorID != "" { // set sensor id if available
+		msgPL.Labels.Set(LabelSensorID, msg.SensorID)
+	}
+
+	// entering into normal message processing
+	switch {
+
+	case msMsg.SensorID != "": // perform sensor related stuff
+		switch msMsg.Command {
+		case cmdPresentation:
+			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
+				msgPL.Name = ml.FieldName
+				msgPL.Labels.Set(LabelTypeString, _type)
+			} else {
+				// not supported? should I have to return from here?
+			}
+
+		case cmdSet, cmdRequest:
+			err := updateFieldAndUnit(msMsg, &msgPL)
+			if err != nil {
+				return nil, err
+			}
+
+		default:
+			// not supported? should I have to return from here?
+		}
+
+	case msMsg.NodeID != "": // perform node related stuff
+		switch msMsg.Command {
+
+		case cmdPresentation:
+			msgPL.Labels.Set(ml.LabelNodeLibraryVersion, msMsg.Payload)
+			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
+				if _type == "S_ARDUINO_REPEATER_NODE" || _type == "S_ARDUINO_NODE" {
+					// this is a node lib version data
+					msgPL.Name = ml.FieldNone
+					if _type == "S_ARDUINO_REPEATER_NODE" {
+						msgPL.Labels.Set(LabelNodeType, "repeater")
+					}
+				} else {
+					// return?
+				}
+			} else {
+				// return?
+			}
+		case cmdInternal:
+			proceedFurther, err := updateNodeInternalMessages(msg, &msgPL, msMsg)
+			if err != nil || !proceedFurther {
+				return nil, err
+			}
+
+		case cmdStream:
+			if typeName, ok := streamTypeMapForRx[msMsg.Type]; ok {
+				// update the requested action
+				_, isActionRequest := ut.FindItem(customValidActions, typeName)
+				if !isActionRequest {
+					// do not care about other types
+					return nil, nil
+				}
+				msg.Type = msgml.TypeAction
+				msgPL.Name = typeName
+			} else {
+				return nil, fmt.Errorf("Message stream type not found: %s", msMsg.Type)
+			}
+		}
+
+	case msMsg.NodeID == "": // don't case about gateway broadcast message
+		return nil, nil
+
+	default:
+		zap.L().Warn("This message not handled", zap.String("gateway", p.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
+		return nil, nil
+	}
+
+	return messages, nil
+}
+
+// helper functions
+
+// decodes raw message into message, which is local struct
+func (p *Provider) decodeRawMessage(rawMsg *msgml.RawMessage) (*message, error) {
 	d := make([]string, 0)
 	payload := ""
 
@@ -157,7 +280,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	}
 
 	// MySensors message
-	msMsg := message{
+	msMsg := &message{
 		NodeID:   d[0],
 		SensorID: d[1],
 		Command:  d[2],
@@ -165,48 +288,24 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 		Type:     d[4],
 		Payload:  payload,
 	}
+	return msMsg, nil
+}
 
-	// if it is a acknowledgement message send it to acknowledgement topic
-	if msMsg.Ack == "1" { // TODO: do send all the messaged to ack topic, verify ack enabled status
-		msgID := generateMessageID(&msMsg)
-		topicAck := mcbus.GetTopicPostRawMessageAcknowledgement(p.GatewayConfig.ID, msgID)
-		err := mcbus.Publish(topicAck, "acknowledgement received.")
-		if err != nil {
-			zap.L().Error("failed post acknowledgement status", zap.String("gateway", p.GatewayConfig.Name), zap.String("topic", topicAck), zap.Error(err))
-		}
-	}
-
-	// Message
-	msg := &msgml.Message{
-		NodeID:     msMsg.NodeID,
-		SensorID:   msMsg.SensorID,
-		IsAck:      msMsg.Ack == "1",
-		IsReceived: true,
-		Timestamp:  rawMsg.Timestamp,
-		Type:       cmdMapForRx[msMsg.Command],
-	}
-	msgPL := msgml.NewData()
-	msgPL.Value = payload
-
-	messages = append(messages, msg)
-
-	// update the payload details on return
-	defer func() { msg.Payloads = []msgml.Data{msgPL} }()
-
-	// verify node and sensor ids
+// verify node and sensor ids
+func verifyAndUpdateNodeSensorIDs(msg *message) error {
 	nID, err := strconv.ParseUint(msg.NodeID, 10, 64)
 	if err != nil {
-		return nil, fmt.Errorf("Invalid node id: %s", msg.NodeID)
+		return fmt.Errorf("Invalid node id: %s", msg.NodeID)
 	}
 	if nID > idBroadcastInt {
-		return nil, fmt.Errorf("Invalid node id: %s", msg.NodeID)
+		return fmt.Errorf("Invalid node id: %s", msg.NodeID)
 	}
 	sID, err := strconv.ParseUint(msg.SensorID, 10, 64)
 	if err != nil {
-		return nil, fmt.Errorf("Invalid sensor id: %s", msg.SensorID)
+		return fmt.Errorf("Invalid sensor id: %s", msg.SensorID)
 	}
 	if sID > idBroadcastInt {
-		return nil, fmt.Errorf("Invalid sensor id: %s", msg.SensorID)
+		return fmt.Errorf("Invalid sensor id: %s", msg.SensorID)
 	}
 
 	// Remove sensor id, if it is a internal message
@@ -218,180 +317,65 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	if msg.NodeID == idBroadcast {
 		msg.NodeID = ""
 	}
+	return nil
+}
 
-	// set labels
-	msgPL.Labels.Set(LabelType, msMsg.Type)
-	if msg.NodeID != "" { // set node id if available
-		msgPL.Labels.Set(LabelNodeID, msg.NodeID)
-	}
-	if msg.SensorID != "" { // set sensor id if available
-		msgPL.Labels.Set(LabelSensorID, msg.SensorID)
-	}
-
-	// internal functions
-	updateFieldData := func() error {
-		_field, ok := setReqFieldMapForRx[msMsg.Type]
-		if ok {
-			msgPL.Labels.Set(LabelTypeString, _field)
-		} else {
-			_field = "V_CUSTOM"
-			zap.L().Warn("This set, req not found. update this. Setting as V_CUSTOM", zap.Any("msMsg", msMsg))
-		}
-
-		// get type and unit
-		if typeUnit, ok := metricTypeAndUnit[_field]; ok {
-			msgPL.Name = _field
-			msgPL.MetricType = typeUnit.Type
-			msgPL.Unit = typeUnit.Unit
-		} else {
-			// not supported? should I have to return from here?
-		}
-		return nil
+// update field name and unit
+func updateFieldAndUnit(msMsg *message, msgPL *msgml.Data) error {
+	fieldName, ok := setReqFieldMapForRx[msMsg.Type]
+	if ok {
+		msgPL.Labels.Set(LabelTypeString, fieldName)
+	} else {
+		fieldName = "V_CUSTOM"
+		zap.L().Warn("This set, req not found. update this. Setting as V_CUSTOM", zap.Any("msMsg", msMsg))
 	}
 
-	if msg.IsReceived && msg.IsAck { // process acknowledgement message
-		// MySensors support ack message only for field/variable level, not for others
-		if msMsg.SensorID != idBroadcast && (msMsg.Command == cmdSet || msMsg.Command == cmdRequest) {
-			err := updateFieldData()
-			if err != nil {
-				return nil, err
-			}
-			return messages, nil
-		} else if msMsg.NodeID != idBroadcast {
-			if msMsg.Command == cmdInternal {
-				switch msMsg.Type { // valid only for this list
-				case typeInternalConfigResponse:
-					msgPL.Name = "I_CONFIG"
-				case typeInternalHeartBeatRequest:
-					msgPL.Name = nml.ActionHeartbeatRequest
-				case typeInternalIDResponse:
-					msgPL.Name = "I_ID_REQUEST"
-				case typeInternalPresentation:
-					msgPL.Name = nml.ActionRefreshNodeInfo
-				case typeInternalReboot:
-					msgPL.Name = nml.ActionReboot
-				case typeInternalTime:
-					msgPL.Name = "I_TIME"
-				default:
-					// leave it, will fail at the end of root if
-				}
-				if msgPL.Name != "" {
-					return messages, nil
-				}
-			} else if msMsg.Command == cmdStream {
-				if _type, ok := streamTypeMapForRx[msMsg.Type]; ok {
-					msg.Type = msgml.TypeAction
-					msgPL.Name = _type
-					return messages, nil
-				}
-			}
-		}
-		return messages, fmt.Errorf("For this message ack not implemented, rawMessage: %v", msMsg)
+	// get type and unit
+	if typeUnit, ok := metricTypeAndUnit[fieldName]; ok {
+		msgPL.Name = fieldName
+		msgPL.MetricType = typeUnit.Type
+		msgPL.Unit = typeUnit.Unit
+	} else {
+		// not supported? should I have to return from here?
 	}
+	return nil
+}
 
-	// entering into normal message processing
-	switch {
-
-	case msMsg.SensorID != idBroadcast: // perform sensor related stuff
-		switch msMsg.Command {
-		case cmdPresentation:
-			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
-				msgPL.Name = ml.FieldName
-				msgPL.Labels.Set(LabelTypeString, _type)
-			} else {
-				// not supported? should I have to return from here?
-			}
-
-		case cmdSet, cmdRequest:
-			err := updateFieldData()
-			if err != nil {
-				return nil, err
-			}
-
-		default:
-			// not supported? should I have to return from here?
-		}
-
-	case msMsg.NodeID != idBroadcast: // perform node related stuff
-		switch msMsg.Command {
-
-		case cmdPresentation:
-			msgPL.Labels.Set(ml.LabelNodeLibraryVersion, payload)
-			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
-				if _type == "S_ARDUINO_REPEATER_NODE" || _type == "S_ARDUINO_NODE" {
-					// this is a node lib version data
-					msgPL.Name = ml.FieldNone
-					if _type == "S_ARDUINO_REPEATER_NODE" {
-						msgPL.Labels.Set(LabelNodeType, "repeater")
-					}
-				} else {
-					// return?
-				}
-			} else {
-				// return?
-			}
-		case cmdInternal:
-			if _type, ok := internalTypeMapForRx[msMsg.Type]; ok {
-				if fieldName, ok := internalValidFields[_type]; ok {
-					msgPL.Name = fieldName
-					msg.Type = msgml.TypeSet
-
-					if fieldName == ml.LabelNodeVersion {
-						msgPL.Labels.Set(ml.LabelNodeVersion, payload)
-					}
-
-					if fieldName == ml.FieldLocked { // update locked reason
-						msgPL.Others.Set(LabelLockedReason, payload, nil)
-						msgPL.Value = "true"
-					}
-				} else {
-					msg.Type = msgml.TypeAction
-					msgPL.Name = _type
-
-					// filter implemented requests
-					_, found := ut.FindItem(customValidActions, _type)
-					if !found {
-						return nil, fmt.Errorf("This internal message handling not implemented: %s", _type)
-					}
-				}
-			} else {
-				return nil, fmt.Errorf("Message internal type not found: %s", msMsg.Type)
-			}
-
-		case cmdStream:
-			if _type, ok := streamTypeMapForRx[msMsg.Type]; ok {
-				msg.Type = msgml.TypeAction
-				msgPL.Name = _type
-
-				// filter implemented requests
-				_, found := ut.FindItem(customValidActions, _type)
-				if !found {
-					return nil, fmt.Errorf("This stream message handling not implemented: %s", _type)
-				}
-			} else {
-				return nil, fmt.Errorf("Message stream type not found: %s", msMsg.Type)
-			}
-		}
-
-	case msMsg.NodeID == idBroadcast:
-		if _type, ok := internalTypeMapForRx[msMsg.Type]; ok {
+// updates node internal message data, return true, if further actions required
+// returns false, if the message can be dropped
+func updateNodeInternalMessages(msg *msgml.Message, msgPL *msgml.Data, msMsg *message) (bool, error) {
+	if msMsg.Ack == "1" { // do not care about internal ack messages
+		return false, nil
+	}
+	if typeName, ok := internalTypeMapForRx[msMsg.Type]; ok {
+		// update the requested access
+		_, isActionRequest := ut.FindItem(customValidActions, typeName)
+		if isActionRequest {
 			msg.Type = msgml.TypeAction
-			msgPL.Name = _type
-
-			// filter implemented requests
-			_, found := ut.FindItem(customValidActions, _type)
-			if !found {
-				return nil, fmt.Errorf("This internal message handling not implemented: %s", _type)
-			}
-		} else {
-			return nil, fmt.Errorf("Message internal type not found: %s", msMsg.Type)
+			msgPL.Name = typeName
+			return true, nil
 		}
 
-	default:
-		// if none of the above
-	}
+		// verify it is valid field to update
+		if fieldName, ok := internalValidFields[typeName]; ok {
+			msgPL.Name = fieldName
+			msg.Type = msgml.TypeSet
 
-	return messages, nil
+			if fieldName == ml.LabelNodeVersion {
+				msgPL.Labels.Set(ml.LabelNodeVersion, msMsg.Payload)
+			}
+
+			if fieldName == ml.FieldLocked { // update locked reason
+				msgPL.Others.Set(LabelLockedReason, msMsg.Payload, nil)
+				msgPL.Value = "true"
+			}
+			return true, nil
+		}
+
+		// if non hits just return from here
+		return false, nil
+	}
+	return false, fmt.Errorf("Message internal type not found: %s", msMsg.Type)
 }
 
 // converts message to MySensors specific type
