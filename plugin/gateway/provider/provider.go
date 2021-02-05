@@ -15,6 +15,6 @@ type Provider interface {
 
 // Providers list
 const (
-	TypeMySensors = "mysensors"
-	TypeTasmota   = "tasmota"
+	TypeMySensorsV2 = "mysensors_v2"
+	TypeTasmota     = "tasmota"
 )

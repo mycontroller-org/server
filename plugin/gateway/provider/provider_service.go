@@ -13,7 +13,7 @@ import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/mysensors"
+	mysensors "github.com/mycontroller-org/backend/v2/plugin/gateway/provider/mysensors_v2"
 	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/tasmota"
 	"go.uber.org/zap"
 )
@@ -48,7 +48,7 @@ type SubscriptionID struct {
 func GetService(gatewayCfg *gwml.Config) (*Service, error) {
 	var provider Provider
 	switch gatewayCfg.Provider.GetString(model.NameType) {
-	case TypeMySensors:
+	case TypeMySensorsV2:
 		provider = mysensors.Init(gatewayCfg)
 
 	case TypeTasmota:
