@@ -159,7 +159,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	includePayloads := func() { msg.Payloads = []msgml.Data{msgPL} }
 	defer includePayloads()
 
-	err = verifyAndUpdateNodeSensorIDs(msMsg)
+	err = verifyAndUpdateNodeSensorIDs(msMsg, msg)
 	if err != nil {
 		return nil, err
 	}
@@ -292,31 +292,36 @@ func (p *Provider) decodeRawMessage(rawMsg *msgml.RawMessage) (*message, error) 
 }
 
 // verify node and sensor ids
-func verifyAndUpdateNodeSensorIDs(msg *message) error {
-	nID, err := strconv.ParseUint(msg.NodeID, 10, 64)
+func verifyAndUpdateNodeSensorIDs(msMsg *message, msg *msgml.Message) error {
+	nID, err := strconv.ParseUint(msMsg.NodeID, 10, 64)
 	if err != nil {
-		return fmt.Errorf("Invalid node id: %s", msg.NodeID)
+		return fmt.Errorf("Invalid node id: %s", msMsg.NodeID)
 	}
 	if nID > idBroadcastInt {
-		return fmt.Errorf("Invalid node id: %s", msg.NodeID)
+		return fmt.Errorf("Invalid node id: %s", msMsg.NodeID)
 	}
-	sID, err := strconv.ParseUint(msg.SensorID, 10, 64)
+	sID, err := strconv.ParseUint(msMsg.SensorID, 10, 64)
 	if err != nil {
-		return fmt.Errorf("Invalid sensor id: %s", msg.SensorID)
+		return fmt.Errorf("Invalid sensor id: %s", msMsg.SensorID)
 	}
 	if sID > idBroadcastInt {
-		return fmt.Errorf("Invalid sensor id: %s", msg.SensorID)
+		return fmt.Errorf("Invalid sensor id: %s", msMsg.SensorID)
 	}
 
 	// Remove sensor id, if it is a internal message
-	if msg.SensorID == idBroadcast {
-		msg.SensorID = ""
+	if msMsg.SensorID == idBroadcast {
+		msMsg.SensorID = ""
 	}
 
 	// Remove node id, if it is a broadcast message
-	if msg.NodeID == idBroadcast {
-		msg.NodeID = ""
+	if msMsg.NodeID == idBroadcast {
+		msMsg.NodeID = ""
 	}
+
+	// update node id and sensor id
+	msg.SensorID = msMsg.SensorID
+	msg.NodeID = msMsg.NodeID
+
 	return nil
 }
 

@@ -370,10 +370,12 @@ func requestFieldData(msg *msgml.Message) error {
 		}
 
 		if field.Payload.Value != nil {
-			clonedData := payload.Clone()                          // clone the message
 			payload.Value = fmt.Sprintf("%v", field.Payload.Value) // update payload
-			payload.Labels = field.Labels.Clone()
-			payloads = append(payloads, clonedData)
+			if payload.Value != "" {                               // if the value is not empty update it
+				payload.Labels = field.Labels.Clone()
+				clonedData := payload.Clone() // clone the message
+				payloads = append(payloads, clonedData)
+			}
 		}
 		// post field data to event listeners
 		postEvent(mcbus.TopicEventSensorFieldRequest, field)
