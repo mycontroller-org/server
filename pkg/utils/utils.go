@@ -88,3 +88,9 @@ func FindItem(slice []string, value string) (int, bool) {
 	}
 	return -1, false
 }
+
+// ContainsString returns the available status
+func ContainsString(slice []string, value string) bool {
+	_, available := FindItem(slice, value)
+	return available
+}

@@ -1,57 +1,51 @@
 package scheduler
 
 import (
-	"github.com/robfig/cron/v3"
+	"fmt"
+
+	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	coreScheduler "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
+	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
+	"go.uber.org/zap"
 )
 
-// Scheduler service
-var (
-	SVC *Scheduler
+const (
+	schedulePrefix = "user_schedule"
 )
 
-// Scheduler struct
-type Scheduler struct {
-	cron      *cron.Cron
-	jobs      map[string]int
-	functions map[string]int
-}
-
-// Close scheduler
-func (s *Scheduler) Close() {
-	s.cron.Stop()
-}
-
-// Init cron scheduler
-func Init() {
-	if SVC == nil {
-		SVC = &Scheduler{
-			cron:      cron.New(cron.WithSeconds()),
-			jobs:      map[string]int{},
-			functions: map[string]int{},
-		}
-		SVC.Start()
+func schedule(cfg *schedulerML.Config) {
+	if cfg.State == nil {
+		cfg.State = &schedulerML.State{}
 	}
-}
-
-// Start scheduler
-func (s *Scheduler) Start() {
-	s.cron.Start()
-}
-
-// AddFunc function
-func (s *Scheduler) AddFunc(name, cron string, targetFunc func()) error {
-	id, err := s.cron.AddFunc(cron, targetFunc)
+	name := getScheduleID(cfg.ID)
+	cronSpec, err := getCronSpec(cfg)
 	if err != nil {
-		return err
+		zap.L().Error("error on creating cron spec", zap.Error(err))
+		cfg.State.LastStatus = false
+		cfg.State.Message = fmt.Sprintf("Error on cron spec creation: %s", err.Error())
+		rsUtils.SetScheduleState(cfg.ID, *cfg.State)
+		return
 	}
-	s.functions[name] = int(id)
-	return nil
+	err = coreScheduler.SVC.AddFunc(name, cronSpec, getScheduleTriggerFunc(cfg, cronSpec))
+	if err != nil {
+		zap.L().Error("error on adding schedule", zap.Error(err))
+		cfg.State.LastStatus = false
+		cfg.State.Message = fmt.Sprintf("Error on adding into scheduler: %s", err.Error())
+		rsUtils.SetScheduleState(cfg.ID, *cfg.State)
+	}
+	cfg.State.Message = fmt.Sprintf("Added into scheduler. cron spec:[%s]", cronSpec)
+	rsUtils.SetScheduleState(cfg.ID, *cfg.State)
 }
 
-// RemoveFunc function
-func (s *Scheduler) RemoveFunc(name string) {
-	id, ok := s.functions[name]
-	if ok {
-		s.cron.Remove(cron.EntryID(id))
-	}
+func unschedule(id string) {
+	name := getScheduleID(id)
+	coreScheduler.SVC.RemoveFunc(name)
+}
+
+func unloadAll() {
+	zap.L().Info("Yet to implement")
+}
+
+func getScheduleID(id string) string {
+	return fmt.Sprintf("%s_%s", schedulePrefix, id)
 }

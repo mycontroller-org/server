@@ -1,50 +1,85 @@
-package services
+package handler
 
 import (
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	nthlml "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // List by filter and pagination
-func List(f []stgml.Filter, p *stgml.Pagination) (*stgml.Result, error) {
-	out := make([]nthlml.Config, 0)
-	return stg.SVC.Find(ml.EntityNotificationHandlers, &out, f, p)
+func List(filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
+	out := make([]handlerML.Config, 0)
+	return stg.SVC.Find(ml.EntityNotifyHandler, &out, filters, pagination)
 }
 
-// Get a Service
-func Get(f []stgml.Filter) (nthlml.Config, error) {
-	out := nthlml.Config{}
-	err := stg.SVC.FindOne(ml.EntityNotificationHandlers, &out, f)
+// Get a config
+func Get(f []stgml.Filter) (handlerML.Config, error) {
+	out := handlerML.Config{}
+	err := stg.SVC.FindOne(ml.EntityNotifyHandler, &out, f)
 	return out, err
 }
 
-// Save Service config
-func Save(node *nthlml.Config) error {
+// SaveAndReload handler
+func SaveAndReload(cfg *handlerML.Config) error {
+	cfg.State = &model.State{} // reset state
+	err := Save(cfg)
+	if err != nil {
+		return err
+	}
+	return Reload([]string{cfg.ID})
+}
+
+// Save config
+func Save(node *handlerML.Config) error {
 	if node.ID == "" {
 		node.ID = ut.RandUUID()
 	}
 	f := []stgml.Filter{
 		{Key: ml.KeyID, Value: node.ID},
 	}
-	return stg.SVC.Upsert(ml.EntityNotificationHandlers, node, f)
+	return stg.SVC.Upsert(ml.EntityNotifyHandler, node, f)
 }
 
-// GetByTypeName returns a Service by type and name
-func GetByTypeName(ServiceType, name string) (*nthlml.Config, error) {
-	f := []stgml.Filter{
-		{Key: ml.KeyServiceType, Value: ServiceType},
-		{Key: ml.KeyServiceName, Value: name},
+// SetState Updates state data
+func SetState(id string, state *ml.State) error {
+	cfg, err := GetByID(id)
+	if err != nil {
+		return err
 	}
-	out := &nthlml.Config{}
-	err := stg.SVC.FindOne(ml.EntityNotificationHandlers, out, f)
+	cfg.State = state
+	return Save(cfg)
+}
+
+// GetByTypeName returns a handler by type and name
+func GetByTypeName(handlerType, name string) (*handlerML.Config, error) {
+	f := []stgml.Filter{
+		{Key: ml.KeyHandlerType, Value: handlerType},
+		{Key: ml.KeyHandlerName, Value: name},
+	}
+	out := &handlerML.Config{}
+	err := stg.SVC.FindOne(ml.EntityNotifyHandler, out, f)
+	return out, err
+}
+
+// GetByID returns a handler by id
+func GetByID(ID string) (*handlerML.Config, error) {
+	f := []stgml.Filter{
+		{Key: ml.KeyID, Value: ID},
+	}
+	out := &handlerML.Config{}
+	err := stg.SVC.FindOne(ml.EntityNotifyHandler, out, f)
 	return out, err
 }
 
 // Delete Service
-func Delete(IDs []string) (int64, error) {
-	f := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
-	return stg.SVC.Delete(ml.EntityNotificationHandlers, f)
+func Delete(ids []string) (int64, error) {
+	err := Disable(ids)
+	if err != nil {
+		return 0, err
+	}
+	f := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
+	return stg.SVC.Delete(ml.EntityNotifyHandler, f)
 }

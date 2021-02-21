@@ -10,6 +10,8 @@ import (
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	quickIdUL "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 )
 
@@ -55,14 +57,14 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 
 	if quickID, ok := params[QuickID]; ok {
 		if len(quickID) > 0 {
-			rt, kvMap, err := model.ResourceKeyValueMap(quickID[0])
+			rt, kvMap, err := quickIdUL.ResourceKeyValueMap(quickID[0])
 			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return
 			}
 			// get resource details
-			switch rt {
-			case model.QuickIDSensorField:
+			switch {
+			case utils.ContainsString(quickIdUL.QuickIDSensorField, rt):
 				// get field details
 				field, err := field.GetByIDs(kvMap[model.KeyGatewayID], kvMap[model.KeyNodeID], kvMap[model.KeySensorID], kvMap[model.KeyFieldID])
 				if err != nil {

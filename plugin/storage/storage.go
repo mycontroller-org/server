@@ -33,6 +33,8 @@ const (
 	OperatorNotEqual         = "ne"
 	OperatorIn               = "in"
 	OperatorNotIn            = "nin"
+	OperatorRangeIn          = "rangeIn"
+	OperatorRangeNotIn       = "rangeNotIn"
 	OperatorGreaterThan      = "gt"
 	OperatorLessThan         = "lt"
 	OperatorGreaterThanEqual = "gte"

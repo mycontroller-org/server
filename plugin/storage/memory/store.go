@@ -8,7 +8,7 @@ import (
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
-	sch "github.com/mycontroller-org/backend/v2/pkg/service/scheduler"
+	sch "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"

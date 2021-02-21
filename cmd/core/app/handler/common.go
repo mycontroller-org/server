@@ -214,32 +214,43 @@ func FindMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 }
 
 // SaveEntity func
-func SaveEntity(w http.ResponseWriter, r *http.Request, en string, e interface{}, bwFunc func(e interface{}, f *[]stgml.Filter) error) {
+func SaveEntity(w http.ResponseWriter, r *http.Request, entityName string, entity interface{}, bwFunc func(entity interface{}, filters *[]stgml.Filter) error) {
 	w.Header().Set("Content-Type", "application/json")
 
-	d, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
+	err := LoadEntity(w, r, entityName)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	err = json.Unmarshal(d, &e)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
+
 	f := make([]stgml.Filter, 0)
 	if bwFunc != nil {
-		err = bwFunc(e, &f)
+		err = bwFunc(entity, &f)
 		if err != nil {
 			http.Error(w, err.Error(), 500)
 			return
 		}
 	}
 
-	err = stg.SVC.Upsert(en, e, f)
+	err = stg.SVC.Upsert(entityName, entity, f)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+}
+
+// LoadEntity func
+func LoadEntity(w http.ResponseWriter, r *http.Request, entity interface{}) error {
+	w.Header().Set("Content-Type", "application/json")
+
+	d, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(d, &entity)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -9,7 +9,6 @@ import (
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -35,14 +34,22 @@ func getGateway(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateGateway(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
-		e := d.(*gwml.Config)
-		if e.ID == "" {
-			e.ID = ut.RandID()
-		}
-		return nil
+	entity := &gwml.Config{}
+	err := LoadEntity(w, r, entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
 	}
-	SaveEntity(w, r, ml.EntityGateway, &gwml.Config{}, bwFunc)
+
+	if entity.ID == "" {
+		http.Error(w, "ID should not be an empty", 400)
+		return
+	}
+	err = gwAPI.SaveAndReload(entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
 
 func enableGateway(w http.ResponseWriter, r *http.Request) {

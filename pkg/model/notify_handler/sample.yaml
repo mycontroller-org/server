@@ -1,0 +1,15 @@
+---
+id: email_handler
+description: email sender
+enabled: true
+type: email
+labels:
+  primary: 'true'
+spec:
+  type: smtp
+  host: mail.google.com
+  port: 444
+  authType: plain
+  username: abc@gmail.com
+  password: "****"
+  insecureSkipVerify: true

@@ -61,7 +61,7 @@ func Enable(ids []string) error {
 			if err != nil {
 				return err
 			}
-			return postGatewayCommand(&gwCfg, rsml.CommandStart)
+			return Start(&gwCfg)
 		}
 	}
 	return nil
@@ -82,10 +82,7 @@ func Disable(ids []string) error {
 			if err != nil {
 				return err
 			}
-			err = postGatewayCommand(&gwCfg, rsml.CommandStop)
-			if err != nil {
-				return err
-			}
+			return Stop(&gwCfg)
 		}
 	}
 	return nil
@@ -99,10 +96,14 @@ func Reload(ids []string) error {
 	}
 	for index := 0; index < len(gateways); index++ {
 		gateway := gateways[index]
+		err = Stop(&gateway)
+		if err != nil {
+			zap.L().Error("error on stoping a gateway command", zap.Error(err), zap.String("gateway", gateway.ID))
+		}
 		if gateway.Enabled {
-			err = postGatewayCommand(&gateway, rsml.CommandReload)
+			err = Start(&gateway)
 			if err != nil {
-				zap.L().Error("error on posting gateway reload command", zap.Error(err), zap.String("gateway", gateway.ID))
+				zap.L().Error("error on start a gateway command", zap.Error(err), zap.String("gateway", gateway.ID))
 			}
 		}
 	}

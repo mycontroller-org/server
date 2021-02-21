@@ -408,7 +408,7 @@ func postMessage(msg *msgml.Message) {
 
 // sends updated resource as event.
 func postEvent(eventTopic string, resource interface{}) {
-	err := mcbus.Publish(eventTopic, resource)
+	err := mcbus.Publish(mcbus.FormatTopic(eventTopic), resource)
 	if err != nil {
 		zap.L().Error("Error on posting resource data", zap.String("topic", eventTopic), zap.Any("resource", resource), zap.Error(err))
 	}

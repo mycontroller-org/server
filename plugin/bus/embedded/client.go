@@ -48,7 +48,7 @@ func (c *Client) Publish(topic string, data interface{}) error {
 	if subscriptionIDs, found := c.topics[topic]; found {
 		for _, subscriptionID := range subscriptionIDs {
 			if callBack, ok := c.subscriptions[subscriptionID]; ok {
-				event := &event.Event{}
+				event := &event.Event{Topic: topic}
 				err := event.SetData(data)
 				if err != nil {
 					zap.L().Error("data conversion failed", zap.Error(err))

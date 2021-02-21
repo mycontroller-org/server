@@ -151,7 +151,7 @@ func (c *Client) Subscribe(topic string, handler busml.CallBackFunc) (int64, err
 func (c *Client) handlerWrapper(handler busml.CallBackFunc) func(natsMsg *nats.Msg) {
 	return func(natsMsg *nats.Msg) {
 		PrintDebug("Receiving message", zap.String("topic", natsMsg.Sub.Subject))
-		handler(&event.Event{Data: natsMsg.Data})
+		handler(&event.Event{Topic: natsMsg.Subject, Data: natsMsg.Data})
 	}
 }
 

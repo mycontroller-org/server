@@ -6,20 +6,21 @@ import (
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	statusUtils "github.com/mycontroller-org/backend/v2/pkg/utils/status"
+	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
 	gwpd "github.com/mycontroller-org/backend/v2/plugin/gateway/provider"
 	"go.uber.org/zap"
 )
 
 // Start gateway
 func Start(gatewayCfg *gwml.Config) error {
+	start := time.Now()
 	if gwService.Get(gatewayCfg.ID) != nil {
 		return fmt.Errorf("A service is in running state. gateway:%s", gatewayCfg.ID)
 	}
 	if !gatewayCfg.Enabled { // this gateway is not enabled
 		return nil
 	}
-	zap.L().Debug("Starting a gateway", zap.Any("id", gatewayCfg.ID))
+	zap.L().Info("Starting a gateway", zap.Any("id", gatewayCfg.ID))
 	state := ml.State{Since: time.Now()}
 
 	service, err := gwpd.GetService(gatewayCfg)
@@ -28,22 +29,24 @@ func Start(gatewayCfg *gwml.Config) error {
 	}
 	err = service.Start()
 	if err != nil {
-		zap.L().Error("Unable to start a gateway service", zap.Any("id", gatewayCfg.ID), zap.Error(err))
+		zap.L().Warn("Failed to start a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 		state.Message = err.Error()
 		state.Status = ml.StateDown
 	} else {
+		zap.L().Info("Started a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 		state.Message = "Started successfully"
 		state.Status = ml.StateUp
 		gwService.Add(service)
 	}
 
-	statusUtils.SetGatewayState(gatewayCfg.ID, state)
+	rsUtils.SetGatewayState(gatewayCfg.ID, state)
 	return nil
 }
 
 // Stop gateway
 func Stop(id string) error {
-	zap.L().Debug("Stopping a gateway", zap.Any("id", id))
+	start := time.Now()
+	zap.L().Info("Stopping a gateway", zap.Any("id", id))
 	service := gwService.Get(id)
 	if service != nil {
 		err := service.Stop()
@@ -53,11 +56,14 @@ func Stop(id string) error {
 			Message: "Stopped by request",
 		}
 		if err != nil {
-			zap.L().Error("Failed to stop gateway service", zap.String("id", id), zap.Error(err))
-			state.Message = err.Error()
+			zap.L().Error("Failed to stop a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
+			state.Message = fmt.Sprintf("Failed to stop: %s", err.Error())
+			rsUtils.SetGatewayState(id, state)
+		} else {
+			zap.L().Error("Stopped a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()))
+			rsUtils.SetGatewayState(id, state)
+			gwService.Remove(id)
 		}
-		statusUtils.SetGatewayState(id, state)
-		gwService.Remove(id)
 	}
 	return nil
 }

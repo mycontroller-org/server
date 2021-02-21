@@ -4,7 +4,8 @@ import "github.com/mycontroller-org/backend/v2/pkg/utils"
 
 // Event struct
 type Event struct {
-	Data []byte
+	Topic string
+	Data  []byte
 }
 
 // SetData updates data in []byte format

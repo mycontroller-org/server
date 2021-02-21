@@ -7,7 +7,10 @@ import (
 
 // Resource type details
 const (
-	TypeGateway = "gateway"
+	TypeGateway       = "gateway"
+	TypeTask          = "task"
+	TypeNotifyHandler = "notify_handler"
+	TypeScheduler     = "scheduler"
 )
 
 // Command details
@@ -15,6 +18,10 @@ const (
 	CommandUpdate      = "update"
 	CommandUpdateState = "updateState"
 	CommandGet         = "get"
+	CommandAdd         = "add"
+	CommandRemove      = "remove"
+	CommandEnable      = "enable"
+	CommandDisable     = "disable"
 	CommandStart       = "start"
 	CommandStop        = "stop"
 	CommandReload      = "reload"

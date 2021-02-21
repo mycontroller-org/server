@@ -6,11 +6,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
+	sch "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/logger"
-	sch "github.com/mycontroller-org/backend/v2/pkg/service/scheduler"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 )

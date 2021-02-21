@@ -11,6 +11,9 @@ import (
 	"github.com/mitchellh/mapstructure"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
+
 	"go.uber.org/zap"
 )
 
@@ -18,10 +21,13 @@ import (
 var registerTypesInitOnce sync.Once
 
 func registerTypes() {
+	gob.Register([]interface{}{})
 	gob.Register(map[string]interface{}{})
 	gob.Register(map[interface{}]interface{}{})
 	gob.Register(cmap.CustomMap{})
 	gob.Register(cmap.CustomStringMap{})
+	gob.Register(fieldML.Field{})
+	gob.Register(taskML.Config{})
 }
 
 // ToString converts interface to string

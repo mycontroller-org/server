@@ -16,13 +16,27 @@ type Config struct {
 	AuthType           string
 	Username           string
 	Password           string `json:"-"`
+	FromEmail          string
+	ToEmails           string // comma seperated
 	InsecureSkipVerify bool
 }
 
+// Keys
+const (
+	keyFromEmail = "email_from"
+	keyToEmails  = "email_to"
+	keySubject   = "email_subject"
+	keyBody      = "email_body"
+
+	defaultSubject = "Email from MyController.org server"
+)
+
 // Client for email service
 type Client interface {
-	Close() error
+	Start() error
+	Post(variables map[string]interface{}) error
 	Send(from string, to []string, subject, body string) error
+	Close() error
 }
 
 // service provider types
@@ -38,7 +52,7 @@ const (
 )
 
 // Init email client
-func Init(config cmap.CustomMap) (Client, error) {
+func Init(id string, config cmap.CustomMap) (Client, error) {
 	cfg := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, config, cfg)
 	if err != nil {
@@ -48,7 +62,7 @@ func Init(config cmap.CustomMap) (Client, error) {
 
 	switch cfg.Type {
 	case TypeSMTP, TypeNone:
-		return initSMTP(cfg)
+		return initSMTP(id, cfg)
 
 	default:
 		return nil, fmt.Errorf("Unknown email client:%s", cfg.Type)

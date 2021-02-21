@@ -6,10 +6,12 @@ import (
 
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nodeml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	quickIdUL "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -52,23 +54,22 @@ func ExecuteNodeAction(action string, nodeIDs []string) error {
 
 // Execute the given request
 func Execute(quickID, payload string) error {
-	resource, kvMap, err := ml.ResourceKeyValueMap(quickID)
+	resource, kvMap, err := quickIdUL.ResourceKeyValueMap(quickID)
 	if err != nil {
 		return err
 	}
 
-	switch resource {
-	case ml.QuickIDGateway:
-	case ml.QuickIDNode:
-	case ml.QuickIDNodeData:
-	case ml.QuickIDSensor:
-	case ml.QuickIDSensorField:
+	switch {
+	case utils.ContainsString(quickIdUL.QuickIDGateway, resource):
+	case utils.ContainsString(quickIdUL.QuickIDNode, resource):
+	case utils.ContainsString(quickIdUL.QuickIDSensor, resource):
+	case utils.ContainsString(quickIdUL.QuickIDSensorField, resource):
 		msg := msgml.NewMessage(false)
-		msg.GatewayID = kvMap[ml.KeyGatewayID]
-		msg.NodeID = kvMap[ml.KeyNodeID]
-		msg.SensorID = kvMap[ml.KeySensorID]
+		msg.GatewayID = kvMap[model.KeyGatewayID]
+		msg.NodeID = kvMap[model.KeyNodeID]
+		msg.SensorID = kvMap[model.KeySensorID]
 		pl := msgml.NewData()
-		pl.Name = kvMap[ml.KeyFieldID]
+		pl.Name = kvMap[model.KeyFieldID]
 		pl.Value = payload
 		msg.Payloads = append(msg.Payloads, pl)
 		msg.Type = msgml.TypeSet
@@ -82,7 +83,7 @@ func Execute(quickID, payload string) error {
 
 // PostToSensorField sends the payload to the given sensorfiled
 func PostToSensorField(id string, payload string) error {
-	filters := []stgml.Filter{{Key: ml.KeyID, Value: id}}
+	filters := []stgml.Filter{{Key: model.KeyID, Value: id}}
 	field, err := fieldAPI.Get(filters)
 	if err != nil {
 		return err

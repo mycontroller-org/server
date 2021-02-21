@@ -8,6 +8,7 @@ import (
 	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	"go.uber.org/zap"
 )
 
@@ -41,12 +42,13 @@ func Init(config cmap.CustomMap) error {
 	}
 
 	eventQueue.StartConsumers(1, processEvent)
+
 	// load gateways
 	reqEvent := rsml.Event{
 		Type:    rsml.TypeGateway,
 		Command: rsml.CommandLoadAll,
 	}
-	topicResourceServer := mcbus.FormatTopic(mcbus.TopicResourceServer)
+	topicResourceServer := mcbus.FormatTopic(mcbus.TopicServiceResourceServer)
 	return mcbus.Publish(topicResourceServer, reqEvent)
 }
 
@@ -86,7 +88,7 @@ func processEvent(event interface{}) {
 	switch reqEvent.Command {
 	case rsml.CommandStart:
 		gwCfg := getGatewayConfig(reqEvent)
-		if gwCfg != nil && isMine(gwCfg) {
+		if gwCfg != nil && helper.IsMine(cfg.IDs, cfg.Labels, gwCfg.ID, gwCfg.Labels) {
 			Start(gwCfg)
 		}
 
@@ -102,8 +104,11 @@ func processEvent(event interface{}) {
 
 	case rsml.CommandReload:
 		gwCfg := getGatewayConfig(reqEvent)
-		if gwCfg != nil && isMine(gwCfg) {
-			Reload(gwCfg)
+		if gwCfg != nil {
+			Stop(gwCfg.ID)
+			if helper.IsMine(cfg.IDs, cfg.Labels, gwCfg.ID, gwCfg.Labels) {
+				Start(gwCfg)
+			}
 		}
 
 	case rsml.CommandUnloadAll:
@@ -122,30 +127,4 @@ func getGatewayConfig(reqEvent *rsml.Event) *gwml.Config {
 		return nil
 	}
 	return gwCfg
-}
-
-func isMine(gwCfg *gwml.Config) bool {
-	if len(cfg.IDs) == 0 {
-		if len(cfg.Labels) == 0 {
-			return true
-		}
-		for key, value := range cfg.Labels {
-			receivedValue, found := gwCfg.Labels[key]
-			if !found {
-				return false
-			}
-			if value != receivedValue {
-				return false
-			}
-		}
-		return true
-	}
-
-	for _, id := range cfg.IDs {
-		if id == gwCfg.ID {
-			return true
-		}
-	}
-	return false
-
 }

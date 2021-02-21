@@ -10,7 +10,7 @@ import (
 
 // GetID returns ID from the interface
 func GetID(data interface{}) string {
-	_, value, err := GetValueByKeyPath(model.KeyID, data)
+	_, value, err := GetValueByKeyPath(data, model.KeyID)
 	if err != nil {
 		return ""
 	}
@@ -30,7 +30,7 @@ func CloneSlice(src []interface{}) ([]interface{}, error) {
 
 // GetValueByKeyPath returns type and value from the given struct
 // returns reflect.Kind, value, error
-func GetValueByKeyPath(keyPath string, data interface{}) (reflect.Kind, interface{}, error) {
+func GetValueByKeyPath(data interface{}, keyPath string) (reflect.Kind, interface{}, error) {
 	dataVal := reflect.ValueOf(data)
 	if dataVal.Kind() == reflect.Ptr {
 		dataVal = dataVal.Elem()

@@ -33,6 +33,7 @@ func GetByID(id string) (*gwml.Config, error) {
 
 // SaveAndReload gateway
 func SaveAndReload(gwCfg *gwml.Config) error {
+	gwCfg.State = &ml.State{} //reset state
 	err := Save(gwCfg)
 	if err != nil {
 		return err
@@ -49,7 +50,7 @@ func Save(gwCfg *gwml.Config) error {
 }
 
 // SetState Updates state data
-func SetState(id string, state ml.State) error {
+func SetState(id string, state *ml.State) error {
 	gwCfg, err := GetByID(id)
 	if err != nil {
 		return err

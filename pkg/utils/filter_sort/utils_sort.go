@@ -40,11 +40,11 @@ func Sort(entities []interface{}, pagination *stgml.Pagination) ([]interface{}, 
 // GetSortByKeyPath returns the slice in order
 func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{} {
 	sort.Slice(data, func(a, b int) bool {
-		aKind, aValue, err := GetValueByKeyPath(keyPath, data[a])
+		aKind, aValue, err := GetValueByKeyPath(data[a], keyPath)
 		if err != nil {
 			return false
 		}
-		bKind, bValue, err := GetValueByKeyPath(keyPath, data[b])
+		bKind, bValue, err := GetValueByKeyPath(data[b], keyPath)
 		if err != nil {
 			return false
 		}

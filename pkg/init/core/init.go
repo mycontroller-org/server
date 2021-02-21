@@ -10,8 +10,11 @@ import (
 	fwdplSVC "github.com/mycontroller-org/backend/v2/pkg/service/forward_payload"
 	msgProcessor "github.com/mycontroller-org/backend/v2/pkg/service/message_processor"
 	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
+	handlerSVC "github.com/mycontroller-org/backend/v2/pkg/service/notify_handlers"
 	resourceSVC "github.com/mycontroller-org/backend/v2/pkg/service/resource"
+	schedulerSVC "github.com/mycontroller-org/backend/v2/pkg/service/scheduler"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
+	taskSVC "github.com/mycontroller-org/backend/v2/pkg/service/task"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
@@ -29,18 +32,39 @@ func initServices() {
 	UpdateInitialUser()
 
 	// start message processing engine
-	msgProcessor.Init()
+	err := msgProcessor.Init()
+	if err != nil {
+		zap.L().Fatal("error on init message process service", zap.Error(err))
+	}
 
 	// init resource server
-	err := resourceSVC.Init()
+	err = resourceSVC.Init()
 	if err != nil {
-		zap.L().Fatal("Error on init resource service listener", zap.Error(err))
+		zap.L().Fatal("error on init resource servicelistener", zap.Error(err))
+	}
+
+	// load notify handlers
+	err = handlerSVC.Init(cfg.CFG.Handler)
+	if err != nil {
+		zap.L().Fatal("error on start notify handler service", zap.Error(err))
+	}
+
+	// init task engine
+	err = taskSVC.Init(cfg.CFG.Task)
+	if err != nil {
+		zap.L().Fatal("error on init task engine service", zap.Error(err))
+	}
+
+	// init scheduler engine
+	err = schedulerSVC.Init(cfg.CFG.Task)
+	if err != nil {
+		zap.L().Fatal("error on init scheduler service", zap.Error(err))
 	}
 
 	// init payload forward service
 	err = fwdplSVC.Init()
 	if err != nil {
-		zap.L().Fatal("Error on init forward payload service", zap.Error(err))
+		zap.L().Fatal("error on init forward payload service", zap.Error(err))
 	}
 }
 
@@ -87,15 +111,22 @@ func UpdateInitialUser() {
 }
 
 func closeServices() {
-
 	// close forward payload service
 	fwdplSVC.Close()
 
 	// close resource service
 	resourceSVC.Close()
 
+	// close task service
+	taskSVC.Close()
+
+	// close scheduler service
+	schedulerSVC.Close()
+
+	// close notify handler service
+	handlerSVC.Close()
+
 	// stop engine
-	zap.L().Debug("Closing message process engine")
 	msgProcessor.Close()
 
 	// Close storage and metric database

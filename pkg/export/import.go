@@ -12,21 +12,25 @@ import (
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
+	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
+	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	mldb "github.com/mycontroller-org/backend/v2/pkg/model/dashboard"
-	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
-	mlfl "github.com/mycontroller-org/backend/v2/pkg/model/field"
-	mlfw "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
-	mlfp "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
-	mlgw "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	mlnd "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	mlnh "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
-	mlsr "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
-	mlus "github.com/mycontroller-org/backend/v2/pkg/model/user"
-	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	dashboardML "github.com/mycontroller-org/backend/v2/pkg/model/dashboard"
+	exportML "github.com/mycontroller-org/backend/v2/pkg/model/export"
+	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
+	fpML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
+	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	nhML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	sensorML "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
+	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
+	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -43,10 +47,10 @@ func ExecuteImport(targetDir, fileType string) error {
 
 	zap.L().Debug("Executing import job", zap.String("targetDir", targetDir), zap.String("fileType", fileType))
 	// check directory availability
-	if !ut.IsDirExists(targetDir) {
+	if !utils.IsDirExists(targetDir) {
 		return fmt.Errorf("Specified directory not available. targetDir:%s", targetDir)
 	}
-	files, err := ut.ListFiles(targetDir)
+	files, err := utils.ListFiles(targetDir)
 	if err != nil {
 		return err
 	}
@@ -60,7 +64,7 @@ func ExecuteImport(targetDir, fileType string) error {
 		entityName := getEntityName(file.Name)
 		zap.L().Debug("Importing a file", zap.String("file", file.Name), zap.String("entityName", entityName))
 		// read data from file
-		fileBytes, err := ut.ReadFile(targetDir, file.Name)
+		fileBytes, err := utils.ReadFile(targetDir, file.Name)
 		if err != nil {
 			return err
 		}
@@ -74,8 +78,8 @@ func ExecuteImport(targetDir, fileType string) error {
 
 func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 	switch entityName {
-	case ml.EntityGateway:
-		entities := make([]mlgw.Config, 0)
+	case model.EntityGateway:
+		entities := make([]gatewayML.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -87,8 +91,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case ml.EntityNode:
-		entities := make([]mlnd.Node, 0)
+	case model.EntityNode:
+		entities := make([]nodeML.Node, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -100,8 +104,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case ml.EntitySensor:
-		entities := make([]mlsr.Sensor, 0)
+	case model.EntitySensor:
+		entities := make([]sensorML.Sensor, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -113,8 +117,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case ml.EntitySensorField:
-		entities := make([]mlfl.Field, 0)
+	case model.EntitySensorField:
+		entities := make([]fieldML.Field, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -126,8 +130,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case ml.EntityFirmware:
-		entities := make([]mlfw.Firmware, 0)
+	case model.EntityFirmware:
+		entities := make([]firmwareML.Firmware, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -139,8 +143,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case ml.EntityUser:
-		entities := make([]mlus.User, 0)
+	case model.EntityUser:
+		entities := make([]userML.User, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -152,8 +156,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case ml.EntityDashboard:
-		entities := make([]mldb.Config, 0)
+	case model.EntityDashboard:
+		entities := make([]dashboardML.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -165,8 +169,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case ml.EntityNotificationHandlers:
-		entities := make([]mlnh.Config, 0)
+	case model.EntityNotifyHandler:
+		entities := make([]nhML.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -178,14 +182,40 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case ml.EntityForwardPayload:
-		entities := make([]mlfp.Mapping, 0)
+	case model.EntityForwardPayload:
+		entities := make([]fpML.Mapping, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
 		}
 		for index := 0; index < len(entities); index++ {
 			err = fpAPI.Save(&entities[index])
+			if err != nil {
+				return err
+			}
+		}
+
+	case model.EntityTask:
+		entities := make([]taskML.Config, 0)
+		err := unmarshal(fileFormat, fileBytes, &entities)
+		if err != nil {
+			return err
+		}
+		for index := 0; index < len(entities); index++ {
+			err = taskAPI.Save(&entities[index])
+			if err != nil {
+				return err
+			}
+		}
+
+	case model.EntityScheduler:
+		entities := make([]schedulerML.Config, 0)
+		err := unmarshal(fileFormat, fileBytes, &entities)
+		if err != nil {
+			return err
+		}
+		for index := 0; index < len(entities); index++ {
+			err = schedulerAPI.Save(&entities[index])
 			if err != nil {
 				return err
 			}
@@ -200,12 +230,12 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 
 func unmarshal(provider string, fileBytes []byte, entities interface{}) error {
 	switch provider {
-	case exportml.TypeJSON:
+	case exportML.TypeJSON:
 		err := json.Unmarshal(fileBytes, entities)
 		if err != nil {
 			return err
 		}
-	case exportml.TypeYAML:
+	case exportML.TypeYAML:
 		err := yaml.Unmarshal(fileBytes, entities)
 		if err != nil {
 			return err
@@ -217,7 +247,7 @@ func unmarshal(provider string, fileBytes []byte, entities interface{}) error {
 }
 
 func getEntityName(filename string) string {
-	entity := strings.Split(filename, exportml.EntityNameIndexSplit)
+	entity := strings.Split(filename, exportML.EntityNameIndexSplit)
 	if len(entity) > 0 {
 		return entity[0]
 	}

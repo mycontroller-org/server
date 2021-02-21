@@ -11,7 +11,7 @@ import (
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	statusUtils "github.com/mycontroller-org/backend/v2/pkg/utils/status"
+	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
 	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
 	msglogger "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/message_logger"
 
@@ -50,7 +50,7 @@ type Endpoint struct {
 
 // New mqtt driver
 func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
-	zap.L().Info("Init protocol", zap.String("gateway", gwCfg.ID))
+	zap.L().Debug("Init protocol", zap.String("gateway", gwCfg.ID))
 	start := time.Now()
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameNone, protocol, &cfg)
@@ -129,7 +129,7 @@ func (ep *Endpoint) onConnectionHandler(c paho.Client) {
 		Message: "Connected successfully",
 		Since:   time.Now(),
 	}
-	statusUtils.SetGatewayState(ep.GatewayCfg.ID, state)
+	rsUtils.SetGatewayState(ep.GatewayCfg.ID, state)
 }
 
 func (ep *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
@@ -139,7 +139,7 @@ func (ep *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
 		Message: err.Error(),
 		Since:   time.Now(),
 	}
-	statusUtils.SetGatewayState(ep.GatewayCfg.ID, state)
+	rsUtils.SetGatewayState(ep.GatewayCfg.ID, state)
 }
 
 // Write publishes a payload
