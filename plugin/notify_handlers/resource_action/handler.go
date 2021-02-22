@@ -40,8 +40,7 @@ func (c *Client) State() *model.State {
 
 // Post handler implementation
 func (c *Client) Post(variables map[string]interface{}) error {
-	for varName, value := range variables {
-		zap.L().Info("variable", zap.String("name", varName), zap.Any("value", value))
+	for _, value := range variables {
 		quickID := getQuickID(value)
 		if quickID != "" {
 			sendPayload(quickID, variables)
