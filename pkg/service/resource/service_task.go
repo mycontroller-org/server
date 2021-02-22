@@ -2,6 +2,7 @@ package resource
 
 import (
 	"errors"
+	"fmt"
 
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
 	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
@@ -21,10 +22,7 @@ func taskService(reqEvent *rsModel.Event) error {
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
-		err = resEvent.SetData(data)
-		if err != nil {
-			return err
-		}
+		return resEvent.SetData(data)
 
 	case rsModel.CommandUpdateState:
 		err := updateTaskState(reqEvent)
@@ -35,8 +33,11 @@ func taskService(reqEvent *rsModel.Event) error {
 	case rsModel.CommandLoadAll:
 		taskAPI.LoadAll()
 
+	case rsModel.CommandDisable:
+		return disableTask(reqEvent)
+
 	default:
-		return errors.New("Unknown command")
+		return fmt.Errorf("Unknown command: %s", reqEvent.Command)
 	}
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
@@ -70,4 +71,17 @@ func updateTaskState(reqEvent *rsModel.Event) error {
 		return err
 	}
 	return taskAPI.SetState(reqEvent.ID, state)
+}
+
+func disableTask(reqEvent *rsModel.Event) error {
+	if reqEvent.Data == nil {
+		zap.L().Error("Task id not supplied", zap.Any("event", reqEvent))
+		return errors.New("id not supplied")
+	}
+	var id string
+	err := reqEvent.ToStruct(&id)
+	if err != nil {
+		return err
+	}
+	return taskAPI.Disable([]string{id})
 }

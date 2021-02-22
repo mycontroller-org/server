@@ -86,5 +86,4 @@ func disableScheduler(reqEvent *rsML.Event) error {
 		return err
 	}
 	return schedulerAPI.Disable([]string{id})
-
 }

@@ -28,11 +28,11 @@ func LoadAll() {
 	}
 	schedulers := *result.Data.(*[]schedulerML.Config)
 	for index := 0; index < len(schedulers); index++ {
-		scheduler := schedulers[index]
-		if scheduler.Enabled {
-			err = Add(&scheduler)
+		cfg := schedulers[index]
+		if cfg.Enabled {
+			err = Add(&cfg)
 			if err != nil {
-				zap.L().Error("Failed to load a schedule", zap.Error(err), zap.String("scheduleID", scheduler.ID))
+				zap.L().Error("Failed to load a schedule", zap.Error(err), zap.String("id", cfg.ID))
 			}
 		}
 	}
@@ -57,11 +57,10 @@ func Enable(ids []string) error {
 		cfg := schedulers[index]
 		if !cfg.Enabled {
 			cfg.Enabled = true
-			err = Save(&cfg)
+			err = SaveAndReload(&cfg)
 			if err != nil {
-				return err
+				zap.L().Error("error on enabling a schedule", zap.String("id", cfg.ID), zap.Error(err))
 			}
-			return postCommand(&cfg, rsML.CommandAdd)
 		}
 	}
 	return nil
@@ -82,9 +81,9 @@ func Disable(ids []string) error {
 			if err != nil {
 				return err
 			}
-			err = postCommand(&cfg, rsML.CommandRemove)
+			err = Remove(&cfg)
 			if err != nil {
-				return err
+				zap.L().Error("error on disabling a schedule", zap.String("id", cfg.ID), zap.Error(err))
 			}
 		}
 	}
@@ -98,15 +97,15 @@ func Reload(ids []string) error {
 		return err
 	}
 	for index := 0; index < len(schedules); index++ {
-		schedule := schedules[index]
-		err = Remove(&schedule)
+		cfg := schedules[index]
+		err = Remove(&cfg)
 		if err != nil {
-			zap.L().Error("error on posting scheduler remove command", zap.Error(err), zap.String("scheduleID", schedule.ID))
+			zap.L().Error("error on removing a scheduling", zap.Error(err), zap.String("id", cfg.ID))
 		}
-		if schedule.Enabled {
-			err = Add(&schedule)
+		if cfg.Enabled {
+			err = Add(&cfg)
 			if err != nil {
-				zap.L().Error("error on posting scheduler add command", zap.Error(err), zap.String("scheduleID", schedule.ID))
+				zap.L().Error("error on adding a schedule", zap.Error(err), zap.String("id", cfg.ID))
 			}
 		}
 	}

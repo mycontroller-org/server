@@ -34,6 +34,11 @@ func DisableSchedule(id string) {
 	postData(id, id, rsML.TypeScheduler, rsML.CommandDisable)
 }
 
+// DisableTask sends id to resource service
+func DisableTask(id string) {
+	postData(id, id, rsML.TypeTask, rsML.CommandDisable)
+}
+
 func postData(id string, data interface{}, serviceType string, command string) {
 	event := &rsML.Event{
 		Type:    serviceType,

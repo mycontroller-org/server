@@ -57,11 +57,10 @@ func Enable(ids []string) error {
 		cfg := tasks[index]
 		if !cfg.Enabled {
 			cfg.Enabled = true
-			err = Save(&cfg)
+			err = SaveAndReload(&cfg)
 			if err != nil {
-				return err
+				zap.L().Error("error on enabling a task", zap.String("id", cfg.ID), zap.Error(err))
 			}
-			return postCommand(&cfg, rsML.CommandAdd)
 		}
 	}
 	return nil
@@ -80,11 +79,11 @@ func Disable(ids []string) error {
 			cfg.Enabled = false
 			err = Save(&cfg)
 			if err != nil {
-				return err
+				zap.L().Error("error on saving a task", zap.String("id", cfg.ID), zap.Error(err))
 			}
-			err = postCommand(&cfg, rsML.CommandRemove)
+			err = Remove(&cfg)
 			if err != nil {
-				return err
+				zap.L().Error("error on disabling a task", zap.String("id", cfg.ID), zap.Error(err))
 			}
 		}
 	}
@@ -99,14 +98,14 @@ func Reload(ids []string) error {
 	}
 	for index := 0; index < len(tasks); index++ {
 		task := tasks[index]
-		err = postCommand(&task, rsML.CommandRemove)
+		err = Remove(&task)
 		if err != nil {
-			zap.L().Error("error on posting task remove command", zap.Error(err), zap.String("task", task.ID))
+			zap.L().Error("error on disabling a task", zap.Error(err), zap.String("id", task.ID))
 		}
 		if task.Enabled {
-			err = postCommand(&task, rsML.CommandAdd)
+			err = Add(&task)
 			if err != nil {
-				zap.L().Error("error on posting task reload command", zap.Error(err), zap.String("task", task.ID))
+				zap.L().Error("error on enabling a task", zap.Error(err), zap.String("ic", task.ID))
 			}
 		}
 	}

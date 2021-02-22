@@ -23,16 +23,16 @@ func Stop(cfg *handlerML.Config) error {
 func LoadAll() {
 	result, err := List(nil, nil)
 	if err != nil {
-		zap.L().Error("Failed to get list of notifyHandlers", zap.Error(err))
+		zap.L().Error("Failed to get list of handlers", zap.Error(err))
 		return
 	}
-	notifyHandlers := *result.Data.(*[]handlerML.Config)
-	for index := 0; index < len(notifyHandlers); index++ {
-		notifyHandler := notifyHandlers[index]
-		if notifyHandler.Enabled {
-			err = Start(&notifyHandler)
+	handlers := *result.Data.(*[]handlerML.Config)
+	for index := 0; index < len(handlers); index++ {
+		cfg := handlers[index]
+		if cfg.Enabled {
+			err = Start(&cfg)
 			if err != nil {
-				zap.L().Error("Failed to load a notifyHandler", zap.Error(err), zap.String("notifyHandler", notifyHandler.ID))
+				zap.L().Error("error on load a handler", zap.Error(err), zap.String("id", cfg.ID))
 			}
 		}
 	}
@@ -42,7 +42,7 @@ func LoadAll() {
 func UnloadAll() {
 	err := postCommand(nil, rsml.CommandUnloadAll)
 	if err != nil {
-		zap.L().Error("error on unload notifyHandlers command", zap.Error(err))
+		zap.L().Error("error on unloadall handlers command", zap.Error(err))
 	}
 }
 
@@ -57,11 +57,10 @@ func Enable(ids []string) error {
 		cfg := notifyHandlers[index]
 		if !cfg.Enabled {
 			cfg.Enabled = true
-			err = Save(&cfg)
+			err = SaveAndReload(&cfg)
 			if err != nil {
-				return err
+				zap.L().Error("error on enabling a handler", zap.Error(err), zap.String("id", cfg.ID))
 			}
-			return postCommand(&cfg, rsml.CommandStart)
 		}
 	}
 	return nil
@@ -76,15 +75,15 @@ func Disable(ids []string) error {
 
 	for index := 0; index < len(notifyHandlers); index++ {
 		cfg := notifyHandlers[index]
+		err := Stop(&cfg)
+		if err != nil {
+			zap.L().Error("error on disabling a handler", zap.Error(err), zap.String("id", cfg.ID))
+		}
 		if cfg.Enabled {
 			cfg.Enabled = false
 			err = Save(&cfg)
 			if err != nil {
-				return err
-			}
-			err = postCommand(&cfg, rsml.CommandStop)
-			if err != nil {
-				return err
+				zap.L().Error("error on saving a handler", zap.Error(err), zap.String("id", cfg.ID))
 			}
 		}
 	}
@@ -98,11 +97,11 @@ func Reload(ids []string) error {
 		return err
 	}
 	for index := 0; index < len(notifyHandlers); index++ {
-		notifyHandler := notifyHandlers[index]
-		if notifyHandler.Enabled {
-			err = postCommand(&notifyHandler, rsml.CommandReload)
+		cfg := notifyHandlers[index]
+		if cfg.Enabled {
+			err = postCommand(&cfg, rsml.CommandReload)
 			if err != nil {
-				zap.L().Error("error on posting notifyHandler reload command", zap.Error(err), zap.String("notifyHandler", notifyHandler.ID))
+				zap.L().Error("error on reload handler command", zap.Error(err), zap.String("id", cfg.ID))
 			}
 		}
 	}

@@ -7,6 +7,7 @@ import (
 
 // operation types
 const (
+	TypeNoop       = "noop"
 	TypeEmail      = "email"
 	TypeTelegram   = "telegram"
 	TypeWebhook    = "webhook"
