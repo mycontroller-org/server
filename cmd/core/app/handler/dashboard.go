@@ -29,8 +29,8 @@ func getDashboard(w http.ResponseWriter, r *http.Request) {
 
 func updateDashboard(w http.ResponseWriter, r *http.Request) {
 	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
-		e := d.(*dbml.Config)
-		if e.ID == "" {
+		entity := d.(*dbml.Config)
+		if entity.ID == "" {
 			return errors.New("ID should not be an empty")
 		}
 		return nil

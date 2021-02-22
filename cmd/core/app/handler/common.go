@@ -217,22 +217,22 @@ func FindMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 func SaveEntity(w http.ResponseWriter, r *http.Request, entityName string, entity interface{}, bwFunc func(entity interface{}, filters *[]stgml.Filter) error) {
 	w.Header().Set("Content-Type", "application/json")
 
-	err := LoadEntity(w, r, entityName)
+	err := LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	f := make([]stgml.Filter, 0)
+	filters := make([]stgml.Filter, 0)
 	if bwFunc != nil {
-		err = bwFunc(entity, &f)
+		err = bwFunc(entity, &filters)
 		if err != nil {
 			http.Error(w, err.Error(), 500)
 			return
 		}
 	}
 
-	err = stg.SVC.Upsert(entityName, entity, f)
+	err = stg.SVC.Upsert(entityName, entity, filters)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

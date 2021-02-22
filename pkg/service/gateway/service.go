@@ -29,7 +29,7 @@ func Start(gatewayCfg *gwml.Config) error {
 	}
 	err = service.Start()
 	if err != nil {
-		zap.L().Warn("Failed to start a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()))
+		zap.L().Error("Failed to start a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
 		state.Message = err.Error()
 		state.Status = ml.StateDown
 	} else {
@@ -60,7 +60,7 @@ func Stop(id string) error {
 			state.Message = fmt.Sprintf("Failed to stop: %s", err.Error())
 			rsUtils.SetGatewayState(id, state)
 		} else {
-			zap.L().Error("Stopped a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()))
+			zap.L().Info("Stopped a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()))
 			rsUtils.SetGatewayState(id, state)
 			gwService.Remove(id)
 		}
