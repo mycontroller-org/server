@@ -46,4 +46,5 @@ const (
 	KeySelector = "selector"
 	KeyTemplate = "template"
 	KeyTask     = "task"
+	KeyPayload  = "payload"
 )

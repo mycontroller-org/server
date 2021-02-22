@@ -86,6 +86,12 @@ func processEvent(item interface{}) {
 			zap.L().Error("error on serving scheduler request", zap.Error(err))
 		}
 
+	case rsModel.TypeQuickID:
+		err := quickIDService(request)
+		if err != nil {
+			zap.L().Error("error on serving quickID request", zap.Error(err))
+		}
+
 	default:
 		zap.L().Warn("unknown event type", zap.Any("event", request))
 	}

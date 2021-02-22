@@ -7,12 +7,13 @@ import (
 
 // operation types
 const (
-	TypeNoop       = "noop"
-	TypeEmail      = "email"
-	TypeTelegram   = "telegram"
-	TypeWebhook    = "webhook"
-	TypeSMS        = "sms"
-	TypePushbullet = "pushbullet"
+	TypeNoop           = "noop"
+	TypeEmail          = "email"
+	TypeTelegram       = "telegram"
+	TypeWebhook        = "webhook"
+	TypeSMS            = "sms"
+	TypePushbullet     = "pushbullet"
+	TypeResourceAction = "resource_action"
 )
 
 // Config model

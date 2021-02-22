@@ -11,6 +11,7 @@ const (
 	TypeTask          = "task"
 	TypeNotifyHandler = "notify_handler"
 	TypeScheduler     = "scheduler"
+	TypeQuickID       = "quick_id"
 )
 
 // Command details
@@ -18,6 +19,7 @@ const (
 	CommandUpdate      = "update"
 	CommandUpdateState = "updateState"
 	CommandGet         = "get"
+	CommandSet         = "set"
 	CommandAdd         = "add"
 	CommandRemove      = "remove"
 	CommandEnable      = "enable"

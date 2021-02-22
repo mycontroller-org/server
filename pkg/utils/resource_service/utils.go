@@ -11,35 +11,36 @@ import (
 
 // SetGatewayState send gateway status into bus
 func SetGatewayState(id string, state model.State) {
-	postData(id, state, rsML.TypeGateway, rsML.CommandUpdateState)
+	PostData(id, state, rsML.TypeGateway, rsML.CommandUpdateState)
 }
 
 // SetHandlerState send handler status into bus
 func SetHandlerState(id string, state model.State) {
-	postData(id, state, rsML.TypeNotifyHandler, rsML.CommandUpdateState)
+	PostData(id, state, rsML.TypeNotifyHandler, rsML.CommandUpdateState)
 }
 
 // SetTaskState send handler status into bus
 func SetTaskState(id string, state taskML.State) {
-	postData(id, state, rsML.TypeTask, rsML.CommandUpdateState)
+	PostData(id, state, rsML.TypeTask, rsML.CommandUpdateState)
 }
 
 // SetScheduleState send handler status into bus
 func SetScheduleState(id string, state scheduleML.State) {
-	postData(id, state, rsML.TypeScheduler, rsML.CommandUpdateState)
+	PostData(id, state, rsML.TypeScheduler, rsML.CommandUpdateState)
 }
 
 // DisableSchedule sends id to resource service
 func DisableSchedule(id string) {
-	postData(id, id, rsML.TypeScheduler, rsML.CommandDisable)
+	PostData(id, id, rsML.TypeScheduler, rsML.CommandDisable)
 }
 
 // DisableTask sends id to resource service
 func DisableTask(id string) {
-	postData(id, id, rsML.TypeTask, rsML.CommandDisable)
+	PostData(id, id, rsML.TypeTask, rsML.CommandDisable)
 }
 
-func postData(id string, data interface{}, serviceType string, command string) {
+// PostData to resource service
+func PostData(id string, data interface{}, serviceType string, command string) {
 	event := &rsML.Event{
 		Type:    serviceType,
 		Command: command,

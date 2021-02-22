@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -46,6 +47,20 @@ func ToString(data interface{}) string {
 		}
 		return string(b)
 	}
+}
+
+// ToBool converts interface to boolean
+func ToBool(data interface{}) bool {
+	value, ok := data.(bool)
+	if !ok {
+		switch strings.ToLower(fmt.Sprintf("%v", data)) {
+		case "true", "1", "on":
+			return true
+		default:
+			return false
+		}
+	}
+	return value
 }
 
 // ToStruct converts bytes to target struct

@@ -54,7 +54,7 @@ func executeAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = action.Execute(resourceArr[0], payloadArr[0])
+	err = action.ExecuteByQuickID(resourceArr[0], payloadArr[0])
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

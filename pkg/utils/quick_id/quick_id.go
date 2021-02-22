@@ -15,6 +15,9 @@ var (
 	QuickIDSensor      = []string{"sn", "sensor"}
 	QuickIDSensorField = []string{"sf", "sensor_filed", "field"}
 	QuickIDTemplate    = []string{"tp", "template"}
+	QuickIDTask        = []string{"tk", "task"}
+	QuickIDSchedule    = []string{"sk", "schedule"}
+	QuickIDHandler     = []string{"hd", "handler"}
 )
 
 // IsValidQuickID says is it in quikID format
@@ -114,6 +117,14 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 			return "", nil, fmt.Errorf("Invalid template. quickID:%s", quickID)
 		}
 		data[model.KeyTemplate] = typeID[1]
+
+	case utils.ContainsString(QuickIDTask, resourceType),
+		utils.ContainsString(QuickIDSchedule, resourceType),
+		utils.ContainsString(QuickIDHandler, resourceType):
+		if typeID[1] == "" {
+			return "", nil, fmt.Errorf("Invalid data. quickID:%s", quickID)
+		}
+		data[model.KeyID] = typeID[1]
 
 	default:
 		return "", nil, fmt.Errorf("Invalid resource type quick_id: %s, check the format", quickID)

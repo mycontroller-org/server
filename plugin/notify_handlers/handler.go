@@ -7,6 +7,7 @@ import (
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/email"
 	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/noop"
+	resourceAction "github.com/mycontroller-org/backend/v2/plugin/notify_handlers/resource_action"
 )
 
 // Handler interface details for operation
@@ -29,6 +30,9 @@ func GetHandler(cfg *handlerML.Config) (Handler, error) {
 
 	case handlerML.TypeNoop:
 		return &noop.Client{HandlerCfg: cfg}, nil
+
+	case handlerML.TypeResourceAction:
+		return &resourceAction.Client{HandlerCfg: cfg}, nil
 
 	default:
 		return nil, fmt.Errorf("unsupported handler, id:%s, name:%s, type:%s", cfg.ID, cfg.Description, cfg.Type)
