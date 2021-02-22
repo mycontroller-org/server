@@ -1,11 +1,16 @@
 package handler
 
 import (
+	"fmt"
+	"time"
+
 	q "github.com/jaegertracing/jaeger/pkg/queue"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/event"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
 	"go.uber.org/zap"
 )
 
@@ -54,6 +59,8 @@ func closeMessageListener() {
 
 func processHandlerMessage(item interface{}) {
 	msg := item.(*handlerML.MessageWrapper)
+	start := time.Now()
+
 	zap.L().Debug("Starting Message Processing", zap.Any("handlerID", msg.ID))
 
 	handler := handlersStore.Get(msg.ID)
@@ -62,8 +69,17 @@ func processHandlerMessage(item interface{}) {
 		return
 	}
 
+	state := handler.State()
+
 	err := handler.Post(msg.Variables)
 	if err != nil {
 		zap.L().Warn("failed to execute handler", zap.Any("handlerID", msg.ID), zap.Error(err))
+		state.Status = model.StateError
+		state.Message = err.Error()
+	} else {
+		state.Status = model.StateOk
+		state.Message = fmt.Sprintf("execution time: %s", time.Since(start).String())
 	}
+
+	rsUtils.SetHandlerState(msg.ID, model.State{})
 }

@@ -6,6 +6,7 @@ import (
 
 // State
 const (
+	StateOk          = "ok"
 	StateUp          = "up"
 	StateDown        = "down"
 	StateError       = "error"

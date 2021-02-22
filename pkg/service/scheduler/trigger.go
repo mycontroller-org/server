@@ -27,6 +27,8 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 		return
 	}
 
+	start := time.Now()
+
 	// if repeat type job, verify repeat count
 	if cfg.Type == schedulerML.TypeRepeat {
 		spec := &schedulerML.SpecRepeat{}
@@ -66,6 +68,7 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 		postToHandler(handlerID, variables)
 	}
 
+	cfg.State.Message = fmt.Sprintf("time taken: %s", time.Since(start).String())
 	// update triggered count and update state
 	rsUtils.SetScheduleState(cfg.ID, *cfg.State)
 

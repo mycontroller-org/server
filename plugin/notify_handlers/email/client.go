@@ -3,7 +3,8 @@ package email
 import (
 	"fmt"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 )
@@ -37,6 +38,7 @@ type Client interface {
 	Post(variables map[string]interface{}) error
 	Send(from string, to []string, subject, body string) error
 	Close() error
+	State() *model.State
 }
 
 // service provider types
@@ -52,17 +54,17 @@ const (
 )
 
 // Init email client
-func Init(id string, config cmap.CustomMap) (Client, error) {
-	cfg := &Config{}
-	err := utils.MapToStruct(utils.TagNameNone, config, cfg)
+func Init(cfg *handlerML.Config) (Client, error) {
+	config := &Config{}
+	err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
 	if err != nil {
 		return nil, err
 	}
-	zap.L().Debug("Email client", zap.Any("config", cfg))
+	zap.L().Debug("Email client", zap.Any("config", config))
 
 	switch cfg.Type {
 	case TypeSMTP, TypeNone:
-		return initSMTP(id, cfg)
+		return initSMTP(cfg, config)
 
 	default:
 		return nil, fmt.Errorf("Unknown email client:%s", cfg.Type)

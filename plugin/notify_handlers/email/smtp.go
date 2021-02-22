@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	tplUtils "github.com/mycontroller-org/backend/v2/pkg/utils/template"
 	"go.uber.org/zap"
@@ -16,13 +18,13 @@ import (
 
 // smtp client
 type smtpClient struct {
-	id   string
-	cfg  *Config
-	auth smtp.Auth
+	handlerCfg *handlerML.Config
+	cfg        *Config
+	auth       smtp.Auth
 }
 
 // init smtp client
-func initSMTP(id string, cfg *Config) (Client, error) {
+func initSMTP(handlerCfg *handlerML.Config, cfg *Config) (Client, error) {
 	zap.L().Info("Init smtp email client", zap.Any("config", cfg))
 
 	var auth smtp.Auth
@@ -36,9 +38,9 @@ func initSMTP(id string, cfg *Config) (Client, error) {
 	}
 
 	client := &smtpClient{
-		id:   id,
-		cfg:  cfg,
-		auth: auth,
+		handlerCfg: handlerCfg,
+		cfg:        cfg,
+		auth:       auth,
 	}
 	return client, nil
 }
@@ -51,6 +53,16 @@ func (sc *smtpClient) Start() error {
 // Close func implementation
 func (sc *smtpClient) Close() error {
 	return nil
+}
+
+func (sc *smtpClient) State() *model.State {
+	if sc.handlerCfg != nil {
+		if sc.handlerCfg.State == nil {
+			sc.handlerCfg.State = sc.handlerCfg.State
+		}
+		return sc.handlerCfg.State
+	}
+	return &model.State{}
 }
 
 // Send func implementation
@@ -182,6 +194,6 @@ func (sc *smtpClient) Post(variables map[string]interface{}) error {
 	if err != nil {
 		zap.L().Error("error on email sent", zap.Error(err))
 	}
-	zap.L().Debug("email sent", zap.String("id", sc.id), zap.String("timeTaken", time.Since(start).String()))
+	zap.L().Debug("email sent", zap.String("id", sc.handlerCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 	return err
 }
