@@ -7,11 +7,12 @@ import (
 
 // Resource type details
 const (
-	TypeGateway       = "gateway"
-	TypeTask          = "task"
-	TypeNotifyHandler = "notify_handler"
-	TypeScheduler     = "scheduler"
-	TypeQuickID       = "quick_id"
+	TypeGateway           = "gateway"
+	TypeTask              = "task"
+	TypeNotifyHandler     = "notify_handler"
+	TypeScheduler         = "scheduler"
+	TypeResourceByQuickID = "resource_by_quick_id"
+	TypeResourceByLabels  = "resource_by_labels"
 )
 
 // Command details
@@ -59,4 +60,11 @@ func (e *Event) SetData(data interface{}) error {
 // ToStruct converts data to target interface
 func (e *Event) ToStruct(out interface{}) error {
 	return utils.ByteToStruct(e.Data, out)
+}
+
+// ResourceLabels used in handlers
+type ResourceLabels struct {
+	ResourceType string
+	Payload      string
+	Labels       cmap.CustomStringMap
 }

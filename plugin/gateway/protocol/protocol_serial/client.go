@@ -9,7 +9,7 @@ import (
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	msglogger "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/message_logger"
 	ser "github.com/tarm/serial"
 	"go.uber.org/zap"
@@ -130,7 +130,7 @@ func (ep *Endpoint) dataListener() {
 					Message: err.Error(),
 					Since:   time.Now(),
 				}
-				rsUtils.SetGatewayState(ep.GwCfg.ID, state)
+				busUtils.SetGatewayState(ep.GwCfg.ID, state)
 				go ep.reconnect()
 				return
 			}
@@ -189,7 +189,7 @@ func (ep *Endpoint) reconnect() {
 					Message: "Reconnected successfully",
 					Since:   time.Now(),
 				}
-				rsUtils.SetGatewayState(ep.GwCfg.ID, state)
+				busUtils.SetGatewayState(ep.GwCfg.ID, state)
 				return
 			}
 			zap.L().Error("Error on opening a port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
@@ -198,7 +198,7 @@ func (ep *Endpoint) reconnect() {
 				Message: err.Error(),
 				Since:   time.Now(),
 			}
-			rsUtils.SetGatewayState(ep.GwCfg.ID, state)
+			busUtils.SetGatewayState(ep.GwCfg.ID, state)
 		}
 	}
 

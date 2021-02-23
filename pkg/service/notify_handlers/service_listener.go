@@ -76,7 +76,7 @@ func onServiceEvent(event *event.Event) {
 		zap.L().Warn("Received a nil message", zap.Any("event", event))
 		return
 	}
-	zap.L().Info("Event added into processing queue", zap.Any("event", reqEvent))
+	zap.L().Debug("Event added into processing queue", zap.Any("event", reqEvent))
 	status := serviceQueue.Produce(reqEvent)
 	if !status {
 		zap.L().Warn("Failed to store the event into queue", zap.Any("event", reqEvent))

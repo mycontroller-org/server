@@ -4,8 +4,8 @@ import (
 	"sync"
 
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
-	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
@@ -40,7 +40,7 @@ func (s *store) UpdateState(id string, state *taskML.State) {
 	if task, ok := s.tasks[id]; ok {
 		task.State = state
 	}
-	rsUtils.SetTaskState(id, *state)
+	busUtils.SetTaskState(id, *state)
 }
 
 // Remove a task

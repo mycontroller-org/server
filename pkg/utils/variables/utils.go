@@ -73,17 +73,15 @@ func getEntity(name, quickID string) interface{} {
 			return nil
 		}
 
-	case utils.ContainsString(quickIdUL.QuickIDTemplate, resourceType):
+	default:
 		data, err := tplUtils.Execute(keys[model.KeyTemplate], nil)
 		if err != nil {
 			zap.L().Warn("failed to parse template", zap.Any("keys", keys), zap.Error(err))
 			return nil
 		}
 		entity = data
-
-	default:
-		entity = nil
 	}
+
 	if entity == nil {
 		return nil
 	}
@@ -97,4 +95,34 @@ func getEntity(name, quickID string) interface{} {
 		return value
 	}
 	return entity
+}
+
+// Merge variables and parameters
+func Merge(variables map[string]interface{}, parameters map[string]string) map[string]interface{} {
+	finalMap := make(map[string]interface{})
+	for key, value := range parameters { // update variables
+		finalMap[key] = value
+	}
+
+	for key, value := range parameters { // execute as template
+		updatedValue, err := tplUtils.Execute(value, variables)
+		if err != nil {
+			finalMap[key] = err.Error()
+			continue
+		}
+		finalMap[key] = updatedValue
+	}
+	return finalMap
+}
+
+// UpdateParameters updates parmaeter templates
+func UpdateParameters(variables map[string]interface{}, parameters map[string]string) {
+	for name, value := range parameters {
+		updatedValue, err := tplUtils.Execute(value, variables)
+		if err != nil {
+			parameters[name] = err.Error()
+			continue
+		}
+		parameters[name] = updatedValue
+	}
 }

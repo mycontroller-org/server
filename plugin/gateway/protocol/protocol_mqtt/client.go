@@ -11,7 +11,7 @@ import (
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
 	msglogger "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/message_logger"
 
@@ -129,7 +129,7 @@ func (ep *Endpoint) onConnectionHandler(c paho.Client) {
 		Message: "Connected successfully",
 		Since:   time.Now(),
 	}
-	rsUtils.SetGatewayState(ep.GatewayCfg.ID, state)
+	busUtils.SetGatewayState(ep.GatewayCfg.ID, state)
 }
 
 func (ep *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
@@ -139,7 +139,7 @@ func (ep *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
 		Message: err.Error(),
 		Since:   time.Now(),
 	}
-	rsUtils.SetGatewayState(ep.GatewayCfg.ID, state)
+	busUtils.SetGatewayState(ep.GatewayCfg.ID, state)
 }
 
 // Write publishes a payload

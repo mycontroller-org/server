@@ -1,4 +1,4 @@
-package status
+package busutils
 
 import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
@@ -11,36 +11,36 @@ import (
 
 // SetGatewayState send gateway status into bus
 func SetGatewayState(id string, state model.State) {
-	PostData(id, state, rsML.TypeGateway, rsML.CommandUpdateState)
+	PostToResourceService(id, state, rsML.TypeGateway, rsML.CommandUpdateState)
 }
 
 // SetHandlerState send handler status into bus
 func SetHandlerState(id string, state model.State) {
-	PostData(id, state, rsML.TypeNotifyHandler, rsML.CommandUpdateState)
+	PostToResourceService(id, state, rsML.TypeNotifyHandler, rsML.CommandUpdateState)
 }
 
 // SetTaskState send handler status into bus
 func SetTaskState(id string, state taskML.State) {
-	PostData(id, state, rsML.TypeTask, rsML.CommandUpdateState)
+	PostToResourceService(id, state, rsML.TypeTask, rsML.CommandUpdateState)
 }
 
 // SetScheduleState send handler status into bus
 func SetScheduleState(id string, state scheduleML.State) {
-	PostData(id, state, rsML.TypeScheduler, rsML.CommandUpdateState)
+	PostToResourceService(id, state, rsML.TypeScheduler, rsML.CommandUpdateState)
 }
 
 // DisableSchedule sends id to resource service
 func DisableSchedule(id string) {
-	PostData(id, id, rsML.TypeScheduler, rsML.CommandDisable)
+	PostToResourceService(id, id, rsML.TypeScheduler, rsML.CommandDisable)
 }
 
 // DisableTask sends id to resource service
 func DisableTask(id string) {
-	PostData(id, id, rsML.TypeTask, rsML.CommandDisable)
+	PostToResourceService(id, id, rsML.TypeTask, rsML.CommandDisable)
 }
 
-// PostData to resource service
-func PostData(id string, data interface{}, serviceType string, command string) {
+// PostToResourceService to resource service
+func PostToResourceService(id string, data interface{}, serviceType string, command string) {
 	event := &rsML.Event{
 		Type:    serviceType,
 		Command: command,

@@ -10,7 +10,7 @@ import (
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	"go.uber.org/zap"
 )
 
@@ -71,7 +71,7 @@ func processHandlerMessage(item interface{}) {
 
 	state := handler.State()
 
-	err := handler.Post(msg.Variables)
+	err := handler.Post(msg.Data)
 	if err != nil {
 		zap.L().Warn("failed to execute handler", zap.Any("handlerID", msg.ID), zap.Error(err))
 		state.Status = model.StateError
@@ -81,5 +81,5 @@ func processHandlerMessage(item interface{}) {
 		state.Message = fmt.Sprintf("execution time: %s", time.Since(start).String())
 	}
 
-	rsUtils.SetHandlerState(msg.ID, model.State{})
+	busUtils.SetHandlerState(msg.ID, model.State{})
 }

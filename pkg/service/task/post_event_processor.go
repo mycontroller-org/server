@@ -5,9 +5,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	variablesUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
 	"go.uber.org/zap"
 )
@@ -52,25 +50,26 @@ func resourcePostProcessor(item interface{}) {
 			triggered = isTriggered(task.Rule, variables)
 		}
 
-		executeNotify := false
+		notifyHandlers := false
 
 		// if ignoreDuplicate enabled and last status false
 		if triggered && task.IgnoreDuplicate && !state.LastStatus {
-			executeNotify = true
+			notifyHandlers = true
 		}
 
 		// if triggered and ignoreDuplicate disabled
 		if triggered && !task.IgnoreDuplicate {
-			executeNotify = true
+			notifyHandlers = true
 		}
 
-		if executeNotify {
+		if notifyHandlers {
 			state.LastSuccess = start // update last success time
 			state.Executions = append(state.Executions, true)
-			zap.L().Debug("Executing handlers", zap.Any("notify", task.Notify))
-			for _, handlerID := range task.Notify {
-				postToHandler(handlerID, variables)
-			}
+
+			parameters := task.HandlerParameters
+			variablesUtils.UpdateParameters(variables, parameters)
+			finalData := variablesUtils.Merge(variables, parameters)
+			busUtils.PostToHandler(task.Handlers, finalData)
 		}
 
 		if !triggered {
@@ -88,18 +87,7 @@ func resourcePostProcessor(item interface{}) {
 
 		// check autoDisable
 		if triggered && task.AutoDisable {
-			rsUtils.DisableTask(task.ID)
+			busUtils.DisableTask(task.ID)
 		}
-	}
-}
-
-func postToHandler(handlerID string, variables map[string]interface{}) {
-	msg := &handlerML.MessageWrapper{
-		ID:        handlerID,
-		Variables: variables,
-	}
-	err := mcbus.Publish(mcbus.FormatTopic(mcbus.TopicPostMessageNotifyHandler), msg)
-	if err != nil {
-		zap.L().Error("error on message publish", zap.Error(err))
 	}
 }

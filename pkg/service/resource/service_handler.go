@@ -29,7 +29,7 @@ func handlerService(reqEvent *rsModel.Event) error {
 	case rsModel.CommandUpdateState:
 		err := updateHandlerState(reqEvent)
 		if err != nil {
-			resEvent.Error = err.Error()
+			return err
 		}
 
 	case rsModel.CommandLoadAll:

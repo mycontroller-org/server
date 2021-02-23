@@ -11,7 +11,7 @@ import (
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	variablesUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
 	"go.uber.org/zap"
 )
@@ -39,9 +39,9 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 		}
 		if spec.RepeatCount != 0 && cfg.State.ExecutedCount >= spec.RepeatCount {
 			zap.L().Debug("Reached maximum execution count, disbling this job", zap.String("ScheduleID", cfg.ID), zap.Any("spec", cfg.Spec))
-			rsUtils.DisableSchedule(cfg.ID)
+			busUtils.DisableSchedule(cfg.ID)
 			cfg.State.Message = "Reached maximum execution count"
-			rsUtils.SetScheduleState(cfg.ID, *cfg.State)
+			busUtils.SetScheduleState(cfg.ID, *cfg.State)
 			return
 		}
 	}
@@ -59,18 +59,19 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 		// update triggered count and update state
 		cfg.State.LastStatus = false
 		cfg.State.Message = fmt.Sprintf("Error: %s", err.Error())
-		rsUtils.SetScheduleState(cfg.ID, *cfg.State)
+		busUtils.SetScheduleState(cfg.ID, *cfg.State)
 		return
 	}
 
 	// post to handlers
-	for _, handlerID := range cfg.Notify {
-		postToHandler(handlerID, variables)
-	}
+	parameters := cfg.HandlerParameters
+	variablesUtils.UpdateParameters(variables, parameters)
+	finalData := variablesUtils.Merge(variables, parameters)
+	busUtils.PostToHandler(cfg.Handlers, finalData)
 
 	cfg.State.Message = fmt.Sprintf("time taken: %s", time.Since(start).String())
 	// update triggered count and update state
-	rsUtils.SetScheduleState(cfg.ID, *cfg.State)
+	busUtils.SetScheduleState(cfg.ID, *cfg.State)
 
 }
 
@@ -221,8 +222,8 @@ func isValidSchedule(cfg *schedulerML.Config) bool {
 
 func postToHandler(handlerID string, variables map[string]interface{}) {
 	msg := &handlerML.MessageWrapper{
-		ID:        handlerID,
-		Variables: variables,
+		ID:   handlerID,
+		Data: variables,
 	}
 	err := mcbus.Publish(mcbus.FormatTopic(mcbus.TopicPostMessageNotifyHandler), msg)
 	if err != nil {

@@ -5,7 +5,7 @@ import (
 
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
 	coreScheduler "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
-	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	"go.uber.org/zap"
 )
 
@@ -23,7 +23,7 @@ func schedule(cfg *schedulerML.Config) {
 		zap.L().Error("error on creating cron spec", zap.Error(err))
 		cfg.State.LastStatus = false
 		cfg.State.Message = fmt.Sprintf("Error on cron spec creation: %s", err.Error())
-		rsUtils.SetScheduleState(cfg.ID, *cfg.State)
+		busUtils.SetScheduleState(cfg.ID, *cfg.State)
 		return
 	}
 	err = coreScheduler.SVC.AddFunc(name, cronSpec, getScheduleTriggerFunc(cfg, cronSpec))
@@ -31,10 +31,10 @@ func schedule(cfg *schedulerML.Config) {
 		zap.L().Error("error on adding schedule", zap.Error(err))
 		cfg.State.LastStatus = false
 		cfg.State.Message = fmt.Sprintf("Error on adding into scheduler: %s", err.Error())
-		rsUtils.SetScheduleState(cfg.ID, *cfg.State)
+		busUtils.SetScheduleState(cfg.ID, *cfg.State)
 	}
 	cfg.State.Message = fmt.Sprintf("Added into scheduler. cron spec:[%s]", cronSpec)
-	rsUtils.SetScheduleState(cfg.ID, *cfg.State)
+	busUtils.SetScheduleState(cfg.ID, *cfg.State)
 }
 
 func unschedule(id string) {

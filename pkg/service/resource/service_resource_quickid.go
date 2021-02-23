@@ -9,13 +9,13 @@ import (
 	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 )
 
-func quickIDService(reqEvent *rsModel.Event) error {
+func resourceQuickIDService(reqEvent *rsModel.Event) error {
 	if reqEvent.Command == rsModel.CommandSet {
 		quickID, payload, err := getQuickIDData(reqEvent)
 		if err != nil {
 			return err
 		}
-		return action.ExecuteByQuickID(quickID, payload)
+		return action.ExecuteActionOnResourceByQuickID(quickID, payload)
 	}
 
 	return fmt.Errorf("Unknown command: %s", reqEvent.Command)

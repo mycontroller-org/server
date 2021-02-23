@@ -28,16 +28,17 @@ const (
 
 // Config for scheduler
 type Config struct {
-	ID          string               `json:"id"`
-	Description string               `json:"description"`
-	Enabled     bool                 `json:"enabled"`
-	Labels      cmap.CustomStringMap `json:"labels"`
-	Variables   map[string]string    `json:"variables"`
-	Validity    Validity             `json:"validity"`
-	Type        string               `json:"type"`
-	Spec        cmap.CustomMap       `json:"spec"`
-	Notify      []string             `json:"notify"`
-	State       *State               `json:"state"`
+	ID                string               `json:"id"`
+	Description       string               `json:"description"`
+	Enabled           bool                 `json:"enabled"`
+	Labels            cmap.CustomStringMap `json:"labels"`
+	Variables         map[string]string    `json:"variables"`
+	Validity          Validity             `json:"validity"`
+	Type              string               `json:"type"`
+	Spec              cmap.CustomMap       `json:"spec"`
+	HandlerParameters map[string]string    `json:"handlerParameters"`
+	Handlers          []string             `json:"handlers"`
+	State             *State               `json:"state"`
 }
 
 // Validity of the scheduler
@@ -101,16 +102,18 @@ const customDateFormat = "2006-01-02"
 
 // MarshalJSON custom implementation
 func (cd CustomDate) MarshalJSON() ([]byte, error) {
-	_time := time.Time(cd.Time)
-	if _time.IsZero() {
+	if cd.Time.IsZero() {
 		return []byte("\"\""), nil
 	}
-	stamp := fmt.Sprintf("\"%s\"", time.Time(cd.Time).Format(customDateFormat))
+	stamp := fmt.Sprintf("\"%s\"", cd.Time.Format(customDateFormat))
 	return []byte(stamp), nil
 }
 
 // MarshalYAML implementation
 func (cd CustomDate) MarshalYAML() (interface{}, error) {
+	if cd.Time.IsZero() {
+		return "", nil
+	}
 	return cd.Time.Format(customDateFormat), nil
 }
 
@@ -153,16 +156,18 @@ const customTimeFormat = "15:04:05"
 
 // MarshalJSON custom implementation
 func (ct CustomTime) MarshalJSON() ([]byte, error) {
-	_time := time.Time(ct.Time)
-	if _time.IsZero() {
+	if ct.Time.IsZero() {
 		return []byte("\"\""), nil
 	}
-	stamp := fmt.Sprintf("\"%s\"", time.Time(ct.Time).Format(customTimeFormat))
+	stamp := fmt.Sprintf("\"%s\"", ct.Time.Format(customTimeFormat))
 	return []byte(stamp), nil
 }
 
 // MarshalYAML implementation
 func (ct CustomTime) MarshalYAML() (interface{}, error) {
+	if ct.Time.IsZero() {
+		return "", nil
+	}
 	return ct.Time.Format(customTimeFormat), nil
 }
 

@@ -6,7 +6,7 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
-	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	handler "github.com/mycontroller-org/backend/v2/plugin/notify_handlers"
 	handlerPlugin "github.com/mycontroller-org/backend/v2/plugin/notify_handlers"
 	"go.uber.org/zap"
@@ -38,7 +38,7 @@ func Start(cfg *handlerML.Config) error {
 		handlersStore.Add(cfg.ID, handler)
 	}
 
-	rsUtils.SetGatewayState(cfg.ID, state)
+	busUtils.SetGatewayState(cfg.ID, state)
 	return nil
 }
 
@@ -57,7 +57,7 @@ func Stop(id string) error {
 			zap.L().Error("Failed to stop gateway service", zap.String("id", id), zap.Error(err))
 			state.Message = err.Error()
 		}
-		rsUtils.SetGatewayState(id, state)
+		busUtils.SetGatewayState(id, state)
 		handlersStore.Remove(id)
 	}
 	return nil

@@ -14,7 +14,6 @@ var (
 	QuickIDNode        = []string{"nd", "node"}
 	QuickIDSensor      = []string{"sn", "sensor"}
 	QuickIDSensorField = []string{"sf", "sensor_filed", "field"}
-	QuickIDTemplate    = []string{"tp", "template"}
 	QuickIDTask        = []string{"tk", "task"}
 	QuickIDSchedule    = []string{"sk", "schedule"}
 	QuickIDHandler     = []string{"hd", "handler"}
@@ -35,7 +34,6 @@ func IsValidQuickID(quickID string) bool {
 	validIDs = append(validIDs, QuickIDNode...)
 	validIDs = append(validIDs, QuickIDSensor...)
 	validIDs = append(validIDs, QuickIDSensorField...)
-	validIDs = append(validIDs, QuickIDTemplate...)
 
 	return utils.ContainsString(validIDs, resourceType)
 }
@@ -111,12 +109,6 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 		if len(values) > expectedLength {
 			data[model.KeySelector] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
-
-	case utils.ContainsString(QuickIDTemplate, resourceType):
-		if typeID[1] == "" {
-			return "", nil, fmt.Errorf("Invalid template. quickID:%s", quickID)
-		}
-		data[model.KeyTemplate] = typeID[1]
 
 	case utils.ContainsString(QuickIDTask, resourceType),
 		utils.ContainsString(QuickIDSchedule, resourceType),

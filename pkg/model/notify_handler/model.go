@@ -7,13 +7,13 @@ import (
 
 // operation types
 const (
-	TypeNoop           = "noop"
-	TypeEmail          = "email"
-	TypeTelegram       = "telegram"
-	TypeWebhook        = "webhook"
-	TypeSMS            = "sms"
-	TypePushbullet     = "pushbullet"
-	TypeResourceAction = "resource_action"
+	TypeNoop       = "noop"
+	TypeEmail      = "email"
+	TypeTelegram   = "telegram"
+	TypeWebhook    = "webhook"
+	TypeSMS        = "sms"
+	TypePushbullet = "pushbullet"
+	TypeResource   = "resource"
 )
 
 // Config model
@@ -42,6 +42,6 @@ func (hdr *Config) Clone() Config {
 
 // MessageWrapper to use in bus
 type MessageWrapper struct {
-	ID        string
-	Variables map[string]interface{}
+	ID   string
+	Data map[string]interface{}
 }

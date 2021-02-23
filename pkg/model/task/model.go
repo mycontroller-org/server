@@ -30,7 +30,8 @@ type Config struct {
 	RemoteCall        bool                 `json:"remoteCall"`
 	RemoteCallConfig  interface{}          `json:"remoteCallConfig"`
 	Rule              Rule                 `json:"rule"`
-	Notify            []string             `json:"notify"`
+	HandlerParameters map[string]string    `json:"handlerParameters"`
+	Handlers          []string             `json:"handlers"`
 	State             *State               `json:"state"`
 }
 

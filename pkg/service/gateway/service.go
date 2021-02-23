@@ -6,7 +6,7 @@ import (
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	rsUtils "github.com/mycontroller-org/backend/v2/pkg/utils/resource_service"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	gwpd "github.com/mycontroller-org/backend/v2/plugin/gateway/provider"
 	"go.uber.org/zap"
 )
@@ -39,7 +39,7 @@ func Start(gatewayCfg *gwml.Config) error {
 		gwService.Add(service)
 	}
 
-	rsUtils.SetGatewayState(gatewayCfg.ID, state)
+	busUtils.SetGatewayState(gatewayCfg.ID, state)
 	return nil
 }
 
@@ -58,10 +58,10 @@ func Stop(id string) error {
 		if err != nil {
 			zap.L().Error("Failed to stop a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
 			state.Message = fmt.Sprintf("Failed to stop: %s", err.Error())
-			rsUtils.SetGatewayState(id, state)
+			busUtils.SetGatewayState(id, state)
 		} else {
 			zap.L().Info("Stopped a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()))
-			rsUtils.SetGatewayState(id, state)
+			busUtils.SetGatewayState(id, state)
 			gwService.Remove(id)
 		}
 	}
