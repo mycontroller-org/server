@@ -62,7 +62,7 @@ func Init(cfg *handlerML.Config) (Client, error) {
 	}
 	zap.L().Debug("Email client", zap.Any("config", config))
 
-	switch cfg.Type {
+	switch config.Type {
 	case TypeSMTP, TypeNone:
 		return initSMTP(cfg, config)
 

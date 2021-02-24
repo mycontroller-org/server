@@ -13,7 +13,7 @@ var (
 	QuickIDGateway     = []string{"gw", "gateway"}
 	QuickIDNode        = []string{"nd", "node"}
 	QuickIDSensor      = []string{"sn", "sensor"}
-	QuickIDSensorField = []string{"sf", "sensor_filed", "field"}
+	QuickIDSensorField = []string{"sf", "sensor_field", "field"}
 	QuickIDTask        = []string{"tk", "task"}
 	QuickIDSchedule    = []string{"sk", "schedule"}
 	QuickIDHandler     = []string{"hd", "handler"}
@@ -34,6 +34,9 @@ func IsValidQuickID(quickID string) bool {
 	validIDs = append(validIDs, QuickIDNode...)
 	validIDs = append(validIDs, QuickIDSensor...)
 	validIDs = append(validIDs, QuickIDSensorField...)
+	validIDs = append(validIDs, QuickIDTask...)
+	validIDs = append(validIDs, QuickIDSchedule...)
+	validIDs = append(validIDs, QuickIDHandler...)
 
 	return utils.ContainsString(validIDs, resourceType)
 }

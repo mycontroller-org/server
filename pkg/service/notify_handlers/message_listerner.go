@@ -65,7 +65,7 @@ func processHandlerMessage(item interface{}) {
 
 	handler := handlersStore.Get(msg.ID)
 	if handler == nil {
-		zap.L().Warn("handler not available", zap.Any("handlerID", msg.ID))
+		zap.L().Warn("handler not available", zap.Any("handlerID", msg.ID), zap.Any("availableHandlers", handlersStore.ListIDs()))
 		return
 	}
 

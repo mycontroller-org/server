@@ -6,7 +6,9 @@ import (
 	"strings"
 
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
+	tplUtils "github.com/mycontroller-org/backend/v2/pkg/utils/template"
 	"go.uber.org/zap"
 )
 
@@ -24,15 +26,29 @@ func isTriggered(rule taskML.Rule, variables map[string]interface{}) bool {
 			zap.L().Warn("error on getting a variable", zap.Error(err))
 			return false
 		}
-		valid := isMatching(value, condition.Operator, condition.Value)
+
+		expectedValue := condition.Value
+		stringValue := utils.ToString(expectedValue)
+
+		// process value as template, if it contains template format
+		if strings.Contains(stringValue, "{{") {
+			updateValue, err := tplUtils.Execute(stringValue, variables)
+			if err == nil {
+				expectedValue = updateValue
+			} else {
+				zap.L().Debug("error on parsing template", zap.Error(err), zap.String("template", stringValue), zap.Any("variables", variables))
+			}
+		}
+
+		valid := isMatching(value, condition.Operator, expectedValue)
 
 		if rule.MatchAll && !valid {
-			zap.L().Debug("condition failed", zap.Any("c", condition), zap.Any("variables", variables))
+			zap.L().Debug("condition failed", zap.Any("condition", condition), zap.Any("variables", variables), zap.Any("expectedValue", expectedValue))
 			return false
 		}
 
 		if !rule.MatchAll && valid {
-			zap.L().Debug("condition passed", zap.Any("c", condition), zap.Any("variables", variables))
+			zap.L().Debug("condition passed", zap.Any("condition", condition), zap.Any("variables", variables), zap.Any("expectedValue", expectedValue))
 			return true
 		}
 	}

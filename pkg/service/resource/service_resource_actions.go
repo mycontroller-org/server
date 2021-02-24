@@ -9,24 +9,27 @@ import (
 	"go.uber.org/zap"
 )
 
-func resourceLabelsService(reqEvent *rsModel.Event) error {
+func resourceActionService(reqEvent *rsModel.Event) error {
 	if reqEvent.Command == rsModel.CommandSet {
-		data, err := getResourceLabelsData(reqEvent)
+		data, err := getResourceSelectorData(reqEvent)
 		if err != nil {
 			return err
 		}
-		zap.L().Info("resourceLabelsService", zap.Any("data", data))
+		zap.L().Debug("resourceActionService", zap.Any("data", data))
+
+		if data.QuickID != "" {
+			return action.ExecuteActionOnResourceByQuickID(data.QuickID, data.Payload)
+		}
 		return action.ExecuteActionOnResourceByLabels(data.ResourceType, data.Labels, data.Payload)
 	}
-
 	return fmt.Errorf("Unknown command: %s", reqEvent.Command)
 }
 
-func getResourceLabelsData(reqEvent *rsModel.Event) (*rsModel.ResourceLabels, error) {
+func getResourceSelectorData(reqEvent *rsModel.Event) (*rsModel.ResourceSelector, error) {
 	if reqEvent.Data == nil {
 		return nil, errors.New("data not supplied")
 	}
-	var data rsModel.ResourceLabels
+	var data rsModel.ResourceSelector
 	err := reqEvent.ToStruct(&data)
 	if err != nil {
 		return nil, err

@@ -7,12 +7,11 @@ import (
 
 // Resource type details
 const (
-	TypeGateway           = "gateway"
-	TypeTask              = "task"
-	TypeNotifyHandler     = "notify_handler"
-	TypeScheduler         = "scheduler"
-	TypeResourceByQuickID = "resource_by_quick_id"
-	TypeResourceByLabels  = "resource_by_labels"
+	TypeGateway                  = "gateway"
+	TypeTask                     = "task"
+	TypeNotifyHandler            = "notify_handler"
+	TypeScheduler                = "scheduler"
+	TypeResourceActionBySelector = "resource_action_by_selector"
 )
 
 // Command details
@@ -62,9 +61,22 @@ func (e *Event) ToStruct(out interface{}) error {
 	return utils.ByteToStruct(e.Data, out)
 }
 
-// ResourceLabels used in handlers
-type ResourceLabels struct {
+// ResourceSelector used in handlers
+type ResourceSelector struct {
+	QuickID      string
 	ResourceType string
 	Payload      string
+	PreDelay     string
+	Selector     string
 	Labels       cmap.CustomStringMap
 }
+
+// Resource parameters, used in task, schedule, and in other places
+const (
+	KeyResourceType     = "--type"
+	KeyResourceLabels   = "--labels"
+	KeyResourceQuickID  = "--qid"
+	KeyResourcePayload  = "--payload"
+	KeyResourcePreDelay = "--predelay"
+	KeyResourceSelector = "--selector"
+)

@@ -83,6 +83,9 @@ func ExecuteActionOnResourceByQuickID(quickID, payload string) error {
 
 // ExecuteActionOnResourceByLabels the given request
 func ExecuteActionOnResourceByLabels(resourceType string, labels cmap.CustomStringMap, payload string) error {
+	if len(labels) == 0 {
+		return errors.New("empty labels not allowed")
+	}
 	filters := getFilterFromLabel(labels)
 	pagination := &stgML.Pagination{Limit: 100}
 
