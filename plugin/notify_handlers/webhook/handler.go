@@ -36,26 +36,6 @@ func (cfg *Config) Clone() *Config {
 	return config
 }
 
-// keys used to identify webhook related data
-const (
-	keyServer = "server"
-	keyAPI    = "api"
-	keyMethod = "method"
-	keyHeader = "header" // Content-Type=application/json,
-	keyBody   = "body"   // {abc:{{.var1}}}
-	keyQuery  = "query"  // a=21&b=43&c={{.var1}}
-)
-
-// Authorization=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHBpcmF0aW9uIjoxNjEwODE2NDY5LCJmdWxsTmFtZSI6IkFkbWluIFVzZXIiLCJ1c2VySUQiOiJjMDIzOGExMS00YzEzLTRjYmMtOTUwNS1mZjI4MDRkOGZkZTYifQ.g5781H9g2fQC_FAMGDhJ_v5iaxjGDg55o7hhmauSgGQ
-// User-Agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36
-// Accept=*/*
-// Sec-Fetch-Site=none
-// Sec-Fetch-Mode=cors
-// Sec-Fetch-Dest=empty
-// Accept-Encoding=gzip, deflate, br
-// Accept-Language=en-US,en;q=0.9,ta;q=0.8
-// Cookie=theme_cookie=black-theme; agh_session=bd989e3441db74f61c2558b97f5acf2f94e9fccc9a6bc4d863e7d88780d86011
-
 // Client struct
 type Client struct {
 	HandlerCfg *handlerML.Config
