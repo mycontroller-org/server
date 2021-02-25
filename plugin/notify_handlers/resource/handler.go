@@ -3,16 +3,14 @@ package resource
 import (
 	"strings"
 
+	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	variablesUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
 	"go.uber.org/zap"
 )
-
-// variables should have this prefixResource
-var prefixResource = []string{"resource_", "rs_"}
 
 // Client struct
 type Client struct {
@@ -39,29 +37,30 @@ func (c *Client) State() *model.State {
 // Post handler implementation
 func (c *Client) Post(data map[string]interface{}) error {
 	for name, value := range data {
-		match := false
-		modifiedName := strings.ToLower(name)
-		for _, identity := range prefixResource {
-			if strings.HasPrefix(modifiedName, identity) {
-				match = true
-				break
-			}
-		}
-		if !match {
-			continue
-		}
-
 		stringValue, ok := value.(string)
 		if !ok {
 			continue
 		}
 
-		data, err := variablesUtils.GetResourceSelector(stringValue)
+		genericData := handlerML.GenericData{}
+		err := json.Unmarshal([]byte(stringValue), &genericData)
 		if err != nil {
-			return err
+			continue
 		}
-		zap.L().Debug("about to perform an action", zap.String("rawData", stringValue), zap.Any("finalData", data))
-		busUtils.PostToResourceService("resource_selector", data, rsML.TypeResourceActionBySelector, rsML.CommandSet)
+
+		if !strings.HasPrefix(genericData.Type, handlerML.DataTypeResource) {
+			continue
+		}
+
+		rsData := handlerML.ResourceData{}
+		err = utils.MapToStruct(utils.TagNameNone, genericData.Data, &rsData)
+		if err != nil {
+			zap.L().Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
+			continue
+		}
+
+		zap.L().Debug("about to perform an action", zap.String("rawData", stringValue), zap.Any("finalData", rsData))
+		busUtils.PostToResourceService("resource_selector", rsData, rsML.TypeResourceActionBySelector, rsML.CommandSet)
 	}
 	return nil
 }

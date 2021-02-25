@@ -33,6 +33,7 @@ func schedule(cfg *schedulerML.Config) {
 		cfg.State.Message = fmt.Sprintf("Error on adding into scheduler: %s", err.Error())
 		busUtils.SetScheduleState(cfg.ID, *cfg.State)
 	}
+	zap.L().Debug("added a schedule", zap.String("name", name), zap.String("ID", cfg.ID), zap.Any("cronSpec", cronSpec))
 	cfg.State.Message = fmt.Sprintf("Added into scheduler. cron spec:[%s]", cronSpec)
 	busUtils.SetScheduleState(cfg.ID, *cfg.State)
 }
@@ -40,6 +41,7 @@ func schedule(cfg *schedulerML.Config) {
 func unschedule(id string) {
 	name := getScheduleID(id)
 	coreScheduler.SVC.RemoveFunc(name)
+	zap.L().Debug("removed a schedule", zap.String("name", name), zap.String("id", id))
 }
 
 func unloadAll() {

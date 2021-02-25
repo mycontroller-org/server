@@ -5,18 +5,24 @@ import (
 	"html/template"
 	"time"
 
+	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/version"
-	"go.uber.org/zap"
 )
 
 var funcMap = template.FuncMap{
 	"now":     time.Now,
 	"version": version.Get,
+	"marshal": marshal,
+	"toJson":  marshal,
+}
+
+func marshal(v interface{}) template.JS {
+	a, _ := json.Marshal(v)
+	return template.JS(a)
 }
 
 // Execute a template
 func Execute(templateText string, data interface{}) (string, error) {
-	zap.L().Debug("template", zap.String("tpl", templateText))
 	tpl, err := template.New("base").Funcs(funcMap).Parse(templateText)
 	if err != nil {
 		return "", err

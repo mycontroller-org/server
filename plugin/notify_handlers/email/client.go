@@ -22,13 +22,7 @@ type Config struct {
 	InsecureSkipVerify bool
 }
 
-// Keys
 const (
-	keyFromEmail = "email_from"
-	keyToEmails  = "email_to"
-	keySubject   = "email_subject"
-	keyBody      = "email_body"
-
 	defaultSubject = "Email from MyController.org server"
 )
 

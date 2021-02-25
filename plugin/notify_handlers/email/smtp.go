@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v2"
 )
 
 // smtp client
@@ -147,41 +147,55 @@ func (sc *smtpClient) sendEmailSSL(from string, to []string, subject, body strin
 
 // Post performs send operation
 func (sc *smtpClient) Post(data map[string]interface{}) error {
-	fromEmail := sc.cfg.FromEmail
-	toEmails := sc.cfg.ToEmails
-	subject := defaultSubject
-	body := ""
-
-	if from, ok := data[keyFromEmail]; ok {
-		fromEmail = utils.ToString(from)
-	}
-
-	if to, ok := data[keyToEmails]; ok {
-		toEmails = utils.ToString(to)
-	}
-
-	if sub, ok := data[keySubject]; ok {
-		subject = utils.ToString(sub)
-	}
-
-	if bd, ok := data[keyBody]; ok {
-		body = utils.ToString(bd)
-	} else {
-		bodyBytes, err := yaml.Marshal(data)
-		if err != nil {
-			body = "Marshal Error: " + err.Error()
-		} else {
-			body = string(bodyBytes)
+	for name, value := range data {
+		stringValue, ok := value.(string)
+		if !ok {
+			continue
 		}
-	}
 
-	to := strings.Split(toEmails, ",")
+		genericData := handlerML.GenericData{}
+		err := json.Unmarshal([]byte(stringValue), &genericData)
+		if err != nil {
+			continue
+		}
+		if genericData.Type != handlerML.DataTypeEmail {
+			continue
+		}
 
-	start := time.Now()
-	err := sc.sendEmailSSL(fromEmail, to, subject, body)
-	if err != nil {
-		zap.L().Error("error on email sent", zap.Error(err))
+		emailData := handlerML.EmailData{}
+		err = utils.MapToStruct(utils.TagNameNone, genericData.Data, &emailData)
+		if err != nil {
+			zap.L().Error("error on converting email data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
+			continue
+		}
+
+		fromEmail := sc.cfg.FromEmail
+		toEmails := sc.cfg.ToEmails
+		subject := defaultSubject
+		body := ""
+
+		if emailData.From != "" {
+			fromEmail = emailData.From
+		}
+
+		if len(emailData.To) > 0 {
+			toEmails = strings.Join(emailData.To, ",")
+		}
+
+		if emailData.Subject != "" {
+			subject = emailData.Subject
+		}
+		if emailData.Body != "" {
+			body = emailData.Body
+		}
+		to := strings.Split(toEmails, ",")
+
+		start := time.Now()
+		err = sc.sendEmailSSL(fromEmail, to, subject, body)
+		if err != nil {
+			zap.L().Error("error on email sent", zap.Error(err))
+		}
+		zap.L().Debug("email sent", zap.String("id", sc.handlerCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 	}
-	zap.L().Debug("email sent", zap.String("id", sc.handlerCfg.ID), zap.String("timeTaken", time.Since(start).String()))
-	return err
+	return nil
 }

@@ -60,23 +60,3 @@ func (e *Event) SetData(data interface{}) error {
 func (e *Event) ToStruct(out interface{}) error {
 	return utils.ByteToStruct(e.Data, out)
 }
-
-// ResourceSelector used in handlers
-type ResourceSelector struct {
-	QuickID      string
-	ResourceType string
-	Payload      string
-	PreDelay     string
-	Selector     string
-	Labels       cmap.CustomStringMap
-}
-
-// Resource parameters, used in task, schedule, and in other places
-const (
-	KeyResourceType     = "--type"
-	KeyResourceLabels   = "--labels"
-	KeyResourceQuickID  = "--qid"
-	KeyResourcePayload  = "--payload"
-	KeyResourcePreDelay = "--predelay"
-	KeyResourceSelector = "--selector"
-)
