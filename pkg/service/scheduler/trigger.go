@@ -23,7 +23,7 @@ func getScheduleTriggerFunc(cfg *schedulerML.Config, spec string) func() {
 func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 	// validate schedule
 	if !isValidSchedule(cfg) {
-		zap.L().Debug("at this moment, this is not a valid schedule", zap.String("ScheduleID", cfg.ID), zap.String("spec", spec))
+		zap.L().Info("at this moment, this is not a valid schedule", zap.String("ScheduleID", cfg.ID), zap.String("spec", spec), zap.Any("validity details", cfg.Validity))
 		return
 	}
 
@@ -168,10 +168,15 @@ func isValidSchedule(cfg *schedulerML.Config) bool {
 	now := time.Now()
 
 	// update from date with time
-	if !fromDate.IsZero() && !fromTime.IsZero() {
-		fromDate = time.Date(fromDate.Year(), fromDate.Month(), fromDate.Day(),
-			fromTime.Hour(), fromTime.Minute(), fromTime.Second(), fromTime.Nanosecond(),
-			fromDate.Location())
+	if !fromDate.IsZero() {
+		if fromTime.IsZero() { // set time to start of the day
+			fromTime = time.Date(fromTime.Year(), fromTime.Month(), fromTime.Day(),
+				0, 0, 0, 0, fromTime.Location())
+		} else { // set the time from defined data
+			fromDate = time.Date(fromDate.Year(), fromDate.Month(), fromDate.Day(),
+				fromTime.Hour(), fromTime.Minute(), fromTime.Second(), fromTime.Nanosecond(),
+				fromDate.Location())
+		}
 	}
 
 	// update to date with time
@@ -179,7 +184,7 @@ func isValidSchedule(cfg *schedulerML.Config) bool {
 		if toTime.IsZero() { // set the time to end of the day
 			toDate = time.Date(toDate.Year(), toDate.Month(), toDate.Day(),
 				23, 59, 59, 999999999, toDate.Location())
-		} else {
+		} else { // set the time from defined data
 			toDate = time.Date(toDate.Year(), toDate.Month(), toDate.Day(),
 				toTime.Hour(), toTime.Minute(), toTime.Second(), toTime.Nanosecond(),
 				toDate.Location())
@@ -187,7 +192,7 @@ func isValidSchedule(cfg *schedulerML.Config) bool {
 	}
 
 	// validate from date and time
-	if !fromDate.IsZero() && fromDate.Before(now) {
+	if !fromDate.IsZero() && fromDate.After(now) {
 		return false
 	}
 
