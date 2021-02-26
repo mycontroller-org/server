@@ -13,6 +13,8 @@ import (
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 
 	"go.uber.org/zap"
@@ -29,6 +31,8 @@ func registerTypes() {
 	gob.Register(cmap.CustomStringMap{})
 	gob.Register(fieldML.Field{})
 	gob.Register(taskML.Config{})
+	gob.Register(gatewayML.Config{})
+	gob.Register(nodeML.Node{})
 }
 
 // ToString converts interface to string
