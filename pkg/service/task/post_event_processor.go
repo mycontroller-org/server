@@ -40,6 +40,10 @@ func resourcePostProcessor(item interface{}) {
 			continue
 		}
 
+		// user conditions can access event and event type
+		variables[model.KeyEventType] = resource.ResourceType
+		variables[model.KeyEvent] = resource.Resource
+
 		variables[model.KeyTask] = task // include task in to the variables list
 
 		triggered := false
