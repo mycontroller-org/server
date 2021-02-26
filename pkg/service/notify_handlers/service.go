@@ -38,7 +38,7 @@ func Start(cfg *handlerML.Config) error {
 		handlersStore.Add(cfg.ID, handler)
 	}
 
-	busUtils.SetGatewayState(cfg.ID, state)
+	busUtils.SetHandlerState(cfg.ID, state)
 	return nil
 }
 
@@ -57,7 +57,7 @@ func Stop(id string) error {
 			zap.L().Error("Failed to stop gateway service", zap.String("id", id), zap.Error(err))
 			state.Message = err.Error()
 		}
-		busUtils.SetGatewayState(id, state)
+		busUtils.SetHandlerState(id, state)
 		handlersStore.Remove(id)
 	}
 	return nil

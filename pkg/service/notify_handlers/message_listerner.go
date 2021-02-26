@@ -81,5 +81,6 @@ func processHandlerMessage(item interface{}) {
 		state.Message = fmt.Sprintf("execution time: %s", time.Since(start).String())
 	}
 
-	busUtils.SetHandlerState(msg.ID, model.State{})
+	state.Since = time.Now()
+	busUtils.SetHandlerState(msg.ID, *state)
 }
