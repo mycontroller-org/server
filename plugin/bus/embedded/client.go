@@ -1,6 +1,9 @@
 package embedded
 
 import (
+	"fmt"
+	"regexp"
+	"strings"
 	"sync"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model/event"
@@ -45,15 +48,22 @@ func (c *Client) Publish(topic string, data interface{}) error {
 
 	PrintDebug("Posting message", zap.String("topic", topic))
 
-	if subscriptionIDs, found := c.topics[topic]; found {
-		for _, subscriptionID := range subscriptionIDs {
-			if callBack, ok := c.subscriptions[subscriptionID]; ok {
-				event := &event.Event{Topic: topic}
-				err := event.SetData(data)
-				if err != nil {
-					zap.L().Error("data conversion failed", zap.Error(err))
-				} else {
-					go callBack(event)
+	for subscriptionTopic, subscriptionIDs := range c.topics {
+		match, err := regexp.MatchString(subscriptionTopic, topic)
+		if err != nil {
+			zap.L().Error("error on matching topic", zap.String("publishTopic", topic), zap.String("subscriptionTopic", subscriptionTopic), zap.Error(err))
+			continue
+		}
+		if match {
+			for _, subscriptionID := range subscriptionIDs {
+				if callBack, ok := c.subscriptions[subscriptionID]; ok {
+					event := &event.Event{Topic: topic}
+					err := event.SetData(data)
+					if err != nil {
+						zap.L().Error("data conversion failed", zap.Error(err))
+					} else {
+						go callBack(event)
+					}
 				}
 			}
 		}
@@ -66,6 +76,8 @@ func (c *Client) Publish(topic string, data interface{}) error {
 func (c *Client) Subscribe(topic string, handler busml.CallBackFunc) (int64, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
+
+	topic = c.getFormatedTopic(topic)
 
 	subscriptionIDs, found := c.topics[topic]
 	if !found {
@@ -85,6 +97,8 @@ func (c *Client) Subscribe(topic string, handler busml.CallBackFunc) (int64, err
 func (c *Client) Unsubscribe(topic string, subscriptionID int64) error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
+
+	topic = c.getFormatedTopic(topic)
 
 	// remove subscription id
 	if subscriptionIDs, found := c.topics[topic]; found {
@@ -126,4 +140,13 @@ func (c *Client) generateSubscriptionID() int64 {
 	c.subscriptionCounter++
 
 	return c.subscriptionCounter
+}
+
+func (c *Client) getFormatedTopic(topic string) string {
+	updatedTopic := topic
+	if strings.HasSuffix(topic, ">") {
+		updatedTopic = fmt.Sprintf("%s*", topic[:len(topic)-1])
+	}
+	updatedTopic = fmt.Sprintf("^%s", updatedTopic)
+	return updatedTopic
 }

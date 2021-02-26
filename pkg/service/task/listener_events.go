@@ -25,8 +25,8 @@ const (
 	eventTypeGateway            = "gateway"
 	eventTypeNode               = "node"
 	eventTypeSensor             = "sensor"
-	eventTypeSensorFieldSet     = "sensor_field/set"
-	eventTypeSensorFieldRequest = "sensor_field/request"
+	eventTypeSensorFieldSet     = "sensor_field.set"
+	eventTypeSensorFieldRequest = "sensor_field.request"
 )
 
 const (
@@ -52,7 +52,7 @@ func initEventListener() error {
 
 	// on message receive add it in to our local queue
 	// TODO: update to listen all the events
-	preEventsTopic = mcbus.FormatTopic(mcbus.TopicEventSensorFieldSet)
+	preEventsTopic = mcbus.FormatTopic(mcbus.TopicEventsAll)
 	sID, err := mcbus.Subscribe(preEventsTopic, onEventReceive)
 	if err != nil {
 		return err
@@ -116,6 +116,8 @@ func processPreEvent(item interface{}) {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
 		return
 	}
+
+	zap.L().Info("event received", zap.String("type", resourceType))
 
 	resourceWrapper := &resourceWrapper{ResourceType: resourceType, Resource: resource}
 	err = resourcePreProcessor(resourceWrapper)
