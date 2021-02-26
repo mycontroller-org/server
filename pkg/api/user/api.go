@@ -1,6 +1,8 @@
 package user
 
 import (
+	"time"
+
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	uml "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
@@ -59,6 +61,7 @@ func Save(user *uml.User) error {
 	filters := []stgml.Filter{
 		{Key: ml.KeyID, Value: user.ID},
 	}
+	user.LastModifiedOn = time.Now()
 	return stg.SVC.Upsert(ml.EntityUser, user, filters)
 }
 

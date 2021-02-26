@@ -31,6 +31,7 @@ type resourceAPI struct {
 }
 
 func toResource(api resourceAPI, id, action string) error {
+	action = model.GetAction(action)
 	switch action {
 	case model.ActionEnable:
 		return api.Enable([]string{id})
@@ -74,6 +75,9 @@ func ExecuteActionOnResourceByQuickID(quickID, payload string) error {
 
 	case utils.ContainsString(quickIdUL.QuickIDSchedule, resourceType):
 		return toSchedule(kvMap[model.KeyID], payload)
+
+	case utils.ContainsString(quickIdUL.QuickIDHandler, resourceType):
+		return toHandler(kvMap[model.KeyID], payload)
 
 	default:
 		return fmt.Errorf("Unknown resource type: %s", resourceType)

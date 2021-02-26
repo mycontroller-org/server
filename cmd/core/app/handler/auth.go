@@ -8,11 +8,13 @@ import (
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
+	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
 )
 
 func registerAuthRoutes(router *mux.Router) {
 	router.HandleFunc("/api/user/login", login).Methods(http.MethodPost)
 	router.HandleFunc("/api/user/profile", profile).Methods(http.MethodGet)
+	router.HandleFunc("/api/user/profile", updateProfile).Methods(http.MethodPost)
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -79,4 +81,40 @@ func profile(w http.ResponseWriter, r *http.Request) {
 		postErrorResponse(w, err.Error(), 400)
 	}
 	postSuccessResponse(w, &user)
+}
+
+func updateProfile(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	userID := getUserID(r)
+	if userID == "" {
+		postErrorResponse(w, "UserID missing in the request", 400)
+		return
+	}
+
+	user, err := userAPI.GetByID(userID)
+	if err != nil {
+		postErrorResponse(w, err.Error(), 400)
+	}
+
+	entity := &userML.User{}
+	err = LoadEntity(w, r, entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	if user.ID != entity.ID {
+		http.Error(w, "You can not change ID", 400)
+		return
+	}
+
+	if entity.Password == "" {
+		entity.Password = user.Password
+	}
+
+	err = userAPI.Save(entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
