@@ -117,8 +117,6 @@ func processPreEvent(item interface{}) {
 		return
 	}
 
-	zap.L().Info("event received", zap.String("type", resourceType))
-
 	resourceWrapper := &resourceWrapper{ResourceType: resourceType, Resource: resource}
 	err = resourcePreProcessor(resourceWrapper)
 	if err != nil {

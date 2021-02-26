@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
@@ -84,6 +85,13 @@ func (s *store) filterTasks(resource *resourceWrapper) []taskML.Config {
 	filteredTasks := make([]taskML.Config, 0)
 	for id := range s.tasks {
 		task := s.tasks[id]
+
+		// if resource filter added and matching do not include
+		resourceTypes := task.EventFilter.ResourceTypes
+		if len(resourceTypes) > 0 && !utils.ContainsString(resourceTypes, resource.ResourceType) {
+			continue
+		}
+
 		filters := s.getFilters(task.EventFilter.Selectors)
 		matching := false
 		zap.L().Debug("filterTasks", zap.Any("filters", filters), zap.Any("resource", resource.Resource))
