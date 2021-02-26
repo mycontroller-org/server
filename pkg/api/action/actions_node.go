@@ -46,6 +46,6 @@ func toNode(gatewayID, nodeID, action string) error {
 	pl.Name = action
 	pl.Value = ""
 	msg.Payloads = append(msg.Payloads, pl)
-	msg.Type = msgml.TypeSet
+	msg.Type = msgml.TypeAction
 	return Post(&msg)
 }
