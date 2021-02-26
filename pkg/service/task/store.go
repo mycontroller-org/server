@@ -86,6 +86,11 @@ func (s *store) filterTasks(resource *resourceWrapper) []taskML.Config {
 	for id := range s.tasks {
 		task := s.tasks[id]
 
+		// if the task is not event based, do not include
+		if !task.TriggerOnEvent {
+			continue
+		}
+
 		// if resource filter added and matching do not include
 		resourceTypes := task.EventFilter.ResourceTypes
 		if len(resourceTypes) > 0 && !utils.ContainsString(resourceTypes, resource.ResourceType) {

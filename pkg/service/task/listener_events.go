@@ -51,7 +51,6 @@ func initEventListener() error {
 	postEventsQueue = queueUtils.New(eventListenerPostQueueName, eventListenerPostQueueLimit, resourcePostProcessor, eventListenerPostWorkerLimit)
 
 	// on message receive add it in to our local queue
-	// TODO: update to listen all the events
 	preEventsTopic = mcbus.FormatTopic(mcbus.TopicEventsAll)
 	sID, err := mcbus.Subscribe(preEventsTopic, onEventReceive)
 	if err != nil {
