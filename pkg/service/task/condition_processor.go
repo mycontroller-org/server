@@ -33,10 +33,10 @@ func isTriggered(rule taskML.Rule, variables map[string]interface{}) bool {
 		// process value as template, if it contains template format
 		if strings.Contains(stringValue, "{{") {
 			updateValue, err := tplUtils.Execute(stringValue, variables)
-			if err == nil {
-				expectedValue = updateValue
+			if err != nil {
+				zap.L().Warn("error on parsing template", zap.Error(err), zap.String("template", stringValue), zap.Any("variables", variables))
 			} else {
-				zap.L().Debug("error on parsing template", zap.Error(err), zap.String("template", stringValue), zap.Any("variables", variables))
+				expectedValue = updateValue
 			}
 		}
 

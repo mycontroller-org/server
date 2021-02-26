@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/json"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	"github.com/mycontroller-org/backend/v2/pkg/version"
 	"go.uber.org/zap"
@@ -17,6 +18,14 @@ var funcMap = template.FuncMap{
 	"marshal":    marshal,
 	"toJson":     marshal,
 	"bySelector": bySelector,
+	"ternary":    ternary,
+}
+
+func ternary(data interface{}, trueValue, falseValue string) string {
+	if utils.ToBool(data) {
+		return trueValue
+	}
+	return falseValue
 }
 
 func bySelector(data interface{}, selector string) template.JS {

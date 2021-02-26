@@ -66,7 +66,7 @@ func resourcePostProcessor(item interface{}) {
 			state.LastSuccess = start // update last success time
 			state.Executions = append(state.Executions, true)
 
-			parameters := task.HandlerParameters
+			parameters := variablesUtils.UpdateParameters(variables, task.HandlerParameters)
 			variablesUtils.UpdateParameters(variables, parameters)
 			finalData := variablesUtils.Merge(variables, parameters)
 			busUtils.PostToHandler(task.Handlers, finalData)

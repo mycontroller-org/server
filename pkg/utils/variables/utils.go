@@ -199,16 +199,18 @@ func getByQuickID(name string, rsData *handlerML.ResourceData) interface{} {
 }
 
 // UpdateParameters updates parmaeter templates
-func UpdateParameters(variables map[string]interface{}, parameters map[string]string) {
+func UpdateParameters(variables map[string]interface{}, parameters map[string]string) map[string]string {
+	updatedParameters := make(map[string]string)
 	for name, value := range parameters {
 		updatedValue, err := tplUtils.Execute(value, variables)
 		if err != nil {
 			zap.L().Warn("error on executing template", zap.Error(err), zap.String("name", name), zap.Any("value", value))
-			parameters[name] = err.Error()
+			updatedParameters[name] = err.Error()
 			continue
 		}
-		parameters[name] = updatedValue
+		updatedParameters[name] = updatedValue
 	}
+	return updatedParameters
 }
 
 // Merge variables and parameters

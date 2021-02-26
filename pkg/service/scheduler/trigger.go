@@ -64,8 +64,7 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 	}
 
 	// post to handlers
-	parameters := cfg.HandlerParameters
-	variablesUtils.UpdateParameters(variables, parameters)
+	parameters := variablesUtils.UpdateParameters(variables, cfg.HandlerParameters)
 	finalData := variablesUtils.Merge(variables, parameters)
 	busUtils.PostToHandler(cfg.Handlers, finalData)
 
