@@ -365,7 +365,8 @@ func requestFieldData(msg *msgml.Message) error {
 	payloads := make([]msgml.Data, 0)
 	for _, payload := range msg.Payloads {
 		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, payload.Name)
-		if err != nil { // TODO: check entry availability on error message
+		if err != nil {
+			// TODO: check availability error message from storage
 			continue
 		}
 
@@ -378,6 +379,7 @@ func requestFieldData(msg *msgml.Message) error {
 			}
 		}
 		// post field data to event listeners
+		// NOTE: if the entry not available in database request topic will not be sent
 		postEvent(mcbus.TopicEventSensorFieldRequest, field)
 	}
 
