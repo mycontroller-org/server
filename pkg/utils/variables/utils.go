@@ -103,6 +103,7 @@ func getByLabels(name string, rsData *handlerML.ResourceData) interface{} {
 		pagination := &stgml.Pagination{Limit: 1} // limit to one element
 		result, err := apiImpl.List(filters, pagination)
 		if err != nil {
+			zap.L().Warn("error on getting label based entity", zap.Error(err), zap.String("name", name), zap.Any("rsData", rsData))
 			return err.Error()
 		}
 		if result.Count == 0 {
@@ -197,32 +198,28 @@ func getByQuickID(name string, rsData *handlerML.ResourceData) interface{} {
 	return entity
 }
 
-// Merge variables and parameters
-func Merge(variables map[string]interface{}, parameters map[string]string) map[string]interface{} {
-	finalMap := make(map[string]interface{})
-	for key, value := range parameters { // update variables
-		finalMap[key] = value
-	}
-
-	for key, value := range parameters { // execute as template
-		updatedValue, err := tplUtils.Execute(value, variables)
-		if err != nil {
-			finalMap[key] = err.Error()
-			continue
-		}
-		finalMap[key] = updatedValue
-	}
-	return finalMap
-}
-
 // UpdateParameters updates parmaeter templates
 func UpdateParameters(variables map[string]interface{}, parameters map[string]string) {
 	for name, value := range parameters {
 		updatedValue, err := tplUtils.Execute(value, variables)
 		if err != nil {
+			zap.L().Warn("error on executing template", zap.Error(err), zap.String("name", name), zap.Any("value", value))
 			parameters[name] = err.Error()
 			continue
 		}
 		parameters[name] = updatedValue
 	}
+}
+
+// Merge variables and parameters
+func Merge(variables map[string]interface{}, parameters map[string]string) map[string]interface{} {
+	finalMap := make(map[string]interface{})
+	for name, value := range variables { // update variables
+		finalMap[name] = value
+	}
+
+	for name, value := range parameters { // update parameters
+		finalMap[name] = value
+	}
+	return finalMap
 }
