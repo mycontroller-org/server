@@ -103,12 +103,15 @@ func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
 	// if acknowledge enabled
 	// wait for acknowledgement message
 	ackChannel := make(chan bool, 0)
+	isChannelClosed := false
 	ackTopic := mcbus.GetTopicPostRawMessageAcknowledgement(p.GatewayConfig.ID, rawMsg.ID)
 	ackSubscriptionID, err := mcbus.Subscribe(
 		ackTopic,
 		func(event *event.Event) {
-			zap.L().Debug("acknowledgement status", zap.Any("event", event))
-			ackChannel <- true
+			if !isChannelClosed {
+				zap.L().Debug("acknowledgement status", zap.Any("event", event))
+				ackChannel <- true
+			}
 		},
 	)
 	if err != nil {
@@ -117,8 +120,12 @@ func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
 
 	// on exit unsubscribe and close the channel
 	defer func() {
-		mcbus.Unsubscribe(ackTopic, ackSubscriptionID)
+		err := mcbus.Unsubscribe(ackTopic, ackSubscriptionID)
+		if err != nil {
+			zap.L().Error("error on unsubscribe", zap.Error(err), zap.String("topic", ackTopic), zap.Any("sunscriptionID", ackSubscriptionID))
+		}
 		close(ackChannel)
+		isChannelClosed = true
 	}()
 
 	timeout, err := time.ParseDuration(p.Config.Timeout)
