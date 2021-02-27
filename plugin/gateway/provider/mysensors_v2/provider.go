@@ -108,6 +108,10 @@ func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
 	ackSubscriptionID, err := mcbus.Subscribe(
 		ackTopic,
 		func(event *event.Event) {
+			// TODO: remove this block. added to debug the previous error
+			if isChannelClosed {
+				zap.L().Info("Entered in to the ack response on closed channel")
+			}
 			if !isChannelClosed {
 				zap.L().Debug("acknowledgement status", zap.Any("event", event))
 				ackChannel <- true
