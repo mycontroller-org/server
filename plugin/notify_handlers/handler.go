@@ -8,6 +8,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/email"
 	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/noop"
 	resourceAction "github.com/mycontroller-org/backend/v2/plugin/notify_handlers/resource"
+	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/telegram"
 )
 
 // Handler interface details for operation
@@ -33,6 +34,9 @@ func GetHandler(cfg *handlerML.Config) (Handler, error) {
 
 	case handlerML.TypeResource:
 		return &resourceAction.Client{HandlerCfg: cfg}, nil
+
+	case handlerML.TypeTelegram:
+		return telegram.Init(cfg)
 
 	default:
 		return nil, fmt.Errorf("unsupported handler, id:%s, name:%s, type:%s", cfg.ID, cfg.Description, cfg.Type)

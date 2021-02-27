@@ -96,7 +96,10 @@ func postProcessServiceEvent(event interface{}) {
 	case rsML.CommandStart:
 		cfg := getConfig(reqEvent)
 		if cfg != nil && helper.IsMine(svcCFG.IDs, svcCFG.Labels, cfg.ID, cfg.Labels) {
-			Start(cfg)
+			err := Start(cfg)
+			if err != nil {
+				zap.L().Error("error on starting a handler", zap.Error(err), zap.String("handler", cfg.ID))
+			}
 		}
 
 	case rsML.CommandStop:

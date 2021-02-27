@@ -113,3 +113,10 @@ type EmailData struct {
 	Subject string   `json:"subject"`
 	Body    string   `json:"body"`
 }
+
+// TelegramData struct
+type TelegramData struct {
+	ChatIDs   []string `json:"chatIds"`
+	ParseMode string   `json:"parseMode"`
+	Text      string   `json:"text"`
+}
