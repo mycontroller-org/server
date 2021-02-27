@@ -6,12 +6,19 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
 
+// Evaluation types
+const (
+	EvaluationTypeRule       = "rule"
+	EvaluationTypeJavascript = "javascript"
+	EvaluationTypeWebhook    = "webhook"
+)
+
 // dampening types
 const (
-	dampeningTypeNone        = "none"
-	dampeningTypeConsecutive = "consecutive"
-	dampeningTypeEvaluations = "evaluations"
-	dampeningTypeActiveTime  = "active_time"
+	DampeningTypeNone        = "none"
+	DampeningTypeConsecutive = "consecutive"
+	DampeningTypeEvaluations = "evaluations"
+	DampeningTypeActiveTime  = "active_time"
 )
 
 // Config struct
@@ -27,9 +34,8 @@ type Config struct {
 	TriggerOnEvent    bool                 `json:"triggerOnEvent"`
 	EventFilter       EventFilter          `json:"eventFilter"`
 	ExecutionInterval string               `json:"executionInterval"`
-	RemoteCall        bool                 `json:"remoteCall"`
-	RemoteCallConfig  interface{}          `json:"remoteCallConfig"`
-	Rule              Rule                 `json:"rule"`
+	EvaluationType    string               `json:"evaluationType"`
+	EvaluationConfig  EvaluationConfig     `json:"evaluationConfig"`
 	HandlerParameters map[string]string    `json:"handlerParameters"`
 	Handlers          []string             `json:"handlers"`
 	State             *State               `json:"state"`
@@ -41,11 +47,11 @@ type EventFilter struct {
 	ResourceTypes []string             `json:"resourceTypes"`
 }
 
-// Resource struct
-type Resource struct {
-	ID      string `json:"id"`
-	Type    string `json:"type"`
-	SubType string `json:"subType"`
+// EvaluationConfig struct
+type EvaluationConfig struct {
+	Rule       Rule   `json:"rule"`
+	JavaScript string `json:"javascript"`
+	WebhookAPI string `json:"webhookApi"`
 }
 
 // Rule struct

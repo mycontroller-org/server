@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
+	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	variablesUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
 	"go.uber.org/zap"
@@ -48,10 +49,18 @@ func resourcePostProcessor(item interface{}) {
 
 		triggered := false
 		// execute conditions
-		if task.RemoteCall {
-			// do remote call things
-		} else {
-			triggered = isTriggered(task.Rule, variables)
+		switch task.EvaluationType {
+		case taskML.EvaluationTypeRule:
+			triggered = isTriggered(task.EvaluationConfig.Rule, variables)
+
+		case taskML.EvaluationTypeJavascript:
+			// TODO: implement javascript based solution
+
+		case taskML.EvaluationTypeWebhook:
+			// TODO: implement webhook based solution
+
+		default:
+			zap.L().Error("Unknown rule engine type", zap.String("type", task.EvaluationType))
 		}
 
 		notifyHandlers := false
