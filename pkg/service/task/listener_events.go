@@ -147,3 +147,18 @@ func resourcePreProcessor(resource *resourceWrapper) error {
 	}
 	return nil
 }
+
+func resourcePostProcessor(item interface{}) {
+	resource, ok := item.(*resourceWrapper)
+	if !ok {
+		zap.L().Warn("supplied item is not resourceWrapper", zap.Any("item", item))
+		return
+	}
+
+	zap.L().Debug("resource received", zap.String("type", resource.ResourceType))
+
+	for index := 0; index < len(resource.Tasks); index++ {
+		task := resource.Tasks[index]
+		executeTask(&task, resource)
+	}
+}

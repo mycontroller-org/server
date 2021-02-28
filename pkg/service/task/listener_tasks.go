@@ -98,6 +98,9 @@ func processServiceEvent(event interface{}) {
 	switch reqEvent.Command {
 	case rsML.CommandAdd:
 		cfg := getConfig(reqEvent)
+		if cfg != nil {
+			tasksStore.Remove(cfg.ID)
+		}
 		if cfg != nil && helper.IsMine(svcCFG.IDs, svcCFG.Labels, cfg.ID, cfg.Labels) {
 			tasksStore.Add(*cfg)
 		}
