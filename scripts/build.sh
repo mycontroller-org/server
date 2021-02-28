@@ -10,7 +10,7 @@ IMAGE_TAG=`git rev-parse --abbrev-ref HEAD`
 
 # alpine golang builder image
 GOLANG_BUILDER_IMAGE="quay.io/mycontroller-org/golang"
-GOLANG_BUILDER_TAG="1.15.6-alpine3.12"
+GOLANG_BUILDER_TAG="1.16.0-alpine3.13"
 
 # debug lines
 echo $PWD

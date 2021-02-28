@@ -1,4 +1,4 @@
-FROM golang:1.15.6-alpine3.12
+FROM golang:1.16.0-alpine3.13
 
 LABEL maintainer="Jeeva Kandasamy <jkandasa@gmail.com>"
 
