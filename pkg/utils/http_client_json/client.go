@@ -83,7 +83,7 @@ func (c *Client) Request(url, method string, headers map[string]string, queryPar
 
 	if responseCode > 0 {
 		if resp.StatusCode != responseCode {
-			return nil, nil, fmt.Errorf("Failed with status code. [url:%v, status: %v, statusCode: %v, body: %s]", url, resp.Status, resp.StatusCode, string(respBodyBytes))
+			return nil, nil, fmt.Errorf("Failed with status code. [status: %v, statusCode: %v, body: %s]", resp.Status, resp.StatusCode, string(respBodyBytes))
 		}
 	}
 

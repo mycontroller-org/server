@@ -100,6 +100,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 		}
 
 		start := time.Now()
+		errors := make([]error, 0)
 		for _, chatID := range chatIDs {
 			msg := &Message{
 				ChatID:    chatID,
@@ -109,7 +110,14 @@ func (c *Client) Post(data map[string]interface{}) error {
 			err = c.SendMessage(msg)
 			if err != nil {
 				zap.L().Error("error on telegram sendMessage", zap.Error(err))
+				errors = append(errors, err)
 			}
+		}
+		if len(errors) > 0 {
+			for _, err := range errors {
+				zap.L().Error("telegram sendMessage error", zap.String("id", c.handlerCfg.ID), zap.Error(err))
+			}
+			return errors[0]
 		}
 		zap.L().Debug("telegram sendMessage success", zap.String("id", c.handlerCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 
