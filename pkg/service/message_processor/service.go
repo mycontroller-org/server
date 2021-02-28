@@ -282,6 +282,7 @@ func setFieldData(msg *msgml.Message) error {
 
 			scriptInput := map[string]interface{}{
 				"value":         currentPayload.Value,
+				"lastValue":     field.Payload.Value,
 				"previousValue": field.PreviousPayload.Value,
 			}
 
