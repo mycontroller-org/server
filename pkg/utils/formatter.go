@@ -16,6 +16,7 @@ import (
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	sensorML "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
@@ -32,9 +33,11 @@ func registerTypes() {
 	gob.Register(cmap.CustomMap{})
 	gob.Register(cmap.CustomStringMap{})
 	gob.Register(fieldML.Field{})
+	gob.Register(fieldML.Payload{})
 	gob.Register(taskML.Config{})
 	gob.Register(gatewayML.Config{})
 	gob.Register(nodeML.Node{})
+	gob.Register(sensorML.Sensor{})
 	gob.Register(primitive.A{})
 }
 
@@ -61,7 +64,7 @@ func ToBool(data interface{}) bool {
 	value, ok := data.(bool)
 	if !ok {
 		switch strings.ToLower(fmt.Sprintf("%v", data)) {
-		case "true", "1", "on", "enabled":
+		case "true", "1", "on", "enabled", "success":
 			return true
 		default:
 			return false

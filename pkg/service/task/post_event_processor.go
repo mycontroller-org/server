@@ -54,7 +54,9 @@ func resourcePostProcessor(item interface{}) {
 			triggered = isTriggered(task.EvaluationConfig.Rule, variables)
 
 		case taskML.EvaluationTypeJavascript:
-			// TODO: implement javascript based solution
+			responseMap, triggeredStatus := isTriggeredJavascript(task.ID, task.EvaluationConfig, variables)
+			triggered = triggeredStatus
+			variables = variablesUtils.Merge(variables, responseMap)
 
 		case taskML.EvaluationTypeWebhook:
 			// TODO: implement webhook based solution
@@ -81,7 +83,7 @@ func resourcePostProcessor(item interface{}) {
 
 			parameters := variablesUtils.UpdateParameters(variables, task.HandlerParameters)
 			variablesUtils.UpdateParameters(variables, parameters)
-			finalData := variablesUtils.Merge(variables, parameters)
+			finalData := variablesUtils.MergeParameter(variables, parameters)
 			busUtils.PostToHandler(task.Handlers, finalData)
 		}
 

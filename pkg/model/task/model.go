@@ -21,6 +21,11 @@ const (
 	DampeningTypeActiveTime  = "active_time"
 )
 
+// keys used in script engine
+const (
+	KeyScriptIsTriggered = "isTriggered" // expected value from script to trigger
+)
+
 // Config struct
 type Config struct {
 	ID                string               `json:"id"`

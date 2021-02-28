@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dop251/goja"
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
@@ -20,7 +21,6 @@ import (
 	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
-	"github.com/robertkrimen/otto"
 	"go.uber.org/zap"
 )
 
@@ -272,33 +272,53 @@ func setFieldData(msg *msgml.Message) error {
 		// update payload
 		currentPayload = fml.Payload{Value: pl, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
 
+		// init labels and others
+		field.Labels = field.Labels.Init()
+		field.Others = field.Others.Init()
+
 		// if custom payload formatter supplied
 		if formatter := field.PayloadFormatter.OnReceive; msg.IsReceived && formatter != "" {
 			startTime := time.Now()
-			ottoVM := otto.New()
-			ottoVM.Set("value", currentPayload.Value)
 
-			ottoValue, err := ottoVM.Run(formatter)
+			rt := goja.New()
+			rt.Set("value", currentPayload.Value)
+
+			rtResponse, err := rt.RunString(formatter)
 			if err != nil {
 				zap.L().Error("Failure on payload formatter", zap.String("formatter", formatter), zap.Error(err))
 				return err
 			}
-			value, err := ottoValue.ToString()
-			if err != nil {
-				zap.L().Error("Failed to get value", zap.String("formatter", formatter), zap.Error(err))
-				return err
+
+			formattedValue := ""
+			responseValue := rtResponse.Export()
+			if responseValue == nil {
+				zap.L().Error("returned nil value", zap.String("formatter", formatter))
+				return errors.New("formatter returned nil value")
 			}
+
+			if mapValue, ok := responseValue.(map[string]interface{}); ok {
+				if _, found := mapValue["value"]; !found {
+					zap.L().Error("value field not updated", zap.Any("received", mapValue), zap.String("formatter", formatter))
+					return errors.New("formatter returned nil value")
+				}
+				for key, value := range mapValue {
+					if key == "value" {
+						formattedValue = utils.ToString(value)
+					} else {
+						field.Others.Set(key, value, nil)
+					}
+				}
+			} else {
+				formattedValue = utils.ToString(responseValue)
+			}
+
 			// update the formatted value
-			currentPayload.Value = value
-			zap.L().Debug("Formatting done", zap.Any("oldValue", currentPayload.Value), zap.String("newValue", value), zap.String("timeTaken", time.Since(startTime).String()))
+			zap.L().Debug("Formatting done", zap.Any("oldValue", currentPayload.Value), zap.String("newValue", formattedValue), zap.String("timeTaken", time.Since(startTime).String()))
+			currentPayload.Value = formattedValue
 		}
 
 		// update last seen
 		field.LastSeen = msg.Timestamp
-
-		// init labels and others
-		field.Labels = field.Labels.Init()
-		field.Others = field.Others.Init()
 
 		// update name
 		if !field.Labels.GetIgnoreBool(ml.LabelName) {
