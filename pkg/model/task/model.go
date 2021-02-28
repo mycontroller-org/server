@@ -55,7 +55,7 @@ type EventFilter struct {
 // EvaluationConfig struct
 type EvaluationConfig struct {
 	Rule       Rule   `json:"rule"`
-	JavaScript string `json:"javascript"`
+	Javascript string `json:"javascript"`
 	WebhookAPI string `json:"webhookApi"`
 }
 

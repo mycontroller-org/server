@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dop251/goja"
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
@@ -20,6 +19,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/javascript"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"go.uber.org/zap"
 )
@@ -280,17 +280,17 @@ func setFieldData(msg *msgml.Message) error {
 		if formatter := field.PayloadFormatter.OnReceive; msg.IsReceived && formatter != "" {
 			startTime := time.Now()
 
-			rt := goja.New()
-			rt.Set("value", currentPayload.Value)
+			scriptInput := map[string]interface{}{
+				"value": currentPayload.Value,
+			}
 
-			rtResponse, err := rt.RunString(formatter)
+			responseValue, err := javascript.Execute(formatter, scriptInput)
 			if err != nil {
-				zap.L().Error("Failure on payload formatter", zap.String("formatter", formatter), zap.Error(err))
+				zap.L().Error("error on executing script", zap.Error(err), zap.Any("inputValue", currentPayload.Value), zap.String("gateway", field.GatewayID), zap.String("node", field.NodeID), zap.String("sensor", field.SensorID), zap.String("fieldID", field.FieldID), zap.String("script", formatter))
 				return err
 			}
 
 			formattedValue := ""
-			responseValue := rtResponse.Export()
 			if responseValue == nil {
 				zap.L().Error("returned nil value", zap.String("formatter", formatter))
 				return errors.New("formatter returned nil value")

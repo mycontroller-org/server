@@ -1,33 +1,18 @@
 package task
 
 import (
-	"encoding/base64"
-
-	"github.com/dop251/goja"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/javascript"
 	"go.uber.org/zap"
 )
 
 func isTriggeredJavascript(taskID string, config taskML.EvaluationConfig, variables map[string]interface{}) (map[string]interface{}, bool) {
-	base64String := config.JavaScript
-	stringScript, err := base64.StdEncoding.DecodeString(base64String)
-
-	rt := goja.New()
-	// enable this line if we want to use supplied object as json
-	// GoLang func call will not be available, if json enabled
-	// rt.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
-
-	for name, value := range variables {
-		rt.Set(name, value)
-	}
-	response, err := rt.RunString(string(stringScript))
+	result, err := javascript.Execute(config.Javascript, variables)
 	if err != nil {
-		zap.L().Error("error on executing a script", zap.String("taskID", taskID), zap.String("script", string(stringScript)), zap.Error(err))
+		zap.L().Error("error on executing script", zap.Error(err), zap.String("taskID", taskID), zap.String("script", config.Javascript))
 		return nil, false
 	}
-
-	result := response.Export()
 	if resultMap, ok := result.(map[string]interface{}); ok {
 		isTriggered, found := resultMap[taskML.KeyScriptIsTriggered]
 		isTriggeredBool := utils.ToBool(isTriggered)
