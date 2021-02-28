@@ -16,6 +16,7 @@ import (
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"go.uber.org/zap"
 )
@@ -33,6 +34,7 @@ func registerTypes() {
 	gob.Register(taskML.Config{})
 	gob.Register(gatewayML.Config{})
 	gob.Register(nodeML.Node{})
+	gob.Register(primitive.A{})
 }
 
 // ToString converts interface to string
