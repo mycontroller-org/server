@@ -14,7 +14,9 @@ func isTriggeredJavascript(taskID string, config taskML.EvaluationConfig, variab
 	stringScript, err := base64.StdEncoding.DecodeString(base64String)
 
 	rt := goja.New()
-	rt.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
+	// enable this line if we want to use supplied object as json
+	// GoLang func call will not be available, if json enabled
+	// rt.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
 
 	for name, value := range variables {
 		rt.Set(name, value)
