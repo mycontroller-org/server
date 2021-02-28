@@ -82,41 +82,41 @@ func GetDataType(name string) string {
 
 // GenericData struct
 type GenericData struct {
-	Type string                 `json:"type"`
-	Data map[string]interface{} `json:"data"`
+	Type string `json:"type"`
+	Data string `json:"data"`
 }
 
 // ResourceData struct
 type ResourceData struct {
-	ResourceType string               `json:"resourceType"`
-	QuickID      string               `json:"quickId"`
-	Labels       cmap.CustomStringMap `json:"labels"`
-	Payload      string               `json:"payload"`
-	PreDelay     string               `json:"preDelay"`
-	Selector     string               `json:"selector"`
+	ResourceType string               `yaml:"resourceType"`
+	QuickID      string               `yaml:"quickId"`
+	Labels       cmap.CustomStringMap `yaml:"labels"`
+	Payload      string               `yaml:"payload"`
+	PreDelay     string               `yaml:"preDelay"`
+	Selector     string               `yaml:"selector"`
 }
 
 // WebhookData struct
 type WebhookData struct {
-	Server    string            `json:"server"`
-	API       string            `json:"api"`
-	Method    string            `json:"method"`
-	Headers   map[string]string `json:"headers"`
-	Parameter string            `json:"parameter"`
-	Body      interface{}       `json:"body"`
+	Server    string            `yaml:"server"`
+	API       string            `yaml:"api"`
+	Method    string            `yaml:"method"`
+	Headers   map[string]string `yaml:"headers"`
+	Parameter string            `yaml:"parameter"`
+	Body      interface{}       `yaml:"body"`
 }
 
 // EmailData struct
 type EmailData struct {
-	From    string   `json:"from"`
-	To      []string `json:"to"`
-	Subject string   `json:"subject"`
-	Body    string   `json:"body"`
+	From    string   `yaml:"from"`
+	To      []string `yaml:"to"`
+	Subject string   `yaml:"subject"`
+	Body    string   `yaml:"body"`
 }
 
 // TelegramData struct
 type TelegramData struct {
-	ChatIDs   []string `json:"chatIds"`
-	ParseMode string   `json:"parseMode"`
-	Text      string   `json:"text"`
+	ChatIDs   []string `yaml:"chatIds"`
+	ParseMode string   `yaml:"parseMode"`
+	Text      string   `yaml:"text"`
 }

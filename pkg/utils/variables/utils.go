@@ -1,6 +1,7 @@
 package variables
 
 import (
+	"encoding/base64"
 	"fmt"
 	"reflect"
 	"strings"
@@ -14,6 +15,7 @@ import (
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	"gopkg.in/yaml.v2"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -53,7 +55,7 @@ func getEntity(name, stringValue string) interface{} {
 	}
 
 	rsData := handlerML.ResourceData{}
-	err = utils.MapToStruct(utils.TagNameNone, genericData.Data, &rsData)
+	err = UnmarshalBase64Yaml(genericData.Data, &rsData)
 	if err != nil {
 		zap.L().Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
 		return err.Error()
@@ -202,13 +204,42 @@ func getByQuickID(name string, rsData *handlerML.ResourceData) interface{} {
 func UpdateParameters(variables map[string]interface{}, parameters map[string]string) map[string]string {
 	updatedParameters := make(map[string]string)
 	for name, value := range parameters {
-		updatedValue, err := tplUtils.Execute(value, variables)
-		if err != nil {
-			zap.L().Warn("error on executing template", zap.Error(err), zap.String("name", name), zap.Any("value", value))
-			updatedParameters[name] = err.Error()
-			continue
+		// load suplied string, this will be passed, if there is an error
+		updatedParameters[name] = value
+
+		genericData := handlerML.GenericData{}
+		err := json.Unmarshal([]byte(value), &genericData)
+		if err == nil {
+			// unpack base64 to normal string
+			yamlBytes, err := base64.StdEncoding.DecodeString(genericData.Data)
+			if err != nil {
+				zap.L().Error("error on converting parameter data", zap.String("name", name), zap.Error(err))
+				continue
+			}
+			// execute template
+			updatedValue, err := tplUtils.Execute(string(yamlBytes), variables)
+			if err != nil {
+				zap.L().Error("error on executing template", zap.Error(err), zap.String("name", name), zap.Any("value", string(yamlBytes)))
+				updatedParameters[name] = err.Error()
+				continue
+			}
+			// repack string to base64 string
+			genericData.Data = base64.StdEncoding.EncodeToString([]byte(updatedValue))
+			jsonBytes, err := json.Marshal(genericData)
+			if err != nil {
+				zap.L().Error("error on converting to json", zap.Error(err), zap.String("name", name))
+			}
+			updatedParameters[name] = string(jsonBytes)
+		} else { // update as a normal text
+			updatedValue, err := tplUtils.Execute(value, variables)
+			if err != nil {
+				zap.L().Warn("error on executing template", zap.Error(err), zap.String("name", name), zap.Any("value", value))
+				updatedParameters[name] = err.Error()
+				continue
+			}
+			updatedParameters[name] = updatedValue
 		}
-		updatedParameters[name] = updatedValue
+
 	}
 	return updatedParameters
 }
@@ -224,4 +255,13 @@ func Merge(variables map[string]interface{}, parameters map[string]string) map[s
 		finalMap[name] = value
 	}
 	return finalMap
+}
+
+// UnmarshalBase64Yaml converts base64 date into given interface
+func UnmarshalBase64Yaml(base64String string, out interface{}) error {
+	yamlBytes, err := base64.StdEncoding.DecodeString(base64String)
+	if err != nil {
+		return err
+	}
+	return yaml.Unmarshal(yamlBytes, out)
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
 	"go.uber.org/zap"
 )
 
@@ -163,7 +163,7 @@ func (sc *smtpClient) Post(data map[string]interface{}) error {
 		}
 
 		emailData := handlerML.EmailData{}
-		err = utils.MapToStruct(utils.TagNameNone, genericData.Data, &emailData)
+		err = variableUtils.UnmarshalBase64Yaml(genericData.Data, &emailData)
 		if err != nil {
 			zap.L().Error("error on converting email data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
 			continue
