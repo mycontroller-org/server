@@ -281,7 +281,8 @@ func setFieldData(msg *msgml.Message) error {
 			startTime := time.Now()
 
 			scriptInput := map[string]interface{}{
-				"value": currentPayload.Value,
+				"value":         currentPayload.Value,
+				"previousValue": field.PreviousPayload.Value,
 			}
 
 			responseValue, err := javascript.Execute(formatter, scriptInput)
