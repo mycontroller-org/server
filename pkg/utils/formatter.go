@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -60,11 +61,25 @@ func ToBool(data interface{}) bool {
 	value, ok := data.(bool)
 	if !ok {
 		switch strings.ToLower(fmt.Sprintf("%v", data)) {
-		case "true", "1", "on":
+		case "true", "1", "on", "enabled":
 			return true
 		default:
 			return false
 		}
+	}
+	return value
+}
+
+// ToFloat converts interface to float64
+func ToFloat(data interface{}) float64 {
+	value, ok := data.(float64)
+	if !ok {
+		strValue := fmt.Sprintf("%v", data)
+		parsedValue, err := strconv.ParseFloat(strValue, 64)
+		if err != nil {
+			return 0
+		}
+		return parsedValue
 	}
 	return value
 }

@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
-	"strconv"
-	"strings"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -56,7 +55,7 @@ func IsMatching(entity interface{}, filters []stgml.Filter) bool {
 
 		switch valKind {
 		case reflect.String:
-			match = CompareString(toString(value), filter.Operator, filter.Value)
+			match = CompareString(utils.ToString(value), filter.Operator, filter.Value)
 
 		case reflect.Bool:
 			match = CompareBool(value, filter.Operator, filter.Value)
@@ -82,7 +81,7 @@ func VerifyStringSlice(value string, operator string, filterValue interface{}) b
 		}
 		_stringSlice := make([]string, 0)
 		for _, val := range genericSlice {
-			_stringSlice = append(_stringSlice, toString(val))
+			_stringSlice = append(_stringSlice, utils.ToString(val))
 		}
 		stringSlice = _stringSlice
 	}
@@ -107,14 +106,14 @@ func VerifyStringSlice(value string, operator string, filterValue interface{}) b
 
 // CompareString compares strings
 func CompareString(value interface{}, operator string, filterValue interface{}) bool {
-	valueString := toString(value)
+	valueString := utils.ToString(value)
 	switch operator {
 	case stgml.OperatorEqual, stgml.OperatorNone:
-		return toString(filterValue) == valueString
+		return utils.ToString(filterValue) == valueString
 	case stgml.OperatorNotEqual:
-		return toString(filterValue) != valueString
+		return utils.ToString(filterValue) != valueString
 	case stgml.OperatorRegex:
-		expression := fmt.Sprintf("(?i)%s", toString(filterValue))
+		expression := fmt.Sprintf("(?i)%s", utils.ToString(filterValue))
 		compiled, err := regexp.Compile(expression)
 		if err != nil {
 			return false
@@ -136,7 +135,7 @@ func VerifyBoolSlice(value bool, operator string, filterValue interface{}) bool 
 	}
 	boolSlice := make([]bool, 0)
 	for _, val := range genericSlice {
-		boolSlice = append(boolSlice, toBool(val))
+		boolSlice = append(boolSlice, utils.ToBool(val))
 	}
 
 	switch operator {
@@ -158,59 +157,59 @@ func VerifyBoolSlice(value bool, operator string, filterValue interface{}) bool 
 }
 
 // CompareBool compares strings
-func CompareBool(value interface{}, operator string, filterValue interface{}) bool {
+func CompareBool(value interface{}, operator string, expectedValue interface{}) bool {
 	switch operator {
 	case stgml.OperatorEqual, stgml.OperatorNone:
-		return toBool(value) == toBool(filterValue)
+		return utils.ToBool(value) == utils.ToBool(expectedValue)
 	case stgml.OperatorNotEqual:
-		return toBool(value) != toBool(filterValue)
+		return utils.ToBool(value) != utils.ToBool(expectedValue)
 	case stgml.OperatorExists:
-		return len(toString(value)) > 0
+		return len(utils.ToString(value)) > 0
 	case stgml.OperatorIn, stgml.OperatorNotIn:
-		return VerifyBoolSlice(toBool(value), operator, filterValue)
+		return VerifyBoolSlice(utils.ToBool(value), operator, expectedValue)
 	}
 	return false
 }
 
 // CompareFloat compares float
-func CompareFloat(value interface{}, operator string, filterValue interface{}) bool {
-	valueFloat := toFloat(value)
+func CompareFloat(value interface{}, operator string, expectedValue interface{}) bool {
+	valueFloat := utils.ToFloat(value)
 	switch operator {
 	case stgml.OperatorEqual, stgml.OperatorNone:
-		return valueFloat == toFloat(filterValue)
+		return valueFloat == utils.ToFloat(expectedValue)
 
 	case stgml.OperatorNotEqual:
-		return valueFloat != toFloat(filterValue)
+		return valueFloat != utils.ToFloat(expectedValue)
 
 	case stgml.OperatorGreaterThan:
-		return valueFloat > toFloat(filterValue)
+		return valueFloat > utils.ToFloat(expectedValue)
 
 	case stgml.OperatorGreaterThanEqual:
-		return valueFloat >= toFloat(filterValue)
+		return valueFloat >= utils.ToFloat(expectedValue)
 
 	case stgml.OperatorLessThan:
-		return valueFloat < toFloat(filterValue)
+		return valueFloat < utils.ToFloat(expectedValue)
 
 	case stgml.OperatorLessThanEqual:
-		return valueFloat <= toFloat(filterValue)
+		return valueFloat <= utils.ToFloat(expectedValue)
 
 	case stgml.OperatorIn, stgml.OperatorNotIn, stgml.OperatorRangeIn, stgml.OperatorRangeNotIn:
-		return VerifyFloatSlice(valueFloat, operator, filterValue)
+		return VerifyFloatSlice(valueFloat, operator, expectedValue)
 	}
 	return false
 }
 
 // VerifyFloatSlice implementation
-func VerifyFloatSlice(value float64, operator string, filterValue interface{}) bool {
-	floatSlice, ok := filterValue.([]float64)
+func VerifyFloatSlice(value float64, operator string, expectedValue interface{}) bool {
+	floatSlice, ok := expectedValue.([]float64)
 	if !ok {
-		genericSlice, genericOk := filterValue.([]interface{})
+		genericSlice, genericOk := expectedValue.([]interface{})
 		if !genericOk {
 			return false
 		}
 		_floatSlice := make([]float64, 0)
 		for _, val := range genericSlice {
-			_floatSlice = append(_floatSlice, toFloat(val))
+			_floatSlice = append(_floatSlice, utils.ToFloat(val))
 		}
 		floatSlice = _floatSlice
 	}
@@ -249,35 +248,6 @@ func VerifyFloatSlice(value float64, operator string, filterValue interface{}) b
 
 	}
 	return false
-}
-
-func toString(data interface{}) string {
-	value, ok := data.(string)
-	if !ok {
-		value = fmt.Sprintf("%v", data)
-	}
-	return value
-}
-
-func toBool(data interface{}) bool {
-	value, ok := data.(bool)
-	if !ok {
-		value = strings.ToLower(fmt.Sprintf("%v", data)) == "true"
-	}
-	return value
-}
-
-func toFloat(data interface{}) float64 {
-	value, ok := data.(float64)
-	if !ok {
-		strValue := fmt.Sprintf("%v", data)
-		parsedValue, err := strconv.ParseFloat(strValue, 64)
-		if err != nil {
-			return 0
-		}
-		return parsedValue
-	}
-	return value
 }
 
 // IsMine verifies the supplied id and labels with valid list

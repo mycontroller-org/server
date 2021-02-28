@@ -9,6 +9,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	tplUtils "github.com/mycontroller-org/backend/v2/pkg/utils/template"
+	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
@@ -30,14 +31,12 @@ func isTriggered(rule taskML.Rule, variables map[string]interface{}) bool {
 		expectedValue := condition.Value
 		stringValue := utils.ToString(expectedValue)
 
-		// process value as template, if it contains template format
-		if strings.Contains(stringValue, "{{") {
-			updateValue, err := tplUtils.Execute(stringValue, variables)
-			if err != nil {
-				zap.L().Warn("error on parsing template", zap.Error(err), zap.String("template", stringValue), zap.Any("variables", variables))
-			} else {
-				expectedValue = updateValue
-			}
+		// process value as template
+		updatedValue, err := tplUtils.Execute(stringValue, variables)
+		if err != nil {
+			zap.L().Warn("error on parsing template", zap.Error(err), zap.String("template", stringValue), zap.Any("variables", variables))
+		} else {
+			expectedValue = updatedValue
 		}
 
 		valid := isMatching(value, condition.Operator, expectedValue)
@@ -86,9 +85,11 @@ func getValueByVariableName(variables map[string]interface{}, variableName strin
 }
 
 func isMatching(value interface{}, operator string, expectedValue interface{}) bool {
+	if operator == "" {
+		operator = stgml.OperatorEqual
+	}
 	// TODO: fix value type based on supplied operator
 	switch reflect.TypeOf(value).Kind() {
-
 	case reflect.String:
 		return helper.CompareString(value, operator, expectedValue)
 
