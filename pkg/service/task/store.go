@@ -158,7 +158,7 @@ func unschedule(id string) string {
 func schedule(task *taskML.Config) string {
 	name := getScheduleID(task.ID)
 	cronSpec := fmt.Sprintf("@every %s", task.ExecutionInterval)
-	err := coreScheduler.SVC.AddFunc(name, cronSpec, getTaskPollingTriggerFunc(task, cronSpec))
+	err := coreScheduler.SVC.AddFunc(name, cronSpec, getTaskPollingTriggerFunc(task))
 	if err != nil {
 		zap.L().Error("error on adding a task into scheduler", zap.Error(err), zap.String("id", task.ID), zap.String("executionInterval", task.ExecutionInterval))
 		task.State.LastStatus = false

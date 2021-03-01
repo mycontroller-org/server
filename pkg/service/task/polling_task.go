@@ -5,11 +5,11 @@ import (
 	"go.uber.org/zap"
 )
 
-func getTaskPollingTriggerFunc(task *taskML.Config, spec string) func() {
-	return func() { taskPollingTriggerFunc(task, spec) }
+func getTaskPollingTriggerFunc(task *taskML.Config) func() {
+	return func() { taskPollingTriggerFunc(task) }
 }
 
-func taskPollingTriggerFunc(task *taskML.Config, spec string) {
-	zap.L().Debug("executing as task on polling", zap.String("id", task.ID))
+func taskPollingTriggerFunc(task *taskML.Config) {
+	zap.L().Debug("executing a task on polling", zap.String("id", task.ID))
 	executeTask(task, nil)
 }
