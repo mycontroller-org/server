@@ -14,6 +14,7 @@ import (
 	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
 	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/api/sensor"
+	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
@@ -34,6 +35,7 @@ var (
 		ml.EntityDashboard:     dashboard.List,
 		ml.EntityNotifyHandler: notificationHandlerAPI.List,
 		ml.EntityScheduler:     schedulerAPI.List,
+		ml.EntitySettings:      settingsAPI.List,
 	}
 )
 

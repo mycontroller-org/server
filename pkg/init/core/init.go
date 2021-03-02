@@ -1,11 +1,9 @@
 package core
 
 import (
-	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	"github.com/mycontroller-org/backend/v2/pkg/export"
 	"github.com/mycontroller-org/backend/v2/pkg/init/common"
 	"github.com/mycontroller-org/backend/v2/pkg/model/config"
-	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	fwdplSVC "github.com/mycontroller-org/backend/v2/pkg/service/forward_payload"
 	msgProcessor "github.com/mycontroller-org/backend/v2/pkg/service/message_processor"
@@ -15,7 +13,6 @@ import (
 	schedulerSVC "github.com/mycontroller-org/backend/v2/pkg/service/scheduler"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	taskSVC "github.com/mycontroller-org/backend/v2/pkg/service/task"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
@@ -29,7 +26,7 @@ func initServices() {
 	mts.Init() // metrics
 
 	StartupJobs(&cfg.CFG.StartupJobs)
-	UpdateInitialUser()
+	StartupJobsExtra()
 
 	// start message processing engine
 	err := msgProcessor.Init()
@@ -83,29 +80,6 @@ func StartupJobs(cfg *config.Startup) {
 		err := export.ExecuteImport(cfg.Importer.TargetDirectory, cfg.Importer.Type)
 		if err != nil {
 			zap.L().WithOptions(zap.AddCallerSkip(10)).Error("Failed to load exported files", zap.String("error", err.Error()))
-		}
-	}
-}
-
-// UpdateInitialUser func
-func UpdateInitialUser() {
-	pagination := &stgml.Pagination{
-		Limit: 1,
-	}
-	users, err := userAPI.List(nil, pagination)
-	if err != nil {
-		zap.L().Error("failed to users", zap.Error(err))
-	}
-	if users.Count == 0 {
-		adminUser := &userML.User{
-			Username: "admin",
-			Password: "admin",
-			FullName: "Admin User",
-			Email:    "admin@example.com",
-		}
-		err = userAPI.Save(adminUser)
-		if err != nil {
-			zap.L().Error("failed to create default admin user", zap.Error(err))
 		}
 	}
 }

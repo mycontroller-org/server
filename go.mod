@@ -3,6 +3,7 @@ module github.com/mycontroller-org/backend/v2
 go 1.15
 
 require (
+	github.com/btittelbach/astrotime v0.0.0-20160515101311-7ddba43aa26e
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/dop251/goja v0.0.0-20210227132020-101e13ab2c34

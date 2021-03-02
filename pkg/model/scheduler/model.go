@@ -10,13 +10,11 @@ import (
 
 // cron types
 const (
-	TypeRepeat   = "repeat"
-	TypeCron     = "cron"
-	TypeSimple   = "simple"
-	TypeSunrise  = "sunrise"
-	TypeSunset   = "sunset"
-	TypeMoonrise = "moonrise"
-	TypeMoonset  = "moonset"
+	TypeRepeat  = "repeat"
+	TypeCron    = "cron"
+	TypeSimple  = "simple"
+	TypeSunrise = "sunrise"
+	TypeSunset  = "sunset"
 )
 
 // frequency types

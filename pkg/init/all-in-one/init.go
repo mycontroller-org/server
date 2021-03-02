@@ -26,7 +26,7 @@ func initServices() {
 	mts.Init() // metrics
 
 	core.StartupJobs(&cfg.CFG.StartupJobs)
-	core.UpdateInitialUser()
+	core.StartupJobsExtra()
 
 	// start message processing engine
 	err := msgProcessor.Init()

@@ -13,6 +13,7 @@ const (
 	EntityNotifyHandler  = "notify_handler"  // keeps configurations for notify handlers
 	EntityTask           = "task"            // keeps configurations for tasks
 	EntityScheduler      = "scheduler"       // keeps configurations for scheduler
+	EntitySettings       = "settings"        // settings of the system
 )
 
 // Kind types
@@ -23,17 +24,18 @@ const (
 
 // Entity field keys
 const (
-	KeyID          = "ID"
-	KeyGatewayID   = "GatewayID"
-	KeyNodeID      = "NodeID"
-	KeySensorID    = "SensorID"
-	KeyFieldID     = "FieldID"
-	KeyUsername    = "Username"
-	KeyEmail       = "Email"
-	KeyHandlerType = "Type"
-	KeyHandlerName = "Name"
-	KeySourceID    = "SourceID"
-	KeyEnabled     = "Enabled"
+	KeyID           = "ID"
+	KeyGatewayID    = "GatewayID"
+	KeyNodeID       = "NodeID"
+	KeySensorID     = "SensorID"
+	KeyFieldID      = "FieldID"
+	KeyUsername     = "Username"
+	KeyEmail        = "Email"
+	KeyHandlerType  = "Type"
+	KeyHandlerName  = "Name"
+	KeySourceID     = "SourceID"
+	KeyEnabled      = "Enabled"
+	KeyScheduleType = "Type"
 )
 
 // Field names used in entities

@@ -1,12 +1,12 @@
 package scheduler
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/mycontroller-org/backend/v2/pkg/api/sunrise"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
@@ -98,12 +98,46 @@ func getCronSpec(cfg *schedulerML.Config) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return toCronExpression(cfg.Type, spec)
+		return toCronExpression(spec)
+
+	case schedulerML.TypeSunrise, schedulerML.TypeSunset:
+		spec := &schedulerML.SpecSimple{}
+		err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, spec)
+		if err != nil {
+			return "", err
+		}
+
+		var suntime *time.Time
+
+		if cfg.Type == schedulerML.TypeSunrise {
+			sunrise, err := sunrise.GetSunriseTime()
+			if err != nil {
+				return "", err
+			}
+			suntime = sunrise
+		}
+		if cfg.Type == schedulerML.TypeSunset {
+			sunset, err := sunrise.GetSunsetTime()
+			if err != nil {
+				return "", err
+			}
+			suntime = sunset
+		}
+		offset, err := time.ParseDuration(spec.Offset)
+		if err != nil {
+			return "", err
+		}
+
+		updatedTime := suntime.Add(offset)
+		spec.Time = updatedTime.Format("15:04:05")
+		return toCronExpression(spec)
+
+	default:
+		return "", fmt.Errorf("invalid schedule type: %s", cfg.Type)
 	}
-	return "", fmt.Errorf("invalid schedule type: %s", cfg.Type)
 }
 
-func toCronExpression(scheduleType string, spec *schedulerML.SpecSimple) (string, error) {
+func toCronExpression(spec *schedulerML.SpecSimple) (string, error) {
 	cronRaw := struct {
 		Seconds    string
 		Minutes    string
@@ -126,31 +160,20 @@ func toCronExpression(scheduleType string, spec *schedulerML.SpecSimple) (string
 		return "", fmt.Errorf("invalid frequency: %s", spec.Frequency)
 	}
 
-	switch scheduleType {
-	case schedulerML.TypeSimple:
-		time := strings.Split(strings.TrimSpace(spec.Time), ":")
-		if len(time) > 3 {
-			return "", fmt.Errorf("invalid time: %s", spec.Time)
-		}
+	time := strings.Split(strings.TrimSpace(spec.Time), ":")
+	if len(time) > 3 {
+		return "", fmt.Errorf("invalid time: %s", spec.Time)
+	}
 
-		// update hour and minute
-		cronRaw.Hours = time[0]
-		cronRaw.Minutes = time[1]
+	// update hour and minute
+	cronRaw.Hours = time[0]
+	cronRaw.Minutes = time[1]
 
-		// update seconds
-		if len(time) == 3 {
-			cronRaw.Seconds = time[2]
-		} else {
-			cronRaw.Seconds = "0"
-		}
-
-	case schedulerML.TypeSunrise, schedulerML.TypeSunset,
-		schedulerML.TypeMoonrise, schedulerML.TypeMoonset:
-		// TODO:...
-		return "", errors.New("this type not implemented yet")
-
-	default:
-		return "", fmt.Errorf("invalid schedule type:%s", scheduleType)
+	// update seconds
+	if len(time) == 3 {
+		cronRaw.Seconds = time[2]
+	} else {
+		cronRaw.Seconds = "0"
 	}
 
 	// format: "Seconds Minutes Hours DayOfMonth Month DayOfWeek"
