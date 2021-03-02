@@ -95,7 +95,7 @@ func processEvent(item interface{}) {
 	default:
 		zap.L().Warn("unknown event type", zap.Any("event", request))
 	}
-	zap.L().Info("completed a resource service", zap.String("timeTaken", time.Since(start).String()), zap.Any("data", request))
+	zap.L().Debug("completed a resource service", zap.String("timeTaken", time.Since(start).String()), zap.Any("data", request))
 }
 
 func postResponse(topic string, response *rsModel.Event) error {
