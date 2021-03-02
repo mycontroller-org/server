@@ -2,6 +2,7 @@ package resource
 
 import (
 	"fmt"
+	"time"
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
@@ -60,7 +61,7 @@ func onEvent(event *event.Event) {
 func processEvent(item interface{}) {
 	request := item.(*rsModel.Event)
 	zap.L().Debug("Processing an event", zap.Any("event", request))
-
+	start := time.Now()
 	switch request.Type {
 	case rsModel.TypeGateway:
 		err := gatewayService(request)
@@ -95,6 +96,7 @@ func processEvent(item interface{}) {
 	default:
 		zap.L().Warn("unknown event type", zap.Any("event", request))
 	}
+	zap.L().Info("completed a resource service", zap.String("timeTaken", time.Since(start).String()), zap.Any("data", request))
 }
 
 func postResponse(topic string, response *rsModel.Event) error {
