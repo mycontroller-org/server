@@ -2,8 +2,10 @@ package utils
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	"go.uber.org/zap"
@@ -37,6 +39,78 @@ func CreateDir(dir string) error {
 		}
 	}
 	return nil
+}
+
+// RemoveDir func
+func RemoveDir(dir string) error {
+	err := os.RemoveAll(dir)
+	if err != nil {
+		zap.L().Error("failed to remove a directory", zap.String("dir", dir))
+		return err
+	}
+	return nil
+}
+
+// RemoveFileOrEmptyDir func
+func RemoveFileOrEmptyDir(file string) error {
+	err := os.Remove(file)
+	if err != nil {
+		zap.L().Error("failed to remove a file/dir", zap.String("file", file))
+		return err
+	}
+	return nil
+}
+
+// CopyFile from a location to another location
+func CopyFile(src, dst string) error {
+	bufferSize := 1024
+
+	sourceFileStat, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	if !sourceFileStat.Mode().IsRegular() {
+		return fmt.Errorf("%s is not a regular file", src)
+	}
+
+	source, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer source.Close()
+
+	if IsFileExists(dst) {
+		return fmt.Errorf("destination file exists: %s", dst)
+	}
+
+	// create target dir location
+	dir, _ := filepath.Split(dst)
+	err = CreateDir(dir)
+	if err != nil {
+		return err
+	}
+
+	destination, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer destination.Close()
+
+	buf := make([]byte, bufferSize)
+	for {
+		n, err := source.Read(buf)
+		if err != nil && err != io.EOF {
+			return err
+		}
+		if n == 0 {
+			break
+		}
+
+		if _, err := destination.Write(buf[:n]); err != nil {
+			return err
+		}
+	}
+	return err
 }
 
 // WriteFile func

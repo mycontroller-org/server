@@ -31,23 +31,23 @@ func Init() {
 		case mtsml.TypeInfluxdbV2:
 			client, err := influx.NewClient(metricsCfg)
 			if err != nil {
-				zap.L().Fatal("error on metrics database initialization", zap.Error(err))
+				zap.L().Fatal("error on metrics database initialization", zap.Error(err), zap.String("database", cfg.CFG.Database.Metrics))
 			}
 			SVC = client
 
 		case mtsml.TypeVoidDB:
 			client, err := voiddb.NewClient(metricsCfg)
 			if err != nil {
-				zap.L().Fatal("error on metrics database initialization", zap.Error(err))
+				zap.L().Fatal("error on metrics database initialization", zap.Error(err), zap.String("database", cfg.CFG.Database.Metrics))
 			}
 			SVC = client
 
 		default:
-			zap.L().Fatal("Specified database type not implemented", zap.Any("type", dbType))
+			zap.L().Fatal("Specified database type not implemented", zap.Any("type", dbType), zap.String("database", cfg.CFG.Database.Metrics))
 		}
 		return
 	}
-	zap.L().Fatal("'type' field should be added on the database config")
+	zap.L().Fatal("'type' field should be added on the database config", zap.String("database", cfg.CFG.Database.Metrics))
 }
 
 func getDatabaseConfig(name string) (map[string]interface{}, error) {

@@ -90,8 +90,13 @@ func (s *Store) Find(entityName string, out interface{}, filters []stgml.Filter,
 
 	outVal.Elem().Set(sliceVal.Slice(0, len(entitiesCloned)))
 
+	offset := int64(0)
+	if pagination != nil {
+		offset = pagination.Offset
+	}
+
 	result := &stgml.Result{
-		Offset: 0,
+		Offset: offset,
 		Count:  count,
 		Data:   out,
 	}

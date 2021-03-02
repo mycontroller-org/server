@@ -6,6 +6,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/email"
+	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/exporter"
 	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/noop"
 	resourceAction "github.com/mycontroller-org/backend/v2/plugin/notify_handlers/resource"
 	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/telegram"
@@ -37,6 +38,9 @@ func GetHandler(cfg *handlerML.Config) (Handler, error) {
 
 	case handlerML.TypeTelegram:
 		return telegram.Init(cfg)
+
+	case handlerML.TypeExporter:
+		return exporter.Init(cfg)
 
 	default:
 		return nil, fmt.Errorf("unsupported handler, id:%s, name:%s, type:%s", cfg.ID, cfg.Description, cfg.Type)

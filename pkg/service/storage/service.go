@@ -33,21 +33,21 @@ func Init() {
 		case stgml.TypeMemory:
 			client, err := memory.NewClient(storageCfg)
 			if err != nil {
-				zap.L().Fatal("error on storage database initialization", zap.Error(err))
+				zap.L().Fatal("error on storage database initialization", zap.Error(err), zap.String("database", cfg.CFG.Database.Storage))
 			}
 			SVC = client
 		case stgml.TypeMongoDB:
 			client, err := mongodb.NewClient(storageCfg)
 			if err != nil {
-				zap.L().Fatal("error on storage database initialization", zap.Error(err))
+				zap.L().Fatal("error on storage database initialization", zap.Error(err), zap.String("database", cfg.CFG.Database.Storage))
 			}
 			SVC = client
 		default:
-			zap.L().Fatal("Specified database type not implemented", zap.Any("type", dbType))
+			zap.L().Fatal("Specified database type not implemented", zap.Any("type", dbType), zap.String("database", cfg.CFG.Database.Storage))
 		}
 		return
 	}
-	zap.L().Fatal("'type' field should be added on the database config")
+	zap.L().Fatal("'type' field should be added on the database config", zap.String("database", cfg.CFG.Database.Storage))
 
 }
 

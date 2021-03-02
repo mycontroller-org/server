@@ -10,10 +10,11 @@ import (
 const (
 	DefaultDirDataRoot = "/tmp/mc/data" // default data dir location
 	DefaultDirLogsRoot = "/tmp/mc/logs" // default data dir location
+	DefaultDirTmp      = "/tmp/mc/tmp"
 
 	DirectoryFirmwares          = "/firmwares"            // location to keep firmware files
 	DirectoryGatewayMessageLogs = "/gateway_message_logs" // location to keep gateway message logs
-	DirectoryExports            = "/exports"              // location to keep gateway message logs
+	DirectoryExports            = "/exports"              // location to keep storage database exported files
 )
 
 // dir reference should be loaded at startup
@@ -24,12 +25,17 @@ func UpdateDirecotries(cfg config.Directories) {
 	dir = config.Directories{
 		Data: DefaultDirDataRoot,
 		Logs: DefaultDirLogsRoot,
+		Tmp:  DefaultDirTmp,
 	}
 	if cfg.Data != "" {
 		dir.Data = cfg.Data
 	}
 	if cfg.Logs != "" {
 		dir.Logs = cfg.Logs
+	}
+
+	if cfg.Tmp != "" {
+		dir.Tmp = cfg.Tmp
 	}
 }
 
@@ -41,6 +47,11 @@ func GetDirectoryDataRoot() string {
 // GetDirectoryLogsRoot location
 func GetDirectoryLogsRoot() string {
 	return dir.Logs
+}
+
+// GetDirectoryTmp location
+func GetDirectoryTmp() string {
+	return dir.Tmp
 }
 
 // GetDirectoryFirmware location

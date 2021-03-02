@@ -1,75 +1,63 @@
 package export
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/api/dashboard"
-	"github.com/mycontroller-org/backend/v2/pkg/api/field"
-	"github.com/mycontroller-org/backend/v2/pkg/api/firmware"
-	"github.com/mycontroller-org/backend/v2/pkg/api/gateway"
-	"github.com/mycontroller-org/backend/v2/pkg/api/node"
+	dashboardAPI "github.com/mycontroller-org/backend/v2/pkg/api/dashboard"
+	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
+	firmwareAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
+	forwardPayloadAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
+	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
+	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
 	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
-	"github.com/mycontroller-org/backend/v2/pkg/api/sensor"
+	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
+	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
+	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
+	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
 	pml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
 
 var (
-	isRunning    = false
+	isRunning = concurrency.SafeBool{}
+)
+
+var (
 	entitiesList = map[string]func(f []pml.Filter, p *pml.Pagination) (*pml.Result, error){
-		ml.EntityGateway:       gateway.List,
-		ml.EntityNode:          node.List,
-		ml.EntitySensor:        sensor.List,
-		ml.EntitySensorField:   field.List,
-		ml.EntityFirmware:      firmware.List,
-		ml.EntityDashboard:     dashboard.List,
-		ml.EntityNotifyHandler: notificationHandlerAPI.List,
-		ml.EntityScheduler:     schedulerAPI.List,
-		ml.EntitySettings:      settingsAPI.List,
+		ml.EntityGateway:        gatewayAPI.List,
+		ml.EntityNode:           nodeAPI.List,
+		ml.EntitySensor:         sensorAPI.List,
+		ml.EntitySensorField:    fieldAPI.List,
+		ml.EntityFirmware:       firmwareAPI.List,
+		ml.EntityUser:           userAPI.List,
+		ml.EntityDashboard:      dashboardAPI.List,
+		ml.EntityForwardPayload: forwardPayloadAPI.List,
+		ml.EntityNotifyHandler:  notificationHandlerAPI.List,
+		ml.EntityTask:           taskAPI.List,
+		ml.EntityScheduler:      schedulerAPI.List,
+		ml.EntitySettings:       settingsAPI.List,
 	}
 )
 
-// ExporterFuncCall implementation
-func ExporterFuncCall(cfg exportml.Config) func() {
-	return func() {
-		if len(cfg.ExportType) == 0 {
-			zap.L().Error("No export type defined", zap.Any("config", cfg))
-			return
-		}
-		// generate targetDirname
-		targetDir := cfg.TargetDir
-		if cfg.UseDateSuffix {
-			suffix := time.Now().Format(exportml.DateSuffixLayout)
-			targetDir = fmt.Sprintf("%s_%s", cfg.TargetDir, suffix)
-		}
-		// export data in different export type
-		for _, exportType := range cfg.ExportType {
-			ExecuteExport(targetDir, exportType)
-		}
-		// execute exporter plugins
-		// TODO...
-	}
-}
-
 // ExecuteExport exports data from database to disk
 func ExecuteExport(targetDir, exportType string) error {
-	if isRunning {
+	if isRunning.IsSet() {
 		return errors.New("There is a exporter job in progress")
 	}
-	isRunning = true
-	defer func() { isRunning = false }()
+	isRunning.Set()
+	defer isRunning.Reset()
 
-	for entityName, listFn := range entitiesList {
+	for entityName := range entitiesList {
+		listFn := entitiesList[entityName]
 		p := &pml.Pagination{
 			Limit: exportml.LimitPerFile, SortBy: []pml.Sort{{Field: model.KeyFieldID, OrderBy: "asc"}}, Offset: 0,
 		}
@@ -81,11 +69,13 @@ func ExecuteExport(targetDir, exportType string) error {
 				zap.L().Error("Failed to get entities", zap.String("entityName", entityName), zap.Error(err))
 				return err
 			}
-			if result.Count == 0 {
+
+			dump(targetDir, entityName, int(result.Offset), result.Data, exportType)
+
+			offset += exportml.LimitPerFile
+			if result.Count < offset {
 				break
 			}
-			offset++
-
 		}
 	}
 	return nil

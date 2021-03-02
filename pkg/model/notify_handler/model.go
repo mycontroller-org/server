@@ -1,8 +1,6 @@
 package notifyhandler
 
 import (
-	"strings"
-
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
@@ -16,6 +14,7 @@ const (
 	TypeSMS        = "sms"
 	TypePushbullet = "pushbullet"
 	TypeResource   = "resource"
+	TypeExporter   = "exporter"
 )
 
 // handler data types
@@ -26,6 +25,7 @@ const (
 	DataTypeSMS        = "sms"
 	DataTypePushbullet = "pushbullet"
 	DataTypeResource   = "resource"
+	DataTypeExporter   = "exporter"
 )
 
 // Config model
@@ -57,27 +57,6 @@ func (hdr *Config) Clone() Config {
 type MessageWrapper struct {
 	ID   string
 	Data map[string]interface{}
-}
-
-// GetDataType returns type of the handler
-func GetDataType(name string) string {
-	name = strings.ToLower(name)
-	switch {
-	case strings.HasPrefix(name, DataTypeEmail):
-		return DataTypeEmail
-	case strings.HasPrefix(name, DataTypeTelegram):
-		return DataTypeTelegram
-	case strings.HasPrefix(name, DataTypeWebhook):
-		return DataTypeWebhook
-	case strings.HasPrefix(name, DataTypeSMS):
-		return DataTypeSMS
-	case strings.HasPrefix(name, DataTypePushbullet):
-		return DataTypePushbullet
-	case strings.HasPrefix(name, DataTypeResource):
-		return DataTypeResource
-	default:
-		return ""
-	}
 }
 
 // GenericData struct
@@ -119,4 +98,10 @@ type TelegramData struct {
 	ChatIDs   []string `yaml:"chatIds"`
 	ParseMode string   `yaml:"parseMode"`
 	Text      string   `yaml:"text"`
+}
+
+// ExporterData struct
+type ExporterData struct {
+	ExporterType string                 `yaml:"exporterType"`
+	Spec         map[string]interface{} `yaml:"spec"`
 }

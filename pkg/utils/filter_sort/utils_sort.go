@@ -30,8 +30,11 @@ func Sort(entities []interface{}, pagination *stgml.Pagination) ([]interface{}, 
 		posEnd := posStart + pagination.Limit
 		if entitiesCount > posEnd {
 			return entities[posStart:posEnd], entitiesCount
+		} else if entitiesCount > posStart {
+			return entities[posStart:], entitiesCount
+		} else {
+			return entities[:], entitiesCount
 		}
-		return entities[posStart:], entitiesCount
 	}
 
 	return entities, entitiesCount

@@ -29,6 +29,7 @@ type WebConfig struct {
 type Directories struct {
 	Data string `yaml:"data"`
 	Logs string `yaml:"logs"`
+	Tmp  string `yaml:"tmp"`
 }
 
 // LoggerConfig input
