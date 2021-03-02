@@ -4,24 +4,24 @@ import (
 	"fmt"
 	"time"
 
-	q "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	"github.com/mycontroller-org/backend/v2/pkg/model/event"
 	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
 var (
-	eventQueue *q.BoundedQueue
-	queueSize  = int(1000)
+	eventQueue   *queueUtils.Queue
+	queueSize    = int(1000)
+	queueWorkers = 5
 )
 
 // Init starts resource server listener
 func Init() error {
-	eventQueue = utils.GetQueue("resource_service", queueSize)
+	eventQueue = queueUtils.New("resource_service", queueSize, processEvent, queueWorkers)
 
 	// on event receive add it in to our local queue
 	_, err := mcbus.Subscribe(mcbus.FormatTopic(mcbus.TopicServiceResourceServer), onEvent)
@@ -29,13 +29,12 @@ func Init() error {
 		return err
 	}
 
-	eventQueue.StartConsumers(1, processEvent)
 	return nil
 }
 
 // Close the service
 func Close() {
-	eventQueue.Stop()
+	eventQueue.Close()
 }
 
 func onEvent(event *event.Event) {
