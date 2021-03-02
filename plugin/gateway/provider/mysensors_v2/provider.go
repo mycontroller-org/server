@@ -12,6 +12,7 @@ import (
 	sch "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	utils "github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
 	mqtt "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/protocol_mqtt"
 	serial "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/protocol_serial"
@@ -103,16 +104,15 @@ func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
 	// if acknowledge enabled
 	// wait for acknowledgement message
 	ackChannel := make(chan bool, 0)
-	isChannelClosed := false
+	channelState := concurrency.SafeBool{}
 	ackTopic := mcbus.GetTopicPostRawMessageAcknowledgement(p.GatewayConfig.ID, rawMsg.ID)
 	ackSubscriptionID, err := mcbus.Subscribe(
 		ackTopic,
 		func(event *event.Event) {
 			// TODO: remove this block. added to debug the previous error
-			if isChannelClosed {
+			if channelState.IsSet() {
 				zap.L().Info("Entered in to the ack response on closed channel")
-			}
-			if !isChannelClosed {
+			} else {
 				zap.L().Debug("acknowledgement status", zap.Any("event", event))
 				ackChannel <- true
 			}
@@ -128,8 +128,8 @@ func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
 		if err != nil {
 			zap.L().Error("error on unsubscribe", zap.Error(err), zap.String("topic", ackTopic), zap.Any("sunscriptionID", ackSubscriptionID))
 		}
+		channelState.Set()
 		close(ackChannel)
-		isChannelClosed = true
 	}()
 
 	timeout, err := time.ParseDuration(p.Config.Timeout)
