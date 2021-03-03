@@ -30,21 +30,18 @@ git branch
 BACKEND_BRANCH=`git rev-parse --abbrev-ref HEAD`
 
 # build web console
-# git submodule update --init --recursive
-# git submodule update --remote
-# cd console-web
-# git checkout $BACKEND_BRANCH  # sync with backend branch for webconsole
-# yarn install
-# CI=false yarn build
-# cd ../
-
-# disable UI build for a while
-mkdir -p console-web/build
+git submodule update --init --recursive
+git submodule update --remote
+cd console-web
+git checkout $BACKEND_BRANCH  # sync with backend branch for webconsole
+yarn install
+CI=false yarn build
+cd ../
 
 # build conatiner images
-docker buildx build --push --progress=plain --platform linux/amd64 --file docker/all-in-one.Dockerfile --tag ${IMAGE_ALL_IN_ONE}:${IMAGE_TAG} .
-docker buildx build --push --progress=plain --platform linux/amd64 --file docker/core.Dockerfile --tag ${IMAGE_CORE}:${IMAGE_TAG} .
-docker buildx build --push --progress=plain --platform linux/amd64 --file docker/gateway.Dockerfile --tag ${IMAGE_GATEWAY}:${IMAGE_TAG} .
+docker buildx build --push --progress=plain --build-arg=GOPROXY=${GOPROXY} --platform linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/arm64,linux/amd64 --file docker/all-in-one.Dockerfile --tag ${IMAGE_ALL_IN_ONE}:${IMAGE_TAG} .
+docker buildx build --push --progress=plain --build-arg=GOPROXY=${GOPROXY} --platform linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/arm64,linux/amd64 --file docker/core.Dockerfile --tag ${IMAGE_CORE}:${IMAGE_TAG} .
+docker buildx build --push --progress=plain --build-arg=GOPROXY=${GOPROXY} --platform linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/arm64,linux/amd64 --file docker/gateway.Dockerfile --tag ${IMAGE_GATEWAY}:${IMAGE_TAG} .
 
 # push images to registry
 # docker push ${IMAGE_ALL_IN_ONE}:${IMAGE_TAG}

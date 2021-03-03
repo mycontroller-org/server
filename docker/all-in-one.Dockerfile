@@ -2,9 +2,12 @@ FROM --platform=${BUILDPLATFORM:-linux/amd64} quay.io/mycontroller-org/golang:1.
 RUN mkdir /app
 ADD . /app
 WORKDIR /app
+
+ARG GOPROXY
+# download deps before gobuild
+RUN go mod download -x
 ARG TARGETOS
 ARG TARGETARCH
-RUN touch mycontroller-all-in-one
 RUN scripts/generate_bin.sh
 
 FROM alpine:3.13
