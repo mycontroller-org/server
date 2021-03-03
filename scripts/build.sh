@@ -39,9 +39,9 @@ CI=false yarn build
 cd ../
 
 # build conatiner images
-docker buildx build --push --platform linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/arm64,linux/amd64 --file docker/all-in-one.Dockerfile -t ${IMAGE_ALL_IN_ONE}:${IMAGE_TAG} .
-docker buildx build --push --platform linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/arm64,linux/amd64 --file docker/core.Dockerfile -t ${IMAGE_CORE}:${IMAGE_TAG} .
-docker buildx build --push --platform linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/arm64,linux/amd64 --file docker/gateway.Dockerfile -t ${IMAGE_GATEWAY}:${IMAGE_TAG} .
+docker buildx build --push --platform linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/arm64,linux/amd64 --file docker/all-in-one.Dockerfile --tag ${IMAGE_ALL_IN_ONE}:${IMAGE_TAG} .
+docker buildx build --push --platform linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/arm64,linux/amd64 --file docker/core.Dockerfile --tag ${IMAGE_CORE}:${IMAGE_TAG} .
+docker buildx build --push --platform linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/arm64,linux/amd64 --file docker/gateway.Dockerfile --tag ${IMAGE_GATEWAY}:${IMAGE_TAG} .
 
 # push images to registry
 # docker push ${IMAGE_ALL_IN_ONE}:${IMAGE_TAG}
