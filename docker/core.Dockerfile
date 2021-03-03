@@ -6,7 +6,7 @@ ARG TARGETOS
 ARG TARGETARCH
 RUN scripts/generate_bin.sh
 
-FROM alpine:3.13
+FROM docker.io/library/alpine@sha256:a75afd8b57e7f34e4dad8d65e2c7ba2e1975c795ce1ee22fa34f8cf46f96a3be
 
 LABEL maintainer="Jeeva Kandasamy <jkandasa@gmail.com>"
 
