@@ -1,3 +1,11 @@
+FROM --platform=${BUILDPLATFORM} quay.io/mycontroller-org/golang:1.16.0-alpine3.13 AS builder
+RUN mkdir /app
+ADD . /app
+WORKDIR /app
+ARG TARGETOS
+ARG TARGETARCH
+RUN scripts/generate_bin.sh
+
 FROM alpine:3.13
 
 LABEL maintainer="Jeeva Kandasamy <jkandasa@gmail.com>"
@@ -17,7 +25,7 @@ RUN mkdir -p ${APP_HOME} && mkdir -p ${DATA_HOME}
 COPY ./console-web/build /ui
 
 # copy application bin file
-COPY ./mycontroller-core ${APP_HOME}/mycontroller-core
+COPY --from=builder /app/mycontroller-core ${APP_HOME}/mycontroller-core
 
 RUN chmod +x ${APP_HOME}/mycontroller-core
 

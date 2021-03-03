@@ -1,3 +1,11 @@
+FROM --platform=${BUILDPLATFORM} quay.io/mycontroller-org/golang:1.16.0-alpine3.13 AS builder
+RUN mkdir /app
+ADD . /app
+WORKDIR /app
+ARG TARGETOS
+ARG TARGETARCH
+RUN scripts/generate_bin.sh
+
 FROM alpine:3.13
 
 LABEL maintainer="Jeeva Kandasamy <jkandasa@gmail.com>"
@@ -14,7 +22,7 @@ RUN apk --no-cache add tzdata
 RUN mkdir -p ${APP_HOME} && mkdir -p ${DATA_HOME}
 
 # copy application bin file
-COPY ./mycontroller-gateway ${APP_HOME}/mycontroller-gateway
+COPY --from=builder /app/mycontroller-gateway ${APP_HOME}/mycontroller-gateway
 
 RUN chmod +x ${APP_HOME}/mycontroller-gateway
 
