@@ -2,29 +2,40 @@ package concurrency
 
 import "sync"
 
-// SafeBool is safe to use in concurrently.
-type SafeBool struct {
-	mutex sync.Mutex
-	state bool
+// Channel struct
+type Channel struct {
+	CH     chan interface{}
+	closed bool
+	mutex  sync.Mutex
 }
 
-// IsSet returns state
-func (sb *SafeBool) IsSet() bool {
-	sb.mutex.Lock()
-	defer sb.mutex.Unlock()
-	return sb.state
+// NewChannel returns new instance
+func NewChannel(capacity int) *Channel {
+	return &Channel{CH: make(chan interface{}, capacity)}
 }
 
-// Set updates the state to true
-func (sb *SafeBool) Set() {
-	sb.mutex.Lock()
-	defer sb.mutex.Unlock()
-	sb.state = true
+// SafeClose closes only once
+func (c *Channel) SafeClose() {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	if !c.closed {
+		close(c.CH)
+		c.closed = true
+	}
 }
 
-// Reset updates the state to false
-func (sb *SafeBool) Reset() {
-	sb.mutex.Lock()
-	defer sb.mutex.Unlock()
-	sb.state = false
+// SafeSend sends data safely
+func (c *Channel) SafeSend(data interface{}) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	if !c.closed {
+		c.CH <- data
+	}
+}
+
+// IsClosed returns status
+func (c *Channel) IsClosed() bool {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	return c.closed
 }

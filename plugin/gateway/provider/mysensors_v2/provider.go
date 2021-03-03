@@ -103,19 +103,13 @@ func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
 
 	// if acknowledge enabled
 	// wait for acknowledgement message
-	ackChannel := make(chan bool, 0)
-	channelState := concurrency.SafeBool{}
+	ackChannel := concurrency.NewChannel(0)
 	ackTopic := mcbus.GetTopicPostRawMessageAcknowledgement(p.GatewayConfig.ID, rawMsg.ID)
 	ackSubscriptionID, err := mcbus.Subscribe(
 		ackTopic,
 		func(event *event.Event) {
-			// TODO: remove this block. added to debug the previous error
-			if channelState.IsSet() {
-				zap.L().Info("Entered in to the ack response on closed channel")
-			} else {
-				zap.L().Debug("acknowledgement status", zap.Any("event", event))
-				ackChannel <- true
-			}
+			zap.L().Debug("acknowledgement status", zap.Any("event", event))
+			ackChannel.SafeSend(true)
 		},
 	)
 	if err != nil {
@@ -128,8 +122,7 @@ func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
 		if err != nil {
 			zap.L().Error("error on unsubscribe", zap.Error(err), zap.String("topic", ackTopic), zap.Any("sunscriptionID", ackSubscriptionID))
 		}
-		channelState.Set()
-		close(ackChannel)
+		ackChannel.SafeClose()
 	}()
 
 	timeout, err := time.ParseDuration(p.Config.Timeout)
@@ -162,7 +155,7 @@ func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
 
 		// wait till timeout or acknowledgement, which one comes earlier
 		select {
-		case <-ackChannel:
+		case <-ackChannel.CH:
 			messageSent = true
 		case <-time.After(timeout):
 			// wait till timeout
