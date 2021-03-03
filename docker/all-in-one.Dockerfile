@@ -4,6 +4,7 @@ ADD . /app
 WORKDIR /app
 ARG TARGETOS
 ARG TARGETARCH
+RUN touch mycontroller-all-in-one
 RUN scripts/generate_bin.sh
 
 FROM alpine:3.13
