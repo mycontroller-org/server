@@ -1,8 +1,8 @@
 package scheduler
 
 import (
+	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	"github.com/mycontroller-org/backend/v2/pkg/model/event"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
@@ -60,7 +60,7 @@ func Close() {
 	serviceQueue.Close()
 }
 
-func onServiceEvent(event *event.Event) {
+func onServiceEvent(event *busML.BusData) {
 	reqEvent := &rsML.Event{}
 	err := event.ToStruct(reqEvent)
 	if err != nil {

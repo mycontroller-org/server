@@ -7,7 +7,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/api/action"
 	fpAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	"github.com/mycontroller-org/backend/v2/pkg/model/event"
+	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/field"
 	fpml "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
@@ -36,7 +36,7 @@ func Init() error {
 	return nil
 }
 
-func onEventReceive(event *event.Event) {
+func onEventReceive(event *busML.BusData) {
 	field := &field.Field{}
 	err := event.ToStruct(field)
 	if err != nil {

@@ -2,8 +2,8 @@ package service
 
 import (
 	q "github.com/jaegertracing/jaeger/pkg/queue"
+	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	"github.com/mycontroller-org/backend/v2/pkg/model/event"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
@@ -58,7 +58,7 @@ func Close() {
 	eventQueue.Stop()
 }
 
-func onEvent(event *event.Event) {
+func onEvent(event *busML.BusData) {
 	reqEvent := &rsml.Event{}
 	err := event.ToStruct(reqEvent)
 	if err != nil {

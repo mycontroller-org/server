@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
+	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	"github.com/mycontroller-org/backend/v2/pkg/model/event"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	sch "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
@@ -107,7 +107,7 @@ func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
 	ackTopic := mcbus.GetTopicPostRawMessageAcknowledgement(p.GatewayConfig.ID, rawMsg.ID)
 	ackSubscriptionID, err := mcbus.Subscribe(
 		ackTopic,
-		func(event *event.Event) {
+		func(event *busML.BusData) {
 			zap.L().Debug("acknowledgement status", zap.Any("event", event))
 			ackChannel.SafeSend(true)
 		},

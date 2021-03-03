@@ -1,6 +1,6 @@
 package bus
 
-import "github.com/mycontroller-org/backend/v2/pkg/model/event"
+import busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 
 // bus client types
 const (
@@ -9,7 +9,7 @@ const (
 )
 
 // CallBackFunc message passed to this func
-type CallBackFunc func(event *event.Event)
+type CallBackFunc func(data *busML.BusData)
 
 // Client interface
 type Client interface {

@@ -1,8 +1,8 @@
 package handler
 
 import (
+	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	"github.com/mycontroller-org/backend/v2/pkg/model/event"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
@@ -65,7 +65,7 @@ func Close() {
 	closeMessageListener()
 }
 
-func onServiceEvent(event *event.Event) {
+func onServiceEvent(event *busML.BusData) {
 	reqEvent := &rsML.Event{}
 	err := event.ToStruct(reqEvent)
 	if err != nil {

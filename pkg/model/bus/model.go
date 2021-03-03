@@ -2,14 +2,14 @@ package event
 
 import "github.com/mycontroller-org/backend/v2/pkg/utils"
 
-// Event struct
-type Event struct {
+// BusData struct
+type BusData struct {
 	Topic string
 	Data  []byte
 }
 
 // SetData updates data in []byte format
-func (e *Event) SetData(data interface{}) error {
+func (e *BusData) SetData(data interface{}) error {
 	if data == nil {
 		return nil
 	}
@@ -22,6 +22,6 @@ func (e *Event) SetData(data interface{}) error {
 }
 
 // ToStruct converts data to target interface
-func (e *Event) ToStruct(out interface{}) error {
+func (e *BusData) ToStruct(out interface{}) error {
 	return utils.ByteToStruct(e.Data, out)
 }

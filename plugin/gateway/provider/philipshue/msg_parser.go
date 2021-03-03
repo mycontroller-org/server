@@ -11,6 +11,7 @@ import (
 )
 
 // implement message parser
+// look at https://github.com/amimof/huego
 
 // ToRawMessage func implementation
 func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {

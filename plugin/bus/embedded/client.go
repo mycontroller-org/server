@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model/event"
+	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	"go.uber.org/zap"
 )
@@ -57,7 +57,7 @@ func (c *Client) Publish(topic string, data interface{}) error {
 		if match {
 			for _, subscriptionID := range subscriptionIDs {
 				if callBack, ok := c.subscriptions[subscriptionID]; ok {
-					event := &event.Event{Topic: topic}
+					event := &busML.BusData{Topic: topic}
 					err := event.SetData(data)
 					if err != nil {
 						zap.L().Error("data conversion failed", zap.Error(err))

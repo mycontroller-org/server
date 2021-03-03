@@ -16,12 +16,6 @@ const (
 	EntitySettings       = "settings"        // settings of the system
 )
 
-// Kind types
-const (
-	KindExportConfig   = "ExportConfig"
-	KindExporterConfig = "ExporterConfig"
-)
-
 // Entity field keys
 const (
 	KeyID           = "ID"

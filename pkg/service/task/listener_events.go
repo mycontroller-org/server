@@ -3,7 +3,7 @@ package task
 import (
 	"strings"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model/event"
+	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/field"
 	"github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	"github.com/mycontroller-org/backend/v2/pkg/model/node"
@@ -70,7 +70,7 @@ func closeEventListener() error {
 	return nil
 }
 
-func onEventReceive(event *event.Event) {
+func onEventReceive(event *busML.BusData) {
 	status := preEventsQueue.Produce(event)
 	if !status {
 		zap.L().Warn("Failed to store the event into queue", zap.Any("event", event))
@@ -78,7 +78,7 @@ func onEventReceive(event *event.Event) {
 }
 
 func processPreEvent(item interface{}) {
-	event := item.(*event.Event)
+	event := item.(*busML.BusData)
 	topic := event.Topic
 
 	var resource interface{}

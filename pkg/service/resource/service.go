@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	"github.com/mycontroller-org/backend/v2/pkg/model/event"
 	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
@@ -37,7 +37,7 @@ func Close() {
 	eventQueue.Close()
 }
 
-func onEvent(event *event.Event) {
+func onEvent(event *busML.BusData) {
 	reqEvent := &rsModel.Event{}
 	err := event.ToStruct(reqEvent)
 	if err != nil {

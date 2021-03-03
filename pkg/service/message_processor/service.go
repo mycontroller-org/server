@@ -11,7 +11,7 @@ import (
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	"github.com/mycontroller-org/backend/v2/pkg/model/event"
+	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
@@ -43,7 +43,7 @@ func Init() error {
 	return nil
 }
 
-func onMessageReceive(event *event.Event) {
+func onMessageReceive(event *busML.BusData) {
 	msg := &msgml.Message{}
 	err := event.ToStruct(msg)
 	if err != nil {

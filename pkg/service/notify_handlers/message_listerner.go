@@ -6,7 +6,7 @@ import (
 
 	q "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	"github.com/mycontroller-org/backend/v2/pkg/model/event"
+	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -33,7 +33,7 @@ func initMessageListener() error {
 	return nil
 }
 
-func onMessageReceive(event *event.Event) {
+func onMessageReceive(event *busML.BusData) {
 	msg := &handlerML.MessageWrapper{}
 	err := event.ToStruct(msg)
 	if err != nil {
