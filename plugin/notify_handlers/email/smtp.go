@@ -24,8 +24,6 @@ type smtpClient struct {
 
 // init smtp client
 func initSMTP(handlerCfg *handlerML.Config, cfg *Config) (Client, error) {
-	zap.L().Info("Init smtp email client", zap.Any("config", cfg))
-
 	var auth smtp.Auth
 
 	if cfg.AuthType == AuthTypePlain || cfg.AuthType == "" {
@@ -41,6 +39,7 @@ func initSMTP(handlerCfg *handlerML.Config, cfg *Config) (Client, error) {
 		cfg:        cfg,
 		auth:       auth,
 	}
+	zap.L().Info("Init smtp email client success", zap.Any("handlerID", handlerCfg.ID))
 	return client, nil
 }
 
