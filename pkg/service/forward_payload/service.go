@@ -3,7 +3,6 @@ package forwardpayload
 import (
 	"fmt"
 
-	q "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mycontroller-org/backend/v2/pkg/api/action"
 	fpAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
@@ -11,20 +10,20 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/field"
 	fpml "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
 var (
-	queue       *q.BoundedQueue
+	queue       *queueUtils.Queue
 	queueSize   = int(1000)
 	workerCount = int(1)
 )
 
 // Init message process engine
 func Init() error {
-	queue = utils.GetQueue("forward_payload", queueSize)
+	queue = queueUtils.New("forward_payload", queueSize, processEvent, workerCount)
 
 	// on event receive add it in to local queue
 	_, err := mcbus.Subscribe(mcbus.TopicEventSensorFieldSet, onEventReceive)
@@ -32,7 +31,6 @@ func Init() error {
 		return err
 	}
 
-	queue.StartConsumers(workerCount, processEvent)
 	return nil
 }
 
@@ -57,7 +55,7 @@ func onEventReceive(event *busML.BusData) {
 
 // Close message process engine
 func Close() error {
-	queue.Stop()
+	queue.Close()
 	return nil
 }
 

@@ -7,23 +7,24 @@ import (
 
 // Queue to hold items
 type Queue struct {
-	Name  string
-	Queue *queue.BoundedQueue
-	Size  int
+	Name    string
+	Queue   *queue.BoundedQueue
+	Size    int
+	Workers int
 }
 
 // New returns brandnew queue
-func New(name string, size int, consumer func(event interface{}), consumersWorkers int) *Queue {
+func New(name string, size int, consumer func(event interface{}), workers int) *Queue {
 	queue := queue.NewBoundedQueue(size, func(item interface{}) {
 		zap.L().Error("Queue full. Droping item", zap.String("QueueName", name), zap.Any("item", item))
 	})
-
-	queue.StartConsumers(consumersWorkers, consumer)
+	queue.StartConsumers(workers, consumer)
 
 	return &Queue{
-		Name:  name,
-		Size:  size,
-		Queue: queue,
+		Name:    name,
+		Queue:   queue,
+		Size:    size,
+		Workers: workers,
 	}
 }
 

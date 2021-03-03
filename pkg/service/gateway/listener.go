@@ -1,7 +1,6 @@
 package service
 
 import (
-	q "github.com/jaegertracing/jaeger/pkg/queue"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
@@ -9,12 +8,14 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
+	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	"go.uber.org/zap"
 )
 
 var (
-	eventQueue *q.BoundedQueue
+	eventQueue *queueUtils.Queue
 	queueSize  = int(50)
+	workers    = int(1)
 	cfg        *Config
 )
 
@@ -32,7 +33,7 @@ func Init(config cmap.CustomMap) error {
 		return err
 	}
 
-	eventQueue = utils.GetQueue("gateway_service", queueSize)
+	eventQueue = queueUtils.New("gateway_service", queueSize, processEvent, workers)
 
 	// on event receive add it in to our local queue
 	topic := mcbus.FormatTopic(mcbus.TopicServiceGateway)
@@ -40,8 +41,6 @@ func Init(config cmap.CustomMap) error {
 	if err != nil {
 		return err
 	}
-
-	eventQueue.StartConsumers(1, processEvent)
 
 	// load gateways
 	reqEvent := rsml.Event{
@@ -55,7 +54,7 @@ func Init(config cmap.CustomMap) error {
 // Close the service
 func Close() {
 	UnloadAll()
-	eventQueue.Stop()
+	eventQueue.Close()
 }
 
 func onEvent(event *busML.BusData) {

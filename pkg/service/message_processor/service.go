@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	q "github.com/jaegertracing/jaeger/pkg/queue"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
@@ -20,18 +19,20 @@ import (
 	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/javascript"
+	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"go.uber.org/zap"
 )
 
 var (
-	msgQueue  *q.BoundedQueue
+	msgQueue  *queueUtils.Queue
 	queueSize = int(1000)
+	workers   = 1
 )
 
 // Init message process engine
 func Init() error {
-	msgQueue = utils.GetQueue("message_processor", queueSize)
+	msgQueue = queueUtils.New("message_processor", queueSize, processMessage, workers)
 
 	// on message receive add it in to our local queue
 	_, err := mcbus.Subscribe(mcbus.GetTopicPostMessageToCore(), onMessageReceive)
@@ -39,7 +40,6 @@ func Init() error {
 		return err
 	}
 
-	msgQueue.StartConsumers(1, processMessage)
 	return nil
 }
 
@@ -64,7 +64,7 @@ func onMessageReceive(event *busML.BusData) {
 
 // Close message process engine
 func Close() error {
-	msgQueue.Stop()
+	msgQueue.Close()
 	return nil
 }
 

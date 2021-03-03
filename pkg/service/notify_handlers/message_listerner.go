@@ -4,24 +4,24 @@ import (
 	"fmt"
 	"time"
 
-	q "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	"go.uber.org/zap"
 )
 
 var (
-	msgQueue  *q.BoundedQueue
+	msgQueue  *queueUtils.Queue
 	queueSize = int(1000)
+	workers   = int(1)
 )
 
 // init message listener
 func initMessageListener() error {
-	msgQueue = utils.GetQueue("handler_message_listener", queueSize)
+	msgQueue = queueUtils.New("handler_message_listener", queueSize, processHandlerMessage, workers)
 
 	// on message receive add it in to our local queue
 	_, err := mcbus.Subscribe(mcbus.FormatTopic(mcbus.TopicPostMessageNotifyHandler), onMessageReceive)
@@ -29,7 +29,6 @@ func initMessageListener() error {
 		return err
 	}
 
-	msgQueue.StartConsumers(1, processHandlerMessage)
 	return nil
 }
 
@@ -54,7 +53,7 @@ func onMessageReceive(event *busML.BusData) {
 
 // close listener service
 func closeMessageListener() {
-	msgQueue.Stop()
+	msgQueue.Close()
 }
 
 func processHandlerMessage(item interface{}) {
