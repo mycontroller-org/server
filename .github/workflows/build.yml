@@ -8,6 +8,10 @@ jobs:
   setup:
     name: Setup
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ["all-in-one", "core", "gateway"]
+
     steps:
     - uses: actions/checkout@v2
     - uses: docker/setup-qemu-action@v1
@@ -15,6 +19,17 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: '14'
+    
+    - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+    
     - name: Login in to docker registry
       uses: docker/login-action@v1
       with:
@@ -27,23 +42,10 @@ jobs:
         username: ${{ secrets.QUAY_USERNAME }}
         password: ${{ secrets.QUAY_TOKEN }}
 
-  build-ui:
-    needs: setup
-    name: Build UI
-    runs-on: ubuntu-latest
-    steps:
     - name: Build Web UI
       run: ./scripts/build_ui.sh
 
-  build-and-push:
-    needs: build-ui
-    name: Build container images and push
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image: ["all-in-one", "core", "gateway"]
-    steps:
-      - name: Build container and push - ${{ matrix.image }}
-        env:
-          TARGET_BUILD: ${{ matrix.image }}
-        run: ./scripts/build.sh
+    - name: Build container and push - ${{ matrix.image }}
+      env:
+        TARGET_BUILD: ${{ matrix.image }}
+      run: ./scripts/build.sh
