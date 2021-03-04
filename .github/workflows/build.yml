@@ -58,7 +58,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
-   - name: Build container and push - ${{ matrix.container_image }}
+    - name: Build container and push - ${{ matrix.container_image }}
       env:
         TARGET_BUILD: ${{ matrix.container_image }}
       run: ./scripts/build.sh
