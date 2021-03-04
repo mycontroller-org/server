@@ -13,7 +13,7 @@ echo $PWD
 ls -alh
 git branch
 
-TARGET_BUILD=${TARGET_BUILD:-all-in-one}
+TARGET_BINARY=${TARGET_BUILD:-all-in-one}
 
 # build conatiner images
 if [[ "$TARGET_BINARY" == "core" ]]; then
