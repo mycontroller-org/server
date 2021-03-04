@@ -22,9 +22,9 @@ if [[ "$TARGET_BINARY" == "core" ]]; then
 
 elif [[ "$TARGET_BINARY" == "gateway" ]]; then
   # build gateway image
-  docker buildx build --push --progress=plain --build-arg=GOPROXY=${GOPROXY} --platform linux/arm/v6,linux/arm/v7,linux/arm64,linux/amd64 --file docker/gateway.Dockerfile --tag ${IMAGE_ALL_IN_ONE}:${IMAGE_TAG} .
+  docker buildx build --push --progress=plain --build-arg=GOPROXY=${GOPROXY} --platform linux/arm/v6,linux/arm/v7,linux/arm64,linux/amd64 --file docker/gateway.Dockerfile --tag ${IMAGE_GATEWAY}:${IMAGE_TAG} .
 
 else
   # build all-in-one image
-  docker buildx build --push --progress=plain --build-arg=GOPROXY=${GOPROXY} --platform linux/arm/v6,linux/arm/v7,linux/arm64,linux/amd64 --file docker/all-in-one.Dockerfile --tag ${IMAGE_GATEWAY}:${IMAGE_TAG} .
+  docker buildx build --push --progress=plain --build-arg=GOPROXY=${GOPROXY} --platform linux/arm/v6,linux/arm/v7,linux/arm64,linux/amd64 --file docker/all-in-one.Dockerfile --tag ${IMAGE_ALL_IN_ONE}:${IMAGE_TAG} .
 fi
