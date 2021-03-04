@@ -5,7 +5,6 @@ on:
     branches: [ master ]
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -27,5 +26,11 @@ jobs:
         registry: quay.io
         username: ${{ secrets.QUAY_USERNAME }}
         password: ${{ secrets.QUAY_TOKEN }}
-    - name: Build and publish images
+
+    - name: Build Web UI
+      run: ./scripts/build_ui.sh
+
+    - name: Build all-in-one images
+      env:
+        TARGET_BUILD: all-in-one
       run: ./scripts/build.sh

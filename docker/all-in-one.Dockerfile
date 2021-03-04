@@ -8,6 +8,7 @@ ARG GOPROXY
 RUN go mod download -x
 ARG TARGETOS
 ARG TARGETARCH
+ENV TARGET_BUILD="all-in-one"
 RUN scripts/generate_bin.sh
 
 FROM alpine:3.13

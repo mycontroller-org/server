@@ -4,6 +4,7 @@ ADD . /app
 WORKDIR /app
 ARG TARGETOS
 ARG TARGETARCH
+ENV TARGET_BUILD="gateway"
 RUN scripts/generate_bin.sh
 
 FROM alpine:3.13
