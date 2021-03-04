@@ -18,7 +18,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: '14'
-    
+    - uses: actions/setup-go@v2
+      with:
+        go-version: ^1.16
+
     - name: Login in to docker registry
       uses: docker/login-action@v1
       with:
@@ -45,6 +48,17 @@ jobs:
     
     - name: Build Web UI Repository
       run: ./scripts/build_ui.sh
+
+    - name: Cache go modules
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Build golang builder image
+      run: docker build --file docker/golang_builder.Dockerfile --tag quay.io/mycontroller-org/golang:1.16.0-alpine3.13 .      
 
     - name: Build container and push - ${{ matrix.image }}
       env:

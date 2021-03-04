@@ -2,6 +2,10 @@ FROM --platform=${BUILDPLATFORM} quay.io/mycontroller-org/golang:1.16.0-alpine3.
 RUN mkdir /app
 ADD . /app
 WORKDIR /app
+
+ARG GOPROXY
+# download deps before gobuild
+RUN go mod download -x
 ARG TARGETOS
 ARG TARGETARCH
 ENV TARGET_BUILD="gateway"
