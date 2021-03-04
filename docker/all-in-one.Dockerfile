@@ -11,7 +11,7 @@ ARG TARGETARCH
 ENV TARGET_BUILD="all-in-one"
 RUN scripts/generate_bin.sh
 
-FROM alpine:3.13.2
+FROM alpine:3.12.4
 
 LABEL maintainer="Jeeva Kandasamy <jkandasa@gmail.com>"
 
