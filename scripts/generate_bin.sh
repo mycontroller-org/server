@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 BUILD_DATE=`date -u +'%Y-%m-%dT%H:%M:%S%:z'`
 GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`
