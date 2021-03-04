@@ -10,17 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ["all-in-one", "core", "gateway"]
+        container_image: ["all-in-one", "core", "gateway"]
+
     steps:
     - uses: actions/checkout@v2
-    - uses: docker/setup-qemu-action@v1
+    # - uses: docker/setup-qemu-action@v1
     - uses: docker/setup-buildx-action@v1
     - uses: actions/setup-node@v2
       with:
         node-version: '14'
     - uses: actions/setup-go@v2
       with:
-        go-version: ^1.16
+        go-version: 1.16
 
     - name: Login in to docker registry
       uses: docker/login-action@v1
@@ -57,10 +58,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
-    - name: Build golang builder image
-      run: docker build --file docker/golang_builder.Dockerfile --tag quay.io/mycontroller-org/golang:1.16.0-alpine3.13 .      
-
-    - name: Build container and push - ${{ matrix.image }}
+   - name: Build container and push - ${{ matrix.container_image }}
       env:
-        TARGET_BUILD: ${{ matrix.image }}
+        TARGET_BUILD: ${{ matrix.container_image }}
       run: ./scripts/build.sh
