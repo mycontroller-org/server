@@ -7,7 +7,7 @@ ARG TARGETARCH
 ENV TARGET_BUILD="gateway"
 RUN scripts/generate_bin.sh
 
-FROM alpine:3.13
+FROM alpine:3.12.4
 
 LABEL maintainer="Jeeva Kandasamy <jkandasa@gmail.com>"
 

@@ -5,8 +5,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-    name: Build
+  setup:
+    name: Setup
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -27,10 +27,23 @@ jobs:
         username: ${{ secrets.QUAY_USERNAME }}
         password: ${{ secrets.QUAY_TOKEN }}
 
+  build-ui:
+    needs: setup
+    name: Build UI
+    runs-on: ubuntu-latest
+    steps:
     - name: Build Web UI
       run: ./scripts/build_ui.sh
 
-    - name: Build all-in-one images
-      env:
-        TARGET_BUILD: all-in-one
-      run: ./scripts/build.sh
+  build-and-push:
+    needs: build-ui
+    name: Build container images and push
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ["all-in-one", "core", "gateway"]
+    steps:
+      - name: Build container and push - ${{ matrix.image }}
+        env:
+          TARGET_BUILD: ${{ matrix.image }}
+        run: ./scripts/build.sh
