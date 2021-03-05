@@ -1,7 +1,7 @@
 package firmware
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -128,7 +128,7 @@ func Upload(sourceFile multipart.File, id, filename string) error {
 	}
 	defer savedFile.Close()
 
-	hash := md5.New()
+	hash := sha256.New()
 	if _, err := io.Copy(hash, savedFile); err != nil {
 		return err
 	}
@@ -138,7 +138,7 @@ func Upload(sourceFile multipart.File, id, filename string) error {
 	firmware.File.Name = filename
 	firmware.File.InternalName = newFilename
 	firmware.File.Size = int(fileInfo.Size())
-	firmware.File.Checksum = fmt.Sprintf("md5:%x", checkSum)
+	firmware.File.Checksum = fmt.Sprintf("sha256:%x", checkSum)
 	firmware.File.ModifiedTime = fileInfo.ModTime()
 
 	err = Save(&firmware, false)

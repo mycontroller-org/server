@@ -128,7 +128,6 @@ func (s *Service) startMessageListener() {
 			zap.L().Warn("received a nil message")
 			return
 		}
-		zap.L().Info("messageQueue producer", zap.String("gateway", s.GatewayConfig.ID), zap.Int("queue size", s.messageQueue.Size()))
 		s.messageQueue.Produce(msg)
 	})
 
@@ -140,7 +139,6 @@ func (s *Service) startMessageListener() {
 }
 
 func (s *Service) messageConsumer(item interface{}) {
-	zap.L().Info("messageQueue consumer", zap.String("gateway", s.GatewayConfig.ID), zap.Int("queue size", s.messageQueue.Size()))
 	msg, ok := item.(*msgml.Message)
 	if !ok {
 		zap.L().Error("invalid message type", zap.Any("received", item))

@@ -14,10 +14,9 @@ func isTriggeredJavascript(taskID string, config taskML.EvaluationConfig, variab
 		return nil, false
 	}
 	if resultMap, ok := result.(map[string]interface{}); ok {
-		isTriggered, found := resultMap[taskML.KeyScriptIsTriggered]
-		isTriggeredBool := utils.ToBool(isTriggered)
-		if found || isTriggeredBool {
-			return resultMap, true
+		isTriggered, isTriggeredFound := resultMap[taskML.KeyScriptIsTriggered]
+		if isTriggeredFound {
+			return resultMap, utils.ToBool(isTriggered)
 		}
 		return resultMap, false
 	}

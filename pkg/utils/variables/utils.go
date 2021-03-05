@@ -21,6 +21,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	quickIdUL "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
+	templateUtils "github.com/mycontroller-org/backend/v2/pkg/utils/template"
 	tplUtils "github.com/mycontroller-org/backend/v2/pkg/utils/template"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
@@ -47,9 +48,16 @@ func getEntity(name, stringValue string) interface{} {
 	genericData := handlerML.GenericData{}
 	err := json.Unmarshal([]byte(stringValue), &genericData)
 	if err != nil {
-		return stringValue
+		// if error happens, this could be a normal string or templated string
+		// try it as template
+		formattedString, err := templateUtils.Execute(stringValue, nil)
+		if err != nil {
+			return fmt.Sprintf("error on executing template. name:%s, template:%s, error:%s", name, stringValue, err.Error())
+		}
+		return formattedString
 	}
 
+	// process only for resource type data
 	if !strings.HasPrefix(genericData.Type, handlerML.DataTypeResource) {
 		return stringValue
 	}
