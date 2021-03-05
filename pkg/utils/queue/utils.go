@@ -15,9 +15,11 @@ type Queue struct {
 
 // New returns brandnew queue
 func New(name string, limit int, consumer func(event interface{}), workers int) *Queue {
-	queue := queue.NewBoundedQueue(limit, func(item interface{}) {
+	droppedItemHandler := func(item interface{}) {
 		zap.L().Error("Queue full. Droping item", zap.String("QueueName", name), zap.Any("item", item))
-	})
+	}
+
+	queue := queue.NewBoundedQueue(limit, droppedItemHandler)
 	queue.StartConsumers(workers, consumer)
 
 	return &Queue{
