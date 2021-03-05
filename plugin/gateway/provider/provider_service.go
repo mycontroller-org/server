@@ -128,6 +128,7 @@ func (s *Service) startMessageListener() {
 			zap.L().Warn("received a nil message")
 			return
 		}
+		zap.L().Info("Current size of the messageQueue", zap.String("gateway", s.GatewayConfig.ID), zap.Int("queue size", s.messageQueue.Size()))
 		s.messageQueue.Produce(msg)
 	})
 

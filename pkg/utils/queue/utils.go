@@ -9,13 +9,13 @@ import (
 type Queue struct {
 	Name    string
 	Queue   *queue.BoundedQueue
-	Size    int
+	Limit   int
 	Workers int
 }
 
 // New returns brandnew queue
-func New(name string, size int, consumer func(event interface{}), workers int) *Queue {
-	queue := queue.NewBoundedQueue(size, func(item interface{}) {
+func New(name string, limit int, consumer func(event interface{}), workers int) *Queue {
+	queue := queue.NewBoundedQueue(limit, func(item interface{}) {
 		zap.L().Error("Queue full. Droping item", zap.String("QueueName", name), zap.Any("item", item))
 	})
 	queue.StartConsumers(workers, consumer)
@@ -23,7 +23,7 @@ func New(name string, size int, consumer func(event interface{}), workers int) *
 	return &Queue{
 		Name:    name,
 		Queue:   queue,
-		Size:    size,
+		Limit:   limit,
 		Workers: workers,
 	}
 }
@@ -36,4 +36,9 @@ func (q *Queue) Close() {
 // Produce adds an item to the queue
 func (q *Queue) Produce(item interface{}) bool {
 	return q.Queue.Produce(item)
+}
+
+// Size returns current size of the queue
+func (q *Queue) Size() int {
+	return q.Queue.Size()
 }
