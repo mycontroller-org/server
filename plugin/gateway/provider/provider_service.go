@@ -62,7 +62,7 @@ func GetService(gatewayCfg *gwml.Config) (*Service, error) {
 
 // Start gateway service
 func (s *Service) Start() error {
-	zap.L().Debug("Starting a provider service", zap.String("name", s.GatewayConfig.Name), zap.String("provider", s.GatewayConfig.Provider.GetString(model.NameType)))
+	zap.L().Debug("Starting a provider service", zap.String("gateway", s.GatewayConfig.ID), zap.String("provider", s.GatewayConfig.Provider.GetString(model.NameType)))
 
 	// update topics
 	s.topicListenFromCore = mcbus.GetTopicPostMessageToProvider(s.GatewayConfig.ID)
@@ -129,9 +129,8 @@ func (s *Service) startMessageListener() {
 			return
 		}
 		s.messageQueue.Produce(msg)
+	})
 
-	},
-	)
 	if err != nil {
 		zap.L().Error("Failed to subscribe", zap.String("topic", s.topicListenFromCore), zap.Error(err))
 	} else {
@@ -140,7 +139,12 @@ func (s *Service) startMessageListener() {
 }
 
 func (s *Service) messageConsumer(item interface{}) {
-	msg := item.(*msgml.Message)
+	msg, ok := item.(*msgml.Message)
+	if !ok {
+		zap.L().Error("invalid message type", zap.Any("received", item))
+		return
+	}
+
 	// for sleeping node message put it on sleeping queue and exit
 	if msg.IsPassiveNode {
 		s.addToSleepingMessageQueue(msg)
@@ -186,14 +190,14 @@ func (s *Service) addToSleepingMessageQueue(msg *msgml.Message) {
 // process received raw messages from protocol
 func (s *Service) rawMessageProcessor(data interface{}) {
 	rawMsg := data.(*msgml.RawMessage)
-	zap.L().Debug("RawMessage received", zap.String("gateway", s.GatewayConfig.Name), zap.Any("rawMessage", rawMsg))
+	zap.L().Debug("RawMessage received", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
 	messages, err := s.provider.ToMessage(rawMsg)
 	if err != nil {
 		zap.L().Warn("Failed to parse", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 		return
 	}
 	if len(messages) == 0 {
-		zap.L().Debug("Messages not parsed", zap.String("gateway", s.GatewayConfig.Name), zap.Any("RawMessage", rawMsg))
+		zap.L().Debug("Messages not parsed", zap.String("gateway", s.GatewayConfig.ID), zap.Any("RawMessage", rawMsg))
 		return
 	}
 	// update gatewayID if not found
@@ -205,7 +209,7 @@ func (s *Service) rawMessageProcessor(data interface{}) {
 			}
 			err = mcbus.Publish(s.topicPostToCore, msg)
 			if err != nil {
-				zap.L().Debug("Messages failed to post on topic", zap.String("topic", s.topicPostToCore), zap.String("gateway", s.GatewayConfig.Name), zap.Any("message", msg), zap.Error(err))
+				zap.L().Debug("Messages failed to post on topic", zap.String("topic", s.topicPostToCore), zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
 				return
 			}
 		}

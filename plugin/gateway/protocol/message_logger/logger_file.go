@@ -12,22 +12,23 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	utils "github.com/mycontroller-org/backend/v2/pkg/utils"
+	concurrencyUtils "github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
 )
 
 // FileMessageLogger struct
 type FileMessageLogger struct {
-	GatewayID           string                                // Gateway id
-	MsgFormatterFunc    func(rawMsg *msgml.RawMessage) string // should supply a func to return parsed message
-	stopLogFlushWorker  chan bool                             // this channel used to terminate the flush interval worker
-	stopLogRotateWorker chan bool                             // this channel used to terminate the logrotate worker
-	msgQueue            []*msgml.RawMessage                   // Messages will be added in to this queue and dump into the file N seconds once
-	mutex               sync.Mutex                            // lock to access the queue
-	Config              fileMessageLoggerConfig               // self configurations
-	maxSize             int64                                 // maximum size of the file in bytes
-	maxAge              time.Duration                         // maximum age of the file in duration
-	maxBackup           int                                   // maximum number of backups, 0 or negative - no limit
-	isRunning           bool                                  // start called
+	GatewayID        string                                // Gateway id
+	MsgFormatterFunc func(rawMsg *msgml.RawMessage) string // should supply a func to return parsed message
+	runnerFlushLog   *concurrencyUtils.Runner              // this runner used to call flush log func
+	runnerRotateLog  *concurrencyUtils.Runner              // this runner used to call rotate log func
+	msgQueue         []*msgml.RawMessage                   // Messages will be added in to this queue and dump into the file N seconds once
+	mutex            sync.Mutex                            // lock to access the queue
+	Config           fileMessageLoggerConfig               // self configurations
+	maxSize          int64                                 // maximum size of the file in bytes
+	maxAge           time.Duration                         // maximum age of the file in duration
+	maxBackup        int                                   // maximum number of backups, 0 or negative - no limit
+	isRunning        bool                                  // start called
 }
 
 // fileMessageLoggerConfig definition
@@ -59,13 +60,12 @@ func InitFileMessageLogger(gatewayID string, config cmap.CustomMap, formatterFun
 	}
 
 	fileLogger := &FileMessageLogger{
-		GatewayID:           gatewayID,
-		MsgFormatterFunc:    formatterFunc,
-		stopLogFlushWorker:  make(chan bool),
-		stopLogRotateWorker: make(chan bool),
-		msgQueue:            make([]*msgml.RawMessage, 0),
-		Config:              cfg,
+		GatewayID:        gatewayID,
+		MsgFormatterFunc: formatterFunc,
+		msgQueue:         make([]*msgml.RawMessage, 0),
+		Config:           cfg,
 	}
+
 	return fileLogger, nil
 }
 
@@ -93,8 +93,11 @@ func (rml *FileMessageLogger) Start() {
 		zap.Int("maxBackup", rml.maxBackup), zap.Duration("flushInterval", flushWorkerInterval),
 		zap.Duration("logRotateInterval", logRotateWorkerInterval), zap.String("gateway", rml.GatewayID))
 
-	go utils.AsyncRunner(rml.logFlushWorker, flushWorkerInterval, rml.stopLogFlushWorker)
-	go utils.AsyncRunner(rml.logRotateWorker, logRotateWorkerInterval, rml.stopLogRotateWorker)
+	rml.runnerFlushLog = concurrencyUtils.GetAsyncRunner(rml.workerFlushLog, flushWorkerInterval, false)
+	rml.runnerRotateLog = concurrencyUtils.GetAsyncRunner(rml.workerRotateLog, logRotateWorkerInterval, false)
+
+	go rml.runnerFlushLog.Start()
+	go rml.runnerRotateLog.Start()
 }
 
 // Close terminates the async runner
@@ -102,11 +105,13 @@ func (rml *FileMessageLogger) Close() {
 	rml.mutex.Lock()
 	defer rml.mutex.Unlock()
 
-	stopWorker(rml.stopLogFlushWorker)
-	rml.stopLogFlushWorker = nil
+	if rml.runnerFlushLog != nil {
+		rml.runnerFlushLog.Close()
+	}
 
-	stopWorker(rml.stopLogRotateWorker)
-	rml.stopLogRotateWorker = nil
+	if rml.runnerRotateLog != nil {
+		rml.runnerRotateLog.Close()
+	}
 }
 
 func stopWorker(workerStopChan chan bool) {
@@ -127,8 +132,8 @@ func (rml *FileMessageLogger) AsyncWrite(rawMsg *msgml.RawMessage) {
 	rml.msgQueue = append(rml.msgQueue, cloned)
 }
 
-// logFlushWorker dumps the queue data into disk on a file
-func (rml *FileMessageLogger) logFlushWorker() {
+// workerFlushLog dumps the queue data into disk on a file
+func (rml *FileMessageLogger) workerFlushLog() {
 	rml.mutex.Lock()
 	defer rml.mutex.Unlock()
 	if len(rml.msgQueue) > 0 {
@@ -143,7 +148,7 @@ func (rml *FileMessageLogger) logFlushWorker() {
 	rml.msgQueue = nil
 }
 
-func (rml *FileMessageLogger) logRotateWorker() {
+func (rml *FileMessageLogger) workerRotateLog() {
 	rml.mutex.Lock()
 	defer rml.mutex.Unlock()
 

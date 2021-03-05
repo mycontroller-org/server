@@ -1,6 +1,8 @@
 package concurrency
 
-import "sync"
+import (
+	"sync"
+)
 
 // Channel struct
 type Channel struct {

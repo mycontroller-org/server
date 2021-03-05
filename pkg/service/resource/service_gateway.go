@@ -6,8 +6,11 @@ import (
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	concurrencyUtils "github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
 )
+
+var gwReconnectStore = concurrencyUtils.NewStore()
 
 func gatewayService(reqEvent *rsModel.Event) error {
 	resEvent := &rsModel.Event{
@@ -69,5 +72,57 @@ func updateGatewayState(reqEvent *rsModel.Event) error {
 	if err != nil {
 		return err
 	}
-	return gatewayAPI.SetState(reqEvent.ID, state)
+
+	err = gatewayAPI.SetState(reqEvent.ID, state)
+	if err != nil {
+		return err
+	}
+
+	if state.Status == model.StateUp {
+		if gwReconnectStore.IsAvailable(reqEvent.ID) {
+			jobInterface := gwReconnectStore.Get(reqEvent.ID)
+			if jobInterface != nil {
+				job, ok := jobInterface.(*concurrencyUtils.Runner)
+				if ok {
+					job.Close()
+				}
+			}
+			gwReconnectStore.Remove(reqEvent.ID)
+		}
+		return nil
+	}
+
+	// if the gateway reports status not as UP and is in enabled state
+	// should restart the gateway after the defined reconnect delay
+	gw, err := gatewayAPI.GetByID(reqEvent.ID)
+	if err != nil {
+		return err
+	}
+	delay := gw.GetReconnectDelay()
+	if gw.Enabled && delay != nil && !gwReconnectStore.IsAvailable(gw.ID) {
+		job := concurrencyUtils.GetAsyncRunner(getTriggerGatewayStartFunc(reqEvent.ID), *delay, true)
+		gwReconnectStore.Add(gw.ID, job)
+		go job.Start()
+	}
+
+	return nil
+}
+
+func getTriggerGatewayStartFunc(gatewayID string) func() {
+	return func() {
+		gwReconnectStore.Remove(gatewayID)
+		gw, err := gatewayAPI.GetByID(gatewayID)
+		if err != nil {
+			zap.L().Debug("error on getting gateway instance. may be deleted?", zap.String("gateway", gatewayID), zap.String("error", err.Error()))
+			return
+		}
+		if !gw.Enabled || gw.State.Status == model.StateUp {
+			return
+		}
+
+		err = gatewayAPI.Reload([]string{gatewayID})
+		if err != nil {
+			zap.L().Error("error on reloading a gateway", zap.String("gateway", gatewayID), zap.Error(err))
+		}
+	}
 }

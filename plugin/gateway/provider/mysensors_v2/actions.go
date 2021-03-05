@@ -130,7 +130,7 @@ func getNodeID(gwCfg *gwml.Config) string {
 	f := []stgml.Filter{{Key: "gatewayID", Operator: "eq", Value: gwCfg.ID}}
 	response, err := nodeAPI.List(f, nil)
 	if err != nil {
-		zap.L().Error("Failed to find list of nodes", zap.String("gateway", gwCfg.Name), zap.Error(err))
+		zap.L().Error("Failed to find list of nodes", zap.String("gateway", gwCfg.ID), zap.Error(err))
 		return ""
 	}
 
@@ -163,7 +163,7 @@ func getNodeID(gwCfg *gwml.Config) string {
 	}
 
 	if electedID == 255 {
-		zap.L().Error("No space left on this network. Reached maximum node counts.", zap.String("gateway", gwCfg.Name))
+		zap.L().Error("No space left on this network. Reached maximum node counts.", zap.String("gateway", gwCfg.ID))
 		return ""
 	}
 	return strconv.Itoa(electedID)

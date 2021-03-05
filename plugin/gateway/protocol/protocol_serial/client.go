@@ -10,6 +10,7 @@ import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
 	msglogger "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/message_logger"
 	ser "github.com/tarm/serial"
 	"go.uber.org/zap"
@@ -29,7 +30,6 @@ type Config struct {
 	BaudRate         int
 	MessageSplitter  byte
 	TransmitPreDelay string
-	ReconnectDelay   string
 }
 
 // Endpoint data
@@ -39,7 +39,7 @@ type Endpoint struct {
 	serCfg         *ser.Config
 	receiveMsgFunc func(rm *msgml.RawMessage) error
 	Port           *ser.Port
-	closeCh        chan bool
+	safeClose      *concurrency.Channel
 	messageLogger  msglogger.MessageLogger
 	txPreDelay     time.Duration
 	reconnectDelay time.Duration
@@ -47,7 +47,6 @@ type Endpoint struct {
 
 // New serial client
 func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
-	zap.L().Info("Init protocol", zap.String("gateway", gwCfg.ID))
 	var cfg Config
 	err := utils.MapToStruct(utils.TagNameNone, protocol, &cfg)
 	if err != nil {
@@ -57,8 +56,10 @@ func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.R
 
 	serCfg := &ser.Config{Name: cfg.Portname, Baud: cfg.BaudRate}
 
+	zap.L().Info("Opening serial port", zap.String("gateway", gwCfg.ID), zap.String("port", cfg.Portname))
 	port, err := ser.OpenPort(serCfg)
 	if err != nil {
+		// zap.L().Error("error on opening port", zap.String("gateway", gwCfg.ID), zap.String("port", serCfg.Name), zap.String("error", err.Error()))
 		return nil, err
 	}
 
@@ -68,9 +69,9 @@ func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.R
 		serCfg:         serCfg,
 		receiveMsgFunc: rxMsgFunc,
 		Port:           port,
-		closeCh:        make(chan bool),
+		safeClose:      concurrency.NewChannel(0),
 		txPreDelay:     utils.ToDuration(cfg.TransmitPreDelay, transmitPreDelayDefault),
-		reconnectDelay: utils.ToDuration(cfg.ReconnectDelay, reconnectDelayDefault),
+		reconnectDelay: utils.ToDuration(gwCfg.ReconnectDelay, reconnectDelayDefault),
 	}
 
 	// init and start message logger
@@ -100,16 +101,19 @@ func (ep *Endpoint) Write(rawMsg *msgml.RawMessage) error {
 
 // Close the driver
 func (ep *Endpoint) Close() error {
-	go func() { ep.closeCh <- true }() // terminate the data listener
+	go func() { ep.safeClose.SafeSend(true) }() // terminate the data listener
 
-	if err := ep.Port.Flush(); err != nil {
-		zap.L().Error("Error on flushing a serial port", zap.String("gateway", ep.GwCfg.Name), zap.String("port", ep.serCfg.Name), zap.Error(err))
+	if ep.Port != nil {
+		if err := ep.Port.Flush(); err != nil {
+			zap.L().Error("Error on flushing a serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
+		}
+		err := ep.Port.Close()
+		if err != nil {
+			zap.L().Error("Error on closing a serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
+		}
+		return err
 	}
-	err := ep.Port.Close()
-	if err != nil {
-		zap.L().Error("Error on closing a serial port", zap.String("gateway", ep.GwCfg.Name), zap.String("port", ep.serCfg.Name), zap.Error(err))
-	}
-	return err
+	return nil
 }
 
 // DataListener func
@@ -118,8 +122,8 @@ func (ep *Endpoint) dataListener() {
 	data := make([]byte, 0)
 	for {
 		select {
-		case <-ep.closeCh:
-			zap.L().Debug("Received close signal.", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name))
+		case <-ep.safeClose.CH:
+			zap.L().Info("Received close signal.", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name))
 			return
 		default:
 			rxLength, err := ep.Port.Read(readBuf)
@@ -131,7 +135,11 @@ func (ep *Endpoint) dataListener() {
 					Since:   time.Now(),
 				}
 				busUtils.SetGatewayState(ep.GwCfg.ID, state)
-				go ep.reconnect()
+
+				// channel close panic issue with internal reconnect
+				// let it reconnected from gateway service
+				// go ep.reconnect()
+
 				return
 			}
 			//zap.L().Debug("data", zap.Any("data", string(data)))
@@ -165,7 +173,7 @@ func (ep *Endpoint) reconnect() {
 	defer ticker.Stop()
 	for {
 		select {
-		case <-ep.closeCh:
+		case <-ep.safeClose.CH:
 			zap.L().Debug("Received close signal", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name))
 			return
 

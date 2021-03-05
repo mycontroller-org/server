@@ -34,7 +34,6 @@ type Config struct {
 	Publish            string
 	QoS                int
 	TransmitPreDelay   string
-	ReconnectDelay     string
 	InsecureSkipVerify bool
 }
 
@@ -76,7 +75,7 @@ func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.R
 	opts.SetClientID(utils.RandID())
 	opts.SetCleanSession(false)
 	opts.SetAutoReconnect(true)
-	opts.SetConnectRetryInterval(utils.ToDuration(cfg.ReconnectDelay, reconnectDelayDefault))
+	opts.SetConnectRetryInterval(utils.ToDuration(gwCfg.ReconnectDelay, reconnectDelayDefault))
 	opts.SetOnConnectHandler(endpoint.onConnectionHandler)
 	opts.SetConnectionLostHandler(endpoint.onConnectionLostHandler)
 
@@ -123,7 +122,7 @@ func messageFormatter(rawMsg *msgml.RawMessage) string {
 }
 
 func (ep *Endpoint) onConnectionHandler(c paho.Client) {
-	zap.L().Debug("MQTT connection success", zap.Any("gateway", ep.GatewayCfg.Name))
+	zap.L().Debug("MQTT connection success", zap.Any("gateway", ep.GatewayCfg.ID))
 	state := model.State{
 		Status:  model.StateUp,
 		Message: "Connected successfully",
@@ -133,7 +132,7 @@ func (ep *Endpoint) onConnectionHandler(c paho.Client) {
 }
 
 func (ep *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
-	zap.L().Error("MQTT connection lost", zap.Any("gateway", ep.GatewayCfg.Name), zap.Error(err))
+	zap.L().Error("MQTT connection lost", zap.Any("gateway", ep.GatewayCfg.ID), zap.Error(err))
 	state := model.State{
 		Status:  model.StateDown,
 		Message: err.Error(),
@@ -171,7 +170,7 @@ func (ep *Endpoint) Close() error {
 	if ep.Client.IsConnected() {
 		ep.Client.Unsubscribe(ep.Config.Subscribe)
 		ep.Client.Disconnect(0)
-		zap.L().Debug("MQTT Client connection closed", zap.String("gateway", ep.GatewayCfg.Name))
+		zap.L().Debug("MQTT Client connection closed", zap.String("gateway", ep.GatewayCfg.ID))
 	}
 	ep.messageLogger.Close()
 	return nil
@@ -186,7 +185,7 @@ func (ep *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 		ep.messageLogger.AsyncWrite(rawMsg)
 		err := ep.receiveMsgFunc(rawMsg)
 		if err != nil {
-			zap.L().Error("Failed to process", zap.String("gateway", ep.GatewayCfg.Name), zap.Any("rawMessage", rawMsg), zap.Error(err))
+			zap.L().Error("Failed to process", zap.String("gateway", ep.GatewayCfg.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 		}
 	}
 }

@@ -10,12 +10,31 @@ import (
 // Config struct
 type Config struct {
 	ID             string               `json:"id"`
-	Name           string               `json:"name"`
+	Description    string               `json:"description"`
 	Enabled        bool                 `json:"enabled"`
+	ReconnectDelay string               `json:"reconnectDelay"`
 	Provider       cmap.CustomMap       `json:"provider"`
 	MessageLogger  cmap.CustomMap       `json:"messageLogger"`
 	Labels         cmap.CustomStringMap `json:"labels"`
 	Others         cmap.CustomMap       `json:"others"`
 	State          *model.State         `json:"state"`
 	LastModifiedOn time.Time            `json:"lastModifiedOn"`
+}
+
+// GetReconnectDelay for this config
+func (c *Config) GetReconnectDelay() *time.Duration {
+	if c.ReconnectDelay == "" {
+		return nil
+	}
+
+	duration, err := time.ParseDuration(c.ReconnectDelay)
+	if err != nil {
+		return nil
+	}
+
+	if duration < 1*time.Second {
+		duration = time.Duration(1 * time.Second)
+	}
+
+	return &duration
 }
