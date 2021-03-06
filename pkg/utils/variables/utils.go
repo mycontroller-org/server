@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strings"
 
+	dataRepositoryAPI "github.com/mycontroller-org/backend/v2/pkg/api/data_repository"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
@@ -41,7 +42,13 @@ func LoadVariables(variablesPreMap map[string]string) (map[string]interface{}, e
 		}
 		variables[name] = value
 	}
-	return variables, nil
+
+	// clone variables to avoid updates in database
+	// in-memory db has some issues, returned data pointing to db data
+	// alter in script or some other places, results direct update
+	variablesCloned := utils.DeepClone(variables)
+
+	return variablesCloned, nil
 }
 
 func getEntity(name, stringValue string) interface{} {
@@ -102,6 +109,9 @@ func getByLabels(name string, rsData *handlerML.ResourceData) interface{} {
 
 	case utils.ContainsString(quickIdUL.QuickIDHandler, rsData.ResourceType):
 		apiImpl.List = handlerAPI.List
+
+	case utils.ContainsString(quickIdUL.QuickIDDataRepository, rsData.ResourceType):
+		apiImpl.List = dataRepositoryAPI.List
 	}
 
 	if apiImpl.List != nil {
@@ -181,6 +191,38 @@ func getByQuickID(name string, rsData *handlerML.ResourceData) interface{} {
 		entity = item
 		if err != nil {
 			zap.L().Warn("field not available", zap.Any("keys", keys), zap.Error(err))
+			return nil
+		}
+
+	case utils.ContainsString(quickIdUL.QuickIDTask, resourceType):
+		item, err := taskAPI.GetByID(keys[model.KeyID])
+		entity = item
+		if err != nil {
+			zap.L().Warn("task not available", zap.Any("keys", keys))
+			return nil
+		}
+
+	case utils.ContainsString(quickIdUL.QuickIDSchedule, resourceType):
+		item, err := schedulerAPI.GetByID(keys[model.KeyID])
+		entity = item
+		if err != nil {
+			zap.L().Warn("schedule not available", zap.Any("keys", keys))
+			return nil
+		}
+
+	case utils.ContainsString(quickIdUL.QuickIDHandler, resourceType):
+		item, err := handlerAPI.GetByID(keys[model.KeyID])
+		entity = item
+		if err != nil {
+			zap.L().Warn("handler not available", zap.Any("keys", keys))
+			return nil
+		}
+
+	case utils.ContainsString(quickIdUL.QuickIDDataRepository, resourceType):
+		item, err := dataRepositoryAPI.GetByID(keys[model.KeyID])
+		entity = item
+		if err != nil {
+			zap.L().Warn("data not available in data repository", zap.Any("keys", keys))
 			return nil
 		}
 

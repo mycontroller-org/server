@@ -2,8 +2,13 @@ package javascript
 
 import (
 	"github.com/dop251/goja"
+	"github.com/dop251/goja_nodejs/console"
+	"github.com/dop251/goja_nodejs/require"
+
 	"go.uber.org/zap"
 )
+
+var registry = new(require.Registry) // this can be shared by multiple runtimes
 
 // Execute a given javascript
 func Execute(scriptString string, variables map[string]interface{}) (interface{}, error) {
@@ -11,6 +16,10 @@ func Execute(scriptString string, variables map[string]interface{}) (interface{}
 	// enable this line if we want to use supplied object as json
 	// GoLang func call will not be available, if json enabled
 	// rt.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
+
+	// add console support on javascript
+	registry.Enable(rt)
+	console.Enable(rt)
 
 	for name, value := range variables {
 		rt.Set(name, value)

@@ -14,6 +14,7 @@ const (
 	EntityTask           = "task"            // keeps configurations for tasks
 	EntityScheduler      = "scheduler"       // keeps configurations for scheduler
 	EntitySettings       = "settings"        // settings of the system
+	EntityDataRepository = "data_repository" // holds user data, can be used across
 )
 
 // Entity field keys

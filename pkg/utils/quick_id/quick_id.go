@@ -10,13 +10,14 @@ import (
 
 // resource quick id prefix
 var (
-	QuickIDGateway     = []string{"gw", "gateway"}
-	QuickIDNode        = []string{"nd", "node"}
-	QuickIDSensor      = []string{"sn", "sensor"}
-	QuickIDSensorField = []string{"sf", "sensor_field", "field"}
-	QuickIDTask        = []string{"tk", "task"}
-	QuickIDSchedule    = []string{"sk", "schedule"}
-	QuickIDHandler     = []string{"hd", "handler"}
+	QuickIDGateway        = []string{"gw", "gateway"}
+	QuickIDNode           = []string{"nd", "node"}
+	QuickIDSensor         = []string{"sn", "sensor"}
+	QuickIDSensorField    = []string{"sf", "sensor_field", "field"}
+	QuickIDTask           = []string{"tk", "task"}
+	QuickIDSchedule       = []string{"sk", "schedule"}
+	QuickIDHandler        = []string{"hd", "handler"}
+	QuickIDDataRepository = []string{"dr", "data_repository"}
 )
 
 // IsValidQuickID says is it in quikID format
@@ -37,6 +38,7 @@ func IsValidQuickID(quickID string) bool {
 	validIDs = append(validIDs, QuickIDTask...)
 	validIDs = append(validIDs, QuickIDSchedule...)
 	validIDs = append(validIDs, QuickIDHandler...)
+	validIDs = append(validIDs, QuickIDDataRepository...)
 
 	return utils.ContainsString(validIDs, resourceType)
 }
@@ -115,7 +117,8 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 
 	case utils.ContainsString(QuickIDTask, resourceType),
 		utils.ContainsString(QuickIDSchedule, resourceType),
-		utils.ContainsString(QuickIDHandler, resourceType):
+		utils.ContainsString(QuickIDHandler, resourceType),
+		utils.ContainsString(QuickIDDataRepository, resourceType):
 		if typeID[1] == "" {
 			return "", nil, fmt.Errorf("Invalid data. quickID:%s", quickID)
 		}

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	dashboardAPI "github.com/mycontroller-org/backend/v2/pkg/api/dashboard"
+	dataRepositoryAPI "github.com/mycontroller-org/backend/v2/pkg/api/data_repository"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	fwAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	fpAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
@@ -20,6 +21,7 @@ import (
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	dashboardML "github.com/mycontroller-org/backend/v2/pkg/model/dashboard"
+	dataRepositoryML "github.com/mycontroller-org/backend/v2/pkg/model/data_repository"
 	exportML "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
@@ -231,6 +233,19 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 		}
 		for index := 0; index < len(entities); index++ {
 			err = settingsAPI.Save(&entities[index])
+			if err != nil {
+				return err
+			}
+		}
+
+	case model.EntityDataRepository:
+		entities := make([]dataRepositoryML.Config, 0)
+		err := unmarshal(fileFormat, fileBytes, &entities)
+		if err != nil {
+			return err
+		}
+		for index := 0; index < len(entities); index++ {
+			err = dataRepositoryAPI.Save(&entities[index])
 			if err != nil {
 				return err
 			}

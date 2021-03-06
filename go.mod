@@ -7,6 +7,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/dop251/goja v0.0.0-20210227132020-101e13ab2c34
+	github.com/dop251/goja_nodejs v0.0.0-20210225215109-d91c329300e7
 	github.com/eclipse/paho.mqtt.golang v1.3.2
 	github.com/fatih/structs v1.1.0
 	github.com/go-cmd/cmd v1.3.0

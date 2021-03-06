@@ -13,6 +13,8 @@ func isTriggeredJavascript(taskID string, config taskML.EvaluationConfig, variab
 		zap.L().Error("error on executing script", zap.Error(err), zap.String("taskID", taskID), zap.String("script", config.Javascript))
 		return nil, false
 	}
+	// data, _ := json.Marshal(result)
+	// zap.L().Info("variables", zap.Any("vars", string(data)))
 	if resultMap, ok := result.(map[string]interface{}); ok {
 		isTriggered, isTriggeredFound := resultMap[taskML.KeyScriptIsTriggered]
 		if isTriggeredFound {

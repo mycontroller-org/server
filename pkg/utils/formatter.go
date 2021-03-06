@@ -13,9 +13,12 @@ import (
 	"github.com/mitchellh/mapstructure"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	dataRepositoryML "github.com/mycontroller-org/backend/v2/pkg/model/data_repository"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
 	sensorML "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -39,6 +42,9 @@ func registerTypes() {
 	gob.Register(nodeML.Node{})
 	gob.Register(sensorML.Sensor{})
 	gob.Register(primitive.A{})
+	gob.Register(handlerML.Config{})
+	gob.Register(schedulerML.Config{})
+	gob.Register(dataRepositoryML.Config{})
 }
 
 // ToString converts interface to string

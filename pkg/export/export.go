@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	dashboardAPI "github.com/mycontroller-org/backend/v2/pkg/api/dashboard"
+	dataRepositoryAPI "github.com/mycontroller-org/backend/v2/pkg/api/data_repository"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	firmwareAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	forwardPayloadAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
@@ -45,6 +46,7 @@ var (
 		ml.EntityTask:           taskAPI.List,
 		ml.EntityScheduler:      schedulerAPI.List,
 		ml.EntitySettings:       settingsAPI.List,
+		ml.EntityDataRepository: dataRepositoryAPI.List,
 	}
 )
 
