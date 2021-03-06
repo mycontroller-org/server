@@ -43,12 +43,7 @@ func LoadVariables(variablesPreMap map[string]string) (map[string]interface{}, e
 		variables[name] = value
 	}
 
-	// clone variables to avoid updates in database
-	// in-memory db has some issues, returned data pointing to db data
-	// alter in script or some other places, results direct update
-	variablesCloned := utils.DeepClone(variables)
-
-	return variablesCloned, nil
+	return variables, nil
 }
 
 func getEntity(name, stringValue string) interface{} {

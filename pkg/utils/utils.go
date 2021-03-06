@@ -6,9 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mycontroller-org/backend/v2/pkg/json"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
-	"go.uber.org/zap"
 )
 
 // contants
@@ -98,8 +96,8 @@ func ContainsString(slice []string, value string) bool {
 	return available
 }
 
-// DeepCloneAlt a interface
-func DeepCloneAlt(data interface{}) interface{} {
+// DeepClone a interface
+func DeepClone(data interface{}) interface{} {
 	newData := reflect.New(reflect.TypeOf(data).Elem())
 
 	value := reflect.ValueOf(data).Elem()
@@ -110,24 +108,4 @@ func DeepCloneAlt(data interface{}) interface{} {
 	}
 
 	return newData.Interface()
-}
-
-// DeepClone with json clone
-func DeepClone(data map[string]interface{}) map[string]interface{} {
-	type cloneTmp struct {
-		Value map[string]interface{}
-	}
-
-	oldData := cloneTmp{Value: data}
-	newData := cloneTmp{Value: make(map[string]interface{})}
-
-	jsonBytes, err := json.Marshal(oldData)
-	if err != nil {
-		zap.L().Error("err", zap.Error(err))
-	}
-	err = json.Unmarshal(jsonBytes, &newData)
-	if err != nil {
-		zap.L().Error("err", zap.Error(err))
-	}
-	return newData.Value
 }
