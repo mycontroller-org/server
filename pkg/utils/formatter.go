@@ -70,8 +70,12 @@ func ToBool(data interface{}) bool {
 	value, ok := data.(bool)
 	if !ok {
 		switch strings.ToLower(fmt.Sprintf("%v", data)) {
-		case "true", "1", "on", "enabled", "success":
+		case "true", "1", "on", "enable":
 			return true
+
+		case "false", "0", "off", "disable":
+			return false
+
 		default:
 			return false
 		}
