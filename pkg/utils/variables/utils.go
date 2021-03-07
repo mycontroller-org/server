@@ -20,6 +20,7 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	cloneUtil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	quickIdUL "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
 	templateUtils "github.com/mycontroller-org/backend/v2/pkg/utils/template"
@@ -43,6 +44,15 @@ func LoadVariables(variablesPreMap map[string]string) (map[string]interface{}, e
 		variables[name] = value
 	}
 
+	// clone variables
+	clonedVariables := cloneUtil.Clone(variables)
+
+	backToVariables, ok := clonedVariables.(map[string]interface{})
+	if ok {
+		return backToVariables, nil
+	}
+
+	zap.L().Error("error on clone, returning variables as is")
 	return variables, nil
 }
 
