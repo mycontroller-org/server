@@ -86,7 +86,7 @@ func processEvent(item interface{}) {
 		mapping := mappings[index]
 		// send payload
 		if mapping.SourceID != mapping.TargetID {
-			err = action.ToSensorFieldByID(mapping.TargetID, fmt.Sprintf("%v", field.Payload.Value))
+			err = action.ToSensorFieldByID(mapping.TargetID, fmt.Sprintf("%v", field.Current.Value))
 			if err != nil {
 				zap.L().Error("error on sending payload", zap.Any("mapping", mapping), zap.Error(err))
 			} else {

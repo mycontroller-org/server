@@ -277,13 +277,13 @@ func setFieldData(msg *msgml.Message) error {
 		field.Others = field.Others.Init()
 
 		// if custom payload formatter supplied
-		if formatter := field.PayloadFormatter.OnReceive; msg.IsReceived && formatter != "" {
+		if formatter := field.Formatter.OnReceive; msg.IsReceived && formatter != "" {
 			startTime := time.Now()
 
 			scriptInput := map[string]interface{}{
 				"value":         currentPayload.Value,
-				"lastValue":     field.Payload.Value,
-				"previousValue": field.PreviousPayload.Value,
+				"lastValue":     field.Current.Value,
+				"previousValue": field.Previous.Value,
 			}
 
 			responseValue, err := javascript.Execute(formatter, scriptInput)
@@ -341,15 +341,15 @@ func setFieldData(msg *msgml.Message) error {
 		field.Others.CopyFrom(payload.Others, field.Labels) // copy other fields
 
 		// update no change since
-		oldValue := fmt.Sprintf("%v", field.Payload.Value)
+		oldValue := fmt.Sprintf("%v", field.Current.Value)
 		newValue := fmt.Sprintf("%v", currentPayload.Value)
 		if oldValue != newValue {
 			field.NoChangeSince = currentPayload.Timestamp
 		}
 
 		// update shift old payload and update current payload
-		field.PreviousPayload = field.Payload
-		field.Payload = currentPayload
+		field.Previous = field.Current
+		field.Current = currentPayload
 
 		startTime := time.Now()
 		err = fieldAPI.Save(field)
@@ -366,7 +366,7 @@ func setFieldData(msg *msgml.Message) error {
 		updateMetric := true
 		// for binary do not update duplicate values
 		if field.MetricType == mtsml.MetricTypeBinary {
-			updateMetric = field.Payload.Timestamp.Equal(field.NoChangeSince)
+			updateMetric = field.Current.Timestamp.Equal(field.NoChangeSince)
 		}
 		if updateMetric {
 			err = mts.SVC.Write(field)
@@ -392,8 +392,8 @@ func requestFieldData(msg *msgml.Message) error {
 			continue
 		}
 
-		if field.Payload.Value != nil {
-			payload.Value = fmt.Sprintf("%v", field.Payload.Value) // update payload
+		if field.Current.Value != nil {
+			payload.Value = fmt.Sprintf("%v", field.Current.Value) // update payload
 			if payload.Value != "" {                               // if the value is not empty update it
 				payload.Labels = field.Labels.Clone()
 				clonedData := payload.Clone() // clone the message

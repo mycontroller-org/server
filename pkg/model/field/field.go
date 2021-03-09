@@ -8,22 +8,22 @@ import (
 
 // Field model
 type Field struct {
-	ID               string               `json:"id"`
-	GatewayID        string               `json:"gatewayId"`
-	NodeID           string               `json:"nodeId"`
-	SensorID         string               `json:"sensorId"`
-	FieldID          string               `json:"fieldId"`
-	Name             string               `json:"name"`
-	MetricType       string               `json:"metricType"`
-	Payload          Payload              `json:"payload"`
-	PreviousPayload  Payload              `json:"previousPayload"`
-	Unit             string               `json:"unit"`
-	Labels           cmap.CustomStringMap `json:"labels"`
-	Others           cmap.CustomMap       `json:"others"`
-	NoChangeSince    time.Time            `json:"noChangeSince"`
-	PayloadFormatter PayloadFormatter     `json:"payloadFormatter"`
-	LastSeen         time.Time            `json:"lastSeen"`
-	LastModifiedOn   time.Time            `json:"lastModifiedOn"`
+	ID            string               `json:"id"`
+	GatewayID     string               `json:"gatewayId"`
+	NodeID        string               `json:"nodeId"`
+	SensorID      string               `json:"sensorId"`
+	FieldID       string               `json:"fieldId"`
+	Name          string               `json:"name"`
+	MetricType    string               `json:"metricType"`
+	Current       Payload              `json:"current"`
+	Previous      Payload              `json:"previous"`
+	Formatter     PayloadFormatter     `json:"formatter"`
+	Unit          string               `json:"unit"`
+	Labels        cmap.CustomStringMap `json:"labels"`
+	Others        cmap.CustomMap       `json:"others"`
+	NoChangeSince time.Time            `json:"noChangeSince"`
+	LastSeen      time.Time            `json:"lastSeen"`
+	ModifiedOn    time.Time            `json:"modifiedOn"`
 }
 
 // Payload model

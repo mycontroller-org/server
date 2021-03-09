@@ -26,7 +26,7 @@ func toSensorField(gatewayID, nodeID, sensorID, fieldID, payload string) error {
 			return err
 		}
 
-		if utils.ToBool(field.Payload.Value) {
+		if utils.ToBool(field.Current.Value) {
 			payload = "false"
 		} else {
 			payload = "true"

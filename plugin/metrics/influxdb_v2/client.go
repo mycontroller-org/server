@@ -169,13 +169,13 @@ func (c *Client) Write(field *fml.Field) error {
 func getPoint(field *fml.Field) (*write.Point, error) {
 	fields := make(map[string]interface{})
 	if field.MetricType == mtrml.MetricTypeGEO {
-		_f, err := geoData(field.Payload.Value)
+		_f, err := geoData(field.Current.Value)
 		if err != nil {
 			return nil, err
 		}
 		fields = _f
 	} else {
-		fields[FieldValue] = field.Payload.Value
+		fields[FieldValue] = field.Current.Value
 	}
 	mt, err := measurementName(field.MetricType)
 	if err != nil {
