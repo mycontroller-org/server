@@ -51,7 +51,7 @@ func UpdateSettings(settings *settingsML.Settings) error {
 		return UpdateSystemSettings(settings)
 
 	case settingsML.KeySystemJobs, settingsML.KeyVersion:
-		settings.Modified = time.Now()
+		settings.ModifiedOn = time.Now()
 		return update(settings)
 
 	default:
@@ -77,7 +77,7 @@ func GetSystemJobs() (*settingsML.SystemJobsSettings, error) {
 // UpdateSystemSettings config into disk
 func UpdateSystemSettings(settings *settingsML.Settings) error {
 	settings.ID = settingsML.KeySystemSettings
-	settings.Modified = time.Now()
+	settings.ModifiedOn = time.Now()
 	// TODO: verify required fields
 	return update(settings)
 }
@@ -125,6 +125,6 @@ func update(settings *settingsML.Settings) error {
 	filters := []stgML.Filter{
 		{Key: ml.KeyID, Value: settings.ID},
 	}
-	settings.Modified = time.Now()
+	settings.ModifiedOn = time.Now()
 	return stg.SVC.Upsert(ml.EntitySettings, settings, filters)
 }

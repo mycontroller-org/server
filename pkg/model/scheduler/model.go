@@ -36,6 +36,7 @@ type Config struct {
 	Spec              cmap.CustomMap       `json:"spec"`
 	HandlerParameters map[string]string    `json:"handlerParameters"`
 	Handlers          []string             `json:"handlers"`
+	ModifiedOn        time.Time            `json:"modifiedOn"`
 	State             *State               `json:"state"`
 }
 

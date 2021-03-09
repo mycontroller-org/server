@@ -49,7 +49,7 @@ func Save(firmware *fml.Firmware, keepFile bool) error {
 	filters := []stgml.Filter{
 		{Key: ml.KeyID, Value: firmware.ID},
 	}
-	firmware.LastModifiedOn = time.Now()
+	firmware.ModifiedOn = time.Now()
 
 	if keepFile {
 		firmwareOld, err := GetByID(firmware.ID)
@@ -139,7 +139,7 @@ func Upload(sourceFile multipart.File, id, filename string) error {
 	firmware.File.InternalName = newFilename
 	firmware.File.Size = int(fileInfo.Size())
 	firmware.File.Checksum = fmt.Sprintf("sha256:%x", checkSum)
-	firmware.File.ModifiedTime = fileInfo.ModTime()
+	firmware.File.ModifiedOn = fileInfo.ModTime()
 
 	err = Save(&firmware, false)
 	if err != nil {

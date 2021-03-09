@@ -1,6 +1,10 @@
 package dashboard
 
-import "github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+import (
+	"time"
+
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+)
 
 // dashboard types
 const (
@@ -17,6 +21,7 @@ type Config struct {
 	Disabled    bool                 `json:"disabled"`
 	Labels      cmap.CustomStringMap `json:"labels"`
 	Widgets     []Widget             `json:"widgets"`
+	ModifiedOn  time.Time            `json:"modifiedOn"`
 }
 
 // Widget details

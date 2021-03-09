@@ -1,6 +1,8 @@
 package notifyhandler
 
 import (
+	"time"
+
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
@@ -36,6 +38,7 @@ type Config struct {
 	Labels      cmap.CustomStringMap `json:"labels"`
 	Type        string               `json:"type"`
 	Spec        cmap.CustomMap       `json:"spec"`
+	ModifiedOn  time.Time            `json:"modifiedOn"`
 	State       *model.State         `json:"state"`
 }
 

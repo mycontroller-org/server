@@ -11,9 +11,9 @@ const (
 
 // Settings struct
 type Settings struct {
-	ID       string                 `json:"id"`
-	Spec     map[string]interface{} `json:"spec"`
-	Modified time.Time              `json:"modified"`
+	ID         string                 `json:"id"`
+	Spec       map[string]interface{} `json:"spec"`
+	ModifiedOn time.Time              `json:"modifiedOn"`
 }
 
 // SystemSettings struct

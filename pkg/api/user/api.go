@@ -61,7 +61,7 @@ func Save(user *uml.User) error {
 	filters := []stgml.Filter{
 		{Key: ml.KeyID, Value: user.ID},
 	}
-	user.LastModifiedOn = time.Now()
+	user.ModifiedOn = time.Now()
 	return stg.SVC.Upsert(ml.EntityUser, user, filters)
 }
 

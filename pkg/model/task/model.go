@@ -43,6 +43,7 @@ type Config struct {
 	EvaluationConfig  EvaluationConfig     `json:"evaluationConfig"`
 	HandlerParameters map[string]string    `json:"handlerParameters"`
 	Handlers          []string             `json:"handlers"`
+	ModifiedOn        time.Time            `json:"modifiedOn"`
 	State             *State               `json:"state"`
 }
 

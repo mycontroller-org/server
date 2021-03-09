@@ -1,6 +1,10 @@
 package forwardpayload
 
-import "github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+import (
+	"time"
+
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+)
 
 // Mapping of forward payload
 type Mapping struct {
@@ -11,4 +15,5 @@ type Mapping struct {
 	SourceID    string               `json:"sourceId"`
 	TargetID    string               `json:"targetId"`
 	Labels      cmap.CustomStringMap `json:"labels"`
+	ModifiedOn  time.Time            `json:"modifiedOn"`
 }

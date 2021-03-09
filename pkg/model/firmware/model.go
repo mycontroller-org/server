@@ -13,12 +13,12 @@ const (
 
 // Firmware struct
 type Firmware struct {
-	ID             string               `json:"id"`
-	Name           string               `json:"name"`
-	Version        string               `json:"version"`
-	File           FileConfig           `json:"file"`
-	Labels         cmap.CustomStringMap `json:"labels"`
-	LastModifiedOn time.Time            `json:"lastModifiedOn"`
+	ID         string               `json:"id"`
+	Name       string               `json:"name"`
+	Version    string               `json:"version"`
+	File       FileConfig           `json:"file"`
+	Labels     cmap.CustomStringMap `json:"labels"`
+	ModifiedOn time.Time            `json:"modifiedOn"`
 }
 
 // FileConfig struct
@@ -27,5 +27,5 @@ type FileConfig struct {
 	InternalName string    `json:"internalName"`
 	Checksum     string    `json:"checksum"`
 	Size         int       `json:"size"`
-	ModifiedTime time.Time `json:"modifiedTime"`
+	ModifiedOn   time.Time `json:"modifiedOn"`
 }
