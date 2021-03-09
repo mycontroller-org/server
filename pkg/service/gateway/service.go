@@ -31,11 +31,11 @@ func Start(gatewayCfg *gwml.Config) error {
 	if err != nil {
 		zap.L().Error("Failed to start a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
 		state.Message = err.Error()
-		state.Status = ml.StateDown
+		state.Status = ml.StatusDown
 	} else {
 		zap.L().Info("Started a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 		state.Message = "Started successfully"
-		state.Status = ml.StateUp
+		state.Status = ml.StatusUp
 		gwService.Add(service)
 	}
 
@@ -51,7 +51,7 @@ func Stop(id string) error {
 	if service != nil {
 		err := service.Stop()
 		state := ml.State{
-			Status:  ml.StateDown,
+			Status:  ml.StatusDown,
 			Since:   time.Now(),
 			Message: "Stopped by request",
 		}

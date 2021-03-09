@@ -6,11 +6,11 @@ import (
 
 // State
 const (
-	StateOk          = "ok"
-	StateUp          = "up"
-	StateDown        = "down"
-	StateError       = "error"
-	StateUnavailable = "unavailable"
+	StatusOk          = "ok"
+	StatusUp          = "up"
+	StatusDown        = "down"
+	StatusError       = "error"
+	StatusUnavailable = "unavailable"
 )
 
 // State data

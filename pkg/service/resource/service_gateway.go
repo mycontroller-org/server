@@ -78,7 +78,7 @@ func updateGatewayState(reqEvent *rsModel.Event) error {
 		return err
 	}
 
-	if state.Status == model.StateUp {
+	if state.Status == model.StatusUp {
 		if gwReconnectStore.IsAvailable(reqEvent.ID) {
 			jobInterface := gwReconnectStore.Get(reqEvent.ID)
 			if jobInterface != nil {
@@ -116,7 +116,7 @@ func getTriggerGatewayStartFunc(gatewayID string) func() {
 			zap.L().Debug("error on getting gateway instance. may be deleted?", zap.String("gateway", gatewayID), zap.String("error", err.Error()))
 			return
 		}
-		if !gw.Enabled || gw.State.Status == model.StateUp {
+		if !gw.Enabled || gw.State.Status == model.StatusUp {
 			return
 		}
 

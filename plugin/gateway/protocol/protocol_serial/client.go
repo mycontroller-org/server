@@ -130,7 +130,7 @@ func (ep *Endpoint) dataListener() {
 			if err != nil {
 				zap.L().Error("Error on reading data from a serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
 				state := model.State{
-					Status:  model.StateDown,
+					Status:  model.StatusDown,
 					Message: err.Error(),
 					Since:   time.Now(),
 				}
@@ -193,7 +193,7 @@ func (ep *Endpoint) reconnect() {
 				ep.Port = port
 				go ep.dataListener() // if connection success, start read listener
 				state := model.State{
-					Status:  model.StateUp,
+					Status:  model.StatusUp,
 					Message: "Reconnected successfully",
 					Since:   time.Now(),
 				}
@@ -202,7 +202,7 @@ func (ep *Endpoint) reconnect() {
 			}
 			zap.L().Error("Error on opening a port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
 			state := model.State{
-				Status:  model.StateDown,
+				Status:  model.StatusDown,
 				Message: err.Error(),
 				Since:   time.Now(),
 			}

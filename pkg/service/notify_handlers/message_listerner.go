@@ -73,10 +73,10 @@ func processHandlerMessage(item interface{}) {
 	err := handler.Post(msg.Data)
 	if err != nil {
 		zap.L().Warn("failed to execute handler", zap.Any("handlerID", msg.ID), zap.Error(err))
-		state.Status = model.StateError
+		state.Status = model.StatusError
 		state.Message = err.Error()
 	} else {
-		state.Status = model.StateOk
+		state.Status = model.StatusOk
 		state.Message = fmt.Sprintf("execution time: %s", time.Since(start).String())
 	}
 

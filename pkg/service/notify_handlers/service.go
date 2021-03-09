@@ -31,10 +31,10 @@ func Start(cfg *handlerML.Config) error {
 	if err != nil {
 		zap.L().Error("Unable to start a handler service", zap.Any("id", cfg.ID), zap.Error(err))
 		state.Message = err.Error()
-		state.Status = model.StateDown
+		state.Status = model.StatusDown
 	} else {
 		state.Message = "Started successfully"
-		state.Status = model.StateUp
+		state.Status = model.StatusUp
 		handlersStore.Add(cfg.ID, handler)
 	}
 
@@ -49,7 +49,7 @@ func Stop(id string) error {
 	if handler != nil {
 		err := handler.Close()
 		state := model.State{
-			Status:  model.StateDown,
+			Status:  model.StatusDown,
 			Since:   time.Now(),
 			Message: "Stopped by request",
 		}

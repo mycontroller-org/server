@@ -124,7 +124,7 @@ func messageFormatter(rawMsg *msgml.RawMessage) string {
 func (ep *Endpoint) onConnectionHandler(c paho.Client) {
 	zap.L().Debug("MQTT connection success", zap.Any("gateway", ep.GatewayCfg.ID))
 	state := model.State{
-		Status:  model.StateUp,
+		Status:  model.StatusUp,
 		Message: "Connected successfully",
 		Since:   time.Now(),
 	}
@@ -134,7 +134,7 @@ func (ep *Endpoint) onConnectionHandler(c paho.Client) {
 func (ep *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
 	zap.L().Error("MQTT connection lost", zap.Any("gateway", ep.GatewayCfg.ID), zap.Error(err))
 	state := model.State{
-		Status:  model.StateDown,
+		Status:  model.StatusDown,
 		Message: err.Error(),
 		Since:   time.Now(),
 	}
