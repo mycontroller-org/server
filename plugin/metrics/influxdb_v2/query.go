@@ -48,12 +48,19 @@ func aggregateWindowPercentileFunc(percentile, window string) (string, string) {
 }
 
 func union(name string, fns []string) string {
+	if len(fns) == 0 {
+		return ""
+	}
+	finalData := fns[0]
+	if len(fns) > 1 {
+		finalData = fmt.Sprintf("union(tables: [%s])", strings.Join(fns, ","))
+	}
 	return fmt.Sprintf(`
 		aColumns = ["_time", "median", "mean", "sum", "count", "min", "max"]
-		union(tables: [%s])
+		%s
 			|> pivot(rowKey:["_time"], columnKey: ["aggregation_type"], valueColumn: "_value")
 			|> drop(fn: (column) => not contains(value: column, set: aColumns) and not column =~ /percentile*/)
-			|> yield(name: "%s")`, strings.Join(fns, ","), name)
+			|> yield(name: "%s")`, finalData, name)
 }
 
 func buildQuery(metricType, name, bucket, start, stop, window string, filters map[string]string, functions []string) string {

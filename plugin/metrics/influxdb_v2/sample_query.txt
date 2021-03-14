@@ -24,7 +24,7 @@ percentile = data
 
 aColumns = ["_time", "median", "mean", "sum", "count", "min", "max"]
 
-union(tables: [median, mean, percentile,sum, count, min, max])
+union(tables: [median, mean, percentile, sum, count, min, max])
 |> pivot(rowKey:["_time"], columnKey: ["aggType"], valueColumn: "_value")
 |> drop(fn: (column) => not contains(value: column, set: aColumns) and not column =~ /percentile*/)
 |> yield(name: "test")
