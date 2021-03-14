@@ -47,6 +47,11 @@ func translateRecursive(copy, original reflect.Value) {
 		originalValue := original.Elem()
 		// Create a new object. Now new gives us a pointer, but we want the value it
 		// points to, so we have to call Elem() to unwrap it
+
+		// return for invalid data
+		if !originalValue.IsValid() {
+			return
+		}
 		copyValue := reflect.New(originalValue.Type()).Elem()
 		translateRecursive(copyValue, originalValue)
 		copy.Set(copyValue)
