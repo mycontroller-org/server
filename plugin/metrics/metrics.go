@@ -24,6 +24,7 @@ const (
 // Metric types
 const (
 	MetricTypeNone       = "none"
+	MetricTypeString     = "string"
 	MetricTypeCounter    = "counter"
 	MetricTypeGauge      = "gauge"
 	MetricTypeGaugeFloat = "gauge_float"
