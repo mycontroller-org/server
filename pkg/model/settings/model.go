@@ -40,7 +40,7 @@ type VersionSettings struct {
 	Version string `json:"version"`
 }
 
-// SystemJobsSettings struct
+// SystemJobsSettings cron struct
 type SystemJobsSettings struct {
-	Sunrise string `json:"sunrise"`
+	Sunrise string `json:"sunrise"` // updates scheduled sunrise sunset jobs on this time
 }

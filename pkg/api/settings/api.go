@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mycontroller-org/backend/v2/pkg/json"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/settings"
 	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
@@ -37,7 +38,50 @@ func GetByID(ID string) (*settingsML.Settings, error) {
 		{Key: ml.KeyID, Operator: stgML.OperatorEqual, Value: ID},
 	}
 	err := stg.SVC.FindOne(ml.EntitySettings, result, filters)
-	return result, err
+	if err != nil {
+		return nil, err
+	}
+
+	// convert map data to struct
+	var specStruct interface{}
+	switch result.ID {
+	case settingsML.KeySystemSettings:
+		settings := settingsML.SystemSettings{}
+		err = utils.MapToStruct(utils.TagNameNone, result.Spec, &settings)
+		if err != nil {
+			return nil, err
+		}
+		specStruct = settings
+
+	case settingsML.KeySystemJobs:
+		settings := settingsML.SystemJobsSettings{}
+		err = utils.MapToStruct(utils.TagNameNone, result.Spec, &settings)
+		if err != nil {
+			return nil, err
+		}
+		specStruct = settings
+
+	default:
+
+	}
+
+	// struct to json then json to map
+	// this workaround to apply json tags
+	if specStruct != nil {
+		bytes, err := json.Marshal(specStruct)
+		if err != nil {
+			return nil, err
+		}
+
+		mapSpec := make(map[string]interface{})
+		err = json.Unmarshal(bytes, &mapSpec)
+		if err != nil {
+			return nil, err
+		}
+		result.Spec = mapSpec
+	}
+
+	return result, nil
 }
 
 // UpdateSettings config into disk
@@ -79,7 +123,21 @@ func UpdateSystemSettings(settings *settingsML.Settings) error {
 	settings.ID = settingsML.KeySystemSettings
 	settings.ModifiedOn = time.Now()
 	// TODO: verify required fields
-	return update(settings)
+	err := update(settings)
+	if err != nil {
+		return err
+	}
+	systemSettings := &settingsML.SystemSettings{}
+	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, systemSettings)
+	if err != nil {
+		return err
+	}
+	if systemSettings.GeoLocation.AutoUpdate {
+		AutoUpdateSystemGEOLocation()
+	}
+	// send geo location updated event
+
+	return nil
 }
 
 // UpdateGeoLocation updates the location details
@@ -99,7 +157,13 @@ func UpdateGeoLocation(location *settingsML.GeoLocation) error {
 	// update location
 	systemSettings.GeoLocation = *location
 	settings.Spec = utils.StructToMap(systemSettings)
-	return update(settings)
+	err = update(settings)
+	if err != nil {
+		return err
+	}
+
+	// send geo location updated event
+	return nil
 }
 
 // GetGeoLocation returns configured latitude and longitude settings to calculate sunrise and sunset

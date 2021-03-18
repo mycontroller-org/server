@@ -2,7 +2,6 @@ package core
 
 import (
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
-	"github.com/mycontroller-org/backend/v2/pkg/api/sunrise"
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
 	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
@@ -92,7 +91,7 @@ func CreateSettingsData() {
 
 // UpdateGeoLocation updates geo location if autoUpdate enabled
 func UpdateGeoLocation() {
-	err := sunrise.AutoUpdateSystemLocation()
+	err := settingsAPI.AutoUpdateSystemGEOLocation()
 	if err != nil {
 		zap.L().Error("error on updating geo location", zap.Error(err))
 	}
