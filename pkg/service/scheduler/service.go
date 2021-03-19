@@ -45,7 +45,7 @@ func unschedule(id string) {
 }
 
 func unloadAll() {
-	zap.L().Info("Yet to implement")
+	coreScheduler.SVC.RemoveWithPrefix(schedulePrefix)
 }
 
 func getScheduleID(id string) string {

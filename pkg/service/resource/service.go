@@ -14,9 +14,10 @@ import (
 )
 
 var (
-	eventQueue   *queueUtils.Queue
-	queueSize    = int(1000)
-	queueWorkers = 5
+	eventQueue     *queueUtils.Queue
+	queueSize      = int(1000)
+	queueWorkers   = 5
+	subscriptionID = int64(0)
 )
 
 // Init starts resource server listener
@@ -24,16 +25,20 @@ func Init() error {
 	eventQueue = queueUtils.New("resource_service", queueSize, processEvent, queueWorkers)
 
 	// on event receive add it in to our local queue
-	_, err := mcbus.Subscribe(mcbus.FormatTopic(mcbus.TopicServiceResourceServer), onEvent)
+	sID, err := mcbus.Subscribe(mcbus.FormatTopic(mcbus.TopicServiceResourceServer), onEvent)
 	if err != nil {
 		return err
 	}
-
+	subscriptionID = sID
 	return nil
 }
 
 // Close the service
 func Close() {
+	err := mcbus.Unsubscribe(mcbus.FormatTopic(mcbus.TopicServiceResourceServer), subscriptionID)
+	if err != nil {
+		zap.L().Error("error on unsubscription", zap.Error(err))
+	}
 	eventQueue.Close()
 }
 

@@ -88,9 +88,6 @@ func closeServices() {
 	// close forward payload service
 	fwdplSVC.Close()
 
-	// close resource service
-	resourceSVC.Close()
-
 	// close task service
 	taskSVC.Close()
 
@@ -102,6 +99,9 @@ func closeServices() {
 
 	// stop engine
 	msgProcessor.Close()
+
+	// close resource service
+	resourceSVC.Close()
 
 	// Close storage and metric database
 	if stg.SVC != nil {

@@ -2,6 +2,7 @@ package queue
 
 import (
 	queue "github.com/jaegertracing/jaeger/pkg/queue"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
 )
 
@@ -11,6 +12,7 @@ type Queue struct {
 	Queue   *queue.BoundedQueue
 	Limit   int
 	Workers int
+	closed  concurrency.SafeBool
 }
 
 // New returns brandnew queue
@@ -27,16 +29,23 @@ func New(name string, limit int, consumer func(event interface{}), workers int) 
 		Queue:   queue,
 		Limit:   limit,
 		Workers: workers,
+		closed:  concurrency.SafeBool{},
 	}
 }
 
 // Close the queue
 func (q *Queue) Close() {
-	q.Queue.Stop()
+	if !q.closed.IsSet() {
+		q.Queue.Stop()
+		q.closed.Set()
+	}
 }
 
 // Produce adds an item to the queue
 func (q *Queue) Produce(item interface{}) bool {
+	if q.closed.IsSet() {
+		return false
+	}
 	return q.Queue.Produce(item)
 }
 

@@ -48,12 +48,14 @@ func (c *Client) Publish(topic string, data interface{}) error {
 
 	PrintDebug("Posting message", zap.String("topic", topic))
 
-	for subscriptionTopic, subscriptionIDs := range c.topics {
+	for subscriptionTopic := range c.topics {
+		subscriptionIDs := c.topics[subscriptionTopic]
 		match, err := regexp.MatchString(subscriptionTopic, topic)
 		if err != nil {
 			zap.L().Error("error on matching topic", zap.String("publishTopic", topic), zap.String("subscriptionTopic", subscriptionTopic), zap.Error(err))
 			continue
 		}
+
 		if match {
 			for _, subscriptionID := range subscriptionIDs {
 				if callBack, ok := c.subscriptions[subscriptionID]; ok {
