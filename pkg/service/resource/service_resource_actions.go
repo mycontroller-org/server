@@ -24,7 +24,7 @@ func resourceActionService(reqEvent *rsModel.Event) error {
 		}
 		return action.ExecuteActionOnResourceByLabels(data.ResourceType, data.Labels, data.Payload)
 	}
-	return fmt.Errorf("Unknown command: %s", reqEvent.Command)
+	return fmt.Errorf("unknown command: %s", reqEvent.Command)
 }
 
 func getResourceData(reqEvent *rsModel.Event) (*handlerML.ResourceData, error) {

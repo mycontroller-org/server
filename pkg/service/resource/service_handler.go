@@ -36,7 +36,7 @@ func handlerService(reqEvent *rsModel.Event) error {
 		handlerAPI.LoadAll()
 
 	default:
-		return errors.New("Unknown command")
+		return errors.New("unknown command")
 	}
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }

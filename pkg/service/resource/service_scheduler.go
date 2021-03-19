@@ -17,7 +17,7 @@ func schedulerService(reqEvent *rsML.Event) error {
 
 	switch reqEvent.Command {
 	case rsML.CommandGet:
-		data, err := getHandler(reqEvent)
+		data, err := getScheduler(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
@@ -39,7 +39,7 @@ func schedulerService(reqEvent *rsML.Event) error {
 		return disableScheduler(reqEvent)
 
 	default:
-		return errors.New("Unknown command")
+		return errors.New("unknown command")
 	}
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }

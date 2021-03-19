@@ -39,7 +39,7 @@ func gatewayService(reqEvent *rsModel.Event) error {
 		gatewayAPI.LoadAll()
 
 	default:
-		return errors.New("Unknown command")
+		return errors.New("unknown command")
 	}
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }

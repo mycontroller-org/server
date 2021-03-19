@@ -18,7 +18,7 @@ func taskService(reqEvent *rsModel.Event) error {
 
 	switch reqEvent.Command {
 	case rsModel.CommandGet:
-		data, err := getHandler(reqEvent)
+		data, err := getTask(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
@@ -37,7 +37,7 @@ func taskService(reqEvent *rsModel.Event) error {
 		return disableTask(reqEvent)
 
 	default:
-		return fmt.Errorf("Unknown command: %s", reqEvent.Command)
+		return fmt.Errorf("unknown command: %s", reqEvent.Command)
 	}
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
