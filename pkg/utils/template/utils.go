@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"time"
 
+	"github.com/mycontroller-org/backend/v2/pkg/api/sunrise"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
@@ -19,6 +20,8 @@ var funcMap = template.FuncMap{
 	"toJson":     marshal,
 	"bySelector": bySelector,
 	"ternary":    ternary,
+	"sunrise":    sunrise.GetSunriseTime,
+	"sunset":     sunrise.GetSunsetTime,
 }
 
 func ternary(data interface{}, trueValue, falseValue string) string {
