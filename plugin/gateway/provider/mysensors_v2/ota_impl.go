@@ -115,7 +115,7 @@ func fetchFirmware(node *nml.Node, typeID, versionID uint16, verifyID bool) (*fi
 	// get mapped firmware by id
 	fwID := node.Labels.Get(ml.LabelNodeAssignedFirmware)
 	if fwID == "" {
-		return nil, errors.New("Firmware not assigned for this node")
+		return nil, errors.New("firmware not assigned for this node")
 	}
 
 	// lambda function to load firmware
@@ -128,13 +128,13 @@ func fetchFirmware(node *nml.Node, typeID, versionID uint16, verifyID bool) (*fi
 
 		// get mysensor specific ids
 		if fw.Labels.Get(LabelFirmwareTypeID) == "" || fw.Labels.Get(LabelFirmwareVersionID) == "" {
-			return nil, errors.New("Firmware type id or version id not set")
+			return nil, errors.New("firmware type id or version id not set")
 		}
 		fwTypeID := uint16(fw.Labels.GetInt(LabelFirmwareTypeID))
 		fwVersionID := uint16(fw.Labels.GetInt(LabelFirmwareVersionID))
 
 		// get firmware hex file
-		hexFile, err := ut.ReadFile(ml.GetDirectoryFirmware(), fw.File.Name)
+		hexFile, err := ut.ReadFile(ml.GetDirectoryFirmware(), fw.File.InternalName)
 		if err != nil {
 			return nil, err
 		}
@@ -162,7 +162,7 @@ func fetchFirmware(node *nml.Node, typeID, versionID uint16, verifyID bool) (*fi
 	}
 	if verifyID { // verify firmware ids
 		if fwRaw.Type != typeID || fwRaw.Version != versionID {
-			return nil, fmt.Errorf("Requested firmware type id or version id not matching[Req, Avl], TypeId:[%v, %v], VersionId:[%v, %v]",
+			return nil, fmt.Errorf("requested firmware type id or version id not matching[Req, Avl], TypeId:[%v, %v], VersionId:[%v, %v]",
 				typeID, fwRaw.Type, versionID, fwRaw.Version)
 		}
 	}
@@ -224,7 +224,7 @@ func hexByteToLocalFormat(typeID, versionID uint16, hexByte []byte, blockSize in
 	}
 	// check the processed bytes length
 	if len(actualData) == 0 {
-		return nil, errors.New("No data available")
+		return nil, errors.New("no data available")
 	}
 
 	// add padding if needed
