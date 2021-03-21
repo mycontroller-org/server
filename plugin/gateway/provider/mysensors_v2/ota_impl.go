@@ -62,7 +62,7 @@ func executeFirmwareConfigRequest(msg *msgml.Message) (string, error) {
 		fwCfgRes.Blocks = fwRaw.Blocks
 		fwCfgRes.CRC = fwRaw.CRC
 	}
-	zap.L().Info("Sending a firmware config respose", zap.Any("request", fwCfgReq), zap.Any("response", fwCfgRes), zap.String("timeTaken", time.Since(startTime).String()))
+	zap.L().Debug("Sending a firmware config respose", zap.Any("request", fwCfgReq), zap.Any("response", fwCfgRes), zap.String("timeTaken", time.Since(startTime).String()))
 
 	// convert the struct to hex string and return
 	return toHex(fwCfgRes)
@@ -103,7 +103,7 @@ func executeFirmwareRequest(msg *msgml.Message) (string, error) {
 	startAddr := fwReq.Block * firmwareBlockSize
 	endAddr := startAddr + firmwareBlockSize
 	copy(fwRes.Data[:], fwRaw.Data[startAddr:(endAddr+1)])
-	zap.L().Info("Sending a firmware respose", zap.Any("request", fwReq), zap.Any("response", fwRes), zap.String("timeTaken", time.Since(startTime).String()))
+	zap.L().Debug("Sending a firmware respose", zap.Any("request", fwReq), zap.Any("response", fwRes), zap.String("timeTaken", time.Since(startTime).String()))
 
 	// convert the struct to hex string and return
 	return toHex(fwRes)
