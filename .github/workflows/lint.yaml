@@ -1,0 +1,24 @@
+name: golangci-lint
+on:
+  push:
+    tags: [ v* ]
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  golang-lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: latest
+          skip-go-installation: true
+          # Optional: show only new issues if it's a pull request. The default value is `false`.
+          # only-new-issues: true
