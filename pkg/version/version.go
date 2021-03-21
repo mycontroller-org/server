@@ -8,8 +8,6 @@ var (
 	gitCommit string
 	version   string
 	buildDate string
-	platform  string
-	arch      string
 )
 
 // Version holds version data
