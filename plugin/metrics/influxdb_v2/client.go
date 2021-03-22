@@ -86,9 +86,9 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	token := cfg.Token
-	if token == "" && cfg.Username != "" {
-		token = fmt.Sprintf("%s:%s", cfg.Username, cfg.Password)
+
+	if cfg.Token == "" && cfg.Username != "" {
+		cfg.Token = fmt.Sprintf("%s:%s", cfg.Username, cfg.Password)
 	}
 	flushInterval := defaultFlushInterval
 
@@ -133,7 +133,7 @@ func (c *Client) Ping() error {
 		return err
 	}
 	if !s {
-		return errors.New("Influx server not ready yet")
+		return errors.New("influx server not ready yet")
 	}
 	return nil
 }
@@ -148,6 +148,9 @@ func (c *Client) Close() error {
 
 // WriteBlocking implementation
 func (c *Client) WriteBlocking(field *fml.Field) error {
+	if field.MetricType == mtrml.MetricTypeNone {
+		return nil
+	}
 	p, err := getPoint(field)
 	if err != nil {
 		return err
@@ -157,6 +160,9 @@ func (c *Client) WriteBlocking(field *fml.Field) error {
 }
 
 func (c *Client) Write(field *fml.Field) error {
+	if field.MetricType == mtrml.MetricTypeNone {
+		return nil
+	}
 	p, err := getPoint(field)
 	if err != nil {
 		return err
@@ -201,21 +207,21 @@ func geoData(pl interface{}) (map[string]interface{}, error) {
 	d := make(map[string]interface{})
 	ds := strings.Split(pl.(string), ";")
 	if len(ds) < 2 {
-		return nil, fmt.Errorf("Invalid geo data: %s", pl)
+		return nil, fmt.Errorf("invalid geo data: %s", pl)
 	}
 	lat, err := strconv.ParseFloat(ds[0], 64)
 	if err != nil {
-		return nil, fmt.Errorf("Invalid float data: %s", pl)
+		return nil, fmt.Errorf("invalid float data: %s", pl)
 	}
 	lon, err := strconv.ParseFloat(ds[1], 64)
 	if err != nil {
-		return nil, fmt.Errorf("Invalid float data: %s", pl)
+		return nil, fmt.Errorf("invalid float data: %s", pl)
 	}
 	alt := float64(0)
 	if len(ds[0]) > 2 {
 		alt, err = strconv.ParseFloat(ds[2], 64)
 		if err != nil {
-			return nil, fmt.Errorf("Invalid float data: %s", pl)
+			return nil, fmt.Errorf("invalid float data: %s", pl)
 		}
 	}
 
@@ -230,17 +236,23 @@ func measurementName(metricType string) (string, error) {
 	switch metricType {
 	case mtrml.MetricTypeBinary:
 		return MeasurementBinary, nil
+
 	case mtrml.MetricTypeGauge:
 		return MeasurementGaugeInteger, nil
+
 	case mtrml.MetricTypeGaugeFloat:
 		return MeasurementGaugeFloat, nil
+
 	case mtrml.MetricTypeCounter:
 		return MeasurementCounter, nil
-	case mtrml.MetricTypeNone:
+
+	case mtrml.MetricTypeString:
 		return MeasurementString, nil
+
 	case mtrml.MetricTypeGEO:
 		return MeasurementGeo, nil
+
 	default:
-		return "", fmt.Errorf("Unknown metric type: %s", metricType)
+		return "", fmt.Errorf("unknown metric type: %s", metricType)
 	}
 }

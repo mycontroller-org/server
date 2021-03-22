@@ -97,6 +97,20 @@ func ToFloat(data interface{}) float64 {
 	return value
 }
 
+// ToInteger converts interface to int64
+func ToInteger(data interface{}) int64 {
+	value, ok := data.(int64)
+	if !ok {
+		strValue := fmt.Sprintf("%v", data)
+		parsedValue, err := strconv.ParseInt(strValue, 64, 10)
+		if err != nil {
+			return 0
+		}
+		return parsedValue
+	}
+	return value
+}
+
 // ToStruct converts bytes to target struct
 func ToStruct(data []byte, out interface{}) error {
 	return json.Unmarshal(data, out)

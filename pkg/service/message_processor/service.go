@@ -11,6 +11,7 @@ import (
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
@@ -226,39 +227,6 @@ func updateSensorDetail(msg *msgml.Message) error {
 
 func setFieldData(msg *msgml.Message) error {
 	for _, payload := range msg.Payloads {
-		// current payload
-		currentPayload := fml.Payload{}
-		var err error
-		var pl interface{}
-
-		// convert payload to actual type
-		switch payload.MetricType {
-
-		case mtsml.MetricTypeBinary:
-			pl, err = strconv.ParseBool(payload.Value)
-
-		case mtsml.MetricTypeGaugeFloat:
-			pl, err = strconv.ParseFloat(payload.Value, 64)
-
-		case mtsml.MetricTypeGauge, mtsml.MetricTypeCounter:
-			pl, err = strconv.ParseInt(payload.Value, 10, 64)
-
-		case mtsml.MetricTypeNone:
-			pl = payload.Value
-
-		case mtsml.MetricTypeGEO: // Implement geo
-			pl = payload.Value
-
-		default:
-			zap.L().Error("Unknown data type on a field", zap.Any("message", msg))
-			return errors.New("Unknown data type on a field")
-		}
-
-		if err != nil {
-			zap.L().Error("Unable to convert the payload to actual type", zap.Error(err), zap.Any("message", msg))
-			return err
-		}
-
 		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, payload.Name)
 		if err != nil { // TODO: check entry availability on error message
 			field = &fml.Field{
@@ -269,26 +237,21 @@ func setFieldData(msg *msgml.Message) error {
 			}
 		}
 
-		// update payload
-		currentPayload = fml.Payload{Value: pl, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
-
-		// init labels and others
-		field.Labels = field.Labels.Init()
-		field.Others = field.Others.Init()
+		value := payload.Value
 
 		// if custom payload formatter supplied
 		if formatter := field.Formatter.OnReceive; msg.IsReceived && formatter != "" {
 			startTime := time.Now()
 
 			scriptInput := map[string]interface{}{
-				"value":         currentPayload.Value,
+				"value":         payload.Value,
 				"lastValue":     field.Current.Value,
 				"previousValue": field.Previous.Value,
 			}
 
 			responseValue, err := javascript.Execute(formatter, scriptInput)
 			if err != nil {
-				zap.L().Error("error on executing script", zap.Error(err), zap.Any("inputValue", currentPayload.Value), zap.String("gateway", field.GatewayID), zap.String("node", field.NodeID), zap.String("sensor", field.SensorID), zap.String("fieldID", field.FieldID), zap.String("script", formatter))
+				zap.L().Error("error on executing script", zap.Error(err), zap.Any("inputValue", payload.Value), zap.String("gateway", field.GatewayID), zap.String("node", field.NodeID), zap.String("sensor", field.SensorID), zap.String("fieldID", field.FieldID), zap.String("script", formatter))
 				return err
 			}
 
@@ -298,16 +261,27 @@ func setFieldData(msg *msgml.Message) error {
 				return errors.New("formatter returned nil value")
 			}
 
+			extraFields := map[string]interface{}{}
 			if mapValue, ok := responseValue.(map[string]interface{}); ok {
 				if _, found := mapValue["value"]; !found {
 					zap.L().Error("value field not updated", zap.Any("received", mapValue), zap.String("formatter", formatter))
 					return errors.New("formatter returned nil value")
 				}
 				for key, value := range mapValue {
+					// TODO: keep this constants on common place: value, others
+					// if we see "value" key, update it on value
+					// if we see others map update it on others map
 					if key == "value" {
 						formattedValue = utils.ToString(value)
+					} else if key == "others" {
+						othersMap, ok := value.(map[string]interface{})
+						if ok {
+							for oKey, oValue := range othersMap {
+								field.Others.Set(oKey, oValue, nil)
+							}
+						}
 					} else {
-						field.Others.Set(key, value, nil)
+						extraFields[key] = value
 					}
 				}
 			} else {
@@ -315,70 +289,195 @@ func setFieldData(msg *msgml.Message) error {
 			}
 
 			// update the formatted value
-			zap.L().Debug("Formatting done", zap.Any("oldValue", currentPayload.Value), zap.String("newValue", formattedValue), zap.String("timeTaken", time.Since(startTime).String()))
-			currentPayload.Value = formattedValue
-		}
+			zap.L().Debug("Formatting done", zap.Any("oldValue", payload.Value), zap.String("newValue", formattedValue), zap.String("timeTaken", time.Since(startTime).String()))
 
-		// update last seen
-		field.LastSeen = msg.Timestamp
+			// update formatted value into value
+			value = formattedValue
 
-		// update name
-		if !field.Labels.GetIgnoreBool(ml.LabelName) {
-			field.Name = payload.Name
-		}
-
-		// update type
-		if !field.Labels.GetIgnoreBool(ml.LabelMetricType) {
-			field.MetricType = payload.MetricType
-		}
-		// update unit
-		if !field.Labels.GetIgnoreBool(ml.LabelUnit) {
-			field.Unit = payload.Unit
-		}
-
-		// update labels and others
-		field.Labels.CopyFrom(payload.Labels)               // copy labels
-		field.Others.CopyFrom(payload.Others, field.Labels) // copy other fields
-
-		// update no change since
-		oldValue := fmt.Sprintf("%v", field.Current.Value)
-		newValue := fmt.Sprintf("%v", currentPayload.Value)
-		if oldValue != newValue {
-			field.NoChangeSince = currentPayload.Timestamp
-		}
-
-		// update shift old payload and update current payload
-		field.Previous = field.Current
-		field.Current = currentPayload
-
-		startTime := time.Now()
-		err = fieldAPI.Save(field)
-		if err != nil {
-			zap.L().Error("Failed to update field in to database", zap.Error(err), zap.Any("field", field))
-		} else {
-			zap.L().Debug("Inserted in to storage db", zap.String("timeTaken", time.Since(startTime).String()))
-		}
-
-		// post field data to event listeners
-		postEvent(mcbus.TopicEventSensorFieldSet, field)
-
-		startTime = time.Now()
-		updateMetric := true
-		// for binary do not update duplicate values
-		if field.MetricType == mtsml.MetricTypeBinary {
-			updateMetric = field.Current.Timestamp.Equal(field.NoChangeSince)
-		}
-		if updateMetric {
-			err = mts.SVC.Write(field)
-			if err != nil {
-				zap.L().Error("Failed to write into metrics database", zap.Error(err), zap.Any("field", field))
-			} else {
-				zap.L().Debug("Inserted in to metric db", zap.String("timeTaken", time.Since(startTime).String()))
+			// update extra fields if any
+			if len(extraFields) > 0 {
+				labels := payload.Labels.Clone()
+				updateExtraFieldsData(extraFields, msg, labels)
 			}
-		} else {
-			zap.L().Debug("Skipped metric update", zap.Any("field", field))
 		}
+		err = updateFieldData(field, payload.Name, payload.Name, payload.MetricType, payload.Unit, payload.Labels, payload.Others, value, msg)
+		if err != nil {
+			zap.L().Error("error on updating field data", zap.Error(err), zap.String("gateway", msg.GatewayID), zap.String("node", msg.NodeID), zap.String("sensor", msg.SensorID), zap.String("field", payload.Name))
+		}
+	}
+	return nil
+}
 
+func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgml.Message, labels cmap.CustomStringMap) error {
+	units := map[string]string{}
+	metricTypes := map[string]string{}
+
+	// update extraLabels
+	if eLabels, ok := extraFields["labels"]; ok {
+		if extraLabels, ok := eLabels.(map[string]interface{}); ok {
+			for key, val := range extraLabels {
+				stringValue := utils.ToString(val)
+				labels.Set(key, stringValue)
+			}
+		}
+	}
+
+	// update units
+	if value, ok := extraFields["units"]; ok {
+		if unitsRaw, ok := value.(map[string]interface{}); ok {
+			for key, val := range unitsRaw {
+				stringValue := utils.ToString(val)
+				units[key] = stringValue
+			}
+		}
+	}
+
+	// update metricTypes
+	if value, ok := extraFields["metricTypes"]; ok {
+		if mTypeRaw, ok := value.(map[string]interface{}); ok {
+			for key, value := range mTypeRaw {
+				stringValue := utils.ToString(value)
+				metricTypes[key] = stringValue
+			}
+		}
+	}
+
+	// remove labels, units and metricTypes
+	delete(extraFields, "labels")
+	delete(extraFields, "units")
+	delete(extraFields, "metricTypes")
+
+	for id, value := range extraFields {
+		fieldId := utils.ToString(id)
+		metricType := mtsml.MetricTypeNone
+		unit := ""
+		// update metricType and unit
+		if mType, ok := metricTypes[fieldId]; ok {
+			metricType = mType
+		}
+		if unitString, ok := units[fieldId]; ok {
+			unit = unitString
+		}
+		err := updateFieldData(nil, fieldId, fieldId, metricType, unit, labels, nil, value, msg)
+		if err != nil {
+			zap.L().Error("error on updating field data", zap.Error(err), zap.String("gateway", msg.GatewayID), zap.String("node", msg.NodeID), zap.String("sensor", msg.SensorID), zap.String("field", fieldId))
+		}
+	}
+
+	return nil
+}
+
+func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, labels cmap.CustomStringMap,
+	others cmap.CustomMap, value interface{}, msg *msgml.Message) error {
+	if field == nil {
+		updateField, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, fieldId)
+		if err != nil { // TODO: check entry availability on error message
+			field = &fml.Field{
+				GatewayID: msg.GatewayID,
+				NodeID:    msg.NodeID,
+				SensorID:  msg.SensorID,
+				FieldID:   fieldId,
+			}
+			field.Labels = cmap.CustomStringMap{}
+			field.Others = cmap.CustomMap{}
+		} else {
+			field = updateField
+		}
+	}
+
+	// init labels and others
+	labels = labels.Init()
+	others = others.Init()
+
+	// update last seen
+	field.LastSeen = msg.Timestamp
+
+	// update name
+	if !field.Labels.GetIgnoreBool(ml.LabelName) {
+		field.Name = name
+	}
+
+	// update type
+	if !field.Labels.GetIgnoreBool(ml.LabelMetricType) {
+		field.MetricType = metricType
+	}
+	// update unit
+	if !field.Labels.GetIgnoreBool(ml.LabelUnit) {
+		field.Unit = unit
+	}
+
+	// update labels and others
+	field.Labels.CopyFrom(labels)               // copy labels
+	field.Others.CopyFrom(others, field.Labels) // copy other fields
+
+	// update no change since
+	oldValue := fmt.Sprintf("%v", field.Current.Value)
+	newValue := fmt.Sprintf("%v", value)
+	if oldValue != newValue {
+		field.NoChangeSince = msg.Timestamp
+	}
+
+	// convert value to specified metric type
+	// convert payload to actual type
+	var convertedValue interface{}
+	switch field.MetricType {
+
+	case mtsml.MetricTypeBinary:
+		convertedValue = utils.ToBool(value)
+
+	case mtsml.MetricTypeGaugeFloat:
+		convertedValue = utils.ToFloat(value)
+
+	case mtsml.MetricTypeGauge, mtsml.MetricTypeCounter:
+		convertedValue = utils.ToInteger(value)
+
+	case mtsml.MetricTypeNone:
+		convertedValue = value
+
+	case mtsml.MetricTypeString:
+		convertedValue = utils.ToString(value)
+
+	case mtsml.MetricTypeGEO: // Implement geo
+		convertedValue = value
+
+	default:
+		zap.L().Error("unknown data type on a field", zap.Any("message", msg))
+		return fmt.Errorf("unknown metricType: %s", field.MetricType)
+	}
+
+	// update shift old payload and update current payload
+	field.Previous = field.Current
+	field.Current = fml.Payload{Value: convertedValue, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
+
+	startTime := time.Now()
+	err := fieldAPI.Save(field)
+	if err != nil {
+		zap.L().Error("failed to update field in to database", zap.Error(err), zap.Any("field", field))
+	} else {
+		zap.L().Debug("inserted in to storage db", zap.String("timeTaken", time.Since(startTime).String()))
+	}
+
+	// post field data to event listeners
+	postEvent(mcbus.TopicEventSensorFieldSet, field)
+
+	startTime = time.Now()
+	updateMetric := true
+	if field.MetricType == mtsml.MetricTypeNone {
+		updateMetric = false
+	}
+	// for binary do not update duplicate values
+	if field.MetricType == mtsml.MetricTypeBinary {
+		updateMetric = field.Current.Timestamp.Equal(field.NoChangeSince)
+	}
+	if updateMetric {
+		err = mts.SVC.Write(field)
+		if err != nil {
+			zap.L().Error("failed to write into metrics database", zap.Error(err), zap.Any("field", field))
+		} else {
+			zap.L().Debug("inserted in to metric db", zap.String("timeTaken", time.Since(startTime).String()))
+		}
+	} else {
+		zap.L().Debug("skipped metric update", zap.Any("field", field))
 	}
 	return nil
 }
