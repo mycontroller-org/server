@@ -466,7 +466,7 @@ func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, l
 	}
 	// for binary do not update duplicate values
 	if field.MetricType == mtsml.MetricTypeBinary {
-		updateMetric = !field.Current.Timestamp.Equal(field.NoChangeSince)
+		updateMetric = field.Current.Timestamp.Equal(field.NoChangeSince)
 	}
 	if updateMetric {
 		err = mts.SVC.Write(field)
