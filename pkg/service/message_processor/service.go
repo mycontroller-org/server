@@ -409,13 +409,6 @@ func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, l
 	field.Labels.CopyFrom(labels)               // copy labels
 	field.Others.CopyFrom(others, field.Labels) // copy other fields
 
-	// update no change since
-	oldValue := fmt.Sprintf("%v", field.Current.Value)
-	newValue := fmt.Sprintf("%v", value)
-	if oldValue != newValue {
-		field.NoChangeSince = msg.Timestamp
-	}
-
 	// convert value to specified metric type
 	// convert payload to actual type
 	var convertedValue interface{}
@@ -447,6 +440,13 @@ func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, l
 	// update shift old payload and update current payload
 	field.Previous = field.Current
 	field.Current = fml.Payload{Value: convertedValue, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
+
+	// update no change since
+	oldValue := fmt.Sprintf("%v", field.Previous.Value)
+	newValue := fmt.Sprintf("%v", field.Current.Value)
+	if oldValue != newValue {
+		field.NoChangeSince = msg.Timestamp
+	}
 
 	startTime := time.Now()
 	err := fieldAPI.Save(field)
