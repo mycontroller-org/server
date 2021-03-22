@@ -69,7 +69,7 @@ func ToString(data interface{}) string {
 func ToBool(data interface{}) bool {
 	value, ok := data.(bool)
 	if !ok {
-		switch strings.ToLower(fmt.Sprintf("%v", data)) {
+		switch strings.ToLower(strings.TrimSpace(fmt.Sprintf("%v", data))) {
 		case "true", "1", "on", "enable":
 			return true
 
@@ -87,7 +87,7 @@ func ToBool(data interface{}) bool {
 func ToFloat(data interface{}) float64 {
 	value, ok := data.(float64)
 	if !ok {
-		strValue := fmt.Sprintf("%v", data)
+		strValue := strings.TrimSpace(fmt.Sprintf("%v", data))
 		parsedValue, err := strconv.ParseFloat(strValue, 64)
 		if err != nil {
 			return 0
@@ -101,7 +101,7 @@ func ToFloat(data interface{}) float64 {
 func ToInteger(data interface{}) int64 {
 	value, ok := data.(int64)
 	if !ok {
-		strValue := fmt.Sprintf("%v", data)
+		strValue := strings.TrimSpace(fmt.Sprintf("%v", data))
 		parsedValue, err := strconv.ParseInt(strValue, 10, 64)
 		if err != nil {
 			return 0
