@@ -10,7 +10,6 @@ import (
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
@@ -139,12 +138,12 @@ func updateNodeData(msg *msgml.Message) error {
 		node.Labels.CopyFrom(d.Labels)
 
 		switch d.Name { // set node name
-		case ml.FieldName:
-			if !node.Labels.GetIgnoreBool(ml.LabelName) {
+		case model.FieldName:
+			if !node.Labels.GetIgnoreBool(model.LabelName) {
 				node.Name = d.Value
 			}
 
-		case ml.FieldBatteryLevel: // set battery level
+		case model.FieldBatteryLevel: // set battery level
 			// update battery level
 			bl, err := strconv.ParseFloat(d.Value, 64)
 			if err != nil {
@@ -155,7 +154,7 @@ func updateNodeData(msg *msgml.Message) error {
 			// TODO: send it to metric store
 
 		default:
-			if d.Name != ml.FieldNone {
+			if d.Name != model.FieldNone {
 				node.Others.Set(d.Name, d.Value, node.Labels)
 				// TODO: Do we need to report to metric strore?
 			}
@@ -199,13 +198,13 @@ func updateSensorDetail(msg *msgml.Message) error {
 
 	for _, payload := range msg.Payloads {
 		switch payload.Name {
-		case ml.FieldName: // set name
-			if !sensor.Labels.GetIgnoreBool(ml.LabelName) {
+		case model.FieldName: // set name
+			if !sensor.Labels.GetIgnoreBool(model.LabelName) {
 				sensor.Name = payload.Value
 			}
 
 		default: // set other variables
-			if payload.Name != ml.FieldNone {
+			if payload.Name != model.FieldNone {
 				sensor.Others.Set(payload.Name, payload.Value, sensor.Labels)
 				// TODO: Do we need to report to metric strore?
 			}
@@ -393,16 +392,16 @@ func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, l
 	field.LastSeen = msg.Timestamp
 
 	// update name
-	if !field.Labels.GetIgnoreBool(ml.LabelName) {
+	if !field.Labels.GetIgnoreBool(model.LabelName) {
 		field.Name = name
 	}
 
 	// update type
-	if !field.Labels.GetIgnoreBool(ml.LabelMetricType) {
+	if !field.Labels.GetIgnoreBool(model.LabelMetricType) {
 		field.MetricType = metricType
 	}
 	// update unit
-	if !field.Labels.GetIgnoreBool(ml.LabelUnit) {
+	if !field.Labels.GetIgnoreBool(model.LabelUnit) {
 		field.Unit = unit
 	}
 
