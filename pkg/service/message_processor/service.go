@@ -9,6 +9,7 @@ import (
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
@@ -268,12 +269,11 @@ func setFieldData(msg *msgml.Message) error {
 					return errors.New("formatter returned nil value")
 				}
 				for key, value := range mapValue {
-					// TODO: keep this constants on common place: value, others
 					// if we see "value" key, update it on value
 					// if we see others map update it on others map
-					if key == "value" {
+					if key == model.KeyValue {
 						formattedValue = utils.ToString(value)
-					} else if key == "others" {
+					} else if key == model.KeyOthers {
 						othersMap, ok := value.(map[string]interface{})
 						if ok {
 							for oKey, oValue := range othersMap {
@@ -313,7 +313,7 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgml.Messag
 	metricTypes := map[string]string{}
 
 	// update extraLabels
-	if eLabels, ok := extraFields["labels"]; ok {
+	if eLabels, ok := extraFields[model.KeyLabels]; ok {
 		if extraLabels, ok := eLabels.(map[string]interface{}); ok {
 			for key, val := range extraLabels {
 				stringValue := utils.ToString(val)
@@ -323,7 +323,7 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgml.Messag
 	}
 
 	// update units
-	if value, ok := extraFields["units"]; ok {
+	if value, ok := extraFields[model.KeyUnits]; ok {
 		if unitsRaw, ok := value.(map[string]interface{}); ok {
 			for key, val := range unitsRaw {
 				stringValue := utils.ToString(val)
@@ -333,7 +333,7 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgml.Messag
 	}
 
 	// update metricTypes
-	if value, ok := extraFields["metricTypes"]; ok {
+	if value, ok := extraFields[model.KeyMetricTypes]; ok {
 		if mTypeRaw, ok := value.(map[string]interface{}); ok {
 			for key, value := range mTypeRaw {
 				stringValue := utils.ToString(value)
@@ -343,9 +343,9 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgml.Messag
 	}
 
 	// remove labels, units and metricTypes
-	delete(extraFields, "labels")
-	delete(extraFields, "units")
-	delete(extraFields, "metricTypes")
+	delete(extraFields, model.KeyLabels)
+	delete(extraFields, model.KeyUnits)
+	delete(extraFields, model.KeyMetricTypes)
 
 	for id, value := range extraFields {
 		fieldId := utils.ToString(id)

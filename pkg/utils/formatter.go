@@ -102,7 +102,7 @@ func ToInteger(data interface{}) int64 {
 	value, ok := data.(int64)
 	if !ok {
 		strValue := fmt.Sprintf("%v", data)
-		parsedValue, err := strconv.ParseInt(strValue, 64, 10)
+		parsedValue, err := strconv.ParseInt(strValue, 10, 64)
 		if err != nil {
 			return 0
 		}

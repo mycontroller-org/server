@@ -40,10 +40,15 @@ const (
 
 // keys used in other locations
 const (
-	KeySelector  = "selector"
-	KeyTemplate  = "template"
-	KeyTask      = "task"
-	KeyEventType = "eventType"
-	KeyEvent     = "event"
-	KeyPayload   = "payload"
+	KeySelector    = "selector"
+	KeyTemplate    = "template"
+	KeyTask        = "task"
+	KeyEventType   = "eventType"
+	KeyEvent       = "event"
+	KeyPayload     = "payload"
+	KeyValue       = "value"
+	KeyMetricTypes = "metricTypes"
+	KeyOthers      = "others"
+	KeyLabels      = "labels"
+	KeyUnits       = "units"
 )
