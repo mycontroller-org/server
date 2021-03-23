@@ -17,7 +17,6 @@ import (
 	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/javascript"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
@@ -151,7 +150,7 @@ func updateNodeData(msg *msgml.Message) error {
 				return err
 			}
 			node.Others.Set(d.Name, bl, node.Labels)
-			// TODO: send it to metric store
+			return writeNodeMetric(node, mtsml.MetricTypeGaugeFloat, model.FieldBatteryLevel, bl)
 
 		default:
 			if d.Name != model.FieldNone {
@@ -469,11 +468,9 @@ func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, l
 		updateMetric = field.Current.Timestamp.Equal(field.NoChangeSince)
 	}
 	if updateMetric {
-		err = mts.SVC.Write(field)
+		err = writeFieldMetric(field)
 		if err != nil {
-			zap.L().Error("failed to write into metrics database", zap.Error(err), zap.Any("field", field))
-		} else {
-			zap.L().Debug("inserted in to metric db", zap.String("timeTaken", time.Since(startTime).String()))
+			return err
 		}
 	} else {
 		zap.L().Debug("skipped metric update", zap.Any("field", field))

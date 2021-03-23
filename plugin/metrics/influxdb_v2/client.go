@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -15,7 +14,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
-	mtrml "github.com/mycontroller-org/backend/v2/plugin/metrics"
+	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"go.uber.org/zap"
 )
 
@@ -148,11 +147,11 @@ func (c *Client) Close() error {
 }
 
 // WriteBlocking implementation
-func (c *Client) WriteBlocking(field *fml.Field) error {
-	if field.MetricType == mtrml.MetricTypeNone {
+func (c *Client) WriteBlocking(data *mtsml.InputData) error {
+	if data.MetricType == mtsml.MetricTypeNone {
 		return nil
 	}
-	p, err := getPoint(field)
+	p, err := getPoint(data)
 	if err != nil {
 		return err
 	}
@@ -160,11 +159,11 @@ func (c *Client) WriteBlocking(field *fml.Field) error {
 	return wb.WritePoint(ctx, p)
 }
 
-func (c *Client) Write(field *fml.Field) error {
-	if field.MetricType == mtrml.MetricTypeNone {
+func (c *Client) Write(data *mtsml.InputData) error {
+	if data.MetricType == mtsml.MetricTypeNone {
 		return nil
 	}
-	p, err := getPoint(field)
+	p, err := getPoint(data)
 	if err != nil {
 		return err
 	}
@@ -173,84 +172,45 @@ func (c *Client) Write(field *fml.Field) error {
 	return nil
 }
 
-func getPoint(field *fml.Field) (*write.Point, error) {
-	fields := make(map[string]interface{})
-	if field.MetricType == mtrml.MetricTypeGEO {
-		_f, err := geoData(field.Current.Value)
-		if err != nil {
-			return nil, err
-		}
-		fields = _f
-	} else {
-		fields[FieldValue] = field.Current.Value
-	}
-	mt, err := measurementName(field.MetricType)
+func getPoint(data *mtsml.InputData) (*write.Point, error) {
+	measurementName, err := getMeasurementName(data.MetricType)
 	if err != nil {
 		return nil, err
 	}
-	p := influxdb2.NewPoint(mt,
-		map[string]string{
-			TagGateway: field.GatewayID,
-			TagNode:    field.NodeID,
-			TagSensor:  field.SensorID,
-			TagField:   field.FieldID,
-			TagID:      field.ID,
-		},
-		fields,
-		field.Current.Timestamp,
+	// convert tags to lowercase
+	tags := make(map[string]string)
+	for name, value := range data.Tags {
+		formattedName := strings.ToLower(name)
+		tags[formattedName] = value
+	}
+
+	p := influxdb2.NewPoint(
+		measurementName,
+		tags,
+		data.Fields,
+		data.Time,
 	)
 	return p, nil
 }
 
-func geoData(pl interface{}) (map[string]interface{}, error) {
-	// payload should be in this format
-	// latitude;longitude;altitude. E.g. "55.722526;13.017972;18"
-	d := make(map[string]interface{})
-	ds := strings.Split(pl.(string), ";")
-	if len(ds) < 2 {
-		return nil, fmt.Errorf("invalid geo data: %s", pl)
-	}
-	lat, err := strconv.ParseFloat(ds[0], 64)
-	if err != nil {
-		return nil, fmt.Errorf("invalid float data: %s", pl)
-	}
-	lon, err := strconv.ParseFloat(ds[1], 64)
-	if err != nil {
-		return nil, fmt.Errorf("invalid float data: %s", pl)
-	}
-	alt := float64(0)
-	if len(ds[0]) > 2 {
-		alt, err = strconv.ParseFloat(ds[2], 64)
-		if err != nil {
-			return nil, fmt.Errorf("invalid float data: %s", pl)
-		}
-	}
-
-	d[FieldLatitude] = lat
-	d[FieldLongitude] = lon
-	d[FieldAltitude] = alt
-
-	return d, nil
-}
-
-func measurementName(metricType string) (string, error) {
+func getMeasurementName(metricType string) (string, error) {
 	switch metricType {
-	case mtrml.MetricTypeBinary:
+	case mtsml.MetricTypeBinary:
 		return MeasurementBinary, nil
 
-	case mtrml.MetricTypeGauge:
+	case mtsml.MetricTypeGauge:
 		return MeasurementGaugeInteger, nil
 
-	case mtrml.MetricTypeGaugeFloat:
+	case mtsml.MetricTypeGaugeFloat:
 		return MeasurementGaugeFloat, nil
 
-	case mtrml.MetricTypeCounter:
+	case mtsml.MetricTypeCounter:
 		return MeasurementCounter, nil
 
-	case mtrml.MetricTypeString:
+	case mtsml.MetricTypeString:
 		return MeasurementString, nil
 
-	case mtrml.MetricTypeGEO:
+	case mtsml.MetricTypeGEO:
 		return MeasurementGeo, nil
 
 	default:

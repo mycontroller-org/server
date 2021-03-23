@@ -118,7 +118,7 @@ func buildQuery(metricType, name, bucket, start, stop, window string, filters ma
 	return query
 }
 
-func (c *Client) executeQuery(q mtrml.Query) ([]mtrml.Data, error) {
+func (c *Client) executeQuery(q mtrml.Query) ([]mtrml.ResponseData, error) {
 	// add range
 	start := defaultStart
 	if q.Start != "" {
@@ -128,9 +128,10 @@ func (c *Client) executeQuery(q mtrml.Query) ([]mtrml.Data, error) {
 	filters := make(map[string]string)
 
 	// add measurement
-	measurement, err := measurementName(q.MetricType)
+	measurement, err := getMeasurementName(q.MetricType)
 	if err != nil {
-		// do some action
+		zap.L().Error("error on getting measurement name", zap.Error(err))
+		return nil, err
 	}
 	filters["_measurement"] = measurement
 
@@ -158,7 +159,7 @@ func (c *Client) executeQuery(q mtrml.Query) ([]mtrml.Data, error) {
 		return nil, err
 	}
 
-	metrics := make([]mtrml.Data, 0)
+	metrics := make([]mtrml.ResponseData, 0)
 
 	// Use Next() to iterate over query result lines
 	for tableResult.Next() {
@@ -182,7 +183,7 @@ func (c *Client) executeQuery(q mtrml.Query) ([]mtrml.Data, error) {
 			}
 		}
 
-		metrics = append(metrics, mtrml.Data{Time: record.Time(), MetricType: q.MetricType, Metric: _metric})
+		metrics = append(metrics, mtrml.ResponseData{Time: record.Time(), MetricType: q.MetricType, Metric: _metric})
 
 		if tableResult.Err() != nil {
 			zap.L().Error("Query error", zap.String("name", q.Name), zap.Error(tableResult.Err()))
@@ -194,8 +195,8 @@ func (c *Client) executeQuery(q mtrml.Query) ([]mtrml.Data, error) {
 }
 
 // Query func implementation
-func (c *Client) Query(queryConfig *mtrml.QueryConfig) (map[string][]mtrml.Data, error) {
-	metricsMap := make(map[string][]mtrml.Data)
+func (c *Client) Query(queryConfig *mtrml.QueryConfig) (map[string][]mtrml.ResponseData, error) {
+	metricsMap := make(map[string][]mtrml.ResponseData)
 
 	// fetch metrics details for the given input
 	for _, q := range queryConfig.Individual {

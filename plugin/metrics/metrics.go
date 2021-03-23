@@ -2,17 +2,15 @@ package metrics
 
 import (
 	"time"
-
-	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 )
 
 // Client interface
 type Client interface {
 	Close() error
 	Ping() error
-	Write(field *fml.Field) error
-	WriteBlocking(field *fml.Field) error
-	Query(queryConfig *QueryConfig) (map[string][]Data, error)
+	Write(data *InputData) error
+	WriteBlocking(data *InputData) error
+	Query(queryConfig *QueryConfig) (map[string][]ResponseData, error)
 }
 
 // Metrics database types
@@ -32,6 +30,14 @@ const (
 	MetricTypeGEO        = "geo" // Geo Coordinates or GPS
 )
 
+// Fields
+const (
+	FieldValue     = "value"
+	FieldLatitude  = "latitude"
+	FieldLongitude = "longitude"
+	FieldAltitude  = "altitude"
+)
+
 // Metric query input parameters
 const (
 	QueryKeyName       = "name"
@@ -42,6 +48,14 @@ const (
 	QueryKeyTags       = "tags"
 	QueryKeyFunctions  = "functions"
 )
+
+// InputData to write
+type InputData struct {
+	MetricType string                 `json:"metricType"`
+	Time       time.Time              `json:"timestamp"`
+	Tags       map[string]string      `json:"tags"`
+	Fields     map[string]interface{} `json:"fields"`
+}
 
 // QueryConfig parameters
 type QueryConfig struct {
@@ -60,8 +74,8 @@ type Query struct {
 	Functions  []string          `json:"functions"`
 }
 
-// Data struct
-type Data struct {
+// ResponseData struct
+type ResponseData struct {
 	Time       time.Time              `json:"timestamp"`
 	MetricType string                 `json:"metricType"`
 	Metric     map[string]interface{} `json:"metric"`

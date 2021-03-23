@@ -24,6 +24,7 @@ const (
 	KeyNodeID       = "NodeID"
 	KeySensorID     = "SensorID"
 	KeyFieldID      = "FieldID"
+	KeyFieldName    = "FieldName"
 	KeyUsername     = "Username"
 	KeyEmail        = "Email"
 	KeyHandlerType  = "Type"

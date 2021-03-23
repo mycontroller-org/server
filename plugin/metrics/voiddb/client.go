@@ -1,8 +1,7 @@
 package voiddb
 
 import (
-	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
-	mtrml "github.com/mycontroller-org/backend/v2/plugin/metrics"
+	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 )
 
 // Client for voiddb
@@ -21,12 +20,12 @@ func (c *Client) Close() error { return nil }
 func (c *Client) Ping() error { return nil }
 
 // Write function
-func (c *Client) Write(variable *fml.Field) error { return nil }
+func (c *Client) Write(data *mtsml.InputData) error { return nil }
 
 // WriteBlocking function
-func (c *Client) WriteBlocking(variable *fml.Field) error { return nil }
+func (c *Client) WriteBlocking(data *mtsml.InputData) error { return nil }
 
 // Query function
-func (c *Client) Query(queryConfig *mtrml.QueryConfig) (map[string][]mtrml.Data, error) {
+func (c *Client) Query(queryConfig *mtsml.QueryConfig) (map[string][]mtsml.ResponseData, error) {
 	return nil, nil
 }
