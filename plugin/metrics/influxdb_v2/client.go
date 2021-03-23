@@ -128,11 +128,12 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 
 // Ping to target database
 func (c *Client) Ping() error {
-	s, err := c.Client.Ready(ctx)
+	ready, err := c.Client.Ready(ctx)
 	if err != nil {
+		zap.L().Error("error on getting ready status", zap.Error(err))
 		return err
 	}
-	if !s {
+	if !ready {
 		return errors.New("influx server not ready yet")
 	}
 	return nil
@@ -196,7 +197,7 @@ func getPoint(field *fml.Field) (*write.Point, error) {
 			TagID:      field.ID,
 		},
 		fields,
-		field.LastSeen,
+		field.Current.Timestamp,
 	)
 	return p, nil
 }
