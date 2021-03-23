@@ -77,22 +77,34 @@ func processMessage(item interface{}) {
 	case msg.SensorID != "":
 		switch msg.Type {
 		case msgml.TypeSet: // set fields
-			setFieldData(msg)
+			err := setFieldData(msg)
+			if err != nil {
+				zap.L().Error("error on field data set", zap.Error(err))
+			}
 
 		case msgml.TypeRequest: // request fields
-			requestFieldData(msg)
+			err := requestFieldData(msg)
+			if err != nil {
+				zap.L().Error("error on field data request", zap.Error(err))
+			}
 
 		case msgml.TypePresentation: // update sensor data, like name or other details
-			updateSensorDetail(msg)
+			err := updateSensorDetail(msg)
+			if err != nil {
+				zap.L().Error("error on sensor data update", zap.Error(err))
+			}
 
 		default:
-			zap.L().Warn("Message type not implemented for sensor", zap.String("type", msg.Type), zap.Any("message", msg))
+			zap.L().Warn("message type not implemented for sensor", zap.String("type", msg.Type), zap.Any("message", msg))
 		}
 
 	case msg.NodeID != "":
 		switch msg.Type {
 		case msgml.TypeSet, msgml.TypePresentation: // set node specific data, like battery level, rssi, etc
-			updateNodeData(msg)
+			err := updateNodeData(msg)
+			if err != nil {
+				zap.L().Error("error on node data update", zap.Error(err))
+			}
 
 		case msgml.TypeRequest: // request node specific data
 
@@ -101,7 +113,7 @@ func processMessage(item interface{}) {
 			postMessage(clonedMsg)
 
 		default:
-			zap.L().Warn("Message type not implemented for node", zap.String("type", msg.Type), zap.Any("message", msg))
+			zap.L().Warn("message type not implemented for node", zap.String("type", msg.Type), zap.Any("message", msg))
 		}
 
 	case msg.NodeID == "" && msg.Type == msgml.TypeAction:
@@ -109,10 +121,10 @@ func processMessage(item interface{}) {
 		postMessage(clonedMsg)
 
 	default:
-		zap.L().Warn("This message not handled", zap.Any("message", msg))
+		zap.L().Warn("this message not handled", zap.Any("message", msg))
 	}
 
-	zap.L().Debug("Message processed", zap.String("timeTaken", time.Since(msg.Timestamp).String()), zap.Any("message", msg))
+	zap.L().Debug("message processed", zap.String("timeTaken", time.Since(msg.Timestamp).String()), zap.Any("message", msg))
 }
 
 // update node detail
@@ -146,7 +158,7 @@ func updateNodeData(msg *msgml.Message) error {
 			// update battery level
 			bl, err := strconv.ParseFloat(d.Value, 64)
 			if err != nil {
-				zap.L().Error("Unable to parse batter level", zap.Error(err))
+				zap.L().Error("unable to parse batter level", zap.Error(err))
 				return err
 			}
 			node.Others.Set(d.Name, bl, node.Labels)
@@ -168,7 +180,7 @@ func updateNodeData(msg *msgml.Message) error {
 	// save node data
 	err = nodeAPI.Save(node)
 	if err != nil {
-		zap.L().Error("Unable to update save the node data", zap.Error(err), zap.Any("node", node))
+		zap.L().Error("unable to update save the node data", zap.Error(err), zap.Any("node", node))
 		return err
 	}
 
@@ -216,7 +228,7 @@ func updateSensorDetail(msg *msgml.Message) error {
 
 	err = sensorAPI.Save(sensor)
 	if err != nil {
-		zap.L().Error("Unable to update the sensor in to database", zap.Error(err), zap.Any("sensor", sensor))
+		zap.L().Error("unable to update the sensor in to database", zap.Error(err), zap.Any("sensor", sensor))
 		return err
 	}
 	// post field data to event listeners
@@ -287,7 +299,7 @@ func setFieldData(msg *msgml.Message) error {
 			}
 
 			// update the formatted value
-			zap.L().Debug("Formatting done", zap.Any("oldValue", payload.Value), zap.String("newValue", formattedValue), zap.String("timeTaken", time.Since(startTime).String()))
+			zap.L().Debug("formatting done", zap.Any("oldValue", payload.Value), zap.String("newValue", formattedValue), zap.String("timeTaken", time.Since(startTime).String()))
 
 			// update formatted value into value
 			value = formattedValue
@@ -295,7 +307,10 @@ func setFieldData(msg *msgml.Message) error {
 			// update extra fields if any
 			if len(extraFields) > 0 {
 				labels := payload.Labels.Clone()
-				updateExtraFieldsData(extraFields, msg, labels)
+				err := updateExtraFieldsData(extraFields, msg, labels)
+				if err != nil {
+					zap.L().Error("error on updating extra fields", zap.Error(err))
+				}
 			}
 		}
 		err = updateFieldData(field, payload.Name, payload.Name, payload.MetricType, payload.Unit, payload.Labels, payload.Others, value, msg)
@@ -521,7 +536,7 @@ func postMessage(msg *msgml.Message) {
 	msg.IsReceived = false
 	err := mcbus.Publish(topic, msg)
 	if err != nil {
-		zap.L().Error("Error on posting message", zap.String("topic", topic), zap.Any("message", msg), zap.Error(err))
+		zap.L().Error("error on posting message", zap.String("topic", topic), zap.Any("message", msg), zap.Error(err))
 	}
 }
 
@@ -529,6 +544,6 @@ func postMessage(msg *msgml.Message) {
 func postEvent(eventTopic string, resource interface{}) {
 	err := mcbus.Publish(mcbus.FormatTopic(eventTopic), resource)
 	if err != nil {
-		zap.L().Error("Error on posting resource data", zap.String("topic", eventTopic), zap.Any("resource", resource), zap.Error(err))
+		zap.L().Error("error on posting resource data", zap.String("topic", eventTopic), zap.Any("resource", resource), zap.Error(err))
 	}
 }

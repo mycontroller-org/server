@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 // Runner struct
@@ -13,6 +15,15 @@ type Runner struct {
 	interval     time.Duration
 	isOnetimeJob bool
 	isRunning    *SafeBool
+}
+
+func (r *Runner) StartAsync() {
+	go func() {
+		err := r.Start()
+		if err != nil {
+			zap.L().Error("error on calling start", zap.Error(err), zap.Any("funcName", r.customFunc))
+		}
+	}()
 }
 
 // Start triggers the execution

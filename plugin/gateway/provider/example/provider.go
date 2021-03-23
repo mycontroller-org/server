@@ -22,14 +22,17 @@ type Provider struct {
 }
 
 // Init MySensors provider
-func Init(gatewayConfig *gwml.Config) *Provider {
+func Init(gatewayConfig *gwml.Config) (*Provider, error) {
 	cfg := &Config{}
-	utils.MapToStruct(utils.TagNameNone, gatewayConfig.Provider, cfg)
+	err := utils.MapToStruct(utils.TagNameNone, gatewayConfig.Provider, cfg)
+	if err != nil {
+		return nil, err
+	}
 	provider := &Provider{
 		Config:        cfg,
 		GatewayConfig: gatewayConfig,
 	}
-	return provider
+	return provider, nil
 }
 
 // Start func

@@ -46,7 +46,10 @@ func addFiles(writer *zip.Writer, basePath, baseInZip string) error {
 			newBase := fmt.Sprintf("%s/%s/", basePath, file.Name())
 			newBaseInZip := fmt.Sprintf("%s/%s/", baseInZip, file.Name())
 			zap.L().Debug("file names", zap.String("newbase", newBase), zap.String("newBaseInZip", newBaseInZip))
-			addFiles(writer, newBase, newBaseInZip)
+			err = addFiles(writer, newBase, newBaseInZip)
+			if err != nil {
+				return err
+			}
 		} else {
 			filename := fmt.Sprintf("%s/%s", basePath, file.Name())
 			dat, err := ioutil.ReadFile(filename)

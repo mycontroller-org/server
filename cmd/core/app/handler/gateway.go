@@ -42,7 +42,7 @@ func updateGateway(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if entity.ID == "" {
-		http.Error(w, "ID should not be an empty", 400)
+		http.Error(w, "id should not be an empty", 400)
 		return
 	}
 	err = gwAPI.SaveAndReload(entity)
@@ -62,7 +62,7 @@ func enableGateway(w http.ResponseWriter, r *http.Request) {
 			}
 			return "Enabled", nil
 		}
-		return nil, errors.New("Supply a gateway id")
+		return nil, errors.New("supply a gateway id")
 	}
 	UpdateData(w, r, &ids, updateFn)
 }
@@ -77,7 +77,7 @@ func disableGateway(w http.ResponseWriter, r *http.Request) {
 			}
 			return "Disabled", nil
 		}
-		return nil, errors.New("Supply a gateway id")
+		return nil, errors.New("supply a gateway id")
 	}
 	UpdateData(w, r, &ids, updateFn)
 }
@@ -92,7 +92,7 @@ func reloadGateway(w http.ResponseWriter, r *http.Request) {
 			}
 			return "Reloaded", nil
 		}
-		return nil, errors.New("Supply a gateway id")
+		return nil, errors.New("supply a gateway id")
 	}
 	UpdateData(w, r, &ids, updateFn)
 }
@@ -105,9 +105,9 @@ func deleteGateways(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				return nil, err
 			}
-			return fmt.Sprintf("Deleted: %d", count), nil
+			return fmt.Sprintf("deleted: %d", count), nil
 		}
-		return nil, errors.New("Supply id(s)")
+		return nil, errors.New("supply id(s)")
 	}
 	UpdateData(w, r, &IDs, updateFn)
 }

@@ -44,13 +44,21 @@ func GetService(gatewayCfg *gwml.Config) (*Service, error) {
 	var provider Provider
 	switch gatewayCfg.Provider.GetString(model.NameType) {
 	case TypeMySensorsV2:
-		provider = mysensors.Init(gatewayCfg)
+		mysProvider, err := mysensors.Init(gatewayCfg)
+		if err != nil {
+			return nil, err
+		}
+		provider = mysProvider
 
 	case TypeTasmota:
-		provider = tasmota.Init(gatewayCfg)
+		tasmotaProvider, err := tasmota.Init(gatewayCfg)
+		if err != nil {
+			return nil, err
+		}
+		provider = tasmotaProvider
 
 	default:
-		return nil, fmt.Errorf("Unknown provider:%s", gatewayCfg.Provider.GetString(model.NameType))
+		return nil, fmt.Errorf("unknown provider:%s", gatewayCfg.Provider.GetString(model.NameType))
 	}
 	service := &Service{
 		GatewayConfig: gatewayCfg,
@@ -79,8 +87,11 @@ func (s *Service) Start() error {
 	// start provider
 	err := s.provider.Start(s.addRawMessageToQueueFunc)
 	if err != nil {
-		zap.L().Error("Error", zap.Error(err))
-		mcbus.Unsubscribe(s.topicListenFromCore, s.topicListenFromCoreSubscriptionID)
+		zap.L().Error("error", zap.Error(err))
+		err := mcbus.Unsubscribe(s.topicListenFromCore, s.topicListenFromCoreSubscriptionID)
+		if err != nil {
+			zap.L().Error("error on unsubscribing a topic", zap.Error(err), zap.String("topic", s.topicListenFromCore))
+		}
 
 		s.messageQueue.Close()
 		s.rawMessageQueue.Close()
@@ -90,7 +101,10 @@ func (s *Service) Start() error {
 
 // unsubscribe and stop queues
 func (s *Service) stopService() {
-	mcbus.Unsubscribe(s.topicListenFromCore, s.topicListenFromCoreSubscriptionID)
+	err := mcbus.Unsubscribe(s.topicListenFromCore, s.topicListenFromCoreSubscriptionID)
+	if err != nil {
+		zap.L().Error("error on unsubscribe", zap.Error(err), zap.String("topic", s.topicListenFromCore))
+	}
 	s.messageQueue.Close()
 	s.rawMessageQueue.Close()
 }
@@ -110,7 +124,7 @@ func (s *Service) Stop() error {
 func (s *Service) addRawMessageToQueueFunc(rawMsg *msgml.RawMessage) error {
 	status := s.rawMessageQueue.Produce(rawMsg)
 	if !status {
-		return errors.New("Failed to add rawmessage in to queue")
+		return errors.New("failed to add rawmessage in to queue")
 	}
 	return nil
 }
@@ -217,8 +231,8 @@ func (s *Service) rawMessageProcessor(data interface{}) {
 }
 
 // ClearSleepingMessageQueue clears all the messages on the queue
-func (s *Service) clearSleepingMessageQueue() {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-	s.sleepingMessageQueue = make(map[string][]*msgml.Message)
-}
+// func (s *Service) clearSleepingMessageQueue() {
+// 	s.mutex.Lock()
+// 	defer s.mutex.Unlock()
+// 	s.sleepingMessageQueue = make(map[string][]*msgml.Message)
+// }

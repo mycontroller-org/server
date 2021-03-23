@@ -88,25 +88,40 @@ func processEvent(event interface{}) {
 	case rsml.CommandStart:
 		gwCfg := getGatewayConfig(reqEvent)
 		if gwCfg != nil && helper.IsMine(cfg.IDs, cfg.Labels, gwCfg.ID, gwCfg.Labels) {
-			Start(gwCfg)
+			err := Start(gwCfg)
+			if err != nil {
+				zap.L().Error("error on starting a service", zap.Error(err), zap.String("id", gwCfg.ID))
+			}
 		}
 
 	case rsml.CommandStop:
 		if reqEvent.ID != "" {
-			Stop(reqEvent.ID)
+			err := Stop(reqEvent.ID)
+			if err != nil {
+				zap.L().Error("error on stopping a service", zap.Error(err), zap.String("id", reqEvent.ID))
+			}
 			return
 		}
 		gwCfg := getGatewayConfig(reqEvent)
 		if gwCfg != nil {
-			Stop(gwCfg.ID)
+			err := Stop(gwCfg.ID)
+			if err != nil {
+				zap.L().Error("error on stopping a service", zap.Error(err), zap.String("id", gwCfg.ID))
+			}
 		}
 
 	case rsml.CommandReload:
 		gwCfg := getGatewayConfig(reqEvent)
 		if gwCfg != nil {
-			Stop(gwCfg.ID)
+			err := Stop(gwCfg.ID)
+			if err != nil {
+				zap.L().Error("error on stopping a service", zap.Error(err), zap.String("id", gwCfg.ID))
+			}
 			if helper.IsMine(cfg.IDs, cfg.Labels, gwCfg.ID, gwCfg.Labels) {
-				Start(gwCfg)
+				err := Start(gwCfg)
+				if err != nil {
+					zap.L().Error("error on starting a service", zap.Error(err), zap.String("id", gwCfg.ID))
+				}
 			}
 		}
 

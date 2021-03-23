@@ -14,7 +14,7 @@ func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, tmMsg *mes
 	switch fn {
 
 	case nml.ActionDiscover:
-		return fmt.Errorf("Discover feature not implemented or not supported")
+		return fmt.Errorf("discover feature not implemented or not supported")
 
 	case nml.ActionHeartbeatRequest:
 		tmMsg.Command = cmdStatus
@@ -39,7 +39,7 @@ func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, tmMsg *mes
 	//case nml.ActionFirmwareUpdate:
 
 	default:
-		return fmt.Errorf("This function is not implemented: %s", fn)
+		return fmt.Errorf("this function is not implemented: %s", fn)
 	}
 	return nil
 }

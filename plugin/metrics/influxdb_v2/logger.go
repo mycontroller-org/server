@@ -18,7 +18,12 @@ func getLogger(mode, level, encoding string) *myLogger {
 	return &myLogger{logger: ut.GetLogger(mode, level, encoding, false, callerSkipLevel)}
 }
 
-func (ml *myLogger) Sync() { ml.logger.Sync() }
+func (ml *myLogger) Sync() {
+	err := ml.logger.Sync()
+	if err != nil {
+		zap.L().Error("error on sync", zap.Error(err))
+	}
+}
 
 // SetLogLevel sets allowed logging level.
 func (ml *myLogger) SetLogLevel(logLevel uint) {

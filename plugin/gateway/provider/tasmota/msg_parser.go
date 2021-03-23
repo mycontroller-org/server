@@ -18,7 +18,7 @@ import (
 // ToRawMessage converts the message into raw message
 func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	if len(msg.Payloads) == 0 {
-		return nil, errors.New("There is no payload details on the message")
+		return nil, errors.New("there is no payload details on the message")
 	}
 
 	// converts exactly the first payload. other payloads are ignored.
@@ -48,7 +48,7 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 		}
 
 	default:
-		return nil, fmt.Errorf("This command not implemented: %s", msg.Type)
+		return nil, fmt.Errorf("this command not implemented: %s", msg.Type)
 	}
 
 	// update payload and mqtt topic
@@ -63,7 +63,6 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	// one raw message can contain multiple messages
 	messages := make([]*msgml.Message, 0)
 
-	topicSlice := make([]string, 0)
 	// topic/node-id/command
 	// jktasmota/stat/tasmota_49C88D/STATUS11
 	topic, ok := rawMsg.Others.Get(gwpl.KeyMqttTopic).(string)
@@ -75,7 +74,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 		zap.L().Error("Invalid message format", zap.Any("rawMessage", rawMsg))
 		return nil, nil
 	}
-	topicSlice = tSlice[len(tSlice)-3:]
+	topicSlice := tSlice[len(tSlice)-3:]
 
 	tmMsg := message{
 		Topic:   topicSlice[0],

@@ -30,7 +30,7 @@ func status(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Write(od)
+	WriteResponse(w, od)
 }
 
 func versionData(w http.ResponseWriter, r *http.Request) {
@@ -41,5 +41,5 @@ func versionData(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Write(od)
+	WriteResponse(w, od)
 }

@@ -111,7 +111,7 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Write(od)
+	WriteResponse(w, od)
 }
 
 func getMetricList(w http.ResponseWriter, r *http.Request) {
@@ -142,5 +142,5 @@ func getMetricList(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Write(od)
+	WriteResponse(w, od)
 }

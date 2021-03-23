@@ -43,16 +43,19 @@ const (
 )
 
 // Init MySensors provider
-func Init(gatewayCfg *gwml.Config) *Provider {
+func Init(gatewayCfg *gwml.Config) (*Provider, error) {
 	cfg := &Config{}
-	utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, cfg)
+	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, cfg)
+	if err != nil {
+		return nil, err
+	}
 	provider := &Provider{
 		Config:        cfg,
 		GatewayConfig: gatewayCfg,
 		ProtocolType:  cfg.Protocol.GetString(model.NameType),
 	}
 	zap.L().Debug("Config details", zap.Any("received", gatewayCfg.Provider), zap.Any("converted", cfg))
-	return provider
+	return provider, nil
 }
 
 // Start func
@@ -167,5 +170,5 @@ func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
 	if messageSent {
 		return nil
 	}
-	return fmt.Errorf("No acknowledgement received, tried maximum retries. retryCount:%d", retryCount)
+	return fmt.Errorf("no acknowledgement received, tried maximum retries. retryCount:%d", retryCount)
 }

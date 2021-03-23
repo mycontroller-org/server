@@ -115,13 +115,19 @@ func CopyFile(src, dst string) error {
 
 // WriteFile func
 func WriteFile(dir, filename string, data []byte) error {
-	CreateDir(dir)
+	err := CreateDir(dir)
+	if err != nil {
+		return err
+	}
 	return ioutil.WriteFile(fmt.Sprintf("%s/%s", dir, filename), data, os.ModePerm)
 }
 
 // AppendFile func
 func AppendFile(dir, filename string, data []byte) error {
-	CreateDir(dir)
+	err := CreateDir(dir)
+	if err != nil {
+		return err
+	}
 	f, err := os.OpenFile(fmt.Sprintf("%s/%s", dir, filename), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
@@ -133,13 +139,19 @@ func AppendFile(dir, filename string, data []byte) error {
 
 // ReadFile func
 func ReadFile(dir, filename string) ([]byte, error) {
-	CreateDir(dir)
+	err := CreateDir(dir)
+	if err != nil {
+		return nil, err
+	}
 	return ioutil.ReadFile(fmt.Sprintf("%s/%s", dir, filename))
 }
 
 // ListFiles func
 func ListFiles(dir string) ([]ml.File, error) {
-	CreateDir(dir)
+	err := CreateDir(dir)
+	if err != nil {
+		return nil, err
+	}
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return nil, err
@@ -162,7 +174,10 @@ func ListFiles(dir string) ([]ml.File, error) {
 
 // ListDirs func
 func ListDirs(dir string) ([]ml.File, error) {
-	CreateDir(dir)
+	err := CreateDir(dir)
+	if err != nil {
+		return nil, err
+	}
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return nil, err

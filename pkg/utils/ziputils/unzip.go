@@ -26,7 +26,10 @@ func Unzip(zipFilename string, destinationDirectory string) error {
 		}
 
 		if file.FileInfo().IsDir() {
-			os.MkdirAll(fPath, os.ModePerm)
+			err := os.MkdirAll(fPath, os.ModePerm)
+			if err != nil {
+				return err
+			}
 			continue
 		}
 

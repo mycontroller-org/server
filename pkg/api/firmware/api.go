@@ -13,7 +13,6 @@ import (
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
@@ -44,7 +43,7 @@ func GetByID(id string) (fml.Firmware, error) {
 // Save config into disk
 func Save(firmware *fml.Firmware, keepFile bool) error {
 	if firmware.ID == "" {
-		firmware.ID = ut.RandID()
+		firmware.ID = utils.RandID()
 	}
 	filters := []stgml.Filter{
 		{Key: ml.KeyID, Value: firmware.ID},
@@ -100,7 +99,10 @@ func Upload(sourceFile multipart.File, id, filename string) error {
 	newFilename := fmt.Sprintf("%s%s", id, extension)
 
 	firmwareDirectory := ml.GetDirectoryFirmware()
-	utils.CreateDir(firmwareDirectory)
+	err = utils.CreateDir(firmwareDirectory)
+	if err != nil {
+		return err
+	}
 
 	fullPath := fmt.Sprintf("%s/%s", firmwareDirectory, newFilename)
 	targetFile, err := os.OpenFile(fullPath, os.O_WRONLY|os.O_CREATE, os.ModePerm)

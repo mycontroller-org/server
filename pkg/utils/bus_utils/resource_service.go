@@ -46,9 +46,13 @@ func PostToResourceService(id string, data interface{}, serviceType string, comm
 		Command: command,
 		ID:      id,
 	}
-	event.SetData(data)
+	err := event.SetData(data)
+	if err != nil {
+		zap.L().Error("failed to set data", zap.Error(err))
+		return
+	}
 	topic := mcbus.FormatTopic(mcbus.TopicServiceResourceServer)
-	err := mcbus.Publish(topic, event)
+	err = mcbus.Publish(topic, event)
 	if err != nil {
 		zap.L().Error("failed to post an event", zap.String("topic", topic), zap.Any("event", event))
 	}

@@ -102,7 +102,7 @@ func updateGatewayState(reqEvent *rsModel.Event) error {
 	if gw.Enabled && delay != nil && !gwReconnectStore.IsAvailable(gw.ID) {
 		job := concurrencyUtils.GetAsyncRunner(getTriggerGatewayStartFunc(reqEvent.ID), *delay, true)
 		gwReconnectStore.Add(gw.ID, job)
-		go job.Start()
+		job.StartAsync()
 	}
 
 	return nil

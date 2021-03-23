@@ -48,7 +48,6 @@ const (
 	defaultFlushWorkerInterval     = time.Second * 1
 	defaultMaxSize                 = utils.MiB * 2
 	defaultMaxAge                  = time.Hour * 24 * 3 // 3 days
-	defaultMaxBackup               = 5
 )
 
 // InitFileMessageLogger file logger
@@ -73,7 +72,7 @@ func InitFileMessageLogger(gatewayID string, config cmap.CustomMap, formatterFun
 // inits the the queue and channel and starts the async runner
 func (rml *FileMessageLogger) Start() {
 	rml.mutex.Lock()
-	rml.mutex.Unlock()
+	defer rml.mutex.Unlock()
 
 	if rml.isRunning {
 		zap.L().Warn("this instance is in running state, close it and re initialize then start")
@@ -96,8 +95,8 @@ func (rml *FileMessageLogger) Start() {
 	rml.runnerFlushLog = concurrencyUtils.GetAsyncRunner(rml.workerFlushLog, flushWorkerInterval, false)
 	rml.runnerRotateLog = concurrencyUtils.GetAsyncRunner(rml.workerRotateLog, logRotateWorkerInterval, false)
 
-	go rml.runnerFlushLog.Start()
-	go rml.runnerRotateLog.Start()
+	rml.runnerFlushLog.StartAsync()
+	rml.runnerRotateLog.StartAsync()
 }
 
 // Close terminates the async runner
@@ -111,13 +110,6 @@ func (rml *FileMessageLogger) Close() {
 
 	if rml.runnerRotateLog != nil {
 		rml.runnerRotateLog.Close()
-	}
-}
-
-func stopWorker(workerStopChan chan bool) {
-	if workerStopChan != nil {
-		workerStopChan <- true
-		close(workerStopChan)
 	}
 }
 

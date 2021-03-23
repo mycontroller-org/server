@@ -54,7 +54,7 @@ func StartHandler() error {
 	} else {
 		defaultPage := func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "text/plain")
-			w.Write([]byte("Web directory not configured."))
+			WriteResponse(w, []byte("Web directory not configured."))
 		}
 		router.HandleFunc("/", defaultPage)
 	}
@@ -73,7 +73,7 @@ func StartHandler() error {
 
 	addr := fmt.Sprintf("%s:%d", cfg.BindAddress, cfg.Port)
 
-	zap.L().Info("Listening HTTP service on", zap.String("address", addr), zap.String("webDirectory", cfg.WebDirectory))
+	zap.L().Info("listening HTTP service on", zap.String("address", addr), zap.String("webDirectory", cfg.WebDirectory))
 	return http.ListenAndServe(addr, handler)
 }
 
@@ -96,5 +96,6 @@ func postSuccessResponse(w http.ResponseWriter, data interface{}) {
 		postErrorResponse(w, err.Error(), 500)
 		return
 	}
-	w.Write(out)
+
+	WriteResponse(w, out)
 }

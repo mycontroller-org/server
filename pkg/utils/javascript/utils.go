@@ -22,7 +22,10 @@ func Execute(scriptString string, variables map[string]interface{}) (interface{}
 	console.Enable(rt)
 
 	for name, value := range variables {
-		rt.Set(name, value)
+		err := rt.Set(name, value)
+		if err != nil {
+			zap.L().Warn("error on setting a value", zap.String("name", name), zap.Any("value", value))
+		}
 	}
 	zap.L().Debug("executing script", zap.Any("variables", variables), zap.String("scriptString", scriptString))
 	response, err := rt.RunString(string(scriptString))

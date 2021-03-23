@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	fwStore = firmwareStore{store: make(map[string]*firmwareRaw, 0)}
+	fwStore = firmwareStore{store: make(map[string]*firmwareRaw)}
 )
 
 type firmwareStore struct {
@@ -33,11 +33,11 @@ func (fws *firmwareStore) get(key string) (*firmwareRaw, bool) {
 }
 
 // remove a firmware from the store
-func (fws *firmwareStore) remove(key string) {
-	fws.mutex.Lock()
-	defer fws.mutex.Unlock()
-	delete(fws.store, key)
-}
+// func (fws *firmwareStore) remove(key string) {
+// 	fws.mutex.Lock()
+// 	defer fws.mutex.Unlock()
+// 	delete(fws.store, key)
+// }
 
 // check the firmware access data and remove it if it is too old
 func (fws *firmwareStore) purge() {
@@ -67,6 +67,5 @@ func toStruct(hex string, out interface{}) error {
 		return err
 	}
 	r := bytes.NewReader(hb)
-	binary.Read(r, binary.LittleEndian, out)
-	return nil
+	return binary.Read(r, binary.LittleEndian, out)
 }

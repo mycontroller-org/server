@@ -18,7 +18,7 @@ import (
 // ToRawMessage converts to gateway specific
 func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	if len(msg.Payloads) == 0 {
-		return nil, errors.New("There is no payload details on the message")
+		return nil, errors.New("there is no payload details on the message")
 	}
 
 	payload := msg.Payloads[0]
@@ -88,7 +88,7 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 		}
 
 	default:
-		return nil, fmt.Errorf("This command not implemented: %s", msg.Type)
+		return nil, fmt.Errorf("this command not implemented: %s", msg.Type)
 	}
 
 	if msMsg.Type == "" {
@@ -182,9 +182,8 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
 				msgPL.Name = ml.FieldName
 				msgPL.Labels.Set(LabelTypeString, _type)
-			} else {
-				// not supported? should I have to return from here?
 			}
+			// else: not supported? should I have to return from here?
 
 		case cmdSet, cmdRequest:
 			err := updateFieldAndUnit(msMsg, &msgPL)
@@ -208,12 +207,11 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 					if _type == "S_ARDUINO_REPEATER_NODE" {
 						msgPL.Labels.Set(LabelNodeType, "repeater")
 					}
-				} else {
-					// return?
 				}
-			} else {
-				// return?
+				// else: return?
 			}
+			// else: return?
+
 		case cmdInternal:
 			proceedFurther, err := updateNodeInternalMessages(msg, &msgPL, msMsg)
 			if err != nil || !proceedFurther {
@@ -231,7 +229,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 				msg.Type = msgml.TypeAction
 				msgPL.Name = typeName
 			} else {
-				return nil, fmt.Errorf("Message stream type not found: %s", msMsg.Type)
+				return nil, fmt.Errorf("message stream type not found: %s", msMsg.Type)
 			}
 		}
 
@@ -276,7 +274,7 @@ func (p *Provider) decodeRawMessage(rawMsg *msgml.RawMessage) (*message, error) 
 		d = _d
 	// implement this one
 	default:
-		return nil, fmt.Errorf("This type not implements. protocol type: %s", p.ProtocolType)
+		return nil, fmt.Errorf("this type not implements. protocol type: %s", p.ProtocolType)
 	}
 
 	// MySensors message
@@ -295,17 +293,17 @@ func (p *Provider) decodeRawMessage(rawMsg *msgml.RawMessage) (*message, error) 
 func verifyAndUpdateNodeSensorIDs(msMsg *message, msg *msgml.Message) error {
 	nID, err := strconv.ParseUint(msMsg.NodeID, 10, 64)
 	if err != nil {
-		return fmt.Errorf("Invalid node id: %s", msMsg.NodeID)
+		return fmt.Errorf("invalid node id: %s", msMsg.NodeID)
 	}
 	if nID > idBroadcastInt {
-		return fmt.Errorf("Invalid node id: %s", msMsg.NodeID)
+		return fmt.Errorf("invalid node id: %s", msMsg.NodeID)
 	}
 	sID, err := strconv.ParseUint(msMsg.SensorID, 10, 64)
 	if err != nil {
-		return fmt.Errorf("Invalid sensor id: %s", msMsg.SensorID)
+		return fmt.Errorf("invalid sensor id: %s", msMsg.SensorID)
 	}
 	if sID > idBroadcastInt {
-		return fmt.Errorf("Invalid sensor id: %s", msMsg.SensorID)
+		return fmt.Errorf("invalid sensor id: %s", msMsg.SensorID)
 	}
 
 	// Remove sensor id, if it is a internal message
@@ -332,7 +330,7 @@ func updateFieldAndUnit(msMsg *message, msgPL *msgml.Data) error {
 		msgPL.Labels.Set(LabelTypeString, fieldName)
 	} else {
 		fieldName = "V_CUSTOM"
-		zap.L().Warn("This set, req not found. update this. Setting as V_CUSTOM", zap.Any("msMsg", msMsg))
+		zap.L().Warn("set or req not found. update this. Setting as V_CUSTOM", zap.Any("msMsg", msMsg))
 	}
 
 	// get type and unit
@@ -340,9 +338,9 @@ func updateFieldAndUnit(msMsg *message, msgPL *msgml.Data) error {
 		msgPL.Name = fieldName
 		msgPL.MetricType = typeUnit.Type
 		msgPL.Unit = typeUnit.Unit
-	} else {
-		// not supported? should I have to return from here?
 	}
+	// else: not supported? should I have to return from here?
+
 	return nil
 }
 
@@ -380,7 +378,7 @@ func updateNodeInternalMessages(msg *msgml.Message, msgPL *msgml.Data, msMsg *me
 		// if non hits just return from here
 		return false, nil
 	}
-	return false, fmt.Errorf("Message internal type not found: %s", msMsg.Type)
+	return false, fmt.Errorf("message internal type not found: %s", msMsg.Type)
 }
 
 // converts message to MySensors specific type

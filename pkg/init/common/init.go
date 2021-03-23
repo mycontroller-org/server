@@ -17,7 +17,12 @@ import (
 
 // InitBasicServices func
 func InitBasicServices(initCustomServices, closeCustomServices func()) {
-	defer zap.L().Sync()
+	defer func() {
+		err := zap.L().Sync()
+		if err != nil {
+			zap.L().Error("error on sync", zap.Error(err))
+		}
+	}()
 
 	start := time.Now()
 	cfg.Init()

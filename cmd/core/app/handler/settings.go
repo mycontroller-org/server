@@ -28,7 +28,7 @@ func getSystemSettings(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Write(od)
+	WriteResponse(w, od)
 }
 
 func updateSettings(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +40,7 @@ func updateSettings(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if entity.ID == "" {
-		http.Error(w, "ID should not be an empty", 400)
+		http.Error(w, "id should not be an empty", 400)
 		return
 	}
 	err = settingsAPI.UpdateSettings(entity)

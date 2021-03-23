@@ -133,7 +133,10 @@ func UpdateSystemSettings(settings *settingsML.Settings) error {
 		return err
 	}
 	if systemSettings.GeoLocation.AutoUpdate {
-		AutoUpdateSystemGEOLocation()
+		err = AutoUpdateSystemGEOLocation()
+		if err != nil {
+			return err
+		}
 	}
 	// send geo location updated event
 

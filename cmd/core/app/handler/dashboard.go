@@ -31,7 +31,7 @@ func updateDashboard(w http.ResponseWriter, r *http.Request) {
 	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
 		entity := d.(*dbml.Config)
 		if entity.ID == "" {
-			return errors.New("ID should not be an empty")
+			return errors.New("id should not be an empty")
 		}
 		return nil
 	}
@@ -46,9 +46,9 @@ func deleteDashboards(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				return nil, err
 			}
-			return fmt.Sprintf("Deleted: %d", count), nil
+			return fmt.Sprintf("deleted: %d", count), nil
 		}
-		return nil, errors.New("Supply id(s)")
+		return nil, errors.New("supply id(s)")
 	}
 	UpdateData(w, r, &IDs, updateFn)
 }

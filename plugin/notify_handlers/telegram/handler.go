@@ -163,7 +163,10 @@ func (c *Client) GetMe() (*User, error) {
 	}
 
 	user := &User{}
-	utils.MapToStruct(utils.TagNameJSON, resp.Result, user)
+	err = utils.MapToStruct(utils.TagNameJSON, resp.Result, user)
+	if err != nil {
+		return nil, err
+	}
 	return user, nil
 }
 

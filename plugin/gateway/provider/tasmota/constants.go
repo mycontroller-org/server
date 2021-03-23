@@ -18,11 +18,6 @@ type message struct {
 	Payload string
 }
 
-// example: jktasmota/stat/tasmota_49C88D/STATUS11
-func (m *message) toMessage(topic string) {
-
-}
-
 func (m *message) toString() string {
 	return fmt.Sprintf("%s/%s/%s", m.Topic, m.NodeID, m.Command)
 }
@@ -40,7 +35,6 @@ const (
 	sensorIDNone  = ""
 	sensorControl = "Control"
 	sensorWiFi    = "WiFi"
-	sensorNetwork = "Network"
 	sensorMemory  = "Memory"
 	sensorTime    = "Time"
 	sensorLogging = "Logging"

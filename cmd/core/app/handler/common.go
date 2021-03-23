@@ -55,7 +55,7 @@ func Params(request *http.Request) ([]stgml.Filter, *stgml.Pagination, error) {
 			}
 			return int64(intValue), nil
 		}
-		return 0, fmt.Errorf("Key '%s' not found in the map", key)
+		return 0, fmt.Errorf("key '%s' not found in the map", key)
 	}
 
 	v, err := lFunc("limit")
@@ -128,7 +128,7 @@ func FindOne(w http.ResponseWriter, r *http.Request, en string, e interface{}) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Write(od)
+	WriteResponse(w, od)
 }
 
 // LoadData loads data
@@ -151,7 +151,7 @@ func LoadData(w http.ResponseWriter, r *http.Request, entityFn func(f []stgml.Fi
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Write(od)
+	WriteResponse(w, od)
 }
 
 // UpdateData loads data
@@ -187,7 +187,7 @@ func UpdateData(w http.ResponseWriter, r *http.Request, entity interface{}, upda
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Write(od)
+	WriteResponse(w, od)
 }
 
 // FindMany func
@@ -210,7 +210,7 @@ func FindMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Write(od)
+	WriteResponse(w, od)
 }
 
 // SaveEntity func
@@ -253,4 +253,12 @@ func LoadEntity(w http.ResponseWriter, r *http.Request, entity interface{}) erro
 		return err
 	}
 	return nil
+}
+
+func WriteResponse(w http.ResponseWriter, data []byte) {
+	_, err := w.Write(data)
+	if err != nil {
+		zap.L().Error("error on writing response", zap.Error(err))
+		return
+	}
 }

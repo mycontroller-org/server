@@ -33,7 +33,7 @@ func updateForwardPayload(w http.ResponseWriter, r *http.Request) {
 	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
 		e := d.(*fpml.Mapping)
 		if e.ID == "" {
-			return errors.New("ID should not be an empty")
+			return errors.New("id should not be an empty")
 		}
 		return nil
 	}
@@ -48,9 +48,9 @@ func deleteForwardPayload(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				return nil, err
 			}
-			return fmt.Sprintf("Deleted: %d", count), nil
+			return fmt.Sprintf("deleted: %d", count), nil
 		}
-		return nil, errors.New("Supply id(s)")
+		return nil, errors.New("supply id(s)")
 	}
 	UpdateData(w, r, &ids, updateFn)
 }
@@ -65,7 +65,7 @@ func enableForwardPayload(w http.ResponseWriter, r *http.Request) {
 			}
 			return "Enabled", nil
 		}
-		return nil, errors.New("Supply a mapping id")
+		return nil, errors.New("supply a mapping id")
 	}
 	UpdateData(w, r, &ids, updateFn)
 }
@@ -80,7 +80,7 @@ func disableForwardPayload(w http.ResponseWriter, r *http.Request) {
 			}
 			return "Disabled", nil
 		}
-		return nil, errors.New("Supply a mapping id")
+		return nil, errors.New("supply a mapping id")
 	}
 	UpdateData(w, r, &ids, updateFn)
 }

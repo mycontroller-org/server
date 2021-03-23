@@ -104,18 +104,27 @@ func postProcessServiceEvent(event interface{}) {
 
 	case rsML.CommandStop:
 		if reqEvent.ID != "" {
-			Stop(reqEvent.ID)
+			err := Stop(reqEvent.ID)
+			if err != nil {
+				zap.L().Error("error on stopping a service", zap.Error(err))
+			}
 			return
 		}
 		cfg := getConfig(reqEvent)
 		if cfg != nil {
-			Stop(cfg.ID)
+			err := Stop(cfg.ID)
+			if err != nil {
+				zap.L().Error("error on stopping a service", zap.Error(err))
+			}
 		}
 
 	case rsML.CommandReload:
 		cfg := getConfig(reqEvent)
 		if cfg != nil && helper.IsMine(svcCFG.IDs, svcCFG.Labels, cfg.ID, cfg.Labels) {
-			Reload(cfg)
+			err := Reload(cfg)
+			if err != nil {
+				zap.L().Error("error on reload a service", zap.Error(err))
+			}
 		}
 
 	case rsML.CommandUnloadAll:

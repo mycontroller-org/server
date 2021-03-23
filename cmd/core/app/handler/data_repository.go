@@ -31,7 +31,7 @@ func updateDataRepositoryItem(w http.ResponseWriter, r *http.Request) {
 	bwFunc := func(d interface{}, f *[]stgML.Filter) error {
 		e := d.(*dataRepositoryML.Config)
 		if e.ID == "" {
-			return errors.New("ID field should not be empty")
+			return errors.New("id field should not be empty")
 		}
 		return nil
 	}
@@ -46,9 +46,9 @@ func deleteDataRepositoryItems(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				return nil, err
 			}
-			return fmt.Sprintf("Deleted: %d", count), nil
+			return fmt.Sprintf("deleted: %d", count), nil
 		}
-		return nil, errors.New("Supply id(s)")
+		return nil, errors.New("supply id(s)")
 	}
 	UpdateData(w, r, &IDs, updateFn)
 }
