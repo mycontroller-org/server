@@ -148,10 +148,11 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 			return nil, err
 		}
 		zap.L().Info("influxdb detected version data", zap.String("name", cfg.Name), zap.Any("health data", health))
-
-		detectedVersion := *health.Version
-		if strings.HasPrefix(detectedVersion, "1.8") { // 1.8.4
-			selectedVersion = QueryClientV1
+		if health != nil && health.Version != nil {
+			detectedVersion := *health.Version
+			if strings.HasPrefix(detectedVersion, "1.8") { // 1.8.4
+				selectedVersion = QueryClientV1
+			}
 		}
 	}
 
