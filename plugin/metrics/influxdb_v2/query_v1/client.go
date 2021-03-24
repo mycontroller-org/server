@@ -153,63 +153,66 @@ func (qv1 *QueryV1) buildQuery(query *mtsml.Query, measurement string) string {
 	}
 
 	// start building query from here
-	finalQuery := "SELECT"
+	var qBuilder strings.Builder
+	qBuilder.WriteString("SELECT")
 
 	switch query.MetricType {
 	case mtsml.MetricTypeGauge, mtsml.MetricTypeGaugeFloat, mtsml.MetricTypeCounter:
 		for index, fn := range functions {
-			if index == 0 {
-				finalQuery += fmt.Sprintf(" %s", fn)
-			} else {
-				finalQuery += fmt.Sprintf(", %s", fn)
+			if index != 0 {
+				qBuilder.WriteByte(',')
 			}
+			fmt.Fprintf(&qBuilder, " %s", fn)
 		}
 
 	case mtsml.MetricTypeBinary:
-		finalQuery += ` "value"`
+		fmt.Fprint(&qBuilder, ` "value"`)
 
 	default:
-		finalQuery += ` "value"`
+		fmt.Fprint(&qBuilder, ` "value"`)
 
 	}
 
-	finalQuery += fmt.Sprintf(` FROM "%s"`, measurement)
+	fmt.Fprintf(&qBuilder, ` FROM "%s"`, measurement)
 
 	index := 0
 	for tag, value := range query.Tags {
 		if index == 0 {
-			finalQuery += fmt.Sprintf(` WHERE "%s"='%s'`, tag, value)
+			qBuilder.WriteString(" WHERE")
 		} else {
-			finalQuery += fmt.Sprintf(` AND "%s"='%s'`, tag, value)
+			qBuilder.WriteString(" AND")
 		}
+		fmt.Fprintf(&qBuilder, ` "%s"='%s'`, tag, value)
 		index++
 	}
 
-	if index > 0 {
-		finalQuery += " AND"
+	if index == 0 {
+		qBuilder.WriteString(" WHERE")
+	} else {
+		qBuilder.WriteString(" AND")
 	}
 
 	_, err := time.ParseDuration(query.Start)
 	if err != nil {
-		finalQuery += fmt.Sprintf(" time >= '%v'", query.Start)
+		fmt.Fprintf(&qBuilder, " time >= '%s'", query.Start)
 	} else {
-		finalQuery += fmt.Sprintf(" time >= now()%v", query.Start)
+		fmt.Fprintf(&qBuilder, " time >= now()%s", query.Start)
 	}
 
 	if query.Stop != "" {
 		_, err := time.ParseDuration(query.Stop)
 		if err != nil {
-			finalQuery += fmt.Sprintf(" AND time >= '%v'", query.Stop)
+			fmt.Fprintf(&qBuilder, " AND time >= '%s'", query.Stop)
 		} else {
-			finalQuery += fmt.Sprintf(" AND time >= now()%v", query.Stop)
+			fmt.Fprintf(&qBuilder, " AND time >= now()%s", query.Stop)
 		}
 	} else {
-		finalQuery += " AND time <= now()"
+		qBuilder.WriteString(" AND time <= now()")
 	}
 
 	switch query.MetricType {
 	case mtsml.MetricTypeGauge, mtsml.MetricTypeGaugeFloat, mtsml.MetricTypeCounter:
-		finalQuery += fmt.Sprintf(" GROUP BY time(%s) fill(null)", query.Window)
+		fmt.Fprintf(&qBuilder, " GROUP BY time(%s) fill(null)", query.Window)
 	}
-	return finalQuery
+	return qBuilder.String()
 }
