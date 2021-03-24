@@ -57,5 +57,5 @@ func (ep *Endpoint) Write(rawMsg *msgml.RawMessage) error {
 
 // Close the connection
 func (ep *Endpoint) Close() error {
-	return ep.Close()
+	return ep.Client.Close()
 }

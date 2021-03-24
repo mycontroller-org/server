@@ -2,7 +2,6 @@ package influx
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -15,6 +14,9 @@ import (
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
+	queryML "github.com/mycontroller-org/backend/v2/plugin/metrics/influxdb_v2/query"
+	queryV1 "github.com/mycontroller-org/backend/v2/plugin/metrics/influxdb_v2/query_v1"
+	queryV2 "github.com/mycontroller-org/backend/v2/plugin/metrics/influxdb_v2/query_v2"
 	"go.uber.org/zap"
 )
 
@@ -26,15 +28,17 @@ const (
 
 // Config of the influxdb_v2
 type Config struct {
-	Name          string
-	Organization  string
-	Bucket        string
-	URI           string
-	Token         string
-	Username      string
-	Password      string
-	FlushInterval string       `yaml:"flush_interval"`
-	Logger        LoggerConfig `yaml:"logger"`
+	Name               string       `yaml:"name"`
+	Organization       string       `yaml:"organization"`
+	Bucket             string       `yaml:"bucket"`
+	URI                string       `yaml:"uri"`
+	Token              string       `yaml:"token"`
+	Username           string       `yaml:"username"`
+	Password           string       `yaml:"password"`
+	InsecureSkipVerify bool         `yaml:"insecure_skip_verify"`
+	QueryClientVersion string       `yaml:"query_client_version"`
+	FlushInterval      string       `yaml:"flush_interval"`
+	Logger             LoggerConfig `yaml:"logger"`
 }
 
 // LoggerConfig struct
@@ -46,27 +50,26 @@ type LoggerConfig struct {
 
 // Client of the influxdb
 type Client struct {
-	Client influxdb2.Client
-	Config Config
-	stop   chan bool
-	buffer []*fml.Field
-	logger *myLogger
-	mutex  *sync.RWMutex
+	Client      influxdb2.Client
+	queryClient queryML.QueryAPI
+	Config      Config
+	stop        chan bool
+	buffer      []*fml.Field
+	logger      *myLogger
+	mutex       *sync.RWMutex
 }
 
 // global constants
 const (
-	FieldValue     = "value"
-	FieldLatitude  = "latitude"
-	FieldLongitude = "longitude"
-	FieldAltitude  = "altitude"
-
 	MeasurementBinary       = "mc_binary_data"
 	MeasurementGaugeInteger = "mc_gauge_int_data"
 	MeasurementGaugeFloat   = "mc_gauge_float_data"
 	MeasurementCounter      = "mc_counter_data"
 	MeasurementString       = "mc_string_data"
 	MeasurementGeo          = "mc_geo_data"
+
+	QueryClientV1 = "v1"
+	QueryClientV2 = "v2"
 )
 
 // variables
@@ -110,6 +113,7 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 	opts := influxdb2.DefaultOptions()
 	opts.SetFlushInterval(uint(flushInterval.Milliseconds()))
 	iClient := influxdb2.NewClient(cfg.URI, cfg.Token)
+
 	c := &Client{
 		Config: cfg,
 		Client: iClient,
@@ -118,23 +122,58 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 		mutex:  &sync.RWMutex{},
 		logger: _logger,
 	}
+
 	err = c.Ping()
 	if err != nil {
 		return nil, err
+	}
+
+	selectedVersion := ""
+
+	if cfg.QueryClientVersion != "" {
+		ver := strings.ToLower(cfg.QueryClientVersion)
+		if ver == QueryClientV1 || ver == QueryClientV2 {
+			selectedVersion = ver
+		} else {
+			zap.L().Warn("invalid query client version, going with auto detection", zap.String("input", cfg.QueryClientVersion))
+		}
+	}
+
+	if selectedVersion == "" {
+		selectedVersion = QueryClientV2 // update default route, if non works
+
+		// get version
+		health, err := c.Client.Health(ctx)
+		if err != nil {
+			return nil, err
+		}
+		zap.L().Info("influxdb detected version data", zap.String("name", cfg.Name), zap.Any("health data", health))
+
+		detectedVersion := *health.Version
+		if strings.HasPrefix(detectedVersion, "1.8") { // 1.8.4
+			selectedVersion = QueryClientV1
+		}
+	}
+
+	zap.L().Debug("selected query client", zap.String("query client version", selectedVersion))
+
+	// update query client
+	if selectedVersion == QueryClientV1 {
+		c.queryClient = queryV1.InitClientV1(cfg.URI, cfg.InsecureSkipVerify, cfg.Bucket, cfg.Username, cfg.Password)
+	} else {
+		c.queryClient = queryV2.InitQueryV2(iClient.QueryAPI(cfg.Organization), cfg.Bucket)
 	}
 	return c, nil
 }
 
 // Ping to target database
 func (c *Client) Ping() error {
-	ready, err := c.Client.Ready(ctx)
+	health, err := c.Client.Health(ctx)
 	if err != nil {
 		zap.L().Error("error on getting ready status", zap.Error(err))
 		return err
 	}
-	if !ready {
-		return errors.New("influx server not ready yet")
-	}
+	zap.L().Debug("health status", zap.Any("health", health))
 	return nil
 }
 
@@ -144,6 +183,45 @@ func (c *Client) Close() error {
 	close(c.stop)
 	c.Client.Close()
 	return nil
+}
+
+// Query func implementation
+func (c *Client) Query(queryConfig *mtsml.QueryConfig) (map[string][]mtsml.ResponseData, error) {
+	metricsMap := make(map[string][]mtsml.ResponseData)
+
+	// fetch metrics details for the given input
+	for _, q := range queryConfig.Individual {
+		// clone global config
+		query := queryConfig.Global.Clone()
+		// update individual config
+		query.Merge(&q)
+
+		// add range
+		if query.Start == "" {
+			query.Start = queryML.DefaultStart
+		}
+
+		// add aggregateWindow
+		if query.Window == "" {
+			query.Window = queryML.DefaultWindow
+		}
+
+		// get measurement
+		measurement, err := getMeasurementName(query.MetricType)
+		if err != nil {
+			zap.L().Error("error on getting measurement name", zap.Error(err))
+			return nil, err
+		}
+
+		// execute query
+		metrics, err := c.queryClient.ExecuteQuery(&query, measurement)
+		if err != nil {
+			return metricsMap, err
+		}
+		metricsMap[q.Name] = metrics
+	}
+
+	return metricsMap, nil
 }
 
 // WriteBlocking implementation

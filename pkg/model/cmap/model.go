@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/mycontroller-org/backend/v2/pkg/utils/normalize"
+	"go.uber.org/zap"
 )
 
 // CustomStringMap data
@@ -82,7 +83,7 @@ func (csm CustomStringMap) GetBool(key string) bool {
 	key = normalize.Key(key)
 	v, err := strconv.ParseBool(csm.Get(key))
 	if err != nil {
-		// TODO: needs to pass it to logger?
+		zap.L().Debug("error on conversion", zap.Error(err), zap.Any("value", v))
 	}
 	return v
 }
@@ -92,7 +93,7 @@ func (csm CustomStringMap) GetIgnoreBool(key string) bool {
 	key = normalize.Key(key)
 	v, err := strconv.ParseBool(csm.Get(GetIgnoreKey(key)))
 	if err != nil {
-		// TODO: needs to pass it to logger?
+		zap.L().Debug("error on conversion", zap.Error(err), zap.Any("value", v))
 	}
 	return v
 }
@@ -102,7 +103,7 @@ func (csm CustomStringMap) GetInt(key string) int {
 	key = normalize.Key(key)
 	v, err := strconv.ParseInt(csm.Get(key), 10, 64)
 	if err != nil {
-		// TODO: needs to pass it to logger?
+		zap.L().Debug("error on conversion", zap.Error(err), zap.Any("value", v))
 	}
 	return int(v)
 }
@@ -112,7 +113,7 @@ func (csm CustomStringMap) GetFloat(key string) float64 {
 	key = normalize.Key(key)
 	v, err := strconv.ParseFloat(csm.Get(key), 64)
 	if err != nil {
-		// TODO: needs to pass it to logger?
+		zap.L().Debug("error on conversion", zap.Error(err), zap.Any("value", v))
 	}
 	return v
 }

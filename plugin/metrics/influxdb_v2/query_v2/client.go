@@ -1,4 +1,4 @@
-package influx
+package queryv2
 
 import (
 	"context"
@@ -6,22 +6,28 @@ import (
 	"strconv"
 	"strings"
 
-	mtrml "github.com/mycontroller-org/backend/v2/plugin/metrics"
+	"github.com/influxdata/influxdb-client-go/v2/api"
+	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
+	queryML "github.com/mycontroller-org/backend/v2/plugin/metrics/influxdb_v2/query"
 	"go.uber.org/zap"
 )
 
-// contants
-const (
-	defaultWindow = "5m"
-	defaultStart  = "-1h"
-)
+// QueryV2 struct
+type QueryV2 struct {
+	api    api.QueryAPI
+	bucket string
+}
 
-func filter(name, value string) string {
+func InitQueryV2(api api.QueryAPI, bucket string) *QueryV2 {
+	return &QueryV2{api: api, bucket: bucket}
+}
+
+func (qv2 *QueryV2) filter(name, value string) string {
 	name = strings.ToLower(name)
 	return fmt.Sprintf(` |> filter(fn: (r) => r["%s"] == "%s")`, name, value)
 }
 
-func aggregateWindowFunc(name, window string) (string, string) {
+func (qv2 *QueryV2) aggregateWindowFunc(name, window string) (string, string) {
 	return name, fmt.Sprintf(`
 		%[1]s = data 
 			|> aggregateWindow(every: %[2]s, fn: %[1]s) 
@@ -29,7 +35,7 @@ func aggregateWindowFunc(name, window string) (string, string) {
 			|> toFloat()`, name, window)
 }
 
-func aggregateWindowPercentileFunc(percentile, window string) (string, string) {
+func (qv2 *QueryV2) aggregateWindowPercentileFunc(percentile, window string) (string, string) {
 	p := float64(0.99)
 	tmp := strings.SplitN(percentile, "_", 2)
 	if len(tmp) == 2 {
@@ -47,7 +53,7 @@ func aggregateWindowPercentileFunc(percentile, window string) (string, string) {
 			|> toFloat()`, fnName, window, p)
 }
 
-func union(name string, fns []string) string {
+func (qv2 *QueryV2) union(name string, fns []string) string {
 	if len(fns) == 0 {
 		return ""
 	}
@@ -63,7 +69,7 @@ func union(name string, fns []string) string {
 			|> yield(name: "%s")`, finalData, name)
 }
 
-func buildQuery(metricType, name, bucket, start, stop, window string, filters map[string]string, functions []string) string {
+func (qv2 *QueryV2) buildQuery(metricType, name, bucket, start, stop, window string, filters map[string]string, functions []string) string {
 	// add bucket
 	query := fmt.Sprintf(`data = from(bucket: "%s")`, bucket)
 
@@ -76,14 +82,14 @@ func buildQuery(metricType, name, bucket, start, stop, window string, filters ma
 
 	// add filters
 	for n, v := range filters {
-		query += filter(n, v)
+		query += qv2.filter(n, v)
 	}
 
 	// convert to float
 	query += `  |> toFloat()`
 
 	switch metricType {
-	case mtrml.MetricTypeGaugeFloat, mtrml.MetricTypeGauge:
+	case mtsml.MetricTypeGaugeFloat, mtsml.MetricTypeGauge:
 		// add default functions, if none available
 		if len(functions) == 0 {
 			functions = []string{"mean", "min", "max"}
@@ -95,44 +101,33 @@ func buildQuery(metricType, name, bucket, start, stop, window string, filters ma
 			fn = strings.ToLower(fn)
 			var fnName, definition string
 			if strings.HasPrefix(fn, "percentile") {
-				fnName, definition = aggregateWindowPercentileFunc(fn, window)
+				fnName, definition = qv2.aggregateWindowPercentileFunc(fn, window)
 			} else {
-				fnName, definition = aggregateWindowFunc(fn, window)
+				fnName, definition = qv2.aggregateWindowFunc(fn, window)
 			}
 			fns = append(fns, fnName)
 			query += definition
 		}
 		// add union
-		query += union(name, fns)
+		query += qv2.union(name, fns)
 
-	case mtrml.MetricTypeBinary:
+	case mtsml.MetricTypeBinary:
 		query += fmt.Sprintf(
 			`data
 				|> toFloat()
 				|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
 				|> drop(fn: (column) => not contains(value: column, set: ["_time", "%[1]s"]))
-				|> yield(name: "%[2]s")`, FieldValue, name)
+				|> yield(name: "%[2]s")`, queryML.FieldValue, name)
 	}
 
 	// final query
 	return query
 }
 
-func (c *Client) executeQuery(q mtrml.Query) ([]mtrml.ResponseData, error) {
-	// add range
-	start := defaultStart
-	if q.Start != "" {
-		start = q.Start
-	}
-
+func (qv2 *QueryV2) ExecuteQuery(q *mtsml.Query, measurement string) ([]mtsml.ResponseData, error) {
 	filters := make(map[string]string)
 
 	// add measurement
-	measurement, err := getMeasurementName(q.MetricType)
-	if err != nil {
-		zap.L().Error("error on getting measurement name", zap.Error(err))
-		return nil, err
-	}
 	filters["_measurement"] = measurement
 
 	// add tags
@@ -141,25 +136,18 @@ func (c *Client) executeQuery(q mtrml.Query) ([]mtrml.ResponseData, error) {
 	}
 
 	// add field value
-	filters["_field"] = FieldValue
+	filters["_field"] = queryML.FieldValue
 
-	// add aggregateWindow
-	window := defaultWindow
-	if q.Window != "" {
-		window = q.Window
-	}
-
-	query := buildQuery(q.MetricType, q.Name, c.Config.Bucket, start, q.Stop, window, filters, q.Functions)
+	query := qv2.buildQuery(q.MetricType, q.Name, qv2.bucket, q.Start, q.Stop, q.Window, filters, q.Functions)
 
 	zap.L().Debug("query", zap.String("query", query))
 
-	api := c.Client.QueryAPI(c.Config.Organization)
-	tableResult, err := api.Query(context.Background(), query)
+	tableResult, err := qv2.api.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
 	}
 
-	metrics := make([]mtrml.ResponseData, 0)
+	metrics := make([]mtsml.ResponseData, 0)
 
 	// Use Next() to iterate over query result lines
 	for tableResult.Next() {
@@ -183,7 +171,7 @@ func (c *Client) executeQuery(q mtrml.Query) ([]mtrml.ResponseData, error) {
 			}
 		}
 
-		metrics = append(metrics, mtrml.ResponseData{Time: record.Time(), MetricType: q.MetricType, Metric: _metric})
+		metrics = append(metrics, mtsml.ResponseData{Time: record.Time(), MetricType: q.MetricType, Metric: _metric})
 
 		if tableResult.Err() != nil {
 			zap.L().Error("Query error", zap.String("name", q.Name), zap.Error(tableResult.Err()))
@@ -192,25 +180,4 @@ func (c *Client) executeQuery(q mtrml.Query) ([]mtrml.ResponseData, error) {
 
 	//zap.L().Debug("query response", zap.String("query", query), zap.Any("result", metrics))
 	return metrics, nil
-}
-
-// Query func implementation
-func (c *Client) Query(queryConfig *mtrml.QueryConfig) (map[string][]mtrml.ResponseData, error) {
-	metricsMap := make(map[string][]mtrml.ResponseData)
-
-	// fetch metrics details for the given input
-	for _, q := range queryConfig.Individual {
-		// clone global config
-		query := queryConfig.Global.Clone()
-		// update individual config
-		query.Merge(&q)
-		// execute query
-		metrics, err := c.executeQuery(query)
-		if err != nil {
-			return metricsMap, err
-		}
-		metricsMap[q.Name] = metrics
-	}
-
-	return metricsMap, nil
 }
