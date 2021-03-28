@@ -33,13 +33,13 @@ const (
 // static sources
 const (
 	sourceIDNone    = ""
-	sourceIDControl = "control"
-	sourceIDWiFi    = "wifi"
-	sourceIDMemory  = "memory"
-	sourceIDTime    = "time"
-	sourceIDLogging = "logging"
-	sourceIDCounter = "counter"
-	sourceIDAnalog  = "analog"
+	sourceIDControl = "Control"
+	sourceIDWiFi    = "WiFi"
+	sourceIDMemory  = "Memory"
+	sourceIDTime    = "Time"
+	sourceIDLogging = "Logging"
+	sourceIDCounter = "Counter"
+	sourceIDAnalog  = "Analog"
 )
 
 // tele state ignore fields
