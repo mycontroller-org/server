@@ -8,6 +8,7 @@ import (
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
+	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	sch "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
@@ -103,6 +104,26 @@ func (s *Store) writeToDisk() {
 }
 
 func (s *Store) dump(entityName string, index int, data interface{}, provider string) {
+	// update user to userPassword to keep the password on the json export
+	if entityName == model.EntityUser {
+		if users, ok := data.([]interface{}); ok {
+			usersWithPasswd := make([]userML.UserWithPassword, 0)
+			for _, userInterface := range users {
+				user, ok := userInterface.(*userML.User)
+				if !ok {
+					zap.L().Error("error on converting the data to user slice, continue with default data type", zap.String("inputType", fmt.Sprintf("%T", userInterface)))
+					break
+				}
+				usersWithPasswd = append(usersWithPasswd, userML.UserWithPassword(*user))
+			}
+			if len(usersWithPasswd) > 0 {
+				data = usersWithPasswd
+			}
+		} else {
+			zap.L().Error("error on converting the data to user slice, continue with default data type", zap.String("inputType", fmt.Sprintf("%T", data)))
+		}
+	}
+
 	var dataBytes []byte
 	var err error
 	switch provider {

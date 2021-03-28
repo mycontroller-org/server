@@ -19,9 +19,9 @@ import (
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
-	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
 	pml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
@@ -34,26 +34,26 @@ var (
 
 var (
 	entitiesList = map[string]func(f []pml.Filter, p *pml.Pagination) (*pml.Result, error){
-		ml.EntityGateway:        gatewayAPI.List,
-		ml.EntityNode:           nodeAPI.List,
-		ml.EntitySensor:         sensorAPI.List,
-		ml.EntitySensorField:    fieldAPI.List,
-		ml.EntityFirmware:       firmwareAPI.List,
-		ml.EntityUser:           userAPI.List,
-		ml.EntityDashboard:      dashboardAPI.List,
-		ml.EntityForwardPayload: forwardPayloadAPI.List,
-		ml.EntityNotifyHandler:  notificationHandlerAPI.List,
-		ml.EntityTask:           taskAPI.List,
-		ml.EntityScheduler:      schedulerAPI.List,
-		ml.EntitySettings:       settingsAPI.List,
-		ml.EntityDataRepository: dataRepositoryAPI.List,
+		model.EntityGateway:        gatewayAPI.List,
+		model.EntityNode:           nodeAPI.List,
+		model.EntitySensor:         sensorAPI.List,
+		model.EntitySensorField:    fieldAPI.List,
+		model.EntityFirmware:       firmwareAPI.List,
+		model.EntityUser:           userAPI.List,
+		model.EntityDashboard:      dashboardAPI.List,
+		model.EntityForwardPayload: forwardPayloadAPI.List,
+		model.EntityNotifyHandler:  notificationHandlerAPI.List,
+		model.EntityTask:           taskAPI.List,
+		model.EntityScheduler:      schedulerAPI.List,
+		model.EntitySettings:       settingsAPI.List,
+		model.EntityDataRepository: dataRepositoryAPI.List,
 	}
 )
 
 // ExecuteExport exports data from database to disk
 func ExecuteExport(targetDir, exportType string) error {
 	if isRunning.IsSet() {
-		return errors.New("There is a exporter job in progress")
+		return errors.New("there is a exporter job in progress")
 	}
 	isRunning.Set()
 	defer isRunning.Reset()
@@ -68,7 +68,7 @@ func ExecuteExport(targetDir, exportType string) error {
 			p.Offset = offset
 			result, err := listFn(nil, p)
 			if err != nil {
-				zap.L().Error("Failed to get entities", zap.String("entityName", entityName), zap.Error(err))
+				zap.L().Error("failed to get entities", zap.String("entityName", entityName), zap.Error(err))
 				return err
 			}
 
@@ -84,6 +84,20 @@ func ExecuteExport(targetDir, exportType string) error {
 }
 
 func dump(targetDir, entityName string, index int, data interface{}, exportType string) {
+	// update user to userPassword to keep the password on the json export
+	if entityName == model.EntityUser {
+		if users, ok := data.(*[]userML.User); ok {
+			usersWithPasswd := make([]userML.UserWithPassword, 0)
+			for _, user := range *users {
+				usersWithPasswd = append(usersWithPasswd, userML.UserWithPassword(user))
+			}
+			if len(usersWithPasswd) > 0 {
+				data = usersWithPasswd
+			}
+		} else {
+			zap.L().Error("error on converting the data to user slice, continue with default data type", zap.String("inputType", fmt.Sprintf("%T", data)))
+		}
+	}
 	var dataBytes []byte
 	var err error
 	switch exportType {
@@ -106,7 +120,7 @@ func dump(targetDir, entityName string, index int, data interface{}, exportType 
 
 	filename := fmt.Sprintf("%s%s%d.%s", entityName, "__", index, exportType)
 	dir := fmt.Sprintf("%s/%s", targetDir, exportType)
-	err = ut.WriteFile(targetDir, filename, dataBytes)
+	err = utils.WriteFile(targetDir, filename, dataBytes)
 	if err != nil {
 		zap.L().Error("failed to write data to disk", zap.String("directory", dir), zap.String("filename", filename), zap.Error(err))
 	}

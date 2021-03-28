@@ -25,3 +25,6 @@ func (u *User) MarshalJSON() ([]byte, error) {
 	x.Password = ""
 	return json.Marshal(x)
 }
+
+// UserWithPassword used to keep the password on json export
+type UserWithPassword User
