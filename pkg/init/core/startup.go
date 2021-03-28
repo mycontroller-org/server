@@ -7,6 +7,7 @@ import (
 	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	systemJobs "github.com/mycontroller-org/backend/v2/pkg/service/system_jobs"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/hashed"
 	"github.com/mycontroller-org/backend/v2/pkg/version"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
@@ -34,9 +35,14 @@ func UpdateInitialUser() {
 		zap.L().Error("failed to list users", zap.Error(err))
 	}
 	if users.Count == 0 {
+		hashedPassword, err := hashed.GenerateHash("admin")
+		if err != nil {
+			zap.L().Fatal("unable to get hashed password", zap.Error(err))
+			return
+		}
 		adminUser := &userML.User{
 			Username: "admin",
-			Password: "admin",
+			Password: hashedPassword,
 			FullName: "Admin User",
 			Email:    "admin@example.com",
 		}

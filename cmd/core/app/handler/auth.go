@@ -9,6 +9,7 @@ import (
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/hashed"
 )
 
 func registerAuthRoutes(router *mux.Router) {
@@ -43,7 +44,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//compare the user from the request, with the one we defined:
-	if userLogin.Username != userDB.Username || userLogin.Password != userDB.Password {
+	if userLogin.Username != userDB.Username || !hashed.IsValidPassword(userDB.Password, userLogin.Password) {
 		postErrorResponse(w, "Please provide valid login details", 401)
 		return
 	}
@@ -110,6 +111,13 @@ func updateProfile(w http.ResponseWriter, r *http.Request) {
 
 	if entity.Password == "" {
 		entity.Password = user.Password
+	} else {
+		hashedPassword, err := hashed.GenerateHash(entity.Password)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		entity.Password = hashedPassword
 	}
 
 	err = userAPI.Save(entity)
