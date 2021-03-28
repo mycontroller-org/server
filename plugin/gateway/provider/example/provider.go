@@ -21,7 +21,7 @@ type Provider struct {
 	Protocol      gwpl.Protocol
 }
 
-// Init MySensors provider
+// Init provider
 func Init(gatewayConfig *gwml.Config) (*Provider, error) {
 	cfg := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gatewayConfig.Provider, cfg)

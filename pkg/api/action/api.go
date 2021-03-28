@@ -64,11 +64,11 @@ func ExecuteActionOnResourceByQuickID(quickID, payload string) error {
 		nodeID := kvMap[model.KeyNodeID]
 		return toNode(gatewayID, nodeID, payload)
 
-	case utils.ContainsString(quickIdUL.QuickIDSensor, resourceType):
+	case utils.ContainsString(quickIdUL.QuickIDSource, resourceType):
 		// no action needed
 
-	case utils.ContainsString(quickIdUL.QuickIDSensorField, resourceType):
-		return toSensorField(kvMap[model.KeyGatewayID], kvMap[model.KeyNodeID], kvMap[model.KeySensorID], kvMap[model.KeyFieldID], payload)
+	case utils.ContainsString(quickIdUL.QuickIDField, resourceType):
+		return ToField(kvMap[model.KeyGatewayID], kvMap[model.KeyNodeID], kvMap[model.KeySourceID], kvMap[model.KeyFieldID], payload)
 
 	case utils.ContainsString(quickIdUL.QuickIDTask, resourceType):
 		return toTask(kvMap[model.KeyID], payload)
@@ -128,10 +128,10 @@ func ExecuteActionOnResourceByLabels(resourceType string, labels cmap.CustomStri
 			}
 		}
 
-	case utils.ContainsString(quickIdUL.QuickIDSensor, resourceType):
+	case utils.ContainsString(quickIdUL.QuickIDSource, resourceType):
 		// no action needed
 
-	case utils.ContainsString(quickIdUL.QuickIDSensorField, resourceType):
+	case utils.ContainsString(quickIdUL.QuickIDField, resourceType):
 		result, err := fieldAPI.List(filters, pagination)
 		if err != nil {
 			return err
@@ -142,7 +142,7 @@ func ExecuteActionOnResourceByLabels(resourceType string, labels cmap.CustomStri
 		items := result.Data.(*[]fieldML.Field)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
-			err = toSensorField(item.GatewayID, item.NodeID, item.SensorID, item.FieldID, payload)
+			err = ToField(item.GatewayID, item.NodeID, item.SourceID, item.FieldID, payload)
 			if err != nil {
 				zap.L().Error("error on sending data", zap.Error(err), zap.String("fieldID", item.ID), zap.String("payload", payload))
 			}

@@ -10,7 +10,6 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	influxdb2log "github.com/influxdata/influxdb-client-go/v2/log"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
 	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
@@ -70,15 +69,6 @@ const (
 
 	QueryClientV1 = "v1"
 	QueryClientV2 = "v2"
-)
-
-// variables
-var (
-	TagGateway = strings.ToLower(model.KeyGatewayID)
-	TagNode    = strings.ToLower(model.KeyNodeID)
-	TagSensor  = strings.ToLower(model.KeySensorID)
-	TagField   = strings.ToLower(model.KeyFieldID)
-	TagID      = strings.ToLower(model.KeyID)
 )
 
 // NewClient of influxdb

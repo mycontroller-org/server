@@ -11,7 +11,7 @@ type Field struct {
 	ID            string               `json:"id"`
 	GatewayID     string               `json:"gatewayId"`
 	NodeID        string               `json:"nodeId"`
-	SensorID      string               `json:"sensorId"`
+	SourceID      string               `json:"sourceId"`
 	FieldID       string               `json:"fieldId"`
 	Name          string               `json:"name"`
 	MetricType    string               `json:"metricType"`

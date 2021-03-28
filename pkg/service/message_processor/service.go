@@ -8,19 +8,19 @@ import (
 
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
+	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	sml "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
+	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/javascript"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
-	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
+	mtsML "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"go.uber.org/zap"
 )
 
@@ -44,7 +44,7 @@ func Init() error {
 }
 
 func onMessageReceive(event *busML.BusData) {
-	msg := &msgml.Message{}
+	msg := &msgML.Message{}
 	err := event.ToStruct(msg)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
@@ -70,45 +70,45 @@ func Close() error {
 
 // processMessage from the queue
 func processMessage(item interface{}) {
-	msg := item.(*msgml.Message)
+	msg := item.(*msgML.Message)
 	zap.L().Debug("Starting Message Processing", zap.Any("message", msg))
 
 	switch {
-	case msg.SensorID != "":
+	case msg.SourceID != "":
 		switch msg.Type {
-		case msgml.TypeSet: // set fields
+		case msgML.TypeSet: // set fields
 			err := setFieldData(msg)
 			if err != nil {
 				zap.L().Error("error on field data set", zap.Error(err))
 			}
 
-		case msgml.TypeRequest: // request fields
+		case msgML.TypeRequest: // request fields
 			err := requestFieldData(msg)
 			if err != nil {
 				zap.L().Error("error on field data request", zap.Error(err))
 			}
 
-		case msgml.TypePresentation: // update sensor data, like name or other details
-			err := updateSensorDetail(msg)
+		case msgML.TypePresentation: // update source data, like name or other details
+			err := updateSourceDetail(msg)
 			if err != nil {
-				zap.L().Error("error on sensor data update", zap.Error(err))
+				zap.L().Error("error on source data update", zap.Error(err))
 			}
 
 		default:
-			zap.L().Warn("message type not implemented for sensor", zap.String("type", msg.Type), zap.Any("message", msg))
+			zap.L().Warn("message type not implemented for source", zap.String("type", msg.Type), zap.Any("message", msg))
 		}
 
 	case msg.NodeID != "":
 		switch msg.Type {
-		case msgml.TypeSet, msgml.TypePresentation: // set node specific data, like battery level, rssi, etc
+		case msgML.TypeSet, msgML.TypePresentation: // set node specific data, like battery level, rssi, etc
 			err := updateNodeData(msg)
 			if err != nil {
 				zap.L().Error("error on node data update", zap.Error(err))
 			}
 
-		case msgml.TypeRequest: // request node specific data
+		case msgML.TypeRequest: // request node specific data
 
-		case msgml.TypeAction: // providers will take care of action type messages
+		case msgML.TypeAction: // providers will take care of action type messages
 			clonedMsg := msg.Clone() // clone the message
 			postMessage(clonedMsg)
 
@@ -116,7 +116,7 @@ func processMessage(item interface{}) {
 			zap.L().Warn("message type not implemented for node", zap.String("type", msg.Type), zap.Any("message", msg))
 		}
 
-	case msg.NodeID == "" && msg.Type == msgml.TypeAction:
+	case msg.NodeID == "" && msg.Type == msgML.TypeAction:
 		clonedMsg := msg.Clone() // clone the message
 		postMessage(clonedMsg)
 
@@ -128,10 +128,10 @@ func processMessage(item interface{}) {
 }
 
 // update node detail
-func updateNodeData(msg *msgml.Message) error {
+func updateNodeData(msg *msgML.Message) error {
 	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
 	if err != nil { // TODO: check entry availability on error message
-		node = &nml.Node{
+		node = &nodeML.Node{
 			GatewayID: msg.GatewayID,
 			NodeID:    msg.NodeID,
 		}
@@ -162,7 +162,7 @@ func updateNodeData(msg *msgml.Message) error {
 				return err
 			}
 			node.Others.Set(d.Name, bl, node.Labels)
-			return writeNodeMetric(node, mtsml.MetricTypeGaugeFloat, model.FieldBatteryLevel, bl)
+			return writeNodeMetric(node, mtsML.MetricTypeGaugeFloat, model.FieldBatteryLevel, bl)
 
 		default:
 			if d.Name != model.FieldNone {
@@ -190,60 +190,60 @@ func updateNodeData(msg *msgml.Message) error {
 	return nil
 }
 
-func updateSensorDetail(msg *msgml.Message) error {
-	sensor, err := sensorAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID)
+func updateSourceDetail(msg *msgML.Message) error {
+	source, err := sourceAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID)
 	if err != nil { // TODO: check entry availability on error message
-		sensor = &sml.Sensor{
+		source = &sourceML.Source{
 			GatewayID: msg.GatewayID,
 			NodeID:    msg.NodeID,
-			SensorID:  msg.SensorID,
+			SourceID:  msg.SourceID,
 		}
 	}
 
 	// update last seen
-	sensor.LastSeen = msg.Timestamp
+	source.LastSeen = msg.Timestamp
 
 	// init labels and others
-	sensor.Labels = sensor.Labels.Init()
-	sensor.Others = sensor.Others.Init()
+	source.Labels = source.Labels.Init()
+	source.Others = source.Others.Init()
 
 	for _, payload := range msg.Payloads {
 		switch payload.Name {
 		case model.FieldName: // set name
-			if !sensor.Labels.GetIgnoreBool(model.LabelName) {
-				sensor.Name = payload.Value
+			if !source.Labels.GetIgnoreBool(model.LabelName) {
+				source.Name = payload.Value
 			}
 
 		default: // set other variables
 			if payload.Name != model.FieldNone {
-				sensor.Others.Set(payload.Name, payload.Value, sensor.Labels)
+				source.Others.Set(payload.Name, payload.Value, source.Labels)
 				// TODO: Do we need to report to metric strore?
 			}
 		}
 
 		// update labels and Others
-		sensor.Labels.CopyFrom(payload.Labels)
-		sensor.Others.CopyFrom(payload.Others, sensor.Labels)
+		source.Labels.CopyFrom(payload.Labels)
+		source.Others.CopyFrom(payload.Others, source.Labels)
 	}
 
-	err = sensorAPI.Save(sensor)
+	err = sourceAPI.Save(source)
 	if err != nil {
-		zap.L().Error("unable to update the sensor in to database", zap.Error(err), zap.Any("sensor", sensor))
+		zap.L().Error("unable to update the source in to database", zap.Error(err), zap.Any("source", source))
 		return err
 	}
 	// post field data to event listeners
-	postEvent(mcbus.TopicEventSensor, sensor)
+	postEvent(mcbus.TopicEventSource, source)
 	return nil
 }
 
-func setFieldData(msg *msgml.Message) error {
+func setFieldData(msg *msgML.Message) error {
 	for _, payload := range msg.Payloads {
-		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, payload.Name)
+		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, payload.Name)
 		if err != nil { // TODO: check entry availability on error message
-			field = &fml.Field{
+			field = &fieldML.Field{
 				GatewayID: msg.GatewayID,
 				NodeID:    msg.NodeID,
-				SensorID:  msg.SensorID,
+				SourceID:  msg.SourceID,
 				FieldID:   payload.Name,
 			}
 		}
@@ -262,7 +262,7 @@ func setFieldData(msg *msgml.Message) error {
 
 			responseValue, err := javascript.Execute(formatter, scriptInput)
 			if err != nil {
-				zap.L().Error("error on executing script", zap.Error(err), zap.Any("inputValue", payload.Value), zap.String("gateway", field.GatewayID), zap.String("node", field.NodeID), zap.String("sensor", field.SensorID), zap.String("fieldID", field.FieldID), zap.String("script", formatter))
+				zap.L().Error("error on executing script", zap.Error(err), zap.Any("inputValue", payload.Value), zap.String("gateway", field.GatewayID), zap.String("node", field.NodeID), zap.String("source", field.SourceID), zap.String("fieldID", field.FieldID), zap.String("script", formatter))
 				return err
 			}
 
@@ -315,13 +315,13 @@ func setFieldData(msg *msgml.Message) error {
 		}
 		err = updateFieldData(field, payload.Name, payload.Name, payload.MetricType, payload.Unit, payload.Labels, payload.Others, value, msg)
 		if err != nil {
-			zap.L().Error("error on updating field data", zap.Error(err), zap.String("gateway", msg.GatewayID), zap.String("node", msg.NodeID), zap.String("sensor", msg.SensorID), zap.String("field", payload.Name))
+			zap.L().Error("error on updating field data", zap.Error(err), zap.String("gateway", msg.GatewayID), zap.String("node", msg.NodeID), zap.String("source", msg.SourceID), zap.String("field", payload.Name))
 		}
 	}
 	return nil
 }
 
-func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgml.Message, labels cmap.CustomStringMap) error {
+func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgML.Message, labels cmap.CustomStringMap) error {
 	units := map[string]string{}
 	metricTypes := map[string]string{}
 
@@ -362,7 +362,7 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgml.Messag
 
 	for id, value := range extraFields {
 		fieldId := utils.ToString(id)
-		metricType := mtsml.MetricTypeNone
+		metricType := mtsML.MetricTypeNone
 		unit := ""
 		// update metricType and unit
 		if mType, ok := metricTypes[fieldId]; ok {
@@ -373,22 +373,24 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgml.Messag
 		}
 		err := updateFieldData(nil, fieldId, fieldId, metricType, unit, labels, nil, value, msg)
 		if err != nil {
-			zap.L().Error("error on updating field data", zap.Error(err), zap.String("gateway", msg.GatewayID), zap.String("node", msg.NodeID), zap.String("sensor", msg.SensorID), zap.String("field", fieldId))
+			zap.L().Error("error on updating field data", zap.Error(err), zap.String("gateway", msg.GatewayID), zap.String("node", msg.NodeID), zap.String("source", msg.SourceID), zap.String("field", fieldId))
 		}
 	}
 
 	return nil
 }
 
-func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, labels cmap.CustomStringMap,
-	others cmap.CustomMap, value interface{}, msg *msgml.Message) error {
+func updateFieldData(
+	field *fieldML.Field, fieldId, name, metricType, unit string, labels cmap.CustomStringMap,
+	others cmap.CustomMap, value interface{}, msg *msgML.Message) error {
+
 	if field == nil {
-		updateField, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, fieldId)
+		updateField, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, fieldId)
 		if err != nil { // TODO: check entry availability on error message
-			field = &fml.Field{
+			field = &fieldML.Field{
 				GatewayID: msg.GatewayID,
 				NodeID:    msg.NodeID,
-				SensorID:  msg.SensorID,
+				SourceID:  msg.SourceID,
 				FieldID:   fieldId,
 			}
 			field.Labels = cmap.CustomStringMap{}
@@ -401,6 +403,10 @@ func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, l
 	// init labels and others
 	labels = labels.Init()
 	others = others.Init()
+
+	// init field labels and others
+	field.Labels = field.Labels.Init()
+	field.Others = field.Others.Init()
 
 	// update last seen
 	field.LastSeen = msg.Timestamp
@@ -419,6 +425,7 @@ func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, l
 		field.Unit = unit
 	}
 
+	zap.L().Debug("field", zap.Any("field", field))
 	// update labels and others
 	field.Labels.CopyFrom(labels)               // copy labels
 	field.Others.CopyFrom(others, field.Labels) // copy other fields
@@ -428,22 +435,22 @@ func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, l
 	var convertedValue interface{}
 	switch field.MetricType {
 
-	case mtsml.MetricTypeBinary:
+	case mtsML.MetricTypeBinary:
 		convertedValue = utils.ToBool(value)
 
-	case mtsml.MetricTypeGaugeFloat:
+	case mtsML.MetricTypeGaugeFloat:
 		convertedValue = utils.ToFloat(value)
 
-	case mtsml.MetricTypeGauge, mtsml.MetricTypeCounter:
+	case mtsML.MetricTypeGauge, mtsML.MetricTypeCounter:
 		convertedValue = utils.ToInteger(value)
 
-	case mtsml.MetricTypeNone:
+	case mtsML.MetricTypeNone:
 		convertedValue = value
 
-	case mtsml.MetricTypeString:
+	case mtsML.MetricTypeString:
 		convertedValue = utils.ToString(value)
 
-	case mtsml.MetricTypeGEO: // Implement geo
+	case mtsML.MetricTypeGEO: // Implement geo
 		convertedValue = value
 
 	default:
@@ -453,7 +460,7 @@ func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, l
 
 	// update shift old payload and update current payload
 	field.Previous = field.Current
-	field.Current = fml.Payload{Value: convertedValue, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
+	field.Current = fieldML.Payload{Value: convertedValue, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
 
 	// update no change since
 	oldValue := fmt.Sprintf("%v", field.Previous.Value)
@@ -471,15 +478,15 @@ func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, l
 	}
 
 	// post field data to event listeners
-	postEvent(mcbus.TopicEventSensorFieldSet, field)
+	postEvent(mcbus.TopicEventFieldSet, field)
 
 	startTime = time.Now()
 	updateMetric := true
-	if field.MetricType == mtsml.MetricTypeNone {
+	if field.MetricType == mtsML.MetricTypeNone {
 		updateMetric = false
 	}
 	// for binary do not update duplicate values
-	if field.MetricType == mtsml.MetricTypeBinary {
+	if field.MetricType == mtsML.MetricTypeBinary {
 		updateMetric = field.Current.Timestamp.Equal(field.NoChangeSince)
 	}
 	if updateMetric {
@@ -493,10 +500,10 @@ func updateFieldData(field *fml.Field, fieldId, name, metricType, unit string, l
 	return nil
 }
 
-func requestFieldData(msg *msgml.Message) error {
-	payloads := make([]msgml.Data, 0)
+func requestFieldData(msg *msgML.Message) error {
+	payloads := make([]msgML.Data, 0)
 	for _, payload := range msg.Payloads {
-		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SensorID, payload.Name)
+		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, payload.Name)
 		if err != nil {
 			// TODO: check availability error message from storage
 			continue
@@ -512,14 +519,14 @@ func requestFieldData(msg *msgml.Message) error {
 		}
 		// post field data to event listeners
 		// NOTE: if the entry not available in database request topic will not be sent
-		postEvent(mcbus.TopicEventSensorFieldRequest, field)
+		postEvent(mcbus.TopicEventFieldRequest, field)
 	}
 
 	if len(payloads) > 0 {
 		clonedMsg := msg.Clone()         // clone the message
 		clonedMsg.Timestamp = time.Now() // set current timestamp
 		clonedMsg.Payloads = payloads    // update payload
-		clonedMsg.Type = msgml.TypeSet   // change type to set
+		clonedMsg.Type = msgML.TypeSet   // change type to set
 		postMessage(clonedMsg)
 	} else {
 		zap.L().Debug("no data found for this request", zap.Any("message", msg))
@@ -528,7 +535,7 @@ func requestFieldData(msg *msgml.Message) error {
 }
 
 // topic to send message to provider gateway
-func postMessage(msg *msgml.Message) {
+func postMessage(msg *msgML.Message) {
 	if msg.IsAck {
 		return // do not respond for ack message
 	}

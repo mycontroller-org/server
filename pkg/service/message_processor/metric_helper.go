@@ -31,7 +31,7 @@ func writeFieldMetric(field *fml.Field) error {
 		model.KeyID:        field.ID,
 		model.KeyGatewayID: field.GatewayID,
 		model.KeyNodeID:    field.NodeID,
-		model.KeySensorID:  field.SensorID,
+		model.KeySourceID:  field.SourceID,
 		model.KeyFieldID:   field.FieldID,
 	}
 

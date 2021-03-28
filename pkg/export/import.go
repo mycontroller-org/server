@@ -14,8 +14,8 @@ import (
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
 	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
-	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
+	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
@@ -30,8 +30,8 @@ import (
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	nhML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
-	sensorML "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
 	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
+	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -108,20 +108,20 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntitySensor:
-		entities := make([]sensorML.Sensor, 0)
+	case model.EntitySource:
+		entities := make([]sourceML.Source, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
 		}
 		for index := 0; index < len(entities); index++ {
-			err = sensorAPI.Save(&entities[index])
+			err = sourceAPI.Save(&entities[index])
 			if err != nil {
 				return err
 			}
 		}
 
-	case model.EntitySensorField:
+	case model.EntityField:
 		entities := make([]fieldML.Field, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {

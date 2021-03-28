@@ -64,9 +64,9 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 			}
 			// get resource details
 			switch {
-			case utils.ContainsString(quickIdUL.QuickIDSensorField, rt):
+			case utils.ContainsString(quickIdUL.QuickIDField, rt):
 				// get field details
-				field, err := field.GetByIDs(kvMap[model.KeyGatewayID], kvMap[model.KeyNodeID], kvMap[model.KeySensorID], kvMap[model.KeyFieldID])
+				field, err := field.GetByIDs(kvMap[model.KeyGatewayID], kvMap[model.KeyNodeID], kvMap[model.KeySourceID], kvMap[model.KeyFieldID])
 				if err != nil {
 					http.Error(w, err.Error(), 500)
 					return

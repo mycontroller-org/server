@@ -2,9 +2,12 @@ package quickid
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model/field"
+	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 )
 
@@ -12,8 +15,8 @@ import (
 var (
 	QuickIDGateway        = []string{"gw", "gateway"}
 	QuickIDNode           = []string{"nd", "node"}
-	QuickIDSensor         = []string{"sn", "sensor"}
-	QuickIDSensorField    = []string{"sf", "sensor_field", "field"}
+	QuickIDSource         = []string{"sn", "source"}
+	QuickIDField          = []string{"sf", "field"}
 	QuickIDTask           = []string{"tk", "task"}
 	QuickIDSchedule       = []string{"sk", "schedule"}
 	QuickIDHandler        = []string{"hd", "handler"}
@@ -33,8 +36,8 @@ func IsValidQuickID(quickID string) bool {
 	validIDs := make([]string, 0)
 	validIDs = append(validIDs, QuickIDGateway...)
 	validIDs = append(validIDs, QuickIDNode...)
-	validIDs = append(validIDs, QuickIDSensor...)
-	validIDs = append(validIDs, QuickIDSensorField...)
+	validIDs = append(validIDs, QuickIDSource...)
+	validIDs = append(validIDs, QuickIDField...)
 	validIDs = append(validIDs, QuickIDTask...)
 	validIDs = append(validIDs, QuickIDSchedule...)
 	validIDs = append(validIDs, QuickIDHandler...)
@@ -51,7 +54,7 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 	// get resource type and full_id
 	typeID := strings.SplitN(quickID, ":", 2)
 	if len(typeID) != 2 {
-		return "", nil, fmt.Errorf("Invalid quick_id: %s, check the format", quickID)
+		return "", nil, fmt.Errorf("invalid quick_id: %s, check the format", quickID)
 	}
 
 	// resource type
@@ -72,7 +75,7 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 	case utils.ContainsString(QuickIDGateway, resourceType):
 		expectedLength := 1
 		if len(values) < expectedLength {
-			return "", nil, fmt.Errorf("Invalid gateway quick_id: %s, check the format", quickID)
+			return "", nil, fmt.Errorf("invalid gateway quick_id: %s, check the format", quickID)
 		}
 		data[model.KeyGatewayID] = normalizeValue(values[0])
 		if len(values) > expectedLength {
@@ -82,7 +85,7 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 	case utils.ContainsString(QuickIDNode, resourceType):
 		expectedLength := 2
 		if len(values) < expectedLength {
-			return "", nil, fmt.Errorf("Invalid node quick_id: %s, check the format", quickID)
+			return "", nil, fmt.Errorf("invalid node quick_id: %s, check the format", quickID)
 		}
 		data[model.KeyGatewayID] = normalizeValue(values[0])
 		data[model.KeyNodeID] = normalizeValue(values[1])
@@ -90,26 +93,26 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 			data[model.KeySelector] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
-	case utils.ContainsString(QuickIDSensor, resourceType):
+	case utils.ContainsString(QuickIDSource, resourceType):
 		expectedLength := 3
 		if len(values) < expectedLength {
-			return "", nil, fmt.Errorf("Invalid sensor quick_id: %s, check the format", quickID)
+			return "", nil, fmt.Errorf("invalid source quick_id: %s, check the format", quickID)
 		}
 		data[model.KeyGatewayID] = normalizeValue(values[0])
 		data[model.KeyNodeID] = normalizeValue(values[1])
-		data[model.KeySensorID] = normalizeValue(values[2])
+		data[model.KeySourceID] = normalizeValue(values[2])
 		if len(values) > expectedLength {
 			data[model.KeySelector] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
-	case utils.ContainsString(QuickIDSensorField, resourceType):
+	case utils.ContainsString(QuickIDField, resourceType):
 		expectedLength := 4
 		if len(values) < expectedLength {
-			return "", nil, fmt.Errorf("Invalid sensor field quick_id: %s, check the format", quickID)
+			return "", nil, fmt.Errorf("invalid field quick_id: %s, check the format", quickID)
 		}
 		data[model.KeyGatewayID] = normalizeValue(values[0])
 		data[model.KeyNodeID] = normalizeValue(values[1])
-		data[model.KeySensorID] = normalizeValue(values[2])
+		data[model.KeySourceID] = normalizeValue(values[2])
 		data[model.KeyFieldID] = normalizeValue(values[3])
 		if len(values) > expectedLength {
 			data[model.KeySelector] = normalizeValue(strings.Join(values[expectedLength:], "."))
@@ -120,20 +123,39 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 		utils.ContainsString(QuickIDHandler, resourceType),
 		utils.ContainsString(QuickIDDataRepository, resourceType):
 		if typeID[1] == "" {
-			return "", nil, fmt.Errorf("Invalid data. quickID:%s", quickID)
+			return "", nil, fmt.Errorf("invalid data. quickID:%s", quickID)
 		}
 		data[model.KeyID] = typeID[1]
 
 	default:
-		return "", nil, fmt.Errorf("Invalid resource type quick_id: %s, check the format", quickID)
+		return "", nil, fmt.Errorf("invalid resource type quick_id: %s, check the format", quickID)
 	}
 
 	// verify all the fields are available
 	for k, v := range data {
 		if v == "" {
-			return resourceType, nil, fmt.Errorf("Value missing for the field:%s, input:%s", k, quickID)
+			return resourceType, nil, fmt.Errorf("value missing for the field:%s, input:%s", k, quickID)
 		}
 	}
 
 	return resourceType, data, nil
+}
+
+// GetQuickID returns quick id of the resource
+func GetQuickID(item interface{}) (string, error) {
+	itemValueType := reflect.ValueOf(item).Kind()
+	if itemValueType != reflect.Struct {
+		return "", fmt.Errorf("struct type only allowed. received:%s", itemValueType.String())
+	}
+
+	itemType := reflect.TypeOf(item)
+
+	switch itemType {
+	case reflect.TypeOf(fieldML.Field{}):
+		field := item.(field.Field)
+		return fmt.Sprintf("%s:%s.%s.%s.%s", QuickIDField[1], field.GatewayID, field.NodeID, field.SourceID, field.FieldID), nil
+
+	default:
+		return "", fmt.Errorf("unsupported struct. received:%s", itemType.String())
+	}
 }

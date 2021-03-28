@@ -5,7 +5,7 @@ const (
 	// resource ids
 	LabelGatewayID = "gateway_id"
 	LabelNodeID    = "node_id"
-	LabelSensorID  = "sensor_id"
+	LabelSourceID  = "source_id"
 	LabelFieldID   = "field_id"
 
 	// Common labels
@@ -22,16 +22,4 @@ const (
 	// Field specific labels
 	LabelMetricType = "metric_type"
 	LabelUnit       = "unit"
-
-	// Widget label
-	LabelWideget = "wideget"
-)
-
-// UI widegets
-const (
-	WidegetSwitch = "switch"
-	WidgetGauge   = "gauge"
-	WidegetRGB    = "rgb"
-	WidegetRGBW   = "rgbw"
-	WidegetRGBWC  = "rgbwc"
 )

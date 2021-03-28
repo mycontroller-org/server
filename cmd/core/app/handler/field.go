@@ -12,22 +12,22 @@ import (
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
-func registerSensorFieldRoutes(router *mux.Router) {
-	router.HandleFunc("/api/sensorfield", listSensorFields).Methods(http.MethodGet)
-	router.HandleFunc("/api/sensorfield/{id}", getSensorField).Methods(http.MethodGet)
-	router.HandleFunc("/api/sensorfield", updateSensorField).Methods(http.MethodPost)
-	router.HandleFunc("/api/sensorfield", deleteFields).Methods(http.MethodDelete)
+func registerFieldRoutes(router *mux.Router) {
+	router.HandleFunc("/api/field", listFields).Methods(http.MethodGet)
+	router.HandleFunc("/api/field/{id}", getField).Methods(http.MethodGet)
+	router.HandleFunc("/api/field", updateField).Methods(http.MethodPost)
+	router.HandleFunc("/api/field", deleteFields).Methods(http.MethodDelete)
 }
 
-func listSensorFields(w http.ResponseWriter, r *http.Request) {
-	FindMany(w, r, ml.EntitySensorField, &[]fml.Field{})
+func listFields(w http.ResponseWriter, r *http.Request) {
+	FindMany(w, r, ml.EntityField, &[]fml.Field{})
 }
 
-func getSensorField(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, ml.EntitySensorField, &fml.Field{})
+func getField(w http.ResponseWriter, r *http.Request) {
+	FindOne(w, r, ml.EntityField, &fml.Field{})
 }
 
-func updateSensorField(w http.ResponseWriter, r *http.Request) {
+func updateField(w http.ResponseWriter, r *http.Request) {
 	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
 		e := d.(*fml.Field)
 		if e.ID == "" {
@@ -35,7 +35,7 @@ func updateSensorField(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	}
-	SaveEntity(w, r, ml.EntitySensorField, &fml.Field{}, bwFunc)
+	SaveEntity(w, r, ml.EntityField, &fml.Field{}, bwFunc)
 }
 
 func deleteFields(w http.ResponseWriter, r *http.Request) {

@@ -12,7 +12,7 @@ import (
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
 	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
-	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
+	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
@@ -24,7 +24,6 @@ import (
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	quickIdUL "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
 	templateUtils "github.com/mycontroller-org/backend/v2/pkg/utils/template"
-	tplUtils "github.com/mycontroller-org/backend/v2/pkg/utils/template"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
@@ -100,10 +99,10 @@ func getByLabels(name string, rsData *handlerML.ResourceData) interface{} {
 	case utils.ContainsString(quickIdUL.QuickIDNode, rsData.ResourceType):
 		apiImpl.List = nodeAPI.List
 
-	case utils.ContainsString(quickIdUL.QuickIDSensor, rsData.ResourceType):
-		apiImpl.List = sensorAPI.List
+	case utils.ContainsString(quickIdUL.QuickIDSource, rsData.ResourceType):
+		apiImpl.List = sourceAPI.List
 
-	case utils.ContainsString(quickIdUL.QuickIDSensorField, rsData.ResourceType):
+	case utils.ContainsString(quickIdUL.QuickIDField, rsData.ResourceType):
 		apiImpl.List = fieldAPI.List
 
 	case utils.ContainsString(quickIdUL.QuickIDTask, rsData.ResourceType):
@@ -183,16 +182,16 @@ func getByQuickID(name string, rsData *handlerML.ResourceData) interface{} {
 			return nil
 		}
 
-	case utils.ContainsString(quickIdUL.QuickIDSensor, resourceType):
-		item, err := sensorAPI.GetByIDs(keys[model.KeyGatewayID], keys[model.KeyNodeID], keys[model.KeySensorID])
+	case utils.ContainsString(quickIdUL.QuickIDSource, resourceType):
+		item, err := sourceAPI.GetByIDs(keys[model.KeyGatewayID], keys[model.KeyNodeID], keys[model.KeySourceID])
 		entity = item
 		if err != nil {
-			zap.L().Warn("sensor not available", zap.Any("keys", keys))
+			zap.L().Warn("source not available", zap.Any("keys", keys))
 			return nil
 		}
 
-	case utils.ContainsString(quickIdUL.QuickIDSensorField, resourceType):
-		item, err := fieldAPI.GetByIDs(keys[model.KeyGatewayID], keys[model.KeyNodeID], keys[model.KeySensorID], keys[model.KeyFieldID])
+	case utils.ContainsString(quickIdUL.QuickIDField, resourceType):
+		item, err := fieldAPI.GetByIDs(keys[model.KeyGatewayID], keys[model.KeyNodeID], keys[model.KeySourceID], keys[model.KeyFieldID])
 		entity = item
 		if err != nil {
 			zap.L().Warn("field not available", zap.Any("keys", keys), zap.Error(err))
@@ -232,7 +231,7 @@ func getByQuickID(name string, rsData *handlerML.ResourceData) interface{} {
 		}
 
 	default:
-		data, err := tplUtils.Execute(keys[model.KeyTemplate], nil)
+		data, err := templateUtils.Execute(keys[model.KeyTemplate], nil)
 		if err != nil {
 			zap.L().Warn("failed to parse template", zap.Any("keys", keys), zap.Error(err))
 			return nil
@@ -272,7 +271,7 @@ func UpdateParameters(variables map[string]interface{}, parameters map[string]st
 				continue
 			}
 			// execute template
-			updatedValue, err := tplUtils.Execute(string(yamlBytes), variables)
+			updatedValue, err := templateUtils.Execute(string(yamlBytes), variables)
 			if err != nil {
 				zap.L().Error("error on executing template", zap.Error(err), zap.String("name", name), zap.Any("value", string(yamlBytes)))
 				updatedParameters[name] = err.Error()
@@ -286,7 +285,7 @@ func UpdateParameters(variables map[string]interface{}, parameters map[string]st
 			}
 			updatedParameters[name] = string(jsonBytes)
 		} else { // update as a normal text
-			updatedValue, err := tplUtils.Execute(value, variables)
+			updatedValue, err := templateUtils.Execute(value, variables)
 			if err != nil {
 				zap.L().Warn("error on executing template", zap.Error(err), zap.String("name", name), zap.Any("value", value))
 				updatedParameters[name] = err.Error()

@@ -12,8 +12,8 @@ type Mapping struct {
 	Name        string               `json:"name"`
 	Description string               `json:"description"`
 	Enabled     bool                 `json:"enabled"`
-	SourceID    string               `json:"sourceId"`
-	TargetID    string               `json:"targetId"`
+	SrcFieldID  string               `json:"srcFieldId"`
+	DstFieldID  string               `json:"dstFieldId"`
 	Labels      cmap.CustomStringMap `json:"labels"`
 	ModifiedOn  time.Time            `json:"modifiedOn"`
 }

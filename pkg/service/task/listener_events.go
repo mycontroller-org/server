@@ -7,7 +7,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/field"
 	"github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	"github.com/mycontroller-org/backend/v2/pkg/model/node"
-	"github.com/mycontroller-org/backend/v2/pkg/model/sensor"
+	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
@@ -22,11 +22,11 @@ type resourceWrapper struct {
 
 // event types
 const (
-	eventTypeGateway            = "gateway"
-	eventTypeNode               = "node"
-	eventTypeSensor             = "sensor"
-	eventTypeSensorFieldSet     = "sensor_field.set"
-	eventTypeSensorFieldRequest = "sensor_field.request"
+	eventTypeGateway      = "gateway"
+	eventTypeNode         = "node"
+	eventTypeSource       = "source"
+	eventTypeFieldSet     = "field.set"
+	eventTypeFieldRequest = "field.request"
 )
 
 const (
@@ -93,17 +93,17 @@ func processPreEvent(item interface{}) {
 		resource = &node.Node{}
 		resourceType = eventTypeNode
 
-	case strings.HasSuffix(topic, eventTypeSensor):
-		resource = &sensor.Sensor{}
-		resourceType = eventTypeSensor
+	case strings.HasSuffix(topic, eventTypeSource):
+		resource = &sourceML.Source{}
+		resourceType = eventTypeSource
 
-	case strings.HasSuffix(topic, eventTypeSensorFieldSet):
+	case strings.HasSuffix(topic, eventTypeFieldSet):
 		resource = &field.Field{}
-		resourceType = eventTypeSensorFieldSet
+		resourceType = eventTypeFieldSet
 
-	case strings.HasSuffix(topic, eventTypeSensorFieldRequest):
+	case strings.HasSuffix(topic, eventTypeFieldRequest):
 		resource = &field.Field{}
-		resourceType = eventTypeSensorFieldRequest
+		resourceType = eventTypeFieldRequest
 
 	default:
 		zap.L().Warn("unknown event", zap.Any("event", event))

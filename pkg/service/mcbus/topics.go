@@ -16,9 +16,9 @@ const (
 	TopicEventsAll                     = "event.>"                             // all events
 	TopicEventGateway                  = "event.gateway"                       // gateway events
 	TopicEventNode                     = "event.node"                          // node events
-	TopicEventSensor                   = "event.sensor"                        // sensor events
-	TopicEventSensorFieldSet           = "event.sensor_field.set"              // sensor field set events
-	TopicEventSensorFieldRequest       = "event.sensor_field.request"          // sensor field request events
+	TopicEventSource                   = "event.source"                        // source events
+	TopicEventFieldSet                 = "event.field.set"                     // field set events
+	TopicEventFieldRequest             = "event.field.request"                 // field request events
 )
 
 const keyTopicPrefix = "topic_prefix"

@@ -13,8 +13,8 @@ import (
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
 	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
-	sensorAPI "github.com/mycontroller-org/backend/v2/pkg/api/sensor"
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
+	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
@@ -36,8 +36,8 @@ var (
 	entitiesList = map[string]func(f []pml.Filter, p *pml.Pagination) (*pml.Result, error){
 		model.EntityGateway:        gatewayAPI.List,
 		model.EntityNode:           nodeAPI.List,
-		model.EntitySensor:         sensorAPI.List,
-		model.EntitySensorField:    fieldAPI.List,
+		model.EntitySource:         sourceAPI.List,
+		model.EntityField:    fieldAPI.List,
 		model.EntityFirmware:       firmwareAPI.List,
 		model.EntityUser:           userAPI.List,
 		model.EntityDashboard:      dashboardAPI.List,

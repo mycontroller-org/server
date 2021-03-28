@@ -5,23 +5,40 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	quickIdUtils "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
-// ToSensorFieldByID sends the payload to the given sensorfiled
-func ToSensorFieldByID(id string, payload string) error {
+// ToFieldByID sends the payload to the given field
+func ToFieldByID(id string, payload string) error {
 	filters := []stgml.Filter{{Key: model.KeyID, Value: id}}
 	field, err := fieldAPI.Get(filters)
 	if err != nil {
 		return err
 	}
-	return toSensorField(field.GatewayID, field.NodeID, field.SensorID, field.FieldID, payload)
+	return ToField(field.GatewayID, field.NodeID, field.SourceID, field.FieldID, payload)
 }
 
-func toSensorField(gatewayID, nodeID, sensorID, fieldID, payload string) error {
+// ToFieldByQuickID sends the payload to the given field
+func ToFieldByQuickID(quickID string, payload string) error {
+	_, idsMap, err := quickIdUtils.ResourceKeyValueMap(quickID)
+	if err != nil {
+		return err
+	}
+
+	// really needs to check these ids on internal database?
+	field, err := fieldAPI.GetByIDs(idsMap[model.KeyGatewayID], idsMap[model.KeyNodeID], idsMap[model.KeySourceID], idsMap[model.KeyFieldID])
+	if err != nil {
+		return err
+	}
+	return ToField(field.GatewayID, field.NodeID, field.SourceID, field.FieldID, payload)
+}
+
+// ToField sends the payload to the given ids
+func ToField(gatewayID, nodeID, sourceID, fieldID, payload string) error {
 	if payload == model.ActionToggle {
 		// get field current data
-		field, err := fieldAPI.GetByIDs(gatewayID, nodeID, sensorID, fieldID)
+		field, err := fieldAPI.GetByIDs(gatewayID, nodeID, sourceID, fieldID)
 		if err != nil {
 			return err
 		}
@@ -36,7 +53,7 @@ func toSensorField(gatewayID, nodeID, sensorID, fieldID, payload string) error {
 	msg := msgml.NewMessage(false)
 	msg.GatewayID = gatewayID
 	msg.NodeID = nodeID
-	msg.SensorID = sensorID
+	msg.SourceID = sourceID
 	pl := msgml.NewData()
 	pl.Name = fieldID
 	pl.Value = payload

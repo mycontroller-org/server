@@ -44,7 +44,7 @@ type Message struct {
 	ID            string
 	GatewayID     string
 	NodeID        string
-	SensorID      string
+	SourceID      string
 	Type          string // Message type: set, request, ...
 	Payloads      []Data // payloads
 	IsAck         bool   // Is this acknowledgement message
@@ -70,7 +70,7 @@ func (m *Message) Clone() *Message {
 		ID:            m.ID,
 		GatewayID:     m.GatewayID,
 		NodeID:        m.NodeID,
-		SensorID:      m.SensorID,
+		SourceID:      m.SourceID,
 		Type:          m.Type,
 		Payloads:      clonedData,
 		IsAck:         m.IsAck,
@@ -91,9 +91,9 @@ func (m *Message) GetID() string {
 		buffer.WriteString("-")
 		buffer.WriteString(m.NodeID)
 	}
-	if m.SensorID != "" {
+	if m.SourceID != "" {
 		buffer.WriteString("-")
-		buffer.WriteString(m.SensorID)
+		buffer.WriteString(m.SourceID)
 	}
 	if len(m.Payloads) > 0 {
 		for _, d := range m.Payloads {

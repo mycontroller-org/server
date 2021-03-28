@@ -11,26 +11,32 @@ import (
 	fpml "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
+	quickIdUtils "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
 var (
-	queue       *queueUtils.Queue
-	queueSize   = int(1000)
-	workerCount = int(1)
+	queue          *queueUtils.Queue
+	queueSize      = int(1000)
+	workerCount    = int(1)
+	topic          = ""
+	subscriptionID = int64(-1)
 )
 
 // Init message process engine
 func Init() error {
 	queue = queueUtils.New("forward_payload", queueSize, processEvent, workerCount)
 
+	topic = mcbus.FormatTopic(mcbus.TopicEventFieldSet)
+
 	// on event receive add it in to local queue
-	_, err := mcbus.Subscribe(mcbus.TopicEventSensorFieldSet, onEventReceive)
+	sID, err := mcbus.Subscribe(topic, onEventReceive)
 	if err != nil {
 		return err
 	}
 
+	subscriptionID = sID
 	return nil
 }
 
@@ -46,7 +52,7 @@ func onEventReceive(event *busML.BusData) {
 		zap.L().Warn("Received a nil data", zap.Any("event", event))
 		return
 	}
-	zap.L().Debug("Sensor Field data added into processing queue", zap.Any("data", field))
+	zap.L().Debug("Field data added into processing queue", zap.Any("data", field))
 	status := queue.Produce(field)
 	if !status {
 		zap.L().Warn("error to store the data into queue", zap.Any("data", field))
@@ -55,6 +61,10 @@ func onEventReceive(event *busML.BusData) {
 
 // Close message process engine
 func Close() error {
+	err := mcbus.Unsubscribe(topic, subscriptionID)
+	if err != nil {
+		zap.L().Error("error on unsubscription", zap.Error(err), zap.String("topic", topic), zap.Int64("subscriptionId", subscriptionID))
+	}
 	queue.Close()
 	return nil
 }
@@ -63,10 +73,16 @@ func Close() error {
 func processEvent(item interface{}) {
 	field := item.(*field.Field)
 
+	quickID, err := quickIdUtils.GetQuickID(*field)
+	if err != nil {
+		zap.L().Error("unable to get quick id", zap.Error(err), zap.String("gateway", field.GatewayID), zap.String("node", field.NodeID), zap.String("source", field.SourceID), zap.String("field", field.FieldID))
+		return
+	}
+
 	// fetch mapped filed for this event
 	pagination := &stgml.Pagination{Limit: 50}
 	filters := []stgml.Filter{
-		{Key: ml.KeySourceID, Operator: stgml.OperatorEqual, Value: field.ID},
+		{Key: ml.KeySrcFieldID, Operator: stgml.OperatorEqual, Value: quickID},
 		{Key: ml.KeyEnabled, Operator: stgml.OperatorEqual, Value: true},
 	}
 	response, err := fpAPI.List(filters, pagination)
@@ -85,8 +101,8 @@ func processEvent(item interface{}) {
 	for index := 0; index < len(mappings); index++ {
 		mapping := mappings[index]
 		// send payload
-		if mapping.SourceID != mapping.TargetID {
-			err = action.ToSensorFieldByID(mapping.TargetID, fmt.Sprintf("%v", field.Current.Value))
+		if mapping.SrcFieldID != mapping.DstFieldID {
+			err = action.ToFieldByQuickID(mapping.DstFieldID, fmt.Sprintf("%v", field.Current.Value))
 			if err != nil {
 				zap.L().Error("error on sending payload", zap.Any("mapping", mapping), zap.Error(err))
 			} else {

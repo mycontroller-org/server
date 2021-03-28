@@ -25,7 +25,7 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 
 	msMsg := message{
 		NodeID:   msg.NodeID,
-		SensorID: msg.SensorID,
+		SensorID: msg.SourceID,
 		Command:  "",
 		Ack:      "0",
 		Type:     "",
@@ -144,7 +144,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	// Message
 	msg := &msgml.Message{
 		NodeID:     msMsg.NodeID,
-		SensorID:   msMsg.SensorID,
+		SourceID:   msMsg.SensorID,
 		IsAck:      msMsg.Ack == "1",
 		IsReceived: true,
 		Timestamp:  rawMsg.Timestamp,
@@ -169,8 +169,8 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 	if msg.NodeID != "" { // set node id if available
 		msgPL.Labels.Set(LabelNodeID, msg.NodeID)
 	}
-	if msg.SensorID != "" { // set sensor id if available
-		msgPL.Labels.Set(LabelSensorID, msg.SensorID)
+	if msg.SourceID != "" { // set source id if available
+		msgPL.Labels.Set(LabelSensorID, msg.SourceID)
 	}
 
 	// entering into normal message processing
@@ -248,7 +248,7 @@ func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error)
 
 // decodes raw message into message, which is local struct
 func (p *Provider) decodeRawMessage(rawMsg *msgml.RawMessage) (*message, error) {
-	d := make([]string, 0)
+	var d []string
 	payload := ""
 
 	// decode message from gateway
@@ -317,7 +317,7 @@ func verifyAndUpdateNodeSensorIDs(msMsg *message, msg *msgml.Message) error {
 	}
 
 	// update node id and sensor id
-	msg.SensorID = msMsg.SensorID
+	msg.SourceID = msMsg.SensorID
 	msg.NodeID = msMsg.NodeID
 
 	return nil

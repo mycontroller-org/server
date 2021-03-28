@@ -30,16 +30,16 @@ const (
 	emptyPayload = ""
 )
 
-// static sensors
+// static sources
 const (
-	sensorIDNone  = ""
-	sensorControl = "Control"
-	sensorWiFi    = "WiFi"
-	sensorMemory  = "Memory"
-	sensorTime    = "Time"
-	sensorLogging = "Logging"
-	sensorCounter = "Counter"
-	sensorAnalog  = "Analog"
+	sourceIDNone    = ""
+	sourceIDControl = "control"
+	sourceIDWiFi    = "wifi"
+	sourceIDMemory  = "memory"
+	sourceIDTime    = "time"
+	sourceIDLogging = "logging"
+	sourceIDCounter = "counter"
+	sourceIDAnalog  = "analog"
 )
 
 // tele state ignore fields
@@ -54,7 +54,7 @@ var teleStateFieldsIgnore = []string{
 	"ledtable",
 }
 
-// WiFi sensor fields ignore
+// WiFi source fields ignore
 var wiFiFieldsIgnore = []string{"ap", "linkcount"}
 
 // supported status
@@ -180,9 +180,3 @@ var metricTypeAndUnit = map[string]payloadMetricTypeUnit{
 	keyVoltage:     {mtsml.MetricTypeGaugeFloat, mtsml.UnitNone},
 	keyCurrent:     {mtsml.MetricTypeGaugeFloat, mtsml.UnitNone},
 }
-
-// Labels used on this provider
-const (
-	LabelFirmwareTypeID    = "ms_firmware_type_id"    // MySensors firmware type id
-	LabelFirmwareVersionID = "ms_firmware_version_id" // MySensors firmware version id
-)

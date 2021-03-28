@@ -4,8 +4,8 @@ package model
 const (
 	EntityGateway        = "gateway"         // keeps gateway config details
 	EntityNode           = "node"            // keeps node details
-	EntitySensor         = "sensor"          // keeps sensor details
-	EntitySensorField    = "sensor_field"    // keeps sensor field details and fields from node, like battery, rssi, etc.,
+	EntitySource         = "source"          // keeps source details
+	EntityField          = "field"           // keeps field details from source and fields from node, like battery, rssi, etc.,
 	EntityFirmware       = "firmware"        // keeps firmware details
 	EntityUser           = "user"            // keeps user details
 	EntityDashboard      = "dashboard"       // keeps dashboard details
@@ -22,16 +22,16 @@ const (
 	KeyID           = "ID"
 	KeyGatewayID    = "GatewayID"
 	KeyNodeID       = "NodeID"
-	KeySensorID     = "SensorID"
+	KeySourceID     = "SourceID"
 	KeyFieldID      = "FieldID"
 	KeyFieldName    = "FieldName"
 	KeyUsername     = "Username"
 	KeyEmail        = "Email"
 	KeyHandlerType  = "Type"
 	KeyHandlerName  = "Name"
-	KeySourceID     = "SourceID"
 	KeyEnabled      = "Enabled"
 	KeyScheduleType = "Type"
+	KeySrcFieldID   = "SrcFieldID"
 )
 
 // Field names used in entities

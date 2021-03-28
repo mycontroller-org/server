@@ -19,7 +19,7 @@ import (
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
-	sensorML "github.com/mycontroller-org/backend/v2/pkg/model/sensor"
+	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
@@ -40,7 +40,7 @@ func registerTypes() {
 	gob.Register(taskML.Config{})
 	gob.Register(gatewayML.Config{})
 	gob.Register(nodeML.Node{})
-	gob.Register(sensorML.Sensor{})
+	gob.Register(sourceML.Source{})
 	gob.Register(primitive.A{})
 	gob.Register(handlerML.Config{})
 	gob.Register(schedulerML.Config{})
