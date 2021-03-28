@@ -70,8 +70,12 @@ func GetValueByKeyPath(data interface{}, keyPath string) (reflect.Kind, interfac
 
 		case reflect.Map:
 			for _, mapKey := range finalVal.MapKeys() {
-				receivedName := strings.ToLower(mapKey.String())
-				//fmt.Printf("comparing names: %s vs %s\n", expectedName, receivedName)
+				mapKeyString := mapKey.String()
+				if mapKey.Kind() == reflect.Interface && mapKey.Elem().Kind() == reflect.String {
+					mapKeyString = mapKey.Elem().String()
+				}
+				receivedName := strings.ToLower(mapKeyString)
+				// fmt.Printf("comparing names: %s vs %s\n", expectedName, receivedName)
 				if expectedName == receivedName {
 					finalVal = finalVal.MapIndex(mapKey)
 					//fmt.Printf("found: %s, %+v\n", receivedName, finalVal)
