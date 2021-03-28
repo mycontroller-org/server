@@ -28,3 +28,15 @@ func (u *User) MarshalJSON() ([]byte, error) {
 
 // UserWithPassword used to keep the password on json export
 type UserWithPassword User
+
+// UserProfileUpdate model, used to update user profile
+type UserProfileUpdate struct {
+	ID              string               `json:"id"`
+	Username        string               `json:"username"`
+	Email           string               `json:"email"`
+	CurrentPassword string               `json:"currentPassword"`
+	NewPassword     string               `json:"newPassword"`
+	ConfirmPassword string               `json:"confirmPassword"`
+	FullName        string               `json:"fullName"`
+	Labels          cmap.CustomStringMap `json:"labels"`
+}

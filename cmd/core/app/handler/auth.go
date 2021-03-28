@@ -97,7 +97,7 @@ func updateProfile(w http.ResponseWriter, r *http.Request) {
 		postErrorResponse(w, err.Error(), 400)
 	}
 
-	entity := &userML.User{}
+	entity := &userML.UserProfileUpdate{}
 	err = LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -109,18 +109,7 @@ func updateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if entity.Password == "" {
-		entity.Password = user.Password
-	} else {
-		hashedPassword, err := hashed.GenerateHash(entity.Password)
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
-		entity.Password = hashedPassword
-	}
-
-	err = userAPI.Save(entity)
+	err = userAPI.UpdateProfile(entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
