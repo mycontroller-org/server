@@ -24,20 +24,35 @@ const (
 	FrequencyMonthly = "monthly"
 )
 
+// Custom variable loader types
+const (
+	CustomVariableTypeNone       = "none"
+	CustomVariableTypeJavascript = "javascript"
+	CustomVariableTypeWebhook    = "webhook"
+)
+
 // Config for scheduler
 type Config struct {
-	ID                string               `json:"id"`
-	Description       string               `json:"description"`
-	Enabled           bool                 `json:"enabled"`
-	Labels            cmap.CustomStringMap `json:"labels"`
-	Variables         map[string]string    `json:"variables"`
-	Validity          Validity             `json:"validity"`
-	Type              string               `json:"type"`
-	Spec              cmap.CustomMap       `json:"spec"`
-	HandlerParameters map[string]string    `json:"handlerParameters"`
-	Handlers          []string             `json:"handlers"`
-	ModifiedOn        time.Time            `json:"modifiedOn"`
-	State             *State               `json:"state"`
+	ID                   string               `json:"id"`
+	Description          string               `json:"description"`
+	Enabled              bool                 `json:"enabled"`
+	Labels               cmap.CustomStringMap `json:"labels"`
+	Validity             Validity             `json:"validity"`
+	Type                 string               `json:"type"`
+	Spec                 cmap.CustomMap       `json:"spec"`
+	Variables            map[string]string    `json:"variables"`
+	CustomVariableType   string               `json:"customVariableType"`
+	CustomVariableConfig CustomVariableConfig `json:"customVariableConfig"`
+	HandlerParameters    map[string]string    `json:"handlerParameters"`
+	Handlers             []string             `json:"handlers"`
+	ModifiedOn           time.Time            `json:"modifiedOn"`
+	State                *State               `json:"state"`
+}
+
+// CustomVariableConfig struct
+type CustomVariableConfig struct {
+	Javascript string `json:"javascript"`
+	WebhookAPI string `json:"webhookApi"`
 }
 
 // Validity of the scheduler

@@ -12,6 +12,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/javascript"
 	variablesUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
 	"go.uber.org/zap"
 )
@@ -61,6 +62,35 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 		cfg.State.Message = fmt.Sprintf("Error: %s", err.Error())
 		busUtils.SetScheduleState(cfg.ID, *cfg.State)
 		return
+	}
+
+	switch cfg.CustomVariableType {
+	case schedulerML.CustomVariableTypeNone, "":
+		// no action needed
+
+	case schedulerML.CustomVariableTypeJavascript:
+		if cfg.CustomVariableConfig.Javascript != "" {
+			result, err := javascript.Execute(cfg.CustomVariableConfig.Javascript, variables)
+			if err != nil {
+				zap.L().Error("error on executing javascript", zap.String("schedulerID", cfg.ID), zap.Error(err))
+				cfg.State.LastStatus = false
+				cfg.State.Message = fmt.Sprintf("Error: %s", err.Error())
+				busUtils.SetScheduleState(cfg.ID, *cfg.State)
+				return
+			}
+
+			// if the response is a map type merge it with variables
+			if resultMap, ok := result.(map[string]interface{}); ok {
+				variables = variablesUtils.Merge(variables, resultMap)
+			}
+
+		}
+
+	case schedulerML.CustomVariableTypeWebhook:
+		// TODO: implement webhook based solution
+
+	default:
+		zap.L().Error("Unknown custom variable loader type", zap.String("type", cfg.CustomVariableType))
 	}
 
 	// post to handlers
