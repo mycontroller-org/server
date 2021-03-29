@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/mycontroller-org/backend/v2/pkg/json"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
@@ -52,10 +53,7 @@ func isTriggered(rule taskML.Rule, variables map[string]interface{}) bool {
 		}
 	}
 
-	if rule.MatchAll {
-		return true
-	}
-	return false
+	return rule.MatchAll
 }
 
 func getValueByVariableName(variables map[string]interface{}, variableName string) (interface{}, error) {
@@ -88,18 +86,39 @@ func isMatching(value interface{}, operator string, expectedValue interface{}) b
 	if operator == "" {
 		operator = stgml.OperatorEqual
 	}
-	// TODO: fix value type based on supplied operator
+
+	var expectedValueUpdated interface{}
+
+	switch operator {
+
+	// convert json string to object, if required
+	case stgml.OperatorIn, stgml.OperatorNotIn, stgml.OperatorRangeIn, stgml.OperatorRangeNotIn:
+		stringValue := converterUtils.ToString(expectedValue)
+		updated := make([]interface{}, 0)
+		err := json.Unmarshal([]byte(stringValue), &updated)
+		if err != nil {
+			zap.L().Error("error on converting expectedValue to array format", zap.Error(err), zap.Any("expectedValue", expectedValue))
+			return false
+		}
+		expectedValueUpdated = updated
+
+	default:
+		expectedValueUpdated = expectedValue
+	}
+
+	zap.L().Debug("ismatching", zap.String("valueType", reflect.TypeOf(value).Kind().String()), zap.Any("value", value), zap.String("operator", operator), zap.Any("expectedValue", expectedValueUpdated))
+
 	switch reflect.TypeOf(value).Kind() {
 	case reflect.String:
-		return helper.CompareString(value, operator, expectedValue)
+		return helper.CompareString(value, operator, expectedValueUpdated)
 
 	case reflect.Bool:
-		return helper.CompareBool(value, operator, expectedValue)
+		return helper.CompareBool(value, operator, expectedValueUpdated)
 
 	case reflect.Float32, reflect.Float64,
 		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return helper.CompareFloat(value, operator, expectedValue)
+		return helper.CompareFloat(value, operator, expectedValueUpdated)
 
 	default:
 		zap.L().Warn("unsupported type", zap.String("type", reflect.TypeOf(value).String()), zap.Any("value", value))
