@@ -31,7 +31,7 @@ func initSMTP(handlerCfg *handlerML.Config, cfg *Config) (Client, error) {
 	} else if cfg.AuthType == AuthTypeCRAMMD5 {
 		auth = smtp.CRAMMD5Auth(cfg.Username, cfg.Password)
 	} else {
-		return nil, fmt.Errorf("Unknown auth type:%s", cfg.AuthType)
+		return nil, fmt.Errorf("unknown auth type:%s", cfg.AuthType)
 	}
 
 	client := &smtpClient{

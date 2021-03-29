@@ -7,7 +7,7 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/api/sunrise"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	"github.com/mycontroller-org/backend/v2/pkg/version"
 	"go.uber.org/zap"
@@ -25,7 +25,7 @@ var funcMap = template.FuncMap{
 }
 
 func ternary(data interface{}, trueValue, falseValue string) string {
-	if utils.ToBool(data) {
+	if converterUtils.ToBool(data) {
 		return trueValue
 	}
 	return falseValue

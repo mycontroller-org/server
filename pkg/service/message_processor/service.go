@@ -17,7 +17,7 @@ import (
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/javascript"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	mtsML "github.com/mycontroller-org/backend/v2/plugin/metrics"
@@ -282,7 +282,7 @@ func setFieldData(msg *msgML.Message) error {
 					// if we see "value" key, update it on value
 					// if we see others map update it on others map
 					if key == model.KeyValue {
-						formattedValue = utils.ToString(value)
+						formattedValue = converterUtils.ToString(value)
 					} else if key == model.KeyOthers {
 						othersMap, ok := value.(map[string]interface{})
 						if ok {
@@ -295,7 +295,7 @@ func setFieldData(msg *msgML.Message) error {
 					}
 				}
 			} else {
-				formattedValue = utils.ToString(responseValue)
+				formattedValue = converterUtils.ToString(responseValue)
 			}
 
 			// update the formatted value
@@ -329,7 +329,7 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgML.Messag
 	if eLabels, ok := extraFields[model.KeyLabels]; ok {
 		if extraLabels, ok := eLabels.(map[string]interface{}); ok {
 			for key, val := range extraLabels {
-				stringValue := utils.ToString(val)
+				stringValue := converterUtils.ToString(val)
 				labels.Set(key, stringValue)
 			}
 		}
@@ -339,7 +339,7 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgML.Messag
 	if value, ok := extraFields[model.KeyUnits]; ok {
 		if unitsRaw, ok := value.(map[string]interface{}); ok {
 			for key, val := range unitsRaw {
-				stringValue := utils.ToString(val)
+				stringValue := converterUtils.ToString(val)
 				units[key] = stringValue
 			}
 		}
@@ -349,7 +349,7 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgML.Messag
 	if value, ok := extraFields[model.KeyMetricTypes]; ok {
 		if mTypeRaw, ok := value.(map[string]interface{}); ok {
 			for key, value := range mTypeRaw {
-				stringValue := utils.ToString(value)
+				stringValue := converterUtils.ToString(value)
 				metricTypes[key] = stringValue
 			}
 		}
@@ -361,7 +361,7 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgML.Messag
 	delete(extraFields, model.KeyMetricTypes)
 
 	for id, value := range extraFields {
-		fieldId := utils.ToString(id)
+		fieldId := converterUtils.ToString(id)
 		metricType := mtsML.MetricTypeNone
 		unit := ""
 		// update metricType and unit
@@ -436,19 +436,19 @@ func updateFieldData(
 	switch field.MetricType {
 
 	case mtsML.MetricTypeBinary:
-		convertedValue = utils.ToBool(value)
+		convertedValue = converterUtils.ToBool(value)
 
 	case mtsML.MetricTypeGaugeFloat:
-		convertedValue = utils.ToFloat(value)
+		convertedValue = converterUtils.ToFloat(value)
 
 	case mtsML.MetricTypeGauge, mtsML.MetricTypeCounter:
-		convertedValue = utils.ToInteger(value)
+		convertedValue = converterUtils.ToInteger(value)
 
 	case mtsML.MetricTypeNone:
 		convertedValue = value
 
 	case mtsML.MetricTypeString:
-		convertedValue = utils.ToString(value)
+		convertedValue = converterUtils.ToString(value)
 
 	case mtsML.MetricTypeGEO: // Implement geo
 		convertedValue = value

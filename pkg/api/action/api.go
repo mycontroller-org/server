@@ -80,7 +80,7 @@ func ExecuteActionOnResourceByQuickID(quickID, payload string) error {
 		return toHandler(kvMap[model.KeyID], payload)
 
 	default:
-		return fmt.Errorf("Unknown resource type: %s", resourceType)
+		return fmt.Errorf("unknown resource type: %s", resourceType)
 	}
 	return nil
 }
@@ -183,7 +183,7 @@ func ExecuteActionOnResourceByLabels(resourceType string, labels cmap.CustomStri
 		}
 
 	default:
-		return fmt.Errorf("Unknown resource type: %s", resourceType)
+		return fmt.Errorf("unknown resource type: %s", resourceType)
 	}
 	return nil
 }

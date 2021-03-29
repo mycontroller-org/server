@@ -61,6 +61,6 @@ func Init(cfg *handlerML.Config) (Client, error) {
 		return initSMTP(cfg, config)
 
 	default:
-		return nil, fmt.Errorf("Unknown email client:%s", cfg.Type)
+		return nil, fmt.Errorf("unknown email client:%s", cfg.Type)
 	}
 }

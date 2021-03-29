@@ -4,7 +4,7 @@ import (
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	quickIdUtils "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
@@ -43,7 +43,7 @@ func ToField(gatewayID, nodeID, sourceID, fieldID, payload string) error {
 			return err
 		}
 
-		if utils.ToBool(field.Current.Value) {
+		if converterUtils.ToBool(field.Current.Value) {
 			payload = "false"
 		} else {
 			payload = "true"

@@ -6,7 +6,7 @@ import (
 	"regexp"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -55,7 +55,7 @@ func IsMatching(entity interface{}, filters []stgml.Filter) bool {
 
 		switch valKind {
 		case reflect.String:
-			match = CompareString(utils.ToString(value), filter.Operator, filter.Value)
+			match = CompareString(converterUtils.ToString(value), filter.Operator, filter.Value)
 
 		case reflect.Bool:
 			match = CompareBool(value, filter.Operator, filter.Value)
@@ -81,7 +81,7 @@ func VerifyStringSlice(value string, operator string, filterValue interface{}) b
 		}
 		_stringSlice := make([]string, 0)
 		for _, val := range genericSlice {
-			_stringSlice = append(_stringSlice, utils.ToString(val))
+			_stringSlice = append(_stringSlice, converterUtils.ToString(val))
 		}
 		stringSlice = _stringSlice
 	}
@@ -106,14 +106,14 @@ func VerifyStringSlice(value string, operator string, filterValue interface{}) b
 
 // CompareString compares strings
 func CompareString(value interface{}, operator string, filterValue interface{}) bool {
-	valueString := utils.ToString(value)
+	valueString := converterUtils.ToString(value)
 	switch operator {
 	case stgml.OperatorEqual, stgml.OperatorNone:
-		return utils.ToString(filterValue) == valueString
+		return converterUtils.ToString(filterValue) == valueString
 	case stgml.OperatorNotEqual:
-		return utils.ToString(filterValue) != valueString
+		return converterUtils.ToString(filterValue) != valueString
 	case stgml.OperatorRegex:
-		expression := fmt.Sprintf("(?i)%s", utils.ToString(filterValue))
+		expression := fmt.Sprintf("(?i)%s", converterUtils.ToString(filterValue))
 		compiled, err := regexp.Compile(expression)
 		if err != nil {
 			return false
@@ -135,7 +135,7 @@ func VerifyBoolSlice(value bool, operator string, filterValue interface{}) bool 
 	}
 	boolSlice := make([]bool, 0)
 	for _, val := range genericSlice {
-		boolSlice = append(boolSlice, utils.ToBool(val))
+		boolSlice = append(boolSlice, converterUtils.ToBool(val))
 	}
 
 	switch operator {
@@ -160,38 +160,38 @@ func VerifyBoolSlice(value bool, operator string, filterValue interface{}) bool 
 func CompareBool(value interface{}, operator string, expectedValue interface{}) bool {
 	switch operator {
 	case stgml.OperatorEqual, stgml.OperatorNone:
-		return utils.ToBool(value) == utils.ToBool(expectedValue)
+		return converterUtils.ToBool(value) == converterUtils.ToBool(expectedValue)
 	case stgml.OperatorNotEqual:
-		return utils.ToBool(value) != utils.ToBool(expectedValue)
+		return converterUtils.ToBool(value) != converterUtils.ToBool(expectedValue)
 	case stgml.OperatorExists:
-		return len(utils.ToString(value)) > 0
+		return len(converterUtils.ToString(value)) > 0
 	case stgml.OperatorIn, stgml.OperatorNotIn:
-		return VerifyBoolSlice(utils.ToBool(value), operator, expectedValue)
+		return VerifyBoolSlice(converterUtils.ToBool(value), operator, expectedValue)
 	}
 	return false
 }
 
 // CompareFloat compares float
 func CompareFloat(value interface{}, operator string, expectedValue interface{}) bool {
-	valueFloat := utils.ToFloat(value)
+	valueFloat := converterUtils.ToFloat(value)
 	switch operator {
 	case stgml.OperatorEqual, stgml.OperatorNone:
-		return valueFloat == utils.ToFloat(expectedValue)
+		return valueFloat == converterUtils.ToFloat(expectedValue)
 
 	case stgml.OperatorNotEqual:
-		return valueFloat != utils.ToFloat(expectedValue)
+		return valueFloat != converterUtils.ToFloat(expectedValue)
 
 	case stgml.OperatorGreaterThan:
-		return valueFloat > utils.ToFloat(expectedValue)
+		return valueFloat > converterUtils.ToFloat(expectedValue)
 
 	case stgml.OperatorGreaterThanEqual:
-		return valueFloat >= utils.ToFloat(expectedValue)
+		return valueFloat >= converterUtils.ToFloat(expectedValue)
 
 	case stgml.OperatorLessThan:
-		return valueFloat < utils.ToFloat(expectedValue)
+		return valueFloat < converterUtils.ToFloat(expectedValue)
 
 	case stgml.OperatorLessThanEqual:
-		return valueFloat <= utils.ToFloat(expectedValue)
+		return valueFloat <= converterUtils.ToFloat(expectedValue)
 
 	case stgml.OperatorIn, stgml.OperatorNotIn, stgml.OperatorRangeIn, stgml.OperatorRangeNotIn:
 		return VerifyFloatSlice(valueFloat, operator, expectedValue)
@@ -209,7 +209,7 @@ func VerifyFloatSlice(value float64, operator string, expectedValue interface{})
 		}
 		_floatSlice := make([]float64, 0)
 		for _, val := range genericSlice {
-			_floatSlice = append(_floatSlice, utils.ToFloat(val))
+			_floatSlice = append(_floatSlice, converterUtils.ToFloat(val))
 		}
 		floatSlice = _floatSlice
 	}

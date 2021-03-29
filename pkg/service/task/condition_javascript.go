@@ -2,7 +2,7 @@ package task
 
 import (
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/javascript"
 	"go.uber.org/zap"
 )
@@ -18,9 +18,9 @@ func isTriggeredJavascript(taskID string, config taskML.EvaluationConfig, variab
 	if resultMap, ok := result.(map[string]interface{}); ok {
 		isTriggered, isTriggeredFound := resultMap[taskML.KeyScriptIsTriggered]
 		if isTriggeredFound {
-			return resultMap, utils.ToBool(isTriggered)
+			return resultMap, converterUtils.ToBool(isTriggered)
 		}
 		return resultMap, false
 	}
-	return nil, utils.ToBool(result)
+	return nil, converterUtils.ToBool(result)
 }

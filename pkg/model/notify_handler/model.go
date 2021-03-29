@@ -64,9 +64,23 @@ type MessageWrapper struct {
 
 // GenericData struct
 type GenericData struct {
-	Type string `json:"type"`
-	Data string `json:"data"`
+	Type     string `json:"type"`
+	Disabled string `json:"disabled"` // string? supports template
+	Data     string `json:"data"`
 }
+
+// // ConvertibleBoolean used to convert string to bool
+// type ConvertibleBoolean bool
+//
+// func (cb *ConvertibleBoolean) UnmarshalJSON(data []byte) error {
+// 	asString := string(data)
+// 	if converterUtils.ToBool(asString) {
+// 		*cb = true
+// 	} else {
+// 		*cb = false
+// 	}
+// 	return nil
+// }
 
 // ResourceData struct
 type ResourceData struct {

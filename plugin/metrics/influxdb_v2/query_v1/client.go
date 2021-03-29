@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/json"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	cloneutil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
+	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	httpclient "github.com/mycontroller-org/backend/v2/pkg/utils/http_client_json"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"go.uber.org/zap"
@@ -106,7 +106,7 @@ func (qv1 *QueryV1) ExecuteQuery(query *mtsml.Query, measurement string) ([]mtsm
 				_time = values[vIndex]
 			} else {
 				if query.MetricType == mtsml.MetricTypeBinary && column == "value" {
-					value := utils.ToBool(values[vIndex])
+					value := converterUtils.ToBool(values[vIndex])
 					if value {
 						_metric[column] = int64(1)
 					} else {
@@ -118,7 +118,7 @@ func (qv1 *QueryV1) ExecuteQuery(query *mtsml.Query, measurement string) ([]mtsm
 			}
 		}
 
-		timeNS := utils.ToFloat(_time)
+		timeNS := converterUtils.ToFloat(_time)
 		finalTime := time.Unix(0, int64(timeNS))
 		if finalTime.IsZero() {
 			return nil, fmt.Errorf("invalid timestamp, type:%T, value:%v, query:%+v", _time, _time, query)

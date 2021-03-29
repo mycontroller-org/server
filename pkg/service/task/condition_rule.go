@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	tplUtils "github.com/mycontroller-org/backend/v2/pkg/utils/template"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
@@ -29,7 +29,7 @@ func isTriggered(rule taskML.Rule, variables map[string]interface{}) bool {
 		}
 
 		expectedValue := condition.Value
-		stringValue := utils.ToString(expectedValue)
+		stringValue := converterUtils.ToString(expectedValue)
 
 		// process value as template
 		updatedValue, err := tplUtils.Execute(stringValue, variables)

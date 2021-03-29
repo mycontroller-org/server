@@ -277,6 +277,16 @@ func UpdateParameters(variables map[string]interface{}, parameters map[string]st
 				updatedParameters[name] = err.Error()
 				continue
 			}
+
+			// update the disabled value via template
+			updatedDisable, err := templateUtils.Execute(genericData.Disabled, variables)
+			if err != nil {
+				zap.L().Error("error on executing template, to update disabled value", zap.Error(err), zap.String("name", name), zap.Any("value", genericData.Disabled))
+				updatedParameters[name] = err.Error()
+				continue
+			}
+			genericData.Disabled = updatedDisable
+
 			// repack string to base64 string
 			genericData.Data = base64.StdEncoding.EncodeToString([]byte(updatedValue))
 			jsonBytes, err := json.Marshal(genericData)

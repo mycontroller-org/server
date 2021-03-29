@@ -12,6 +12,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/javascript"
 	variablesUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
 	"go.uber.org/zap"
@@ -184,7 +185,7 @@ func toCronExpression(spec *schedulerML.SpecSimple) (string, error) {
 
 	case schedulerML.FrequencyMonthly:
 		cronRaw.DayOfWeek = "*"
-		cronRaw.DayOfMonth = utils.ToString(spec.DateOfMonth)
+		cronRaw.DayOfMonth = converterUtils.ToString(spec.DateOfMonth)
 
 	default:
 		return "", fmt.Errorf("invalid frequency: %s", spec.Frequency)
