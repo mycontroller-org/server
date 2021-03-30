@@ -67,7 +67,7 @@ func (c *Client) State() *model.State {
 // Post func
 func (c *Client) Post(data map[string]interface{}) error {
 	for name, value := range data {
-		zap.L().Info("processing a request", zap.String("name", name), zap.Any("value", value))
+		zap.L().Debug("processing a request", zap.String("name", name), zap.Any("value", value))
 		stringValue, ok := value.(string)
 		if !ok {
 			continue
@@ -108,7 +108,7 @@ func (c *Client) triggerExport(spec map[string]interface{}) error {
 		return err
 	}
 
-	zap.L().Info("data", zap.Any("config", newConfig))
+	zap.L().Debug("data", zap.Any("config", newConfig))
 
 	targetExportType := c.cfg.ExportType
 	targetDirectory := c.cfg.TargetDirectory
