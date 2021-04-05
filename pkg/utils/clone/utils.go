@@ -2,6 +2,7 @@ package cloneutil
 
 import (
 	"reflect"
+	"time"
 )
 
 // copied from https://gist.github.com/hvoecking/10772475
@@ -58,8 +59,18 @@ func translateRecursive(copy, original reflect.Value) {
 
 	// If it is a struct we translate each field
 	case reflect.Struct:
+		// for time Struct there is no public fields
+		// we have to clone it manually
+		if original.Type() == reflect.TypeOf(time.Time{}) {
+			if t, ok := original.Interface().(time.Time); ok {
+				copy.Set(reflect.ValueOf(t.Add(0)))
+				return
+			}
+		}
+
+		// for other types
 		for index := 0; index < original.NumField(); index++ {
-			if original.Field(index).CanSet() {
+			if original.Field(index).CanSet() || original.Field(index).CanInterface() {
 				translateRecursive(copy.Field(index), original.Field(index))
 			}
 		}
@@ -88,6 +99,15 @@ func translateRecursive(copy, original reflect.Value) {
 		//translatedString := dict[original.Interface().(string)]
 		// copy.SetString(translatedString)
 		copy.SetString(original.String())
+
+	// case reflect.Float32, reflect.Float64:
+	// 	copy.SetFloat(original.Float())
+	//
+	// case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+	// 	copy.SetInt(original.Int())
+	//
+	// case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+	// 	copy.SetUint(original.Uint())
 
 	// And everything else will simply be taken from the original
 	default:
