@@ -1,6 +1,7 @@
 package quickid
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -8,6 +9,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/field"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	"github.com/mycontroller-org/backend/v2/pkg/model/source"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 )
 
@@ -144,6 +146,12 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 // GetQuickID returns quick id of the resource
 func GetQuickID(item interface{}) (string, error) {
 	itemValueType := reflect.ValueOf(item).Kind()
+
+	if itemValueType == reflect.Ptr {
+		item = reflect.ValueOf(item).Elem().Interface()
+		itemValueType = reflect.ValueOf(item).Kind()
+	}
+
 	if itemValueType != reflect.Struct {
 		return "", fmt.Errorf("struct type only allowed. received:%s", itemValueType.String())
 	}
@@ -152,10 +160,20 @@ func GetQuickID(item interface{}) (string, error) {
 
 	switch itemType {
 	case reflect.TypeOf(fieldML.Field{}):
-		field := item.(field.Field)
-		return fmt.Sprintf("%s:%s.%s.%s.%s", QuickIDField[1], field.GatewayID, field.NodeID, field.SourceID, field.FieldID), nil
+		res, ok := item.(field.Field)
+		if ok {
+			return fmt.Sprintf("%s:%s.%s.%s.%s", QuickIDField[1], res.GatewayID, res.NodeID, res.SourceID, res.FieldID), nil
+		}
+
+	case reflect.TypeOf(source.Source{}):
+		res, ok := item.(source.Source)
+		if ok {
+			return fmt.Sprintf("%s:%s.%s.%s", QuickIDSource[1], res.GatewayID, res.NodeID, res.SourceID), nil
+		}
 
 	default:
 		return "", fmt.Errorf("unsupported struct. received:%s", itemType.String())
 	}
+
+	return "", errors.New("unknown resource type")
 }

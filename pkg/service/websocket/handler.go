@@ -1,32 +1,47 @@
-package handler
+package mcwebsocket
 
 import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
+	ws "github.com/gorilla/websocket"
 	"go.uber.org/zap"
 )
 
-func registerWebsocketRoutes(router *mux.Router) {
-	router.HandleFunc("/api/ws", ws)
+// RegisterWebsocketRoutes registers it into the handlers
+func RegisterWebsocketRoutes(router *mux.Router) {
+	err := initEventListener()
+	if err != nil {
+		zap.L().Error("error on calling websocket init", zap.Error(err))
+	}
+	router.HandleFunc("/api/ws", wsFunc)
 }
 
-var upgrader = websocket.Upgrader{}
+var (
+	clients  = make(map[*ws.Conn]bool) // connected clients
+	upgrader = ws.Upgrader{
+		CheckOrigin: func(r *http.Request) bool { return true },
+	}
+)
 
 // this is simple example websocket
 // yet to implement actual version
-func ws(w http.ResponseWriter, r *http.Request) {
+func wsFunc(w http.ResponseWriter, r *http.Request) {
 	wsCon, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		zap.L().Error("websocket upgrade error", zap.Error(err))
 		return
 	}
 	defer wsCon.Close()
+
+	// Register our new client
+	clients[wsCon] = true
+
 	for {
 		mt, message, err := wsCon.ReadMessage()
 		if err != nil {
 			zap.L().Error("websocket read error", zap.Error(err))
+			delete(clients, wsCon)
 			break
 		}
 		zap.L().Debug("websocket received message", zap.String("message", string(message)), zap.Any("from port", r.RemoteAddr))

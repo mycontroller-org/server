@@ -110,7 +110,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 			}
 			err = c.SendMessage(msg)
 			if err != nil {
-				zap.L().Error("error on telegram sendMessage", zap.Error(err))
+				zap.L().Error("error on telegram sendMessage", zap.Error(err), zap.String("parameter", name))
 				errors = append(errors, err)
 			}
 		}

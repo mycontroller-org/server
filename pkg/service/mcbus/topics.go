@@ -19,6 +19,9 @@ const (
 	TopicEventSource                   = "event.source"                        // source events
 	TopicEventFieldSet                 = "event.field.set"                     // field set events
 	TopicEventFieldRequest             = "event.field.request"                 // field request events
+	TopicEventTask                     = "event.task"                          // task events
+	TopicEventSchedule                 = "event.schedule"                      // schedule events
+	TopicEventHandler                  = "event.handler"                       // handler events
 )
 
 const keyTopicPrefix = "topic_prefix"

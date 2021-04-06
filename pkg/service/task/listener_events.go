@@ -42,7 +42,7 @@ var (
 	preEventsQueue          *queueUtils.Queue
 	postEventsQueue         *queueUtils.Queue
 	preEventsSubscriptionID = int64(0)
-	preEventsTopic          = ""
+	preEventsTopic          = "" // updated dynamically
 )
 
 // initEventListener events listener

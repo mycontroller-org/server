@@ -16,7 +16,7 @@ type Queue struct {
 }
 
 // New returns brandnew queue
-func New(name string, limit int, consumer func(event interface{}), workers int) *Queue {
+func New(name string, limit int, consumer func(item interface{}), workers int) *Queue {
 	droppedItemHandler := func(item interface{}) {
 		zap.L().Error("Queue full. Droping item", zap.String("QueueName", name), zap.Any("item", item))
 	}

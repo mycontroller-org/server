@@ -9,6 +9,7 @@ import (
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
+	mcWS "github.com/mycontroller-org/backend/v2/pkg/service/websocket"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
 )
@@ -31,13 +32,13 @@ func StartHandler() error {
 	// register routes
 	registerAuthRoutes(router)
 	registerStatusRoutes(router)
+	mcWS.RegisterWebsocketRoutes(router)
 	registerGatewayRoutes(router)
 	registerNodeRoutes(router)
 	registerSourceRoutes(router)
 	registerFieldRoutes(router)
 	registerFirmwareRoutes(router)
 	registerMetricRoutes(router)
-	registerWebsocketRoutes(router)
 	registerActionRoutes(router)
 	registerDashboardRoutes(router)
 	registerForwardPayloadRoutes(router)

@@ -12,6 +12,8 @@ const (
 	HeaderAuthorization = "Authorization"
 	HeaderUserID        = "mc_userid"
 
+	AccessToken = "access_token"
+
 	DefaultExpiration = "168h" // 24 * 7 days
 )
 

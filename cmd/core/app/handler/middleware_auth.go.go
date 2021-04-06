@@ -95,6 +95,13 @@ func extractJwtToken(r *http.Request) string {
 	if len(strArr) == 2 {
 		return strArr[1]
 	}
+
+	// verify query param has authorization token
+	authToken := r.URL.Query().Get(handlerML.AccessToken)
+	if authToken != "" {
+		return authToken
+	}
+
 	return ""
 }
 
