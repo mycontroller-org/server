@@ -7,9 +7,13 @@ import (
 	"strings"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	"github.com/mycontroller-org/backend/v2/pkg/model/field"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
-	"github.com/mycontroller-org/backend/v2/pkg/model/source"
+	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
+	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 )
 
@@ -160,15 +164,45 @@ func GetQuickID(item interface{}) (string, error) {
 
 	switch itemType {
 	case reflect.TypeOf(fieldML.Field{}):
-		res, ok := item.(field.Field)
+		res, ok := item.(fieldML.Field)
 		if ok {
 			return fmt.Sprintf("%s:%s.%s.%s.%s", QuickIDField[1], res.GatewayID, res.NodeID, res.SourceID, res.FieldID), nil
 		}
 
-	case reflect.TypeOf(source.Source{}):
-		res, ok := item.(source.Source)
+	case reflect.TypeOf(sourceML.Source{}):
+		res, ok := item.(sourceML.Source)
 		if ok {
 			return fmt.Sprintf("%s:%s.%s.%s", QuickIDSource[1], res.GatewayID, res.NodeID, res.SourceID), nil
+		}
+
+	case reflect.TypeOf(nodeML.Node{}):
+		res, ok := item.(nodeML.Node)
+		if ok {
+			return fmt.Sprintf("%s:%s.%s", QuickIDNode[1], res.GatewayID, res.NodeID), nil
+		}
+
+	case reflect.TypeOf(gatewayML.Config{}):
+		res, ok := item.(gatewayML.Config)
+		if ok {
+			return fmt.Sprintf("%s:%s", QuickIDGateway[1], res.ID), nil
+		}
+
+	case reflect.TypeOf(taskML.Config{}):
+		res, ok := item.(taskML.Config)
+		if ok {
+			return fmt.Sprintf("%s:%s", QuickIDTask[1], res.ID), nil
+		}
+
+	case reflect.TypeOf(schedulerML.Config{}):
+		res, ok := item.(schedulerML.Config)
+		if ok {
+			return fmt.Sprintf("%s:%s", QuickIDSchedule[1], res.ID), nil
+		}
+
+	case reflect.TypeOf(handlerML.Config{}):
+		res, ok := item.(handlerML.Config)
+		if ok {
+			return fmt.Sprintf("%s:%s", QuickIDHandler[1], res.ID), nil
 		}
 
 	default:

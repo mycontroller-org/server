@@ -40,7 +40,7 @@ func wsFunc(w http.ResponseWriter, r *http.Request) {
 	for {
 		mt, message, err := wsCon.ReadMessage()
 		if err != nil {
-			zap.L().Error("websocket read error", zap.Error(err))
+			zap.L().Info("websocket read error", zap.String("error", err.Error()), zap.Any("remoteAddress", wsCon.RemoteAddr()))
 			delete(clients, wsCon)
 			break
 		}
@@ -49,7 +49,7 @@ func wsFunc(w http.ResponseWriter, r *http.Request) {
 		msg += ", you are calling from: " + r.RemoteAddr
 		err = wsCon.WriteMessage(mt, []byte(msg))
 		if err != nil {
-			zap.L().Error("websocket write error", zap.Error(err))
+			zap.L().Info("websocket write error", zap.String("error", err.Error()), zap.Any("remoteAddress", wsCon.RemoteAddr()))
 			break
 		}
 	}

@@ -6,13 +6,13 @@ import (
 	ws "github.com/gorilla/websocket"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	"github.com/mycontroller-org/backend/v2/pkg/model/field"
-	"github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	"github.com/mycontroller-org/backend/v2/pkg/model/node"
-	handler "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
-	"github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
-	"github.com/mycontroller-org/backend/v2/pkg/model/source"
-	"github.com/mycontroller-org/backend/v2/pkg/model/task"
+	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
+	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	wsML "github.com/mycontroller-org/backend/v2/pkg/model/websocket"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
@@ -31,11 +31,6 @@ var (
 	eventsSubscriptionID = int64(0)
 	eventsTopic          = "" // updated dynamically
 )
-
-type resourceWrapper struct {
-	ResourceType string
-	Resource     interface{}
-}
 
 // initEventListener events listener
 func initEventListener() error {
@@ -76,31 +71,31 @@ func processEvent(item interface{}) {
 
 	switch {
 	case strings.HasSuffix(topic, mcbus.TopicEventGateway):
-		resourceData = &gateway.Config{}
+		resourceData = &gatewayML.Config{}
 		resourceType = "gateway"
 
 	case strings.HasSuffix(topic, mcbus.TopicEventNode):
-		resourceData = &node.Node{}
+		resourceData = &nodeML.Node{}
 		resourceType = "node"
 
 	case strings.HasSuffix(topic, mcbus.TopicEventSource):
-		resourceData = &source.Source{}
+		resourceData = &sourceML.Source{}
 		resourceType = "source"
 
 	case strings.HasSuffix(topic, mcbus.TopicEventFieldSet):
-		resourceData = &field.Field{}
+		resourceData = &fieldML.Field{}
 		resourceType = "field"
 
 	case strings.HasSuffix(topic, mcbus.TopicEventTask):
-		resourceData = &task.Config{}
+		resourceData = &taskML.Config{}
 		resourceType = "task"
 
 	case strings.HasSuffix(topic, mcbus.TopicEventSchedule):
-		resourceData = &scheduler.Config{}
+		resourceData = &schedulerML.Config{}
 		resourceType = "schedule"
 
 	case strings.HasSuffix(topic, mcbus.TopicEventHandler):
-		resourceData = &handler.Config{}
+		resourceData = &handlerML.Config{}
 		resourceType = "handler"
 
 	default:
