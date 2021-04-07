@@ -47,6 +47,7 @@ func StartHandler() error {
 	registerSchedulerRoutes(router)
 	registerDataRepositoryRoutes(router)
 	registerSystemRoutes(router)
+	registerQuickIDRoutes(router)
 
 	if cfg.WebDirectory != "" {
 		fs := http.FileServer(http.Dir(cfg.WebDirectory))

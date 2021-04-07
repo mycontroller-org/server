@@ -15,7 +15,7 @@ import (
 
 // ReceivedQueryMap returns all the user query and url input
 func ReceivedQueryMap(request *http.Request) (map[string][]string, error) {
-	data := make(map[string][]string, 0)
+	data := make(map[string][]string)
 	// url parameters
 	filters := mux.Vars(request)
 	for key, value := range filters {
