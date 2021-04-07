@@ -3,8 +3,10 @@ package task
 import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -29,7 +31,12 @@ func Save(task *taskML.Config) error {
 	filters := []stgml.Filter{
 		{Key: ml.KeyID, Value: task.ID},
 	}
-	return stg.SVC.Upsert(ml.EntityTask, task, filters)
+	err := stg.SVC.Upsert(ml.EntityTask, task, filters)
+	if err != nil {
+		return err
+	}
+	busUtils.PostEvent(mcbus.TopicEventTask, *task)
+	return nil
 }
 
 // SaveAndReload task
@@ -64,6 +71,10 @@ func SetState(id string, state *taskML.State) error {
 
 // Delete tasks
 func Delete(IDs []string) (int64, error) {
+	err := Disable(IDs)
+	if err != nil {
+		return 0, err
+	}
 	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
 	return stg.SVC.Delete(ml.EntityTask, filters)
 }

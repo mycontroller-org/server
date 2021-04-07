@@ -106,7 +106,7 @@ func processPreEvent(item interface{}) {
 		resourceType = eventTypeFieldRequest
 
 	default:
-		zap.L().Warn("unknown event", zap.Any("event", event))
+		// zap.L().Warn("unknown event", zap.Any("event", event))
 		return
 	}
 

@@ -3,8 +3,10 @@ package scheduler
 import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -22,14 +24,19 @@ func Get(filters []stgml.Filter) (*schedulerML.Config, error) {
 }
 
 // Save a scheduler details
-func Save(scheduler *schedulerML.Config) error {
-	if scheduler.ID == "" {
-		scheduler.ID = ut.RandUUID()
+func Save(schedule *schedulerML.Config) error {
+	if schedule.ID == "" {
+		schedule.ID = ut.RandUUID()
 	}
 	filters := []stgml.Filter{
-		{Key: ml.KeyID, Value: scheduler.ID},
+		{Key: ml.KeyID, Value: schedule.ID},
 	}
-	return stg.SVC.Upsert(ml.EntityScheduler, scheduler, filters)
+	err := stg.SVC.Upsert(ml.EntityScheduler, schedule, filters)
+	if err != nil {
+		return err
+	}
+	busUtils.PostEvent(mcbus.TopicEventSchedule, *schedule)
+	return nil
 }
 
 // SaveAndReload scheduler
@@ -64,6 +71,11 @@ func SetState(id string, state *schedulerML.State) error {
 
 // Delete schedulers
 func Delete(IDs []string) (int64, error) {
+	// disable the schedules
+	err := Disable(IDs)
+	if err != nil {
+		return 0, err
+	}
 	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
 	return stg.SVC.Delete(ml.EntityScheduler, filters)
 }

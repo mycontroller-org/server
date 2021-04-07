@@ -17,6 +17,7 @@ import (
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/javascript"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
@@ -185,7 +186,7 @@ func updateNodeData(msg *msgML.Message) error {
 	}
 
 	// post field data to event listeners
-	postEvent(mcbus.TopicEventNode, node)
+	busUtils.PostEvent(mcbus.TopicEventNode, node)
 
 	return nil
 }
@@ -232,7 +233,7 @@ func updateSourceDetail(msg *msgML.Message) error {
 		return err
 	}
 	// post field data to event listeners
-	postEvent(mcbus.TopicEventSource, source)
+	busUtils.PostEvent(mcbus.TopicEventSource, source)
 	return nil
 }
 
@@ -478,7 +479,7 @@ func updateFieldData(
 	}
 
 	// post field data to event listeners
-	postEvent(mcbus.TopicEventFieldSet, field)
+	busUtils.PostEvent(mcbus.TopicEventFieldSet, field)
 
 	startTime = time.Now()
 	updateMetric := true
@@ -519,7 +520,7 @@ func requestFieldData(msg *msgML.Message) error {
 		}
 		// post field data to event listeners
 		// NOTE: if the entry not available in database request topic will not be sent
-		postEvent(mcbus.TopicEventFieldRequest, field)
+		busUtils.PostEvent(mcbus.TopicEventFieldRequest, field)
 	}
 
 	if len(payloads) > 0 {
@@ -544,13 +545,5 @@ func postMessage(msg *msgML.Message) {
 	err := mcbus.Publish(topic, msg)
 	if err != nil {
 		zap.L().Error("error on posting message", zap.String("topic", topic), zap.Any("message", msg), zap.Error(err))
-	}
-}
-
-// sends updated resource as event.
-func postEvent(eventTopic string, resource interface{}) {
-	err := mcbus.Publish(mcbus.FormatTopic(eventTopic), resource)
-	if err != nil {
-		zap.L().Error("error on posting resource data", zap.String("topic", eventTopic), zap.Any("resource", resource), zap.Error(err))
 	}
 }
