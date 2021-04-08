@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/api/sunrise"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"

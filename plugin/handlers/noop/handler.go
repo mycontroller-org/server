@@ -2,7 +2,7 @@ package noop
 
 import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 )
 
 // Client struct

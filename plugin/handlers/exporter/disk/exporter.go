@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
-	exporter "github.com/mycontroller-org/backend/v2/plugin/notify_handlers/exporter/util"
+	exporter "github.com/mycontroller-org/backend/v2/plugin/handlers/exporter/util"
 	"go.uber.org/zap"
 )
 

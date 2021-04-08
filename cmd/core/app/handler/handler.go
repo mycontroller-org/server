@@ -7,7 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	mcWS "github.com/mycontroller-org/backend/v2/pkg/service/websocket"
 	"github.com/rs/cors"

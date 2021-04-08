@@ -7,8 +7,8 @@ import (
 	"github.com/gorilla/mux"
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/hashed"
 )
 

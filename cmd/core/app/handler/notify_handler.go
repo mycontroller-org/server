@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
+	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -23,11 +23,11 @@ func registerNotifyHandlerRoutes(router *mux.Router) {
 }
 
 func listNotifyHandler(w http.ResponseWriter, r *http.Request) {
-	FindMany(w, r, ml.EntityNotifyHandler, &[]handlerML.Config{})
+	FindMany(w, r, ml.EntityHandler, &[]handlerML.Config{})
 }
 
 func getNotifyHandler(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, ml.EntityNotifyHandler, &handlerML.Config{})
+	FindOne(w, r, ml.EntityHandler, &handlerML.Config{})
 }
 
 func updateNotifyHandler(w http.ResponseWriter, r *http.Request) {

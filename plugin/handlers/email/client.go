@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 )

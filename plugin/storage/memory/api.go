@@ -25,10 +25,11 @@ func (s *Store) Ping() error {
 func (s *Store) Insert(entityName string, data interface{}) error {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
+
 	newID := helper.GetID(data)
 	entity := s.getByID(entityName, newID)
 	if entity != nil {
-		return fmt.Errorf("A entity found with the id: %s", newID)
+		return fmt.Errorf("a entity found with the id: %s", newID)
 	}
 	s.addEntity(entityName, data)
 	return nil
@@ -38,6 +39,7 @@ func (s *Store) Insert(entityName string, data interface{}) error {
 func (s *Store) Upsert(entityName string, data interface{}, f []stgml.Filter) error {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
+
 	return s.updateEntity(entityName, data, f, true)
 }
 
@@ -45,6 +47,7 @@ func (s *Store) Upsert(entityName string, data interface{}, f []stgml.Filter) er
 func (s *Store) Update(entityName string, data interface{}, f []stgml.Filter) error {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
+
 	return s.updateEntity(entityName, data, f, false)
 }
 
@@ -76,15 +79,6 @@ func (s *Store) Find(entityName string, out interface{}, filters []stgml.Filter,
 			sliceVal = reflect.Append(sliceVal, newElem.Elem())
 			sliceVal = sliceVal.Slice(0, sliceVal.Cap())
 		}
-		//currElem := sliceVal.Index(index).Addr().Interface()
-		//bytes, err := util.StructToByte(en)
-		//if err != nil {
-		//	return nil, err
-		//}
-		//err = util.ByteToStruct(bytes, currElem)
-		//if err != nil {
-		//	return nil, err
-		//}
 		sliceVal.Index(index).Set(reflect.ValueOf(en).Elem())
 	}
 
@@ -110,6 +104,7 @@ func (s *Store) Find(entityName string, out interface{}, filters []stgml.Filter,
 func (s *Store) FindOne(entityName string, out interface{}, f []stgml.Filter) error {
 	s.RWMutex.RLock()
 	defer s.RWMutex.RUnlock()
+
 	entities := s.getEntities(entityName)
 	entities = helper.Filter(entities, f, true)
 
@@ -125,6 +120,7 @@ func (s *Store) FindOne(entityName string, out interface{}, f []stgml.Filter) er
 func (s *Store) Delete(entityName string, filters []stgml.Filter) (int64, error) {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
+
 	entities := s.getEntities(entityName)
 	filteredEntities := helper.Filter(entities, filters, false)
 
@@ -179,7 +175,7 @@ func (s *Store) updateEntity(entityName string, entity interface{}, filters []st
 		entities := s.getEntities(entityName)
 		entities = helper.Filter(entities, filters, true)
 		if len(entities) > 1 {
-			return errors.New("More than one entities found, with the supplied filter")
+			return errors.New("more than one entities found, with the supplied filter")
 		} else if len(entities) > 0 {
 			sourceID = helper.GetID(entities[0])
 		}
@@ -200,7 +196,7 @@ func (s *Store) updateEntity(entityName string, entity interface{}, filters []st
 		//	zap.L().Info("Entity not available, added", zap.Any("new", entity))
 		return nil
 	}
-	return errors.New("Entity not available")
+	return errors.New("entity not available")
 }
 
 func (s *Store) removeEntity(entityName, id string) {

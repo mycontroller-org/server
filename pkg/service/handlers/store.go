@@ -3,7 +3,7 @@ package handler
 import (
 	"sync"
 
-	handler "github.com/mycontroller-org/backend/v2/plugin/notify_handlers"
+	handler "github.com/mycontroller-org/backend/v2/plugin/handlers"
 	"go.uber.org/zap"
 )
 

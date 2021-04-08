@@ -3,7 +3,7 @@ package busutils
 import (
 	"encoding/json"
 
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	"go.uber.org/zap"

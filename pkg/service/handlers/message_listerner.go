@@ -6,7 +6,7 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"

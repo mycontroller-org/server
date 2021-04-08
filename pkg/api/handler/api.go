@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -13,13 +13,13 @@ import (
 // List by filter and pagination
 func List(filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
 	out := make([]handlerML.Config, 0)
-	return stg.SVC.Find(model.EntityNotifyHandler, &out, filters, pagination)
+	return stg.SVC.Find(model.EntityHandler, &out, filters, pagination)
 }
 
 // Get a config
 func Get(f []stgml.Filter) (handlerML.Config, error) {
 	out := handlerML.Config{}
-	err := stg.SVC.FindOne(model.EntityNotifyHandler, &out, f)
+	err := stg.SVC.FindOne(model.EntityHandler, &out, f)
 	return out, err
 }
 
@@ -41,7 +41,7 @@ func Save(cfg *handlerML.Config) error {
 	f := []stgml.Filter{
 		{Key: model.KeyID, Value: cfg.ID},
 	}
-	err := stg.SVC.Upsert(model.EntityNotifyHandler, cfg, f)
+	err := stg.SVC.Upsert(model.EntityHandler, cfg, f)
 	if err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func GetByTypeName(handlerType, name string) (*handlerML.Config, error) {
 		{Key: model.KeyHandlerName, Value: name},
 	}
 	out := &handlerML.Config{}
-	err := stg.SVC.FindOne(model.EntityNotifyHandler, out, f)
+	err := stg.SVC.FindOne(model.EntityHandler, out, f)
 	return out, err
 }
 
@@ -76,7 +76,7 @@ func GetByID(ID string) (*handlerML.Config, error) {
 		{Key: model.KeyID, Value: ID},
 	}
 	out := &handlerML.Config{}
-	err := stg.SVC.FindOne(model.EntityNotifyHandler, out, f)
+	err := stg.SVC.FindOne(model.EntityHandler, out, f)
 	return out, err
 }
 
@@ -87,5 +87,5 @@ func Delete(ids []string) (int64, error) {
 		return 0, err
 	}
 	f := []stgml.Filter{{Key: model.KeyID, Operator: stgml.OperatorIn, Value: ids}}
-	return stg.SVC.Delete(model.EntityNotifyHandler, f)
+	return stg.SVC.Delete(model.EntityHandler, f)
 }

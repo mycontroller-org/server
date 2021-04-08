@@ -10,8 +10,8 @@ import (
 	firmwareAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	forwardPayloadAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
+	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
 	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
 	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
@@ -37,12 +37,12 @@ var (
 		model.EntityGateway:        gatewayAPI.List,
 		model.EntityNode:           nodeAPI.List,
 		model.EntitySource:         sourceAPI.List,
-		model.EntityField:    fieldAPI.List,
+		model.EntityField:          fieldAPI.List,
 		model.EntityFirmware:       firmwareAPI.List,
 		model.EntityUser:           userAPI.List,
 		model.EntityDashboard:      dashboardAPI.List,
 		model.EntityForwardPayload: forwardPayloadAPI.List,
-		model.EntityNotifyHandler:  notificationHandlerAPI.List,
+		model.EntityHandler:        notificationHandlerAPI.List,
 		model.EntityTask:           taskAPI.List,
 		model.EntityScheduler:      schedulerAPI.List,
 		model.EntitySettings:       settingsAPI.List,

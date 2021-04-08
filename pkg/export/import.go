@@ -11,8 +11,8 @@ import (
 	fwAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	fpAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
+	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
 	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
 	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
@@ -27,8 +27,8 @@ import (
 	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	fpML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	nhML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	nhML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
 	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
 	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
@@ -173,7 +173,7 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntityNotifyHandler:
+	case model.EntityHandler:
 		entities := make([]nhML.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {

@@ -5,17 +5,16 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	handler "github.com/mycontroller-org/backend/v2/plugin/notify_handlers"
-	handlerPlugin "github.com/mycontroller-org/backend/v2/plugin/notify_handlers"
+	handlerPlugin "github.com/mycontroller-org/backend/v2/plugin/handlers"
 	"go.uber.org/zap"
 )
 
 // Start notify handlers
 func Start(cfg *handlerML.Config) error {
 	if handlersStore.Get(cfg.ID) != nil {
-		return fmt.Errorf("A service is in running state. id:%s", cfg.ID)
+		return fmt.Errorf("a service is in running state. id:%s", cfg.ID)
 	}
 	if !cfg.Enabled { // this handler is not enabled
 		return nil
@@ -83,7 +82,7 @@ func UnloadAll() {
 	}
 }
 
-func loadHandler(cfg *handlerML.Config) (handler.Handler, error) {
+func loadHandler(cfg *handlerML.Config) (handlerPlugin.Handler, error) {
 	handler, err := handlerPlugin.GetHandler(cfg)
 	if err != nil {
 		return nil, err

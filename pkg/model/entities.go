@@ -10,7 +10,7 @@ const (
 	EntityUser           = "user"            // keeps user details
 	EntityDashboard      = "dashboard"       // keeps dashboard details
 	EntityForwardPayload = "forward_payload" // keeps forward payload mapping details
-	EntityNotifyHandler  = "notify_handler"  // keeps configurations for notify handlers
+	EntityHandler        = "handler"         // keeps configurations for handlers
 	EntityTask           = "task"            // keeps configurations for tasks
 	EntityScheduler      = "scheduler"       // keeps configurations for scheduler
 	EntitySettings       = "settings"        // settings of the system

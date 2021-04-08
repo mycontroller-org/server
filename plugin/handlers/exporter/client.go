@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/exporter/disk"
-	exporter "github.com/mycontroller-org/backend/v2/plugin/notify_handlers/exporter/util"
+	"github.com/mycontroller-org/backend/v2/plugin/handlers/exporter/disk"
+	exporter "github.com/mycontroller-org/backend/v2/plugin/handlers/exporter/util"
 )
 
 // Config of email service

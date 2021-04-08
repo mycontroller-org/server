@@ -7,7 +7,7 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	coreScheduler "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"

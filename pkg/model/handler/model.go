@@ -1,47 +1,124 @@
 package handler
 
-// global constants
-const (
-	KeyUserID     = "userID"
-	KeyFullName   = "fullName"
-	KeyAuthorized = "authorized"
-	KeyExpiration = "expiration"
+import (
+	"time"
 
-	EnvJwtAccessSecret = "JWT_ACCESS_SECRET" // environment variable to set secret for JWT token
-
-	HeaderAuthorization = "Authorization"
-	HeaderUserID        = "mc_userid"
-
-	AccessToken = "access_token"
-
-	DefaultExpiration = "168h" // 24 * 7 days
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
 
-// UserLogin struct
-type UserLogin struct {
-	Username   string `json:"username"`
-	Password   string `json:"password"`
-	Expiration string `json:"expiration"`
+// handler types
+const (
+	TypeNoop       = "noop"
+	TypeEmail      = "email"
+	TypeTelegram   = "telegram"
+	TypeWebhook    = "webhook"
+	TypeSMS        = "sms"
+	TypePushbullet = "pushbullet"
+	TypeResource   = "resource"
+	TypeExporter   = "exporter"
+)
+
+// handler data types
+const (
+	DataTypeEmail      = "email"
+	DataTypeTelegram   = "telegram"
+	DataTypeWebhook    = "webhook"
+	DataTypeSMS        = "sms"
+	DataTypePushbullet = "pushbullet"
+	DataTypeResource   = "resource"
+	DataTypeExporter   = "exporter"
+)
+
+// Config model
+type Config struct {
+	ID          string               `json:"id"`
+	Description string               `json:"description"`
+	Enabled     bool                 `json:"enabled"`
+	Labels      cmap.CustomStringMap `json:"labels"`
+	Type        string               `json:"type"`
+	Spec        cmap.CustomMap       `json:"spec"`
+	ModifiedOn  time.Time            `json:"modifiedOn"`
+	State       *model.State         `json:"state"`
 }
 
-// JwtToken struct
-type JwtToken struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
+// Clone config
+func (hdr *Config) Clone() Config {
+	clonedConfig := Config{
+		ID:          hdr.ID,
+		Description: hdr.Description,
+		Enabled:     hdr.Enabled,
+		Type:        hdr.Type,
+		Labels:      hdr.Labels.Clone(),
+		Spec:        hdr.Spec.Clone(),
+	}
+	return clonedConfig
 }
 
-// JwtTokenResponse struct
-type JwtTokenResponse struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	FullName string `json:"fullName"`
-	Email    string `json:"email"`
-	Token    string `json:"token"`
+// MessageWrapper to use in bus
+// specially used to send data to handlers
+type MessageWrapper struct {
+	ID   string
+	Data map[string]interface{}
 }
 
-// Response struct
-type Response struct {
-	Success bool        `json:"success"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+// GenericData struct
+type GenericData struct {
+	Type     string `json:"type"`
+	Disabled string `json:"disabled"` // string? supports template
+	Data     string `json:"data"`
+}
+
+// // ConvertibleBoolean used to convert string to bool
+// type ConvertibleBoolean bool
+//
+// func (cb *ConvertibleBoolean) UnmarshalJSON(data []byte) error {
+// 	asString := string(data)
+// 	if converterUtils.ToBool(asString) {
+// 		*cb = true
+// 	} else {
+// 		*cb = false
+// 	}
+// 	return nil
+// }
+
+// ResourceData struct
+type ResourceData struct {
+	ResourceType string               `yaml:"resourceType"`
+	QuickID      string               `yaml:"quickId"`
+	Labels       cmap.CustomStringMap `yaml:"labels"`
+	Payload      string               `yaml:"payload"`
+	PreDelay     string               `yaml:"preDelay"`
+	Selector     string               `yaml:"selector"`
+}
+
+// WebhookData struct
+type WebhookData struct {
+	Server    string            `yaml:"server"`
+	API       string            `yaml:"api"`
+	Method    string            `yaml:"method"`
+	Headers   map[string]string `yaml:"headers"`
+	Parameter string            `yaml:"parameter"`
+	Body      interface{}       `yaml:"body"`
+}
+
+// EmailData struct
+type EmailData struct {
+	From    string   `yaml:"from"`
+	To      []string `yaml:"to"`
+	Subject string   `yaml:"subject"`
+	Body    string   `yaml:"body"`
+}
+
+// TelegramData struct
+type TelegramData struct {
+	ChatIDs   []string `yaml:"chatIds"`
+	ParseMode string   `yaml:"parseMode"`
+	Text      string   `yaml:"text"`
+}
+
+// ExporterData struct
+type ExporterData struct {
+	ExporterType string                 `yaml:"exporterType"`
+	Spec         map[string]interface{} `yaml:"spec"`
 }

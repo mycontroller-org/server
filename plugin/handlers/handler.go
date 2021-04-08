@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
-	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/email"
-	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/exporter"
-	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/noop"
-	resourceAction "github.com/mycontroller-org/backend/v2/plugin/notify_handlers/resource"
-	"github.com/mycontroller-org/backend/v2/plugin/notify_handlers/telegram"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
+	"github.com/mycontroller-org/backend/v2/plugin/handlers/email"
+	"github.com/mycontroller-org/backend/v2/plugin/handlers/exporter"
+	"github.com/mycontroller-org/backend/v2/plugin/handlers/noop"
+	resourceAction "github.com/mycontroller-org/backend/v2/plugin/handlers/resource"
+	"github.com/mycontroller-org/backend/v2/plugin/handlers/telegram"
 )
 
 // Handler interface details for operation

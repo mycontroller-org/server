@@ -7,7 +7,7 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	httpClient "github.com/mycontroller-org/backend/v2/pkg/utils/http_client_json"
 	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"

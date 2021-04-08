@@ -10,7 +10,7 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/notify_handler"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
 	"go.uber.org/zap"
 )

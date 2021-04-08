@@ -3,7 +3,7 @@ package resource
 import (
 	"errors"
 
-	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
+	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"go.uber.org/zap"

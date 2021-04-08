@@ -5,8 +5,8 @@ import (
 
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
+	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/notify_handler"
 	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
 	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
