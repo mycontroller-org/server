@@ -10,15 +10,19 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
 	exporter "github.com/mycontroller-org/backend/v2/plugin/handlers/exporter/util"
+	"github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
 // Config of disk exporter
 type Config struct {
+	Prefix          string
 	ExportType      string
 	TargetDirectory string
+	RetentionCount  int
 }
 
 // Client struct
@@ -112,6 +116,8 @@ func (c *Client) triggerExport(spec map[string]interface{}) error {
 
 	targetExportType := c.cfg.ExportType
 	targetDirectory := c.cfg.TargetDirectory
+	prefix := c.cfg.Prefix
+	retentionCount := c.cfg.RetentionCount
 
 	if newConfig.ExportType != "" {
 		targetExportType = newConfig.ExportType
@@ -125,10 +131,22 @@ func (c *Client) triggerExport(spec map[string]interface{}) error {
 		targetDirectory = targetDirectory[:len(targetDirectory)-1]
 	}
 
+	if newConfig.Prefix != "" {
+		prefix = newConfig.Prefix
+	}
+
+	if prefix == "" {
+		prefix = c.handlerCfg.ID
+	}
+
+	if newConfig.RetentionCount != 0 {
+		retentionCount = newConfig.RetentionCount
+	}
+
 	start := time.Now()
-	zap.L().Info("Export job triggered")
+	zap.L().Debug("Export job triggered", zap.String("handler", c.handlerCfg.ID))
 	// start export
-	filename, err := exporter.Export(targetExportType)
+	filename, err := exporter.Export(prefix, targetExportType)
 	if err != nil {
 		return err
 	}
@@ -146,7 +164,51 @@ func (c *Client) triggerExport(spec map[string]interface{}) error {
 		return err
 	}
 
-	zap.L().Info("Export job completed", zap.String("timeTaken", time.Since(start).String()))
+	zap.L().Debug("Export job completed", zap.String("handler", c.handlerCfg.ID), zap.String("timeTaken", time.Since(start).String()))
+
+	err = c.executeRetentionCount(targetDirectory, prefix, retentionCount)
+	if err != nil {
+		zap.L().Error("error on executing retention count", zap.String("handler", c.handlerCfg.ID), zap.Error(err))
+	}
+
+	return nil
+}
+
+func (c *Client) executeRetentionCount(targetDir, prefix string, retentionCount int) error {
+	if retentionCount <= 0 {
+		return nil
+	}
+
+	files, err := utils.ListFiles(targetDir)
+	if err != nil {
+		return err
+	}
+
+	prefix = fmt.Sprintf("%s_export_", prefix)
+	matchingFiles := make([]interface{}, 0)
+	for _, file := range files {
+		if strings.HasPrefix(file.Name, prefix) {
+			matchingFiles = append(matchingFiles, file)
+		}
+	}
+
+	// sort by filename
+	sortBy := []storage.Sort{{Field: "name", OrderBy: storage.SortByDESC}}
+	ordered, _ := helper.Sort(matchingFiles, &storage.Pagination{SortBy: sortBy, Limit: -1, Offset: 0})
+
+	if len(ordered) > retentionCount {
+		deleteFiles := ordered[retentionCount:]
+		for _, f := range deleteFiles {
+			if file, ok := f.(model.File); ok {
+				zap.L().Debug("deleting a file", zap.Any("file", file))
+				filename := fmt.Sprintf("%s/%s", targetDir, file.Name)
+				err = utils.RemoveFileOrEmptyDir(filename)
+				if err != nil {
+					zap.L().Error("error on deleting a file", zap.Any("file", file), zap.Error(err))
+				}
+			}
+		}
+	}
 
 	return nil
 }

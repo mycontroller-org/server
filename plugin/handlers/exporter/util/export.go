@@ -12,9 +12,9 @@ import (
 )
 
 // Export creates zip file on a tmp location and returns the location details
-func Export(exportType string) (string, error) {
+func Export(prefix, exportType string) (string, error) {
 	timestamp := time.Now().Format("20060102_150405")
-	targetDir := fmt.Sprintf("%s/export_%s_%s", model.GetDirectoryTmp(), timestamp, exportType)
+	targetDir := fmt.Sprintf("%s/%s_export_%s_%s", model.GetDirectoryTmp(), prefix, timestamp, exportType)
 	zipFilename := fmt.Sprintf("%s.zip", targetDir)
 
 	// export to tmp directory

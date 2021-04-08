@@ -37,6 +37,6 @@ func Init(cfg *handlerML.Config) (Client, error) {
 		return disk.Init(cfg, config.Spec)
 
 	default:
-		return nil, fmt.Errorf("Unknown exporter client:%s", cfg.Type)
+		return nil, fmt.Errorf("unknown exporter client:%s", cfg.Type)
 	}
 }
