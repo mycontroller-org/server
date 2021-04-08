@@ -12,7 +12,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
-	exporter "github.com/mycontroller-org/backend/v2/plugin/handlers/exporter/util"
+	exporterUtil "github.com/mycontroller-org/backend/v2/plugin/handlers/exporter/util"
 	"github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
@@ -93,7 +93,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 			continue
 		}
 
-		if exporterData.ExporterType != exporter.TypeExporterDisk {
+		if exporterData.ExporterType != exporterUtil.TypeExporterDisk {
 			continue
 		}
 
@@ -146,7 +146,7 @@ func (c *Client) triggerExport(spec map[string]interface{}) error {
 	start := time.Now()
 	zap.L().Debug("Export job triggered", zap.String("handler", c.handlerCfg.ID))
 	// start export
-	filename, err := exporter.Export(prefix, targetExportType)
+	filename, err := exporterUtil.Export(prefix, targetExportType)
 	if err != nil {
 		return err
 	}
@@ -166,7 +166,7 @@ func (c *Client) triggerExport(spec map[string]interface{}) error {
 
 	zap.L().Debug("Export job completed", zap.String("handler", c.handlerCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 
-	err = c.executeRetentionCount(targetDirectory, prefix, retentionCount)
+	err = c.executeRetentionCount(targetDirectory, prefix, targetExportType, retentionCount)
 	if err != nil {
 		zap.L().Error("error on executing retention count", zap.String("handler", c.handlerCfg.ID), zap.Error(err))
 	}
@@ -174,7 +174,7 @@ func (c *Client) triggerExport(spec map[string]interface{}) error {
 	return nil
 }
 
-func (c *Client) executeRetentionCount(targetDir, prefix string, retentionCount int) error {
+func (c *Client) executeRetentionCount(targetDir, prefix, targetExportType string, retentionCount int) error {
 	if retentionCount <= 0 {
 		return nil
 	}
@@ -184,7 +184,7 @@ func (c *Client) executeRetentionCount(targetDir, prefix string, retentionCount 
 		return err
 	}
 
-	prefix = fmt.Sprintf("%s_export_", prefix)
+	prefix = fmt.Sprintf("%s_%s_%s", prefix, exporterUtil.ExportIdentifier, targetExportType)
 	matchingFiles := make([]interface{}, 0)
 	for _, file := range files {
 		if strings.HasPrefix(file.Name, prefix) {

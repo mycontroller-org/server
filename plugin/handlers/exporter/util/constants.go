@@ -4,3 +4,8 @@ package exporter
 const (
 	TypeExporterDisk = "disk"
 )
+
+// export identifier prefix
+const (
+	ExportIdentifier = "mc_export"
+)
