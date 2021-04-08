@@ -10,7 +10,7 @@ import (
 	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	sch "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
-	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -42,7 +42,7 @@ type Store struct {
 // NewClient in-memory database
 func NewClient(config map[string]interface{}) (*Store, error) {
 	cfg := Config{}
-	err := ut.MapToStruct(ut.TagNameYaml, config, &cfg)
+	err := utils.MapToStruct(utils.TagNameYaml, config, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func (s *Store) dump(entityName string, index int, data interface{}, provider st
 
 	filename := fmt.Sprintf("%s%s%d.%s", entityName, exportml.EntityNameIndexSplit, index, provider)
 	dir := fmt.Sprintf("%s/%s/%s", model.GetDirectoryExport(), s.Config.DumpDir, provider)
-	err = ut.WriteFile(dir, filename, dataBytes)
+	err = utils.WriteFile(dir, filename, dataBytes)
 	if err != nil {
 		zap.L().Error("failed to write data to disk", zap.String("directory", dir), zap.String("filename", filename), zap.Error(err))
 	}
