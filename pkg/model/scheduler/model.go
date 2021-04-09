@@ -22,6 +22,7 @@ const (
 	FrequencyDaily   = "daily"
 	FrequencyWeekly  = "weekly"
 	FrequencyMonthly = "monthly"
+	FrequencyOnDate  = "on_date"
 )
 
 // Custom variable loader types
@@ -57,6 +58,7 @@ type CustomVariableConfig struct {
 
 // Validity of the scheduler
 type Validity struct {
+	Enabled              bool      `json:"enabled"`
 	Date                 DateRange `json:"date"`
 	Time                 TimeRange `json:"time"`
 	ValidateTimeEveryday bool      `json:"validateTimeEveryday"`
@@ -100,6 +102,7 @@ type SpecSimple struct {
 	Frequency   string
 	DayOfWeek   string
 	DateOfMonth int
+	Date        string
 	Time        string
 	Offset      string
 }
@@ -112,14 +115,14 @@ type CustomDate struct {
 	time.Time
 }
 
-const customDateFormat = "2006-01-02"
+const CustomDateFormat = "2006-01-02"
 
 // MarshalJSON custom implementation
 func (cd CustomDate) MarshalJSON() ([]byte, error) {
 	if cd.Time.IsZero() {
 		return []byte("\"\""), nil
 	}
-	stamp := fmt.Sprintf("\"%s\"", cd.Time.Format(customDateFormat))
+	stamp := fmt.Sprintf("\"%s\"", cd.Time.Format(CustomDateFormat))
 	return []byte(stamp), nil
 }
 
@@ -128,7 +131,7 @@ func (cd CustomDate) MarshalYAML() (interface{}, error) {
 	if cd.Time.IsZero() {
 		return "", nil
 	}
-	return cd.Time.Format(customDateFormat), nil
+	return cd.Time.Format(CustomDateFormat), nil
 }
 
 // UnmarshalJSON custom implementation
@@ -151,7 +154,7 @@ func (cd *CustomDate) unmarshal(stringDate string) error {
 	var parsedDate time.Time
 
 	if stringDate != "" {
-		date, err := time.Parse(customDateFormat, stringDate)
+		date, err := time.Parse(CustomDateFormat, stringDate)
 		if err != nil {
 			return err
 		}

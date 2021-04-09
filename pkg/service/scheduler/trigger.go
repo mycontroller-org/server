@@ -7,9 +7,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/api/sunrise"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
@@ -25,28 +23,11 @@ func getScheduleTriggerFunc(cfg *schedulerML.Config, spec string) func() {
 func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 	// validate schedule
 	if !isValidSchedule(cfg) {
-		zap.L().Info("at this moment, this is not a valid schedule", zap.String("ScheduleID", cfg.ID), zap.String("spec", spec), zap.Any("validity details", cfg.Validity))
+		zap.L().Info("at this time, this is not a valid schedule", zap.String("ScheduleID", cfg.ID), zap.String("spec", spec), zap.Any("validity details", cfg.Validity))
 		return
 	}
 
 	start := time.Now()
-
-	// if repeat type job, verify repeat count
-	if cfg.Type == schedulerML.TypeRepeat {
-		spec := &schedulerML.SpecRepeat{}
-		err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, spec)
-		if err != nil {
-			zap.L().Error("error on convert to repeat spec", zap.Error(err), zap.String("ScheduleID", cfg.ID), zap.Any("spec", cfg.Spec))
-			return
-		}
-		if spec.RepeatCount != 0 && cfg.State.ExecutedCount >= spec.RepeatCount {
-			zap.L().Debug("Reached maximum execution count, disbling this job", zap.String("ScheduleID", cfg.ID), zap.Any("spec", cfg.Spec))
-			busUtils.DisableSchedule(cfg.ID)
-			cfg.State.Message = "Reached maximum execution count"
-			busUtils.SetScheduleState(cfg.ID, *cfg.State)
-			return
-		}
-	}
 
 	cfg.State.LastRun = time.Now()
 	cfg.State.ExecutedCount++
@@ -102,6 +83,40 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 	cfg.State.Message = fmt.Sprintf("time taken: %s", time.Since(start).String())
 	// update triggered count and update state
 	busUtils.SetScheduleState(cfg.ID, *cfg.State)
+
+	switch cfg.Type {
+
+	// if repeat type job, verify repeat count
+	case schedulerML.TypeRepeat:
+		spec := &schedulerML.SpecRepeat{}
+		err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, spec)
+		if err != nil {
+			zap.L().Error("error on convert to repeat spec", zap.Error(err), zap.String("ScheduleID", cfg.ID), zap.Any("spec", cfg.Spec))
+			return
+		}
+		if spec.RepeatCount != 0 && cfg.State.ExecutedCount >= spec.RepeatCount {
+			zap.L().Debug("Reached maximum execution count, disbling this job", zap.String("ScheduleID", cfg.ID), zap.Any("spec", cfg.Spec))
+			busUtils.DisableSchedule(cfg.ID)
+			cfg.State.Message = fmt.Sprintf("time taken: %s, reached maximum execution count", time.Since(start).String())
+			busUtils.SetScheduleState(cfg.ID, *cfg.State)
+			return
+		}
+
+	// disable the schedule if it is a on date job
+	case schedulerML.TypeSimple, schedulerML.TypeSunrise, schedulerML.TypeSunset:
+		spec := &schedulerML.SpecSimple{}
+		err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, spec)
+		if err != nil {
+			zap.L().Error("error on loading spec", zap.String("schedulerID", cfg.ID), zap.Error(err))
+			cfg.State.LastStatus = false
+			cfg.State.Message = fmt.Sprintf("Error: %s", err.Error())
+			busUtils.SetScheduleState(cfg.ID, *cfg.State)
+			return
+		}
+		if spec.Frequency == schedulerML.FrequencyOnDate {
+			busUtils.DisableSchedule(cfg.ID)
+		}
+	}
 
 }
 
@@ -178,6 +193,8 @@ func toCronExpression(spec *schedulerML.SpecSimple) (string, error) {
 		DayOfWeek  string
 	}{}
 
+	cronRaw.Month = "*"
+
 	switch spec.Frequency {
 	case schedulerML.FrequencyDaily, schedulerML.FrequencyWeekly:
 		cronRaw.DayOfMonth = "*"
@@ -186,6 +203,15 @@ func toCronExpression(spec *schedulerML.SpecSimple) (string, error) {
 	case schedulerML.FrequencyMonthly:
 		cronRaw.DayOfWeek = "*"
 		cronRaw.DayOfMonth = converterUtils.ToString(spec.DateOfMonth)
+
+	case schedulerML.FrequencyOnDate:
+		date, err := time.Parse(schedulerML.CustomDateFormat, spec.Date)
+		if err != nil {
+			return "", err
+		}
+		cronRaw.DayOfMonth = converterUtils.ToString(date.Day())
+		cronRaw.Month = converterUtils.ToString(int(date.Month()))
+		cronRaw.DayOfWeek = "*"
 
 	default:
 		return "", fmt.Errorf("invalid frequency: %s", spec.Frequency)
@@ -208,11 +234,15 @@ func toCronExpression(spec *schedulerML.SpecSimple) (string, error) {
 	}
 
 	// format: "Seconds Minutes Hours DayOfMonth Month DayOfWeek"
-	cron := fmt.Sprintf("%s %s %s %s * %s", cronRaw.Seconds, cronRaw.Minutes, cronRaw.Hours, cronRaw.DayOfMonth, cronRaw.DayOfWeek)
+	cron := fmt.Sprintf("%s %s %s %s %s %s", cronRaw.Seconds, cronRaw.Minutes, cronRaw.Hours, cronRaw.DayOfMonth, cronRaw.Month, cronRaw.DayOfWeek)
 	return cron, nil
 }
 
 func isValidSchedule(cfg *schedulerML.Config) bool {
+	if !cfg.Validity.Enabled {
+		return true
+	}
+
 	fromDate := time.Time(cfg.Validity.Date.From.Time)
 	toDate := time.Time(cfg.Validity.Date.To.Time)
 	fromTime := time.Time(cfg.Validity.Time.From.Time)
@@ -224,33 +254,45 @@ func isValidSchedule(cfg *schedulerML.Config) bool {
 	if !fromDate.IsZero() {
 		if fromTime.IsZero() { // set time to start of the day
 			fromTime = time.Date(fromTime.Year(), fromTime.Month(), fromTime.Day(),
-				0, 0, 0, 0, fromTime.Location())
+				0, 0, 0, 0, now.Location())
 		} else { // set the time from defined data
 			fromDate = time.Date(fromDate.Year(), fromDate.Month(), fromDate.Day(),
 				fromTime.Hour(), fromTime.Minute(), fromTime.Second(), fromTime.Nanosecond(),
-				fromDate.Location())
+				now.Location())
 		}
+
+		// update timezone to system timezone
+		fromDate = time.Date(fromDate.Year(), fromDate.Month(), fromDate.Day(),
+			fromDate.Hour(), fromDate.Minute(), fromDate.Second(), fromDate.Nanosecond(),
+			now.Location())
 	}
 
 	// update to date with time
 	if !toDate.IsZero() {
 		if toTime.IsZero() { // set the time to end of the day
 			toDate = time.Date(toDate.Year(), toDate.Month(), toDate.Day(),
-				23, 59, 59, 999999999, toDate.Location())
+				23, 59, 59, 999999999, now.Location())
 		} else { // set the time from defined data
 			toDate = time.Date(toDate.Year(), toDate.Month(), toDate.Day(),
 				toTime.Hour(), toTime.Minute(), toTime.Second(), toTime.Nanosecond(),
-				toDate.Location())
+				now.Location())
 		}
+
+		// update timezone to system timezone
+		toDate = time.Date(toDate.Year(), toDate.Month(), toDate.Day(),
+			toDate.Hour(), toDate.Minute(), toDate.Second(), toDate.Nanosecond(),
+			now.Location())
 	}
 
 	// validate from date and time
-	if !fromDate.IsZero() && fromDate.After(now) {
+	if !fromDate.IsZero() && now.Before(fromDate) {
+		zap.L().Info("failed", zap.Any("fromDate", fromDate), zap.Any("now", now))
 		return false
 	}
 
 	// validate to date and time
-	if !toDate.IsZero() && toDate.Before(now) {
+	if !toDate.IsZero() && now.After(toDate) {
+		zap.L().Info("failed", zap.Any("toDate", toDate), zap.Any("now", now))
 		return false
 	}
 
@@ -263,14 +305,16 @@ func isValidSchedule(cfg *schedulerML.Config) bool {
 		if !fromTime.IsZero() {
 			fromTimeInt, _ := strconv.ParseUint(fromTime.Format(timeFormat), 10, 64)
 			if nowTimeInt < fromTimeInt {
+				zap.L().Info("failed", zap.Any("fromTime", fromTime))
 				return false
 			}
 		}
 
 		// validate to time
-		if !fromTime.IsZero() {
+		if !toTime.IsZero() {
 			toTimeInt, _ := strconv.ParseUint(toTime.Format(timeFormat), 10, 64)
 			if nowTimeInt > toTimeInt {
+				zap.L().Info("failed", zap.Any("toTime", toTime))
 				return false
 			}
 		}
@@ -278,13 +322,26 @@ func isValidSchedule(cfg *schedulerML.Config) bool {
 	return true
 }
 
-func postToHandler(handlerID string, variables map[string]interface{}) {
-	msg := &handlerML.MessageWrapper{
-		ID:   handlerID,
-		Data: variables,
+func updateOnDateJobValidity(cfg *schedulerML.Config) error {
+	if cfg.Type == schedulerML.TypeSimple ||
+		cfg.Type == schedulerML.TypeSunrise ||
+		cfg.Type == schedulerML.TypeSunset {
+
+		spec := &schedulerML.SpecSimple{}
+		err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, spec)
+		if err != nil {
+			return err
+		}
+		if spec.Frequency != schedulerML.FrequencyOnDate {
+			return nil
+		}
+		date, err := time.Parse(schedulerML.CustomDateFormat, spec.Date)
+		if err != nil {
+			return nil
+		}
+		cfg.Validity.Enabled = true
+		cfg.Validity.Date.From = schedulerML.CustomDate{Time: date}
+		cfg.Validity.Date.To = schedulerML.CustomDate{Time: date}
 	}
-	err := mcbus.Publish(mcbus.FormatTopic(mcbus.TopicPostMessageNotifyHandler), msg)
-	if err != nil {
-		zap.L().Error("error on message publish", zap.Error(err))
-	}
+	return nil
 }

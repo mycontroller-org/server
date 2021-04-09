@@ -18,6 +18,14 @@ func schedule(cfg *schedulerML.Config) {
 		cfg.State = &schedulerML.State{}
 	}
 	name := getScheduleID(cfg.ID)
+
+	// update validity, if it is on date job, add date(with year) on validity
+	err := updateOnDateJobValidity(cfg)
+	if err != nil {
+		zap.L().Error("error on updating on date job config", zap.Error(err), zap.String("id", cfg.ID))
+		return
+	}
+
 	cronSpec, err := getCronSpec(cfg)
 	if err != nil {
 		zap.L().Error("error on creating cron spec", zap.Error(err))
