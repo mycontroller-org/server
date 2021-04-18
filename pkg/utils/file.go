@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
@@ -165,7 +166,7 @@ func ListFiles(dir string) ([]ml.File, error) {
 				Size:         file.Size(),
 				ModifiedTime: file.ModTime(),
 				IsDir:        false,
-				FullPath:     fmt.Sprintf("%s/%s", dir, file.Name()),
+				FullPath:     path.Join(dir, file.Name()),
 			}
 			items = append(items, f)
 		}
