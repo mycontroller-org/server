@@ -118,6 +118,10 @@ func ExecuteRestoreFirmware(sourceDir string) error {
 		return err
 	}
 
+	if !utils.IsDirExists(sourceDir) {
+		return nil
+	}
+
 	err = os.Rename(sourceDir, destDir)
 	if err != nil {
 		return err
