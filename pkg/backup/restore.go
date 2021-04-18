@@ -3,7 +3,10 @@ package export
 import (
 	"errors"
 	"fmt"
+	"os"
+	"path"
 	"strings"
+	"time"
 
 	dashboardAPI "github.com/mycontroller-org/backend/v2/pkg/api/dashboard"
 	dataRepositoryAPI "github.com/mycontroller-org/backend/v2/pkg/api/data_repository"
@@ -20,9 +23,10 @@ import (
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
+	backupML "github.com/mycontroller-org/backend/v2/pkg/model/backup"
+	"github.com/mycontroller-org/backend/v2/pkg/model/config"
 	dashboardML "github.com/mycontroller-org/backend/v2/pkg/model/dashboard"
 	dataRepositoryML "github.com/mycontroller-org/backend/v2/pkg/model/data_repository"
-	exportML "github.com/mycontroller-org/backend/v2/pkg/model/export"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	fpML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
@@ -34,32 +38,116 @@ import (
 	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
+	"github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/ziputils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
 
-var isImportJobRunning = false
+var isImportJobRunning = concurrency.SafeBool{}
 
-// ExecuteImport update data into database
-func ExecuteImport(targetDir, fileType string) error {
-	if isImportJobRunning {
-		return errors.New("There is an import job is progress")
+func ExecuteRestore(extractedDir string) error {
+	start := time.Now()
+	zap.L().Info("Restore job triggered", zap.String("extractedDirectory", extractedDir))
+
+	err := storage.SVC.Pause()
+	if err != nil {
+		zap.L().Fatal("error on pause a database", zap.Error(err))
+		return err
 	}
-	isImportJobRunning = true
-	defer func() { isImportJobRunning = false }()
 
-	zap.L().Debug("Executing import job", zap.String("targetDir", targetDir), zap.String("fileType", fileType))
+	err = storage.SVC.ClearDatabase()
+	if err != nil {
+		zap.L().Fatal("error on emptying database", zap.Error(err))
+		return err
+	}
+
+	storageDir := path.Join(extractedDir, model.DirectoryStorage)
+	firmwareDir := path.Join(extractedDir, model.DirectoryFirmware)
+
+	dataBytes, err := utils.ReadFile(extractedDir, backupML.BackupDetailsFilename)
+	if err != nil {
+		zap.L().Fatal("error on reading export details", zap.String("dir", extractedDir), zap.String("filename", backupML.BackupDetailsFilename), zap.Error(err))
+		return err
+	}
+
+	exportDetails := &backupML.BackupDetails{}
+	err = yaml.Unmarshal(dataBytes, exportDetails)
+	if err != nil {
+		zap.L().Fatal("error on loading export details", zap.Error(err))
+		return err
+	}
+
+	err = ExecuteImportStorage(storageDir, exportDetails.StorageExportType, false)
+	if err != nil {
+		zap.L().Fatal("error on importing storage files", zap.Error(err))
+		return err
+	}
+
+	err = storage.SVC.Resume()
+	if err != nil {
+		zap.L().Fatal("error on resume a database service", zap.Error(err))
+		return err
+	}
+
+	zap.L().Info("Import database completed", zap.String("timeTaken", time.Since(start).String()))
+
+	// restore firmwares
+	err = ExecuteRestoreFirmware(firmwareDir)
+	if err != nil {
+		zap.L().Fatal("error on copying firmware files", zap.Error(err))
+		return err
+	}
+	zap.L().Info("restore completed successfully", zap.String("timeTaken", time.Since(start).String()))
+	return nil
+}
+
+// ExecuteRestoreFirmware copies firmwares to the actual directory
+func ExecuteRestoreFirmware(sourceDir string) error {
+	if isImportJobRunning.IsSet() {
+		return errors.New("there is an import job is in progress")
+	}
+	isImportJobRunning.Set()
+	defer isImportJobRunning.Reset()
+
+	destDir := model.GetDirectoryFirmware()
+	err := utils.RemoveDir(destDir)
+	if err != nil {
+		return err
+	}
+
+	err = os.Rename(sourceDir, destDir)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ExecuteImportStorage update data into database
+func ExecuteImportStorage(sourceDir, fileType string, ignoreEmptyDir bool) error {
+	if isImportJobRunning.IsSet() {
+		return errors.New("there is an import job is in progress")
+	}
+	isImportJobRunning.Set()
+	defer isImportJobRunning.Reset()
+
+	zap.L().Debug("Executing import job", zap.String("sourceDir", sourceDir), zap.String("fileType", fileType))
 	// check directory availability
-	if !utils.IsDirExists(targetDir) {
-		return fmt.Errorf("Specified directory not available. targetDir:%s", targetDir)
+	if !utils.IsDirExists(sourceDir) {
+		return fmt.Errorf("specified directory not available. sourceDir:%s", sourceDir)
 	}
-	files, err := utils.ListFiles(targetDir)
+	files, err := utils.ListFiles(sourceDir)
 	if err != nil {
 		return err
 	}
 	if len(files) == 0 {
-		return fmt.Errorf("No files found on:%s", targetDir)
+		if ignoreEmptyDir {
+			return nil
+		}
+		return fmt.Errorf("no files found on:%s", sourceDir)
 	}
 	for _, file := range files {
 		if !strings.HasSuffix(file.Name, fileType) {
@@ -68,7 +156,7 @@ func ExecuteImport(targetDir, fileType string) error {
 		entityName := getEntityName(file.Name)
 		zap.L().Debug("Importing a file", zap.String("file", file.Name), zap.String("entityName", entityName))
 		// read data from file
-		fileBytes, err := utils.ReadFile(targetDir, file.Name)
+		fileBytes, err := utils.ReadFile(sourceDir, file.Name)
 		if err != nil {
 			return err
 		}
@@ -252,7 +340,7 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 		}
 
 	default:
-		return fmt.Errorf("Unknown entity type:%s", entityName)
+		return fmt.Errorf("unknown entity type:%s", entityName)
 	}
 
 	return nil
@@ -260,26 +348,69 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 
 func unmarshal(provider string, fileBytes []byte, entities interface{}) error {
 	switch provider {
-	case exportML.TypeJSON:
+	case backupML.TypeJSON:
 		err := json.Unmarshal(fileBytes, entities)
 		if err != nil {
 			return err
 		}
-	case exportML.TypeYAML:
+	case backupML.TypeYAML:
 		err := yaml.Unmarshal(fileBytes, entities)
 		if err != nil {
 			return err
 		}
 	default:
-		return fmt.Errorf("Unknown provider:%s", provider)
+		return fmt.Errorf("unknown provider:%s", provider)
 	}
 	return nil
 }
 
 func getEntityName(filename string) string {
-	entity := strings.Split(filename, exportML.EntityNameIndexSplit)
+	entity := strings.Split(filename, backupML.EntityNameIndexSplit)
 	if len(entity) > 0 {
 		return entity[0]
 	}
 	return ""
+}
+
+func ExtractExportedZipfile(exportedZipfile string) error {
+	if isImportJobRunning.IsSet() {
+		return errors.New("there is an import job is in progress")
+	}
+	isImportJobRunning.Set()
+	defer isImportJobRunning.Reset()
+
+	zipFilename := path.Base(exportedZipfile)
+	baseDir := strings.TrimSuffix(zipFilename, path.Ext(zipFilename))
+	extractFullPath := path.Join(model.GetDirectoryInternal(), baseDir)
+
+	err := ziputils.Unzip(exportedZipfile, extractFullPath)
+	if err != nil {
+		zap.L().Error("error on unzip", zap.String("exportedZipfile", exportedZipfile), zap.String("extractLocation", extractFullPath), zap.Error(err))
+		return err
+	}
+
+	// TODO: verify extracted file
+
+	systemStartJobs := &config.SystemStartupJobs{
+		Restore: config.StartupRestore{
+			Enabled:            true,
+			ExtractedDirectory: extractFullPath,
+			ClearDatabase:      true,
+		},
+	}
+
+	// store on internal, will be restored on startup
+	dataBytes, err := yaml.Marshal(systemStartJobs)
+	if err != nil {
+		return err
+	}
+
+	internalDir := model.GetDirectoryInternal()
+	err = utils.WriteFile(internalDir, config.SystemStartJobsFilename, dataBytes)
+	if err != nil {
+		zap.L().Error("failed to write data to disk", zap.String("directory", internalDir), zap.String("filename", config.SystemStartJobsFilename), zap.Error(err))
+		return err
+	}
+
+	return nil
 }

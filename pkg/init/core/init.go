@@ -1,9 +1,8 @@
 package core
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/export"
+	backupAPI "github.com/mycontroller-org/backend/v2/pkg/backup"
 	"github.com/mycontroller-org/backend/v2/pkg/init/common"
-	"github.com/mycontroller-org/backend/v2/pkg/model/config"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	fwdplSVC "github.com/mycontroller-org/backend/v2/pkg/service/forward_payload"
 	handlerSVC "github.com/mycontroller-org/backend/v2/pkg/service/handlers"
@@ -22,10 +21,10 @@ func Init(handlerFunc func()) {
 }
 
 func initServices() {
-	stg.Init() // storage
-	mts.Init() // metrics
+	stg.Init(backupAPI.ExecuteImportStorage) // storage
+	mts.Init()                               // metrics
 
-	StartupJobs(&cfg.CFG.StartupJobs)
+	StartupJobs()
 	StartupJobsExtra()
 
 	// start message processing engine
@@ -75,13 +74,8 @@ func wrapHandlerFunc(handlerFunc func()) func() {
 }
 
 // StartupJobs func
-func StartupJobs(cfg *config.Startup) {
-	if cfg.Importer.Enabled {
-		err := export.ExecuteImport(cfg.Importer.TargetDirectory, cfg.Importer.Type)
-		if err != nil {
-			zap.L().WithOptions(zap.AddCallerSkip(10)).Error("Failed to load exported files", zap.String("error", err.Error()))
-		}
-	}
+func StartupJobs() {
+	RunSystemStartJobs()
 }
 
 func closeServices() {

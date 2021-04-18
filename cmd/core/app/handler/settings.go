@@ -10,14 +10,23 @@ import (
 )
 
 func registerSystemRoutes(router *mux.Router) {
+	router.HandleFunc("/api/settings", updateSettings).Methods(http.MethodPost)
 	router.HandleFunc("/api/settings/system", getSystemSettings).Methods(http.MethodGet)
-	router.HandleFunc("/api/settings/system", updateSettings).Methods(http.MethodPost)
+	router.HandleFunc("/api/settings/backuplocations", getSystemBackupLocations).Methods(http.MethodGet)
+}
+
+func getSystemBackupLocations(w http.ResponseWriter, r *http.Request) {
+	getSettings(settingsML.KeySystemBackupLocations, w, r)
 }
 
 func getSystemSettings(w http.ResponseWriter, r *http.Request) {
+	getSettings(settingsML.KeySystemSettings, w, r)
+}
+
+func getSettings(key string, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	data, err := settingsAPI.GetByID(settingsML.KeySystemSettings)
+	data, err := settingsAPI.GetByID(key)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

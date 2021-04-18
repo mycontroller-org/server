@@ -3,6 +3,8 @@ package export
 import (
 	"errors"
 	"fmt"
+	"path"
+	"time"
 
 	dashboardAPI "github.com/mycontroller-org/backend/v2/pkg/api/dashboard"
 	dataRepositoryAPI "github.com/mycontroller-org/backend/v2/pkg/api/data_repository"
@@ -19,10 +21,11 @@ import (
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
+	backupML "github.com/mycontroller-org/backend/v2/pkg/model/backup"
 	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
+	"github.com/mycontroller-org/backend/v2/pkg/version"
 	pml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
@@ -50,18 +53,68 @@ var (
 	}
 )
 
-// ExecuteExport exports data from database to disk
-func ExecuteExport(targetDir, exportType string) error {
+// ExecuteCopyFirmware copies firmware files
+func ExecuteCopyFirmware(targetDir string) error {
+	targetDirFullPath := fmt.Sprintf("%s%s", targetDir, model.DirectoryFirmware)
+	err := utils.CreateDir(targetDirFullPath)
+	if err != nil {
+		return err
+	}
+
+	files, err := utils.ListFiles(model.GetDirectoryFirmware())
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		destPath := fmt.Sprintf("%s/%s", targetDirFullPath, file.Name)
+		err = utils.CopyFile(file.FullPath, destPath)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func addBackupInformation(targetDir, storageExportType string) error {
+	backupDetails := &backupML.BackupDetails{
+		Filename:          path.Base(targetDir),
+		StorageExportType: storageExportType,
+		CreatedOn:         time.Now(),
+		Version:           version.Get(),
+	}
+
+	dataBytes, err := yaml.Marshal(backupDetails)
+	if err != nil {
+		return err
+	}
+
+	err = utils.WriteFile(targetDir, backupML.BackupDetailsFilename, dataBytes)
+	if err != nil {
+		zap.L().Error("failed to write data to disk", zap.String("directory", targetDir), zap.String("filename", backupML.BackupDetailsFilename), zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+// ExecuteExportStorage exports data from database to disk
+func ExecuteExportStorage(targetDir, storageExportType string) error {
 	if isRunning.IsSet() {
 		return errors.New("there is a exporter job in progress")
 	}
 	isRunning.Set()
 	defer isRunning.Reset()
 
+	// include version details
+	addBackupInformation(targetDir, storageExportType)
+
+	targetDirFullPath := fmt.Sprintf("%s%s", targetDir, model.DirectoryStorage)
+
 	for entityName := range entitiesList {
 		listFn := entitiesList[entityName]
 		p := &pml.Pagination{
-			Limit: exportml.LimitPerFile, SortBy: []pml.Sort{{Field: model.KeyFieldID, OrderBy: "asc"}}, Offset: 0,
+			Limit: backupML.LimitPerFile, SortBy: []pml.Sort{{Field: model.KeyFieldID, OrderBy: "asc"}}, Offset: 0,
 		}
 		offset := int64(0)
 		for {
@@ -72,9 +125,9 @@ func ExecuteExport(targetDir, exportType string) error {
 				return err
 			}
 
-			dump(targetDir, entityName, int(result.Offset), result.Data, exportType)
+			dump(targetDirFullPath, entityName, int(result.Offset), result.Data, storageExportType)
 
-			offset += exportml.LimitPerFile
+			offset += backupML.LimitPerFile
 			if result.Count < offset {
 				break
 			}
@@ -83,7 +136,7 @@ func ExecuteExport(targetDir, exportType string) error {
 	return nil
 }
 
-func dump(targetDir, entityName string, index int, data interface{}, exportType string) {
+func dump(targetDir, entityName string, index int, data interface{}, storageExportType string) {
 	// update user to userPassword to keep the password on the json export
 	if entityName == model.EntityUser {
 		if users, ok := data.(*[]userML.User); ok {
@@ -100,26 +153,26 @@ func dump(targetDir, entityName string, index int, data interface{}, exportType 
 	}
 	var dataBytes []byte
 	var err error
-	switch exportType {
-	case exportml.TypeJSON:
+	switch storageExportType {
+	case backupML.TypeJSON:
 		dataBytes, err = json.Marshal(data)
 		if err != nil {
-			zap.L().Error("failed to convert to target format", zap.String("format", exportType), zap.Error(err))
+			zap.L().Error("failed to convert to target format", zap.String("format", storageExportType), zap.Error(err))
 			return
 		}
-	case exportml.TypeYAML:
+	case backupML.TypeYAML:
 		dataBytes, err = yaml.Marshal(data)
 		if err != nil {
-			zap.L().Error("failed to convert to target format", zap.String("format", exportType), zap.Error(err))
+			zap.L().Error("failed to convert to target format", zap.String("format", storageExportType), zap.Error(err))
 			return
 		}
 	default:
-		zap.L().Error("This format not supported", zap.String("format", exportType), zap.Error(err))
+		zap.L().Error("This format not supported", zap.String("format", storageExportType), zap.Error(err))
 		return
 	}
 
-	filename := fmt.Sprintf("%s%s%d.%s", entityName, "__", index, exportType)
-	dir := fmt.Sprintf("%s/%s", targetDir, exportType)
+	filename := fmt.Sprintf("%s%s%d.%s", entityName, "__", index, storageExportType)
+	dir := fmt.Sprintf("%s/%s", targetDir, storageExportType)
 	err = utils.WriteFile(targetDir, filename, dataBytes)
 	if err != nil {
 		zap.L().Error("failed to write data to disk", zap.String("directory", dir), zap.String("filename", filename), zap.Error(err))

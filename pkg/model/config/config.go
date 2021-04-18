@@ -2,6 +2,11 @@ package config
 
 import "github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 
+const (
+	SystemStartJobsFilename = "system_startup_jobs.yaml"
+	UserStartJobsFilename   = "user_startup_jobs.yaml"
+)
+
 // Config of the system
 type Config struct {
 	Web         WebConfig                `yaml:"web"`
@@ -14,7 +19,6 @@ type Config struct {
 	Task        cmap.CustomMap           `yaml:"task"`
 	Database    Database                 `yaml:"database"`
 	Databases   []map[string]interface{} `yaml:"databases"`
-	StartupJobs Startup                  `yaml:"startup_jobs"`
 }
 
 // WebConfig input
@@ -50,17 +54,4 @@ type LogLevelConfig struct {
 type Database struct {
 	Storage string `yaml:"storage"`
 	Metrics string `yaml:"metrics"`
-}
-
-// Startup jobs
-type Startup struct {
-	Importer StartupImporter `yaml:"importer"`
-}
-
-// StartupImporter loads data on startup
-type StartupImporter struct {
-	Enabled         bool   `yaml:"enabled"`
-	TargetDirectory string `yaml:"target_directory"`
-	Type            string `yaml:"type"`
-	ClearDatabase   bool   `yaml:"clean_database"`
 }

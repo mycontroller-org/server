@@ -16,7 +16,7 @@ var (
 )
 
 // Init storage service
-func Init() {
+func Init(importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error) {
 	// Get storage and metric database config
 	storageCfg, err := getDatabaseConfig(cfg.CFG.Database.Storage)
 	if err != nil {
@@ -36,12 +36,19 @@ func Init() {
 				zap.L().Fatal("error on storage database initialization", zap.Error(err), zap.String("database", cfg.CFG.Database.Storage))
 			}
 			SVC = client
+			// run local import
+			err = client.LocalImport(importFunc)
+			if err != nil {
+				zap.L().Fatal("error on run local import on memory database", zap.Error(err), zap.String("database", cfg.CFG.Database.Storage))
+			}
+
 		case stgml.TypeMongoDB:
 			client, err := mongodb.NewClient(storageCfg)
 			if err != nil {
 				zap.L().Fatal("error on storage database initialization", zap.Error(err), zap.String("database", cfg.CFG.Database.Storage))
 			}
 			SVC = client
+
 		default:
 			zap.L().Fatal("Specified database type not implemented", zap.Any("type", dbType), zap.String("database", cfg.CFG.Database.Storage))
 		}

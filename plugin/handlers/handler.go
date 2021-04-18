@@ -5,11 +5,11 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	"github.com/mycontroller-org/backend/v2/plugin/handlers/email"
-	"github.com/mycontroller-org/backend/v2/plugin/handlers/exporter"
-	"github.com/mycontroller-org/backend/v2/plugin/handlers/noop"
+	backupHandler "github.com/mycontroller-org/backend/v2/plugin/handlers/backup"
+	emailHandler "github.com/mycontroller-org/backend/v2/plugin/handlers/email"
+	noopHandler "github.com/mycontroller-org/backend/v2/plugin/handlers/noop"
 	resourceAction "github.com/mycontroller-org/backend/v2/plugin/handlers/resource"
-	"github.com/mycontroller-org/backend/v2/plugin/handlers/telegram"
+	telegramHandler "github.com/mycontroller-org/backend/v2/plugin/handlers/telegram"
 )
 
 // Handler interface details for operation
@@ -28,19 +28,19 @@ func GetHandler(cfg *handlerML.Config) (Handler, error) {
 
 	switch cfg.Type {
 	case handlerML.TypeEmail:
-		return email.Init(cfg)
+		return emailHandler.Init(cfg)
 
 	case handlerML.TypeNoop:
-		return &noop.Client{HandlerCfg: cfg}, nil
+		return &noopHandler.Client{HandlerCfg: cfg}, nil
 
 	case handlerML.TypeResource:
 		return &resourceAction.Client{HandlerCfg: cfg}, nil
 
 	case handlerML.TypeTelegram:
-		return telegram.Init(cfg)
+		return telegramHandler.Init(cfg)
 
-	case handlerML.TypeExporter:
-		return exporter.Init(cfg)
+	case handlerML.TypeBackup:
+		return backupHandler.Init(cfg)
 
 	default:
 		return nil, fmt.Errorf("unsupported handler, id:%s, name:%s, type:%s", cfg.ID, cfg.Description, cfg.Type)

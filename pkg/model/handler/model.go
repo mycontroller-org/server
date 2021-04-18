@@ -16,7 +16,7 @@ const (
 	TypeSMS        = "sms"
 	TypePushbullet = "pushbullet"
 	TypeResource   = "resource"
-	TypeExporter   = "exporter"
+	TypeBackup     = "backup"
 )
 
 // handler data types
@@ -27,7 +27,7 @@ const (
 	DataTypeSMS        = "sms"
 	DataTypePushbullet = "pushbullet"
 	DataTypeResource   = "resource"
-	DataTypeExporter   = "exporter"
+	DataTypeBackup     = "backup"
 )
 
 // Config model
@@ -117,8 +117,8 @@ type TelegramData struct {
 	Text      string   `yaml:"text"`
 }
 
-// ExporterData struct
-type ExporterData struct {
-	ExporterType string                 `yaml:"exporterType"`
+// BackupData struct
+type BackupData struct {
+	ProviderType string                 `yaml:"providerType"`
 	Spec         map[string]interface{} `yaml:"spec"`
 }

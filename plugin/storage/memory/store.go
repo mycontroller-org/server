@@ -2,12 +2,13 @@ package memory
 
 import (
 	"fmt"
+	"path"
 	"sync"
 	"time"
 
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	exportml "github.com/mycontroller-org/backend/v2/pkg/model/export"
+	backupML "github.com/mycontroller-org/backend/v2/pkg/model/backup"
 	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
 	sch "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -20,15 +21,17 @@ const (
 	syncJobName         = "in-memory-db-sync-to-disk"
 
 	defaultDumpDir    = "memory_db"
-	defaultDumpFormat = exportml.TypeJSON
+	defaultDumpFormat = backupML.TypeJSON
 )
 
 // Config of the memory storage
 type Config struct {
+	Name         string   `yaml:"name"`
 	DumpEnabled  bool     `yaml:"dump_enabled"`
 	DumpInterval string   `yaml:"dump_interval"`
 	DumpDir      string   `yaml:"dump_dir"`
 	DumpFormat   []string `yaml:"dump_format"`
+	LoadFormat   string   `yaml:"load_format"`
 }
 
 // Store to keep all the entities
@@ -37,6 +40,7 @@ type Store struct {
 	Config   Config
 	data     map[string][]interface{} // entities map with entity name
 	lastSync time.Time
+	paused   bool
 }
 
 // NewClient in-memory database
@@ -47,34 +51,94 @@ func NewClient(config map[string]interface{}) (*Store, error) {
 		return nil, err
 	}
 
+	if cfg.DumpDir == "" {
+		cfg.DumpDir = cfg.Name
+	}
+
+	if cfg.LoadFormat == "" {
+		cfg.LoadFormat = defaultDumpFormat
+	}
+
+	// update default dump format, if none supplied
+	if len(cfg.DumpFormat) == 0 {
+		cfg.DumpFormat = []string{defaultDumpFormat}
+	}
+
 	store := &Store{
 		Config:   cfg,
 		data:     make(map[string][]interface{}),
 		lastSync: time.Now(),
 	}
 
-	if cfg.DumpEnabled {
-		if cfg.DumpDir == "" {
-			cfg.DumpDir = defaultDumpDir
-		}
-		// update default dump format, if none supplied
-		if len(cfg.DumpFormat) == 0 {
-			cfg.DumpFormat = []string{defaultDumpFormat}
-		}
-		if err != nil {
-			return nil, err
-		}
-		// add sync job
-		if cfg.DumpInterval == "" {
-			cfg.DumpInterval = defaultSyncInterval
-		}
-		err = sch.SVC.AddFunc(syncJobName, fmt.Sprintf("@every %s", cfg.DumpInterval), store.writeToDisk)
-		if err != nil {
-			return nil, err
-		}
-		zap.L().Debug("Memory database dump job scheduled", zap.Any("config", cfg))
-	}
 	return store, nil
+}
+
+func (s *Store) LocalImport(importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error) error {
+	// load data from disk
+	dataDir := s.getStorageLocation(s.Config.LoadFormat)
+	utils.CreateDir(dataDir)
+	err := importFunc(dataDir, s.Config.LoadFormat, true)
+	if err != nil {
+		zap.L().WithOptions(zap.AddCallerSkip(10)).Error("error on local import", zap.String("error", err.Error()))
+		return err
+	}
+
+	return s.loadDumpJob()
+}
+
+func (s *Store) loadDumpJob() error {
+	if s.Config.DumpEnabled {
+		if s.Config.DumpDir == "" {
+			s.Config.DumpDir = defaultDumpDir
+		}
+
+		// add sync job
+		if s.Config.DumpInterval == "" {
+			s.Config.DumpInterval = defaultSyncInterval
+		}
+		err := sch.SVC.AddFunc(syncJobName, fmt.Sprintf("@every %s", s.Config.DumpInterval), s.writeToDisk)
+		if err != nil {
+			return err
+		}
+		zap.L().Debug("Memory database dump job scheduled", zap.Any("config", s.Config))
+	}
+	return nil
+}
+
+// Pause the storage to perform import like jobs
+func (s *Store) Pause() error {
+	s.RWMutex.Lock()
+	defer s.RWMutex.Unlock()
+
+	s.paused = true
+	// stop dump job
+	sch.SVC.RemoveFunc(syncJobName)
+
+	return nil
+}
+
+// Resume the storage if Paused
+func (s *Store) Resume() error {
+	s.RWMutex.Lock()
+	defer s.RWMutex.Unlock()
+
+	s.paused = false
+	s.loadDumpJob()
+
+	return nil
+}
+
+// ClearDatabase removes all the data from the database
+func (s *Store) ClearDatabase() error {
+	s.RWMutex.Lock()
+	defer s.RWMutex.Unlock()
+
+	// remove all the data
+	s.data = make(map[string][]interface{})
+
+	// remove all the files from disk
+	storageDir := path.Join(model.GetDirectoryStorage(), s.Config.DumpDir)
+	return utils.RemoveDir(storageDir)
 }
 
 func (s *Store) writeToDisk() {
@@ -88,9 +152,9 @@ func (s *Store) writeToDisk() {
 				if dataLength == 0 {
 					break
 				}
-				positionStart := index * exportml.LimitPerFile
+				positionStart := index * backupML.LimitPerFile
 				index++
-				positionEnd := (index * exportml.LimitPerFile)
+				positionEnd := (index * backupML.LimitPerFile)
 
 				if positionEnd < dataLength {
 					s.dump(entityName, index, data[positionStart:positionEnd-1], format)
@@ -127,13 +191,13 @@ func (s *Store) dump(entityName string, index int, data interface{}, provider st
 	var dataBytes []byte
 	var err error
 	switch provider {
-	case exportml.TypeJSON:
+	case backupML.TypeJSON:
 		dataBytes, err = json.Marshal(data)
 		if err != nil {
 			zap.L().Error("failed to convert to target format", zap.String("format", provider), zap.Error(err))
 			return
 		}
-	case exportml.TypeYAML:
+	case backupML.TypeYAML:
 		dataBytes, err = yaml.Marshal(data)
 		if err != nil {
 			zap.L().Error("failed to convert to target format", zap.String("format", provider), zap.Error(err))
@@ -145,10 +209,14 @@ func (s *Store) dump(entityName string, index int, data interface{}, provider st
 		return
 	}
 
-	filename := fmt.Sprintf("%s%s%d.%s", entityName, exportml.EntityNameIndexSplit, index, provider)
-	dir := fmt.Sprintf("%s/%s/%s", model.GetDirectoryExport(), s.Config.DumpDir, provider)
+	filename := fmt.Sprintf("%s%s%d.%s", entityName, backupML.EntityNameIndexSplit, index, provider)
+	dir := s.getStorageLocation(provider)
 	err = utils.WriteFile(dir, filename, dataBytes)
 	if err != nil {
 		zap.L().Error("failed to write data to disk", zap.String("directory", dir), zap.String("filename", filename), zap.Error(err))
 	}
+}
+
+func (s *Store) getStorageLocation(provider string) string {
+	return fmt.Sprintf("%s/%s/%s", model.GetDirectoryStorage(), s.Config.DumpDir, provider)
 }

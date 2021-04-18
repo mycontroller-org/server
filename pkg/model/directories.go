@@ -12,9 +12,10 @@ const (
 	DefaultDirLogsRoot = "/tmp/mc/logs" // default data dir location
 	DefaultDirTmp      = "/tmp/mc/tmp"
 
-	DirectoryFirmwares          = "/firmwares"            // location to keep firmware files
-	DirectoryGatewayMessageLogs = "/gateway_message_logs" // location to keep gateway message logs
-	DirectoryExports            = "/exports"              // location to keep storage database exported files
+	DirectoryFirmware    = "/firmware"     // location to keep firmware files
+	DirectoryGatewayLogs = "/gateway_logs" // location to keep gateway message logs
+	DirectoryStorage     = "/storage"      // location to keep storage database exported files
+	DirectoryInternal    = "/internal"     // location to keep system internal files
 )
 
 // dir reference should be loaded at startup
@@ -56,19 +57,24 @@ func GetDirectoryTmp() string {
 
 // GetDirectoryFirmware location
 func GetDirectoryFirmware() string {
-	return getDirectoryFullPath(dir.Data, DirectoryFirmwares)
+	return getDirectoryFullPath(dir.Data, DirectoryFirmware)
 }
 
 // GetDirectoryGatewayLog location
 func GetDirectoryGatewayLog() string {
-	return getDirectoryFullPath(dir.Logs, DirectoryGatewayMessageLogs)
+	return getDirectoryFullPath(dir.Logs, DirectoryGatewayLogs)
 }
 
-// GetDirectoryExport location
-func GetDirectoryExport() string {
-	return getDirectoryFullPath(dir.Data, DirectoryExports)
+// GetDirectoryStorage location
+func GetDirectoryStorage() string {
+	return getDirectoryFullPath(dir.Data, DirectoryStorage)
 }
 
 func getDirectoryFullPath(rootDir, subDir string) string {
 	return fmt.Sprintf("%s%s", rootDir, subDir)
+}
+
+// GetDirectoryStorage location
+func GetDirectoryInternal() string {
+	return getDirectoryFullPath(dir.Data, DirectoryInternal)
 }

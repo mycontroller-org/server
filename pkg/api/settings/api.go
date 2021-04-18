@@ -7,7 +7,6 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	"github.com/mycontroller-org/backend/v2/pkg/model/settings"
 	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -61,6 +60,14 @@ func GetByID(ID string) (*settingsML.Settings, error) {
 		}
 		specStruct = settings
 
+	case settingsML.KeySystemBackupLocations:
+		exportLocations := settingsML.BackupLocations{}
+		err = utils.MapToStruct(utils.TagNameNone, result.Spec, &exportLocations)
+		if err != nil {
+			return nil, err
+		}
+		specStruct = exportLocations
+
 	default:
 
 	}
@@ -94,7 +101,7 @@ func UpdateSettings(settings *settingsML.Settings) error {
 	case settingsML.KeySystemSettings:
 		return UpdateSystemSettings(settings)
 
-	case settingsML.KeySystemJobs, settingsML.KeyVersion:
+	case settingsML.KeySystemJobs, settingsML.KeyVersion, settingsML.KeySystemBackupLocations:
 		settings.ModifiedOn = time.Now()
 		return update(settings)
 
@@ -106,7 +113,7 @@ func UpdateSettings(settings *settingsML.Settings) error {
 
 // GetSystemJobs details
 func GetSystemJobs() (*settingsML.SystemJobsSettings, error) {
-	settings, err := GetByID(settings.KeySystemJobs)
+	settings, err := GetByID(settingsML.KeySystemJobs)
 	if err != nil {
 		return nil, err
 	}
@@ -185,6 +192,23 @@ func GetGeoLocation() (*settingsML.GeoLocation, error) {
 
 	sunrise := systemSettings.GeoLocation
 	return &sunrise, nil
+}
+
+// GetBackupLocations returns locations set by user
+func GetBackupLocations() (*settingsML.BackupLocations, error) {
+	settings, err := GetByID(settingsML.KeySystemBackupLocations)
+	if err != nil {
+		return nil, err
+	}
+
+	// convert spec to BackupLocations
+	systemSettings := &settingsML.BackupLocations{}
+	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, systemSettings)
+	if err != nil {
+		return nil, err
+	}
+
+	return systemSettings, nil
 }
 
 // update is a common function to update a document in settings entity

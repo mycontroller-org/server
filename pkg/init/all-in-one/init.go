@@ -1,6 +1,7 @@
 package allinone
 
 import (
+	backupAPI "github.com/mycontroller-org/backend/v2/pkg/backup"
 	"github.com/mycontroller-org/backend/v2/pkg/init/common"
 	"github.com/mycontroller-org/backend/v2/pkg/init/core"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
@@ -22,10 +23,10 @@ func Init(handlerFunc func()) {
 }
 
 func initServices() {
-	stg.Init() // storage
-	mts.Init() // metrics
+	stg.Init(backupAPI.ExecuteImportStorage) // storage
+	mts.Init()                               // metrics
 
-	core.StartupJobs(&cfg.CFG.StartupJobs)
+	core.StartupJobs()
 	core.StartupJobsExtra()
 
 	// start message processing engine

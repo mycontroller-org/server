@@ -12,17 +12,17 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
-	exporterUtil "github.com/mycontroller-org/backend/v2/plugin/handlers/exporter/util"
+	backupUtil "github.com/mycontroller-org/backend/v2/plugin/handlers/backup/util"
 	"github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
-// Config of disk exporter
+// Config of disk backup client
 type Config struct {
-	Prefix          string
-	ExportType      string
-	TargetDirectory string
-	RetentionCount  int
+	Prefix            string
+	StorageExportType string
+	TargetDirectory   string
+	RetentionCount    int
 }
 
 // Client struct
@@ -31,7 +31,7 @@ type Client struct {
 	cfg        *Config
 }
 
-// Init disk exporter
+// Init disk backup client
 func Init(cfg *handlerML.Config, spec map[string]interface{}) (*Client, error) {
 	config := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, spec, config)
@@ -82,22 +82,22 @@ func (c *Client) Post(data map[string]interface{}) error {
 		if err != nil {
 			continue
 		}
-		if genericData.Type != handlerML.DataTypeExporter {
+		if genericData.Type != handlerML.DataTypeBackup {
 			continue
 		}
 
-		exporterData := handlerML.ExporterData{}
-		err = variableUtils.UnmarshalBase64Yaml(genericData.Data, &exporterData)
+		backupConfigData := handlerML.BackupData{}
+		err = variableUtils.UnmarshalBase64Yaml(genericData.Data, &backupConfigData)
 		if err != nil {
-			zap.L().Error("error on converting exporter data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
+			zap.L().Error("error on converting backup config data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
 			continue
 		}
 
-		if exporterData.ExporterType != exporterUtil.TypeExporterDisk {
+		if backupConfigData.ProviderType != backupUtil.ProviderDisk {
 			continue
 		}
 
-		err = c.triggerExport(exporterData.Spec)
+		err = c.triggerBackup(backupConfigData.Spec)
 		if err != nil {
 			return err
 		}
@@ -105,7 +105,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 	return nil
 }
 
-func (c *Client) triggerExport(spec map[string]interface{}) error {
+func (c *Client) triggerBackup(spec map[string]interface{}) error {
 	newConfig := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, spec, newConfig)
 	if err != nil {
@@ -114,13 +114,13 @@ func (c *Client) triggerExport(spec map[string]interface{}) error {
 
 	zap.L().Debug("data", zap.Any("config", newConfig))
 
-	targetExportType := c.cfg.ExportType
+	targetExportType := c.cfg.StorageExportType
 	targetDirectory := c.cfg.TargetDirectory
 	prefix := c.cfg.Prefix
 	retentionCount := c.cfg.RetentionCount
 
-	if newConfig.ExportType != "" {
-		targetExportType = newConfig.ExportType
+	if newConfig.StorageExportType != "" {
+		targetExportType = newConfig.StorageExportType
 	}
 
 	if newConfig.TargetDirectory != "" {
@@ -144,9 +144,9 @@ func (c *Client) triggerExport(spec map[string]interface{}) error {
 	}
 
 	start := time.Now()
-	zap.L().Debug("Export job triggered", zap.String("handler", c.handlerCfg.ID))
-	// start export
-	filename, err := exporterUtil.Export(prefix, targetExportType)
+	zap.L().Debug("Backup job triggered", zap.String("handler", c.handlerCfg.ID))
+	// start backup
+	filename, err := backupUtil.Backup(prefix, targetExportType)
 	if err != nil {
 		return err
 	}
@@ -184,7 +184,7 @@ func (c *Client) executeRetentionCount(targetDir, prefix, targetExportType strin
 		return err
 	}
 
-	prefix = fmt.Sprintf("%s_%s_%s", prefix, exporterUtil.ExportIdentifier, targetExportType)
+	prefix = fmt.Sprintf("%s_%s_%s", prefix, backupUtil.BackupIdentifier, targetExportType)
 	matchingFiles := make([]interface{}, 0)
 	for _, file := range files {
 		if strings.HasPrefix(file.Name, prefix) {

@@ -28,4 +28,5 @@ type File struct {
 	ModifiedTime time.Time `json:"modifiedTime"`
 	Data         string    `json:"data"`
 	IsDir        bool      `json:"isDir"`
+	FullPath     string    `json:"fullPath"`
 }

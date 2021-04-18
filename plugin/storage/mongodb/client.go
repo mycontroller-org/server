@@ -49,6 +49,21 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 	return client, err
 }
 
+// Pause the database to perform import like jobs
+func (c *Client) Pause() error {
+	return nil
+}
+
+// Resume the database if Paused
+func (c *Client) Resume() error {
+	return nil
+}
+
+// ClearDatabase removes all the data from the database
+func (c *Client) ClearDatabase() error {
+	return nil
+}
+
 // Close the connection
 func (c *Client) Close() error {
 	return c.Client.Disconnect(ctx)

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
+	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	sch "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/logger"
@@ -50,11 +51,12 @@ func InitBasicServices(initCustomServices, closeCustomServices func()) {
 	zap.L().Debug("Init complete", zap.String("timeTaken", time.Since(start).String()))
 
 	// call handle shutdown
-	handleShutdown(closeCustomServices)
+	handleShutdownEvent(closeCustomServices)
+	handleShutdownSignal(closeCustomServices)
 }
 
-// handleShutdown func
-func handleShutdown(closeCustomServices func()) {
+// handleShutdownSignal func
+func handleShutdownSignal(closeCustomServices func()) {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
@@ -62,8 +64,26 @@ func handleShutdown(closeCustomServices func()) {
 	sig := <-sigs
 	close(sigs)
 
-	start := time.Now()
 	zap.L().Info("Shutdown initiated..", zap.Any("signal", sig))
+	triggerShutdown(closeCustomServices)
+}
+
+// handleShutdownEvent func
+func handleShutdownEvent(closeCustomServices func()) {
+	shutdownFunc := func(data *busML.BusData) {
+		zap.L().Info("Shutdown initiated..", zap.Any("signal", "internal event"))
+		triggerShutdown(closeCustomServices)
+	}
+	_, err := mcbus.Subscribe(mcbus.FormatTopic(mcbus.TopicInternalShutdown), shutdownFunc)
+	if err != nil {
+		zap.L().Fatal("error on subscribing shutdown event", zap.Error(err))
+		return
+	}
+
+}
+
+func triggerShutdown(closeCustomServices func()) {
+	start := time.Now()
 
 	// close other services
 	if closeCustomServices != nil {

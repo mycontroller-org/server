@@ -165,6 +165,7 @@ func ListFiles(dir string) ([]ml.File, error) {
 				Size:         file.Size(),
 				ModifiedTime: file.ModTime(),
 				IsDir:        false,
+				FullPath:     fmt.Sprintf("%s/%s", dir, file.Name()),
 			}
 			items = append(items, f)
 		}

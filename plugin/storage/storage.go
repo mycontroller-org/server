@@ -10,6 +10,9 @@ type Client interface {
 	FindOne(entityName string, out interface{}, filter []Filter) error
 	Find(entityName string, out interface{}, filter []Filter, pagination *Pagination) (*Result, error)
 	Delete(entityName string, filter []Filter) (int64, error)
+	ClearDatabase() error
+	Pause() error
+	Resume() error
 }
 
 // Storage database types

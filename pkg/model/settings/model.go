@@ -1,12 +1,17 @@
 package settings
 
-import "time"
+import (
+	"time"
+
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+)
 
 // key to get a specific settings
 const (
-	KeySystemSettings = "system_settings"
-	KeySystemJobs     = "system_jobs"
-	KeyVersion        = "version"
+	KeySystemSettings        = "system_settings"
+	KeySystemJobs            = "system_jobs"
+	KeySystemBackupLocations = "system_backup_locations"
+	KeyVersion               = "version"
 )
 
 // Settings struct
@@ -43,4 +48,16 @@ type VersionSettings struct {
 // SystemJobsSettings cron struct
 type SystemJobsSettings struct {
 	Sunrise string `json:"sunrise"` // updates scheduled sunrise sunset jobs on this time
+}
+
+// BackupLocations of server
+type BackupLocations struct {
+	Locations []BackupLocation `json:"locations"`
+}
+
+// BackupLocation of server
+type BackupLocation struct {
+	Name   string         `json:"name"`
+	Type   string         `json:"type"`
+	Config cmap.CustomMap `json:"config"`
 }

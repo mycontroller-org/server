@@ -6,17 +6,17 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	"github.com/mycontroller-org/backend/v2/plugin/handlers/exporter/disk"
-	exporter "github.com/mycontroller-org/backend/v2/plugin/handlers/exporter/util"
+	"github.com/mycontroller-org/backend/v2/plugin/handlers/backup/disk"
+	backupUtil "github.com/mycontroller-org/backend/v2/plugin/handlers/backup/util"
 )
 
-// Config of email service
+// Config of backup service
 type Config struct {
-	ExporterType string
+	ProviderType string
 	Spec         map[string]interface{}
 }
 
-// Client for email service
+// Client for backup service
 type Client interface {
 	Start() error
 	Post(variables map[string]interface{}) error
@@ -24,7 +24,7 @@ type Client interface {
 	State() *model.State
 }
 
-// Init exporter client
+// Init backup client
 func Init(cfg *handlerML.Config) (Client, error) {
 	config := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
@@ -32,11 +32,11 @@ func Init(cfg *handlerML.Config) (Client, error) {
 		return nil, err
 	}
 
-	switch config.ExporterType {
-	case exporter.TypeExporterDisk:
+	switch config.ProviderType {
+	case backupUtil.ProviderDisk:
 		return disk.Init(cfg, config.Spec)
 
 	default:
-		return nil, fmt.Errorf("unknown exporter client:%s", cfg.Type)
+		return nil, fmt.Errorf("unknown backup provider:%s", config.ProviderType)
 	}
 }

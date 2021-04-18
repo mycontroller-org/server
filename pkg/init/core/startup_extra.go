@@ -93,6 +93,15 @@ func CreateSettingsData() {
 	if err != nil {
 		zap.L().Fatal("error on updating system jobs detail", zap.Error(err))
 	}
+
+	// update export locations
+	settingsExportLocations := &settingsML.Settings{ID: settingsML.KeySystemBackupLocations}
+	settingsExportLocations.Spec = utils.StructToMap(&settingsML.BackupLocations{})
+	err = settingsAPI.UpdateSettings(settingsExportLocations)
+	if err != nil {
+		zap.L().Fatal("error on updating system export locations", zap.Error(err))
+	}
+
 }
 
 // UpdateGeoLocation updates geo location if autoUpdate enabled

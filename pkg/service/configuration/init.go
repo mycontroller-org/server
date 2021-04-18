@@ -24,6 +24,7 @@ func Init() {
 	flag.Parse()
 	if cf == nil {
 		logger.Fatal("Configuration file not supplied")
+		return
 	}
 	d, err := ioutil.ReadFile(*cf)
 	if err != nil {

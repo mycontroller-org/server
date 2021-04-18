@@ -35,6 +35,10 @@ func PostToHandler(handlers []string, data map[string]interface{}) {
 		updateData[name] = value
 	}
 
+	if len(updateData) == 0 {
+		return
+	}
+
 	for _, handlerID := range handlers {
 		msg := &handlerML.MessageWrapper{
 			ID:   handlerID,
