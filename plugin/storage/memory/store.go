@@ -146,18 +146,18 @@ func (s *Store) writeToDisk() {
 	defer s.RWMutex.Unlock()
 	for entityName, data := range s.data {
 		for _, format := range s.Config.DumpFormat {
-			dataLength := len(data)
+			itemsCount := len(data)
+			if itemsCount == 0 {
+				continue
+			}
 			index := 0
 			for {
-				if dataLength == 0 {
-					break
-				}
 				positionStart := index * backupML.LimitPerFile
 				index++
 				positionEnd := (index * backupML.LimitPerFile)
 
-				if positionEnd < dataLength {
-					s.dump(entityName, index, data[positionStart:positionEnd-1], format)
+				if positionEnd < itemsCount {
+					s.dump(entityName, index, data[positionStart:positionEnd], format)
 				} else {
 					s.dump(entityName, index, data[positionStart:], format)
 					break
@@ -167,7 +167,7 @@ func (s *Store) writeToDisk() {
 	}
 }
 
-func (s *Store) dump(entityName string, index int, data interface{}, provider string) {
+func (s *Store) dump(entityName string, index int, data interface{}, extension string) {
 	// update user to userPassword to keep the password on the json export
 	if entityName == model.EntityUser {
 		if users, ok := data.([]interface{}); ok {
@@ -190,27 +190,27 @@ func (s *Store) dump(entityName string, index int, data interface{}, provider st
 
 	var dataBytes []byte
 	var err error
-	switch provider {
+	switch extension {
 	case backupML.TypeJSON:
 		dataBytes, err = json.Marshal(data)
 		if err != nil {
-			zap.L().Error("failed to convert to target format", zap.String("format", provider), zap.Error(err))
+			zap.L().Error("failed to convert to target extension", zap.String("extension", extension), zap.Error(err))
 			return
 		}
 	case backupML.TypeYAML:
 		dataBytes, err = yaml.Marshal(data)
 		if err != nil {
-			zap.L().Error("failed to convert to target format", zap.String("format", provider), zap.Error(err))
+			zap.L().Error("failed to convert to target extension", zap.String("extension", extension), zap.Error(err))
 			return
 		}
 
 	default:
-		zap.L().Error("This format not supported", zap.String("format", provider), zap.Error(err))
+		zap.L().Error("This extension not supported", zap.String("extension", extension), zap.Error(err))
 		return
 	}
 
-	filename := fmt.Sprintf("%s%s%d.%s", entityName, backupML.EntityNameIndexSplit, index, provider)
-	dir := s.getStorageLocation(provider)
+	filename := fmt.Sprintf("%s%s%d.%s", entityName, backupML.EntityNameIndexSplit, index, extension)
+	dir := s.getStorageLocation(extension)
 	err = utils.WriteFile(dir, filename, dataBytes)
 	if err != nil {
 		zap.L().Error("failed to write data to disk", zap.String("directory", dir), zap.String("filename", filename), zap.Error(err))
@@ -218,5 +218,5 @@ func (s *Store) dump(entityName string, index int, data interface{}, provider st
 }
 
 func (s *Store) getStorageLocation(provider string) string {
-	return fmt.Sprintf("%s/%s/%s", model.GetDirectoryStorage(), s.Config.DumpDir, provider)
+	return path.Join(model.GetDirectoryStorage(), s.Config.DumpDir, provider)
 }
