@@ -8,38 +8,37 @@ import (
 	"time"
 
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	"github.com/mycontroller-org/backend/v2/pkg/model/node"
-	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
 // This function is like route for globally defined features for the request like reboot, discover, etc.,
 // And this should have addition request implementation defined in "internalValidRequests" map on constants.go file
-func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *message) error {
+func handleActions(gwCfg *gwML.Config, fn string, msg *msgML.Message, msMsg *message) error {
 	switch fn {
 
-	case nml.ActionDiscover:
+	case nodeML.ActionDiscover:
 		msMsg.Type = actionDiscoverRequest
 		msMsg.Payload = payloadEmpty
 		msMsg.NodeID = idBroadcast
 
-	case nml.ActionHeartbeatRequest:
+	case nodeML.ActionHeartbeatRequest:
 		msMsg.Type = actionHeartBeatRequest
 		msMsg.Payload = payloadEmpty
 
-	case nml.ActionReboot:
+	case nodeML.ActionReboot:
 		msMsg.Type = actionReboot
 		msMsg.Payload = payloadEmpty
 
-	case nml.ActionRefreshNodeInfo:
+	case nodeML.ActionRefreshNodeInfo:
 		msMsg.Type = actionRequestPresentation
 		msMsg.Payload = payloadEmpty
 
-	case nml.ActionReset:
+	case nodeML.ActionReset:
 		// NOTE: This feature supports only for MySensorsBootloaderRF24
 		// set reset flag on the node labels
 		// reboot the node
@@ -66,14 +65,14 @@ func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *mes
 		msMsg.Type = actionIDResponse
 		msMsg.Payload = getNodeID(gwCfg)
 		if msMsg.Payload == "" {
-			return errors.New("Failed to get node ID")
+			return errors.New("error on getting node ID")
 		}
 
 	case "I_TIME":
 		msMsg.Payload = getTimestamp(gwCfg)
 		msMsg.Type = actionTime
 
-	case nml.ActionFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST":
+	case nodeML.ActionFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST":
 		pl, err := executeFirmwareConfigRequest(msg)
 		if err != nil {
 			return err
@@ -92,7 +91,7 @@ func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *mes
 		msMsg.Payload = strings.ToUpper(pl)
 
 	default:
-		return fmt.Errorf("This function is not implemented: %s", fn)
+		return fmt.Errorf("this function is not implemented: %s", fn)
 	}
 	return nil
 }
@@ -101,10 +100,10 @@ func handleActions(gwCfg *gwml.Config, fn string, msg *msgml.Message, msMsg *mes
 // adds zone offset to the actual timestamp
 // user can specify different timezone as a gateway label
 // if non set, take system timezone
-func getTimestamp(gwCfg *gwml.Config) string {
+func getTimestamp(gwCfg *gwML.Config) string {
 	var loc *time.Location
 	// get user defined timezone from gateway label
-	tz := gwCfg.Labels.Get(ml.LabelTimezone)
+	tz := gwCfg.Labels.Get(model.LabelTimezone)
 	if tz != "" {
 		_loc, err := time.LoadLocation(tz)
 		if err != nil {
@@ -126,8 +125,8 @@ func getTimestamp(gwCfg *gwml.Config) string {
 }
 
 // get node id
-func getNodeID(gwCfg *gwml.Config) string {
-	f := []stgml.Filter{{Key: "gatewayID", Operator: "eq", Value: gwCfg.ID}}
+func getNodeID(gwCfg *gwML.Config) string {
+	f := []stgML.Filter{{Key: "gatewayID", Operator: "eq", Value: gwCfg.ID}}
 	response, err := nodeAPI.List(f, nil)
 	if err != nil {
 		zap.L().Error("Failed to find list of nodes", zap.String("gateway", gwCfg.ID), zap.Error(err))
@@ -136,7 +135,7 @@ func getNodeID(gwCfg *gwml.Config) string {
 
 	reservedIDs := make([]int, 0)
 	if response.Data != nil {
-		if nodes, ok := response.Data.([]node.Node); ok {
+		if nodes, ok := response.Data.([]nodeML.Node); ok {
 			for _, n := range nodes {
 				if n.Labels.Get(LabelNodeID) != "" {
 					id := n.Labels.GetInt(LabelNodeID)
@@ -169,7 +168,7 @@ func getNodeID(gwCfg *gwml.Config) string {
 	return strconv.Itoa(electedID)
 }
 
-func updateResetFlag(msg *msgml.Message) error {
+func updateResetFlag(msg *msgML.Message) error {
 	// get the node details
 	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
 	if err != nil {

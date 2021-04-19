@@ -10,34 +10,39 @@ import (
 
 	fwAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 
 // executeFirmwareConfigRequest executes firmware config request and response with hex payload
-func executeFirmwareConfigRequest(msg *msgml.Message) (string, error) {
+func executeFirmwareConfigRequest(msg *msgML.Message) (string, error) {
 	startTime := time.Now()
 	rxPL := msg.Payloads[0].Value
 
 	// convert the received hex to matching struct format
 	fwCfgReq := &firmwareConfigRequest{}
-	err := toStruct(rxPL, fwCfgReq)
-	if err != nil {
-		return "", err
+	if rxPL != "" {
+		err := toStruct(rxPL, fwCfgReq)
+		if err != nil {
+			zap.L().Error("error on converting firmwareConfigRequest", zap.String("payload", rxPL), zap.Error(err))
+			return "", err
+		}
 	}
 
 	// get the node details
 	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
 	if err != nil {
+		zap.L().Error("error to get node details", zap.Any("msg", msg), zap.Error(err))
 		return "", err
 	}
 
 	// get firmware raw format
 	fwRaw, err := fetchFirmware(node, fwCfgReq.Type, fwCfgReq.Version, false)
 	if err != nil {
+		zap.L().Error("error to get firmware", zap.Any("fwCfgReq", fwCfgReq), zap.Error(err))
 		return "", err
 	}
 	fwRaw.LastAccess = time.Now()
@@ -54,6 +59,7 @@ func executeFirmwareConfigRequest(msg *msgml.Message) (string, error) {
 		node.Labels.Set(LabelEraseEEPROM, "false")
 		err = nodeAPI.Save(node)
 		if err != nil {
+			zap.L().Error("error to save node data", zap.String("gatewayId", node.GatewayID), zap.String("nodeId", node.NodeID), zap.Error(err))
 			return "", err
 		}
 	} else { // update assigned firmware config details
@@ -69,7 +75,7 @@ func executeFirmwareConfigRequest(msg *msgml.Message) (string, error) {
 }
 
 // executeFirmwareRequest executes firmware request and response with hex payload
-func executeFirmwareRequest(msg *msgml.Message) (string, error) {
+func executeFirmwareRequest(msg *msgML.Message) (string, error) {
 	rxPL := msg.Payloads[0].Value
 	startTime := time.Now()
 
@@ -77,18 +83,21 @@ func executeFirmwareRequest(msg *msgml.Message) (string, error) {
 	fwReq := &firmwareRequest{}
 	err := toStruct(rxPL, fwReq)
 	if err != nil {
+		zap.L().Error("error on converting firmwareRequest", zap.String("payload", rxPL), zap.Error(err))
 		return "", err
 	}
 
 	// get the node details
 	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
 	if err != nil {
+		zap.L().Error("error to get node details", zap.Any("msg", msg), zap.Error(err))
 		return "", err
 	}
 
 	// get firmware raw format
 	fwRaw, err := fetchFirmware(node, fwReq.Type, fwReq.Version, true)
 	if err != nil {
+		zap.L().Error("error to get firmware", zap.Any("fwReq", fwReq), zap.Error(err))
 		return "", err
 	}
 	fwRaw.LastAccess = time.Now()
@@ -111,9 +120,9 @@ func executeFirmwareRequest(msg *msgml.Message) (string, error) {
 
 // fetchFirmware looks requested firmware on memory store,
 // if not available, loads it from disk
-func fetchFirmware(node *nml.Node, typeID, versionID uint16, verifyID bool) (*firmwareRaw, error) {
+func fetchFirmware(node *nodeML.Node, typeID, versionID uint16, verifyID bool) (*firmwareRaw, error) {
 	// get mapped firmware by id
-	fwID := node.Labels.Get(ml.LabelNodeAssignedFirmware)
+	fwID := node.Labels.Get(model.LabelNodeAssignedFirmware)
 	if fwID == "" {
 		return nil, errors.New("firmware not assigned for this node")
 	}
@@ -123,25 +132,28 @@ func fetchFirmware(node *nml.Node, typeID, versionID uint16, verifyID bool) (*fi
 		// get firmware details
 		fw, err := fwAPI.GetByID(fwID)
 		if err != nil {
+			zap.L().Error("error to get firmware raw", zap.Any("fwID", fwID), zap.Error(err))
 			return nil, err
 		}
 
 		// get mysensor specific ids
 		if fw.Labels.Get(LabelFirmwareTypeID) == "" || fw.Labels.Get(LabelFirmwareVersionID) == "" {
-			return nil, errors.New("firmware type id or version id not set")
+			return nil, fmt.Errorf("firmware '%s' or '%s' labels are not set", LabelFirmwareTypeID, LabelFirmwareVersionID)
 		}
 		fwTypeID := uint16(fw.Labels.GetInt(LabelFirmwareTypeID))
 		fwVersionID := uint16(fw.Labels.GetInt(LabelFirmwareVersionID))
 
 		// get firmware hex file
-		hexFile, err := ut.ReadFile(ml.GetDirectoryFirmware(), fw.File.InternalName)
+		hexFile, err := utils.ReadFile(model.GetDirectoryFirmware(), fw.File.InternalName)
 		if err != nil {
+			zap.L().Error("error on reading a firmware file", zap.String("directory", model.GetDirectoryFirmware()), zap.String("fileName", fw.File.InternalName), zap.Error(err))
 			return nil, err
 		}
 
 		// convert the hex file to raw format
 		fwRaw, err := hexByteToLocalFormat(fwTypeID, fwVersionID, hexFile, firmwareBlockSize)
 		if err != nil {
+			zap.L().Error("error on converting hex to local format", zap.String("directory", model.GetDirectoryFirmware()), zap.String("fileName", fw.File.InternalName), zap.Error(err))
 			return nil, err
 		}
 
