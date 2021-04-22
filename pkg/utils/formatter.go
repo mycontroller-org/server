@@ -42,6 +42,7 @@ func registerTypes() {
 	gob.Register(primitive.A{})
 	gob.Register(handlerML.Config{})
 	gob.Register(schedulerML.Config{})
+	gob.Register(schedulerML.State{})
 	gob.Register(dataRepositoryML.Config{})
 	gob.Register(firmwareML.Firmware{})
 	gob.Register(firmwareML.FileConfig{})
