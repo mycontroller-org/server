@@ -90,7 +90,6 @@ func processServiceEvent(item interface{}) {
 	// process events
 	if event.EntityType == model.EntityFirmware {
 		if firmware, ok := event.Entity.(firmwareML.Firmware); ok {
-			zap.L().Info("removing firmwares", zap.String("id", firmware.ID))
 			fwRawStore.Remove(firmware.ID)
 			fwStore.Remove(firmware.ID)
 		}
@@ -100,7 +99,6 @@ func processServiceEvent(item interface{}) {
 			if nodeStore.IsAvailable(localID) {
 				nodeStore.Add(localID, &node)
 			}
-			zap.L().Info("node updated", zap.String("localID", localID))
 		}
 	}
 }

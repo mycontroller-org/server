@@ -104,12 +104,12 @@ func (s *Store) Find(entityName string, out interface{}, filters []stgML.Filter,
 }
 
 // FindOne Implementation
-func (s *Store) FindOne(entityName string, out interface{}, f []stgML.Filter) error {
+func (s *Store) FindOne(entityName string, out interface{}, filters []stgML.Filter) error {
 	s.RWMutex.RLock()
 	defer s.RWMutex.RUnlock()
 
 	entities := s.getEntities(entityName)
-	entities = helper.Filter(entities, f, true)
+	entities = helper.Filter(entities, filters, true)
 
 	if len(entities) > 0 {
 		outVal := reflect.ValueOf(out)

@@ -108,22 +108,22 @@ func Params(request *http.Request) ([]stgml.Filter, *stgml.Pagination, error) {
 }
 
 // FindOne func
-func FindOne(w http.ResponseWriter, r *http.Request, en string, e interface{}) {
+func FindOne(w http.ResponseWriter, r *http.Request, entityName string, entity interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 
-	f, _, err := Params(r)
+	filters, _, err := Params(r)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	err = stg.SVC.FindOne(en, e, f)
+	err = stg.SVC.FindOne(entityName, entity, filters)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	od, err := json.Marshal(e)
+	od, err := json.Marshal(entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

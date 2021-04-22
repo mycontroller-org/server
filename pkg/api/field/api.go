@@ -2,48 +2,47 @@ package field
 
 import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
-	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
-	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // List by filter and pagination
-func List(filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
-	result := make([]fml.Field, 0)
-	return stg.SVC.Find(ml.EntityField, &result, filters, pagination)
+func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+	result := make([]fieldML.Field, 0)
+	return stg.SVC.Find(model.EntityField, &result, filters, pagination)
 }
 
 // Get returns a field
-func Get(filters []stgml.Filter) (*fml.Field, error) {
-	result := &fml.Field{}
-	err := stg.SVC.FindOne(ml.EntityField, result, filters)
+func Get(filters []stgML.Filter) (*fieldML.Field, error) {
+	result := &fieldML.Field{}
+	err := stg.SVC.FindOne(model.EntityField, result, filters)
 	return result, err
 }
 
 // GetByID returns a field
-func GetByID(id string) (*fml.Field, error) {
-	filters := []stgml.Filter{
+func GetByID(id string) (*fieldML.Field, error) {
+	filters := []stgML.Filter{
 		{Key: model.KeyID, Value: id},
 	}
-	result := &fml.Field{}
-	err := stg.SVC.FindOne(model.EntityFirmware, result, filters)
+	result := &fieldML.Field{}
+	err := stg.SVC.FindOne(model.EntityField, result, filters)
 	return result, err
 }
 
 // Save a field details
-func Save(field *fml.Field, retainValue bool) error {
+func Save(field *fieldML.Field, retainValue bool) error {
 	eventType := eventML.TypeUpdated
 	if field.ID == "" {
-		field.ID = ut.RandUUID()
+		field.ID = utils.RandUUID()
 		eventType = eventML.TypeCreated
 	}
-	filters := []stgml.Filter{
-		{Key: ml.KeyID, Value: field.ID},
+	filters := []stgML.Filter{
+		{Key: model.KeyID, Value: field.ID},
 	}
 
 	if retainValue && eventType != eventML.TypeCreated {
@@ -54,7 +53,7 @@ func Save(field *fml.Field, retainValue bool) error {
 		field.Current = fieldOrg.Current
 		field.Previous = fieldOrg.Previous
 	}
-	err := stg.SVC.Upsert(ml.EntityField, field, filters)
+	err := stg.SVC.Upsert(model.EntityField, field, filters)
 	if err != nil {
 		return err
 	}
@@ -66,20 +65,20 @@ func Save(field *fml.Field, retainValue bool) error {
 }
 
 // GetByIDs returns a field details by gatewayID, nodeId, sourceID and fieldName of a message
-func GetByIDs(gatewayID, nodeID, sourceID, fieldID string) (*fml.Field, error) {
-	filters := []stgml.Filter{
-		{Key: ml.KeyGatewayID, Value: gatewayID},
-		{Key: ml.KeyNodeID, Value: nodeID},
-		{Key: ml.KeySourceID, Value: sourceID},
-		{Key: ml.KeyFieldID, Value: fieldID},
+func GetByIDs(gatewayID, nodeID, sourceID, fieldID string) (*fieldML.Field, error) {
+	filters := []stgML.Filter{
+		{Key: model.KeyGatewayID, Value: gatewayID},
+		{Key: model.KeyNodeID, Value: nodeID},
+		{Key: model.KeySourceID, Value: sourceID},
+		{Key: model.KeyFieldID, Value: fieldID},
 	}
-	result := &fml.Field{}
-	err := stg.SVC.FindOne(ml.EntityField, result, filters)
+	result := &fieldML.Field{}
+	err := stg.SVC.FindOne(model.EntityField, result, filters)
 	return result, err
 }
 
 // Delete fields
 func Delete(IDs []string) (int64, error) {
-	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
-	return stg.SVC.Delete(ml.EntityField, filters)
+	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: IDs}}
+	return stg.SVC.Delete(model.EntityField, filters)
 }

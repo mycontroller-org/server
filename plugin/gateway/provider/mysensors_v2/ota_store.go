@@ -167,7 +167,6 @@ func updateFirmwareFile(id string, fwTypeID, fwVersionID uint16) error {
 				zap.L().Error("error on getting firmare config", zap.Error(err), zap.String("firmwareId", id))
 				return false
 			}
-			zap.L().Info("received firmware", zap.String("fwID", fw.ID), zap.String("checkSumRemote", fw.File.Checksum), zap.String("receivedSumLocal", receivedCheckSum))
 			if fw.File.Checksum == receivedCheckSum {
 				// convert the hex file to raw format
 				fwRaw, err := hexByteToLocalFormat(fwTypeID, fwVersionID, hexBytes, firmwareBlockSize)
@@ -176,6 +175,8 @@ func updateFirmwareFile(id string, fwTypeID, fwVersionID uint16) error {
 					return false
 				}
 				fwRawStore.Add(id, fwRaw)
+			} else {
+				zap.L().Info("received firmware checksum mismatch", zap.String("fwID", fw.ID), zap.String("remote", fw.File.Checksum), zap.String("received", receivedCheckSum))
 			}
 			return false
 		}
