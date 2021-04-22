@@ -31,6 +31,10 @@ const (
 	firmwarePurgeJobName      = "mysensors_firmware_store" // firmware purge job name, append with gateway id
 	firmwarePurgeJobCron      = "0 */5 * * * *"            // purge loaded firmware, if not used for a while
 	firmwarePurgeInactiveTime = 15 * time.Minute           // firmware inactive time, eligible for purging
+	queryTimeout              = 2 * time.Second            // query timout
+	queryFirmwareFileTimeout  = 10 * time.Second           // query timout for firmware file
+	BootloaderMYSBootloader   = "MYSBootloader"            // MYSBootloader - https://github.com/mysensors/MySensorsBootloaderRF24
+	BootloaderDualoptiboot    = "Dualoptiboot"
 
 	payloadON  = "1"
 	payloadOFF = "0"

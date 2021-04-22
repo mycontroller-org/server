@@ -113,16 +113,13 @@ func Reload(ids []string) error {
 }
 
 func postCommand(cfg *taskML.Config, command string) error {
-	reqEvent := rsML.Event{
+	reqEvent := rsML.ServiceEvent{
 		Type:    rsML.TypeTask,
 		Command: command,
 	}
 	if cfg != nil {
 		reqEvent.ID = cfg.ID
-		err := reqEvent.SetData(cfg)
-		if err != nil {
-			return err
-		}
+		reqEvent.SetData(cfg)
 	}
 	topic := mcbus.FormatTopic(mcbus.TopicServiceTask)
 	return mcbus.Publish(topic, reqEvent)

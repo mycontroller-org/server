@@ -90,12 +90,17 @@ func processServiceEvent(item interface{}) {
 	// process events
 	if event.EntityType == model.EntityFirmware {
 		if firmware, ok := event.Entity.(firmwareML.Firmware); ok {
+			zap.L().Info("removing firmwares", zap.String("id", firmware.ID))
+			fwRawStore.Remove(firmware.ID)
 			fwStore.Remove(firmware.ID)
 		}
 	} else if event.EntityType == model.EntityNode {
 		if node, ok := event.Entity.(nodeML.Node); ok {
-			nodeStore.Remove(getNodeStoreID(node.GatewayID, node.NodeID))
-			zap.L().Info("node removed", zap.String("id", getNodeStoreID(node.GatewayID, node.NodeID)))
+			localID := getNodeStoreID(node.GatewayID, node.NodeID)
+			if nodeStore.IsAvailable(localID) {
+				nodeStore.Add(localID, &node)
+			}
+			zap.L().Info("node updated", zap.String("localID", localID))
 		}
 	}
 }

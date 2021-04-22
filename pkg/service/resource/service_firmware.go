@@ -7,13 +7,12 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 
-func firmwareService(reqEvent *rsModel.Event) error {
-	resEvent := &rsModel.Event{
+func firmwareService(reqEvent *rsModel.ServiceEvent) error {
+	resEvent := &rsModel.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
@@ -24,10 +23,7 @@ func firmwareService(reqEvent *rsModel.Event) error {
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
-		err = resEvent.SetData(data)
-		if err != nil {
-			return err
-		}
+		resEvent.SetData(data)
 
 	case rsModel.CommandBlocks:
 		sendFirmwareBlocks(reqEvent)
@@ -39,7 +35,7 @@ func firmwareService(reqEvent *rsModel.Event) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getFirmware(request *rsModel.Event) (interface{}, error) {
+func getFirmware(request *rsModel.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
 		cfg, err := firmwareAPI.GetByID(request.ID)
 		if err != nil {
@@ -57,8 +53,8 @@ func getFirmware(request *rsModel.Event) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func sendFirmwareBlocks(reqEvent *rsModel.Event) {
-	if reqEvent.ID == "" {
+func sendFirmwareBlocks(reqEvent *rsModel.ServiceEvent) {
+	if reqEvent.ID == "" || reqEvent.ReplyTopic == "" {
 		return
 	}
 	fw, err := firmwareAPI.GetByID(reqEvent.ID)
@@ -73,14 +69,11 @@ func sendFirmwareBlocks(reqEvent *rsModel.Event) {
 		return
 	}
 
-	block := 0
-	totalBlocks := len(fwBytes) / firmwareML.BlockSize
-	if len(fwBytes)%firmwareML.BlockSize > 0 {
-		totalBlocks++
-	}
+	blockNumber := 0
+	totalBytes := len(fwBytes)
 	for {
-		positionStart := block * firmwareML.BlockSize
-		positionEnd := (block + 1) * firmwareML.BlockSize
+		positionStart := blockNumber * firmwareML.BlockSize
+		positionEnd := positionStart + firmwareML.BlockSize
 
 		reachedEnd := false
 		var bytes []byte
@@ -91,7 +84,7 @@ func sendFirmwareBlocks(reqEvent *rsModel.Event) {
 			reachedEnd = true
 		}
 
-		err := postFirmwareBlock(fw.ID, bytes, int64(block), int64(totalBlocks))
+		err := postFirmwareBlock(reqEvent.ReplyTopic, fw.ID, bytes, blockNumber, totalBytes, reachedEnd)
 		if err != nil {
 			zap.L().Error("error on posting firmware blocks", zap.String("firmwareId", fw.ID), zap.Error(err))
 		}
@@ -99,25 +92,26 @@ func sendFirmwareBlocks(reqEvent *rsModel.Event) {
 		if reachedEnd {
 			return
 		}
-		block++
+		blockNumber++
 	}
 
 }
 
-func postFirmwareBlock(id string, bytes []byte, blockNumber, totalBlocks int64) error {
-	resEvent := &rsModel.Event{
+func postFirmwareBlock(replyTopic, id string, bytes []byte, blockNumber, totalBytes int, isFinal bool) error {
+	resEvent := &rsModel.ServiceEvent{
 		Type:    rsModel.TypeFirmware,
 		Command: rsModel.CommandBlocks,
 		ID:      id,
 	}
 
 	fwBlock := firmwareML.FirmwareBlock{
-		ID:    id,
-		Block: blockNumber,
-		Total: totalBlocks,
-		Data:  bytes,
+		ID:          id,
+		BlockNumber: blockNumber,
+		TotalBytes:  totalBytes,
+		Data:        bytes,
+		IsFinal:     isFinal,
 	}
 
 	resEvent.SetData(fwBlock)
-	return postResponse(mcbus.FormatTopic(mcbus.TopicFirmwareBlocks), resEvent)
+	return postResponse(replyTopic, resEvent)
 }

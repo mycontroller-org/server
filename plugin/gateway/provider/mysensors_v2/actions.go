@@ -7,12 +7,15 @@ import (
 	"strings"
 	"time"
 
-	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils/query"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	"go.uber.org/zap"
 )
 
@@ -126,23 +129,31 @@ func getTimestamp(gwCfg *gwML.Config) string {
 
 // get node id
 func getNodeID(gwCfg *gwML.Config) string {
-	filters := []stgML.Filter{{Key: "gatewayID", Operator: "eq", Value: gwCfg.ID}}
-	response, err := nodeAPI.List(filters, nil)
+	var reservedIDsString []string
+	updateNodeIDs := func(item interface{}) bool {
+		ids, ok := item.([]string)
+		if !ok {
+			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
+			return false
+		}
+		reservedIDsString = ids
+		return false
+	}
+	filter := map[string]interface{}{model.KeyGatewayID: gwCfg.ID}
+	err := query.QueryResource("", rsML.TypeNode, rsML.CommandGetIds, filter, updateNodeIDs, queryTimeout)
 	if err != nil {
 		zap.L().Error("error on finding list of nodes", zap.String("gateway", gwCfg.ID), zap.Error(err))
 		return ""
 	}
 
-	reservedIDs := make([]int, 0)
-	if response.Data != nil {
-		if nodes, ok := response.Data.([]nodeML.Node); ok {
-			for _, n := range nodes {
-				if n.Labels.Get(LabelNodeID) != "" {
-					id := n.Labels.GetInt(LabelNodeID)
-					reservedIDs = append(reservedIDs, id)
-				}
-			}
-		}
+	if reservedIDsString == nil {
+		zap.L().Warn("there is no reserved ids found")
+		return ""
+	}
+
+	reservedIDs := make([]int, len(reservedIDsString))
+	for index, value := range reservedIDsString {
+		reservedIDs[index] = int(convertor.ToInteger(value))
 	}
 
 	// find first available id
@@ -170,10 +181,16 @@ func getNodeID(gwCfg *gwML.Config) string {
 
 func updateResetFlag(msg *msgML.Message) error {
 	// get the node details
-	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
+	node, err := getNode(msg.GatewayID, msg.NodeID)
 	if err != nil {
 		return err
 	}
-	node.Labels.Set(LabelEraseEEPROM, "true")
-	return nodeAPI.Save(node)
+
+	var labels cmap.CustomStringMap
+	labels = labels.Init()
+	labels.Set(LabelEraseEEPROM, "true")
+
+	busUtils.PostToResourceService(node.ID, labels, rsML.TypeNode, rsML.CommandSetLabel, "")
+
+	return nil
 }

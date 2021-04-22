@@ -1,38 +1,34 @@
 package mysensors
 
 import (
-	"bytes"
-	"context"
-	"encoding/binary"
-	hexENC "encoding/hex"
+	"crypto/sha256"
 	"fmt"
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
+	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils/query"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
 )
 
 var (
-	fwStore   = concurrency.NewStore()
-	nodeStore = concurrency.NewStore()
+	nodeStore  = concurrency.NewStore()
+	fwStore    = concurrency.NewStore()
+	fwRawStore = concurrency.NewStore()
 )
 
-func firmwarePurge() {
-	for _, fwID := range fwStore.Keys() {
-		fwInf := fwStore.Get(fwID)
+func firmwareRawPurge() {
+	for _, fwID := range fwRawStore.Keys() {
+		fwInf := fwRawStore.Get(fwID)
 		fw, ok := fwInf.(*firmwareRaw)
 		if !ok {
 			continue
 		}
 		if time.Since(fw.LastAccess) >= firmwarePurgeInactiveTime { // eligible for purging
-			fwStore.Remove(fwID)
+			fwRawStore.Remove(fwID)
 		}
 	}
 }
@@ -64,83 +60,127 @@ func getNode(gatewayID, nodeID string) (*nodeML.Node, error) {
 	return nil, fmt.Errorf("node not available. gatewayID:%s, nodeID:%s", gatewayID, nodeID)
 }
 
-func setNodeLabels(node *nodeML.Node) {
-	busUtils.PostToResourceService(node.ID, node, rsML.TypeNode, rsML.CommandSet, "")
-}
-
-// toHex returns hex string
-func toHex(in interface{}) (string, error) {
-	var bBuf bytes.Buffer
-	err := binary.Write(&bBuf, binary.LittleEndian, in)
-	if err != nil {
-		return "", err
+// getNode returns the node
+func getFirmware(id string) (*firmwareML.Firmware, error) {
+	toFirmware := func(item interface{}) (*firmwareML.Firmware, error) {
+		if fw, ok := item.(*firmwareML.Firmware); ok {
+			return fw, nil
+		}
+		return nil, fmt.Errorf("unknown data received in the place node: %T", item)
 	}
-	return hexENC.EncodeToString(bBuf.Bytes()), nil
-}
 
-// toStruct updates struct from hex string
-func toStruct(hex string, out interface{}) error {
-	hb, err := hexENC.DecodeString(hex)
-	if err != nil {
-		return err
+	data := fwStore.Get(id)
+	if data != nil {
+		return toFirmware(data)
 	}
-	r := bytes.NewReader(hb)
-	return binary.Read(r, binary.LittleEndian, out)
+
+	err := updateFirmware(id)
+	if err != nil {
+		return nil, err
+	}
+	data = fwStore.Get(id)
+	if data != nil {
+		return toFirmware(data)
+	}
+	return nil, fmt.Errorf("firmware not available. id:%v", id)
 }
 
 func getNodeStoreID(gatewayID, nodeID string) string {
 	return fmt.Sprintf("%s_%s", gatewayID, nodeID)
 }
 
-// get node details via bus
 func updateNode(gatewayID, nodeID string) error {
-	closeChan := concurrency.NewChannel(0)
-	defer closeChan.SafeClose()
-
-	replyTopic := mcbus.FormatTopic(fmt.Sprintf("node_response_%s", utils.RandIDWithLength(5)))
-	sID, err := mcbus.Subscribe(replyTopic, nodeResponse(closeChan))
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		err := mcbus.Unsubscribe(replyTopic, sID)
-		if err != nil {
-			zap.L().Error("error on unsubscribe", zap.Error(err), zap.String("topic", replyTopic))
-		}
-	}()
-
-	timeoutDuration := 2 * time.Second
-	ctx, cancel := context.WithTimeout(context.Background(), timeoutDuration)
-	defer cancel()
-
 	ids := map[string]interface{}{
 		model.KeyGatewayID: gatewayID,
 		model.KeyNodeID:    nodeID,
 	}
-	busUtils.PostToResourceService("", ids, rsML.TypeNode, rsML.CommandGet, replyTopic)
 
-	select {
-	case <-closeChan.CH:
-		return nil
-	case <-ctx.Done():
-		return fmt.Errorf("reached timeout: %s", timeoutDuration.String())
+	addToStore := func(item interface{}) bool {
+		node, ok := item.(nodeML.Node)
+		if !ok {
+			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
+			return false
+		}
+		nodeStore.Add(getNodeStoreID(node.GatewayID, node.NodeID), &node)
+		return false
 	}
+	return query.QueryResource("", rsML.TypeNode, rsML.CommandGet, ids, addToStore, queryTimeout)
 }
 
-func nodeResponse(closeChan *concurrency.Channel) func(data *busML.BusData) {
-	return func(data *busML.BusData) {
-		defer closeChan.SafeClose()
-
-		node := &nodeML.Node{}
-		err := data.ToStruct(node)
-		if err != nil {
-			zap.L().Error("error on converting to target type", zap.Error(err))
+func updateFirmware(id string) error {
+	addToStore := func(item interface{}) bool {
+		firmware, ok := item.(firmwareML.Firmware)
+		if !ok {
+			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
+			return false
 		}
-		zap.L().Info("node received", zap.Any("node", node))
-
-		nodeStore.Add(getNodeStoreID(node.GatewayID, node.NodeID), node)
-		zap.L().Info("node added", zap.String("id", getNodeStoreID(node.GatewayID, node.NodeID)))
-
+		fwStore.Add(firmware.ID, &firmware)
+		return false
 	}
+	return query.QueryResource(id, rsML.TypeFirmware, rsML.CommandGet, nil, addToStore, queryTimeout)
+}
+
+// getFirmwareRaw func
+func getFirmwareRaw(id string, fwTypeID, fwVersionID uint16) (*firmwareRaw, error) {
+	toFirmwareRaw := func(item interface{}) (*firmwareRaw, error) {
+		if fw, ok := item.(*firmwareRaw); ok {
+			return fw, nil
+		}
+		return nil, fmt.Errorf("unknown data received in the place node: %T", item)
+	}
+
+	data := fwRawStore.Get(id)
+	if data != nil {
+		return toFirmwareRaw(data)
+	}
+
+	err := updateFirmwareFile(id, fwTypeID, fwVersionID)
+	if err != nil {
+		return nil, err
+	}
+	data = fwRawStore.Get(id)
+	if data != nil {
+		return toFirmwareRaw(data)
+	}
+	return nil, fmt.Errorf("firmware not available. id:%v", id)
+}
+
+func updateFirmwareFile(id string, fwTypeID, fwVersionID uint16) error {
+	var hexBytes []byte
+	addToStore := func(item interface{}) bool {
+		fwBlock, ok := item.(firmwareML.FirmwareBlock)
+		if !ok {
+			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
+			return false
+		}
+		if hexBytes == nil {
+			hexBytes = make([]byte, fwBlock.TotalBytes)
+		}
+		startPos := int(firmwareML.BlockSize * fwBlock.BlockNumber)
+		for offset, byteData := range fwBlock.Data {
+			hexBytes[startPos+offset] = byteData
+		}
+		if fwBlock.IsFinal {
+			receivedCheckSum := fmt.Sprintf("sha256:%x", sha256.Sum256(hexBytes))
+			fw, err := getFirmware(id)
+			if err != nil {
+				zap.L().Error("error on getting firmare config", zap.Error(err), zap.String("firmwareId", id))
+				return false
+			}
+			zap.L().Info("received firmware", zap.String("fwID", fw.ID), zap.String("checkSumRemote", fw.File.Checksum), zap.String("receivedSumLocal", receivedCheckSum))
+			if fw.File.Checksum == receivedCheckSum {
+				// convert the hex file to raw format
+				fwRaw, err := hexByteToLocalFormat(fwTypeID, fwVersionID, hexBytes, firmwareBlockSize)
+				if err != nil {
+					zap.L().Error("error on converting hex to local format", zap.String("firmwareId", id), zap.Error(err))
+					return false
+				}
+				fwRawStore.Add(id, fwRaw)
+			}
+			return false
+		}
+		return true // continue
+	}
+
+	return query.QueryResource(id, rsML.TypeFirmware, rsML.CommandBlocks, nil, addToStore, queryFirmwareFileTimeout)
 }

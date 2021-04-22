@@ -79,20 +79,11 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgML.RawMessage) e
 
 	// load firmware purge job
 	firmwarePurgeJobName := fmt.Sprintf("%s_%s", firmwarePurgeJobName, p.GatewayConfig.ID)
-	err = sch.SVC.AddFunc(firmwarePurgeJobName, firmwarePurgeJobCron, firmwarePurge)
+	err = sch.SVC.AddFunc(firmwarePurgeJobName, firmwarePurgeJobCron, firmwareRawPurge)
 	if err != nil {
 		return err
 	}
-	err = initEventListener(p.GatewayConfig.ID)
-	if err != nil {
-		return err
-	}
-
-	err = updateNode("mysensor", "1")
-	if err != nil {
-		zap.L().Error("error on getting node", zap.Error(err))
-	}
-	return nil
+	return initEventListener(p.GatewayConfig.ID)
 }
 
 // Close func

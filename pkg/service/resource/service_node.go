@@ -6,15 +6,15 @@ import (
 
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/plugin/storage"
-	"go.uber.org/zap"
 )
 
-func nodeService(reqEvent *rsModel.Event) error {
-	resEvent := &rsModel.Event{
+func nodeService(reqEvent *rsModel.ServiceEvent) error {
+	resEvent := &rsModel.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
@@ -25,18 +25,14 @@ func nodeService(reqEvent *rsModel.Event) error {
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
-		err = resEvent.SetData(data)
-		if err != nil {
-			return err
-		}
-		zap.L().Info("node sent", zap.String("bytes", string(resEvent.Data)))
+		resEvent.SetData(data)
 
 	case rsModel.CommandSet:
-		node := &nodeML.Node{}
-		err := reqEvent.ToStruct(node)
-		if err != nil {
-			return err
+		node, ok := reqEvent.GetData().(nodeML.Node)
+		if !ok {
+			return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
 		}
+
 		nodeOrg, err := nodeAPI.GetByID(node.ID)
 		if err != nil {
 			return err
@@ -50,10 +46,26 @@ func nodeService(reqEvent *rsModel.Event) error {
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
-		err = resEvent.SetData(data)
+		resEvent.SetData(data)
+
+	case rsModel.CommandFirmwareState:
+		fwState, ok := reqEvent.GetData().(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
+		}
+		return nodeAPI.UpdateFirmwareState(reqEvent.ID, fwState)
+
+	case rsModel.CommandSetLabel:
+		labels, ok := reqEvent.GetData().(cmap.CustomStringMap)
+		if !ok {
+			return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
+		}
+		node, err := getNode(reqEvent)
 		if err != nil {
 			return err
 		}
+		node.Labels.CopyFrom(labels)
+		return nodeAPI.Save(node)
 
 	default:
 		return errors.New("unknown command")
@@ -61,7 +73,7 @@ func nodeService(reqEvent *rsModel.Event) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getNodeIDs(request *rsModel.Event) ([]string, error) {
+func getNodeIDs(request *rsModel.ServiceEvent) ([]string, error) {
 	var response *storage.Result
 	if len(request.Labels) > 0 {
 		filters := getLabelsFilter(request.Labels)
@@ -71,11 +83,11 @@ func getNodeIDs(request *rsModel.Event) ([]string, error) {
 		}
 		response = result
 	} else {
-		ids := make(map[string]interface{})
-		err := request.ToStruct(&ids)
-		if err != nil {
-			return nil, err
+		ids, ok := request.GetData().(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("error on data conversion, receivedType: %T", request.GetData())
 		}
+
 		// get NodeId and GatewayId
 		gatewayId := utils.GetMapValueString(ids, model.KeyGatewayID, "")
 		if gatewayId == "" {
@@ -101,26 +113,20 @@ func getNodeIDs(request *rsModel.Event) ([]string, error) {
 	return nodeIDs, nil
 }
 
-func getNode(request *rsModel.Event) (interface{}, error) {
+func getNode(request *rsModel.ServiceEvent) (*nodeML.Node, error) {
 	if request.ID != "" {
 		cfg, err := nodeAPI.GetByID(request.ID)
 		if err != nil {
 			return nil, err
 		}
 		return cfg, nil
-	} else if len(request.Labels) > 0 {
-		filters := getLabelsFilter(request.Labels)
-		result, err := nodeAPI.List(filters, nil)
-		if err != nil {
-			return nil, err
-		}
-		return result.Data, nil
+
 	} else {
-		ids := make(map[string]interface{})
-		err := request.ToStruct(&ids)
-		if err != nil {
-			return nil, err
+		ids, ok := request.GetData().(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("error on data conversion, receivedType: %T", request.GetData())
 		}
+
 		// get NodeId and GatewayId
 		nodeId := utils.GetMapValueString(ids, model.KeyNodeID, "")
 		gatewayId := utils.GetMapValueString(ids, model.KeyGatewayID, "")

@@ -31,8 +31,9 @@ type FileConfig struct {
 }
 
 type FirmwareBlock struct {
-	ID    string `json:"id"`
-	Block int64  `json:"block"`
-	Total int64  `json:"total"`
-	Data  []byte `json:"data"`
+	ID          string `json:"id"`
+	BlockNumber int    `json:"blockNumber"`
+	TotalBytes  int    `json:"totalBytes"` // entire file bytes size
+	IsFinal     bool   `json:"isFinal"`
+	Data        []byte `json:"data"`
 }

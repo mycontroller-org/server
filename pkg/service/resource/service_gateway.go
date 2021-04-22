@@ -2,6 +2,7 @@ package resource
 
 import (
 	"errors"
+	"fmt"
 
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
@@ -12,8 +13,8 @@ import (
 
 var gwReconnectStore = concurrencyUtils.NewStore()
 
-func gatewayService(reqEvent *rsModel.Event) error {
-	resEvent := &rsModel.Event{
+func gatewayService(reqEvent *rsModel.ServiceEvent) error {
+	resEvent := &rsModel.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
@@ -24,10 +25,7 @@ func gatewayService(reqEvent *rsModel.Event) error {
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
-		err = resEvent.SetData(data)
-		if err != nil {
-			return err
-		}
+		resEvent.SetData(data)
 
 	case rsModel.CommandUpdateState:
 		err := updateGatewayState(reqEvent)
@@ -44,7 +42,7 @@ func gatewayService(reqEvent *rsModel.Event) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getGateway(request *rsModel.Event) (interface{}, error) {
+func getGateway(request *rsModel.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
 		gwConfig, err := gatewayAPI.GetByID(request.ID)
 		if err != nil {
@@ -62,18 +60,17 @@ func getGateway(request *rsModel.Event) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func updateGatewayState(reqEvent *rsModel.Event) error {
+func updateGatewayState(reqEvent *rsModel.ServiceEvent) error {
 	if reqEvent.Data == nil {
 		zap.L().Error("gateway state not supplied", zap.Any("event", reqEvent))
 		return errors.New("gateway state not supplied")
 	}
-	state := &model.State{}
-	err := reqEvent.ToStruct(state)
-	if err != nil {
-		return err
+	state, ok := reqEvent.GetData().(model.State)
+	if !ok {
+		return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
 	}
 
-	err = gatewayAPI.SetState(reqEvent.ID, state)
+	err := gatewayAPI.SetState(reqEvent.ID, &state)
 	if err != nil {
 		return err
 	}

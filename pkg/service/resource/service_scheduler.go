@@ -2,6 +2,7 @@ package resource
 
 import (
 	"errors"
+	"fmt"
 
 	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
@@ -9,8 +10,8 @@ import (
 	"go.uber.org/zap"
 )
 
-func schedulerService(reqEvent *rsML.Event) error {
-	resEvent := &rsML.Event{
+func schedulerService(reqEvent *rsML.ServiceEvent) error {
+	resEvent := &rsML.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
@@ -21,10 +22,7 @@ func schedulerService(reqEvent *rsML.Event) error {
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
-		err = resEvent.SetData(data)
-		if err != nil {
-			return err
-		}
+		resEvent.SetData(data)
 
 	case rsML.CommandUpdateState:
 		err := updateSchedulerState(reqEvent)
@@ -44,7 +42,7 @@ func schedulerService(reqEvent *rsML.Event) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getScheduler(request *rsML.Event) (interface{}, error) {
+func getScheduler(request *rsML.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
 		cfg, err := schedulerAPI.GetByID(request.ID)
 		if err != nil {
@@ -62,28 +60,27 @@ func getScheduler(request *rsML.Event) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func updateSchedulerState(reqEvent *rsML.Event) error {
+func updateSchedulerState(reqEvent *rsML.ServiceEvent) error {
 	if reqEvent.Data == nil {
 		zap.L().Error("state not supplied", zap.Any("event", reqEvent))
 		return errors.New("state not supplied")
 	}
-	state := &schedulerML.State{}
-	err := reqEvent.ToStruct(state)
-	if err != nil {
-		return err
+	state, ok := reqEvent.GetData().(schedulerML.State)
+	if !ok {
+		return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
 	}
-	return schedulerAPI.SetState(reqEvent.ID, state)
+	return schedulerAPI.SetState(reqEvent.ID, &state)
 }
 
-func disableScheduler(reqEvent *rsML.Event) error {
+func disableScheduler(reqEvent *rsML.ServiceEvent) error {
 	if reqEvent.Data == nil {
 		zap.L().Error("scheduler id not supplied", zap.Any("event", reqEvent))
 		return errors.New("id not supplied")
 	}
-	var id string
-	err := reqEvent.ToStruct(&id)
-	if err != nil {
-		return err
+
+	id, ok := reqEvent.GetData().(string)
+	if !ok {
+		return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
 	}
 	return schedulerAPI.Disable([]string{id})
 }

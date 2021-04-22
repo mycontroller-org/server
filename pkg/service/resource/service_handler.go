@@ -2,6 +2,7 @@ package resource
 
 import (
 	"errors"
+	"fmt"
 
 	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
@@ -9,8 +10,8 @@ import (
 	"go.uber.org/zap"
 )
 
-func handlerService(reqEvent *rsModel.Event) error {
-	resEvent := &rsModel.Event{
+func handlerService(reqEvent *rsModel.ServiceEvent) error {
+	resEvent := &rsModel.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
@@ -21,10 +22,7 @@ func handlerService(reqEvent *rsModel.Event) error {
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
-		err = resEvent.SetData(data)
-		if err != nil {
-			return err
-		}
+		resEvent.SetData(data)
 
 	case rsModel.CommandUpdateState:
 		err := updateHandlerState(reqEvent)
@@ -41,7 +39,7 @@ func handlerService(reqEvent *rsModel.Event) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getHandler(request *rsModel.Event) (interface{}, error) {
+func getHandler(request *rsModel.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
 		cfg, err := handlerAPI.GetByID(request.ID)
 		if err != nil {
@@ -59,15 +57,15 @@ func getHandler(request *rsModel.Event) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func updateHandlerState(reqEvent *rsModel.Event) error {
+func updateHandlerState(reqEvent *rsModel.ServiceEvent) error {
 	if reqEvent.Data == nil {
 		zap.L().Error("handler state not supplied", zap.Any("event", reqEvent))
 		return errors.New("handler state not supplied")
 	}
-	state := &model.State{}
-	err := reqEvent.ToStruct(state)
-	if err != nil {
-		return err
+	state, ok := reqEvent.GetData().(model.State)
+	if !ok {
+		return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
 	}
-	return handlerAPI.SetState(reqEvent.ID, state)
+
+	return handlerAPI.SetState(reqEvent.ID, &state)
 }

@@ -43,7 +43,7 @@ func Close() {
 }
 
 func onEvent(data *busML.BusData) {
-	reqEvent := &rsModel.Event{}
+	reqEvent := &rsModel.ServiceEvent{}
 	err := data.ToStruct(reqEvent)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
@@ -63,7 +63,7 @@ func onEvent(data *busML.BusData) {
 
 // processEvent from the queue
 func processEvent(item interface{}) {
-	request := item.(*rsModel.Event)
+	request := item.(*rsModel.ServiceEvent)
 	zap.L().Debug("Processing an event", zap.Any("event", request))
 	start := time.Now()
 	switch request.Type {
@@ -115,7 +115,7 @@ func processEvent(item interface{}) {
 	zap.L().Debug("completed a resource service", zap.String("timeTaken", time.Since(start).String()), zap.Any("data", request))
 }
 
-func postResponse(topic string, response *rsModel.Event) error {
+func postResponse(topic string, response *rsModel.ServiceEvent) error {
 	if topic == "" {
 		return nil
 	}

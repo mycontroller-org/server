@@ -41,19 +41,16 @@ func DisableTask(id string) {
 
 // PostToResourceService to resource service
 func PostToResourceService(id string, data interface{}, serviceType, command, replyTopic string) {
-	event := &rsML.Event{
+	event := &rsML.ServiceEvent{
 		Type:       serviceType,
 		Command:    command,
 		ID:         id,
 		ReplyTopic: replyTopic,
 	}
-	err := event.SetData(data)
-	if err != nil {
-		zap.L().Error("failed to set data", zap.Error(err))
-		return
-	}
+	event.SetData(data)
+
 	topic := mcbus.FormatTopic(mcbus.TopicServiceResourceServer)
-	err = mcbus.Publish(topic, event)
+	err := mcbus.Publish(topic, event)
 	if err != nil {
 		zap.L().Error("failed to post an event", zap.String("topic", topic), zap.Any("event", event))
 	}

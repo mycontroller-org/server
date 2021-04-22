@@ -1,8 +1,9 @@
 package model
 
 import (
+	"reflect"
+
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
 )
 
 // Resource type details
@@ -18,49 +19,53 @@ const (
 
 // Command details
 const (
-	CommandUpdate      = "update"
-	CommandUpdateState = "updateState"
-	CommandGet         = "get"
-	CommandGetIds      = "getIds"
-	CommandSet         = "set"
-	CommandAdd         = "add"
-	CommandRemove      = "remove"
-	CommandEnable      = "enable"
-	CommandDisable     = "disable"
-	CommandStart       = "start"
-	CommandStop        = "stop"
-	CommandReload      = "reload"
-	CommandLoadAll     = "loadAll"
-	CommandUnloadAll   = "unloadAll"
-	CommandBlocks      = "blocks"
+	CommandUpdate        = "update"
+	CommandUpdateState   = "updateState"
+	CommandGet           = "get"
+	CommandList          = "list"
+	CommandGetIds        = "getIds"
+	CommandSet           = "set"
+	CommandAdd           = "add"
+	CommandRemove        = "remove"
+	CommandEnable        = "enable"
+	CommandDisable       = "disable"
+	CommandStart         = "start"
+	CommandStop          = "stop"
+	CommandReload        = "reload"
+	CommandLoadAll       = "loadAll"
+	CommandUnloadAll     = "unloadAll"
+	CommandBlocks        = "blocks"
+	CommandFirmwareState = "firmwareState"
+	CommandSetLabel      = "setLabel"
 )
 
-// Event details
-type Event struct {
+// ServiceEvent details
+type ServiceEvent struct {
 	Type         string
 	Command      string
 	ReplyCommand string
 	ReplyTopic   string
 	ID           string
 	Labels       cmap.CustomStringMap
-	Data         []byte `json:"-"` // ignore this field on logging
-	Error        string
+	// 	Data         []byte `json:"-"` // ignore this field on logging
+	Data  interface{} `json:"-"` // ignore this field on logging
+	Error string
 }
 
-// SetData updates data in []byte format
-func (e *Event) SetData(data interface{}) error {
-	if data == nil {
+func (e *ServiceEvent) SetData(data interface{}) {
+	if reflect.ValueOf(data).Kind() == reflect.Ptr {
+		e.Data = reflect.ValueOf(data).Elem().Interface()
+		return
+	}
+	e.Data = data
+}
+
+func (e *ServiceEvent) GetData() interface{} {
+	if e.Data == nil {
 		return nil
 	}
-	bytes, err := utils.StructToByte(data)
-	if err != nil {
-		return err
+	if reflect.ValueOf(e.Data).Kind() == reflect.Ptr {
+		return reflect.ValueOf(e.Data).Elem().Interface()
 	}
-	e.Data = bytes
-	return nil
-}
-
-// ToStruct converts data to target interface
-func (e *Event) ToStruct(out interface{}) error {
-	return utils.ByteToStruct(e.Data, out)
+	return e.Data
 }

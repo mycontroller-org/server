@@ -1,18 +1,20 @@
 package mysensors
 
 import (
-	"encoding/hex"
+	"bytes"
+	"encoding/binary"
+	hexENC "encoding/hex"
 	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
-	fwAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	"go.uber.org/zap"
 )
 
@@ -30,13 +32,6 @@ func executeFirmwareConfigRequest(msg *msgML.Message) (string, error) {
 			return "", err
 		}
 	}
-
-	// get the node details
-	// node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
-	// if err != nil {
-	// 	zap.L().Error("error to get node details", zap.Any("msg", msg), zap.Error(err))
-	// 	return "", err
-	// }
 
 	node, err := getNode(msg.GatewayID, msg.NodeID)
 	if err != nil {
@@ -62,11 +57,7 @@ func executeFirmwareConfigRequest(msg *msgML.Message) (string, error) {
 		fwCfgRes.SetEraseEEPROM()
 		// remove erase config data from node
 		node.Labels.Set(LabelEraseEEPROM, "false")
-		// err = nodeAPI.Save(node)
-		// if err != nil {
-		// 	zap.L().Error("error to save node data", zap.String("gatewayId", node.GatewayID), zap.String("nodeId", node.NodeID), zap.Error(err))
-		// 	return "", err
-		// }
+
 		setNodeLabels(node)
 	} else { // update assigned firmware config details
 		fwCfgRes.Type = fwRaw.Type
@@ -92,13 +83,6 @@ func executeFirmwareRequest(msg *msgML.Message) (string, error) {
 		zap.L().Error("error on converting firmwareRequest", zap.String("payload", rxPL), zap.Error(err))
 		return "", err
 	}
-
-	// get the node details
-	// node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
-	// if err != nil {
-	// 	zap.L().Error("error to get node details", zap.Any("msg", msg), zap.Error(err))
-	// 	return "", err
-	// }
 
 	node, err := getNode(msg.GatewayID, msg.NodeID)
 	if err != nil {
@@ -126,6 +110,8 @@ func executeFirmwareRequest(msg *msgML.Message) (string, error) {
 	copy(fwRes.Data[:], fwRaw.Data[startAddr:(endAddr+1)])
 	zap.L().Debug("Sending a firmware respose", zap.Any("request", fwReq), zap.Any("response", fwRes), zap.String("timeTaken", time.Since(startTime).String()))
 
+	updateFirmwareProgressStatus(node, int(fwReq.Block), len(fwRaw.Data))
+
 	// convert the struct to hex string and return
 	return toHex(fwRes)
 }
@@ -141,8 +127,8 @@ func fetchFirmware(node *nodeML.Node, typeID, versionID uint16, verifyID bool) (
 
 	// lambda function to load firmware
 	loadFirmwareRawFn := func() (*firmwareRaw, error) {
-		// get firmware details
-		fw, err := fwAPI.GetByID(fwID)
+
+		fw, err := getFirmware(fwID)
 		if err != nil {
 			zap.L().Error("error to get firmware raw", zap.Any("fwID", fwID), zap.Error(err))
 			return nil, err
@@ -155,29 +141,21 @@ func fetchFirmware(node *nodeML.Node, typeID, versionID uint16, verifyID bool) (
 		fwTypeID := uint16(fw.Labels.GetInt(LabelFirmwareTypeID))
 		fwVersionID := uint16(fw.Labels.GetInt(LabelFirmwareVersionID))
 
-		// get firmware hex file
-		hexFile, err := utils.ReadFile(model.GetDataDirectoryFirmware(), fw.File.InternalName)
+		fwRaw, err := getFirmwareRaw(fw.ID, fwTypeID, fwVersionID)
 		if err != nil {
-			zap.L().Error("error on reading a firmware file", zap.String("directory", model.GetDataDirectoryFirmware()), zap.String("fileName", fw.File.InternalName), zap.Error(err))
-			return nil, err
-		}
-
-		// convert the hex file to raw format
-		fwRaw, err := hexByteToLocalFormat(fwTypeID, fwVersionID, hexFile, firmwareBlockSize)
-		if err != nil {
-			zap.L().Error("error on converting hex to local format", zap.String("directory", model.GetDataDirectoryFirmware()), zap.String("fileName", fw.File.InternalName), zap.Error(err))
+			zap.L().Error("error on getting firmware data", zap.String("firmwareId", fw.ID), zap.Error(err))
 			return nil, err
 		}
 
 		// keep it on memory store
-		fwStore.Add(fwID, fwRaw)
+		fwRawStore.Add(fwID, fwRaw)
 		return fwRaw, nil
 	}
 
 	// check firmware on memory store
 	// if not found, load it from disk
 	var fwRaw *firmwareRaw
-	fwRawInf := fwStore.Get(fwID)
+	fwRawInf := fwRawStore.Get(fwID)
 	if fwRawInf == nil {
 		_fwRaw, err := loadFirmwareRawFn()
 		if err != nil {
@@ -246,7 +224,7 @@ func hexByteToLocalFormat(typeID, versionID uint16, hexByte []byte, blockSize in
 
 		// get only data bytes and convert to bytes from string bytes
 		data := line[9 : len(line)-2]
-		dataBytes, err := hex.DecodeString(data)
+		dataBytes, err := hexENC.DecodeString(data)
 		if err != nil {
 			zap.L().Error("failed", zap.Any("data", data), zap.Error(err))
 			return nil, err
@@ -288,4 +266,83 @@ func hexByteToLocalFormat(typeID, versionID uint16, hexByte []byte, blockSize in
 		LastAccess: time.Now(),
 	}
 	return fw, nil
+}
+
+func setNodeLabels(node *nodeML.Node) {
+	busUtils.PostToResourceService(node.ID, node, rsML.TypeNode, rsML.CommandSet, "")
+}
+
+// toHex returns hex string
+func toHex(in interface{}) (string, error) {
+	var bBuf bytes.Buffer
+	err := binary.Write(&bBuf, binary.LittleEndian, in)
+	if err != nil {
+		return "", err
+	}
+	return hexENC.EncodeToString(bBuf.Bytes()), nil
+}
+
+// toStruct updates struct from hex string
+func toStruct(hex string, out interface{}) error {
+	hb, err := hexENC.DecodeString(hex)
+	if err != nil {
+		return err
+	}
+	r := bytes.NewReader(hb)
+	return binary.Read(r, binary.LittleEndian, out)
+}
+
+func updateFirmwareProgressStatus(node *nodeML.Node, currentBlock, totalBytes int) {
+	bootloader := node.Labels.Get(model.LabelNodeBootloader)
+	if bootloader == "" {
+		bootloader = BootloaderDualoptiboot
+	}
+
+	totalBlocks := totalBytes / firmwareBlockSize
+	if totalBytes%firmwareBlockSize != 0 {
+		totalBlocks++
+	}
+
+	lastBlock := totalBlocks - 1
+
+	if currentBlock == 0 ||
+		currentBlock%10 == 0 || // number of blocks once send the status
+		currentBlock == lastBlock {
+
+		var startTime interface{}
+		var endTime interface{}
+
+		isRunning := true
+		percentage := float64(currentBlock) / float64(lastBlock)
+		if bootloader == BootloaderDualoptiboot {
+			percentage = 1 - percentage
+			isRunning = currentBlock != 0
+			if currentBlock == lastBlock {
+				startTime = time.Now()
+			} else if currentBlock == 0 {
+				endTime = time.Now()
+			}
+		} else {
+			isRunning = currentBlock != lastBlock
+			if currentBlock == 0 {
+				startTime = time.Now()
+			} else if currentBlock == lastBlock {
+				endTime = time.Now()
+			}
+		}
+
+		// update the status
+		state := map[string]interface{}{
+			model.FieldOTARunning:     isRunning,
+			model.FieldOTAProgress:    int(percentage * 100),
+			model.FieldOTAStatusOn:    time.Now(),
+			model.FieldOTABlockNumber: currentBlock,
+			model.FieldOTAStartTime:   startTime,
+			model.FieldOTAEndTime:     endTime,
+			model.FieldOTABlockTotal:  totalBlocks,
+		}
+
+		// publish the state
+		busUtils.PostToResourceService(node.ID, state, rsML.TypeNode, rsML.CommandFirmwareState, "")
+	}
 }

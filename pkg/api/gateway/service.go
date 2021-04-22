@@ -111,16 +111,13 @@ func Reload(ids []string) error {
 }
 
 func postGatewayCommand(gwCfg *gwml.Config, command string) error {
-	reqEvent := rsml.Event{
+	reqEvent := rsml.ServiceEvent{
 		Type:    rsml.TypeGateway,
 		Command: command,
 	}
 	if gwCfg != nil {
 		reqEvent.ID = gwCfg.ID
-		err := reqEvent.SetData(gwCfg)
-		if err != nil {
-			return err
-		}
+		reqEvent.SetData(gwCfg)
 	}
 	topic := mcbus.FormatTopic(mcbus.TopicServiceGateway)
 	return mcbus.Publish(topic, reqEvent)

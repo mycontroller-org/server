@@ -1,6 +1,8 @@
 package task
 
 import (
+	"fmt"
+
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
@@ -50,7 +52,7 @@ func Init(config cmap.CustomMap) error {
 	}
 
 	// load tasks
-	reqEvent := rsML.Event{
+	reqEvent := rsML.ServiceEvent{
 		Type:    rsML.TypeTask,
 		Command: rsML.CommandLoadAll,
 	}
@@ -69,7 +71,7 @@ func Close() {
 }
 
 func onServiceEvent(event *busML.BusData) {
-	reqEvent := &rsML.Event{}
+	reqEvent := &rsML.ServiceEvent{}
 	err := event.ToStruct(reqEvent)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
@@ -88,7 +90,7 @@ func onServiceEvent(event *busML.BusData) {
 
 // processServiceEvent from the queue
 func processServiceEvent(event interface{}) {
-	reqEvent := event.(*rsML.Event)
+	reqEvent := event.(*rsML.ServiceEvent)
 	zap.L().Debug("Processing a request", zap.Any("event", reqEvent))
 
 	if reqEvent.Type != rsML.TypeTask {
@@ -128,12 +130,11 @@ func processServiceEvent(event interface{}) {
 	}
 }
 
-func getConfig(reqEvent *rsML.Event) *taskML.Config {
-	cfg := &taskML.Config{}
-	err := reqEvent.ToStruct(cfg)
-	if err != nil {
-		zap.L().Error("Error on data conversion", zap.Error(err))
+func getConfig(reqEvent *rsML.ServiceEvent) *taskML.Config {
+	cfg, ok := reqEvent.GetData().(taskML.Config)
+	if !ok {
+		zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", reqEvent.GetData())))
 		return nil
 	}
-	return cfg
+	return &cfg
 }

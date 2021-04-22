@@ -9,6 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/mitchellh/mapstructure"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	dataRepositoryML "github.com/mycontroller-org/backend/v2/pkg/model/data_repository"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
@@ -34,6 +35,7 @@ func registerTypes() {
 	gob.Register(fieldML.Field{})
 	gob.Register(fieldML.Payload{})
 	gob.Register(taskML.Config{})
+	gob.Register(taskML.State{})
 	gob.Register(gatewayML.Config{})
 	gob.Register(nodeML.Node{})
 	gob.Register(sourceML.Source{})
@@ -43,6 +45,9 @@ func registerTypes() {
 	gob.Register(dataRepositoryML.Config{})
 	gob.Register(firmwareML.Firmware{})
 	gob.Register(firmwareML.FileConfig{})
+	gob.Register(firmwareML.FirmwareBlock{})
+	gob.Register(model.State{})
+	gob.Register(time.Time{})
 }
 
 // ToStruct converts bytes to target struct

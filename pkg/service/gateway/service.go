@@ -15,12 +15,12 @@ import (
 func Start(gatewayCfg *gwml.Config) error {
 	start := time.Now()
 	if gwService.Get(gatewayCfg.ID) != nil {
-		return fmt.Errorf("A service is in running state. gateway:%s", gatewayCfg.ID)
+		return fmt.Errorf("a service is in running state. gateway:%s", gatewayCfg.ID)
 	}
 	if !gatewayCfg.Enabled { // this gateway is not enabled
 		return nil
 	}
-	zap.L().Info("Starting a gateway", zap.Any("id", gatewayCfg.ID))
+	zap.L().Info("starting a gateway", zap.Any("id", gatewayCfg.ID))
 	state := ml.State{Since: time.Now()}
 
 	service, err := gwpd.GetService(gatewayCfg)
@@ -29,11 +29,11 @@ func Start(gatewayCfg *gwml.Config) error {
 	}
 	err = service.Start()
 	if err != nil {
-		zap.L().Error("Failed to start a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
+		zap.L().Error("failed to start a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
 		state.Message = err.Error()
 		state.Status = ml.StatusDown
 	} else {
-		zap.L().Info("Started a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()))
+		zap.L().Info("started a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 		state.Message = "Started successfully"
 		state.Status = ml.StatusUp
 		gwService.Add(service)
@@ -46,7 +46,7 @@ func Start(gatewayCfg *gwml.Config) error {
 // Stop gateway
 func Stop(id string) error {
 	start := time.Now()
-	zap.L().Info("Stopping a gateway", zap.Any("id", id))
+	zap.L().Info("stopping a gateway", zap.Any("id", id))
 	service := gwService.Get(id)
 	if service != nil {
 		err := service.Stop()
@@ -56,11 +56,11 @@ func Stop(id string) error {
 			Message: "Stopped by request",
 		}
 		if err != nil {
-			zap.L().Error("Failed to stop a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
+			zap.L().Error("failed to stop a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
 			state.Message = fmt.Sprintf("Failed to stop: %s", err.Error())
 			busUtils.SetGatewayState(id, state)
 		} else {
-			zap.L().Info("Stopped a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()))
+			zap.L().Info("stopped a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()))
 			busUtils.SetGatewayState(id, state)
 			gwService.Remove(id)
 		}

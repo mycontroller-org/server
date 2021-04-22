@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func resourceActionService(reqEvent *rsModel.Event) error {
+func resourceActionService(reqEvent *rsModel.ServiceEvent) error {
 	if reqEvent.Command == rsModel.CommandSet {
 		data, err := getResourceData(reqEvent)
 		if err != nil {
@@ -27,14 +27,14 @@ func resourceActionService(reqEvent *rsModel.Event) error {
 	return fmt.Errorf("unknown command: %s", reqEvent.Command)
 }
 
-func getResourceData(reqEvent *rsModel.Event) (*handlerML.ResourceData, error) {
+func getResourceData(reqEvent *rsModel.ServiceEvent) (*handlerML.ResourceData, error) {
 	if reqEvent.Data == nil {
 		return nil, errors.New("data not supplied")
 	}
-	var data handlerML.ResourceData
-	err := reqEvent.ToStruct(&data)
-	if err != nil {
-		return nil, err
+	data, ok := reqEvent.GetData().(handlerML.ResourceData)
+	if !ok {
+		return nil, fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
 	}
+
 	return &data, nil
 }
