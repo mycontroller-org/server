@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 
 	cfgml "github.com/mycontroller-org/backend/v2/pkg/model/config"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	loggerUtils "github.com/mycontroller-org/backend/v2/pkg/utils/logger"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -18,7 +18,7 @@ var (
 // Init configuration
 func Init() {
 	// init a temp logger
-	logger := utils.GetLogger("development", "error", "console", false, 0)
+	logger := loggerUtils.GetLogger("development", "error", "console", false, 0)
 
 	cf := flag.String("config", "./config.yaml", "Configuration file")
 	flag.Parse()

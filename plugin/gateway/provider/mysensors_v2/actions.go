@@ -126,10 +126,10 @@ func getTimestamp(gwCfg *gwML.Config) string {
 
 // get node id
 func getNodeID(gwCfg *gwML.Config) string {
-	f := []stgML.Filter{{Key: "gatewayID", Operator: "eq", Value: gwCfg.ID}}
-	response, err := nodeAPI.List(f, nil)
+	filters := []stgML.Filter{{Key: "gatewayID", Operator: "eq", Value: gwCfg.ID}}
+	response, err := nodeAPI.List(filters, nil)
 	if err != nil {
-		zap.L().Error("Failed to find list of nodes", zap.String("gateway", gwCfg.ID), zap.Error(err))
+		zap.L().Error("error on finding list of nodes", zap.String("gateway", gwCfg.ID), zap.Error(err))
 		return ""
 	}
 

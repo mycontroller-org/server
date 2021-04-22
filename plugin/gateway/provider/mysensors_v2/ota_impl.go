@@ -9,7 +9,6 @@ import (
 	"time"
 
 	fwAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
-	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
@@ -33,7 +32,13 @@ func executeFirmwareConfigRequest(msg *msgML.Message) (string, error) {
 	}
 
 	// get the node details
-	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
+	// node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
+	// if err != nil {
+	// 	zap.L().Error("error to get node details", zap.Any("msg", msg), zap.Error(err))
+	// 	return "", err
+	// }
+
+	node, err := getNode(msg.GatewayID, msg.NodeID)
 	if err != nil {
 		zap.L().Error("error to get node details", zap.Any("msg", msg), zap.Error(err))
 		return "", err
@@ -57,11 +62,12 @@ func executeFirmwareConfigRequest(msg *msgML.Message) (string, error) {
 		fwCfgRes.SetEraseEEPROM()
 		// remove erase config data from node
 		node.Labels.Set(LabelEraseEEPROM, "false")
-		err = nodeAPI.Save(node)
-		if err != nil {
-			zap.L().Error("error to save node data", zap.String("gatewayId", node.GatewayID), zap.String("nodeId", node.NodeID), zap.Error(err))
-			return "", err
-		}
+		// err = nodeAPI.Save(node)
+		// if err != nil {
+		// 	zap.L().Error("error to save node data", zap.String("gatewayId", node.GatewayID), zap.String("nodeId", node.NodeID), zap.Error(err))
+		// 	return "", err
+		// }
+		setNodeLabels(node)
 	} else { // update assigned firmware config details
 		fwCfgRes.Type = fwRaw.Type
 		fwCfgRes.Version = fwRaw.Version
@@ -88,7 +94,13 @@ func executeFirmwareRequest(msg *msgML.Message) (string, error) {
 	}
 
 	// get the node details
-	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
+	// node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
+	// if err != nil {
+	// 	zap.L().Error("error to get node details", zap.Any("msg", msg), zap.Error(err))
+	// 	return "", err
+	// }
+
+	node, err := getNode(msg.GatewayID, msg.NodeID)
 	if err != nil {
 		zap.L().Error("error to get node details", zap.Any("msg", msg), zap.Error(err))
 		return "", err
@@ -144,34 +156,42 @@ func fetchFirmware(node *nodeML.Node, typeID, versionID uint16, verifyID bool) (
 		fwVersionID := uint16(fw.Labels.GetInt(LabelFirmwareVersionID))
 
 		// get firmware hex file
-		hexFile, err := utils.ReadFile(model.GetDirectoryFirmware(), fw.File.InternalName)
+		hexFile, err := utils.ReadFile(model.GetDataDirectoryFirmware(), fw.File.InternalName)
 		if err != nil {
-			zap.L().Error("error on reading a firmware file", zap.String("directory", model.GetDirectoryFirmware()), zap.String("fileName", fw.File.InternalName), zap.Error(err))
+			zap.L().Error("error on reading a firmware file", zap.String("directory", model.GetDataDirectoryFirmware()), zap.String("fileName", fw.File.InternalName), zap.Error(err))
 			return nil, err
 		}
 
 		// convert the hex file to raw format
 		fwRaw, err := hexByteToLocalFormat(fwTypeID, fwVersionID, hexFile, firmwareBlockSize)
 		if err != nil {
-			zap.L().Error("error on converting hex to local format", zap.String("directory", model.GetDirectoryFirmware()), zap.String("fileName", fw.File.InternalName), zap.Error(err))
+			zap.L().Error("error on converting hex to local format", zap.String("directory", model.GetDataDirectoryFirmware()), zap.String("fileName", fw.File.InternalName), zap.Error(err))
 			return nil, err
 		}
 
 		// keep it on memory store
-		fwStore.add(fwID, fwRaw)
+		fwStore.Add(fwID, fwRaw)
 		return fwRaw, nil
 	}
 
 	// check firmware on memory store
 	// if not found, load it from disk
-	fwRaw, found := fwStore.get(fwID)
-	if !found {
+	var fwRaw *firmwareRaw
+	fwRawInf := fwStore.Get(fwID)
+	if fwRawInf == nil {
 		_fwRaw, err := loadFirmwareRawFn()
 		if err != nil {
 			return nil, err
 		}
 		fwRaw = _fwRaw
+	} else {
+		_fwRaw, ok := fwRawInf.(*firmwareRaw)
+		if !ok {
+			return nil, fmt.Errorf("error on converting target type. firmwareID: %s", fwID)
+		}
+		fwRaw = _fwRaw
 	}
+
 	if verifyID { // verify firmware ids
 		if fwRaw.Type != typeID || fwRaw.Version != versionID {
 			return nil, fmt.Errorf("requested firmware type id or version id not matching[Req, Avl], TypeId:[%v, %v], VersionId:[%v, %v]",

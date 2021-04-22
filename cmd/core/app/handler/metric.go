@@ -57,7 +57,7 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 
 	if quickID, ok := params[QuickID]; ok {
 		if len(quickID) > 0 {
-			rt, kvMap, err := quickIdUL.ResourceKeyValueMap(quickID[0])
+			rt, kvMap, err := quickIdUL.EntityKeyValueMap(quickID[0])
 			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return

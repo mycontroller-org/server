@@ -1,6 +1,9 @@
 package mcbus
 
-import busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
+import (
+	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
+	"go.uber.org/zap"
+)
 
 // Close func
 func Close() error {
@@ -12,6 +15,10 @@ func Close() error {
 
 // Publish a data to a topic
 func Publish(topic string, data interface{}) error {
+	if pauseSRV.IsSet() {
+		return nil
+	}
+
 	return busClient.Publish(topic, data)
 }
 
@@ -23,4 +30,16 @@ func Subscribe(topic string, handler func(data *busML.BusData)) (int64, error) {
 // Unsubscribe a topic
 func Unsubscribe(topic string, subscriptionID int64) error {
 	return busClient.Unsubscribe(topic, subscriptionID)
+}
+
+// Pause bus service
+func Pause() {
+	pauseSRV.Set()
+	zap.L().Info("bus service paused")
+}
+
+// Resume bus service
+func Resume() {
+	pauseSRV.Reset()
+	zap.L().Info("bus service resumed")
 }

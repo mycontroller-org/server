@@ -12,7 +12,7 @@ import (
 )
 
 func RunSystemStartJobs() {
-	dir := model.GetDirectoryInternal()
+	dir := model.GetDataDirectoryInternal()
 	filename := fmt.Sprintf("%s/%s", dir, config.SystemStartJobsFilename)
 	if !utils.IsFileExists(filename) {
 		return
@@ -41,9 +41,9 @@ func RunSystemStartJobs() {
 	}
 
 	// remove internal directory
-	err = utils.RemoveDir(model.GetDirectoryInternal())
+	err = utils.RemoveDir(model.GetDataDirectoryInternal())
 	if err != nil {
-		zap.L().Fatal("error on removing internal direcotry", zap.String("path", model.GetDirectoryInternal()), zap.Error(err))
+		zap.L().Fatal("error on removing internal direcotry", zap.String("path", model.GetDataDirectoryInternal()), zap.Error(err))
 	}
 }
 

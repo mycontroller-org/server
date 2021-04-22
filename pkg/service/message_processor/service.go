@@ -11,6 +11,7 @@ import (
 	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
+	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
@@ -186,7 +187,7 @@ func updateNodeData(msg *msgML.Message) error {
 	}
 
 	// post field data to event listeners
-	busUtils.PostEvent(mcbus.TopicEventNode, node)
+	busUtils.PostEvent(mcbus.TopicEventNode, eventML.TypeUpdated, model.EntityNode, node)
 
 	return nil
 }
@@ -233,7 +234,7 @@ func updateSourceDetail(msg *msgML.Message) error {
 		return err
 	}
 	// post field data to event listeners
-	busUtils.PostEvent(mcbus.TopicEventSource, source)
+	busUtils.PostEvent(mcbus.TopicEventSource, eventML.TypeUpdated, model.EntitySource, source)
 	return nil
 }
 
@@ -471,7 +472,7 @@ func updateFieldData(
 	}
 
 	startTime := time.Now()
-	err := fieldAPI.Save(field)
+	err := fieldAPI.Save(field, false)
 	if err != nil {
 		zap.L().Error("failed to update field in to database", zap.Error(err), zap.Any("field", field))
 	} else {
@@ -479,7 +480,7 @@ func updateFieldData(
 	}
 
 	// post field data to event listeners
-	busUtils.PostEvent(mcbus.TopicEventFieldSet, field)
+	busUtils.PostEvent(mcbus.TopicEventField, eventML.TypeUpdated, model.EntityField, field)
 
 	startTime = time.Now()
 	updateMetric := true
@@ -519,8 +520,8 @@ func requestFieldData(msg *msgML.Message) error {
 			}
 		}
 		// post field data to event listeners
-		// NOTE: if the entry not available in database request topic will not be sent
-		busUtils.PostEvent(mcbus.TopicEventFieldRequest, field)
+		// NOTE: if the entry not available in database, request will be dropped
+		busUtils.PostEvent(mcbus.TopicEventField, eventML.TypeRequested, model.EntityField, field)
 	}
 
 	if len(payloads) > 0 {

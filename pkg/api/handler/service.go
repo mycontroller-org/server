@@ -110,7 +110,7 @@ func Reload(ids []string) error {
 
 func postCommand(cfg *handlerML.Config, command string) error {
 	reqEvent := rsml.Event{
-		Type:    rsml.TypeNotifyHandler,
+		Type:    rsml.TypeHandler,
 		Command: command,
 	}
 	if cfg != nil {
@@ -120,7 +120,7 @@ func postCommand(cfg *handlerML.Config, command string) error {
 			return err
 		}
 	}
-	topic := mcbus.FormatTopic(mcbus.TopicServiceNotifyHandler)
+	topic := mcbus.FormatTopic(mcbus.TopicServiceHandler)
 	return mcbus.Publish(topic, reqEvent)
 }
 

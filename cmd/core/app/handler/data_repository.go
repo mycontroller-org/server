@@ -28,14 +28,22 @@ func getDataRepositoryItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateDataRepositoryItem(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]stgML.Filter) error {
-		e := d.(*dataRepositoryML.Config)
-		if e.ID == "" {
-			return errors.New("id field should not be empty")
-		}
-		return nil
+	entity := &dataRepositoryML.Config{}
+	err := LoadEntity(w, r, entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
 	}
-	SaveEntity(w, r, model.EntityDataRepository, &dataRepositoryML.Config{}, bwFunc)
+
+	if entity.ID == "" {
+		http.Error(w, "id should not be empty", 400)
+		return
+	}
+	err = dataRepositoryAPI.Save(entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
 
 func deleteDataRepositoryItems(w http.ResponseWriter, r *http.Request) {

@@ -38,6 +38,7 @@ import (
 	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
@@ -64,8 +65,8 @@ func ExecuteRestore(extractedDir string) error {
 		return err
 	}
 
-	storageDir := path.Join(extractedDir, model.DirectoryStorage)
-	firmwareDir := path.Join(extractedDir, model.DirectoryFirmware)
+	storageDir := path.Join(extractedDir, model.DirectoryDataStorage)
+	firmwareDir := path.Join(extractedDir, model.DirectoryDataFirmware)
 
 	dataBytes, err := utils.ReadFile(extractedDir, backupML.BackupDetailsFilename)
 	if err != nil {
@@ -112,7 +113,7 @@ func ExecuteRestoreFirmware(sourceDir string) error {
 	isImportJobRunning.Set()
 	defer isImportJobRunning.Reset()
 
-	destDir := model.GetDirectoryFirmware()
+	destDir := model.GetDataDirectoryFirmware()
 	err := utils.RemoveDir(destDir)
 	if err != nil {
 		return err
@@ -136,9 +137,16 @@ func ExecuteImportStorage(sourceDir, fileType string, ignoreEmptyDir bool) error
 		return errors.New("there is an import job is in progress")
 	}
 	isImportJobRunning.Set()
-	defer isImportJobRunning.Reset()
+	defer func() {
+		isImportJobRunning.Reset()
+		// resume bus service
+		mcbus.Resume()
+	}()
 
-	zap.L().Debug("Executing import job", zap.String("sourceDir", sourceDir), zap.String("fileType", fileType))
+	// pause bus service
+	mcbus.Pause()
+
+	zap.L().Info("Executing import job", zap.String("sourceDir", sourceDir), zap.String("fileType", fileType))
 	// check directory availability
 	if !utils.IsDirExists(sourceDir) {
 		return fmt.Errorf("specified directory not available. sourceDir:%s", sourceDir)
@@ -220,7 +228,7 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			return err
 		}
 		for index := 0; index < len(entities); index++ {
-			err = fieldAPI.Save(&entities[index])
+			err = fieldAPI.Save(&entities[index], false)
 			if err != nil {
 				return err
 			}
@@ -385,7 +393,7 @@ func ExtractExportedZipfile(exportedZipfile string) error {
 
 	zipFilename := path.Base(exportedZipfile)
 	baseDir := strings.TrimSuffix(zipFilename, path.Ext(zipFilename))
-	extractFullPath := path.Join(model.GetDirectoryInternal(), baseDir)
+	extractFullPath := path.Join(model.GetDataDirectoryInternal(), baseDir)
 
 	err := ziputils.Unzip(exportedZipfile, extractFullPath)
 	if err != nil {
@@ -409,7 +417,7 @@ func ExtractExportedZipfile(exportedZipfile string) error {
 		return err
 	}
 
-	internalDir := model.GetDirectoryInternal()
+	internalDir := model.GetDataDirectoryInternal()
 	err = utils.WriteFile(internalDir, config.SystemStartJobsFilename, dataBytes)
 	if err != nil {
 		zap.L().Error("failed to write data to disk", zap.String("directory", internalDir), zap.String("filename", config.SystemStartJobsFilename), zap.Error(err))

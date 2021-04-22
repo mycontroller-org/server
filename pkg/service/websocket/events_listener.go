@@ -1,22 +1,13 @@
 package mcwebsocket
 
 import (
-	"strings"
-
 	ws "github.com/gorilla/websocket"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
-	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
-	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
-	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
+	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
 	wsML "github.com/mycontroller-org/backend/v2/pkg/model/websocket"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
-	quickid "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
 	"go.uber.org/zap"
 )
 
@@ -55,78 +46,28 @@ func CloseEventListener() error {
 	return nil
 }
 
-func onEventReceive(event *busML.BusData) {
-	status := eventsQueue.Produce(event)
+func onEventReceive(data *busML.BusData) {
+	status := eventsQueue.Produce(data)
 	if !status {
 		zap.L().Error("failed to post selected tasks on processor queue")
 	}
 }
 
 func processEvent(item interface{}) {
-	event := item.(*busML.BusData)
-	topic := event.Topic
+	data := item.(*busML.BusData)
 
-	var resourceData interface{}
-	resourceType := ""
-
-	switch {
-	case strings.HasSuffix(topic, mcbus.TopicEventGateway):
-		resourceData = &gatewayML.Config{}
-		resourceType = "gateway"
-
-	case strings.HasSuffix(topic, mcbus.TopicEventNode):
-		resourceData = &nodeML.Node{}
-		resourceType = "node"
-
-	case strings.HasSuffix(topic, mcbus.TopicEventSource):
-		resourceData = &sourceML.Source{}
-		resourceType = "source"
-
-	case strings.HasSuffix(topic, mcbus.TopicEventFieldSet):
-		resourceData = &fieldML.Field{}
-		resourceType = "field"
-
-	case strings.HasSuffix(topic, mcbus.TopicEventTask):
-		resourceData = &taskML.Config{}
-		resourceType = "task"
-
-	case strings.HasSuffix(topic, mcbus.TopicEventSchedule):
-		resourceData = &schedulerML.Config{}
-		resourceType = "schedule"
-
-	case strings.HasSuffix(topic, mcbus.TopicEventHandler):
-		resourceData = &handlerML.Config{}
-		resourceType = "handler"
-
-	default:
-		return
-	}
-
-	err := event.ToStruct(resourceData)
+	event := &eventML.Event{}
+	err := data.ToStruct(event)
 	if err != nil {
-		zap.L().Warn("Failed to convet to target type", zap.Error(err))
+		zap.L().Warn("Failed to convet to target type", zap.Any("topic", data.Topic), zap.Error(err))
 		return
 	}
 
-	resource := wsML.Resource{
-		Type:     resourceType,
-		Resource: resourceData,
-		ID:       "", // TODO: add id of the resource
-	}
-
-	qID, err := quickid.GetQuickID(resource.Resource)
-	if err != nil {
-		zap.L().Error("error on getting quick id", zap.Error(err))
-		return
-	}
-
-	resource.QuickID = qID
-
-	zap.L().Debug("resource received", zap.Any("resource", resourceData))
+	zap.L().Debug("event received", zap.Any("event", event))
 
 	response := wsML.Response{
-		Type: wsML.ResponseTypeResource,
-		Data: resource,
+		Type: wsML.ResponseTypeEvent,
+		Data: event,
 	}
 
 	// convert to json bytes

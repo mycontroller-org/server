@@ -55,13 +55,13 @@ var (
 
 // ExecuteCopyFirmware copies firmware files
 func ExecuteCopyFirmware(targetDir string) error {
-	targetDirFullPath := fmt.Sprintf("%s%s", targetDir, model.DirectoryFirmware)
+	targetDirFullPath := fmt.Sprintf("%s%s", targetDir, model.DirectoryDataFirmware)
 	err := utils.CreateDir(targetDirFullPath)
 	if err != nil {
 		return err
 	}
 
-	files, err := utils.ListFiles(model.GetDirectoryFirmware())
+	files, err := utils.ListFiles(model.GetDataDirectoryFirmware())
 	if err != nil {
 		return err
 	}
@@ -109,7 +109,7 @@ func ExecuteExportStorage(targetDir, storageExportType string) error {
 	// include version details
 	addBackupInformation(targetDir, storageExportType)
 
-	targetDirFullPath := fmt.Sprintf("%s%s", targetDir, model.DirectoryStorage)
+	targetDirFullPath := fmt.Sprintf("%s%s", targetDir, model.DirectoryDataStorage)
 
 	for entityName := range entitiesList {
 		listFn := entitiesList[entityName]

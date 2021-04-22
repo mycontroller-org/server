@@ -1,10 +1,14 @@
 package gateway
 
 import (
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -43,10 +47,17 @@ func SaveAndReload(gwCfg *gwml.Config) error {
 
 // Save gateway config
 func Save(gwCfg *gwml.Config) error {
+	eventType := eventML.TypeUpdated
 	if gwCfg.ID == "" {
 		gwCfg.ID = ut.RandID()
+		eventType = eventML.TypeCreated
 	}
-	return stg.SVC.Upsert(ml.EntityGateway, gwCfg, nil)
+	err := stg.SVC.Upsert(ml.EntityGateway, gwCfg, nil)
+	if err != nil {
+		return err
+	}
+	busUtils.PostEvent(mcbus.TopicEventGateway, eventType, model.EntityGateway, gwCfg)
+	return nil
 }
 
 // SetState Updates state data

@@ -137,7 +137,7 @@ func (s *Store) ClearDatabase() error {
 	s.data = make(map[string][]interface{})
 
 	// remove all the files from disk
-	storageDir := path.Join(model.GetDirectoryStorage(), s.Config.DumpDir)
+	storageDir := path.Join(model.GetDataDirectoryStorage(), s.Config.DumpDir)
 	return utils.RemoveDir(storageDir)
 }
 
@@ -218,5 +218,5 @@ func (s *Store) dump(entityName string, index int, data interface{}, extension s
 }
 
 func (s *Store) getStorageLocation(provider string) string {
-	return path.Join(model.GetDirectoryStorage(), s.Config.DumpDir, provider)
+	return path.Join(model.GetDataDirectoryStorage(), s.Config.DumpDir, provider)
 }

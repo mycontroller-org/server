@@ -81,7 +81,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 		}
 
 		zap.L().Debug("about to perform an action", zap.String("rawData", stringValue), zap.Any("finalData", rsData))
-		busUtils.PostToResourceService("resource_selector", rsData, rsML.TypeResourceActionBySelector, rsML.CommandSet)
+		busUtils.PostToResourceService("resource_selector", rsData, rsML.TypeResourceActionBySelector, rsML.CommandSet, "")
 	}
 	return nil
 }
@@ -95,7 +95,7 @@ func (c *Client) getScheduleTriggerFunc(name string, rsData handlerML.ResourceDa
 
 		// call the resource action
 		zap.L().Debug("scheduler triggere. about to perform an action", zap.String("name", name), zap.Any("rsData", rsData))
-		busUtils.PostToResourceService("resource_selector", rsData, rsML.TypeResourceActionBySelector, rsML.CommandSet)
+		busUtils.PostToResourceService("resource_selector", rsData, rsML.TypeResourceActionBySelector, rsML.CommandSet, "")
 	}
 }
 

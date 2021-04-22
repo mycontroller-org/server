@@ -5,13 +5,17 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
 	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
 	embedBus "github.com/mycontroller-org/backend/v2/plugin/bus/embedded"
 	"github.com/mycontroller-org/backend/v2/plugin/bus/natsio"
 	"go.uber.org/zap"
 )
 
-var busClient busml.Client
+var (
+	busClient busml.Client
+	pauseSRV  concurrency.SafeBool
+)
 
 // InitBus function
 func InitBus(config cmap.CustomMap) {
@@ -24,6 +28,7 @@ func InitBus(config cmap.CustomMap) {
 		zap.L().Fatal("Failed to init bus client", zap.Error(err))
 	}
 	busClient = client
+	pauseSRV = concurrency.SafeBool{}
 }
 
 func initBusImpl(config cmap.CustomMap) (busml.Client, error) {
@@ -39,6 +44,6 @@ func initBusImpl(config cmap.CustomMap) (busml.Client, error) {
 	case busml.TypeNatsIO:
 		return natsio.Init(config)
 	default:
-		return nil, fmt.Errorf("Specified bus type not implemented. %s", busType)
+		return nil, fmt.Errorf("specified bus type not implemented. %s", busType)
 	}
 }

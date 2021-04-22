@@ -9,44 +9,49 @@ import (
 	"path/filepath"
 	"time"
 
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	fml "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
+	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
 // List by filter and pagination
-func List(filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
-	result := make([]fml.Firmware, 0)
-	return stg.SVC.Find(ml.EntityFirmware, &result, filters, pagination)
+func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+	result := make([]firmwareML.Firmware, 0)
+	return stg.SVC.Find(model.EntityFirmware, &result, filters, pagination)
 }
 
 // Get returns a item
-func Get(filters []stgml.Filter) (fml.Firmware, error) {
-	result := fml.Firmware{}
-	err := stg.SVC.FindOne(ml.EntityFirmware, &result, filters)
+func Get(filters []stgML.Filter) (firmwareML.Firmware, error) {
+	result := firmwareML.Firmware{}
+	err := stg.SVC.FindOne(model.EntityFirmware, &result, filters)
 	return result, err
 }
 
 // GetByID returns a firmware details by ID
-func GetByID(id string) (fml.Firmware, error) {
-	filters := []stgml.Filter{
-		{Key: ml.KeyID, Value: id},
+func GetByID(id string) (firmwareML.Firmware, error) {
+	filters := []stgML.Filter{
+		{Key: model.KeyID, Value: id},
 	}
-	result := fml.Firmware{}
-	err := stg.SVC.FindOne(ml.EntityFirmware, &result, filters)
+	result := firmwareML.Firmware{}
+	err := stg.SVC.FindOne(model.EntityFirmware, &result, filters)
 	return result, err
 }
 
 // Save config into disk
-func Save(firmware *fml.Firmware, keepFile bool) error {
+func Save(firmware *firmwareML.Firmware, keepFile bool) error {
+	eventType := eventML.TypeUpdated
 	if firmware.ID == "" {
 		firmware.ID = utils.RandID()
+		eventType = eventML.TypeCreated
 	}
-	filters := []stgml.Filter{
-		{Key: ml.KeyID, Value: firmware.ID},
+	filters := []stgML.Filter{
+		{Key: model.KeyID, Value: firmware.ID},
 	}
 	firmware.ModifiedOn = time.Now()
 
@@ -57,23 +62,28 @@ func Save(firmware *fml.Firmware, keepFile bool) error {
 		}
 	}
 
-	return stg.SVC.Upsert(ml.EntityFirmware, firmware, filters)
+	err := stg.SVC.Upsert(model.EntityFirmware, firmware, filters)
+	if err != nil {
+		return err
+	}
+	busUtils.PostEvent(mcbus.TopicEventFirmware, eventType, model.EntityFirmware, firmware)
+	return nil
 }
 
 // Delete firmwares
 func Delete(ids []string) (int64, error) {
-	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
-	pagination := &stgml.Pagination{Limit: 100}
+	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
+	pagination := &stgML.Pagination{Limit: 100}
 
 	// delete firmwares
 	response, err := List(filters, pagination)
 	if err != nil {
 		return 0, err
 	}
-	firmwares := *response.Data.(*[]fml.Firmware)
+	firmwares := *response.Data.(*[]firmwareML.Firmware)
 	for index := 0; index < len(firmwares); index++ {
 		firmware := firmwares[index]
-		firmwareDirectory := ml.GetDirectoryFirmware()
+		firmwareDirectory := model.GetDataDirectoryFirmware()
 		filename := fmt.Sprintf("%s/%s", firmwareDirectory, firmware.File.InternalName)
 		err := os.Remove(filename)
 		if err != nil {
@@ -82,7 +92,7 @@ func Delete(ids []string) (int64, error) {
 	}
 
 	// delete entries
-	return stg.SVC.Delete(ml.EntityFirmware, filters)
+	return stg.SVC.Delete(model.EntityFirmware, filters)
 }
 
 // Upload a firmware file
@@ -98,7 +108,7 @@ func Upload(sourceFile multipart.File, id, filename string) error {
 	extension := filepath.Ext(filename)
 	newFilename := fmt.Sprintf("%s%s", id, extension)
 
-	firmwareDirectory := ml.GetDirectoryFirmware()
+	firmwareDirectory := model.GetDataDirectoryFirmware()
 	err = utils.CreateDir(firmwareDirectory)
 	if err != nil {
 		return err

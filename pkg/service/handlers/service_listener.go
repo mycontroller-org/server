@@ -39,7 +39,7 @@ func Init(config cmap.CustomMap) error {
 	serviceQueue = queueUtils.New(serviceMessageQueueName, serviceMessageQueueLimit, postProcessServiceEvent, 1)
 
 	// on message receive add it in to our local queue
-	_, err = mcbus.Subscribe(mcbus.FormatTopic(mcbus.TopicServiceNotifyHandler), onServiceEvent)
+	_, err = mcbus.Subscribe(mcbus.FormatTopic(mcbus.TopicServiceHandler), onServiceEvent)
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func Init(config cmap.CustomMap) error {
 
 	// load handlers
 	reqEvent := rsML.Event{
-		Type:    rsML.TypeNotifyHandler,
+		Type:    rsML.TypeHandler,
 		Command: rsML.CommandLoadAll,
 	}
 	topicResourceServer := mcbus.FormatTopic(mcbus.TopicServiceResourceServer)
@@ -88,7 +88,7 @@ func postProcessServiceEvent(event interface{}) {
 	reqEvent := event.(*rsML.Event)
 	zap.L().Debug("Processing a request", zap.Any("event", reqEvent))
 
-	if reqEvent.Type != rsML.TypeNotifyHandler {
+	if reqEvent.Type != rsML.TypeHandler {
 		zap.L().Warn("unsupported event type", zap.Any("event", reqEvent))
 	}
 

@@ -18,7 +18,7 @@ import (
 func GetResources(quickIDs []string) (map[string]interface{}, error) {
 	result := make(map[string]interface{})
 	for _, quickID := range quickIDs {
-		resourceType, keys, err := quickIdUtils.ResourceKeyValueMap(quickID)
+		resourceType, keys, err := quickIdUtils.EntityKeyValueMap(quickID)
 		if err != nil {
 			return result, err
 		}

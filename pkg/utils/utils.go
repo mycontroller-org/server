@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -78,6 +79,11 @@ func GetMapValue(m map[string]interface{}, key string, defaultValue interface{})
 		return v
 	}
 	return defaultValue
+}
+
+// GetMapValueString returns value, if not available returns defaultValue
+func GetMapValueString(m map[string]interface{}, key string, defaultValue string) string {
+	return convertor.ToString(GetMapValue(m, key, defaultValue))
 }
 
 // FindItem returns the availability status and location

@@ -50,7 +50,7 @@ func toResource(api resourceAPI, id, action string) error {
 
 // ExecuteActionOnResourceByQuickID the given request
 func ExecuteActionOnResourceByQuickID(quickID, payload string) error {
-	resourceType, kvMap, err := quickIdUL.ResourceKeyValueMap(quickID)
+	resourceType, kvMap, err := quickIdUL.EntityKeyValueMap(quickID)
 	if err != nil {
 		return err
 	}

@@ -49,8 +49,9 @@ type Config struct {
 
 // EventFilter struct
 type EventFilter struct {
-	Selectors     cmap.CustomStringMap `json:"selectors"`
-	ResourceTypes []string             `json:"resourceTypes"`
+	EventTypes  []string             `json:"eventTypes"`
+	EntityTypes []string             `json:"entityTypes"`
+	Selectors   cmap.CustomStringMap `json:"selectors"`
 }
 
 // EvaluationConfig struct

@@ -8,10 +8,12 @@ import (
 // Resource type details
 const (
 	TypeGateway                  = "gateway"
+	TypeNode                     = "node"
 	TypeTask                     = "task"
-	TypeNotifyHandler            = "notify_handler"
+	TypeHandler                  = "handler"
 	TypeScheduler                = "scheduler"
 	TypeResourceActionBySelector = "resource_action_by_selector"
+	TypeFirmware                 = "firmware"
 )
 
 // Command details
@@ -19,6 +21,7 @@ const (
 	CommandUpdate      = "update"
 	CommandUpdateState = "updateState"
 	CommandGet         = "get"
+	CommandGetIds      = "getIds"
 	CommandSet         = "set"
 	CommandAdd         = "add"
 	CommandRemove      = "remove"
@@ -29,6 +32,7 @@ const (
 	CommandReload      = "reload"
 	CommandLoadAll     = "loadAll"
 	CommandUnloadAll   = "unloadAll"
+	CommandBlocks      = "blocks"
 )
 
 // Event details

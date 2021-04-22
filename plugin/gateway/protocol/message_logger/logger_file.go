@@ -131,7 +131,7 @@ func (rml *FileMessageLogger) workerFlushLog() {
 	if len(rml.msgQueue) > 0 {
 		for _, rawMsg := range rml.msgQueue {
 			msgStr := rml.MsgFormatterFunc(rawMsg)
-			err := utils.AppendFile(model.GetDirectoryGatewayLog(), rml.getFilename(), []byte(msgStr))
+			err := utils.AppendFile(model.GetLogsDirectoryGatewayLog(), rml.getFilename(), []byte(msgStr))
 			if err != nil {
 				zap.L().Error("Failed to write", zap.Error(err), zap.String("gateway", rml.GatewayID))
 			}
@@ -144,9 +144,9 @@ func (rml *FileMessageLogger) workerRotateLog() {
 	rml.mutex.Lock()
 	defer rml.mutex.Unlock()
 
-	files, err := utils.ListFiles(model.GetDirectoryGatewayLog())
+	files, err := utils.ListFiles(model.GetLogsDirectoryGatewayLog())
 	if err != nil {
-		zap.L().Error("Failed to get log files", zap.Error(err), zap.String("gateway", rml.GatewayID), zap.String("directory", model.GetDirectoryGatewayLog()))
+		zap.L().Error("Failed to get log files", zap.Error(err), zap.String("gateway", rml.GatewayID), zap.String("directory", model.GetLogsDirectoryGatewayLog()))
 		return
 	}
 
@@ -156,8 +156,8 @@ func (rml *FileMessageLogger) workerRotateLog() {
 	for _, file := range files {
 		if file.Name == liveFilename {
 			if file.Size >= rml.maxSize {
-				newFilenameFull := fmt.Sprintf("%s/%s.%s", model.GetDirectoryGatewayLog(), liveFilename, time.Now().Format(filenameFormatBackup))
-				liveFilenameFull := fmt.Sprintf("%s/%s", model.GetDirectoryGatewayLog(), liveFilename)
+				newFilenameFull := fmt.Sprintf("%s/%s.%s", model.GetLogsDirectoryGatewayLog(), liveFilename, time.Now().Format(filenameFormatBackup))
+				liveFilenameFull := fmt.Sprintf("%s/%s", model.GetLogsDirectoryGatewayLog(), liveFilename)
 				zap.L().Debug("Renaming file", zap.Any("size", file.Size), zap.Any("new name", newFilenameFull))
 				err = os.Rename(liveFilenameFull, newFilenameFull)
 				if err != nil {
@@ -172,7 +172,7 @@ func (rml *FileMessageLogger) workerRotateLog() {
 	maxAgeTime := time.Now().Add(-1 * rml.maxAge)
 	for _, file := range files {
 		if strings.HasPrefix(file.Name, liveFilename+".") && file.ModifiedTime.Before(maxAgeTime) {
-			filenameFull := fmt.Sprintf("%s/%s", model.GetDirectoryGatewayLog(), file.Name)
+			filenameFull := fmt.Sprintf("%s/%s", model.GetLogsDirectoryGatewayLog(), file.Name)
 			zap.L().Debug("Files for deletion, max age", zap.Any("filename", file.Name))
 			err = os.Remove(filenameFull)
 			if err != nil {
@@ -197,7 +197,7 @@ func (rml *FileMessageLogger) workerRotateLog() {
 			deletionFilenames := filenames[:len(filenames)-rml.maxBackup]
 			zap.L().Debug("Log files for deletion", zap.Any("all", filenames), zap.Any("deletion", deletionFilenames))
 			for _, filename := range deletionFilenames {
-				filenameFull := fmt.Sprintf("%s/%s", model.GetDirectoryGatewayLog(), filename)
+				filenameFull := fmt.Sprintf("%s/%s", model.GetLogsDirectoryGatewayLog(), filename)
 				err = os.Remove(filenameFull)
 				if err != nil {
 					zap.L().Error("Failed to delete log file", zap.Error(err), zap.String("gateway", rml.GatewayID), zap.String("filename", filenameFull))

@@ -29,7 +29,7 @@ var (
 func wsFunc(w http.ResponseWriter, r *http.Request) {
 	wsCon, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		zap.L().Error("websocket upgrade error", zap.Error(err))
+		zap.L().Info("websocket upgrade error", zap.String("error", err.Error()))
 		return
 	}
 	defer wsCon.Close()

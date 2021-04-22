@@ -28,14 +28,22 @@ func getnode(w http.ResponseWriter, r *http.Request) {
 }
 
 func updatenode(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
-		e := d.(*nml.Node)
-		if e.ID == "" {
-			return errors.New("id field should not be empty")
-		}
-		return nil
+	entity := &nml.Node{}
+	err := LoadEntity(w, r, entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
 	}
-	SaveEntity(w, r, ml.EntityNode, &nml.Node{}, bwFunc)
+
+	if entity.ID == "" {
+		http.Error(w, "id should not be empty", 400)
+		return
+	}
+	err = nodeAPI.Save(entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
 
 func deleteNodes(w http.ResponseWriter, r *http.Request) {

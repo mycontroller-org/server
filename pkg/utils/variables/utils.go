@@ -159,7 +159,7 @@ func getByLabels(name string, rsData *handlerML.ResourceData) interface{} {
 
 func getByQuickID(name string, rsData *handlerML.ResourceData) interface{} {
 	quickID := fmt.Sprintf("%s:%s", rsData.ResourceType, rsData.QuickID)
-	resourceType, keys, err := quickIdUL.ResourceKeyValueMap(quickID)
+	resourceType, keys, err := quickIdUL.EntityKeyValueMap(quickID)
 	if err != nil {
 		zap.L().Warn("failed to parse variable", zap.Any("name", name), zap.Any("selector", rsData), zap.Error(err))
 		return nil

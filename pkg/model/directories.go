@@ -1,7 +1,7 @@
 package model
 
 import (
-	"fmt"
+	"path"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model/config"
 )
@@ -9,13 +9,14 @@ import (
 // Files, directory locations
 const (
 	DefaultDirDataRoot = "/tmp/mc/data" // default data dir location
-	DefaultDirLogsRoot = "/tmp/mc/logs" // default data dir location
-	DefaultDirTmp      = "/tmp/mc/tmp"
+	DefaultDirLogsRoot = "/tmp/mc/logs" // default logs dir location
+	DefaultDirTmp      = "/tmp/mc/tmp"  // default tmp dir location
 
-	DirectoryFirmware    = "/firmware"     // location to keep firmware files
-	DirectoryGatewayLogs = "/gateway_logs" // location to keep gateway message logs
-	DirectoryStorage     = "/storage"      // location to keep storage database exported files
-	DirectoryInternal    = "/internal"     // location to keep system internal files
+	DirectoryDataFirmware       = "/firmware"         // location to keep firmware files
+	DirectoryDataStorage        = "/storage"          // location to keep storage database exported files
+	DirectoryDataInternal       = "/internal"         // location to keep system internal files
+	DirectoryLogsGateway        = "/gateway_logs"     // location to keep gateway message logs
+	DirectoryTmpGatewayFirmware = "/gateway/firmware" // location to keep gateway related tmp items
 )
 
 // dir reference should be loaded at startup
@@ -55,26 +56,30 @@ func GetDirectoryTmp() string {
 	return dir.Tmp
 }
 
-// GetDirectoryFirmware location
-func GetDirectoryFirmware() string {
-	return getDirectoryFullPath(dir.Data, DirectoryFirmware)
+func getDirectoryFullPath(paths ...string) string {
+	return path.Join(paths...)
 }
 
-// GetDirectoryGatewayLog location
-func GetDirectoryGatewayLog() string {
-	return getDirectoryFullPath(dir.Logs, DirectoryGatewayLogs)
+// GetDataDirectoryFirmware location
+func GetDataDirectoryFirmware() string {
+	return getDirectoryFullPath(dir.Data, DirectoryDataFirmware)
+}
+
+// GetLogsDirectoryGatewayLog location
+func GetLogsDirectoryGatewayLog() string {
+	return getDirectoryFullPath(dir.Logs, DirectoryLogsGateway)
+}
+
+// GetDataDirectoryStorage location
+func GetDataDirectoryStorage() string {
+	return getDirectoryFullPath(dir.Data, DirectoryDataStorage)
 }
 
 // GetDirectoryStorage location
-func GetDirectoryStorage() string {
-	return getDirectoryFullPath(dir.Data, DirectoryStorage)
+func GetDataDirectoryInternal() string {
+	return getDirectoryFullPath(dir.Data, DirectoryDataInternal)
 }
 
-func getDirectoryFullPath(rootDir, subDir string) string {
-	return fmt.Sprintf("%s%s", rootDir, subDir)
-}
-
-// GetDirectoryStorage location
-func GetDirectoryInternal() string {
-	return getDirectoryFullPath(dir.Data, DirectoryInternal)
+func GetTmpGatewayFirmware() string {
+	return getDirectoryFullPath(dir.Tmp, DirectoryTmpGatewayFirmware)
 }

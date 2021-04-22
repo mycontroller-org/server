@@ -7,8 +7,8 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	sch "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	utils "github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -32,7 +32,7 @@ type Config struct {
 // Provider implementation
 type Provider struct {
 	Config        *Config
-	GatewayConfig *gwml.Config
+	GatewayConfig *gwML.Config
 	Protocol      gwpl.Protocol
 	ProtocolType  string
 }
@@ -43,7 +43,7 @@ const (
 )
 
 // Init MySensors provider
-func Init(gatewayCfg *gwml.Config) (*Provider, error) {
+func Init(gatewayCfg *gwML.Config) (*Provider, error) {
 	cfg := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, cfg)
 	if err != nil {
@@ -59,7 +59,7 @@ func Init(gatewayCfg *gwml.Config) (*Provider, error) {
 }
 
 // Start func
-func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgml.RawMessage) error) error {
+func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgML.RawMessage) error) error {
 	var err error
 	switch p.ProtocolType {
 	case gwpl.TypeMQTT:
@@ -79,11 +79,27 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgml.RawMessage) e
 
 	// load firmware purge job
 	firmwarePurgeJobName := fmt.Sprintf("%s_%s", firmwarePurgeJobName, p.GatewayConfig.ID)
-	return sch.SVC.AddFunc(firmwarePurgeJobName, firmwarePurgeJobCron, fwStore.purge)
+	err = sch.SVC.AddFunc(firmwarePurgeJobName, firmwarePurgeJobCron, firmwarePurge)
+	if err != nil {
+		return err
+	}
+	err = initEventListener(p.GatewayConfig.ID)
+	if err != nil {
+		return err
+	}
+
+	err = updateNode("mysensor", "1")
+	if err != nil {
+		zap.L().Error("error on getting node", zap.Error(err))
+	}
+	return nil
 }
 
 // Close func
 func (p *Provider) Close() error {
+	// stop event listener
+	closeEventListener()
+
 	// remove firmware purge job
 	fwPurgeJobName := fmt.Sprintf("%s_%s", firmwarePurgeJobName, p.GatewayConfig.ID)
 	sch.SVC.RemoveFunc(fwPurgeJobName)
@@ -93,7 +109,7 @@ func (p *Provider) Close() error {
 
 // Post func
 // returns the status and error message if any
-func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
+func (p *Provider) Post(rawMsg *msgML.RawMessage) error {
 
 	// if acknowledge not enabled
 	if !rawMsg.AcknowledgeEnabled {

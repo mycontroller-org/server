@@ -1,17 +1,19 @@
 package websocket
 
-// Response type
-const (
-	ResponseTypeResource = "resource"
+import (
+	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
 )
 
-// Resource struct
-type Resource struct {
-	Type     string      `json:"type"`
-	ID       string      `json:"id"`
-	QuickID  string      `json:"quickId"`
-	Resource interface{} `json:"resource"`
-}
+// Request types
+const (
+	RequestTypeSubscribeEvent   = "subscribe_event"
+	RequestTypeUnsubscribeEvent = "unsubscribe_event"
+)
+
+// Response types
+const (
+	ResponseTypeEvent = "event"
+)
 
 // Response of a websocket
 type Response struct {
@@ -27,10 +29,10 @@ type Request struct {
 
 // SubscribeRequest details
 type SubscribeRequest struct {
-	Resources []Resource `json:"resources"`
+	Resources []eventML.Event `json:"events"`
 }
 
 // unsubscribeRequest details
 type UnsubscribeRequest struct {
-	Resources []Resource `json:"resources"`
+	Resources []eventML.Event `json:"events"`
 }

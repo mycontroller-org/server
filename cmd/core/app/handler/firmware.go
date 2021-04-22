@@ -8,9 +8,8 @@ import (
 	"github.com/gorilla/mux"
 	fwAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	fwml "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
-	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	fwML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 func registerFirmwareRoutes(router *mux.Router) {
@@ -22,27 +21,35 @@ func registerFirmwareRoutes(router *mux.Router) {
 }
 
 func listFirmwares(w http.ResponseWriter, r *http.Request) {
-	FindMany(w, r, ml.EntityFirmware, &[]fwml.Firmware{})
+	FindMany(w, r, ml.EntityFirmware, &[]fwML.Firmware{})
 }
 
 func getFirmware(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, ml.EntityFirmware, &fwml.Firmware{})
+	FindOne(w, r, ml.EntityFirmware, &fwML.Firmware{})
 }
 
 func updateFirmware(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
-		e := d.(*fwml.Firmware)
-		if e.ID == "" {
-			e.ID = ut.RandID()
-		}
-		return nil
+	entity := &fwML.Firmware{}
+	err := LoadEntity(w, r, entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
 	}
-	SaveEntity(w, r, ml.EntityFirmware, &fwml.Firmware{}, bwFunc)
+
+	if entity.ID == "" {
+		http.Error(w, "id should not be empty", 400)
+		return
+	}
+	err = fwAPI.Save(entity, true)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
 
 func deleteFirmware(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			count, err := fwAPI.Delete(ids)
 			if err != nil {

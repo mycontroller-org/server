@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func executeTask(task *taskML.Config, resource *resourceWrapper) {
+func executeTask(task *taskML.Config, evntWrapper *eventWrapper) {
 	start := time.Now()
 
 	state := task.State
@@ -30,10 +30,9 @@ func executeTask(task *taskML.Config, resource *resourceWrapper) {
 		return
 	}
 
-	// user conditions can access event and event type
-	if resource != nil {
-		variables[model.KeyEventType] = resource.ResourceType
-		variables[model.KeyEvent] = resource.Resource
+	// user can access event
+	if evntWrapper != nil {
+		variables[model.KeyEvent] = evntWrapper.Event
 	}
 	variables[model.KeyTask] = task // include task in to the variables list
 

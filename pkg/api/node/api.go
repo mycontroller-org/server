@@ -43,8 +43,8 @@ func GetByGatewayAndNodeID(gatewayID, nodeID string) (*nml.Node, error) {
 	return result, err
 }
 
-// GetByeID returns a node details by id
-func GetByeID(id string) (*nml.Node, error) {
+// GetByID returns a node details by id
+func GetByID(id string) (*nml.Node, error) {
 	f := []stgml.Filter{
 		{Key: ml.KeyID, Value: id},
 	}
@@ -53,8 +53,8 @@ func GetByeID(id string) (*nml.Node, error) {
 	return result, err
 }
 
-// GetByeIDs returns a node details by id
-func GetByeIDs(ids []string) ([]nml.Node, error) {
+// GetByIDs returns a node details by id
+func GetByIDs(ids []string) ([]nml.Node, error) {
 	filters := []stgml.Filter{
 		{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids},
 	}

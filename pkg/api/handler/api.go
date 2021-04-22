@@ -2,22 +2,23 @@ package handler
 
 import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
+	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
-	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // List by filter and pagination
-func List(filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
+func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
 	out := make([]handlerML.Config, 0)
 	return stg.SVC.Find(model.EntityHandler, &out, filters, pagination)
 }
 
 // Get a config
-func Get(f []stgml.Filter) (handlerML.Config, error) {
+func Get(f []stgML.Filter) (handlerML.Config, error) {
 	out := handlerML.Config{}
 	err := stg.SVC.FindOne(model.EntityHandler, &out, f)
 	return out, err
@@ -35,17 +36,19 @@ func SaveAndReload(cfg *handlerML.Config) error {
 
 // Save config
 func Save(cfg *handlerML.Config) error {
+	eventType := eventML.TypeUpdated
 	if cfg.ID == "" {
-		cfg.ID = ut.RandUUID()
+		cfg.ID = utils.RandUUID()
+		eventType = eventML.TypeCreated
 	}
-	f := []stgml.Filter{
+	f := []stgML.Filter{
 		{Key: model.KeyID, Value: cfg.ID},
 	}
 	err := stg.SVC.Upsert(model.EntityHandler, cfg, f)
 	if err != nil {
 		return err
 	}
-	busUtils.PostEvent(mcbus.TopicEventHandler, *cfg)
+	busUtils.PostEvent(mcbus.TopicEventHandler, eventType, model.EntityHandler, cfg)
 	return nil
 }
 
@@ -61,7 +64,7 @@ func SetState(id string, state *model.State) error {
 
 // GetByTypeName returns a handler by type and name
 func GetByTypeName(handlerType, name string) (*handlerML.Config, error) {
-	f := []stgml.Filter{
+	f := []stgML.Filter{
 		{Key: model.KeyHandlerType, Value: handlerType},
 		{Key: model.KeyHandlerName, Value: name},
 	}
@@ -72,7 +75,7 @@ func GetByTypeName(handlerType, name string) (*handlerML.Config, error) {
 
 // GetByID returns a handler by id
 func GetByID(ID string) (*handlerML.Config, error) {
-	f := []stgml.Filter{
+	f := []stgML.Filter{
 		{Key: model.KeyID, Value: ID},
 	}
 	out := &handlerML.Config{}
@@ -86,6 +89,6 @@ func Delete(ids []string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	f := []stgml.Filter{{Key: model.KeyID, Operator: stgml.OperatorIn, Value: ids}}
+	f := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
 	return stg.SVC.Delete(model.EntityHandler, f)
 }

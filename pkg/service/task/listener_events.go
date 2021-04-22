@@ -1,32 +1,26 @@
 package task
 
 import (
-	"strings"
-
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	"github.com/mycontroller-org/backend/v2/pkg/model/field"
-	"github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	"github.com/mycontroller-org/backend/v2/pkg/model/node"
-	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
+	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	"go.uber.org/zap"
 )
 
-type resourceWrapper struct {
-	ResourceType string
-	Resource     interface{}
-	Tasks        []taskML.Config
+type eventWrapper struct {
+	Event *eventML.Event
+	Tasks []taskML.Config
 }
 
 // event types
 const (
-	eventTypeGateway      = "gateway"
-	eventTypeNode         = "node"
-	eventTypeSource       = "source"
-	eventTypeFieldSet     = "field.set"
-	eventTypeFieldRequest = "field.request"
+	eventTypeGateway = "gateway"
+	eventTypeNode    = "node"
+	eventTypeSource  = "source"
+	eventTypeField   = "field"
 )
 
 const (
@@ -70,53 +64,39 @@ func closeEventListener() error {
 	return nil
 }
 
-func onEventReceive(event *busML.BusData) {
-	status := preEventsQueue.Produce(event)
+func onEventReceive(data *busML.BusData) {
+	status := preEventsQueue.Produce(data)
 	if !status {
-		zap.L().Warn("Failed to store the event into queue", zap.Any("event", event))
+		zap.L().Warn("Failed to store the event into queue", zap.Any("event", data))
 	}
 }
 
 func processPreEvent(item interface{}) {
-	event := item.(*busML.BusData)
-	topic := event.Topic
+	data := item.(*busML.BusData)
 
-	var resource interface{}
-	resourceType := ""
+	event := &eventML.Event{}
 
-	switch {
-	case strings.HasSuffix(topic, eventTypeGateway):
-		resource = &gateway.Config{}
-		resourceType = eventTypeGateway
+	err := data.ToStruct(event)
+	if err != nil {
+		zap.L().Warn("Error on convet to target type", zap.Any("topic", data.Topic), zap.Error(err))
+		return
+	}
 
-	case strings.HasSuffix(topic, eventTypeNode):
-		resource = &node.Node{}
-		resourceType = eventTypeNode
-
-	case strings.HasSuffix(topic, eventTypeSource):
-		resource = &sourceML.Source{}
-		resourceType = eventTypeSource
-
-	case strings.HasSuffix(topic, eventTypeFieldSet):
-		resource = &field.Field{}
-		resourceType = eventTypeFieldSet
-
-	case strings.HasSuffix(topic, eventTypeFieldRequest):
-		resource = &field.Field{}
-		resourceType = eventTypeFieldRequest
+	// supported entity events
+	switch event.EntityType {
+	case
+		model.EntityGateway,
+		model.EntityNode,
+		model.EntitySource,
+		model.EntityField:
+		// continue
 
 	default:
-		// zap.L().Warn("unknown event", zap.Any("event", event))
+		// return do not proceed further
 		return
 	}
 
-	err := event.ToStruct(resource)
-	if err != nil {
-		zap.L().Warn("Failed to convet to target type", zap.Error(err))
-		return
-	}
-
-	resourceWrapper := &resourceWrapper{ResourceType: resourceType, Resource: resource}
+	resourceWrapper := &eventWrapper{Event: event}
 	err = resourcePreProcessor(resourceWrapper)
 	if err != nil {
 		zap.L().Error("Error on executing a resource", zap.Any("resource", resourceWrapper), zap.Error(err))
@@ -129,36 +109,35 @@ func processPreEvent(item interface{}) {
 			zap.L().Error("failed to post selected tasks on post processor queue")
 		}
 	}
-
 }
 
-func resourcePreProcessor(resource *resourceWrapper) error {
-	zap.L().Debug("resource received", zap.Any("resource", resource))
+func resourcePreProcessor(evntWrapper *eventWrapper) error {
+	zap.L().Debug("eventWrapper received", zap.Any("eventWrapper", evntWrapper))
 
-	tasks := tasksStore.filterTasks(resource)
+	tasks := tasksStore.filterTasks(evntWrapper)
 	zap.L().Debug("filtered", zap.Any("numberOftasks", len(tasks)))
 
 	for index := 0; index < len(tasks); index++ {
 		task := tasks[index]
 		zap.L().Debug("executing task", zap.String("id", task.ID), zap.String("description", task.Description))
 		if len(tasks) > 0 {
-			resource.Tasks = tasks
+			evntWrapper.Tasks = tasks
 		}
 	}
 	return nil
 }
 
 func resourcePostProcessor(item interface{}) {
-	resource, ok := item.(*resourceWrapper)
+	evntWrapper, ok := item.(*eventWrapper)
 	if !ok {
 		zap.L().Warn("supplied item is not resourceWrapper", zap.Any("item", item))
 		return
 	}
 
-	zap.L().Debug("resource received", zap.String("type", resource.ResourceType))
+	zap.L().Debug("resourceWrapper received", zap.String("entityType", evntWrapper.Event.EntityType))
 
-	for index := 0; index < len(resource.Tasks); index++ {
-		task := resource.Tasks[index]
-		executeTask(&task, resource)
+	for index := 0; index < len(evntWrapper.Tasks); index++ {
+		task := evntWrapper.Tasks[index]
+		executeTask(&task, evntWrapper)
 	}
 }

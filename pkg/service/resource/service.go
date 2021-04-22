@@ -42,16 +42,16 @@ func Close() {
 	eventQueue.Close()
 }
 
-func onEvent(event *busML.BusData) {
+func onEvent(data *busML.BusData) {
 	reqEvent := &rsModel.Event{}
-	err := event.ToStruct(reqEvent)
+	err := data.ToStruct(reqEvent)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
 		return
 	}
 
 	if reqEvent == nil {
-		zap.L().Warn("Received a nil event", zap.Any("event", event))
+		zap.L().Warn("Received a nil event", zap.Any("event", data))
 		return
 	}
 	zap.L().Debug("Event added into processing queue", zap.Any("event", reqEvent))
@@ -73,13 +73,19 @@ func processEvent(item interface{}) {
 			zap.L().Error("error on serving gateway request", zap.Error(err))
 		}
 
+	case rsModel.TypeNode:
+		err := nodeService(request)
+		if err != nil {
+			zap.L().Error("error on serving node request", zap.Error(err))
+		}
+
 	case rsModel.TypeTask:
 		err := taskService(request)
 		if err != nil {
 			zap.L().Error("error on serving task request", zap.Error(err))
 		}
 
-	case rsModel.TypeNotifyHandler:
+	case rsModel.TypeHandler:
 		err := handlerService(request)
 		if err != nil {
 			zap.L().Error("error on serving handler request", zap.Error(err))
@@ -95,6 +101,12 @@ func processEvent(item interface{}) {
 		err := resourceActionService(request)
 		if err != nil {
 			zap.L().Error("error on serving resource quickID request", zap.Error(err))
+		}
+
+	case rsModel.TypeFirmware:
+		err := firmwareService(request)
+		if err != nil {
+			zap.L().Error("error on serving firmware service request", zap.Error(err))
 		}
 
 	default:

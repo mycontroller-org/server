@@ -1,53 +1,63 @@
 package forwardpayload
 
 import (
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	fpml "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
+	fpML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // List by filter and pagination
-func List(filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
-	result := make([]fpml.Mapping, 0)
-	return stg.SVC.Find(ml.EntityForwardPayload, &result, filters, pagination)
+func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+	result := make([]fpML.Mapping, 0)
+	return stg.SVC.Find(model.EntityForwardPayload, &result, filters, pagination)
 }
 
 // Get returns a item
-func Get(filters []stgml.Filter) (*fpml.Mapping, error) {
-	result := &fpml.Mapping{}
-	err := stg.SVC.FindOne(ml.EntityForwardPayload, result, filters)
+func Get(filters []stgML.Filter) (*fpML.Mapping, error) {
+	result := &fpML.Mapping{}
+	err := stg.SVC.FindOne(model.EntityForwardPayload, result, filters)
 	return result, err
 }
 
 // Save a item details
-func Save(field *fpml.Mapping) error {
-	if field.ID == "" {
-		field.ID = utils.RandUUID()
+func Save(fp *fpML.Mapping) error {
+	eventType := eventML.TypeUpdated
+	if fp.ID == "" {
+		fp.ID = utils.RandUUID()
+		eventType = eventML.TypeCreated
 	}
-	filters := []stgml.Filter{
-		{Key: ml.KeyID, Value: field.ID},
+	filters := []stgML.Filter{
+		{Key: model.KeyID, Value: fp.ID},
 	}
-	return stg.SVC.Upsert(ml.EntityForwardPayload, field, filters)
+	err := stg.SVC.Upsert(model.EntityForwardPayload, fp, filters)
+	if err != nil {
+		return err
+	}
+	busUtils.PostEvent(mcbus.TopicEventForwardPayload, eventType, model.EntityForwardPayload, fp)
+	return nil
 }
 
 // Delete items
 func Delete(IDs []string) (int64, error) {
-	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
-	return stg.SVC.Delete(ml.EntityForwardPayload, filters)
+	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: IDs}}
+	return stg.SVC.Delete(model.EntityForwardPayload, filters)
 }
 
 // Enable forward payload entries
 func Enable(ids []string) error {
-	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
-	pagination := &stgml.Pagination{Limit: 100}
+	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
+	pagination := &stgML.Pagination{Limit: 100}
 	response, err := List(filters, pagination)
 	if err != nil {
 		return err
 	}
 
-	mappings := *response.Data.(*[]fpml.Mapping)
+	mappings := *response.Data.(*[]fpML.Mapping)
 	for index := 0; index < len(mappings); index++ {
 		mapping := mappings[index]
 		if !mapping.Enabled {
@@ -63,13 +73,13 @@ func Enable(ids []string) error {
 
 // Disable forward entries
 func Disable(ids []string) error {
-	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
-	pagination := &stgml.Pagination{Limit: 100}
+	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
+	pagination := &stgML.Pagination{Limit: 100}
 	response, err := List(filters, pagination)
 	if err != nil {
 		return err
 	}
-	mappings := *response.Data.(*[]fpml.Mapping)
+	mappings := *response.Data.(*[]fpML.Mapping)
 	for index := 0; index < len(mappings); index++ {
 		mapping := mappings[index]
 		if mapping.Enabled {

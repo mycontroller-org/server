@@ -28,14 +28,22 @@ func getSource(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateSource(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]storageML.Filter) error {
-		e := d.(*sourceML.Source)
-		if e.ID == "" {
-			return errors.New("id field should not be empty")
-		}
-		return nil
+	entity := &sourceML.Source{}
+	err := LoadEntity(w, r, entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
 	}
-	SaveEntity(w, r, model.EntitySource, &sourceML.Source{}, bwFunc)
+
+	if entity.ID == "" {
+		http.Error(w, "id should not be empty", 400)
+		return
+	}
+	err = sourceAPI.Save(entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
 
 func deleteSources(w http.ResponseWriter, r *http.Request) {

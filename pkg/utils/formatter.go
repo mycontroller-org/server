@@ -12,6 +12,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	dataRepositoryML "github.com/mycontroller-org/backend/v2/pkg/model/data_repository"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
@@ -40,6 +41,8 @@ func registerTypes() {
 	gob.Register(handlerML.Config{})
 	gob.Register(schedulerML.Config{})
 	gob.Register(dataRepositoryML.Config{})
+	gob.Register(firmwareML.Firmware{})
+	gob.Register(firmwareML.FileConfig{})
 }
 
 // ToStruct converts bytes to target struct

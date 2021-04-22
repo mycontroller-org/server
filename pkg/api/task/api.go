@@ -1,41 +1,44 @@
 package task
 
 import (
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
-	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // List by filter and pagination
-func List(filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
+func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
 	result := make([]taskML.Config, 0)
-	return stg.SVC.Find(ml.EntityTask, &result, filters, pagination)
+	return stg.SVC.Find(model.EntityTask, &result, filters, pagination)
 }
 
 // Get returns a task
-func Get(filters []stgml.Filter) (*taskML.Config, error) {
+func Get(filters []stgML.Filter) (*taskML.Config, error) {
 	result := &taskML.Config{}
-	err := stg.SVC.FindOne(ml.EntityTask, result, filters)
+	err := stg.SVC.FindOne(model.EntityTask, result, filters)
 	return result, err
 }
 
 // Save a task details
 func Save(task *taskML.Config) error {
+	eventType := eventML.TypeUpdated
 	if task.ID == "" {
-		task.ID = ut.RandUUID()
+		task.ID = utils.RandUUID()
+		eventType = eventML.TypeCreated
 	}
-	filters := []stgml.Filter{
-		{Key: ml.KeyID, Value: task.ID},
+	filters := []stgML.Filter{
+		{Key: model.KeyID, Value: task.ID},
 	}
-	err := stg.SVC.Upsert(ml.EntityTask, task, filters)
+	err := stg.SVC.Upsert(model.EntityTask, task, filters)
 	if err != nil {
 		return err
 	}
-	busUtils.PostEvent(mcbus.TopicEventTask, *task)
+	busUtils.PostEvent(mcbus.TopicEventTask, eventType, model.EntityTask, task)
 	return nil
 }
 
@@ -51,11 +54,11 @@ func SaveAndReload(cfg *taskML.Config) error {
 
 // GetByID returns a task by id
 func GetByID(id string) (*taskML.Config, error) {
-	f := []stgml.Filter{
-		{Key: ml.KeyID, Value: id},
+	f := []stgML.Filter{
+		{Key: model.KeyID, Value: id},
 	}
 	out := &taskML.Config{}
-	err := stg.SVC.FindOne(ml.EntityTask, out, f)
+	err := stg.SVC.FindOne(model.EntityTask, out, f)
 	return out, err
 }
 
@@ -75,6 +78,6 @@ func Delete(IDs []string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: IDs}}
-	return stg.SVC.Delete(ml.EntityTask, filters)
+	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: IDs}}
+	return stg.SVC.Delete(model.EntityTask, filters)
 }

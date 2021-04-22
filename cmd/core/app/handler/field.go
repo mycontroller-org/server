@@ -7,9 +7,9 @@ import (
 
 	"github.com/gorilla/mux"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 func registerFieldRoutes(router *mux.Router) {
@@ -20,27 +20,35 @@ func registerFieldRoutes(router *mux.Router) {
 }
 
 func listFields(w http.ResponseWriter, r *http.Request) {
-	FindMany(w, r, ml.EntityField, &[]fml.Field{})
+	FindMany(w, r, model.EntityField, &[]fieldML.Field{})
 }
 
 func getField(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, ml.EntityField, &fml.Field{})
+	FindOne(w, r, model.EntityField, &fieldML.Field{})
 }
 
 func updateField(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
-		e := d.(*fml.Field)
-		if e.ID == "" {
-			return errors.New("id should not be an empty")
-		}
-		return nil
+	entity := &fieldML.Field{}
+	err := LoadEntity(w, r, entity)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
 	}
-	SaveEntity(w, r, ml.EntityField, &fml.Field{}, bwFunc)
+
+	if entity.ID == "" {
+		http.Error(w, "id should not be empty", 400)
+		return
+	}
+	err = fieldAPI.Save(entity, true)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
 
 func deleteFields(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := fieldAPI.Delete(IDs)
 			if err != nil {

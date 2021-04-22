@@ -29,7 +29,10 @@ func (s *Store) Get(key string) interface{} {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	value, _ := s.data[key]
+	value, ok := s.data[key]
+	if !ok {
+		return nil
+	}
 	return value
 }
 

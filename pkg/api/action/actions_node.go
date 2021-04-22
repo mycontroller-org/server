@@ -24,7 +24,7 @@ func ExecuteNodeAction(action string, nodeIDs []string) error {
 		return fmt.Errorf("invalid node action:%s", action)
 	}
 
-	nodes, err := nodeAPI.GetByeIDs(nodeIDs)
+	nodes, err := nodeAPI.GetByIDs(nodeIDs)
 	if err != nil {
 		return err
 	}

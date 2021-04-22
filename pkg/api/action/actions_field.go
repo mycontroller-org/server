@@ -21,7 +21,7 @@ func ToFieldByID(id string, payload string) error {
 
 // ToFieldByQuickID sends the payload to the given field
 func ToFieldByQuickID(quickID string, payload string) error {
-	_, idsMap, err := quickIdUtils.ResourceKeyValueMap(quickID)
+	_, idsMap, err := quickIdUtils.EntityKeyValueMap(quickID)
 	if err != nil {
 		return err
 	}

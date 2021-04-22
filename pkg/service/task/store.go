@@ -100,7 +100,7 @@ func (s *store) ListIDs() []string {
 	return ids
 }
 
-func (s *store) filterTasks(resource *resourceWrapper) []taskML.Config {
+func (s *store) filterTasks(evnWrapper *eventWrapper) []taskML.Config {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -113,21 +113,25 @@ func (s *store) filterTasks(resource *resourceWrapper) []taskML.Config {
 			continue
 		}
 
-		// if resource filter added and matching do not include
-		resourceTypes := task.EventFilter.ResourceTypes
-		if len(resourceTypes) > 0 && !utils.ContainsString(resourceTypes, resource.ResourceType) {
+		// if event filter added and matching do not include
+		eventTypes := task.EventFilter.EventTypes
+		if len(eventTypes) > 0 && !utils.ContainsString(eventTypes, evnWrapper.Event.Type) {
+			continue
+		}
+		entityTypes := task.EventFilter.EntityTypes
+		if len(entityTypes) > 0 && !utils.ContainsString(entityTypes, evnWrapper.Event.EntityType) {
 			continue
 		}
 
 		filters := s.getFilters(task.EventFilter.Selectors)
 		matching := false
-		zap.L().Debug("filterTasks", zap.Any("filters", filters), zap.Any("resource", resource.Resource))
+		zap.L().Debug("filterTasks", zap.Any("filters", filters), zap.Any("event", evnWrapper.Event))
 
 		if len(filters) == 0 {
 			matching = true
 		} else {
-			zap.L().Debug("filterTasks", zap.Any("filters", filters), zap.Any("resource", resource.Resource))
-			matching = helper.IsMatching(resource.Resource, filters)
+			zap.L().Debug("filterTasks", zap.Any("filters", filters), zap.Any("event", evnWrapper.Event))
+			matching = helper.IsMatching(evnWrapper.Event.Entity, filters)
 		}
 		if matching {
 			filteredTasks = append(filteredTasks, task)

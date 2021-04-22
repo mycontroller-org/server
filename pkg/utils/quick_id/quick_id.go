@@ -8,6 +8,7 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
@@ -17,27 +18,28 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 )
 
-// resource quick id prefix
+// entity quick id prefix
 var (
-	QuickIDGateway        = []string{"gw", "gateway"}
-	QuickIDNode           = []string{"nd", "node"}
-	QuickIDSource         = []string{"sn", "source"}
-	QuickIDField          = []string{"sf", "field"}
-	QuickIDTask           = []string{"tk", "task"}
-	QuickIDSchedule       = []string{"sk", "schedule"}
-	QuickIDHandler        = []string{"hd", "handler"}
-	QuickIDDataRepository = []string{"dr", "data_repository"}
+	QuickIDGateway        = []string{"gateway"}
+	QuickIDNode           = []string{"node"}
+	QuickIDSource         = []string{"source"}
+	QuickIDField          = []string{"field"}
+	QuickIDTask           = []string{"task"}
+	QuickIDSchedule       = []string{"schedule"}
+	QuickIDHandler        = []string{"handler"}
+	QuickIDFirmware       = []string{"firmware"}
+	QuickIDDataRepository = []string{"data_repository"}
 )
 
 // IsValidQuickID says is it in quikID format
 func IsValidQuickID(quickID string) bool {
-	// get resource type and full_id
+	// get entity type and full_id
 	typeID := strings.SplitN(quickID, ":", 2)
 	if len(typeID) != 2 {
 		return false
 	}
-	// resource type
-	resourceType := strings.ToLower(typeID[0])
+	// entity type
+	entityType := strings.ToLower(typeID[0])
 
 	validIDs := make([]string, 0)
 	validIDs = append(validIDs, QuickIDGateway...)
@@ -48,23 +50,24 @@ func IsValidQuickID(quickID string) bool {
 	validIDs = append(validIDs, QuickIDSchedule...)
 	validIDs = append(validIDs, QuickIDHandler...)
 	validIDs = append(validIDs, QuickIDDataRepository...)
+	validIDs = append(validIDs, QuickIDFirmware...)
 
-	return utils.ContainsString(validIDs, resourceType)
+	return utils.ContainsString(validIDs, entityType)
 }
 
-// ResourceKeyValueMap converts quick id to referable map
-// returns resourceType, keyValueMap, error
-func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
+// EntityKeyValueMap converts quick id to referable map
+// returns entityType, keyValueMap, error
+func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 	data := make(map[string]string)
 
-	// get resource type and full_id
+	// get entity type and full_id
 	typeID := strings.SplitN(quickID, ":", 2)
 	if len(typeID) != 2 {
 		return "", nil, fmt.Errorf("invalid quick_id: %s, check the format", quickID)
 	}
 
-	// resource type
-	resourceType := strings.ToLower(typeID[0])
+	// entity type
+	entityType := strings.ToLower(typeID[0])
 
 	// id values
 	values := strings.Split(typeID[1], ".")
@@ -78,7 +81,7 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 	}
 
 	switch {
-	case utils.ContainsString(QuickIDGateway, resourceType):
+	case utils.ContainsString(QuickIDGateway, entityType):
 		expectedLength := 1
 		if len(values) < expectedLength {
 			return "", nil, fmt.Errorf("invalid gateway quick_id: %s, check the format", quickID)
@@ -88,7 +91,7 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 			data[model.KeySelector] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
-	case utils.ContainsString(QuickIDNode, resourceType):
+	case utils.ContainsString(QuickIDNode, entityType):
 		expectedLength := 2
 		if len(values) < expectedLength {
 			return "", nil, fmt.Errorf("invalid node quick_id: %s, check the format", quickID)
@@ -99,7 +102,7 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 			data[model.KeySelector] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
-	case utils.ContainsString(QuickIDSource, resourceType):
+	case utils.ContainsString(QuickIDSource, entityType):
 		expectedLength := 3
 		if len(values) < expectedLength {
 			return "", nil, fmt.Errorf("invalid source quick_id: %s, check the format", quickID)
@@ -111,7 +114,7 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 			data[model.KeySelector] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
-	case utils.ContainsString(QuickIDField, resourceType):
+	case utils.ContainsString(QuickIDField, entityType):
 		expectedLength := 4
 		if len(values) < expectedLength {
 			return "", nil, fmt.Errorf("invalid field quick_id: %s, check the format", quickID)
@@ -124,10 +127,11 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 			data[model.KeySelector] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
-	case utils.ContainsString(QuickIDTask, resourceType),
-		utils.ContainsString(QuickIDSchedule, resourceType),
-		utils.ContainsString(QuickIDHandler, resourceType),
-		utils.ContainsString(QuickIDDataRepository, resourceType):
+	case utils.ContainsString(QuickIDTask, entityType),
+		utils.ContainsString(QuickIDSchedule, entityType),
+		utils.ContainsString(QuickIDHandler, entityType),
+		utils.ContainsString(QuickIDDataRepository, entityType),
+		utils.ContainsString(QuickIDFirmware, entityType):
 		if typeID[1] == "" {
 			return "", nil, fmt.Errorf("invalid data. quickID:%s", quickID)
 		}
@@ -140,73 +144,79 @@ func ResourceKeyValueMap(quickID string) (string, map[string]string, error) {
 	// verify all the fields are available
 	for k, v := range data {
 		if v == "" {
-			return resourceType, nil, fmt.Errorf("value missing for the field:%s, input:%s", k, quickID)
+			return entityType, nil, fmt.Errorf("value missing for the field:%s, input:%s", k, quickID)
 		}
 	}
 
-	return resourceType, data, nil
+	return entityType, data, nil
 }
 
-// GetQuickID returns quick id of the resource
-func GetQuickID(item interface{}) (string, error) {
-	itemValueType := reflect.ValueOf(item).Kind()
+// GetQuickID returns quick id of the entity
+func GetQuickID(entity interface{}) (string, error) {
+	itemValueType := reflect.ValueOf(entity).Kind()
 
 	if itemValueType == reflect.Ptr {
-		item = reflect.ValueOf(item).Elem().Interface()
-		itemValueType = reflect.ValueOf(item).Kind()
+		entity = reflect.ValueOf(entity).Elem().Interface()
+		itemValueType = reflect.ValueOf(entity).Kind()
 	}
 
 	if itemValueType != reflect.Struct {
 		return "", fmt.Errorf("struct type only allowed. received:%s", itemValueType.String())
 	}
 
-	itemType := reflect.TypeOf(item)
+	itemType := reflect.TypeOf(entity)
 
 	switch itemType {
 	case reflect.TypeOf(fieldML.Field{}):
-		res, ok := item.(fieldML.Field)
+		res, ok := entity.(fieldML.Field)
 		if ok {
-			return fmt.Sprintf("%s:%s.%s.%s.%s", QuickIDField[1], res.GatewayID, res.NodeID, res.SourceID, res.FieldID), nil
+			return fmt.Sprintf("%s:%s.%s.%s.%s", QuickIDField[0], res.GatewayID, res.NodeID, res.SourceID, res.FieldID), nil
 		}
 
 	case reflect.TypeOf(sourceML.Source{}):
-		res, ok := item.(sourceML.Source)
+		res, ok := entity.(sourceML.Source)
 		if ok {
-			return fmt.Sprintf("%s:%s.%s.%s", QuickIDSource[1], res.GatewayID, res.NodeID, res.SourceID), nil
+			return fmt.Sprintf("%s:%s.%s.%s", QuickIDSource[0], res.GatewayID, res.NodeID, res.SourceID), nil
 		}
 
 	case reflect.TypeOf(nodeML.Node{}):
-		res, ok := item.(nodeML.Node)
+		res, ok := entity.(nodeML.Node)
 		if ok {
-			return fmt.Sprintf("%s:%s.%s", QuickIDNode[1], res.GatewayID, res.NodeID), nil
+			return fmt.Sprintf("%s:%s.%s", QuickIDNode[0], res.GatewayID, res.NodeID), nil
 		}
 
 	case reflect.TypeOf(gatewayML.Config{}):
-		res, ok := item.(gatewayML.Config)
+		res, ok := entity.(gatewayML.Config)
 		if ok {
-			return fmt.Sprintf("%s:%s", QuickIDGateway[1], res.ID), nil
+			return fmt.Sprintf("%s:%s", QuickIDGateway[0], res.ID), nil
 		}
 
 	case reflect.TypeOf(taskML.Config{}):
-		res, ok := item.(taskML.Config)
+		res, ok := entity.(taskML.Config)
 		if ok {
-			return fmt.Sprintf("%s:%s", QuickIDTask[1], res.ID), nil
+			return fmt.Sprintf("%s:%s", QuickIDTask[0], res.ID), nil
 		}
 
 	case reflect.TypeOf(schedulerML.Config{}):
-		res, ok := item.(schedulerML.Config)
+		res, ok := entity.(schedulerML.Config)
 		if ok {
-			return fmt.Sprintf("%s:%s", QuickIDSchedule[1], res.ID), nil
+			return fmt.Sprintf("%s:%s", QuickIDSchedule[0], res.ID), nil
 		}
 
 	case reflect.TypeOf(handlerML.Config{}):
-		res, ok := item.(handlerML.Config)
+		res, ok := entity.(handlerML.Config)
 		if ok {
-			return fmt.Sprintf("%s:%s", QuickIDHandler[1], res.ID), nil
+			return fmt.Sprintf("%s:%s", QuickIDHandler[0], res.ID), nil
+		}
+
+	case reflect.TypeOf(firmwareML.Firmware{}):
+		res, ok := entity.(firmwareML.Firmware)
+		if ok {
+			return fmt.Sprintf("%s:%s", QuickIDFirmware[0], res.ID), nil
 		}
 
 	default:
-		return "", fmt.Errorf("unsupported struct. received:%s", itemType.String())
+		return "", fmt.Errorf("unsupported type received: %s", itemType.String())
 	}
 
 	return "", errors.New("unknown resource type")

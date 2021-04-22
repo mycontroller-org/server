@@ -5,8 +5,10 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/api/action"
 	fpAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
+	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
 	"github.com/mycontroller-org/backend/v2/pkg/model/field"
 	fpml "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
@@ -28,7 +30,7 @@ var (
 func Init() error {
 	queue = queueUtils.New("forward_payload", queueSize, processEvent, workerCount)
 
-	topic = mcbus.FormatTopic(mcbus.TopicEventFieldSet)
+	topic = mcbus.FormatTopic(mcbus.TopicEventField)
 
 	// on event receive add it in to local queue
 	sID, err := mcbus.Subscribe(topic, onEventReceive)
@@ -40,20 +42,32 @@ func Init() error {
 	return nil
 }
 
-func onEventReceive(event *busML.BusData) {
-	field := &field.Field{}
-	err := event.ToStruct(field)
+func onEventReceive(data *busML.BusData) {
+	event := &eventML.Event{}
+	err := data.ToStruct(event)
 	if err != nil {
-		zap.L().Warn("Error on convet to target type", zap.Error(err))
+		zap.L().Warn("Error on convet to target type", zap.Any("topic", data.Topic), zap.Error(err))
 		return
 	}
 
-	if field == nil {
-		zap.L().Warn("Received a nil data", zap.Any("event", event))
+	if event.EntityType != model.EntityField || event.Type != eventML.TypeUpdated {
+		// this data is not for us
 		return
 	}
+
+	if event.Entity == nil {
+		zap.L().Warn("Received a nil data", zap.Any("event", data))
+		return
+	}
+
+	field, ok := event.Entity.(field.Field)
+	if !ok {
+		zap.L().Warn("received non field entity", zap.Any("entityType", event.EntityType), zap.Any("entity", event.Entity))
+		return
+	}
+
 	zap.L().Debug("Field data added into processing queue", zap.Any("data", field))
-	status := queue.Produce(field)
+	status := queue.Produce(&field)
 	if !status {
 		zap.L().Warn("error to store the data into queue", zap.Any("data", field))
 	}
