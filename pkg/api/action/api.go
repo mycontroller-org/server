@@ -13,6 +13,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
@@ -49,35 +50,38 @@ func toResource(api resourceAPI, id, action string) error {
 }
 
 // ExecuteActionOnResourceByQuickID the given request
-func ExecuteActionOnResourceByQuickID(quickID, payload string) error {
-	resourceType, kvMap, err := quickIdUL.EntityKeyValueMap(quickID)
+func ExecuteActionOnResourceByQuickID(data *handlerML.ResourceData) error {
+	resourceType, kvMap, err := quickIdUL.EntityKeyValueMap(data.QuickID)
 	if err != nil {
 		return err
 	}
 
 	switch {
 	case utils.ContainsString(quickIdUL.QuickIDGateway, resourceType):
-		return toGateway(kvMap[model.KeyGatewayID], payload)
+		return toGateway(kvMap[model.KeyGatewayID], data.Payload)
 
 	case utils.ContainsString(quickIdUL.QuickIDNode, resourceType):
 		gatewayID := kvMap[model.KeyGatewayID]
 		nodeID := kvMap[model.KeyNodeID]
-		return toNode(gatewayID, nodeID, payload)
+		return toNode(gatewayID, nodeID, data.Payload)
 
 	case utils.ContainsString(quickIdUL.QuickIDSource, resourceType):
 		// no action needed
 
 	case utils.ContainsString(quickIdUL.QuickIDField, resourceType):
-		return ToField(kvMap[model.KeyGatewayID], kvMap[model.KeyNodeID], kvMap[model.KeySourceID], kvMap[model.KeyFieldID], payload)
+		return ToField(kvMap[model.KeyGatewayID], kvMap[model.KeyNodeID], kvMap[model.KeySourceID], kvMap[model.KeyFieldID], data.Payload)
 
 	case utils.ContainsString(quickIdUL.QuickIDTask, resourceType):
-		return toTask(kvMap[model.KeyID], payload)
+		return toTask(kvMap[model.KeyID], data.Payload)
 
 	case utils.ContainsString(quickIdUL.QuickIDSchedule, resourceType):
-		return toSchedule(kvMap[model.KeyID], payload)
+		return toSchedule(kvMap[model.KeyID], data.Payload)
 
 	case utils.ContainsString(quickIdUL.QuickIDHandler, resourceType):
-		return toHandler(kvMap[model.KeyID], payload)
+		return toHandler(kvMap[model.KeyID], data.Payload)
+
+	case utils.ContainsString(quickIdUL.QuickIDDataRepository, resourceType):
+		return toDataRepository(kvMap[model.KeyID], data.Selector, data.Payload)
 
 	default:
 		return fmt.Errorf("unknown resource type: %s", resourceType)
@@ -86,15 +90,15 @@ func ExecuteActionOnResourceByQuickID(quickID, payload string) error {
 }
 
 // ExecuteActionOnResourceByLabels the given request
-func ExecuteActionOnResourceByLabels(resourceType string, labels cmap.CustomStringMap, payload string) error {
-	if len(labels) == 0 {
+func ExecuteActionOnResourceByLabels(data *handlerML.ResourceData) error {
+	if len(data.Labels) == 0 {
 		return errors.New("empty labels not allowed")
 	}
-	filters := getFilterFromLabel(labels)
+	filters := getFilterFromLabel(data.Labels)
 	pagination := &stgML.Pagination{Limit: 100}
 
 	switch {
-	case utils.ContainsString(quickIdUL.QuickIDGateway, resourceType):
+	case utils.ContainsString(quickIdUL.QuickIDGateway, data.ResourceType):
 		result, err := gatewayAPI.List(filters, pagination)
 		if err != nil {
 			return err
@@ -105,13 +109,13 @@ func ExecuteActionOnResourceByLabels(resourceType string, labels cmap.CustomStri
 		items := result.Data.(*[]gatewayML.Config)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
-			err = toGateway(item.ID, payload)
+			err = toGateway(item.ID, data.Payload)
 			if err != nil {
-				zap.L().Error("error on sending data", zap.Error(err), zap.String("gatewayID", item.ID), zap.String("payload", payload))
+				zap.L().Error("error on sending data", zap.Error(err), zap.String("gatewayID", item.ID), zap.String("payload", data.Payload))
 			}
 		}
 
-	case utils.ContainsString(quickIdUL.QuickIDNode, resourceType):
+	case utils.ContainsString(quickIdUL.QuickIDNode, data.ResourceType):
 		result, err := nodeAPI.List(filters, pagination)
 		if err != nil {
 			return err
@@ -122,16 +126,16 @@ func ExecuteActionOnResourceByLabels(resourceType string, labels cmap.CustomStri
 		items := result.Data.(*[]nodeML.Node)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
-			err = toNode(item.GatewayID, item.NodeID, payload)
+			err = toNode(item.GatewayID, item.NodeID, data.Payload)
 			if err != nil {
-				zap.L().Error("error on sending data", zap.Error(err), zap.String("nodeID", item.ID), zap.String("payload", payload))
+				zap.L().Error("error on sending data", zap.Error(err), zap.String("nodeID", item.ID), zap.String("payload", data.Payload))
 			}
 		}
 
-	case utils.ContainsString(quickIdUL.QuickIDSource, resourceType):
+	case utils.ContainsString(quickIdUL.QuickIDSource, data.ResourceType):
 		// no action needed
 
-	case utils.ContainsString(quickIdUL.QuickIDField, resourceType):
+	case utils.ContainsString(quickIdUL.QuickIDField, data.ResourceType):
 		result, err := fieldAPI.List(filters, pagination)
 		if err != nil {
 			return err
@@ -142,13 +146,13 @@ func ExecuteActionOnResourceByLabels(resourceType string, labels cmap.CustomStri
 		items := result.Data.(*[]fieldML.Field)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
-			err = ToField(item.GatewayID, item.NodeID, item.SourceID, item.FieldID, payload)
+			err = ToField(item.GatewayID, item.NodeID, item.SourceID, item.FieldID, data.Payload)
 			if err != nil {
-				zap.L().Error("error on sending data", zap.Error(err), zap.String("fieldID", item.ID), zap.String("payload", payload))
+				zap.L().Error("error on sending data", zap.Error(err), zap.String("fieldID", item.ID), zap.String("payload", data.Payload))
 			}
 		}
 
-	case utils.ContainsString(quickIdUL.QuickIDTask, resourceType):
+	case utils.ContainsString(quickIdUL.QuickIDTask, data.ResourceType):
 		result, err := taskAPI.List(filters, pagination)
 		if err != nil {
 			return err
@@ -159,13 +163,13 @@ func ExecuteActionOnResourceByLabels(resourceType string, labels cmap.CustomStri
 		items := result.Data.(*[]taskML.Config)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
-			err = toTask(item.ID, payload)
+			err = toTask(item.ID, data.Payload)
 			if err != nil {
-				zap.L().Error("error on sending data", zap.Error(err), zap.String("taskID", item.ID), zap.String("payload", payload))
+				zap.L().Error("error on sending data", zap.Error(err), zap.String("taskID", item.ID), zap.String("payload", data.Payload))
 			}
 		}
 
-	case utils.ContainsString(quickIdUL.QuickIDSchedule, resourceType):
+	case utils.ContainsString(quickIdUL.QuickIDSchedule, data.ResourceType):
 		result, err := schedulerAPI.List(filters, pagination)
 		if err != nil {
 			return err
@@ -176,14 +180,14 @@ func ExecuteActionOnResourceByLabels(resourceType string, labels cmap.CustomStri
 		items := result.Data.(*[]schedulerML.Config)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
-			err = toSchedule(item.ID, payload)
+			err = toSchedule(item.ID, data.Payload)
 			if err != nil {
-				zap.L().Error("error on sending data", zap.Error(err), zap.String("scheduleID", item.ID), zap.String("payload", payload))
+				zap.L().Error("error on sending data", zap.Error(err), zap.String("scheduleID", item.ID), zap.String("payload", data.Payload))
 			}
 		}
 
 	default:
-		return fmt.Errorf("unknown resource type: %s", resourceType)
+		return fmt.Errorf("unknown resource type: %s", data.ResourceType)
 	}
 	return nil
 }

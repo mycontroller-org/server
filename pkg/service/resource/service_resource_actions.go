@@ -20,9 +20,10 @@ func resourceActionService(reqEvent *rsModel.ServiceEvent) error {
 
 		if data.QuickID != "" {
 			quickIDWithType := fmt.Sprintf("%s:%s", data.ResourceType, data.QuickID)
-			return action.ExecuteActionOnResourceByQuickID(quickIDWithType, data.Payload)
+			data.QuickID = quickIDWithType
+			return action.ExecuteActionOnResourceByQuickID(data)
 		}
-		return action.ExecuteActionOnResourceByLabels(data.ResourceType, data.Labels, data.Payload)
+		return action.ExecuteActionOnResourceByLabels(data)
 	}
 	return fmt.Errorf("unknown command: %s", reqEvent.Command)
 }
