@@ -33,8 +33,8 @@ const (
 	firmwarePurgeInactiveTime = 15 * time.Minute           // firmware inactive time, eligible for purging
 	queryTimeout              = 2 * time.Second            // query timout
 	queryFirmwareFileTimeout  = 10 * time.Second           // query timout for firmware file
-	BootloaderMYSBootloader   = "MYSBootloader"            // MYSBootloader - https://github.com/mysensors/MySensorsBootloaderRF24
-	BootloaderDualoptiboot    = "Dualoptiboot"
+	BootloaderMYSBootloader   = "mysbootloader"            // MYSBootloader - https://github.com/mysensors/MySensorsBootloaderRF24
+	BootloaderDualoptiboot    = "dualoptiboot"
 
 	payloadON  = "1"
 	payloadOFF = "0"

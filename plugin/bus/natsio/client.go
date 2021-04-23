@@ -37,11 +37,13 @@ type WebsocketOptions struct {
 
 // Client struct
 type Client struct {
-	ctx           context.Context
-	natConn       *nats.Conn
-	subscriptions map[string]*nats.Subscription
-	mutex         sync.RWMutex
-	config        *Config
+	ctx                 context.Context
+	natConn             *nats.Conn
+	topics              map[string][]int64
+	subscriptions       map[int64]*nats.Subscription
+	subscriptionCounter int64
+	mutex               sync.RWMutex
+	config              *Config
 }
 
 const (
@@ -102,10 +104,12 @@ func Init(config cmap.CustomMap) (busml.Client, error) {
 		return nil, err
 	}
 	client := Client{
-		ctx:           context.TODO(),
-		natConn:       nc,
-		subscriptions: make(map[string]*nats.Subscription),
-		config:        cfg,
+		ctx:                 context.TODO(),
+		natConn:             nc,
+		topics:              make(map[string][]int64),
+		subscriptions:       make(map[int64]*nats.Subscription),
+		subscriptionCounter: 0,
+		config:              cfg,
 	}
 	return &client, nil
 }
@@ -133,19 +137,22 @@ func (c *Client) Subscribe(topic string, handler busml.CallBackFunc) (int64, err
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	_, found := c.subscriptions[topic]
-	if found {
-		return -1, nil // needs to return error?
+	subscriptionIDs, found := c.topics[topic]
+	if !found {
+		subscriptionIDs = make([]int64, 0)
 	}
 
+	newSubscriptionID := c.generateSubscriptionID()
 	wrappedHandler := c.handlerWrapper(handler)
 	subscription, err := c.natConn.Subscribe(topic, wrappedHandler)
 	if err != nil {
 		return -1, err
 	}
-	c.subscriptions[topic] = subscription
-	PrintDebug("Subscription created", zap.String("topic", subscription.Subject))
-	return -1, nil
+	c.subscriptions[newSubscriptionID] = subscription
+	subscriptionIDs = append(subscriptionIDs, newSubscriptionID)
+	c.topics[topic] = subscriptionIDs
+	PrintDebug("Subscription created", zap.String("topic", subscription.Subject), zap.Int64("subscriptionID", newSubscriptionID))
+	return newSubscriptionID, nil
 }
 
 func (c *Client) handlerWrapper(handler busml.CallBackFunc) func(natsMsg *nats.Msg) {
@@ -160,8 +167,22 @@ func (c *Client) Unsubscribe(topic string, subscriptionID int64) error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	if subscription, found := c.subscriptions[topic]; found {
-		PrintDebug("Subscription removed", zap.String("topic", subscription.Subject))
+	var subscription *nats.Subscription
+	// remove subscription id
+	if subscriptionIDs, found := c.topics[topic]; found {
+		for index, id := range subscriptionIDs {
+			if id == subscriptionID {
+				subscription = c.subscriptions[id]
+				c.topics[topic] = append(subscriptionIDs[:index], subscriptionIDs[index+1:]...)
+				PrintDebug("Subscription removed", zap.String("topic", topic), zap.Int64("subscriptionID", subscriptionID))
+				break
+			}
+		}
+	}
+
+	// remove subscription reference
+	delete(c.subscriptions, subscriptionID)
+	if subscription != nil {
 		return subscription.Unsubscribe()
 	}
 
@@ -188,4 +209,10 @@ func cbClosed(con *nats.Conn) {
 
 func cbDisconnectedError(con *nats.Conn, err error) {
 	PrintWarn("disconnected", zap.String("error", err.Error()))
+}
+
+func (c *Client) generateSubscriptionID() int64 {
+	// increment counter id
+	c.subscriptionCounter++
+	return c.subscriptionCounter
 }
