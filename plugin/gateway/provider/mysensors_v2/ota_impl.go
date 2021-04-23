@@ -293,9 +293,9 @@ func toStruct(hex string, out interface{}) error {
 }
 
 func updateFirmwareProgressStatus(node *nodeML.Node, currentBlock, totalBytes int) {
-	bootloader := node.Labels.Get(model.LabelNodeBootloader)
-	if bootloader == "" {
-		bootloader = BootloaderDualoptiboot
+	otaBlockOrder := node.Labels.Get(model.LabelNodeOTABlockOrder)
+	if otaBlockOrder == "" {
+		otaBlockOrder = OTABlockOrderReverse
 	}
 
 	totalBlocks := totalBytes / firmwareBlockSize
@@ -314,7 +314,7 @@ func updateFirmwareProgressStatus(node *nodeML.Node, currentBlock, totalBytes in
 
 		isRunning := true
 		percentage := float64(currentBlock) / float64(lastBlock)
-		if bootloader == BootloaderDualoptiboot {
+		if otaBlockOrder == OTABlockOrderReverse {
 			percentage = 1 - percentage
 			isRunning = currentBlock != 0
 			if currentBlock == lastBlock {

@@ -33,8 +33,8 @@ const (
 	firmwarePurgeInactiveTime = 15 * time.Minute           // firmware inactive time, eligible for purging
 	queryTimeout              = 2 * time.Second            // query timout
 	queryFirmwareFileTimeout  = 10 * time.Second           // query timout for firmware file
-	BootloaderMYSBootloader   = "mysbootloader"            // MYSBootloader - https://github.com/mysensors/MySensorsBootloaderRF24
-	BootloaderDualoptiboot    = "dualoptiboot"
+	OTABlockOrderForward      = "forward"                  // forward order of block will be asked, 0,1,2...
+	OTABlockOrderReverse      = "reverse"                  // reverse order of block will be asked, ...3,2,1,0
 
 	payloadON  = "1"
 	payloadOFF = "0"
