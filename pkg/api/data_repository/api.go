@@ -51,21 +51,6 @@ func Save(data *repositoryML.Config) error {
 	return nil
 }
 
-// Merge is used to update an item by task, schedule, etc
-// TODO: should be updated as required
-func Merge(data *repositoryML.Config) error {
-	if data.ID == "" {
-		return errors.New("'id' can not be empty")
-	}
-
-	// verify the supplied id is not readonly
-
-	filters := []stgML.Filter{
-		{Key: model.KeyID, Value: data.ID},
-	}
-	return stg.SVC.Upsert(model.EntityDataRepository, data, filters)
-}
-
 // GetByID returns a item by id
 func GetByID(id string) (*repositoryML.Config, error) {
 	f := []stgML.Filter{

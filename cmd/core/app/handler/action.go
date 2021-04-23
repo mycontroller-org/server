@@ -5,11 +5,13 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mycontroller-org/backend/v2/pkg/api/action"
+	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 )
 
 const (
 	keyResource = "resource"
 	keyPayload  = "payload"
+	keySelector = "selector"
 	keyAction   = "action"
 	keyID       = "id"
 )
@@ -47,6 +49,7 @@ func executeAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resourceArr := query[keyResource]
+	selectorArr := query[keySelector]
 	payloadArr := query[keyPayload]
 
 	if len(resourceArr) == 0 || len(payloadArr) == 0 {
@@ -54,7 +57,14 @@ func executeAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = action.ExecuteActionOnResourceByQuickID(resourceArr[0], payloadArr[0])
+	resourceData := &handlerML.ResourceData{
+		QuickID: resourceArr[0],
+		Payload: payloadArr[0],
+	}
+	if len(selectorArr) > 0 {
+		resourceData.Selector = selectorArr[0]
+	}
+	err = action.ExecuteActionOnResourceByQuickID(resourceData)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

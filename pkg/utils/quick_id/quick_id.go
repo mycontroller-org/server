@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
+	dataRepoML "github.com/mycontroller-org/backend/v2/pkg/model/data_repository"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
@@ -213,6 +214,12 @@ func GetQuickID(entity interface{}) (string, error) {
 		res, ok := entity.(firmwareML.Firmware)
 		if ok {
 			return fmt.Sprintf("%s:%s", QuickIDFirmware[0], res.ID), nil
+		}
+
+	case reflect.TypeOf(dataRepoML.Config{}):
+		res, ok := entity.(dataRepoML.Config)
+		if ok {
+			return fmt.Sprintf("%s:%s", QuickIDDataRepository[0], res.ID), nil
 		}
 
 	default:

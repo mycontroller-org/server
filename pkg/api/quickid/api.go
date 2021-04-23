@@ -3,6 +3,7 @@ package quickid
 import (
 	"fmt"
 
+	dataRepoAPI "github.com/mycontroller-org/backend/v2/pkg/api/data_repository"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
@@ -26,26 +27,29 @@ func GetResources(quickIDs []string) (map[string]interface{}, error) {
 		var item interface{}
 
 		switch resourceType {
-		case "gateway":
+		case model.EntityGateway:
 			item, err = gatewayAPI.GetByID(keys[model.KeyGatewayID])
 
-		case "node":
+		case model.EntityNode:
 			item, err = nodeAPI.GetByGatewayAndNodeID(keys[model.KeyGatewayID], keys[model.KeyNodeID])
 
-		case "source":
+		case model.EntitySource:
 			item, err = sourceAPI.GetByIDs(keys[model.KeyGatewayID], keys[model.KeyNodeID], keys[model.KeySourceID])
 
-		case "field":
+		case model.EntityField:
 			item, err = fieldAPI.GetByIDs(keys[model.KeyGatewayID], keys[model.KeyNodeID], keys[model.KeySourceID], keys[model.KeyFieldID])
 
-		case "task":
+		case model.EntityTask:
 			item, err = taskAPI.GetByID(keys[model.KeyID])
 
-		case "schedule":
+		case model.EntityScheduler, "schedule": // in ui some places marked as "schedule"
 			item, err = schedulerAPI.GetByID(keys[model.KeyID])
 
-		case "handler":
+		case model.EntityHandler:
 			item, err = handlerAPI.GetByID(keys[model.KeyID])
+
+		case model.EntityDataRepository:
+			item, err = dataRepoAPI.GetByID(keys[model.KeyID])
 
 		default:
 			return nil, fmt.Errorf("unknown resource type: %s, quickID: %s", resourceType, quickID)
