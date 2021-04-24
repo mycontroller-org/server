@@ -40,7 +40,7 @@ func (s *store) Get(id string) handler.Handler {
 	return s.handlers[id]
 }
 
-func (s *store) closeHandlers() {
+func (s *store) CloseHandlers() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 

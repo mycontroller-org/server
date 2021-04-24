@@ -312,7 +312,7 @@ func updateFirmwareProgressStatus(node *nodeML.Node, currentBlock, totalBytes in
 		var startTime interface{}
 		var endTime interface{}
 
-		isRunning := true
+		var isRunning bool
 		percentage := float64(currentBlock) / float64(lastBlock)
 		if otaBlockOrder == OTABlockOrderReverse {
 			percentage = 1 - percentage

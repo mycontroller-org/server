@@ -107,7 +107,10 @@ func ExecuteExportStorage(targetDir, storageExportType string) error {
 	defer isRunning.Reset()
 
 	// include version details
-	addBackupInformation(targetDir, storageExportType)
+	err := addBackupInformation(targetDir, storageExportType)
+	if err != nil {
+		return err
+	}
 
 	targetDirFullPath := fmt.Sprintf("%s%s", targetDir, model.DirectoryDataStorage)
 

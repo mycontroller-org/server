@@ -152,9 +152,9 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 				return false
 			}
 			if orderBy == stgml.SortByASC {
-				return aFinalValue == true
+				return aFinalValue
 			}
-			return bFinalValue == false
+			return !bFinalValue
 
 		case reflect.Uint:
 			aFinalValue, aOK := aValue.(uint)

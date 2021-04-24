@@ -66,9 +66,7 @@ func (s *store) Remove(id string) {
 	name := unschedule(id)
 	if utils.ContainsString(s.pollingTasks, name) {
 		updatedSlice := make([]string, 0)
-		for _, item := range s.pollingTasks {
-			updatedSlice = append(updatedSlice, item)
-		}
+		updatedSlice = append(updatedSlice, s.pollingTasks...)
 		s.pollingTasks = updatedSlice
 	}
 	delete(s.tasks, id)

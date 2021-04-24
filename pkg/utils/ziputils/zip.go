@@ -44,7 +44,7 @@ func addFiles(writer *zip.Writer, basePath, baseInZip string) error {
 		if file.IsDir() {
 			// Recurse
 			newBase := fmt.Sprintf("%s/%s/", basePath, file.Name())
-			newBaseInZip := "/"
+			var newBaseInZip string
 			if baseInZip == "" {
 				newBaseInZip = file.Name()
 			} else {

@@ -15,14 +15,6 @@ type eventWrapper struct {
 	Tasks []taskML.Config
 }
 
-// event types
-const (
-	eventTypeGateway = "gateway"
-	eventTypeNode    = "node"
-	eventTypeSource  = "source"
-	eventTypeField   = "field"
-)
-
 const (
 	eventListenerPreQueueLimit   = 1000
 	eventListenerPostQueueLimit  = 1000

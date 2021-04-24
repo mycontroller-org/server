@@ -168,46 +168,46 @@ func (ep *Endpoint) dataListener() {
 	}
 }
 
-func (ep *Endpoint) reconnect() {
-	ticker := time.NewTicker(ep.reconnectDelay)
-	defer ticker.Stop()
-	for {
-		select {
-		case <-ep.safeClose.CH:
-			zap.L().Debug("Received close signal", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name))
-			return
-
-		case <-ticker.C: // reconnect
-			// close the port
-			if ep.Port != nil {
-				err := ep.Port.Close()
-				if err != nil {
-					zap.L().Error("Error on closing a serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
-				}
-				ep.Port = nil
-			}
-			// open the port
-			port, err := ser.OpenPort(ep.serCfg)
-			if err == nil {
-				zap.L().Debug("serial port reconnected successfully", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name))
-				ep.Port = port
-				go ep.dataListener() // if connection success, start read listener
-				state := model.State{
-					Status:  model.StatusUp,
-					Message: "Reconnected successfully",
-					Since:   time.Now(),
-				}
-				busUtils.SetGatewayState(ep.GwCfg.ID, state)
-				return
-			}
-			zap.L().Error("Error on opening a port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
-			state := model.State{
-				Status:  model.StatusDown,
-				Message: err.Error(),
-				Since:   time.Now(),
-			}
-			busUtils.SetGatewayState(ep.GwCfg.ID, state)
-		}
-	}
-
-}
+// func (ep *Endpoint) reconnect() {
+// 	ticker := time.NewTicker(ep.reconnectDelay)
+// 	defer ticker.Stop()
+// 	for {
+// 		select {
+// 		case <-ep.safeClose.CH:
+// 			zap.L().Debug("Received close signal", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name))
+// 			return
+//
+// 		case <-ticker.C: // reconnect
+// 			// close the port
+// 			if ep.Port != nil {
+// 				err := ep.Port.Close()
+// 				if err != nil {
+// 					zap.L().Error("Error on closing a serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
+// 				}
+// 				ep.Port = nil
+// 			}
+// 			// open the port
+// 			port, err := ser.OpenPort(ep.serCfg)
+// 			if err == nil {
+// 				zap.L().Debug("serial port reconnected successfully", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name))
+// 				ep.Port = port
+// 				go ep.dataListener() // if connection success, start read listener
+// 				state := model.State{
+// 					Status:  model.StatusUp,
+// 					Message: "Reconnected successfully",
+// 					Since:   time.Now(),
+// 				}
+// 				busUtils.SetGatewayState(ep.GwCfg.ID, state)
+// 				return
+// 			}
+// 			zap.L().Error("Error on opening a port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
+// 			state := model.State{
+// 				Status:  model.StatusDown,
+// 				Message: err.Error(),
+// 				Since:   time.Now(),
+// 			}
+// 			busUtils.SetGatewayState(ep.GwCfg.ID, state)
+// 		}
+// 	}
+//
+// }

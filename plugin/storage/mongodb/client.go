@@ -194,7 +194,7 @@ func idFilter(data interface{}) *bson.M {
 }
 
 func defaultFilter(filters []stgml.Filter, data interface{}) *bson.M {
-	if filters == nil || len(filters) == 0 {
+	if len(filters) == 0 {
 		return idFilter(data)
 	}
 	return filter(filters)
@@ -202,7 +202,7 @@ func defaultFilter(filters []stgml.Filter, data interface{}) *bson.M {
 
 func filter(filters []stgml.Filter) *bson.M {
 	bm := bson.M{}
-	if filters == nil || len(filters) == 0 {
+	if len(filters) == 0 {
 		return &bm
 	}
 	for _, _f := range filters {
@@ -247,7 +247,7 @@ func filter(filters []stgml.Filter) *bson.M {
 
 func sort(sort []stgml.Sort) *bson.M {
 	bm := bson.M{}
-	if sort == nil || len(sort) == 0 {
+	if len(sort) == 0 {
 		return &bm
 	}
 	for _, _s := range sort {

@@ -482,7 +482,6 @@ func updateFieldData(
 	// post field data to event listeners
 	busUtils.PostEvent(mcbus.TopicEventField, eventML.TypeUpdated, model.EntityField, field)
 
-	startTime = time.Now()
 	updateMetric := true
 	if field.MetricType == mtsML.MetricTypeNone {
 		updateMetric = false

@@ -76,8 +76,13 @@ func NewClient(config map[string]interface{}) (*Store, error) {
 func (s *Store) LocalImport(importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error) error {
 	// load data from disk
 	dataDir := s.getStorageLocation(s.Config.LoadFormat)
-	utils.CreateDir(dataDir)
-	err := importFunc(dataDir, s.Config.LoadFormat, true)
+	err := utils.CreateDir(dataDir)
+	if err != nil {
+		zap.L().Error("error on create data dir", zap.String("dir", dataDir), zap.String("error", err.Error()))
+		return err
+	}
+
+	err = importFunc(dataDir, s.Config.LoadFormat, true)
 	if err != nil {
 		zap.L().WithOptions(zap.AddCallerSkip(10)).Error("error on local import", zap.String("error", err.Error()))
 		return err
@@ -123,9 +128,7 @@ func (s *Store) Resume() error {
 	defer s.RWMutex.Unlock()
 
 	s.paused = false
-	s.loadDumpJob()
-
-	return nil
+	return s.loadDumpJob()
 }
 
 // ClearDatabase removes all the data from the database
