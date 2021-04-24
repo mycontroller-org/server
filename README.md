@@ -1,4 +1,6 @@
 # MyController
+![lint workflow](https://github.com/mycontroller-org/backend/actions/workflows/lint.yaml/badge.svg)
+![build workflow](https://github.com/mycontroller-org/backend/actions/workflows/build.yaml/badge.svg)
 
 MyController.org version 2.x is in early development stage.
 
