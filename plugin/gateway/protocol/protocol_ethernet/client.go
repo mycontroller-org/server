@@ -27,7 +27,7 @@ const (
 
 // Config details
 type Config struct {
-	URI                string
+	Server             string
 	MessageSplitter    byte
 	TransmitPreDelay   string
 	InsecureSkipVerify bool
@@ -55,12 +55,12 @@ func New(gwCfg *gwML.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgML.R
 	}
 	zap.L().Debug("config:", zap.Any("converted", cfg))
 
-	uri, err := url.Parse(cfg.URI)
+	serverURL, err := url.Parse(cfg.Server)
 	if err != nil {
 		return nil, err
 	}
 
-	conn, err := net.Dial(uri.Scheme, uri.Host)
+	conn, err := net.Dial(serverURL.Scheme, serverURL.Host)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func New(gwCfg *gwML.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgML.R
 	endpoint := &Endpoint{
 		GwCfg:          gwCfg,
 		Config:         cfg,
-		connUrl:        uri,
+		connUrl:        serverURL,
 		conn:           conn,
 		receiveMsgFunc: rxMsgFunc,
 		safeClose:      concurrency.NewChannel(0),
@@ -108,7 +108,7 @@ func (ep *Endpoint) Close() error {
 	if ep.conn != nil {
 		err := ep.conn.Close()
 		if err != nil {
-			zap.L().Error("Error on closing a a connection", zap.String("gateway", ep.GwCfg.ID), zap.String("host", ep.Config.URI), zap.Error(err))
+			zap.L().Error("Error on closing a a connection", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server), zap.Error(err))
 		}
 		ep.conn = nil
 	}
@@ -122,12 +122,12 @@ func (ep *Endpoint) dataListener() {
 	for {
 		select {
 		case <-ep.safeClose.CH:
-			zap.L().Info("Received close signal.", zap.String("gateway", ep.GwCfg.ID), zap.String("host", ep.Config.URI))
+			zap.L().Info("Received close signal.", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server))
 			return
 		default:
 			rxLength, err := ep.conn.Read(readBuf)
 			if err != nil {
-				zap.L().Error("Error on reading data from a ethernet connection", zap.String("gateway", ep.GwCfg.ID), zap.String("host", ep.Config.URI), zap.Error(err))
+				zap.L().Error("Error on reading data from a ethernet connection", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server), zap.Error(err))
 				state := model.State{
 					Status:  model.StatusDown,
 					Message: err.Error(),
