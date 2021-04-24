@@ -14,6 +14,7 @@ import (
 	utils "github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
+	ethernet "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/protocol_ethernet"
 	mqtt "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/protocol_mqtt"
 	serial "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/protocol_serial"
 	"go.uber.org/zap"
@@ -66,13 +67,23 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgML.RawMessage) e
 		protocol, _err := mqtt.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
 		err = _err
 		p.Protocol = protocol
+
 	case gwpl.TypeSerial:
 		// update serial message splitter
 		p.Config.Protocol.Set(serial.KeyMessageSplitter, serialMessageSplitter, nil)
 		protocol, _err := serial.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
 		err = _err
 		p.Protocol = protocol
+
+	case gwpl.TypeEthernet:
+		// update ethernet message splitter
+		p.Config.Protocol.Set(serial.KeyMessageSplitter, ethernetMessageSplitter, nil)
+		protocol, _err := ethernet.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
+		err = _err
+		p.Protocol = protocol
+
 	}
+
 	if err != nil {
 		return err
 	}

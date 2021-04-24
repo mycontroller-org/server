@@ -28,6 +28,7 @@ const (
 	idBroadcast               = "255"                      // broadcast id in MySensors
 	payloadEmpty              = ""                         // Empty payload
 	serialMessageSplitter     = '\n'                       // serial message splitter
+	ethernetMessageSplitter   = '\n'                       // ethernet message splitter
 	firmwarePurgeJobName      = "mysensors_firmware_store" // firmware purge job name, append with gateway id
 	firmwarePurgeJobCron      = "0 */5 * * * *"            // purge loaded firmware, if not used for a while
 	firmwarePurgeInactiveTime = 15 * time.Minute           // firmware inactive time, eligible for purging

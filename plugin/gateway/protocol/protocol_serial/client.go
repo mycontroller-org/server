@@ -37,8 +37,8 @@ type Endpoint struct {
 	GwCfg          *gwml.Config
 	Config         Config
 	serCfg         *ser.Config
-	receiveMsgFunc func(rm *msgml.RawMessage) error
 	Port           *ser.Port
+	receiveMsgFunc func(rm *msgml.RawMessage) error
 	safeClose      *concurrency.Channel
 	messageLogger  msglogger.MessageLogger
 	txPreDelay     time.Duration
