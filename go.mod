@@ -22,6 +22,8 @@ require (
 	github.com/nats-io/nats.go v1.10.0
 	github.com/robfig/cron/v3 v3.0.2-0.20210106135023-bc59245fe10e
 	github.com/rs/cors v1.7.0
+	github.com/shirou/gopsutil v3.21.3+incompatible // indirect
+	github.com/shirou/gopsutil/v3 v3.21.3
 	github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07
 	github.com/tidwall/gjson v1.7.5 // indirect
 	github.com/tidwall/sjson v1.1.7-0.20210402144851-c052998284ce
@@ -30,6 +32,6 @@ require (
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
 	google.golang.org/api v0.3.1
-	google.golang.org/protobuf v1.25.0 // indirect
+	google.golang.org/genproto v0.0.0-20210426193834-eac7f76ac494 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )

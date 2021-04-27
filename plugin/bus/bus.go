@@ -5,7 +5,7 @@ import busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 // bus client types
 const (
 	TypeEmbedded = "embedded"
-	TypeNatsIO   = "nats_io"
+	TypeNatsIO   = "natsio"
 )
 
 // CallBackFunc message passed to this func

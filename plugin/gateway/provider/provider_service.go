@@ -13,6 +13,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	mysensors "github.com/mycontroller-org/backend/v2/plugin/gateway/provider/mysensors_v2"
+	systemMonitoring "github.com/mycontroller-org/backend/v2/plugin/gateway/provider/system_monitoring"
 	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/tasmota"
 	"go.uber.org/zap"
 )
@@ -56,6 +57,13 @@ func GetService(gatewayCfg *gwml.Config) (*Service, error) {
 			return nil, err
 		}
 		provider = tasmotaProvider
+
+	case TypeSystemMonitoring:
+		smProvider, err := systemMonitoring.Init(gatewayCfg)
+		if err != nil {
+			return nil, err
+		}
+		provider = smProvider
 
 	default:
 		return nil, fmt.Errorf("unknown provider:%s", gatewayCfg.Provider.GetString(model.NameType))
