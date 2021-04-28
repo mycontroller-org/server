@@ -3,6 +3,7 @@ module github.com/mycontroller-org/backend/v2
 go 1.15
 
 require (
+	github.com/amimof/huego v1.2.0
 	github.com/btittelbach/astrotime v0.0.0-20160515101311-7ddba43aa26e
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dlclark/regexp2 v1.4.0 // indirect
@@ -12,6 +13,7 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/go-cmd/cmd v1.3.0
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2
@@ -22,7 +24,6 @@ require (
 	github.com/nats-io/nats.go v1.10.0
 	github.com/robfig/cron/v3 v3.0.2-0.20210106135023-bc59245fe10e
 	github.com/rs/cors v1.7.0
-	github.com/shirou/gopsutil v3.21.3+incompatible // indirect
 	github.com/shirou/gopsutil/v3 v3.21.3
 	github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07
 	github.com/tidwall/gjson v1.7.5 // indirect
@@ -30,8 +31,8 @@ require (
 	go.mongodb.org/mongo-driver v1.4.6
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
-	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
-	google.golang.org/api v0.3.1
-	google.golang.org/genproto v0.0.0-20210426193834-eac7f76ac494 // indirect
+	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5 // indirect
+	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4 // indirect
+	golang.org/x/sys v0.0.0-20210320140829-1e4c9ba3b0c4 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )

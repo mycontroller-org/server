@@ -2,7 +2,7 @@ package systemmonitoring
 
 import (
 	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/system_monitoring/config"
 	"go.uber.org/zap"
@@ -20,7 +20,7 @@ type Provider struct {
 	NodeID        string
 }
 
-// Init MySensors provider
+// Init provider
 func Init(gatewayCfg *gwML.Config) (*Provider, error) {
 	cfg := config.Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, &cfg)
@@ -37,7 +37,7 @@ func Init(gatewayCfg *gwML.Config) (*Provider, error) {
 }
 
 // Start func
-func (p *Provider) Start(rxMessageFunc func(rawMsg *msgml.RawMessage) error) error {
+func (p *Provider) Start(rxMessageFunc func(rawMsg *msgML.RawMessage) error) error {
 	// update node id
 	nodeID, err := p.HostID()
 	if err != nil {
@@ -82,7 +82,7 @@ func (p *Provider) Close() error {
 }
 
 // Post func
-func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
+func (p *Provider) Post(rawMsg *msgML.RawMessage) error {
 	// this gateway do not support post messages
 	return nil
 }
