@@ -199,7 +199,7 @@ func (p *Provider) updateProcess() {
 				continue
 			}
 			msg.Payloads = append(msg.Payloads, p.getData("rss", memInfo.RSS, metricsML.MetricTypeGauge))
-			msg.Payloads = append(msg.Payloads, p.getData("vms", memInfo.VMS, metricsML.MetricTypeGauge))
+			msg.Payloads = append(msg.Payloads, p.getData("vms", memInfo.VMS, metricsML.MetricTypeNone))
 			msg.Payloads = append(msg.Payloads, p.getData("swap", memInfo.Swap, metricsML.MetricTypeNone))
 			msg.Payloads = append(msg.Payloads, p.getData("stack", memInfo.Stack, metricsML.MetricTypeNone))
 			msg.Payloads = append(msg.Payloads, p.getData("locked", memInfo.Locked, metricsML.MetricTypeNone))
