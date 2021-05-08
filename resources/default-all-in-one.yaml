@@ -44,7 +44,6 @@ databases:
     batch_size:
     flush_interval: 5s
 
-
 bus:
   type: embedded
 

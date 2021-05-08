@@ -30,6 +30,10 @@ func (ml *myLogger) SetLogLevel(logLevel uint) {
 	// nothing to do here, it is set on creation
 }
 
+func (ml *myLogger) LogLevel() uint {
+	return 0
+}
+
 // SetPrefix sets logging prefix.
 func (ml *myLogger) SetPrefix(prefix string) {
 	// We are not going to use this prefix

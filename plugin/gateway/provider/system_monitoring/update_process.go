@@ -76,7 +76,9 @@ func (p *Provider) updateProcess() {
 				}
 
 				if err != nil {
-					zap.L().Error("error on collecting process data", zap.Error(err))
+					if !strings.Contains(err.Error(), "no such file or directory") {
+						zap.L().Error("error on collecting process data", zap.Error(err))
+					}
 					matching = false
 					break
 				}
