@@ -9,7 +9,7 @@ RUN go mod download -x
 ARG TARGETOS
 ARG TARGETARCH
 ENV TARGET_BUILD="gateway"
-RUN scripts/generate_bin.sh
+RUN scripts/generate_binary.sh
 
 FROM alpine:3.12.4
 

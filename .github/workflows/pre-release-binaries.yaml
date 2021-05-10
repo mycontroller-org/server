@@ -1,4 +1,4 @@
-name: Publish images
+name: Publish binaries
 
 on:
   push:
@@ -16,8 +16,8 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: mycontroller-org/pre-releases
-        token: ${{ secrets.GITHUB_PAT }}
         path: pre-releases
+        # token: ${{ secrets.GITHUB_PAT }}
 
     - uses: actions/setup-go@v2
       with:
