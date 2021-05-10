@@ -25,14 +25,14 @@ bus:
 gateway:
   ids: []
   labels:
-    location: internal
+    location: local
 
 database:
-  storage: memory_db
-  metrics: influxdb_v1_8
+  storage: memory_database
+  metrics: void_database
 
 databases:
-  - name: memory_db
+  - name: memory_database
     type: memory
     dump_enabled: true
     dump_interval: 10m
@@ -40,7 +40,7 @@ databases:
     dump_format: ["yaml", "json"]
     load_format: "yaml"
 
-  - name: influxdb_v1_8
+  - name: influxdb_database
     type: influxdb_v2
     uri: http://192.168.1.21:8086
     token: 
@@ -50,3 +50,6 @@ databases:
     bucket: mycontroller
     batch_size:
     flush_interval: 5s
+
+  - name: void_database
+    type: void_db

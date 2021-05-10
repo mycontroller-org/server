@@ -1,0 +1,53 @@
+name: Publish images
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: backend repository
+      uses: actions/checkout@v2
+    - name: pre release repository
+      uses: actions/checkout@v2
+      with:
+        repository: mycontroller-org/pre-releases
+        token: ${{ secrets.GITHUB_PAT }}
+        path: pre-releases
+
+    - uses: actions/setup-go@v2
+      with:
+        go-version: 1.16  
+
+    - name: Cache go modules
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Build binaries
+      env:
+        TARGET_BUILD: ${{ matrix.container_image }}
+      run: ./scripts/build.sh
+
+    - name: Build binary images
+      run: ./scripts/generate_binaries.sh
+    
+    - name: Push binaries into pre-releases git repository
+      env:
+        RELEASE_REPO: "pre-release"
+      run: |
+        mkdir -p ${RELEASE_REPO}/v2
+        cp binaries/* ${RELEASE_REPO}/v2/
+        cd ${RELEASE_REPO}
+        git config user.name "Jeeva Kandasamy"
+        git config user.email jkandasa@gmail.com
+        git add v2/.
+        git commit -s -m "auto generated files on master branch changes"
+        git push origin master
