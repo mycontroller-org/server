@@ -29,6 +29,8 @@ jobs:
       run: ./scripts/generate_binaries.sh
     
     - name: Push binaries into pre-releases git repository
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
         git clone https://github.com/mycontroller-org/pre-releases.git pre-releases
         mkdir -p pre-releases/v2
