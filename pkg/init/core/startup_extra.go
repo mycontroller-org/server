@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	loginMessage = "Default user name and password to login: admin / admin"
+	loginMessage = "Default username and password to login: <b>admin</b> / <b>admin</b>"
 )
 
 // StartupJobsExtra func

@@ -6,7 +6,10 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
+	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/version"
 )
 
@@ -23,8 +26,24 @@ func status(w http.ResponseWriter, r *http.Request) {
 	hn, err := os.Hostname()
 	if err != nil {
 		http.Error(w, err.Error(), 500)
+		return
 	}
 	s["hostname"] = hn
+
+	// include login message
+	rawSettings, err := settingsAPI.GetByID(settingsML.KeySystemSettings)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	sysSettings := &settingsML.SystemSettings{}
+	err = utils.MapToStruct(utils.TagNameNone, rawSettings.Spec, sysSettings)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	s["login"] = sysSettings.Login
+
 	od, err := json.Marshal(&s)
 	if err != nil {
 		http.Error(w, err.Error(), 500)

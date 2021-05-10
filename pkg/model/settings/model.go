@@ -37,7 +37,8 @@ type GeoLocation struct {
 
 // Login settings
 type Login struct {
-	Message string `json:"message"`
+	Message       string `json:"message"`
+	ServerMessage string `json:"serverMessage"`
 }
 
 // VersionSettings struct
