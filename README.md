@@ -2,9 +2,10 @@
 ![lint workflow](https://github.com/mycontroller-org/backend/actions/workflows/lint.yaml/badge.svg)
 ![build workflow](https://github.com/mycontroller-org/backend/actions/workflows/build.yaml/badge.svg)
 
-MyController.org version 2.x is in early development stage.
+MyController.org version 2.x is in alpha stage.
 
-**WARNING:** Huge change will be expected on each commit. At this moment this version is not ready for the production environment.
+**WARNING:** Change will be expected on each commit. At this moment this version is not ready for the production environment.
+However you can give a try and report issues.
 
 ### Demo
 * https://demo-v2.mycontroller.org
