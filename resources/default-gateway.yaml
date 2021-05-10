@@ -1,24 +1,22 @@
-secret: 5a2f6ff25b0025aeae12ae096363b51a
-
 directories:
   data: /mc_home/data
   logs: /mc_home/logs
+  tmp: /mc_home/tmp
 
 logger:
-  mode: production # other option: development
+  mode: development
   encoding: console
   level:
     core: info
-    storage: info
-    metrics: warn
 
 bus:
   type: nats_io
-  topic_prefix:
-  server_url: <nats_url>
+  topic_prefix: mc_core
+  server_url: nats://192.168.1.21:4222
   tls_insecure_skip_verify: false
   connection_timeout: 10s
 
 gateway:
   ids: []
-  labels: {}
+  labels: 
+    location: external_gw1

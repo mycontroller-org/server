@@ -23,9 +23,9 @@ type Config struct {
 
 // WebConfig input
 type WebConfig struct {
-	BindAddress     string `yaml:"bindAddress"`
+	BindAddress     string `yaml:"bind_address"`
 	Port            uint   `yaml:"port"`
-	WebDirectory    string `yaml:"webDirectory"`
+	WebDirectory    string `yaml:"web_directory"`
 	EnableProfiling bool   `yaml:"enable_profiling"`
 }
 

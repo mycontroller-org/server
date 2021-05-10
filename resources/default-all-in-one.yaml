@@ -1,24 +1,31 @@
 web:
-  bindAddress: "0.0.0.0"
+  bind_address: "0.0.0.0"
   port: 8080
-  webDirectory: /ui
+  web_directory: /ui
   enable_profiling: false
 
 secret: 5a2f6ff25b0025aeae12ae096363b51a
+
+logger:
+  mode: development
+  encoding: console
+  level:
+    core: info
+    storage: info
+    metrics: warn
 
 directories:
   data: /mc_home/data
   logs: /mc_home/logs
   tmp: /mc_home/tmp
 
-logger:
-  mode: development
-  # mode: production
-  encoding: console
-  level:
-    core: info
-    storage: info
-    metrics: warn
+bus:
+  type: embedded
+
+gateway:
+  ids: []
+  labels:
+    location: internal
 
 database:
   storage: memory_db
@@ -43,11 +50,3 @@ databases:
     bucket: mycontroller
     batch_size:
     flush_interval: 5s
-
-bus:
-  type: embedded
-
-gateway:
-  ids: []
-  labels:
-    location: core
