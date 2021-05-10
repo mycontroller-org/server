@@ -18,9 +18,9 @@ build_binaries() {
   os=$1
   arch=$2
   mkdir -p binaries
-  GOOS=${os} GOARCH=${arch} go build -o -v binaries/mycontroller-all-in-one_${os}_${arch} -ldflags "$LD_FLAGS" cmd/all-in-one/main.go
-  GOOS=${os} GOARCH=${arch} go build -o -v binaries/mycontroller-core_${os}_${arch} -ldflags "$LD_FLAGS" cmd/core/main.go
-  GOOS=${os} GOARCH=${arch} go build -o -v binaries/mycontroller-gateway_${os}_${arch} -ldflags "$LD_FLAGS" cmd/gateway/main.go
+  GOOS=${os} GOARCH=${arch} go build -v -o binaries/mycontroller-all-in-one_${os}_${arch} -ldflags "$LD_FLAGS" cmd/all-in-one/main.go
+  GOOS=${os} GOARCH=${arch} go build -v -o binaries/mycontroller-core_${os}_${arch} -ldflags "$LD_FLAGS" cmd/core/main.go
+  GOOS=${os} GOARCH=${arch} go build -v -o binaries/mycontroller-gateway_${os}_${arch} -ldflags "$LD_FLAGS" cmd/gateway/main.go
 }
 
 # compile for android
