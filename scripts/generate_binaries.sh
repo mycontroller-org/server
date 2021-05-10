@@ -9,8 +9,6 @@ VERSION_PKG="github.com/mycontroller-org/backend/v2/pkg/version"
 LD_FLAGS="-X $VERSION_PKG.version=$GIT_BRANCH -X $VERSION_PKG.buildDate=$BUILD_DATE -X $VERSION_PKG.gitCommit=$GIT_SHA"
 
 # different architectures
-ANDROID_ARCHITECTURES="arm"
-DARWIN_ARCHITECTURES="arm arm64 386 amd64"
 LINUX_ARCHITECTURES="arm arm64 386 amd64"
 WINDOWS_ARCHITECTURES="386 amd64"
 
@@ -25,19 +23,7 @@ build_binaries() {
 
 # download dependencies
 go mod tidy
-
-# compile for android
-for arch in ${ANDROID_ARCHITECTURES}
-do
-  build_binaries "android" ${arch}
-done
-
-# compile for darwin
-for arch in ${DARWIN_ARCHITECTURES}
-do
-  build_binaries "darwin" ${arch}
-done
-
+ 
 # compile for linux
 for arch in ${LINUX_ARCHITECTURES}
 do
