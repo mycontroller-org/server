@@ -38,9 +38,10 @@ jobs:
       env:
         RELEASE_REPO: "pre-release"
       run: |
-        mkdir -p ${RELEASE_REPO}/v2
-        cp binaries/* ${RELEASE_REPO}/v2/
-        cd ${RELEASE_REPO}
+        ls ../
+        mkdir -p ../${RELEASE_REPO}/v2
+        cp binaries/* ../${RELEASE_REPO}/v2/
+        cd ../${RELEASE_REPO}
         git config user.name "Jeeva Kandasamy"
         git config user.email jkandasa@gmail.com
         git add v2/.
