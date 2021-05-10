@@ -12,12 +12,6 @@ jobs:
     steps:
     - name: backend repository
       uses: actions/checkout@v2
-    - name: pre release repository
-      uses: actions/checkout@v2
-      with:
-        repository: mycontroller-org/pre-releases
-        path: pre-releases
-        # token: ${{ secrets.GITHUB_PAT }}
 
     - uses: actions/setup-go@v2
       with:
