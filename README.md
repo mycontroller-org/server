@@ -2,15 +2,17 @@
 ![lint workflow](https://github.com/mycontroller-org/backend/actions/workflows/lint.yaml/badge.svg)
 ![build workflow](https://github.com/mycontroller-org/backend/actions/workflows/build.yaml/badge.svg)
 
-MyController.org version 2.x is in alpha stage.
+MyController 2.0 is in the alpha phase.
 
-**WARNING:** Change will be expected on each commit. At this moment this version is not ready for the production environment.
-However you can give a try and report issues.
+**WARNING:** 
+Changes will be expected on each commit.
+At this moment this version is not ready for the production environment.
+You can give it a try in a non-production environment and report back the issues.
 
-### Demo
+## Demo
 * https://demo-v2.mycontroller.org
 * default username and password to login: `admin` / `admin`
 
-### Documentation
+## Documentation
 * [Overview](https://v2.mycontroller.org/docs/overview/)
 * [Quick Installation](https://v2.mycontroller.org/docs/quick-installation/)
