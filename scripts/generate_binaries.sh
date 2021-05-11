@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# this script used to generate binary files
+# should be executed from the root locations of the repository
+
 BUILD_DATE=`date -u +'%Y-%m-%dT%H:%M:%S%:z'`
 GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 GIT_SHA=`git rev-parse HEAD`
