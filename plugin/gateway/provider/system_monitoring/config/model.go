@@ -20,6 +20,7 @@ type MemoryConfig struct {
 	Interval           string
 	MemoryDisabled     bool
 	SwapMemoryDisabled bool
+	Unit               string
 }
 
 // CPU details
@@ -41,6 +42,7 @@ type DiskData struct {
 	Disabled bool
 	Name     string
 	Path     string
+	Unit     string
 }
 
 // Temperature details
@@ -61,6 +63,7 @@ type ProcessConfig struct {
 type ProcessData struct {
 	Disabled bool
 	Name     string
+	Unit     string
 	Filter   map[string]string
 }
 

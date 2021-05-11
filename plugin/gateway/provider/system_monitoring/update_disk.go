@@ -7,24 +7,24 @@ import (
 )
 
 func (p *Provider) updateDisk() {
-	for sourceID, data := range p.HostConfig.Disk.Data {
-		if !data.Disabled {
-			stat, err := disk.Usage(data.Path)
+	for sourceID, dataCFG := range p.HostConfig.Disk.Data {
+		if !dataCFG.Disabled {
+			stat, err := disk.Usage(dataCFG.Path)
 			if err != nil {
-				zap.L().Error("error on getting disk stat", zap.String("path", data.Path), zap.Error(err))
+				zap.L().Error("error on getting disk stat", zap.String("path", dataCFG.Path), zap.Error(err))
 				continue
 			}
 
 			// presentation message
-			sourceName := data.Name
+			sourceName := dataCFG.Name
 			if sourceName == "" {
-				sourceName = data.Path
+				sourceName = dataCFG.Path
 			}
 			presentMsg := p.getSourcePresentationMsg(sourceID, sourceName)
 			othersData := presentMsg.Payloads[0]
 			othersData.Others.Set("fstype", stat.Fstype, nil)
 			othersData.Others.Set("inodes_total", stat.InodesTotal, nil)
-			othersData.Others.Set("size", stat.Total, nil)
+			othersData.Others.Set("size", getValueByUnit(stat.Total, dataCFG.Unit), nil)
 			presentMsg.Payloads[0] = othersData
 
 			err = p.postMsg(&presentMsg)
@@ -41,8 +41,8 @@ func (p *Provider) updateDisk() {
 			msg.Payloads = append(msg.Payloads, inodeData)
 
 			usedData := p.getData("used_percent", stat.UsedPercent, metricsML.MetricTypeGaugeFloat)
-			usedData.Others.Set("used", stat.Used, nil)
-			usedData.Others.Set("total", stat.Total, nil)
+			usedData.Others.Set("used", getValueByUnit(stat.Used, dataCFG.Unit), nil)
+			usedData.Others.Set("total", getValueByUnit(stat.Total, dataCFG.Unit), nil)
 			msg.Payloads = append(msg.Payloads, usedData)
 
 			err = p.postMsg(&msg)

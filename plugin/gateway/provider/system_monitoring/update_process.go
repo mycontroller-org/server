@@ -17,11 +17,11 @@ func (p *Provider) updateProcess() {
 		return
 	}
 
-	for sourceID, data := range p.HostConfig.Process.Data {
-		if data.Disabled {
+	for sourceID, dataCFG := range p.HostConfig.Process.Data {
+		if dataCFG.Disabled {
 			continue
 		}
-		if len(data.Filter) == 0 {
+		if len(dataCFG.Filter) == 0 {
 			continue
 		}
 
@@ -29,7 +29,7 @@ func (p *Provider) updateProcess() {
 
 			// verify filter
 			matching := true
-			for key, expectedValue := range data.Filter {
+			for key, expectedValue := range dataCFG.Filter {
 				actualValue := ""
 				var err error
 				switch strings.ToLower(key) {
@@ -95,7 +95,7 @@ func (p *Provider) updateProcess() {
 			}
 
 			// presentation message
-			sourceName := data.Name
+			sourceName := dataCFG.Name
 			if sourceName == "" {
 				sourceName = sourceID
 			}
@@ -200,9 +200,9 @@ func (p *Provider) updateProcess() {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			msg.Payloads = append(msg.Payloads, p.getData("rss", memInfo.RSS, metricsML.MetricTypeGauge))
-			msg.Payloads = append(msg.Payloads, p.getData("vms", memInfo.VMS, metricsML.MetricTypeNone))
-			msg.Payloads = append(msg.Payloads, p.getData("swap", memInfo.Swap, metricsML.MetricTypeNone))
+			msg.Payloads = append(msg.Payloads, p.getData("rss", getValueByUnit(memInfo.RSS, dataCFG.Unit), metricsML.MetricTypeGauge))
+			msg.Payloads = append(msg.Payloads, p.getData("vms", getValueByUnit(memInfo.VMS, dataCFG.Unit), metricsML.MetricTypeNone))
+			msg.Payloads = append(msg.Payloads, p.getData("swap", getValueByUnit(memInfo.Swap, dataCFG.Unit), metricsML.MetricTypeNone))
 			msg.Payloads = append(msg.Payloads, p.getData("stack", memInfo.Stack, metricsML.MetricTypeNone))
 			msg.Payloads = append(msg.Payloads, p.getData("locked", memInfo.Locked, metricsML.MetricTypeNone))
 			msg.Payloads = append(msg.Payloads, p.getData("data", memInfo.Data, metricsML.MetricTypeNone))
