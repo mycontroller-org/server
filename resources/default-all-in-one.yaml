@@ -21,6 +21,10 @@ directories:
 
 bus:
   type: embedded
+  topic_prefix: mc_all_in_one
+  server_url: nats://192.168.1.21:4222
+  tls_insecure_skip_verify: false
+  connection_timeout: 10s
 
 gateway:
   ids: []
@@ -37,10 +41,10 @@ databases:
     dump_enabled: true
     dump_interval: 10m
     dump_dir: "memory_db"
-    dump_format: ["yaml", "json"]
+    dump_format: ["yaml"]
     load_format: "yaml"
 
-  - name: influxdb_database
+  - name: influx_database
     type: influxdb_v2
     uri: http://192.168.1.21:8086
     token: 

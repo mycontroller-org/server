@@ -27,16 +27,28 @@ bus:
   connection_timeout: 10s
 
 database:
-  storage: memory_db
+  storage: memory_database
   metrics: void_database
 
 databases:
-  - name: memory_db
+  - name: memory_database
     type: memory
     dump_enabled: true
-    dump_interval: 1m
+    dump_interval: 10m
     dump_dir: "memory_db"
-    dump_format: ["yaml", "json"]
+    dump_format: ["yaml"]
+    load_format: "yaml"
+
+  - name: influx_database
+    type: influxdb_v2
+    uri: http://192.168.1.21:8086
+    token: 
+    username:
+    password:
+    organization: 
+    bucket: mycontroller
+    batch_size:
+    flush_interval: 5s
 
   - name: void_database
     type: void_db

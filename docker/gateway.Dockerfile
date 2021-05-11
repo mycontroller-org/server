@@ -1,4 +1,4 @@
-FROM --platform=${BUILDPLATFORM} quay.io/mycontroller-org/golang:1.16.0-alpine3.13 AS builder
+FROM --platform=${BUILDPLATFORM} golang:1.16-alpine3.13 AS builder
 RUN mkdir /app
 ADD . /app
 WORKDIR /app

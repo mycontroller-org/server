@@ -1,7 +1,9 @@
-FROM --platform=${BUILDPLATFORM:-linux/amd64} quay.io/mycontroller-org/golang:1.16.0-alpine3.13 AS builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.16-alpine3.13 AS builder
 RUN mkdir /app
 ADD . /app
 WORKDIR /app
+
+RUN apk add --no-cache git
 
 ARG GOPROXY
 # download deps before gobuild
