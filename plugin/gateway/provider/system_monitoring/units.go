@@ -1,20 +1,37 @@
 package systemmonitoring
 
-func getValueByUnit(value uint64, unit string) uint64 {
+const (
+	KiB = 1 << (10 * (iota + 1)) // Kibibytes
+	MiB = 1 << (10 * (iota + 1)) // Mibibytes
+	GiB = 1 << (10 * (iota + 1)) // Gibibytes
+	TiB = 1 << (10 * (iota + 1)) // Tebibytes
+	PiB = 1 << (10 * (iota + 1)) // Pebibytes
+	EiB = 1 << (10 * (iota + 1)) // Exbibytes
+)
+
+func getValueByUnit(value uint64, unit string) float64 {
+	floatValue := float64(value)
+
 	switch unit {
 	case "KiB":
-		return value / 1024
+		return floatValue / KiB
 
 	case "MiB":
-		return value / (1024 * 1024)
+		return floatValue / MiB
 
 	case "GiB":
-		return value / (1024 * 1024 * 1024)
+		return floatValue / GiB
 
 	case "TiB":
-		return value / (1024 * 1024 * 1024 * 1024)
+		return floatValue / TiB
+
+	case "PiB":
+		return floatValue / PiB
+
+	case "EiB":
+		return floatValue / EiB
 
 	default:
-		return value
+		return floatValue
 	}
 }

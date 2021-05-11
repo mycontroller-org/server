@@ -200,7 +200,7 @@ func (p *Provider) updateProcess() {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			msg.Payloads = append(msg.Payloads, p.getData("rss", getValueByUnit(memInfo.RSS, dataCFG.Unit), metricsML.MetricTypeGauge))
+			msg.Payloads = append(msg.Payloads, p.getData("rss", getValueByUnit(memInfo.RSS, dataCFG.Unit), metricsML.MetricTypeGaugeFloat))
 			msg.Payloads = append(msg.Payloads, p.getData("vms", getValueByUnit(memInfo.VMS, dataCFG.Unit), metricsML.MetricTypeNone))
 			msg.Payloads = append(msg.Payloads, p.getData("swap", getValueByUnit(memInfo.Swap, dataCFG.Unit), metricsML.MetricTypeNone))
 			msg.Payloads = append(msg.Payloads, p.getData("stack", memInfo.Stack, metricsML.MetricTypeNone))

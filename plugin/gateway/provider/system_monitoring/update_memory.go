@@ -30,7 +30,7 @@ func (p *Provider) updateMemory() {
 			return
 		}
 		msg.Payloads = append(msg.Payloads, p.getData("total", getValueByUnit(vm.Total, cfg.Unit), metricsML.MetricTypeNone))
-		msg.Payloads = append(msg.Payloads, p.getData("used", getValueByUnit(vm.Used, cfg.Unit), metricsML.MetricTypeGauge))
+		msg.Payloads = append(msg.Payloads, p.getData("used", getValueByUnit(vm.Used, cfg.Unit), metricsML.MetricTypeGaugeFloat))
 		msg.Payloads = append(msg.Payloads, p.getData("used_percent", vm.UsedPercent, metricsML.MetricTypeGaugeFloat))
 	}
 
@@ -41,7 +41,7 @@ func (p *Provider) updateMemory() {
 			return
 		}
 		msg.Payloads = append(msg.Payloads, p.getData("swap_total", getValueByUnit(sm.Total, cfg.Unit), metricsML.MetricTypeNone))
-		msg.Payloads = append(msg.Payloads, p.getData("swap_used", getValueByUnit(sm.Used, cfg.Unit), metricsML.MetricTypeGauge))
+		msg.Payloads = append(msg.Payloads, p.getData("swap_used", getValueByUnit(sm.Used, cfg.Unit), metricsML.MetricTypeGaugeFloat))
 		msg.Payloads = append(msg.Payloads, p.getData("swap_used_percent", sm.UsedPercent, metricsML.MetricTypeGaugeFloat))
 	}
 
