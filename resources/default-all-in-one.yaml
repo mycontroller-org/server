@@ -53,7 +53,7 @@ databases:
     organization: 
     bucket: mycontroller
     batch_size:
-    flush_interval: 5s
+    flush_interval: 1s
 
   - name: void_database
     type: void_db
