@@ -4,3 +4,4 @@
 !/resources/default*.yaml
 /scripts/push_bin.sh
 binaries/*
+builds/*
