@@ -1,6 +1,6 @@
 # MyController
 ![lint workflow](https://github.com/mycontroller-org/backend/actions/workflows/lint.yaml/badge.svg)
-![build workflow](https://github.com/mycontroller-org/backend/actions/workflows/build.yaml/badge.svg)
+![publish images workflow](https://github.com/mycontroller-org/backend/actions/workflows/publish_images.yaml/badge.svg)
 
 MyController 2.0 is in the alpha phase.
 
