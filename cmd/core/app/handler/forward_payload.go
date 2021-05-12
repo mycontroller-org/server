@@ -7,9 +7,9 @@ import (
 
 	"github.com/gorilla/mux"
 	fpAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	fpml "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	fwdPayloadML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 func registerForwardPayloadRoutes(router *mux.Router) {
@@ -22,27 +22,27 @@ func registerForwardPayloadRoutes(router *mux.Router) {
 }
 
 func listForwardPayload(w http.ResponseWriter, r *http.Request) {
-	FindMany(w, r, ml.EntityForwardPayload, &[]fpml.Mapping{})
+	FindMany(w, r, model.EntityForwardPayload, &[]fwdPayloadML.Config{})
 }
 
 func getForwardPayload(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, ml.EntityForwardPayload, &fpml.Mapping{})
+	FindOne(w, r, model.EntityForwardPayload, &fwdPayloadML.Config{})
 }
 
 func updateForwardPayload(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
-		e := d.(*fpml.Mapping)
+	bwFunc := func(d interface{}, f *[]stgML.Filter) error {
+		e := d.(*fwdPayloadML.Config)
 		if e.ID == "" {
 			return errors.New("id should not be an empty")
 		}
 		return nil
 	}
-	SaveEntity(w, r, ml.EntityForwardPayload, &fpml.Mapping{}, bwFunc)
+	SaveEntity(w, r, model.EntityForwardPayload, &fwdPayloadML.Config{}, bwFunc)
 }
 
 func deleteForwardPayload(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			count, err := fpAPI.Delete(ids)
 			if err != nil {
@@ -57,7 +57,7 @@ func deleteForwardPayload(w http.ResponseWriter, r *http.Request) {
 
 func enableForwardPayload(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := fpAPI.Enable(ids)
 			if err != nil {
@@ -72,7 +72,7 @@ func enableForwardPayload(w http.ResponseWriter, r *http.Request) {
 
 func disableForwardPayload(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := fpAPI.Disable(ids)
 			if err != nil {

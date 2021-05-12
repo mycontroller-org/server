@@ -6,10 +6,9 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
 
-// Mapping of forward payload
-type Mapping struct {
+// Config of forward payload
+type Config struct {
 	ID          string               `json:"id"`
-	Name        string               `json:"name"`
 	Description string               `json:"description"`
 	Enabled     bool                 `json:"enabled"`
 	SrcFieldID  string               `json:"srcFieldId"`

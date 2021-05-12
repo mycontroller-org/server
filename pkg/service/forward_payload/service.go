@@ -4,17 +4,16 @@ import (
 	"fmt"
 
 	"github.com/mycontroller-org/backend/v2/pkg/api/action"
-	fpAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
+	fwdpayloadAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
 	"github.com/mycontroller-org/backend/v2/pkg/model/field"
-	fpml "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
+	fedPayloadML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	quickIdUtils "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
@@ -94,12 +93,12 @@ func processEvent(item interface{}) {
 	}
 
 	// fetch mapped filed for this event
-	pagination := &stgml.Pagination{Limit: 50}
-	filters := []stgml.Filter{
-		{Key: ml.KeySrcFieldID, Operator: stgml.OperatorEqual, Value: quickID},
-		{Key: ml.KeyEnabled, Operator: stgml.OperatorEqual, Value: true},
+	pagination := &stgML.Pagination{Limit: 50}
+	filters := []stgML.Filter{
+		{Key: model.KeySrcFieldID, Operator: stgML.OperatorEqual, Value: quickID},
+		{Key: model.KeyEnabled, Operator: stgML.OperatorEqual, Value: true},
 	}
-	response, err := fpAPI.List(filters, pagination)
+	response, err := fwdpayloadAPI.List(filters, pagination)
 	if err != nil {
 		zap.L().Error("error getting mapping data from database", zap.Error(err))
 		return
@@ -111,7 +110,7 @@ func processEvent(item interface{}) {
 
 	zap.L().Debug("Starting data forwarding", zap.Any("data", field))
 
-	mappings := *response.Data.(*[]fpml.Mapping)
+	mappings := *response.Data.(*[]fedPayloadML.Config)
 	for index := 0; index < len(mappings); index++ {
 		mapping := mappings[index]
 		// send payload

@@ -3,7 +3,7 @@ package forwardpayload
 import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
-	fpML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
+	fwdPayloadML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -13,19 +13,19 @@ import (
 
 // List by filter and pagination
 func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
-	result := make([]fpML.Mapping, 0)
+	result := make([]fwdPayloadML.Config, 0)
 	return stg.SVC.Find(model.EntityForwardPayload, &result, filters, pagination)
 }
 
 // Get returns a item
-func Get(filters []stgML.Filter) (*fpML.Mapping, error) {
-	result := &fpML.Mapping{}
+func Get(filters []stgML.Filter) (*fwdPayloadML.Config, error) {
+	result := &fwdPayloadML.Config{}
 	err := stg.SVC.FindOne(model.EntityForwardPayload, result, filters)
 	return result, err
 }
 
 // Save a item details
-func Save(fp *fpML.Mapping) error {
+func Save(fp *fwdPayloadML.Config) error {
 	eventType := eventML.TypeUpdated
 	if fp.ID == "" {
 		fp.ID = utils.RandUUID()
@@ -57,7 +57,7 @@ func Enable(ids []string) error {
 		return err
 	}
 
-	mappings := *response.Data.(*[]fpML.Mapping)
+	mappings := *response.Data.(*[]fwdPayloadML.Config)
 	for index := 0; index < len(mappings); index++ {
 		mapping := mappings[index]
 		if !mapping.Enabled {
@@ -79,7 +79,7 @@ func Disable(ids []string) error {
 	if err != nil {
 		return err
 	}
-	mappings := *response.Data.(*[]fpML.Mapping)
+	mappings := *response.Data.(*[]fwdPayloadML.Config)
 	for index := 0; index < len(mappings); index++ {
 		mapping := mappings[index]
 		if mapping.Enabled {

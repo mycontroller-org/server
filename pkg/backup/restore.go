@@ -12,7 +12,7 @@ import (
 	dataRepositoryAPI "github.com/mycontroller-org/backend/v2/pkg/api/data_repository"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	fwAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
-	fpAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
+	fwdPayloadAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
@@ -29,7 +29,7 @@ import (
 	dataRepositoryML "github.com/mycontroller-org/backend/v2/pkg/model/data_repository"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
-	fpML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
+	fwdPayloadML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	nhML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
@@ -287,13 +287,13 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 		}
 
 	case model.EntityForwardPayload:
-		entities := make([]fpML.Mapping, 0)
+		entities := make([]fwdPayloadML.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
 		}
 		for index := 0; index < len(entities); index++ {
-			err = fpAPI.Save(&entities[index])
+			err = fwdPayloadAPI.Save(&entities[index])
 			if err != nil {
 				return err
 			}

@@ -10,6 +10,7 @@ import (
 	dataRepoML "github.com/mycontroller-org/backend/v2/pkg/model/data_repository"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
+	fwdPayloadML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
@@ -30,6 +31,7 @@ var (
 	QuickIDHandler        = []string{"handler"}
 	QuickIDFirmware       = []string{"firmware"}
 	QuickIDDataRepository = []string{"data_repository"}
+	QuickIDForwardPayload = []string{"forward_payload"}
 )
 
 // IsValidQuickID says is it in quikID format
@@ -52,6 +54,7 @@ func IsValidQuickID(quickID string) bool {
 	validIDs = append(validIDs, QuickIDHandler...)
 	validIDs = append(validIDs, QuickIDDataRepository...)
 	validIDs = append(validIDs, QuickIDFirmware...)
+	validIDs = append(validIDs, QuickIDForwardPayload...)
 
 	return utils.ContainsString(validIDs, entityType)
 }
@@ -132,7 +135,8 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 		utils.ContainsString(QuickIDSchedule, entityType),
 		utils.ContainsString(QuickIDHandler, entityType),
 		utils.ContainsString(QuickIDDataRepository, entityType),
-		utils.ContainsString(QuickIDFirmware, entityType):
+		utils.ContainsString(QuickIDFirmware, entityType),
+		utils.ContainsString(QuickIDForwardPayload, entityType):
 		if typeID[1] == "" {
 			return "", nil, fmt.Errorf("invalid data. quickID:%s", quickID)
 		}
@@ -220,6 +224,12 @@ func GetQuickID(entity interface{}) (string, error) {
 		res, ok := entity.(dataRepoML.Config)
 		if ok {
 			return fmt.Sprintf("%s:%s", QuickIDDataRepository[0], res.ID), nil
+		}
+
+	case reflect.TypeOf(fwdPayloadML.Config{}):
+		res, ok := entity.(fwdPayloadML.Config)
+		if ok {
+			return fmt.Sprintf("%s:%s", QuickIDForwardPayload[0], res.ID), nil
 		}
 
 	default:
