@@ -16,7 +16,7 @@ func isTriggeredJavascript(taskID string, config taskML.EvaluationConfig, variab
 	// data, _ := json.Marshal(result)
 	// zap.L().Info("variables", zap.Any("vars", string(data)))
 	if resultMap, ok := result.(map[string]interface{}); ok {
-		isTriggered, isTriggeredFound := resultMap[taskML.KeyScriptIsTriggered]
+		isTriggered, isTriggeredFound := resultMap[taskML.KeyIsTriggered]
 		if isTriggeredFound {
 			return resultMap, converterUtils.ToBool(isTriggered)
 		}

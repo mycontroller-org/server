@@ -48,7 +48,9 @@ func executeTask(task *taskML.Config, evntWrapper *eventWrapper) {
 		variables = variablesUtils.Merge(variables, responseMap)
 
 	case taskML.EvaluationTypeWebhook:
-		// TODO: implement webhook based solution
+		responseMap, triggeredStatus := isTriggeredWebhook(task.ID, task.EvaluationConfig, variables)
+		triggered = triggeredStatus
+		variables = variablesUtils.Merge(variables, responseMap)
 
 	default:
 		zap.L().Error("Unknown rule engine type", zap.String("type", task.EvaluationType))

@@ -23,7 +23,7 @@ const (
 
 // keys used in script engine
 const (
-	KeyScriptIsTriggered = "isTriggered" // expected value from script to trigger
+	KeyIsTriggered = "isTriggered" // expected value from script or from webhook to trigger
 )
 
 // Config struct
@@ -56,15 +56,23 @@ type EventFilter struct {
 
 // EvaluationConfig struct
 type EvaluationConfig struct {
-	Rule       Rule   `json:"rule"`
-	Javascript string `json:"javascript"`
-	WebhookAPI string `json:"webhookApi"`
+	Rule       Rule        `json:"rule"`
+	Javascript string      `json:"javascript"`
+	Webhook    WebhookData `json:"webhook"`
 }
 
 // Rule struct
 type Rule struct {
 	MatchAll   bool         `json:"matchAll"`
 	Conditions []Conditions `json:"conditions"`
+}
+
+// WebhookData struct
+type WebhookData struct {
+	URL                string            `json:"url"`
+	InsecureSkipVerify bool              `json:"insecureSkipVerify"`
+	Headers            map[string]string `json:"headers"`
+	IncludeTaskConfig  bool              `json:"includeTaskConfig"`
 }
 
 // Conditions struct
