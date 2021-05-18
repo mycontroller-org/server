@@ -3,6 +3,7 @@ package variables
 import (
 	"encoding/base64"
 	"fmt"
+	"net/http"
 	"reflect"
 	"strings"
 
@@ -290,11 +291,31 @@ func UpdateParameters(variables map[string]interface{}, parameters map[string]st
 
 			// repack string to base64 string
 			genericData.Data = base64.StdEncoding.EncodeToString([]byte(updatedValue))
-			jsonBytes, err := json.Marshal(genericData)
-			if err != nil {
-				zap.L().Error("error on converting to json", zap.Error(err), zap.String("name", name))
+
+			// if it is a webhook data and customData not enabled, update variables on the data field
+			if genericData.Type == handlerML.DataTypeWebhook {
+				webhookData := handlerML.WebhookData{}
+				err = UnmarshalBase64Yaml(genericData.Data, &webhookData)
+				if err != nil {
+					zap.L().Error("error on converting webhook data", zap.Error(err), zap.String("name", name))
+					continue
+				}
+				if webhookData.Method != http.MethodGet && !webhookData.CustomData {
+					webhookData.Data = variables
+					updatedString, err := MarshalBase64Yaml(webhookData)
+					if err != nil {
+						zap.L().Error("error on converting webhook data to yaml", zap.Error(err), zap.String("name", name))
+						continue
+					}
+					genericData.Data = updatedString
+				}
+
+				jsonBytes, err := json.Marshal(genericData)
+				if err != nil {
+					zap.L().Error("error on converting to json", zap.Error(err), zap.String("name", name))
+				}
+				updatedParameters[name] = string(jsonBytes)
 			}
-			updatedParameters[name] = string(jsonBytes)
 		} else { // update as a normal text
 			updatedValue, err := templateUtils.Execute(value, variables)
 			if err != nil {

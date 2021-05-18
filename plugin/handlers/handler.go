@@ -10,6 +10,7 @@ import (
 	noopHandler "github.com/mycontroller-org/backend/v2/plugin/handlers/noop"
 	resourceAction "github.com/mycontroller-org/backend/v2/plugin/handlers/resource"
 	telegramHandler "github.com/mycontroller-org/backend/v2/plugin/handlers/telegram"
+	webhookHandler "github.com/mycontroller-org/backend/v2/plugin/handlers/webhook"
 )
 
 // Handler interface details for operation
@@ -38,6 +39,9 @@ func GetHandler(cfg *handlerML.Config) (Handler, error) {
 
 	case handlerML.TypeTelegram:
 		return telegramHandler.Init(cfg)
+
+	case handlerML.TypeWebhook:
+		return webhookHandler.Init(cfg)
 
 	case handlerML.TypeBackup:
 		return backupHandler.Init(cfg)
