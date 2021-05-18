@@ -55,11 +55,11 @@ func SaveAndReload(cfg *schedulerML.Config) error {
 
 // GetByID returns a scheduler by id
 func GetByID(id string) (*schedulerML.Config, error) {
-	f := []stgML.Filter{
+	filters := []stgML.Filter{
 		{Key: model.KeyID, Value: id},
 	}
 	out := &schedulerML.Config{}
-	err := stg.SVC.FindOne(model.EntityScheduler, out, f)
+	err := stg.SVC.FindOne(model.EntityScheduler, out, filters)
 	return out, err
 }
 

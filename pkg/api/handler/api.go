@@ -8,6 +8,7 @@ import (
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	cloneutil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
 	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -41,10 +42,17 @@ func Save(cfg *handlerML.Config) error {
 		cfg.ID = utils.RandUUID()
 		eventType = eventML.TypeCreated
 	}
-	f := []stgML.Filter{
+
+	// encrypt passwords
+	err := cloneutil.UpdateSecrets(cfg, true)
+	if err != nil {
+		return err
+	}
+
+	filters := []stgML.Filter{
 		{Key: model.KeyID, Value: cfg.ID},
 	}
-	err := stg.SVC.Upsert(model.EntityHandler, cfg, f)
+	err = stg.SVC.Upsert(model.EntityHandler, cfg, filters)
 	if err != nil {
 		return err
 	}

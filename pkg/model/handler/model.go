@@ -21,13 +21,11 @@ const (
 
 // handler data types
 const (
-	DataTypeEmail      = "email"
-	DataTypeTelegram   = "telegram"
-	DataTypeWebhook    = "webhook"
-	DataTypeSMS        = "sms"
-	DataTypePushbullet = "pushbullet"
-	DataTypeResource   = "resource"
-	DataTypeBackup     = "backup"
+	DataTypeResource = "resource"
+	DataTypeEmail    = "email"
+	DataTypeTelegram = "telegram"
+	DataTypeWebhook  = "webhook"
+	DataTypeBackup   = "backup"
 )
 
 // Config model

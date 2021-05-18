@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 
 	cfgml "github.com/mycontroller-org/backend/v2/pkg/model/config"
@@ -35,4 +36,14 @@ func Init() {
 	if err != nil {
 		logger.Fatal("Failed to unmarshal yaml data", zap.Error(err))
 	}
+
+	// update encryption key length
+	// converts it to fixed size as 32 bytes
+	CFG.Secret = updatedKey(CFG.Secret)
+}
+
+// UpdatedKey returns fixed key size
+// that is 32 bytes
+func updatedKey(actualKey string) string {
+	return fmt.Sprintf("%032.32s", actualKey)
 }

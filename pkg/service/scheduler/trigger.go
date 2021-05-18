@@ -24,7 +24,7 @@ func getScheduleTriggerFunc(cfg *schedulerML.Config, spec string) func() {
 func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 	// validate schedule
 	if !isValidSchedule(cfg) {
-		zap.L().Info("at this time, this is not a valid schedule", zap.String("ScheduleID", cfg.ID), zap.String("spec", spec), zap.Any("validity details", cfg.Validity))
+		zap.L().Debug("at this time, this is not a valid schedule", zap.String("ScheduleID", cfg.ID), zap.String("spec", spec), zap.Any("validity details", cfg.Validity))
 		return
 	}
 
@@ -102,6 +102,9 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 		if spec.RepeatCount != 0 && cfg.State.ExecutedCount >= spec.RepeatCount {
 			zap.L().Debug("Reached maximum execution count, disbling this job", zap.String("ScheduleID", cfg.ID), zap.Any("spec", cfg.Spec))
 			busUtils.DisableSchedule(cfg.ID)
+			// Sometimes setState updates as enabled
+			// To avoid this addind small sleep, but this is not good fix.
+			time.Sleep(time.Millisecond * 5)
 			cfg.State.Message = fmt.Sprintf("time taken: %s, reached maximum execution count", time.Since(start).String())
 			busUtils.SetScheduleState(cfg.ID, *cfg.State)
 			return

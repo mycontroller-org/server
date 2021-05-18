@@ -5,6 +5,7 @@ import (
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
+	cloneutil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
@@ -114,6 +115,11 @@ func postCommand(cfg *handlerML.Config, command string) error {
 		Command: command,
 	}
 	if cfg != nil {
+		// descrypt the secrets
+		err := cloneutil.UpdateSecrets(cfg, false)
+		if err != nil {
+			return err
+		}
 		reqEvent.ID = cfg.ID
 		reqEvent.SetData(cfg)
 	}

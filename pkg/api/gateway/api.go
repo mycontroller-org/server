@@ -9,6 +9,7 @@ import (
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	cloneutil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -52,7 +53,14 @@ func Save(gwCfg *gwml.Config) error {
 		gwCfg.ID = ut.RandID()
 		eventType = eventML.TypeCreated
 	}
-	err := stg.SVC.Upsert(ml.EntityGateway, gwCfg, nil)
+
+	// encrypt passwords
+	err := cloneutil.UpdateSecrets(gwCfg, true)
+	if err != nil {
+		return err
+	}
+
+	err = stg.SVC.Upsert(ml.EntityGateway, gwCfg, nil)
 	if err != nil {
 		return err
 	}

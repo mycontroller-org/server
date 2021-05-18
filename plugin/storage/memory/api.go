@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
+	cloneutil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
@@ -34,24 +35,28 @@ func (s *Store) Insert(entityName string, data interface{}) error {
 	if entity != nil {
 		return fmt.Errorf("a entity found with the id: %s", newID)
 	}
-	s.addEntity(entityName, data)
+
+	clonedData := cloneutil.Clone(data)
+	s.addEntity(entityName, clonedData)
 	return nil
 }
 
 // Upsert Implementation
-func (s *Store) Upsert(entityName string, data interface{}, f []stgML.Filter) error {
+func (s *Store) Upsert(entityName string, data interface{}, filters []stgML.Filter) error {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
-	return s.updateEntity(entityName, data, f, true)
+	clonedData := cloneutil.Clone(data)
+	return s.updateEntity(entityName, clonedData, filters, true)
 }
 
 // Update Implementation
-func (s *Store) Update(entityName string, data interface{}, f []stgML.Filter) error {
+func (s *Store) Update(entityName string, data interface{}, filters []stgML.Filter) error {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
-	return s.updateEntity(entityName, data, f, false)
+	clonedData := cloneutil.Clone(data)
+	return s.updateEntity(entityName, clonedData, filters, false)
 }
 
 // Find Implementation
@@ -68,24 +73,22 @@ func (s *Store) Find(entityName string, out interface{}, filters []stgML.Filter,
 	elementType := sliceVal.Type().Elem()
 	entities := s.getEntities(entityName)
 
-	entitiesCloned, err := helper.CloneSlice(entities)
-	if err != nil {
-		return nil, err
-	}
-	filteredEntities := helper.Filter(entitiesCloned, filters, false)
-	entitiesCloned, count := helper.Sort(filteredEntities, pagination)
+	filteredEntities := helper.Filter(entities, filters, false)
+	entitiesSorted, count := helper.Sort(filteredEntities, pagination)
 
-	for index, en := range entitiesCloned {
+	for index, entity := range entitiesSorted {
+		clonedEntity := cloneutil.Clone(entity)
+
 		if sliceVal.Len() == index {
 			// slice is full
 			newElem := reflect.New(elementType)
 			sliceVal = reflect.Append(sliceVal, newElem.Elem())
 			sliceVal = sliceVal.Slice(0, sliceVal.Cap())
 		}
-		sliceVal.Index(index).Set(reflect.ValueOf(en).Elem())
+		sliceVal.Index(index).Set(reflect.ValueOf(clonedEntity).Elem())
 	}
 
-	outVal.Elem().Set(sliceVal.Slice(0, len(entitiesCloned)))
+	outVal.Elem().Set(sliceVal.Slice(0, len(entitiesSorted)))
 
 	offset := int64(0)
 	if pagination != nil {
@@ -112,8 +115,9 @@ func (s *Store) FindOne(entityName string, out interface{}, filters []stgML.Filt
 	entities = helper.Filter(entities, filters, true)
 
 	if len(entities) > 0 {
+		clonedEntity := cloneutil.Clone(entities[0])
 		outVal := reflect.ValueOf(out)
-		outVal.Elem().Set(reflect.ValueOf(entities[0]).Elem())
+		outVal.Elem().Set(reflect.ValueOf(clonedEntity).Elem())
 		return nil
 	}
 	return errors.New("requested data not available")

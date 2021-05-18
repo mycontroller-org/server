@@ -5,6 +5,7 @@ import (
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
+	cloneutil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
@@ -116,6 +117,11 @@ func postGatewayCommand(gwCfg *gwml.Config, command string) error {
 		Command: command,
 	}
 	if gwCfg != nil {
+		// descrypt the secrets
+		err := cloneutil.UpdateSecrets(gwCfg, false)
+		if err != nil {
+			return err
+		}
 		reqEvent.ID = gwCfg.ID
 		reqEvent.SetData(gwCfg)
 	}

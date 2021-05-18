@@ -1,12 +1,11 @@
 package action
 
 import (
-	"fmt"
-
 	dataRepoAPI "github.com/mycontroller-org/backend/v2/pkg/api/data_repository"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	"github.com/tidwall/sjson"
+	"go.uber.org/zap"
 )
 
 func toDataRepository(id, selector, value string) error {
@@ -15,7 +14,8 @@ func toDataRepository(id, selector, value string) error {
 		return err
 	}
 	if dataRepo.ReadOnly {
-		return fmt.Errorf("'%s' is a readonly data repository", id)
+		zap.L().Info("data repository is in readonly state", zap.String("id", id), zap.String("selector", selector), zap.String("value", value))
+		return nil
 	}
 
 	dataBytes, err := json.Marshal(dataRepo.Data)

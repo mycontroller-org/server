@@ -1,8 +1,13 @@
 package cloneutil
 
 import (
+	"fmt"
 	"reflect"
+	"strings"
 	"time"
+
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/hashed"
 )
 
 // copied from https://gist.github.com/hvoecking/10772475
@@ -74,6 +79,7 @@ func translateRecursive(copy, original reflect.Value) {
 				translateRecursive(copy.Field(index), original.Field(index))
 			}
 		}
+
 	// If it is a slice we create a new slice and translate each element
 	case reflect.Slice:
 		copy.Set(reflect.MakeSlice(original.Type(), original.Len(), original.Cap()))
@@ -113,5 +119,118 @@ func translateRecursive(copy, original reflect.Value) {
 	default:
 		copy.Set(original)
 	}
+}
 
+var (
+	secretKeys = []string{"password", "token", "authorization", "authentication"}
+)
+
+func UpdateSecrets(source interface{}, encrypt bool) error {
+	original := reflect.ValueOf(source)
+	return updateSecretRecursive(original, encrypt)
+}
+
+func updateSecretRecursive(value reflect.Value, encrypt bool) error {
+	switch value.Kind() {
+
+	case reflect.Ptr:
+		originalValue := value.Elem()
+		// Check if the pointer is nil
+		if !originalValue.IsValid() {
+			return nil
+		}
+		err := updateSecretRecursive(originalValue, encrypt)
+		if err != nil {
+			return err
+		}
+
+	case reflect.Interface:
+		originalValue := value.Elem()
+		if !originalValue.IsValid() {
+			return nil
+		}
+		err := updateSecretRecursive(originalValue, encrypt)
+		if err != nil {
+			return err
+		}
+
+	case reflect.Struct:
+		if value.Type() == reflect.TypeOf(time.Time{}) {
+			return nil
+		}
+
+		// for other types
+		for index := 0; index < value.NumField(); index++ {
+			originalValue := value.Field(index)
+			if originalValue.CanSet() || originalValue.CanInterface() {
+				if originalValue.Kind() == reflect.String { // update secret
+					fieldName := value.Type().Field(index).Name
+					newValue, err := updateStringSecret(fieldName, originalValue.String(), encrypt)
+					if err != nil {
+						return err
+					}
+					value.Field(index).SetString(newValue)
+				} else {
+					err := updateSecretRecursive(originalValue, encrypt)
+					if err != nil {
+						return err
+					}
+				}
+			}
+		}
+
+	case reflect.Slice:
+		for index := 0; index < value.Len(); index++ {
+			originalValue := value.Index(index)
+			if originalValue.Kind() != reflect.String {
+				err := updateSecretRecursive(originalValue, encrypt)
+				if err != nil {
+					return err
+				}
+			}
+		}
+
+	case reflect.Map:
+		for _, key := range value.MapKeys() {
+			originalValue := value.MapIndex(key)
+			keyString := fmt.Sprintf("%v", key)
+
+			if originalValue.Kind() == reflect.Interface {
+				originalValue = originalValue.Elem()
+				if !originalValue.IsValid() {
+					return nil
+				}
+			}
+
+			if originalValue.Kind() == reflect.String { // update secret
+				newValue, err := updateStringSecret(keyString, originalValue.String(), encrypt)
+				if err != nil {
+					return err
+				}
+				value.SetMapIndex(key, reflect.ValueOf(newValue))
+			} else {
+				err := updateSecretRecursive(originalValue, encrypt)
+				if err != nil {
+					return err
+				}
+			}
+		}
+
+	case reflect.String:
+		// noop
+
+	}
+	return nil
+}
+
+func updateStringSecret(fieldName, value string, encrypt bool) (string, error) {
+	// zap.L().Info("updating field", zap.String("fieldName", fieldName), zap.String("value", value))
+	if !utils.ContainsString(secretKeys, strings.ToLower(fieldName)) {
+		return value, nil
+	}
+	if encrypt {
+		return hashed.Encrypt(value)
+	} else {
+		return hashed.Decrypt(value)
+	}
 }
