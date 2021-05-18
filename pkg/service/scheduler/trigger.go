@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/api/sunrise"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
@@ -46,6 +47,8 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 		return
 	}
 
+	variables[model.KeySchedule] = cfg // include schedule in to the variables list
+
 	switch cfg.CustomVariableType {
 	case schedulerML.CustomVariableTypeNone, "":
 		// no action needed
@@ -65,11 +68,13 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 			if resultMap, ok := result.(map[string]interface{}); ok {
 				variables = variablesUtils.Merge(variables, resultMap)
 			}
-
 		}
 
 	case schedulerML.CustomVariableTypeWebhook:
-		// TODO: implement webhook based solution
+		customMap := loadWebhookVariables(cfg.ID, cfg.CustomVariableConfig, variables)
+		if len(customMap) > 0 {
+			variables = variablesUtils.Merge(variables, customMap)
+		}
 
 	default:
 		zap.L().Error("Unknown custom variable loader type", zap.String("type", cfg.CustomVariableType))

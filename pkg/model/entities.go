@@ -44,6 +44,7 @@ const (
 	KeySelector    = "selector"
 	KeyTemplate    = "template"
 	KeyTask        = "task"
+	KeySchedule    = "schedule"
 	KeyEventType   = "eventType"
 	KeyEvent       = "event"
 	KeyPayload     = "payload"

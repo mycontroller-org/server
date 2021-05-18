@@ -14,10 +14,15 @@ import (
 func isTriggeredWebhook(taskID string, config taskML.EvaluationConfig, variables map[string]interface{}) (map[string]interface{}, bool) {
 	whCfg := config.Webhook
 	client := httpclient.GetClient(whCfg.InsecureSkipVerify)
-	if !whCfg.IncludeTaskConfig {
+	if !whCfg.IncludeConfig {
 		delete(variables, model.KeyTask)
 	}
-	res, resBody, err := client.Request(whCfg.URL, http.MethodPost, whCfg.Headers, nil, variables, 0)
+
+	if whCfg.Method == "" {
+		whCfg.Method = http.MethodPost
+	}
+
+	res, resBody, err := client.Request(whCfg.URL, whCfg.Method, whCfg.Headers, whCfg.QueryParameters, variables, 0)
 	responseStatusCode := 0
 	if res != nil {
 		responseStatusCode = res.StatusCode
