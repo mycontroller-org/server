@@ -309,13 +309,13 @@ func UpdateParameters(variables map[string]interface{}, parameters map[string]st
 					}
 					genericData.Data = updatedString
 				}
-
-				jsonBytes, err := json.Marshal(genericData)
-				if err != nil {
-					zap.L().Error("error on converting to json", zap.Error(err), zap.String("name", name))
-				}
-				updatedParameters[name] = string(jsonBytes)
 			}
+
+			jsonBytes, err := json.Marshal(genericData)
+			if err != nil {
+				zap.L().Error("error on converting to json", zap.Error(err), zap.String("name", name))
+			}
+			updatedParameters[name] = string(jsonBytes)
 		} else { // update as a normal text
 			updatedValue, err := templateUtils.Execute(value, variables)
 			if err != nil {
