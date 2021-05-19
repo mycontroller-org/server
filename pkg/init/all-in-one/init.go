@@ -7,8 +7,8 @@ import (
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	fwdplSVC "github.com/mycontroller-org/backend/v2/pkg/service/forward_payload"
 	gwService "github.com/mycontroller-org/backend/v2/pkg/service/gateway"
+	gwMsgProcessor "github.com/mycontroller-org/backend/v2/pkg/service/gateway_msg_processor"
 	handlerSVC "github.com/mycontroller-org/backend/v2/pkg/service/handlers"
-	msgProcessor "github.com/mycontroller-org/backend/v2/pkg/service/message_processor"
 	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	resourceSVC "github.com/mycontroller-org/backend/v2/pkg/service/resource"
 	schedulerSVC "github.com/mycontroller-org/backend/v2/pkg/service/scheduler"
@@ -30,7 +30,7 @@ func initServices() {
 	core.StartupJobsExtra()
 
 	// start message processing engine
-	err := msgProcessor.Init()
+	err := gwMsgProcessor.Init()
 	if err != nil {
 		zap.L().Fatal("error on init message process service", zap.Error(err))
 	}
@@ -101,7 +101,7 @@ func closeServices() {
 	handlerSVC.Close()
 
 	// stop engine
-	msgProcessor.Close()
+	gwMsgProcessor.Close()
 
 	// Close storage and metric database
 	if stg.SVC != nil {

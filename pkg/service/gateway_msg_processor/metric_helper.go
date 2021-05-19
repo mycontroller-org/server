@@ -1,4 +1,4 @@
-package messageprocessor
+package gatewaymessageprocessor
 
 import (
 	"fmt"
