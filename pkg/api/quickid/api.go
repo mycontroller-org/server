@@ -8,7 +8,7 @@ import (
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
+	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
 	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
@@ -42,8 +42,8 @@ func GetResources(quickIDs []string) (map[string]interface{}, error) {
 		case model.EntityTask:
 			item, err = taskAPI.GetByID(keys[model.KeyID])
 
-		case model.EntityScheduler, "schedule": // in ui some places marked as "schedule"
-			item, err = schedulerAPI.GetByID(keys[model.KeyID])
+		case model.EntitySchedule:
+			item, err = scheduleAPI.GetByID(keys[model.KeyID])
 
 		case model.EntityHandler:
 			item, err = handlerAPI.GetByID(keys[model.KeyID])

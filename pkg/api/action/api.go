@@ -7,7 +7,7 @@ import (
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
+	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
@@ -16,7 +16,7 @@ import (
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -170,14 +170,14 @@ func ExecuteActionOnResourceByLabels(data *handlerML.ResourceData) error {
 		}
 
 	case utils.ContainsString(quickIdUL.QuickIDSchedule, data.ResourceType):
-		result, err := schedulerAPI.List(filters, pagination)
+		result, err := scheduleAPI.List(filters, pagination)
 		if err != nil {
 			return err
 		}
 		if result.Count == 0 {
 			return nil
 		}
-		items := result.Data.(*[]schedulerML.Config)
+		items := result.Data.(*[]scheduleML.Config)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
 			err = toSchedule(item.ID, data.Payload)

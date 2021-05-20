@@ -12,7 +12,7 @@ import (
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
+	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
 	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
@@ -111,7 +111,7 @@ func getByLabels(name string, rsData *handlerML.ResourceData) interface{} {
 		apiImpl.List = taskAPI.List
 
 	case utils.ContainsString(quickIdUL.QuickIDSchedule, rsData.ResourceType):
-		apiImpl.List = schedulerAPI.List
+		apiImpl.List = scheduleAPI.List
 
 	case utils.ContainsString(quickIdUL.QuickIDHandler, rsData.ResourceType):
 		apiImpl.List = handlerAPI.List
@@ -209,7 +209,7 @@ func getByQuickID(name string, rsData *handlerML.ResourceData) interface{} {
 		}
 
 	case utils.ContainsString(quickIdUL.QuickIDSchedule, resourceType):
-		item, err := schedulerAPI.GetByID(keys[model.KeyID])
+		item, err := scheduleAPI.GetByID(keys[model.KeyID])
 		entity = item
 		if err != nil {
 			zap.L().Warn("schedule not available", zap.Any("keys", keys))

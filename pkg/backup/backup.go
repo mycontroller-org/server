@@ -14,7 +14,7 @@ import (
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
+	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
 	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
@@ -47,7 +47,7 @@ var (
 		model.EntityForwardPayload: forwardPayloadAPI.List,
 		model.EntityHandler:        notificationHandlerAPI.List,
 		model.EntityTask:           taskAPI.List,
-		model.EntityScheduler:      schedulerAPI.List,
+		model.EntitySchedule:       scheduleAPI.List,
 		model.EntitySettings:       settingsAPI.List,
 		model.EntityDataRepository: dataRepositoryAPI.List,
 	}

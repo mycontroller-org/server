@@ -16,7 +16,7 @@ import (
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	notificationHandlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
+	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
 	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
@@ -33,7 +33,7 @@ import (
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	nhML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
 	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
@@ -312,14 +312,14 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntityScheduler:
-		entities := make([]schedulerML.Config, 0)
+	case model.EntitySchedule:
+		entities := make([]scheduleML.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
 		}
 		for index := 0; index < len(entities); index++ {
-			err = schedulerAPI.Save(&entities[index])
+			err = scheduleAPI.Save(&entities[index])
 			if err != nil {
 				return err
 			}

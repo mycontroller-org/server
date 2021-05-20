@@ -14,7 +14,7 @@ import (
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -202,8 +202,8 @@ func GetQuickID(entity interface{}) (string, error) {
 			return fmt.Sprintf("%s:%s", QuickIDTask[0], res.ID), nil
 		}
 
-	case reflect.TypeOf(schedulerML.Config{}):
-		res, ok := entity.(schedulerML.Config)
+	case reflect.TypeOf(scheduleML.Config{}):
+		res, ok := entity.(scheduleML.Config)
 		if ok {
 			return fmt.Sprintf("%s:%s", QuickIDSchedule[0], res.ID), nil
 		}

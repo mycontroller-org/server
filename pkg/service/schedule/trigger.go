@@ -1,4 +1,4 @@
-package scheduler
+package schedule
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/api/sunrise"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
@@ -17,11 +17,11 @@ import (
 	"go.uber.org/zap"
 )
 
-func getScheduleTriggerFunc(cfg *schedulerML.Config, spec string) func() {
+func getScheduleTriggerFunc(cfg *scheduleML.Config, spec string) func() {
 	return func() { scheduleTriggerFunc(cfg, spec) }
 }
 
-func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
+func scheduleTriggerFunc(cfg *scheduleML.Config, spec string) {
 	// validate schedule
 	if !isValidSchedule(cfg) {
 		zap.L().Debug("at this time, this is not a valid schedule", zap.String("ScheduleID", cfg.ID), zap.String("spec", spec), zap.Any("validity details", cfg.Validity))
@@ -44,16 +44,17 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 		cfg.State.LastStatus = false
 		cfg.State.Message = fmt.Sprintf("Error: %s", err.Error())
 		busUtils.SetScheduleState(cfg.ID, *cfg.State)
+		verifyAndDisableSchedule(cfg, time.Since(start), err.Error())
 		return
 	}
 
 	variables[model.KeySchedule] = cfg // include schedule in to the variables list
 
 	switch cfg.CustomVariableType {
-	case schedulerML.CustomVariableTypeNone, "":
+	case scheduleML.CustomVariableTypeNone, "":
 		// no action needed
 
-	case schedulerML.CustomVariableTypeJavascript:
+	case scheduleML.CustomVariableTypeJavascript:
 		if cfg.CustomVariableConfig.Javascript != "" {
 			result, err := javascript.Execute(cfg.CustomVariableConfig.Javascript, variables)
 			if err != nil {
@@ -61,6 +62,7 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 				cfg.State.LastStatus = false
 				cfg.State.Message = fmt.Sprintf("Error: %s", err.Error())
 				busUtils.SetScheduleState(cfg.ID, *cfg.State)
+				verifyAndDisableSchedule(cfg, time.Since(start), err.Error())
 				return
 			}
 
@@ -70,7 +72,7 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 			}
 		}
 
-	case schedulerML.CustomVariableTypeWebhook:
+	case scheduleML.CustomVariableTypeWebhook:
 		customMap := loadWebhookVariables(cfg.ID, cfg.CustomVariableConfig, variables)
 		if len(customMap) > 0 {
 			variables = variablesUtils.Merge(variables, customMap)
@@ -88,11 +90,15 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 	// update triggered count and update state
 	busUtils.SetScheduleState(cfg.ID, *cfg.State)
 
+	verifyAndDisableSchedule(cfg, time.Since(start), "")
+}
+
+func verifyAndDisableSchedule(cfg *scheduleML.Config, timeTaken time.Duration, executionError string) {
 	switch cfg.Type {
 
 	// if repeat type job, verify repeat count
-	case schedulerML.TypeRepeat:
-		spec := &schedulerML.SpecRepeat{}
+	case scheduleML.TypeRepeat:
+		spec := &scheduleML.SpecRepeat{}
 		err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, spec)
 		if err != nil {
 			zap.L().Error("error on convert to repeat spec", zap.Error(err), zap.String("ScheduleID", cfg.ID), zap.Any("spec", cfg.Spec))
@@ -103,58 +109,64 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 			busUtils.DisableSchedule(cfg.ID)
 			// Sometimes setState updates as enabled
 			// To avoid this addind small sleep, but this is not good fix.
-			time.Sleep(time.Millisecond * 5)
-			cfg.State.Message = fmt.Sprintf("time taken: %s, reached maximum execution count", time.Since(start).String())
+			time.Sleep(time.Millisecond * 50)
+			cfg.State.Message = fmt.Sprintf("time taken: %s, reached maximum execution count", timeTaken.String())
+			if executionError != "" {
+				cfg.State.Message = fmt.Sprintf("%s, executionError:%s", cfg.State.Message, executionError)
+			}
 			busUtils.SetScheduleState(cfg.ID, *cfg.State)
 			return
 		}
 
 	// disable the schedule if it is a on date job
-	case schedulerML.TypeSimple, schedulerML.TypeSunrise, schedulerML.TypeSunset:
-		spec := &schedulerML.SpecSimple{}
+	case scheduleML.TypeSimple, scheduleML.TypeSunrise, scheduleML.TypeSunset:
+		spec := &scheduleML.SpecSimple{}
 		err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, spec)
 		if err != nil {
 			zap.L().Error("error on loading spec", zap.String("schedulerID", cfg.ID), zap.Error(err))
 			cfg.State.LastStatus = false
 			cfg.State.Message = fmt.Sprintf("Error: %s", err.Error())
+			if executionError != "" {
+				cfg.State.Message = fmt.Sprintf("%s, executionError:%s", cfg.State.Message, executionError)
+			}
 			busUtils.SetScheduleState(cfg.ID, *cfg.State)
 			return
 		}
-		if spec.Frequency == schedulerML.FrequencyOnDate {
+		if spec.Frequency == scheduleML.FrequencyOnDate {
 			busUtils.DisableSchedule(cfg.ID)
 		}
 	}
 
 }
 
-func getCronSpec(cfg *schedulerML.Config) (string, error) {
+func getCronSpec(cfg *scheduleML.Config) (string, error) {
 	switch cfg.Type {
-	case schedulerML.TypeRepeat:
-		spec := &schedulerML.SpecRepeat{}
+	case scheduleML.TypeRepeat:
+		spec := &scheduleML.SpecRepeat{}
 		err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, spec)
 		if err != nil {
 			return "", err
 		}
 		return fmt.Sprintf("@every %s", spec.Interval), nil
 
-	case schedulerML.TypeCron:
-		spec := &schedulerML.SpecCron{}
+	case scheduleML.TypeCron:
+		spec := &scheduleML.SpecCron{}
 		err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, spec)
 		if err != nil {
 			return "", err
 		}
 		return spec.CronExpression, nil
 
-	case schedulerML.TypeSimple:
-		spec := &schedulerML.SpecSimple{}
+	case scheduleML.TypeSimple:
+		spec := &scheduleML.SpecSimple{}
 		err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, spec)
 		if err != nil {
 			return "", err
 		}
 		return toCronExpression(spec)
 
-	case schedulerML.TypeSunrise, schedulerML.TypeSunset:
-		spec := &schedulerML.SpecSimple{}
+	case scheduleML.TypeSunrise, scheduleML.TypeSunset:
+		spec := &scheduleML.SpecSimple{}
 		err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, spec)
 		if err != nil {
 			return "", err
@@ -162,14 +174,14 @@ func getCronSpec(cfg *schedulerML.Config) (string, error) {
 
 		var suntime *time.Time
 
-		if cfg.Type == schedulerML.TypeSunrise {
+		if cfg.Type == scheduleML.TypeSunrise {
 			sunrise, err := sunrise.GetSunriseTime()
 			if err != nil {
 				return "", err
 			}
 			suntime = sunrise
 		}
-		if cfg.Type == schedulerML.TypeSunset {
+		if cfg.Type == scheduleML.TypeSunset {
 			sunset, err := sunrise.GetSunsetTime()
 			if err != nil {
 				return "", err
@@ -190,7 +202,7 @@ func getCronSpec(cfg *schedulerML.Config) (string, error) {
 	}
 }
 
-func toCronExpression(spec *schedulerML.SpecSimple) (string, error) {
+func toCronExpression(spec *scheduleML.SpecSimple) (string, error) {
 	cronRaw := struct {
 		Seconds    string
 		Minutes    string
@@ -203,16 +215,16 @@ func toCronExpression(spec *schedulerML.SpecSimple) (string, error) {
 	cronRaw.Month = "*"
 
 	switch spec.Frequency {
-	case schedulerML.FrequencyDaily, schedulerML.FrequencyWeekly:
+	case scheduleML.FrequencyDaily, scheduleML.FrequencyWeekly:
 		cronRaw.DayOfMonth = "*"
 		cronRaw.DayOfWeek = spec.DayOfWeek
 
-	case schedulerML.FrequencyMonthly:
+	case scheduleML.FrequencyMonthly:
 		cronRaw.DayOfWeek = "*"
 		cronRaw.DayOfMonth = converterUtils.ToString(spec.DateOfMonth)
 
-	case schedulerML.FrequencyOnDate:
-		date, err := time.Parse(schedulerML.CustomDateFormat, spec.Date)
+	case scheduleML.FrequencyOnDate:
+		date, err := time.Parse(scheduleML.CustomDateFormat, spec.Date)
 		if err != nil {
 			return "", err
 		}
@@ -245,7 +257,7 @@ func toCronExpression(spec *schedulerML.SpecSimple) (string, error) {
 	return cron, nil
 }
 
-func isValidSchedule(cfg *schedulerML.Config) bool {
+func isValidSchedule(cfg *scheduleML.Config) bool {
 	if !cfg.Validity.Enabled {
 		return true
 	}
@@ -329,26 +341,26 @@ func isValidSchedule(cfg *schedulerML.Config) bool {
 	return true
 }
 
-func updateOnDateJobValidity(cfg *schedulerML.Config) error {
-	if cfg.Type == schedulerML.TypeSimple ||
-		cfg.Type == schedulerML.TypeSunrise ||
-		cfg.Type == schedulerML.TypeSunset {
+func updateOnDateJobValidity(cfg *scheduleML.Config) error {
+	if cfg.Type == scheduleML.TypeSimple ||
+		cfg.Type == scheduleML.TypeSunrise ||
+		cfg.Type == scheduleML.TypeSunset {
 
-		spec := &schedulerML.SpecSimple{}
+		spec := &scheduleML.SpecSimple{}
 		err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, spec)
 		if err != nil {
 			return err
 		}
-		if spec.Frequency != schedulerML.FrequencyOnDate {
+		if spec.Frequency != scheduleML.FrequencyOnDate {
 			return nil
 		}
-		date, err := time.Parse(schedulerML.CustomDateFormat, spec.Date)
+		date, err := time.Parse(scheduleML.CustomDateFormat, spec.Date)
 		if err != nil {
 			return nil
 		}
 		cfg.Validity.Enabled = true
-		cfg.Validity.Date.From = schedulerML.CustomDate{Time: date}
-		cfg.Validity.Date.To = schedulerML.CustomDate{Time: date}
+		cfg.Validity.Date.From = scheduleML.CustomDate{Time: date}
+		cfg.Validity.Date.To = scheduleML.CustomDate{Time: date}
 	}
 	return nil
 }

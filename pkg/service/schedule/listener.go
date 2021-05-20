@@ -1,4 +1,4 @@
-package scheduler
+package schedule
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
@@ -117,8 +117,8 @@ func processServiceEvent(event interface{}) {
 	}
 }
 
-func getConfig(reqEvent *rsML.ServiceEvent) *schedulerML.Config {
-	cfg, ok := reqEvent.GetData().(schedulerML.Config)
+func getConfig(reqEvent *rsML.ServiceEvent) *scheduleML.Config {
+	cfg, ok := reqEvent.GetData().(scheduleML.Config)
 	if !ok {
 		zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", reqEvent.GetData())))
 		return nil

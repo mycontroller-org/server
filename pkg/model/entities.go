@@ -12,7 +12,7 @@ const (
 	EntityForwardPayload = "forward_payload" // keeps forward payload mapping details
 	EntityHandler        = "handler"         // keeps configurations for handlers
 	EntityTask           = "task"            // keeps configurations for tasks
-	EntityScheduler      = "scheduler"       // keeps configurations for scheduler
+	EntitySchedule       = "schedule"        // keeps configurations for schedules
 	EntitySettings       = "settings"        // settings of the system
 	EntityDataRepository = "data_repository" // holds user data, can be used across
 )

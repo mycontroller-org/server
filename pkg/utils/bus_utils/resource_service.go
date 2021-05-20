@@ -3,7 +3,7 @@ package busutils
 import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"go.uber.org/zap"

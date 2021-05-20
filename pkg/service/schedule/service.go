@@ -1,9 +1,9 @@
-package scheduler
+package schedule
 
 import (
 	"fmt"
 
-	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	coreScheduler "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	"go.uber.org/zap"
@@ -13,9 +13,9 @@ const (
 	schedulePrefix = "user_schedule"
 )
 
-func schedule(cfg *schedulerML.Config) {
+func schedule(cfg *scheduleML.Config) {
 	if cfg.State == nil {
-		cfg.State = &schedulerML.State{}
+		cfg.State = &scheduleML.State{}
 	}
 	name := getScheduleID(cfg.ID)
 

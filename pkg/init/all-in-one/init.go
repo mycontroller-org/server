@@ -11,7 +11,7 @@ import (
 	handlerSVC "github.com/mycontroller-org/backend/v2/pkg/service/handlers"
 	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	resourceSVC "github.com/mycontroller-org/backend/v2/pkg/service/resource"
-	schedulerSVC "github.com/mycontroller-org/backend/v2/pkg/service/scheduler"
+	scheduleSVC "github.com/mycontroller-org/backend/v2/pkg/service/schedule"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	taskSVC "github.com/mycontroller-org/backend/v2/pkg/service/task"
 	"go.uber.org/zap"
@@ -54,7 +54,7 @@ func initServices() {
 	}
 
 	// init scheduler engine
-	err = schedulerSVC.Init(cfg.CFG.Task)
+	err = scheduleSVC.Init(cfg.CFG.Task)
 	if err != nil {
 		zap.L().Fatal("error on init scheduler service", zap.Error(err))
 	}
@@ -95,7 +95,7 @@ func closeServices() {
 	taskSVC.Close()
 
 	// close scheduler service
-	schedulerSVC.Close()
+	scheduleSVC.Close()
 
 	// close notify handler service
 	handlerSVC.Close()

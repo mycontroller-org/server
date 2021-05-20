@@ -1,14 +1,14 @@
 package action
 
 import (
-	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
+	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
 )
 
 func toSchedule(id, action string) error {
 	api := resourceAPI{
-		Enable:  schedulerAPI.Enable,
-		Disable: schedulerAPI.Disable,
-		Reload:  schedulerAPI.Reload,
+		Enable:  scheduleAPI.Enable,
+		Disable: scheduleAPI.Disable,
+		Reload:  scheduleAPI.Reload,
 	}
 	return toResource(api, id, action)
 }

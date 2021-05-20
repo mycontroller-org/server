@@ -17,7 +17,7 @@ import (
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -48,12 +48,12 @@ func registerTypes() {
 	gob.Register(primitive.A{})
 	gob.Register(handlerML.Config{})
 	gob.Register(handlerML.ResourceData{})
-	gob.Register(schedulerML.Config{})
-	gob.Register(schedulerML.Validity{})
-	gob.Register(schedulerML.DateRange{})
-	gob.Register(schedulerML.TimeRange{})
-	gob.Register(schedulerML.CustomVariableConfig{})
-	gob.Register(schedulerML.State{})
+	gob.Register(scheduleML.Config{})
+	gob.Register(scheduleML.Validity{})
+	gob.Register(scheduleML.DateRange{})
+	gob.Register(scheduleML.TimeRange{})
+	gob.Register(scheduleML.CustomVariableConfig{})
+	gob.Register(scheduleML.State{})
 	gob.Register(dataRepositoryML.Config{})
 	gob.Register(firmwareML.Firmware{})
 	gob.Register(firmwareML.FileConfig{})

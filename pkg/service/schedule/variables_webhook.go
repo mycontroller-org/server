@@ -1,11 +1,11 @@
-package scheduler
+package schedule
 
 import (
 	"net/http"
 
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	httpclient "github.com/mycontroller-org/backend/v2/pkg/utils/http_client_json"
 	"go.uber.org/zap"
 )

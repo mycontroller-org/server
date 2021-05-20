@@ -1,25 +1,25 @@
 package systemjobs
 
 import (
-	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
+	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
 // updateSunriseSchedules func
 func updateSunriseSchedules() {
-	filters := []stgML.Filter{{Key: model.KeyScheduleType, Operator: stgML.OperatorIn, Value: []string{schedulerML.TypeSunrise, schedulerML.TypeSunset}}}
+	filters := []stgML.Filter{{Key: model.KeyScheduleType, Operator: stgML.OperatorIn, Value: []string{scheduleML.TypeSunrise, scheduleML.TypeSunset}}}
 	pagination := &stgML.Pagination{Limit: 100}
-	result, err := schedulerAPI.List(filters, pagination)
+	result, err := scheduleAPI.List(filters, pagination)
 	if err != nil {
 		zap.L().Error("error on fetching schedule jobs", zap.Error(err))
 	}
 	if result.Count == 0 {
 		return
 	}
-	schedules, ok := result.Data.(*[]schedulerML.Config)
+	schedules, ok := result.Data.(*[]scheduleML.Config)
 	if !ok {
 		zap.L().Error("error on converting to target type")
 		return
@@ -31,7 +31,7 @@ func updateSunriseSchedules() {
 		scheduleIDs = append(scheduleIDs, schedule.ID)
 	}
 
-	err = schedulerAPI.Reload(scheduleIDs)
+	err = scheduleAPI.Reload(scheduleIDs)
 	if err != nil {
 		zap.L().Error("error on reloading schedules", zap.Error(err))
 	}

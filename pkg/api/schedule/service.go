@@ -1,21 +1,21 @@
-package scheduler
+package schedule
 
 import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
 // Add scheduler
-func Add(cfg *schedulerML.Config) error {
+func Add(cfg *scheduleML.Config) error {
 	return postCommand(cfg, rsML.CommandAdd)
 }
 
 // Remove scheduler
-func Remove(cfg *schedulerML.Config) error {
+func Remove(cfg *scheduleML.Config) error {
 	return postCommand(cfg, rsML.CommandRemove)
 }
 
@@ -26,7 +26,7 @@ func LoadAll() {
 		zap.L().Error("Failed to get list of schedules", zap.Error(err))
 		return
 	}
-	schedulers := *result.Data.(*[]schedulerML.Config)
+	schedulers := *result.Data.(*[]scheduleML.Config)
 	for index := 0; index < len(schedulers); index++ {
 		cfg := schedulers[index]
 		if cfg.Enabled {
@@ -112,7 +112,7 @@ func Reload(ids []string) error {
 	return nil
 }
 
-func postCommand(cfg *schedulerML.Config, command string) error {
+func postCommand(cfg *scheduleML.Config, command string) error {
 	reqEvent := rsML.ServiceEvent{
 		Type:    rsML.TypeScheduler,
 		Command: command,
@@ -125,12 +125,12 @@ func postCommand(cfg *schedulerML.Config, command string) error {
 	return mcbus.Publish(topic, reqEvent)
 }
 
-func getSchedulerEntries(ids []string) ([]schedulerML.Config, error) {
+func getSchedulerEntries(ids []string) ([]scheduleML.Config, error) {
 	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
 	pagination := &stgml.Pagination{Limit: 100}
 	result, err := List(filters, pagination)
 	if err != nil {
 		return nil, err
 	}
-	return *result.Data.(*[]schedulerML.Config), nil
+	return *result.Data.(*[]scheduleML.Config), nil
 }

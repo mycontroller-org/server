@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	schedulerAPI "github.com/mycontroller-org/backend/v2/pkg/api/scheduler"
+	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/scheduler"
+	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	"go.uber.org/zap"
 )
 
@@ -31,7 +31,7 @@ func schedulerService(reqEvent *rsML.ServiceEvent) error {
 		}
 
 	case rsML.CommandLoadAll:
-		schedulerAPI.LoadAll()
+		scheduleAPI.LoadAll()
 
 	case rsML.CommandDisable:
 		return disableScheduler(reqEvent)
@@ -44,14 +44,14 @@ func schedulerService(reqEvent *rsML.ServiceEvent) error {
 
 func getScheduler(request *rsML.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
-		cfg, err := schedulerAPI.GetByID(request.ID)
+		cfg, err := scheduleAPI.GetByID(request.ID)
 		if err != nil {
 			return nil, err
 		}
 		return cfg, nil
 	} else if len(request.Labels) > 0 {
 		filters := getLabelsFilter(request.Labels)
-		result, err := schedulerAPI.List(filters, nil)
+		result, err := scheduleAPI.List(filters, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -65,11 +65,11 @@ func updateSchedulerState(reqEvent *rsML.ServiceEvent) error {
 		zap.L().Error("state not supplied", zap.Any("event", reqEvent))
 		return errors.New("state not supplied")
 	}
-	state, ok := reqEvent.GetData().(schedulerML.State)
+	state, ok := reqEvent.GetData().(scheduleML.State)
 	if !ok {
 		return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
 	}
-	return schedulerAPI.SetState(reqEvent.ID, &state)
+	return scheduleAPI.SetState(reqEvent.ID, &state)
 }
 
 func disableScheduler(reqEvent *rsML.ServiceEvent) error {
@@ -82,5 +82,5 @@ func disableScheduler(reqEvent *rsML.ServiceEvent) error {
 	if !ok {
 		return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
 	}
-	return schedulerAPI.Disable([]string{id})
+	return scheduleAPI.Disable([]string{id})
 }
