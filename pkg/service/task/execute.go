@@ -74,8 +74,7 @@ func executeTask(task *taskML.Config, evntWrapper *eventWrapper) {
 
 		parameters := variablesUtils.UpdateParameters(variables, task.HandlerParameters)
 		variablesUtils.UpdateParameters(variables, parameters)
-		finalData := variablesUtils.MergeParameter(variables, parameters)
-		busUtils.PostToHandler(task.Handlers, finalData)
+		busUtils.PostToHandler(task.Handlers, parameters)
 	}
 
 	if !triggered {

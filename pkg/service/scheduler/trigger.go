@@ -82,8 +82,7 @@ func scheduleTriggerFunc(cfg *schedulerML.Config, spec string) {
 
 	// post to handlers
 	parameters := variablesUtils.UpdateParameters(variables, cfg.HandlerParameters)
-	finalData := variablesUtils.MergeParameter(variables, parameters)
-	busUtils.PostToHandler(cfg.Handlers, finalData)
+	busUtils.PostToHandler(cfg.Handlers, parameters)
 
 	cfg.State.Message = fmt.Sprintf("time taken: %s", time.Since(start).String())
 	// update triggered count and update state

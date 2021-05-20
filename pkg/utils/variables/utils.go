@@ -330,24 +330,6 @@ func UpdateParameters(variables map[string]interface{}, parameters map[string]st
 	return updatedParameters
 }
 
-// MergeParameter variables and parameters
-func MergeParameter(variables map[string]interface{}, parameters map[string]string) map[string]interface{} {
-	finalMap := make(map[string]interface{})
-	if len(variables) > 0 {
-		for name, value := range variables { // update variables
-			finalMap[name] = value
-		}
-	}
-
-	if len(parameters) > 0 {
-		for name, value := range parameters { // update parameters
-			finalMap[name] = value
-		}
-	}
-
-	return finalMap
-}
-
 // Merge variables and extra variables
 func Merge(variables map[string]interface{}, extra map[string]interface{}) map[string]interface{} {
 	finalMap := make(map[string]interface{})

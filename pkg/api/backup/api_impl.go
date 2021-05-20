@@ -66,7 +66,7 @@ func RunOnDemandBackup(input *backupML.OnDemandBackupConfig) error {
 		return err
 	}
 
-	finalData := map[string]interface{}{
+	finalData := map[string]string{
 		"on_demand_backup": string(dataBytes),
 	}
 	busUtils.PostToHandler([]string{input.Handler}, finalData)

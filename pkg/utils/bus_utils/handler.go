@@ -10,19 +10,14 @@ import (
 )
 
 // PostToHandler send data to handlers
-func PostToHandler(handlers []string, data map[string]interface{}) {
+func PostToHandler(handlers []string, data map[string]string) {
 	zap.L().Debug("Posting data to handlers", zap.Any("handlers", handlers))
 
 	// remove disabled parameters
 	updateData := make(map[string]interface{})
 	for name, value := range data {
-		stringValue, ok := value.(string)
-		if !ok {
-			continue
-		}
-
 		genericData := handlerML.GenericData{}
-		err := json.Unmarshal([]byte(stringValue), &genericData)
+		err := json.Unmarshal([]byte(value), &genericData)
 		if err != nil {
 			continue
 		}
