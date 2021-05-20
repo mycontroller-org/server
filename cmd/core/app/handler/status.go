@@ -9,6 +9,7 @@ import (
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
+	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/version"
 )
@@ -29,6 +30,9 @@ func status(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s["hostname"] = hn
+
+	// include documentation url
+	s["documentationUrl"] = cfg.CFG.Web.DocumentationURL
 
 	// include login message
 	rawSettings, err := settingsAPI.GetByID(settingsML.KeySystemSettings)

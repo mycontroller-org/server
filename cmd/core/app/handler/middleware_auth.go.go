@@ -10,6 +10,7 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/model/user"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	"go.uber.org/zap"
 
 	"github.com/dgrijalva/jwt-go"
@@ -52,8 +53,15 @@ func isValidToken(r *http.Request) error {
 	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
 		return err
 	}
-	// add userID into request header
+
+	// verify the validity
+	expiresAt := convertor.ToInteger(claims[handlerML.KeyExpiresAt])
+	if time.Now().Unix() >= expiresAt {
+		return errors.New("expired token")
+	}
+
 	// clear userID header, might be injected from external
+	// add userID into request header from here
 	r.Header.Del(handlerML.HeaderUserID)
 	if userID, ok := claims[handlerML.KeyUserID]; ok {
 		id, ok := userID.(string)
@@ -70,7 +78,7 @@ func getJwtToken(r *http.Request) (*jwt.Token, jwt.MapClaims, error) {
 		return nil, nil, errors.New("token not supplied")
 	}
 	claims := jwt.MapClaims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
 		// Make sure that the token method conform to "SigningMethodHMAC"
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -105,26 +113,24 @@ func extractJwtToken(r *http.Request) string {
 	return ""
 }
 
-func createToken(user user.User, expiration string) (string, error) {
+func createToken(user user.User, expiresIn string) (string, error) {
 	atClaims := jwt.MapClaims{}
 	atClaims[handlerML.KeyAuthorized] = true
 	atClaims[handlerML.KeyUserID] = user.ID
 	atClaims[handlerML.KeyFullName] = user.FullName
 
-	expirationDuration, err := time.ParseDuration(handlerML.DefaultExpiration)
-	if err != nil {
-		zap.L().Error("failed to parse", zap.Error(err))
-	}
-	if expiration != "" {
-		exp, err := time.ParseDuration(expiration)
+	expiresInDuration := handlerML.DefaultExpiration
+
+	if expiresIn != "" {
+		expiresInReceived, err := time.ParseDuration(expiresIn)
 		if err != nil {
-			zap.L().Error("failed to parse", zap.String("expiration", expiration), zap.Error(err))
-		} else {
-			expirationDuration = exp
+			zap.L().Error("error on parse the duration", zap.String("expiration", expiresIn), zap.Error(err))
+		} else if expiresInReceived > 2*time.Second { // minimum expiration duration is 2 minutes
+			expiresInDuration = expiresInReceived
 		}
 	}
 
-	atClaims[handlerML.KeyExpiration] = time.Now().Add(expirationDuration).Unix()
+	atClaims[handlerML.KeyExpiresAt] = time.Now().Add(expiresInDuration).Unix()
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	token, err := at.SignedString([]byte(os.Getenv(handlerML.EnvJwtAccessSecret)))
 	if err != nil {

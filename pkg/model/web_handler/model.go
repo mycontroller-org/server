@@ -1,11 +1,13 @@
 package webhandler
 
+import "time"
+
 // global constants
 const (
-	KeyUserID     = "userID"
-	KeyFullName   = "fullName"
+	KeyUserID     = "user_id"
+	KeyFullName   = "fullname"
 	KeyAuthorized = "authorized"
-	KeyExpiration = "expiration"
+	KeyExpiresAt  = "expires_at"
 
 	EnvJwtAccessSecret = "JWT_ACCESS_SECRET" // environment variable to set secret for JWT token
 
@@ -14,14 +16,14 @@ const (
 
 	AccessToken = "access_token"
 
-	DefaultExpiration = "168h" // 24 * 7 days
+	DefaultExpiration = time.Hour * 24 * 7 // 24 * 7 days
 )
 
 // UserLogin struct
 type UserLogin struct {
-	Username   string `json:"username"`
-	Password   string `json:"password"`
-	Expiration string `json:"expiration"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	ExpiresIn string `json:"expiresIn"`
 }
 
 // JwtToken struct

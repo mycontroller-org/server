@@ -48,7 +48,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		postErrorResponse(w, "Please provide valid login details", 401)
 		return
 	}
-	token, err := createToken(userDB, userLogin.Expiration)
+	token, err := createToken(userDB, userLogin.ExpiresIn)
 	if err != nil {
 		postErrorResponse(w, err.Error(), 500)
 		return

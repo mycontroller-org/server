@@ -15,8 +15,19 @@ func ToString(data interface{}) string {
 		return ""
 	}
 	switch data.(type) {
-	case int, float64, string, bool:
+	case int8, int16, int32, int64, int,
+		uint8, uint16, uint32, uint64, uint:
+		return fmt.Sprintf("%d", data)
+
+	case float32, float64:
+		return fmt.Sprintf("%f", data)
+
+	case bool:
+		return fmt.Sprintf("%b", data)
+
+	case string:
 		return fmt.Sprintf("%v", data)
+
 	default:
 		b, err := json.Marshal(data)
 		if err != nil {
@@ -47,28 +58,37 @@ func ToBool(data interface{}) bool {
 
 // ToFloat converts interface to float64
 func ToFloat(data interface{}) float64 {
-	value, ok := data.(float64)
-	if !ok {
-		strValue := strings.TrimSpace(fmt.Sprintf("%v", data))
-		parsedValue, err := strconv.ParseFloat(strValue, 64)
-		if err != nil {
-			return 0
-		}
-		return parsedValue
+	if value, ok := data.(float64); ok {
+		return value
 	}
-	return value
+	strValue := toStringValue(data)
+	parsedValue, err := strconv.ParseFloat(strValue, 64)
+	if err != nil {
+		return 0
+	}
+	return parsedValue
 }
 
 // ToInteger converts interface to int64
 func ToInteger(data interface{}) int64 {
-	value, ok := data.(int64)
-	if !ok {
-		strValue := strings.TrimSpace(fmt.Sprintf("%v", data))
-		parsedValue, err := strconv.ParseInt(strValue, 10, 64)
-		if err != nil {
-			return 0
-		}
-		return parsedValue
+	if value, ok := data.(int64); ok {
+		return value
 	}
-	return value
+
+	floatValue := ToFloat(data)
+	return int64(floatValue)
+}
+
+func toStringValue(data interface{}) string {
+	strValue := ""
+	switch data.(type) {
+	case int8, int16, int32, int64, int,
+		uint8, uint16, uint32, uint64, uint:
+		strValue = fmt.Sprintf("%d", data)
+	case float32, float64:
+		strValue = fmt.Sprintf("%f", data)
+	default:
+		strValue = strings.TrimSpace(fmt.Sprintf("%v", data))
+	}
+	return strValue
 }
