@@ -20,10 +20,10 @@ func ToString(data interface{}) string {
 		return fmt.Sprintf("%d", data)
 
 	case float32, float64:
-		return fmt.Sprintf("%f", data)
+		return strings.TrimRight(strings.TrimRight(fmt.Sprintf("%f", data), "0"), ".")
 
 	case bool:
-		return fmt.Sprintf("%b", data)
+		return fmt.Sprintf("%t", data)
 
 	case string:
 		return fmt.Sprintf("%v", data)
@@ -41,19 +41,19 @@ func ToString(data interface{}) string {
 // ToBool converts interface to boolean
 func ToBool(data interface{}) bool {
 	value, ok := data.(bool)
-	if !ok {
-		switch strings.ToLower(strings.TrimSpace(fmt.Sprintf("%v", data))) {
-		case "true", "1", "on", "enable":
-			return true
-
-		case "false", "0", "off", "disable":
-			return false
-
-		default:
-			return false
-		}
+	if ok {
+		return value
 	}
-	return value
+	switch ToString(data) {
+	case "true", "1", "on", "enable":
+		return true
+
+	case "false", "0", "off", "disable":
+		return false
+
+	default:
+		return false
+	}
 }
 
 // ToFloat converts interface to float64
@@ -61,7 +61,7 @@ func ToFloat(data interface{}) float64 {
 	if value, ok := data.(float64); ok {
 		return value
 	}
-	strValue := toStringValue(data)
+	strValue := ToString(data)
 	parsedValue, err := strconv.ParseFloat(strValue, 64)
 	if err != nil {
 		return 0
@@ -77,18 +77,4 @@ func ToInteger(data interface{}) int64 {
 
 	floatValue := ToFloat(data)
 	return int64(floatValue)
-}
-
-func toStringValue(data interface{}) string {
-	strValue := ""
-	switch data.(type) {
-	case int8, int16, int32, int64, int,
-		uint8, uint16, uint32, uint64, uint:
-		strValue = fmt.Sprintf("%d", data)
-	case float32, float64:
-		strValue = fmt.Sprintf("%f", data)
-	default:
-		strValue = strings.TrimSpace(fmt.Sprintf("%v", data))
-	}
-	return strValue
 }
