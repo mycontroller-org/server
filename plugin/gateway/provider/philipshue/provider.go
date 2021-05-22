@@ -101,11 +101,6 @@ func (p *Provider) Close() error {
 	return nil
 }
 
-// Post func
-func (p *Provider) Post(rawMsg *msgML.RawMessage) error {
-	return nil
-}
-
 func (p *Provider) unscheduleAll() {
 	coreScheduler.SVC.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, p.GatewayConfig.ID))
 }

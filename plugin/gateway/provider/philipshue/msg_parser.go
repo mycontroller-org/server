@@ -11,10 +11,10 @@ import (
 	"go.uber.org/zap"
 )
 
-// ToRawMessage func implementation
-func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
+// Post func
+func (p *Provider) Post(msg *msgml.Message) error {
 	if len(msg.Payloads) == 0 {
-		return nil, errors.New("there is no payload details on the message")
+		return errors.New("there is no payload details on the message")
 	}
 
 	payload := msg.Payloads[0]
@@ -30,11 +30,12 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	} else if msg.Type == msgml.TypeSet && strings.HasPrefix(msg.SourceID, "state") {
 		p.updateState(msg.NodeID, &payload)
 	}
-	return nil, nil
+	return nil
 }
 
-// ToMessage implementation
-func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
+// Process implementation
+func (p *Provider) Process(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
+	// not using the queue
 	return nil, nil
 }
 

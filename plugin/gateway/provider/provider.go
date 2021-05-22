@@ -6,10 +6,9 @@ import (
 
 // Provider interface
 type Provider interface {
-	ToRawMessage(message *msgml.Message) (*msgml.RawMessage, error)
-	ToMessage(rawMesage *msgml.RawMessage) ([]*msgml.Message, error)
-	Post(rawMessage *msgml.RawMessage) error
 	Start(messageReceiveFunc func(rawMsg *msgml.RawMessage) error) error
+	Process(rawMesage *msgml.RawMessage) ([]*msgml.Message, error)
+	Post(message *msgml.Message) error
 	Close() error
 }
 
@@ -19,4 +18,5 @@ const (
 	TypePhilipsHue       = "philips_hue"
 	TypeSystemMonitoring = "system_monitoring"
 	TypeTasmota          = "tasmota"
+	TypeEsphome          = "esphome"
 )

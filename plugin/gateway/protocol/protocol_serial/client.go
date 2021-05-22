@@ -11,6 +11,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	msglogger "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/message_logger"
 	ser "github.com/tarm/serial"
 	"go.uber.org/zap"
@@ -88,14 +89,19 @@ func messageFormatter(rawMsg *msgml.RawMessage) string {
 	if rawMsg.IsReceived {
 		direction = "Recd"
 	}
-	return fmt.Sprintf("%v\t%v\t%s\n", rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"), direction, string(rawMsg.Data))
+	return fmt.Sprintf("%v\t%v\t%s\n", rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"), direction, convertor.ToString(rawMsg.Data))
 }
 
 func (ep *Endpoint) Write(rawMsg *msgml.RawMessage) error {
 	time.Sleep(ep.txPreDelay) // transmit pre delay
 	ep.messageLogger.AsyncWrite(rawMsg)
 
-	_, err := ep.Port.Write(rawMsg.Data)
+	dataBytes, ok := rawMsg.Data.([]byte)
+	if !ok {
+		zap.L().Error("error on converting to bytes", zap.Any("rawMessage", rawMsg))
+		return fmt.Errorf("error on converting to bytes. received: %T", rawMsg.Data)
+	}
+	_, err := ep.Port.Write(dataBytes)
 	return err
 }
 

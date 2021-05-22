@@ -10,6 +10,7 @@ import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
 	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"go.uber.org/zap"
@@ -122,8 +123,8 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	return rawMsg, nil
 }
 
-// ToMessage converts to mycontroller specific
-func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
+// Process converts to mycontroller specific
+func (p *Provider) Process(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
 	messages := make([]*msgml.Message, 0)
 
 	msMsg, err := p.decodeRawMessage(rawMsg)
@@ -262,12 +263,12 @@ func (p *Provider) decodeRawMessage(rawMsg *msgml.RawMessage) (*message, error) 
 			return nil, nil
 		}
 		d = rData[len(rData)-5:]
-		payload = string(rawMsg.Data)
+		payload = convertor.ToString(rawMsg.Data)
 	case gwpl.TypeSerial, gwpl.TypeEthernet:
 		// node-id;child-sensor-id;command;ack;type;payload
-		_d := strings.Split(string(rawMsg.Data), ";")
+		_d := strings.Split(convertor.ToString(rawMsg.Data), ";")
 		if len(_d) < 6 {
-			zap.L().Error("Invalid message format", zap.String("rawMessage", string(rawMsg.Data)))
+			zap.L().Error("Invalid message format", zap.String("rawMessage", convertor.ToString(rawMsg.Data)))
 			return nil, nil
 		}
 		payload = _d[5]

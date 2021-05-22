@@ -14,19 +14,22 @@ func ToString(data interface{}) string {
 	if data == nil {
 		return ""
 	}
-	switch data.(type) {
+	switch dataNew := data.(type) {
 	case int8, int16, int32, int64, int,
 		uint8, uint16, uint32, uint64, uint:
-		return fmt.Sprintf("%d", data)
+		return fmt.Sprintf("%d", dataNew)
 
 	case float32, float64:
-		return strings.TrimRight(strings.TrimRight(fmt.Sprintf("%f", data), "0"), ".")
+		return strings.TrimRight(strings.TrimRight(fmt.Sprintf("%f", dataNew), "0"), ".")
 
 	case bool:
-		return fmt.Sprintf("%t", data)
+		return fmt.Sprintf("%t", dataNew)
 
 	case string:
-		return fmt.Sprintf("%v", data)
+		return fmt.Sprintf("%v", dataNew)
+
+	case []byte:
+		return string(dataNew)
 
 	default:
 		b, err := json.Marshal(data)

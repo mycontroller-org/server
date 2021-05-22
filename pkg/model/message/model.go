@@ -6,6 +6,8 @@ import (
 
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	cloneutil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 )
 
 // Data definition
@@ -116,7 +118,7 @@ type RawMessage struct {
 	ID                 string
 	IsReceived         bool
 	AcknowledgeEnabled bool
-	Data               []byte
+	Data               interface{}
 	Timestamp          time.Time
 	Others             cmap.CustomMap
 }
@@ -139,7 +141,7 @@ func (rm *RawMessage) MarshalJSON() ([]byte, error) {
 		Data string
 		*RawMsgAlias
 	}{
-		Data:        string(rm.Data),
+		Data:        convertor.ToString(rm.Data),
 		RawMsgAlias: (*RawMsgAlias)(rm),
 	})
 }
@@ -149,7 +151,7 @@ func (rm *RawMessage) Clone() *RawMessage {
 	return &RawMessage{
 		ID:         rm.ID,
 		IsReceived: rm.IsReceived,
-		Data:       rm.Data,
+		Data:       cloneutil.Clone(rm.Data),
 		Timestamp:  rm.Timestamp,
 		Others:     rm.Others.Clone(),
 	}

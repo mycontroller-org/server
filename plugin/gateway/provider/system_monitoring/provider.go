@@ -80,9 +80,3 @@ func (p *Provider) Close() error {
 	p.unloadAll()
 	return nil
 }
-
-// Post func
-func (p *Provider) Post(rawMsg *msgML.RawMessage) error {
-	// this gateway do not support post messages
-	return nil
-}

@@ -111,7 +111,17 @@ func (p *Provider) Close() error {
 
 // Post func
 // returns the status and error message if any
-func (p *Provider) Post(rawMsg *msgML.RawMessage) error {
+func (p *Provider) Post(msg *msgML.Message) error {
+
+	rawMsg, err := p.ToRawMessage(msg)
+	if err != nil {
+		zap.L().Error("error on converting to raw message", zap.Error(err), zap.String("gatewayId", p.GatewayConfig.ID))
+		return err
+	}
+
+	if rawMsg == nil {
+		return nil
+	}
 
 	// if acknowledge not enabled
 	if !rawMsg.AcknowledgeEnabled {

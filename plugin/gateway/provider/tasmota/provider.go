@@ -5,10 +5,10 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	utils "github.com/mycontroller-org/backend/v2/pkg/utils"
-	gwpl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
+	gwPRL "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
 	mqtt "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/protocol_mqtt"
 )
 
@@ -22,13 +22,13 @@ type Config struct {
 // Provider implementation
 type Provider struct {
 	Config        *Config
-	GatewayConfig *gwml.Config
-	Protocol      gwpl.Protocol
+	GatewayConfig *gwML.Config
+	Protocol      gwPRL.Protocol
 	ProtocolType  string
 }
 
 // Init provider
-func Init(gatewayConfig *gwml.Config) (*Provider, error) {
+func Init(gatewayConfig *gwML.Config) (*Provider, error) {
 	cfg := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gatewayConfig.Provider, cfg)
 	if err != nil {
@@ -43,10 +43,10 @@ func Init(gatewayConfig *gwml.Config) (*Provider, error) {
 }
 
 // Start func
-func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgml.RawMessage) error) error {
+func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgML.RawMessage) error) error {
 	var err error
 	switch p.ProtocolType {
-	case gwpl.TypeMQTT:
+	case gwPRL.TypeMQTT:
 		// update subscription topics
 		protocol, _err := mqtt.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
 		err = _err
@@ -63,6 +63,10 @@ func (p *Provider) Close() error {
 }
 
 // Post func
-func (p *Provider) Post(rawMsg *msgml.RawMessage) error {
+func (p *Provider) Post(msg *msgML.Message) error {
+	rawMsg, err := p.ToRawMessage(msg)
+	if err != nil {
+		return err
+	}
 	return p.Protocol.Write(rawMsg)
 }

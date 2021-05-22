@@ -12,6 +12,7 @@ import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
+	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/esphome"
 	mysensors "github.com/mycontroller-org/backend/v2/plugin/gateway/provider/mysensors_v2"
 	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/philipshue"
 	systemMonitoring "github.com/mycontroller-org/backend/v2/plugin/gateway/provider/system_monitoring"
@@ -72,6 +73,13 @@ func GetService(gatewayCfg *gwml.Config) (*Service, error) {
 			return nil, err
 		}
 		provider = philipsHueProvider
+
+	case TypeEsphome:
+		esphomeProvider, err := esphome.Init(gatewayCfg)
+		if err != nil {
+			return nil, err
+		}
+		provider = esphomeProvider
 
 	default:
 		return nil, fmt.Errorf("unknown provider:%s", gatewayCfg.Provider.GetString(model.NameType))
@@ -187,14 +195,9 @@ func (s *Service) messageConsumer(item interface{}) {
 
 // converts and post the message to protocol
 func (s *Service) post(msg *msgml.Message) {
-	rawMsg, err := s.provider.ToRawMessage(msg)
+	err := s.provider.Post(msg)
 	if err != nil {
-		zap.L().Warn("Failed to parse", zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
-		return
-	}
-	err = s.provider.Post(rawMsg)
-	if err != nil {
-		zap.L().Warn("Failed to send", zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Any("rawMessage", rawMsg), zap.Error(err))
+		zap.L().Warn("Failed to send", zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
 	}
 }
 
@@ -221,7 +224,7 @@ func (s *Service) addToSleepingMessageQueue(msg *msgml.Message) {
 func (s *Service) rawMessageProcessor(data interface{}) {
 	rawMsg := data.(*msgml.RawMessage)
 	zap.L().Debug("RawMessage received", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
-	messages, err := s.provider.ToMessage(rawMsg)
+	messages, err := s.provider.Process(rawMsg)
 	if err != nil {
 		zap.L().Warn("Failed to parse", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 		return

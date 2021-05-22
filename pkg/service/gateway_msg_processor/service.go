@@ -19,6 +19,7 @@ import (
 	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/javascript"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
@@ -465,8 +466,8 @@ func updateFieldData(
 	field.Current = fieldML.Payload{Value: convertedValue, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
 
 	// update no change since
-	oldValue := fmt.Sprintf("%v", field.Previous.Value)
-	newValue := fmt.Sprintf("%v", field.Current.Value)
+	oldValue := convertor.ToString(field.Previous.Value)
+	newValue := convertor.ToString(field.Current.Value)
 	if oldValue != newValue {
 		field.NoChangeSince = msg.Timestamp
 	}

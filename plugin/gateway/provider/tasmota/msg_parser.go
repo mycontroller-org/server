@@ -59,8 +59,8 @@ func (p *Provider) ToRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
 	return rawMsg, nil
 }
 
-// ToMessage converts raw message into message
-func (p *Provider) ToMessage(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
+// Process converts raw message into message
+func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 	// one raw message can contain multiple messages
 	messages := make([]*msgML.Message, 0)
 
@@ -127,7 +127,12 @@ func (p *Provider) ToMessage(rawMsg *msgML.RawMessage) ([]*msgML.Message, error)
 		}
 
 		data := make(map[string]interface{})
-		err := utils.ToStruct(rawMsg.Data, &data)
+		rawMsgBytes, ok := rawMsg.Data.([]byte)
+		if !ok {
+			zap.L().Error("error on converting to bytes", zap.Any("rawMessage", rawMsg))
+			return nil, fmt.Errorf("error on converting to bytes. received: %T", rawMsg.Data)
+		}
+		err := utils.ToStruct(rawMsgBytes, &data)
 		if err != nil {
 			return nil, err
 		}
@@ -228,7 +233,12 @@ func (p *Provider) ToMessage(rawMsg *msgML.RawMessage) ([]*msgML.Message, error)
 		switch tmMsg.Command {
 		case cmdResult:
 			data := make(map[string]interface{})
-			err := utils.ToStruct(rawMsg.Data, &data)
+			rawMsgBytes, ok := rawMsg.Data.([]byte)
+			if !ok {
+				zap.L().Error("error on converting to bytes", zap.Any("rawMessage", rawMsg))
+				return nil, fmt.Errorf("error on converting to bytes. received: %T", rawMsg.Data)
+			}
+			err := utils.ToStruct(rawMsgBytes, &data)
 			if err != nil {
 				return nil, err
 			}
@@ -255,7 +265,12 @@ func (p *Provider) ToMessage(rawMsg *msgML.RawMessage) ([]*msgML.Message, error)
 			if found {
 				// get mesage type
 				rawData := make(map[string]map[string]interface{})
-				err := utils.ToStruct(rawMsg.Data, &rawData)
+				rawMsgBytes, ok := rawMsg.Data.([]byte)
+				if !ok {
+					zap.L().Error("error on converting to bytes", zap.Any("rawMessage", rawMsg))
+					return nil, fmt.Errorf("error on converting to bytes. received: %T", rawMsg.Data)
+				}
+				err := utils.ToStruct(rawMsgBytes, &rawData)
 				if err != nil {
 					return nil, err
 				}

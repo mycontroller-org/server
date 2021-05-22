@@ -7,14 +7,20 @@ import (
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 )
 
-// ToRawMessage func implementation
-func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
+// Process implementation
+func (p *Provider) Process(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
+	// gateway do not send a messages to queue, sends directly
+	return nil, nil
+}
+
+// Post func
+func (p *Provider) Post(msg *msgml.Message) error {
 	if len(msg.Payloads) == 0 {
-		return nil, errors.New("there is no payload details on the message")
+		return errors.New("there is no payload details on the message")
 	}
 
 	if p.NodeID != msg.NodeID {
-		return nil, nil
+		return nil
 	}
 
 	payload := msg.Payloads[0]
@@ -26,10 +32,5 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 
 		}
 	}
-	return nil, nil
-}
-
-// ToMessage implementation
-func (p *Provider) ToMessage(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
-	return nil, nil
+	return nil
 }

@@ -12,6 +12,7 @@ import (
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	gwptcl "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
 	msglogger "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/message_logger"
 
@@ -117,7 +118,7 @@ func messageFormatter(rawMsg *msgml.RawMessage) string {
 		rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"),
 		direction,
 		rawMsg.Others.Get(gwptcl.KeyMqttTopic),
-		string(rawMsg.Data),
+		convertor.ToString(rawMsg.Data),
 	)
 }
 
