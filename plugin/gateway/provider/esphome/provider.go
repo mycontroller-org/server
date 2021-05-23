@@ -96,6 +96,7 @@ func (p *Provider) Start(rxMessageFunc func(rawMsg *msgML.RawMessage) error) err
 func (p *Provider) Close() error {
 	p.unscheduleAll()
 	p.clientStore.Close()
+	p.entityStore.Close()
 	return nil
 }
 

@@ -67,7 +67,7 @@ func (en *ESPHomeNode) doAliveCheck() {
 	if err != nil {
 		Unschedule(en.aliveScheduleID())
 		en.ScheduleReconnect()
-		zap.L().Info("error on ping, reconnect scheduled", zap.String("error", err.Error()), zap.String("reconnectDelay", en.Config.ReconnectDelay))
+		zap.L().Info("error on ping, reconnect scheduled", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.String("error", err.Error()), zap.String("reconnectDelay", en.Config.ReconnectDelay))
 	}
 }
 
@@ -83,7 +83,7 @@ func (en *ESPHomeNode) Disconnect() error {
 
 // Post sends message to a esphome node
 func (en *ESPHomeNode) Post(msg proto.Message) error {
-	zap.L().Debug("posting a message", zap.Any("msg", msg), zap.String("type", fmt.Sprintf("%T", msg)))
+	zap.L().Debug("posting a message", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Any("msg", msg), zap.String("type", fmt.Sprintf("%T", msg)))
 	err := en.Client.Send(msg)
 	if err != nil {
 		return err
@@ -104,7 +104,7 @@ func (en *ESPHomeNode) Post(msg proto.Message) error {
 		topic := mcbus.GetTopicPostMessageToCore()
 		err = mcbus.Publish(topic, streamResponse)
 		if err != nil {
-			zap.L().Error("error on posting a message", zap.Error(err))
+			zap.L().Error("error on posting a message", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
 		}
 	}
 	return nil
@@ -132,7 +132,10 @@ func (en *ESPHomeNode) onReceive(msg proto.Message) {
 	rawMsg.Others.Set(MessageTypeID, msgTypeID, nil)
 	rawMsg.Others.Set(NodeID, en.NodeID, nil)
 
-	en.rxMessageFunc(rawMsg)
+	err := en.rxMessageFunc(rawMsg)
+	if err != nil {
+		zap.L().Error("error on posting a message", zap.Error(err), zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Any("message", msg))
+	}
 }
 
 // reconnect performs a reconnection
@@ -141,13 +144,13 @@ func (en *ESPHomeNode) reconnect() {
 	if en.Client != nil {
 		err := en.Client.Close()
 		if err != nil {
-			zap.L().Debug("error on disconnect", zap.String("error", err.Error()))
+			zap.L().Debug("error on disconnect", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.String("error", err.Error()))
 		}
 	}
 
 	err := en.Connect()
 	if err != nil {
-		zap.L().Info("error on reconnect", zap.String("error", err.Error()))
+		zap.L().Info("error on reconnect", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.String("error", err.Error()))
 	} else {
 		Unschedule(en.reconnectScheduleID())
 	}
@@ -157,7 +160,7 @@ func (en *ESPHomeNode) reconnect() {
 func (en *ESPHomeNode) scheduleAliveCheck() {
 	err := Schedule(en.aliveScheduleID(), en.Config.AliveCheckInterval, en.doAliveCheck)
 	if err != nil {
-		zap.L().Error("error on configure alive check interval", zap.Error(err))
+		zap.L().Error("error on configure alive check interval", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
 	}
 }
 
@@ -165,7 +168,7 @@ func (en *ESPHomeNode) scheduleAliveCheck() {
 func (en *ESPHomeNode) ScheduleReconnect() {
 	err := Schedule(en.reconnectScheduleID(), en.Config.ReconnectDelay, en.reconnect)
 	if err != nil {
-		zap.L().Error("error on configure reconnect", zap.Error(err))
+		zap.L().Error("error on configure reconnect", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
 	}
 }
 
@@ -183,7 +186,7 @@ func (en *ESPHomeNode) reconnectScheduleID() string {
 func (en *ESPHomeNode) sendNodeInfo() {
 	deviceInfo, err := en.Client.DeviceInfo()
 	if err != nil {
-		zap.L().Error("error on getting device info")
+		zap.L().Error("error on getting device info", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
 		return
 	}
 
@@ -203,6 +206,6 @@ func (en *ESPHomeNode) sendNodeInfo() {
 	topic := mcbus.GetTopicPostMessageToCore()
 	err = mcbus.Publish(topic, nodeMsg)
 	if err != nil {
-		zap.L().Error("error on posting a message", zap.Error(err))
+		zap.L().Error("error on posting a message", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
 	}
 }

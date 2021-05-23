@@ -20,7 +20,7 @@ import (
 // Post sends a command to esphome node
 func (p *Provider) Post(message *msgML.Message) error {
 	if message == nil || len(message.Payloads) == 0 || message.NodeID == "" {
-		zap.L().Error("invalid message received", zap.Any("message", message))
+		zap.L().Error("invalid message received", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("message", message))
 		return errors.New("invalid message")
 	}
 
@@ -34,7 +34,7 @@ func (p *Provider) Post(message *msgML.Message) error {
 	}
 
 	if message.SourceID == "" {
-		zap.L().Error("invalid message received", zap.Any("message", message))
+		zap.L().Error("invalid message received", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("message", message))
 		return errors.New("sourceID not found")
 	}
 
@@ -83,7 +83,7 @@ func (p *Provider) Post(message *msgML.Message) error {
 	}
 
 	if request != nil {
-		zap.L().Debug("field populated", zap.Any("fields", fields), zap.Any("entity", entity))
+		zap.L().Debug("field populated", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("fields", fields), zap.Any("entity", entity))
 
 		jsonBytes, err := json.Marshal(fields)
 		if err != nil {
@@ -102,7 +102,7 @@ func (p *Provider) Post(message *msgML.Message) error {
 
 // Process performs operation on raw message received from esphome node and returns multiple messages
 func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
-	zap.L().Debug("processing a message", zap.Any("type", fmt.Sprintf("%T", rawMsg.Data)), zap.Any("rawMessage", rawMsg))
+	zap.L().Debug("processing a message", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("type", fmt.Sprintf("%T", rawMsg.Data)), zap.Any("rawMessage", rawMsg))
 	nodeID := rawMsg.Others.GetString(NodeID)
 	protoMsg := rawMsg.Data.(protoreflect.ProtoMessage)
 
@@ -127,7 +127,7 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 		return nil, err
 	}
 
-	zap.L().Debug("fields", zap.Any("fields", fields))
+	zap.L().Debug("fields", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("fields", fields))
 	delete(fields, "missing_state") // this field is not required
 
 	switch protoMsg.(type) {
@@ -294,7 +294,7 @@ func adjustValueToEsphomeNode(entityType, fieldID string, value interface{}) int
 
 // getMessageEntitiesResponse returns the entities as multiple messages
 func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timestamp time.Time, fields map[string]interface{}) ([]*msgML.Message, error) {
-	zap.L().Info("fields", zap.Any("fields", fields))
+	zap.L().Debug("fields", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("nodeId", nodeID), zap.Any("fields", fields))
 	objectID, found := fields[FieldObjectID]
 	if !found {
 		return nil, errors.New("object id not found")
@@ -330,7 +330,7 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 	deviceClass := ""
 	// update presentation messages
 	for field, value := range fields {
-		zap.L().Debug("field", zap.String("field", field), zap.Any("value", value))
+		zap.L().Debug("field", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("field", field), zap.Any("value", value))
 		if strings.HasPrefix(field, "legacy") { // ignore legacy fields
 			continue
 		} else if field == "unit_of_measurement" {
@@ -426,7 +426,7 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 	messages = append(messages, msgSource)
 	messages = append(messages, msgFields)
 
-	zap.L().Debug("presentations", zap.Any("messages", messages))
+	zap.L().Debug("presentations", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("messages", messages))
 	return messages, nil
 }
 

@@ -63,3 +63,9 @@ func (s *EntityStore) GetByEntityType(nodeID string, entityType string) *Entity 
 	}
 	return nil
 }
+
+func (s *EntityStore) Close() {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.nodes = make(map[string]map[uint32]Entity)
+}
