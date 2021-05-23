@@ -34,7 +34,7 @@ func ToString(data interface{}) string {
 	default:
 		b, err := json.Marshal(data)
 		if err != nil {
-			zap.L().Error("Failed to convert to string", zap.Any("data", data), zap.Error(err))
+			zap.L().Error("error on converting to string", zap.Any("data", data), zap.Error(err))
 			return fmt.Sprintf("%v", data)
 		}
 		return string(b)

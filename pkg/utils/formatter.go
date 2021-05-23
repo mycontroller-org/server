@@ -123,3 +123,15 @@ func ToDuration(duration string, defaultDuration time.Duration) time.Duration {
 	}
 	return parsedDuration
 }
+
+// ValidDuration verifies the duration, if it hits error returns the default duration
+func ValidDuration(duration, defaultDuration string) string {
+	if duration == "" {
+		return defaultDuration
+	}
+	_, err := time.ParseDuration(duration)
+	if err == nil {
+		return duration
+	}
+	return defaultDuration
+}

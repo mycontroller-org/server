@@ -11,6 +11,7 @@ import (
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/esphome"
 	mysensors "github.com/mycontroller-org/backend/v2/plugin/gateway/provider/mysensors_v2"
@@ -26,6 +27,8 @@ const (
 	sleepingQueueLimit  = 100
 	workersMessage      = 1
 	workersRawMessage   = 1
+
+	defaultReconnectDelay = "15s"
 )
 
 // Service component of the provider
@@ -44,6 +47,9 @@ type Service struct {
 
 // GetService returns service instance
 func GetService(gatewayCfg *gwml.Config) (*Service, error) {
+	// verify default reconnect delay
+	gatewayCfg.ReconnectDelay = utils.ValidDuration(gatewayCfg.ReconnectDelay, defaultReconnectDelay)
+
 	var provider Provider
 	switch gatewayCfg.Provider.GetString(model.NameType) {
 	case TypeMySensorsV2:

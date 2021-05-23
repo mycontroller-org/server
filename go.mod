@@ -19,6 +19,7 @@ require (
 	github.com/jaegertracing/jaeger v1.22.0
 	github.com/json-iterator/go v1.1.11
 	github.com/mitchellh/mapstructure v1.4.1
+	github.com/mycontroller-org/esphome_api v0.0.0-20210521131434-a7948558294c
 	github.com/nats-io/nats.go v1.10.0
 	github.com/robfig/cron/v3 v3.0.2-0.20210106135023-bc59245fe10e
 	github.com/rs/cors v1.7.0
@@ -31,5 +32,6 @@ require (
 	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b
 	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5 // indirect
 	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420 // indirect
+	google.golang.org/protobuf v1.26.0
 	gopkg.in/yaml.v2 v2.4.0
 )
