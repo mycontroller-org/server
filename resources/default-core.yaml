@@ -18,6 +18,8 @@ directories:
   data: /mc_home/data
   logs: /mc_home/logs
   tmp: /mc_home/tmp
+  secure_share: /secure_share
+  insecure_share: /insecure_share
 
 bus:
   type: natsio

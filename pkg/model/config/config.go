@@ -32,9 +32,11 @@ type WebConfig struct {
 
 // Directories for data and logs
 type Directories struct {
-	Data string `yaml:"data"`
-	Logs string `yaml:"logs"`
-	Tmp  string `yaml:"tmp"`
+	Data          string `yaml:"data"`
+	Logs          string `yaml:"logs"`
+	Tmp           string `yaml:"tmp"`
+	SecureShare   string `yaml:"secure_share"`
+	InsecureShare string `yaml:"insecure_share"`
 }
 
 // LoggerConfig input

@@ -17,6 +17,9 @@ const (
 	AccessToken = "access_token"
 
 	DefaultExpiration = time.Hour * 24 * 7 // 24 * 7 days
+
+	SecureShareDirWebHandlerPath   = "/secure_share"
+	InsecureShareDirWebHandlerPath = "/insecure_share"
 )
 
 // UserLogin struct

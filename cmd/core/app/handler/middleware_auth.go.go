@@ -18,14 +18,22 @@ import (
 
 var (
 	// middler check vars
-	verifyPrefix      = "/api/"
+	verifyPrefixes    = []string{"/api/", handlerML.SecureShareDirWebHandlerPath}
 	nonRestrictedAPIs = []string{"/api/status", "/api/user/registration", "/api/user/login"}
 )
 
 func middlewareAuthenticationVerification(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
-		if strings.HasPrefix(path, verifyPrefix) {
+		isSecurePrefix := false
+		for _, verifyPrefix := range verifyPrefixes {
+			if strings.HasPrefix(path, verifyPrefix) {
+				isSecurePrefix = true
+				break
+			}
+		}
+
+		if isSecurePrefix {
 			for _, aPath := range nonRestrictedAPIs {
 				if strings.HasPrefix(path, aPath) {
 					next.ServeHTTP(w, r)
@@ -42,6 +50,7 @@ func middlewareAuthenticationVerification(next http.Handler) http.Handler {
 			return
 		}
 		next.ServeHTTP(w, r)
+
 	})
 }
 

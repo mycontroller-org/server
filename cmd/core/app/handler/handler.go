@@ -7,7 +7,8 @@ import (
 
 	"github.com/gorilla/mux"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
+	"github.com/mycontroller-org/backend/v2/pkg/model/config"
+	webHandlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	mcWS "github.com/mycontroller-org/backend/v2/pkg/service/websocket"
 	"github.com/rs/cors"
@@ -18,14 +19,14 @@ import (
 func StartHandler() error {
 	router := mux.NewRouter()
 
-	cfg := cfg.CFG.Web
+	webCfg := cfg.CFG.Web
 
 	// set JWT access secret in environment
 	// TODO: this should be updated dynamically
-	os.Setenv(handlerML.EnvJwtAccessSecret, "add2a90d-c7c5-4d93-96e2-e70eca62400d")
+	os.Setenv(webHandlerML.EnvJwtAccessSecret, "add2a90d-c7c5-4d93-96e2-e70eca62400d")
 
 	// Enable Profiling, if enabled
-	if cfg.EnableProfiling {
+	if webCfg.EnableProfiling {
 		registerPProfRoutes(router)
 	}
 
@@ -50,8 +51,11 @@ func StartHandler() error {
 	registerQuickIDRoutes(router)
 	registerImportExportRoutes(router)
 
-	if cfg.WebDirectory != "" {
-		fs := http.FileServer(http.Dir(cfg.WebDirectory))
+	// add secure and insecure directories into handler
+	addFileServers(cfg.CFG.Directories, router)
+
+	if webCfg.WebDirectory != "" {
+		fs := http.FileServer(http.Dir(webCfg.WebDirectory))
 		//router.Handle("/", fs)
 		router.PathPrefix("/").Handler(fs)
 	} else {
@@ -74,14 +78,14 @@ func StartHandler() error {
 	handler := c.Handler(router)
 	handler = middlewareAuthenticationVerification(handler)
 
-	addr := fmt.Sprintf("%s:%d", cfg.BindAddress, cfg.Port)
+	addr := fmt.Sprintf("%s:%d", webCfg.BindAddress, webCfg.Port)
 
-	zap.L().Info("listening HTTP service on", zap.String("address", addr), zap.String("webDirectory", cfg.WebDirectory))
+	zap.L().Info("listening HTTP service on", zap.String("address", addr), zap.String("webDirectory", webCfg.WebDirectory))
 	return http.ListenAndServe(addr, handler)
 }
 
 func postErrorResponse(w http.ResponseWriter, message string, code int) {
-	response := &handlerML.Response{
+	response := &webHandlerML.Response{
 		Success: false,
 		Message: message,
 	}
@@ -101,4 +105,19 @@ func postSuccessResponse(w http.ResponseWriter, data interface{}) {
 	}
 
 	WriteResponse(w, out)
+}
+
+// configure secure and insecure dir shares
+func addFileServers(dirs config.Directories, router *mux.Router) {
+	if dirs.SecureShare != "" {
+		zap.L().Info("secure share directory included", zap.String("directory", dirs.SecureShare), zap.String("handlerPath", webHandlerML.SecureShareDirWebHandlerPath))
+		fs := http.StripPrefix(webHandlerML.SecureShareDirWebHandlerPath, http.FileServer(http.Dir(dirs.SecureShare)))
+		router.PathPrefix(webHandlerML.SecureShareDirWebHandlerPath).Handler(fs)
+	}
+	if dirs.InsecureShare != "" {
+		zap.L().Info("insecure share directory included", zap.String("directory", dirs.InsecureShare), zap.String("handlerPath", webHandlerML.InsecureShareDirWebHandlerPath))
+		fs := http.StripPrefix(webHandlerML.InsecureShareDirWebHandlerPath, http.FileServer(http.Dir(dirs.InsecureShare)))
+		router.PathPrefix(webHandlerML.InsecureShareDirWebHandlerPath).Handler(fs)
+
+	}
 }
