@@ -23,11 +23,37 @@ type Config struct {
 
 // WebConfig input
 type WebConfig struct {
-	BindAddress      string `yaml:"bind_address"`
-	Port             uint   `yaml:"port"`
-	WebDirectory     string `yaml:"web_directory"`
-	DocumentationURL string `yaml:"documentation_url"`
-	EnableProfiling  bool   `yaml:"enable_profiling"`
+	WebDirectory     string            `yaml:"web_directory"`
+	DocumentationURL string            `yaml:"documentation_url"`
+	EnableProfiling  bool              `yaml:"enable_profiling"`
+	HTTP             HttpConfig        `yaml:"http"`
+	SSL              SSLConfig         `yaml:"ssl"`
+	Letsencrypt      LetsencryptConfig `yaml:"letsencrypt"`
+}
+
+// HttpConfig struct
+type HttpConfig struct {
+	Enabled     bool   `yaml:"enabled"`
+	BindAddress string `yaml:"bind_address"`
+	Port        uint   `yaml:"port"`
+}
+
+// SSLConfig struct
+type SSLConfig struct {
+	Enabled     bool   `yaml:"enabled"`
+	BindAddress string `yaml:"bind_address"`
+	Port        uint   `yaml:"port"`
+	CertDir     string `yaml:"cert_dir"`
+}
+
+// LetsencryptConfig struct
+type LetsencryptConfig struct {
+	Enabled     bool     `yaml:"enabled"`
+	CacheDir    string   `yaml:"cache_dir"`
+	BindAddress string   `yaml:"bind_address"`
+	Port        uint     `yaml:"port"`
+	Email       string   `yaml:"email"`
+	Domains     []string `yaml:"domains"`
 }
 
 // Directories for data and logs

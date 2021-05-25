@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
@@ -15,8 +14,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// StartHandler for http access
-func StartHandler() error {
+// GetHandler for http access
+func GetHandler() (http.Handler, error) {
 	router := mux.NewRouter()
 
 	webCfg := cfg.CFG.Web
@@ -78,10 +77,7 @@ func StartHandler() error {
 	handler := c.Handler(router)
 	handler = middlewareAuthenticationVerification(handler)
 
-	addr := fmt.Sprintf("%s:%d", webCfg.BindAddress, webCfg.Port)
-
-	zap.L().Info("listening HTTP service on", zap.String("address", addr), zap.String("webDirectory", webCfg.WebDirectory))
-	return http.ListenAndServe(addr, handler)
+	return handler, nil
 }
 
 func postErrorResponse(w http.ResponseWriter, message string, code int) {
