@@ -28,7 +28,7 @@ type WebConfig struct {
 	EnableProfiling  bool            `yaml:"enable_profiling"`
 	Http             HttpConfig      `yaml:"http"`
 	HttpsSSL         HttpsSSLConfig  `yaml:"https_ssl"`
-	HttpsACME        HttpsACMEConfig `yaml:"letsencrypt"`
+	HttpsACME        HttpsACMEConfig `yaml:"https_acme"`
 }
 
 // HttpConfig struct
