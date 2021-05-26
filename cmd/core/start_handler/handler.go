@@ -13,17 +13,17 @@ import (
 )
 
 const (
-	LoggerPrefixHTTP        = "HTTP"
-	LoggerPrefixSSL         = "HTTPS/SSL"
-	LoggerPrefixLetsencrypt = "HTTPS/LE"
+	LoggerPrefixHTTP = "HTTP"
+	LoggerPrefixSSL  = "HTTPS/SSL"
+	LoggerPrefixACME = "HTTPS/ACME"
 )
 
 func StartHandler() {
 	loggerCfg := cfg.CFG.Logger
 	webCfg := cfg.CFG.Web
 
-	if !webCfg.HTTP.Enabled && !webCfg.SSL.Enabled && !webCfg.Letsencrypt.Enabled {
-		zap.L().Fatal("web services are disabled. Enable at least a service HTTP, HTTPS/SSL or HTTPS/Letsencrypt")
+	if !webCfg.Http.Enabled && !webCfg.HttpsSSL.Enabled && !webCfg.HttpsACME.Enabled {
+		zap.L().Fatal("web services are disabled. Enable at least a service HTTP, HTTPS/SSL or HTTPS/ACME")
 	}
 
 	handler, err := handler.GetHandler()
@@ -36,9 +36,9 @@ func StartHandler() {
 	errs := make(chan error, 1) // a channel for errors
 
 	// http service
-	if webCfg.HTTP.Enabled {
+	if webCfg.Http.Enabled {
 		go func() {
-			addr := fmt.Sprintf("%s:%d", webCfg.HTTP.BindAddress, webCfg.HTTP.Port)
+			addr := fmt.Sprintf("%s:%d", webCfg.Http.BindAddress, webCfg.Http.Port)
 			zap.L().Info("listening HTTP service on", zap.String("address", addr))
 			server := &http.Server{
 				Addr:     addr,
@@ -54,15 +54,15 @@ func StartHandler() {
 		}()
 	}
 
-	// ssl service
-	if webCfg.SSL.Enabled {
+	// https ssl service
+	if webCfg.HttpsSSL.Enabled {
 		go func() {
-			addr := fmt.Sprintf("%s:%d", webCfg.SSL.BindAddress, webCfg.SSL.Port)
+			addr := fmt.Sprintf("%s:%d", webCfg.HttpsSSL.BindAddress, webCfg.HttpsSSL.Port)
 			zap.L().Info("listening HTTPS/SSL service on", zap.String("address", addr))
 
-			tlsConfig, err := https.GetSSLTLSConfig(webCfg.SSL)
+			tlsConfig, err := https.GetSSLTLSConfig(webCfg.HttpsSSL)
 			if err != nil {
-				zap.L().Error("error on getting https/ssl tlsConfig", zap.Error(err), zap.Any("sslConfig", webCfg.SSL))
+				zap.L().Error("error on getting https/ssl tlsConfig", zap.Error(err), zap.Any("sslConfig", webCfg.HttpsSSL))
 				errs <- err
 				return
 			}
@@ -82,15 +82,15 @@ func StartHandler() {
 		}()
 	}
 
-	// letsencrypt service
-	if webCfg.Letsencrypt.Enabled {
+	// https acme service
+	if webCfg.HttpsACME.Enabled {
 		go func() {
-			addr := fmt.Sprintf("%s:%d", webCfg.Letsencrypt.BindAddress, webCfg.Letsencrypt.Port)
-			zap.L().Info("listening HTTPS/Letsencrypt service on", zap.String("address", addr))
+			addr := fmt.Sprintf("%s:%d", webCfg.HttpsACME.BindAddress, webCfg.HttpsACME.Port)
+			zap.L().Info("listening HTTPS/acme service on", zap.String("address", addr))
 
-			tlsConfig, err := https.GetLetsencryptTLSConfig(webCfg.Letsencrypt)
+			tlsConfig, err := https.GetAcmeTLSConfig(webCfg.HttpsACME)
 			if err != nil {
-				zap.L().Error("error on getting letsencrypt tlsConfig", zap.Error(err), zap.Any("letsencryptConfig", webCfg.Letsencrypt))
+				zap.L().Error("error on getting acme tlsConfig", zap.Error(err), zap.Any("acmeConfig", webCfg.HttpsACME))
 				errs <- err
 				return
 			}
@@ -99,12 +99,12 @@ func StartHandler() {
 				Addr:      addr,
 				TLSConfig: tlsConfig,
 				Handler:   handler,
-				ErrorLog:  log.New(getLogger(LoggerPrefixLetsencrypt, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
+				ErrorLog:  log.New(getLogger(LoggerPrefixACME, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
 			}
 
 			err = server.ListenAndServeTLS("", "")
 			if err != nil {
-				zap.L().Error("Error on starting https/letsencrypt handler", zap.Error(err))
+				zap.L().Error("Error on starting https/acme handler", zap.Error(err))
 				errs <- err
 			}
 		}()

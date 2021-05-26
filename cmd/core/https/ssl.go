@@ -30,7 +30,7 @@ const (
 )
 
 // GetSSLTLSConfig returns ssl certificate
-func GetSSLTLSConfig(cfg config.SSLConfig) (*tls.Config, error) {
+func GetSSLTLSConfig(cfg config.HttpsSSLConfig) (*tls.Config, error) {
 
 	if cfg.CertDir == "" {
 		return nil, errors.New("cert_dir is missing")
