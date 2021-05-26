@@ -25,6 +25,7 @@ logger:
   encoding: console
   level:
     core: info
+    web_handler: info
     storage: info
     metrics: warn
 

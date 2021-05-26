@@ -2,6 +2,7 @@ package mainhandler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"go.uber.org/zap"
@@ -11,7 +12,14 @@ import (
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 )
 
+const (
+	LoggerPrefixHTTP        = "HTTP"
+	LoggerPrefixSSL         = "HTTPS/SSL"
+	LoggerPrefixLetsencrypt = "HTTPS/LE"
+)
+
 func StartHandler() {
+	loggerCfg := cfg.CFG.Logger
 	webCfg := cfg.CFG.Web
 
 	if !webCfg.HTTP.Enabled && !webCfg.SSL.Enabled && !webCfg.Letsencrypt.Enabled {
@@ -33,8 +41,9 @@ func StartHandler() {
 			addr := fmt.Sprintf("%s:%d", webCfg.HTTP.BindAddress, webCfg.HTTP.Port)
 			zap.L().Info("listening HTTP service on", zap.String("address", addr))
 			server := &http.Server{
-				Addr:    addr,
-				Handler: handler,
+				Addr:     addr,
+				Handler:  handler,
+				ErrorLog: log.New(getLogger(LoggerPrefixHTTP, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
 			}
 
 			err = server.ListenAndServe()
@@ -62,6 +71,7 @@ func StartHandler() {
 				Addr:      addr,
 				TLSConfig: tlsConfig,
 				Handler:   handler,
+				ErrorLog:  log.New(getLogger(LoggerPrefixSSL, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
 			}
 
 			err = server.ListenAndServeTLS("", "")
@@ -89,6 +99,7 @@ func StartHandler() {
 				Addr:      addr,
 				TLSConfig: tlsConfig,
 				Handler:   handler,
+				ErrorLog:  log.New(getLogger(LoggerPrefixLetsencrypt, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
 			}
 
 			err = server.ListenAndServeTLS("", "")
