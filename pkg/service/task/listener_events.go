@@ -4,6 +4,10 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
+	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
+	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	"github.com/mycontroller-org/backend/v2/pkg/model/source"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
@@ -73,19 +77,33 @@ func processPreEvent(item interface{}) {
 		return
 	}
 
+	var out interface{}
+
 	// supported entity events
 	switch event.EntityType {
-	case
-		model.EntityGateway,
-		model.EntityNode,
-		model.EntitySource,
-		model.EntityField:
-		// continue
+	case model.EntityGateway:
+		out = &gatewayML.Config{}
+
+	case model.EntityNode:
+		out = &nodeML.Node{}
+
+	case model.EntitySource:
+		out = &source.Source{}
+
+	case model.EntityField:
+		out = &fieldML.Field{}
 
 	default:
 		// return do not proceed further
 		return
 	}
+
+	err = event.LoadEntity(out)
+	if err != nil {
+		zap.L().Warn("error on loading entity", zap.Any("event", event), zap.Error(err))
+		return
+	}
+	event.Entity = out
 
 	resourceWrapper := &eventWrapper{Event: event}
 	err = resourcePreProcessor(resourceWrapper)
