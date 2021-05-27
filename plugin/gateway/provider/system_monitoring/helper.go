@@ -4,15 +4,19 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 )
 
-func (p *Provider) getData(name string, value interface{}, metricType string) msgML.Payload {
+func (p *Provider) getData(name string, value interface{}, metricType, unit string, isReadOnly bool) msgML.Payload {
 	data := msgML.NewPayload()
 	data.Key = name
 	data.Value = fmt.Sprintf("%v", value)
 	data.MetricType = metricType
+	if isReadOnly {
+		data.Labels.Set(model.LabelReadOnly, "true")
+	}
 	return data
 }
 

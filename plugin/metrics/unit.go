@@ -1,14 +1,11 @@
 package metrics
 
-// MyController follows unit details from grafana, take unit details from here
-// Source: https://github.com/grafana/grafana/blob/v6.7.1/packages/grafana-data/src/valueFormats/categories.ts#L23
+// units used across providers
 const (
 	UnitNone       = ""
-	UnitCelsius    = "celsius"
-	UnitFahrenheit = "fahrenheit"
-	UnitKelvin     = "kelvin"
-	UnitHumidity   = "humidity"
-	UnitPercent    = "percent"
-	UnitVoltage    = "volt"
-	UnitAmpere     = "amp"
+	UnitCelsius    = "°C"
+	UnitFahrenheit = "°F"
+	UnitPercent    = "%"
+	UnitVoltage    = "V"
+	UnitAmpere     = "A"
 )

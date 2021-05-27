@@ -29,9 +29,9 @@ func (p *Provider) updateMemory() {
 			zap.L().Error("error on getting memory usage", zap.Error(err))
 			return
 		}
-		msg.Payloads = append(msg.Payloads, p.getData("total", getValueByUnit(vm.Total, cfg.Unit), metricsML.MetricTypeNone))
-		msg.Payloads = append(msg.Payloads, p.getData("used", getValueByUnit(vm.Used, cfg.Unit), metricsML.MetricTypeGaugeFloat))
-		msg.Payloads = append(msg.Payloads, p.getData("used_percent", vm.UsedPercent, metricsML.MetricTypeGaugeFloat))
+		msg.Payloads = append(msg.Payloads, p.getData("total", getValueByUnit(vm.Total, cfg.Unit), metricsML.MetricTypeNone, cfg.Unit, true))
+		msg.Payloads = append(msg.Payloads, p.getData("used", getValueByUnit(vm.Used, cfg.Unit), metricsML.MetricTypeGaugeFloat, cfg.Unit, true))
+		msg.Payloads = append(msg.Payloads, p.getData("used_percent", vm.UsedPercent, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
 	}
 
 	if !cfg.SwapMemoryDisabled {
@@ -40,9 +40,9 @@ func (p *Provider) updateMemory() {
 			zap.L().Error("error on getting swap memory usage", zap.Error(err))
 			return
 		}
-		msg.Payloads = append(msg.Payloads, p.getData("swap_total", getValueByUnit(sm.Total, cfg.Unit), metricsML.MetricTypeNone))
-		msg.Payloads = append(msg.Payloads, p.getData("swap_used", getValueByUnit(sm.Used, cfg.Unit), metricsML.MetricTypeGaugeFloat))
-		msg.Payloads = append(msg.Payloads, p.getData("swap_used_percent", sm.UsedPercent, metricsML.MetricTypeGaugeFloat))
+		msg.Payloads = append(msg.Payloads, p.getData("swap_total", getValueByUnit(sm.Total, cfg.Unit), metricsML.MetricTypeNone, cfg.Unit, true))
+		msg.Payloads = append(msg.Payloads, p.getData("swap_used", getValueByUnit(sm.Used, cfg.Unit), metricsML.MetricTypeGaugeFloat, cfg.Unit, true))
+		msg.Payloads = append(msg.Payloads, p.getData("swap_used_percent", sm.UsedPercent, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
 	}
 
 	err = p.postMsg(&msg)

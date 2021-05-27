@@ -113,7 +113,7 @@ func (p *Provider) Close() error {
 // returns the status and error message if any
 func (p *Provider) Post(msg *msgML.Message) error {
 
-	rawMsg, err := p.ToRawMessage(msg)
+	rawMsg, err := p.toRawMessage(msg)
 	if err != nil {
 		zap.L().Error("error on converting to raw message", zap.Error(err), zap.String("gatewayId", p.GatewayConfig.ID))
 		return err

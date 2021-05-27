@@ -33,12 +33,12 @@ func (p *Provider) updateNodeDetails() {
 	infoMap := utils.StructToMap(&info)
 
 	for name, value := range infoMap {
-		msg.Payloads = append(msg.Payloads, p.getData(name, value, metricsML.MetricTypeNone))
+		msg.Payloads = append(msg.Payloads, p.getData(name, value, metricsML.MetricTypeNone, metricsML.UnitNone, false))
 	}
 
 	// include version details
 	// library_version
-	data := p.getData("name", info.Hostname, metricsML.MetricTypeNone)
+	data := p.getData("name", info.Hostname, metricsML.MetricTypeNone, metricsML.UnitNone, false)
 	data.Labels.Set(model.LabelNodeVersion, fmt.Sprintf("%s_%s", info.PlatformFamily, info.PlatformVersion))
 	data.Labels.Set(model.LabelNodeLibraryVersion, info.KernelVersion)
 	data.Labels.Set("arch", info.KernelArch)

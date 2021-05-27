@@ -36,7 +36,7 @@ func (p *Provider) updateCPU() {
 		}
 
 		msg := p.getMsg(config.SourceTypeCPU)
-		msg.Payloads = append(msg.Payloads, p.getData("used_percent", usage[0], metricsML.MetricTypeGaugeFloat))
+		msg.Payloads = append(msg.Payloads, p.getData("used_percent", usage[0], metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
 
 		err = p.postMsg(&msg)
 		if err != nil {
@@ -72,7 +72,7 @@ func (p *Provider) updateCPU() {
 		for index, usage := range usageList {
 			sourceID := fmt.Sprintf("%s_%v", config.SourceTypeCPU, index)
 			msg := p.getMsg(sourceID)
-			msg.Payloads = append(msg.Payloads, p.getData("used_percent", usage, metricsML.MetricTypeGaugeFloat))
+			msg.Payloads = append(msg.Payloads, p.getData("used_percent", usage, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
 
 			err = p.postMsg(&msg)
 			if err != nil {
@@ -101,7 +101,7 @@ func sendCPUInfo(p *Provider, cpuInfo *cpu.InfoStat, cpuIndex, cpuCount int) {
 	if len(presentMsg.Payloads) > 0 {
 		data = presentMsg.Payloads[0]
 	} else {
-		data = p.getData(sourceID, sourceName, metricsML.MetricTypeNone)
+		data = p.getData(sourceID, sourceName, metricsML.MetricTypeNone, metricsML.UnitNone, true)
 		presentMsg.Payloads = append(presentMsg.Payloads, data)
 	}
 

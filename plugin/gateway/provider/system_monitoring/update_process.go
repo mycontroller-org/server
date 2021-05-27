@@ -186,26 +186,26 @@ func (p *Provider) updateProcess() {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			msg.Payloads = append(msg.Payloads, p.getData("cpu_percent", value, metricsML.MetricTypeGaugeFloat))
+			msg.Payloads = append(msg.Payloads, p.getData("cpu_percent", value, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
 
 			value, err = proc.MemoryPercent()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			msg.Payloads = append(msg.Payloads, p.getData("memory_percent", value, metricsML.MetricTypeGaugeFloat))
+			msg.Payloads = append(msg.Payloads, p.getData("memory_percent", value, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
 
 			memInfo, err := proc.MemoryInfo()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			msg.Payloads = append(msg.Payloads, p.getData("rss", getValueByUnit(memInfo.RSS, dataCFG.Unit), metricsML.MetricTypeGaugeFloat))
-			msg.Payloads = append(msg.Payloads, p.getData("vms", getValueByUnit(memInfo.VMS, dataCFG.Unit), metricsML.MetricTypeNone))
-			msg.Payloads = append(msg.Payloads, p.getData("swap", getValueByUnit(memInfo.Swap, dataCFG.Unit), metricsML.MetricTypeNone))
-			msg.Payloads = append(msg.Payloads, p.getData("stack", memInfo.Stack, metricsML.MetricTypeNone))
-			msg.Payloads = append(msg.Payloads, p.getData("locked", memInfo.Locked, metricsML.MetricTypeNone))
-			msg.Payloads = append(msg.Payloads, p.getData("data", memInfo.Data, metricsML.MetricTypeNone))
+			msg.Payloads = append(msg.Payloads, p.getData("rss", getValueByUnit(memInfo.RSS, dataCFG.Unit), metricsML.MetricTypeGaugeFloat, dataCFG.Unit, true))
+			msg.Payloads = append(msg.Payloads, p.getData("vms", getValueByUnit(memInfo.VMS, dataCFG.Unit), metricsML.MetricTypeNone, dataCFG.Unit, true))
+			msg.Payloads = append(msg.Payloads, p.getData("swap", getValueByUnit(memInfo.Swap, dataCFG.Unit), metricsML.MetricTypeNone, dataCFG.Unit, true))
+			msg.Payloads = append(msg.Payloads, p.getData("stack", memInfo.Stack, metricsML.MetricTypeNone, metricsML.UnitNone, true))
+			msg.Payloads = append(msg.Payloads, p.getData("locked", memInfo.Locked, metricsML.MetricTypeNone, metricsML.UnitNone, true))
+			msg.Payloads = append(msg.Payloads, p.getData("data", memInfo.Data, metricsML.MetricTypeNone, metricsML.UnitNone, true))
 
 			err = p.postMsg(&msg)
 			if err != nil {

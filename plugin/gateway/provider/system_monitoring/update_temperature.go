@@ -52,7 +52,7 @@ func (p *Provider) updateTemperature() {
 		}
 
 		// include temperature data
-		data := p.getData(fieldID, temp.Temperature, metricsML.MetricTypeGaugeFloat)
+		data := p.getData(fieldID, temp.Temperature, metricsML.MetricTypeGaugeFloat, metricsML.UnitCelsius, true)
 		data.Others.Set("high", temp.High, nil)
 		data.Others.Set("critical", temp.Critical, nil)
 		data.Others.Set("index", index, nil)
