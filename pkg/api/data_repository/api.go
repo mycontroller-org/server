@@ -11,6 +11,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	cloneUtil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
 	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -43,7 +44,14 @@ func Save(data *repositoryML.Config) error {
 		{Key: model.KeyID, Value: data.ID},
 	}
 	data.ModifiedOn = time.Now()
-	err := stg.SVC.Upsert(model.EntityDataRepository, data, filters)
+
+	// encrypt passwords, tokens
+	err := cloneUtil.UpdateSecrets(data, true)
+	if err != nil {
+		return err
+	}
+
+	err = stg.SVC.Upsert(model.EntityDataRepository, data, filters)
 	if err != nil {
 		return err
 	}

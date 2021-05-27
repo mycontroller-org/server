@@ -50,6 +50,12 @@ func LoadVariables(variablesPreMap map[string]string) (map[string]interface{}, e
 
 	backToVariables, ok := clonedVariables.(map[string]interface{})
 	if ok {
+		// descrypt the secrets, tokens
+		err := cloneUtil.UpdateSecrets(backToVariables, false)
+		if err != nil {
+			return nil, err
+		}
+
 		return backToVariables, nil
 	}
 

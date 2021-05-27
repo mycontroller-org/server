@@ -1,23 +1,22 @@
 package gateway
 
 import (
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	cloneutil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
 // Start gateway
-func Start(gwCfg *gwml.Config) error {
-	return postGatewayCommand(gwCfg, rsml.CommandStart)
+func Start(gwCfg *gwML.Config) error {
+	return postGatewayCommand(gwCfg, rsML.CommandStart)
 }
 
 // Stop gateway
-func Stop(gwCfg *gwml.Config) error {
-	return postGatewayCommand(gwCfg, rsml.CommandStop)
+func Stop(gwCfg *gwML.Config) error {
+	return postGatewayCommand(gwCfg, rsML.CommandStop)
 }
 
 // LoadAll makes gateways alive
@@ -27,7 +26,7 @@ func LoadAll() {
 		zap.L().Error("Failed to get list of gateways", zap.Error(err))
 		return
 	}
-	gateways := *gwsResult.Data.(*[]gwml.Config)
+	gateways := *gwsResult.Data.(*[]gwML.Config)
 	for index := 0; index < len(gateways); index++ {
 		gateway := gateways[index]
 		if gateway.Enabled {
@@ -41,7 +40,7 @@ func LoadAll() {
 
 // UnloadAll makes stop all gateways
 func UnloadAll() {
-	err := postGatewayCommand(nil, rsml.CommandUnloadAll)
+	err := postGatewayCommand(nil, rsML.CommandUnloadAll)
 	if err != nil {
 		zap.L().Error("error on unload gateways command", zap.Error(err))
 	}
@@ -111,17 +110,12 @@ func Reload(ids []string) error {
 	return nil
 }
 
-func postGatewayCommand(gwCfg *gwml.Config, command string) error {
-	reqEvent := rsml.ServiceEvent{
-		Type:    rsml.TypeGateway,
+func postGatewayCommand(gwCfg *gwML.Config, command string) error {
+	reqEvent := rsML.ServiceEvent{
+		Type:    rsML.TypeGateway,
 		Command: command,
 	}
 	if gwCfg != nil {
-		// descrypt the secrets
-		err := cloneutil.UpdateSecrets(gwCfg, false)
-		if err != nil {
-			return err
-		}
 		reqEvent.ID = gwCfg.ID
 		reqEvent.SetData(gwCfg)
 	}
@@ -129,12 +123,12 @@ func postGatewayCommand(gwCfg *gwml.Config, command string) error {
 	return mcbus.Publish(topic, reqEvent)
 }
 
-func getGatewayEntries(ids []string) ([]gwml.Config, error) {
-	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
-	pagination := &stgml.Pagination{Limit: 100}
+func getGatewayEntries(ids []string) ([]gwML.Config, error) {
+	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
+	pagination := &stgML.Pagination{Limit: 100}
 	gwsResult, err := List(filters, pagination)
 	if err != nil {
 		return nil, err
 	}
-	return *gwsResult.Data.(*[]gwml.Config), nil
+	return *gwsResult.Data.(*[]gwML.Config), nil
 }

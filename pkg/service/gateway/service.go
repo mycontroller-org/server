@@ -7,6 +7,7 @@ import (
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	cloneUtil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
 	gwpd "github.com/mycontroller-org/backend/v2/plugin/gateway/provider"
 	"go.uber.org/zap"
 )
@@ -14,6 +15,13 @@ import (
 // Start gateway
 func Start(gatewayCfg *gwml.Config) error {
 	start := time.Now()
+
+	// descrypt the secrets, tokens
+	err := cloneUtil.UpdateSecrets(gatewayCfg, false)
+	if err != nil {
+		return err
+	}
+
 	if gwService.Get(gatewayCfg.ID) != nil {
 		return fmt.Errorf("a service is in running state. gateway:%s", gatewayCfg.ID)
 	}

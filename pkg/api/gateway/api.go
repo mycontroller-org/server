@@ -2,43 +2,42 @@ package gateway
 
 import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
-	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
-	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	cloneutil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	cloneUtil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // List by filter and pagination
-func List(filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
-	result := make([]gwml.Config, 0)
-	return stg.SVC.Find(ml.EntityGateway, &result, filters, pagination)
+func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+	result := make([]gwML.Config, 0)
+	return stg.SVC.Find(model.EntityGateway, &result, filters, pagination)
 }
 
 // Get returns a gateway
-func Get(filters []stgml.Filter) (*gwml.Config, error) {
-	result := &gwml.Config{}
-	err := stg.SVC.FindOne(ml.EntityGateway, result, filters)
+func Get(filters []stgML.Filter) (*gwML.Config, error) {
+	result := &gwML.Config{}
+	err := stg.SVC.FindOne(model.EntityGateway, result, filters)
 	return result, err
 }
 
 // GetByID returns a gateway details
-func GetByID(id string) (*gwml.Config, error) {
-	filters := []stgml.Filter{
-		{Key: ml.KeyID, Value: id},
+func GetByID(id string) (*gwML.Config, error) {
+	filters := []stgML.Filter{
+		{Key: model.KeyID, Value: id},
 	}
-	result := &gwml.Config{}
-	err := stg.SVC.FindOne(ml.EntityGateway, result, filters)
+	result := &gwML.Config{}
+	err := stg.SVC.FindOne(model.EntityGateway, result, filters)
 	return result, err
 }
 
 // SaveAndReload gateway
-func SaveAndReload(gwCfg *gwml.Config) error {
-	gwCfg.State = &ml.State{} //reset state
+func SaveAndReload(gwCfg *gwML.Config) error {
+	gwCfg.State = &model.State{} //reset state
 	err := Save(gwCfg)
 	if err != nil {
 		return err
@@ -47,20 +46,20 @@ func SaveAndReload(gwCfg *gwml.Config) error {
 }
 
 // Save gateway config
-func Save(gwCfg *gwml.Config) error {
+func Save(gwCfg *gwML.Config) error {
 	eventType := eventML.TypeUpdated
 	if gwCfg.ID == "" {
-		gwCfg.ID = ut.RandID()
+		gwCfg.ID = utils.RandID()
 		eventType = eventML.TypeCreated
 	}
 
-	// encrypt passwords
-	err := cloneutil.UpdateSecrets(gwCfg, true)
+	// encrypt passwords, tokens
+	err := cloneUtil.UpdateSecrets(gwCfg, true)
 	if err != nil {
 		return err
 	}
 
-	err = stg.SVC.Upsert(ml.EntityGateway, gwCfg, nil)
+	err = stg.SVC.Upsert(model.EntityGateway, gwCfg, nil)
 	if err != nil {
 		return err
 	}
@@ -69,7 +68,7 @@ func Save(gwCfg *gwml.Config) error {
 }
 
 // SetState Updates state data
-func SetState(id string, state *ml.State) error {
+func SetState(id string, state *model.State) error {
 	gwCfg, err := GetByID(id)
 	if err != nil {
 		return err
@@ -84,6 +83,6 @@ func Delete(ids []string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
-	return stg.SVC.Delete(ml.EntityGateway, filters)
+	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
+	return stg.SVC.Delete(model.EntityGateway, filters)
 }

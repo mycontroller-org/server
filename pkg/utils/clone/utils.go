@@ -122,7 +122,7 @@ func translateRecursive(copy, original reflect.Value) {
 }
 
 var (
-	secretKeys = []string{"password", "token", "authorization", "authentication"}
+	secretKeys = []string{"password", "token", "access_token", "authorization", "authentication"}
 )
 
 func UpdateSecrets(source interface{}, encrypt bool) error {

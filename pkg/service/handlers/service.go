@@ -7,6 +7,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	cloneUtil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
 	handlerPlugin "github.com/mycontroller-org/backend/v2/plugin/handlers"
 	"go.uber.org/zap"
 )
@@ -83,6 +84,12 @@ func UnloadAll() {
 }
 
 func loadHandler(cfg *handlerML.Config) (handlerPlugin.Handler, error) {
+	// descrypt the secrets, tokens
+	err := cloneUtil.UpdateSecrets(cfg, false)
+	if err != nil {
+		return nil, err
+	}
+
 	handler, err := handlerPlugin.GetHandler(cfg)
 	if err != nil {
 		return nil, err

@@ -8,7 +8,7 @@ import (
 	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	cloneutil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
+	cloneUtil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
 	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
@@ -44,7 +44,7 @@ func Save(cfg *handlerML.Config) error {
 	}
 
 	// encrypt passwords
-	err := cloneutil.UpdateSecrets(cfg, true)
+	err := cloneUtil.UpdateSecrets(cfg, true)
 	if err != nil {
 		return err
 	}

@@ -1,3 +1,6 @@
+# This secret should be same as given in the server configuration file.
+secret: 5a2f6ff25b0025aeae12ae096363b51a
+
 directories:
   data: /mc_home/data
   logs: /mc_home/logs
