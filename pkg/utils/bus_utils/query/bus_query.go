@@ -65,7 +65,7 @@ func responseFunc(closeChan *concurrency.Channel, callBack func(item interface{}
 			// convert data to callback type
 			err := event.LoadData(out)
 			if err != nil {
-				zap.L().Error("error on converting to target type", zap.Error(err))
+				zap.L().Error("error on converting to target type", zap.Error(err), zap.Any("event", event))
 				closeChan.SafeSend(true)
 				return
 			}

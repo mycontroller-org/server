@@ -118,8 +118,8 @@ func getNodeIDs(request *rsML.ServiceEvent) ([]string, error) {
 		return nil, errors.New("nil data supplied")
 	}
 	nodeIDs := make([]string, 0)
-	if nodes, ok := response.Data.([]nodeML.Node); ok {
-		for _, node := range nodes {
+	if nodes, ok := response.Data.(*[]nodeML.Node); ok {
+		for _, node := range *nodes {
 			nodeIDs = append(nodeIDs, node.NodeID)
 		}
 	}

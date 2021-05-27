@@ -66,7 +66,7 @@ func handleActions(gwCfg *gwML.Config, fn string, msg *msgML.Message, msMsg *mes
 
 	case "I_ID_REQUEST":
 		msMsg.Type = actionIDResponse
-		msMsg.Payload = getNodeID(gwCfg)
+		msMsg.Payload = getNodeID(gwCfg.ID)
 		if msMsg.Payload == "" {
 			return errors.New("error on getting node ID")
 		}
@@ -128,21 +128,22 @@ func getTimestamp(gwCfg *gwML.Config) string {
 }
 
 // get node id
-func getNodeID(gwCfg *gwML.Config) string {
+func getNodeID(gatewayID string) string {
 	var reservedIDsString []string
 	updateNodeIDs := func(item interface{}) bool {
-		ids, ok := item.([]string)
+		ids, ok := item.(*[]string)
 		if !ok {
 			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
 			return false
 		}
-		reservedIDsString = ids
+		reservedIDsString = *ids
 		return false
 	}
-	filter := map[string]interface{}{model.KeyGatewayID: gwCfg.ID}
-	err := query.QueryResource("", rsML.TypeNode, rsML.CommandGetIds, filter, updateNodeIDs, make([]string, 0), queryTimeout)
+	filter := map[string]interface{}{model.KeyGatewayID: gatewayID}
+	out := make([]string, 0)
+	err := query.QueryResource("", rsML.TypeNode, rsML.CommandGetIds, filter, updateNodeIDs, &out, queryTimeout)
 	if err != nil {
-		zap.L().Error("error on finding list of nodes", zap.String("gateway", gwCfg.ID), zap.Error(err))
+		zap.L().Error("error on finding list of nodes", zap.String("gatewayId", gatewayID), zap.Error(err))
 		return ""
 	}
 
@@ -173,7 +174,7 @@ func getNodeID(gwCfg *gwML.Config) string {
 	}
 
 	if electedID == 255 {
-		zap.L().Error("No space left on this network. Reached maximum node counts.", zap.String("gateway", gwCfg.ID))
+		zap.L().Error("No space left on this network. Reached maximum node counts.", zap.String("gatewayId", gatewayID))
 		return ""
 	}
 	return strconv.Itoa(electedID)

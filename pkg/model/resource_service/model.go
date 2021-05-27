@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
@@ -74,22 +75,51 @@ func (e *ServiceEvent) GetData() interface{} {
 
 // LoadData loads the data to given interface
 func (e *ServiceEvent) LoadData(out interface{}) error {
+	outVal := reflect.ValueOf(out)
+	if outVal.Kind() != reflect.Ptr {
+		return errors.New("out argument must be a pointer")
+	}
 
-	switch out.(type) {
-	case string:
-		out = convertor.ToString(e.Data)
-		return nil
+	sliceVal := outVal.Elem()
 
-	case []string:
-		if stringSlice, ok := e.Data.([]string); ok {
-			out = stringSlice
-			return nil
+	switch sliceVal.Type().Kind() {
+	case reflect.Struct, reflect.Map:
+		mapData, ok := e.Data.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("data is not in map[string]interface{} type, received:%T, out:%T", e.Data, out)
+		}
+		return utils.MapToStruct(utils.TagNameJSON, mapData, out)
+
+	case reflect.Slice:
+		elementType := sliceVal.Type().Elem()
+		switch out.(type) {
+		case *[]string:
+			if sliceData, ok := e.Data.([]interface{}); ok {
+				for index, data := range sliceData {
+					if sliceVal.Len() == index { // slice is full
+						newElem := reflect.New(elementType)
+						sliceVal = reflect.Append(sliceVal, newElem.Elem())
+						sliceVal = sliceVal.Slice(0, sliceVal.Cap())
+					}
+					sliceVal.Index(index).Set(reflect.ValueOf(convertor.ToString(data)))
+				}
+				outVal.Elem().Set(sliceVal.Slice(0, len(sliceData)))
+				return nil
+			}
+			return fmt.Errorf("data is not in []interface{} type, received:%T, out:%T", e.Data, out)
+
+		}
+
+	case reflect.String, reflect.Interface:
+		switch out.(type) {
+		case *string:
+			if outVal.Elem().CanSet() {
+				outVal.Elem().Set(reflect.ValueOf(convertor.ToString(e.Data)))
+				return nil
+			}
+			return errors.New("out field cannot be set")
+
 		}
 	}
-
-	mapData, ok := e.Data.(map[string]interface{})
-	if !ok {
-		return errors.New("data is not in map[string]interface{} type")
-	}
-	return utils.MapToStruct(utils.TagNameJSON, mapData, out)
+	return fmt.Errorf("unknown type received, received:%T, out:%T", e.Data, out)
 }
