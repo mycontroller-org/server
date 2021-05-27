@@ -28,7 +28,7 @@ func (p *Provider) ToRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
 	tmMsg := &message{
 		Topic:   topicCmnd,
 		NodeID:  msg.NodeID,
-		Command: payload.Name,
+		Command: payload.Key,
 	}
 
 	rawMsg := msgML.NewRawMessage(false, nil)
@@ -43,7 +43,7 @@ func (p *Provider) ToRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
 		tmMsg.Payload = emptyPayload
 
 	case msgML.TypeAction:
-		err := handleActions(p.GatewayConfig, payload.Name, msg, tmMsg)
+		err := handleActions(p.GatewayConfig, payload.Key, msg, tmMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -59,8 +59,8 @@ func (p *Provider) ToRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
 	return rawMsg, nil
 }
 
-// Process converts raw message into message
-func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
+// ProcessReceived converts raw message into message
+func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 	// one raw message can contain multiple messages
 	messages := make([]*msgML.Message, 0)
 
@@ -98,7 +98,7 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 	}
 
 	// update metric type and unit
-	updateMetricTypeAndUnit := func(key string, pl *msgML.Data) {
+	updateMetricTypeAndUnit := func(key string, pl *msgML.Payload) {
 		mu, found := metricTypeAndUnit[key]
 		if found {
 			pl.MetricType = mu.Type
@@ -143,8 +143,8 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 
 			for key, v := range data {
 				// create new payload data
-				pl := msgML.NewData()
-				pl.Name = key
+				pl := msgML.NewPayload()
+				pl.Key = key
 				pl.Value = converterUtils.ToString(v)
 				updateMetricTypeAndUnit(key, &pl)
 				msg.Payloads = append(msg.Payloads, pl)
@@ -173,8 +173,8 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 							if ignore {
 								continue
 							}
-							pl := msgML.NewData()
-							pl.Name = wKey
+							pl := msgML.NewPayload()
+							pl.Key = wKey
 							pl.Value = converterUtils.ToString(wValue)
 							updateMetricTypeAndUnit(wKey, &pl)
 							senWiFi.Payloads = append(senWiFi.Payloads, pl)
@@ -186,8 +186,8 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 					pls := p.getHsbColor(plValue)
 					senControl.Payloads = append(senControl.Payloads, pls...)
 				} else {
-					pl := msgML.NewData()
-					pl.Name = key
+					pl := msgML.NewPayload()
+					pl.Key = key
 					pl.Value = converterUtils.ToString(v)
 					updateMetricTypeAndUnit(key, &pl)
 					if key == keyHeap {
@@ -210,8 +210,8 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 
 					for sK, sV := range dataMap {
 						// create new payload data
-						pl := msgML.NewData()
-						pl.Name = sK
+						pl := msgML.NewPayload()
+						pl.Key = sK
 						pl.Value = converterUtils.ToString(sV)
 						updateMetricTypeAndUnit(sK, &pl)
 						msg.Payloads = append(msg.Payloads, pl)
@@ -251,8 +251,8 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 					msg.Payloads = append(msg.Payloads, pls...)
 				} else {
 					// create new payload data
-					pl := msgML.NewData()
-					pl.Name = key
+					pl := msgML.NewPayload()
+					pl.Key = key
 					pl.Value = plValue
 					updateMetricTypeAndUnit(key, &pl)
 					msg.Payloads = append(msg.Payloads, pl)
@@ -295,8 +295,8 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 						if ignore {
 							continue
 						}
-						pl := msgML.Data{
-							Name:       k,
+						pl := msgML.Payload{
+							Key:        k,
 							Value:      converterUtils.ToString(v),
 							MetricType: mtsML.MetricTypeNone,
 						}
@@ -311,8 +311,8 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 					msg := p.createMessage(tmMsg.NodeID, sourceIDMemory, msgML.TypeSet)
 					heap, found := data[keyHeap]
 					if found {
-						pl := msgML.Data{
-							Name:       keyHeap,
+						pl := msgML.Payload{
+							Key:        keyHeap,
 							Value:      converterUtils.ToString(heap),
 							MetricType: mtsML.MetricTypeGauge,
 						}
@@ -327,8 +327,8 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 					addSourcePresentationMessage(sourceIDTime)
 
 					for k, v := range data {
-						pl := msgML.NewData()
-						pl.Name = k
+						pl := msgML.NewPayload()
+						pl.Key = k
 						pl.Value = converterUtils.ToString(v)
 						updateMetricTypeAndUnit(k, &pl)
 						msg.Payloads = append(msg.Payloads, pl)
@@ -355,10 +355,10 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 						switch k {
 						case keyAnalog:
 							d := getMapFn(v)
-							pls := make([]msgML.Data, 0)
+							pls := make([]msgML.Payload, 0)
 							for fName, fValue := range d {
-								pl := msgML.Data{
-									Name:       fName,
+								pl := msgML.Payload{
+									Key:        fName,
 									Value:      converterUtils.ToString(fValue),
 									MetricType: mtsML.MetricTypeNone,
 									Unit:       mtsML.UnitNone,
@@ -377,10 +377,10 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 
 						case keyCounter:
 							d := getMapFn(v)
-							pls := make([]msgML.Data, 0)
+							pls := make([]msgML.Payload, 0)
 							for fName, fValue := range d {
-								pl := msgML.Data{
-									Name:       fName,
+								pl := msgML.Payload{
+									Key:        fName,
 									Value:      converterUtils.ToString(fValue),
 									MetricType: mtsML.MetricTypeCounter,
 									Unit:       mtsML.UnitNone,
@@ -401,7 +401,7 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 
 						default:
 							d := getMapFn(v)
-							pls := make([]msgML.Data, 0)
+							pls := make([]msgML.Payload, 0)
 							for fName, fValue := range d {
 								if fValue == nil {
 									continue
@@ -416,8 +416,8 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 									mt.Unit = temperatureUnit
 								}
 
-								pl := msgML.NewData()
-								pl.Name = fName
+								pl := msgML.NewPayload()
+								pl.Key = fName
 								pl.Value = converterUtils.ToString(fValue)
 								pl.MetricType = mt.Type
 								pl.Unit = mt.Unit
@@ -459,15 +459,15 @@ func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 
 // get HsbColor to HsbColor1, HsbColor2, HsbColor3
 // input: "HSBColor":"249,0,0"(HsbColor1,2,3)
-func (p *Provider) getHsbColor(value string) []msgML.Data {
-	pls := make([]msgML.Data, 0)
-	pls = append(pls, msgML.Data{Name: keyHSBColor, Value: value, MetricType: mtsML.MetricTypeNone, Unit: mtsML.UnitNone})
+func (p *Provider) getHsbColor(value string) []msgML.Payload {
+	pls := make([]msgML.Payload, 0)
+	pls = append(pls, msgML.Payload{Key: keyHSBColor, Value: value, MetricType: mtsML.MetricTypeNone, Unit: mtsML.UnitNone})
 	if value != "" && strings.Contains(value, ",") {
 		values := strings.Split(value, ",")
 		if len(values) == 3 {
-			pls = append(pls, msgML.Data{Name: keyHSBColor1, Value: values[0], MetricType: mtsML.MetricTypeNone, Unit: mtsML.UnitNone})
-			pls = append(pls, msgML.Data{Name: keyHSBColor2, Value: values[1], MetricType: mtsML.MetricTypeNone, Unit: mtsML.UnitNone})
-			pls = append(pls, msgML.Data{Name: keyHSBColor3, Value: values[2], MetricType: mtsML.MetricTypeNone, Unit: mtsML.UnitNone})
+			pls = append(pls, msgML.Payload{Key: keyHSBColor1, Value: values[0], MetricType: mtsML.MetricTypeNone, Unit: mtsML.UnitNone})
+			pls = append(pls, msgML.Payload{Key: keyHSBColor2, Value: values[1], MetricType: mtsML.MetricTypeNone, Unit: mtsML.UnitNone})
+			pls = append(pls, msgML.Payload{Key: keyHSBColor3, Value: values[2], MetricType: mtsML.MetricTypeNone, Unit: mtsML.UnitNone})
 		}
 	}
 	return pls
@@ -475,19 +475,19 @@ func (p *Provider) getHsbColor(value string) []msgML.Data {
 
 // get node details as payload
 func (p *Provider) getNodeMessage(nodeID string, data map[string]interface{}) *msgML.Message {
-	payloads := make([]msgML.Data, 0)
+	payloads := make([]msgML.Payload, 0)
 	for key, v := range data {
 		value := converterUtils.ToString(v)
 
 		// create new payload data
-		pl := msgML.NewData()
-		pl.Name = normalize.ToSnakeCase(key)
+		pl := msgML.NewPayload()
+		pl.Key = normalize.ToSnakeCase(key)
 		pl.Value = value
 		include := true
 
 		switch key {
 		case keyFriendlyName:
-			pl.Name = model.FieldName
+			pl.Key = model.FieldName
 			names, ok := v.([]interface{})
 			if ok {
 				if len(names) > 0 {
@@ -502,10 +502,10 @@ func (p *Provider) getNodeMessage(nodeID string, data map[string]interface{}) *m
 			pl.Labels.Set(model.LabelNodeLibraryVersion, value)
 
 		case keyIPAddress:
-			pl.Name = model.FieldIPAddress
+			pl.Key = model.FieldIPAddress
 			// add host url
-			urlPL := msgML.NewData()
-			urlPL.Name = model.FieldNodeWebURL
+			urlPL := msgML.NewPayload()
+			urlPL.Key = model.FieldNodeWebURL
 			urlPL.Value = fmt.Sprintf("http://%s", value)
 			payloads = append(payloads, urlPL)
 
@@ -531,7 +531,7 @@ func (p *Provider) getNodeMessage(nodeID string, data map[string]interface{}) *m
 	return nil
 }
 
-func (p *Provider) createMessage(nodeID, sourceID, msgType string, pls ...msgML.Data) *msgML.Message {
+func (p *Provider) createMessage(nodeID, sourceID, msgType string, pls ...msgML.Payload) *msgML.Message {
 	msg := msgML.NewMessage(true)
 	msg.GatewayID = p.GatewayConfig.ID
 	msg.NodeID = nodeID
@@ -545,9 +545,9 @@ func (p *Provider) createMessage(nodeID, sourceID, msgType string, pls ...msgML.
 	return &msg
 }
 
-func (p *Provider) createSourcePresentationPL(value string) *msgML.Data {
-	pl := msgML.NewData()
-	pl.Name = model.FieldName
+func (p *Provider) createSourcePresentationPL(value string) *msgML.Payload {
+	pl := msgML.NewPayload()
+	pl.Key = model.FieldName
 	pl.Value = value
 	pl.MetricType = mtsML.MetricTypeNone
 	pl.Unit = mtsML.UnitNone

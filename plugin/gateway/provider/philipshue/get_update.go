@@ -35,8 +35,8 @@ func (p *Provider) updateLight(light *huego.Light) {
 	// update node presentation message
 	presnMsg := p.getPresnMsg(nodeID, "")
 
-	nodeData := msgML.NewData()
-	nodeData.Name = "name"
+	nodeData := msgML.NewPayload()
+	nodeData.Key = "name"
 	nodeData.Value = light.Name
 	nodeData.Labels.Set(model.LabelNodeVersion, light.SwVersion)
 	nodeData.Labels.Set("unique_id", light.UniqueID)
@@ -60,8 +60,8 @@ func (p *Provider) updateLight(light *huego.Light) {
 
 	// update source presentation messages
 	sourceMsg := p.getPresnMsg(nodeID, SourceState)
-	stateMsgData := msgML.NewData()
-	stateMsgData.Name = "name"
+	stateMsgData := msgML.NewPayload()
+	stateMsgData.Key = "name"
 	stateMsgData.Value = "State"
 
 	sourceMsg.Payloads = append(sourceMsg.Payloads, stateMsgData)
@@ -106,8 +106,8 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 	// update node presentation message
 	presnMsg := p.getPresnMsg(nodeID, "")
 
-	nodeData := msgML.NewData()
-	nodeData.Name = "name"
+	nodeData := msgML.NewPayload()
+	nodeData.Key = "name"
 	nodeData.Value = sensor.Name
 	nodeData.Labels.Set(model.LabelNodeVersion, sensor.SwVersion)
 	nodeData.Labels.Set("unique_id", sensor.UniqueID)
@@ -129,8 +129,8 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 
 	// update source presentation messages
 	sourceStateMsg := p.getPresnMsg(nodeID, SourceState)
-	stateMsgData := msgML.NewData()
-	stateMsgData.Name = "name"
+	stateMsgData := msgML.NewPayload()
+	stateMsgData.Key = "name"
 	stateMsgData.Value = "State"
 
 	sourceStateMsg.Payloads = append(sourceStateMsg.Payloads, stateMsgData)
@@ -154,8 +154,8 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 
 	// update config fields
 	sourceConfigMsg := p.getPresnMsg(nodeID, SourceConfig)
-	configMsgData := msgML.NewData()
-	configMsgData.Name = "name"
+	configMsgData := msgML.NewPayload()
+	configMsgData.Key = "name"
 	configMsgData.Value = "Config"
 
 	sourceConfigMsg.Payloads = append(sourceConfigMsg.Payloads, configMsgData)
@@ -195,8 +195,8 @@ func (p *Provider) updateBridgeDetails() {
 	// update node presentation message
 	presnMsg := p.getPresnMsg(NodeBridge, "")
 
-	nodeData := msgML.NewData()
-	nodeData.Name = "name"
+	nodeData := msgML.NewPayload()
+	nodeData.Key = "name"
 	nodeData.Value = brCfg.Name
 	nodeData.Labels.Set(model.LabelNodeVersion, brCfg.SwVersion)
 	nodeData.Labels.Set("bridge_id", brCfg.BridgeID)

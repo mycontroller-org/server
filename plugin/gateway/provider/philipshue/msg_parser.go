@@ -20,7 +20,7 @@ func (p *Provider) Post(msg *msgml.Message) error {
 	payload := msg.Payloads[0]
 
 	if msg.Type == msgml.TypeAction {
-		switch payload.Name {
+		switch payload.Key {
 		case nodeML.ActionRefreshNodeInfo:
 			p.actionRefreshNodeInfo(msg.NodeID)
 
@@ -33,8 +33,8 @@ func (p *Provider) Post(msg *msgml.Message) error {
 	return nil
 }
 
-// Process implementation
-func (p *Provider) Process(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
+// ProcessReceived implementation
+func (p *Provider) ProcessReceived(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
 	// not using the queue
 	return nil, nil
 }
@@ -49,7 +49,7 @@ func getID(nodeID string) (int, error) {
 	return int(intId), nil
 }
 
-func (p *Provider) updateState(nodeID string, data *msgml.Data) {
+func (p *Provider) updateState(nodeID string, data *msgml.Payload) {
 	lightID, err := getID(nodeID)
 	if err != nil {
 		zap.L().Error("error on parsing light id", zap.Error(err))
@@ -62,7 +62,7 @@ func (p *Provider) updateState(nodeID string, data *msgml.Data) {
 		return
 	}
 
-	switch data.Name {
+	switch data.Key {
 	case FieldPower:
 		powerON := convertor.ToBool(data.Value)
 		if powerON {
@@ -96,11 +96,11 @@ func (p *Provider) updateState(nodeID string, data *msgml.Data) {
 		err = light.Effect(effect)
 
 	default:
-		zap.L().Error("unsupported field", zap.String("nodeId", nodeID), zap.String("fieldId", data.Name))
+		zap.L().Error("unsupported field", zap.String("nodeId", nodeID), zap.String("fieldId", data.Key))
 		return
 	}
 	if err != nil {
-		zap.L().Error("error on updating field", zap.String("nodeId", nodeID), zap.String("fieldId", data.Name), zap.Any("value", data.Value))
+		zap.L().Error("error on updating field", zap.String("nodeId", nodeID), zap.String("fieldId", data.Key), zap.Any("value", data.Value))
 		return
 	}
 

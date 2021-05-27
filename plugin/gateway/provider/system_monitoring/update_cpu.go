@@ -97,7 +97,7 @@ func sendCPUInfo(p *Provider, cpuInfo *cpu.InfoStat, cpuIndex, cpuCount int) {
 	// presentation message
 	presentMsg := p.getSourcePresentationMsg(sourceID, sourceName)
 
-	var data msgML.Data
+	var data msgML.Payload
 	if len(presentMsg.Payloads) > 0 {
 		data = presentMsg.Payloads[0]
 	} else {

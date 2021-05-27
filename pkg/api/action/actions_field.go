@@ -3,15 +3,15 @@ package action
 import (
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	quickIdUtils "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
 // ToFieldByID sends the payload to the given field
 func ToFieldByID(id string, payload string) error {
-	filters := []stgml.Filter{{Key: model.KeyID, Value: id}}
+	filters := []stgML.Filter{{Key: model.KeyID, Value: id}}
 	field, err := fieldAPI.Get(filters)
 	if err != nil {
 		return err
@@ -50,14 +50,14 @@ func ToField(gatewayID, nodeID, sourceID, fieldID, payload string) error {
 		}
 	}
 
-	msg := msgml.NewMessage(false)
+	msg := msgML.NewMessage(false)
 	msg.GatewayID = gatewayID
 	msg.NodeID = nodeID
 	msg.SourceID = sourceID
-	pl := msgml.NewData()
-	pl.Name = fieldID
+	pl := msgML.NewPayload()
+	pl.Key = fieldID
 	pl.Value = payload
 	msg.Payloads = append(msg.Payloads, pl)
-	msg.Type = msgml.TypeSet
+	msg.Type = msgML.TypeSet
 	return Post(&msg)
 }

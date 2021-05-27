@@ -124,7 +124,7 @@ func (p *Provider) Post(msg *msgML.Message) error {
 	}
 
 	// if acknowledge not enabled
-	if !rawMsg.AcknowledgeEnabled {
+	if !rawMsg.IsAckEnabled {
 		err := p.Protocol.Write(rawMsg)
 		if err != nil {
 			return err

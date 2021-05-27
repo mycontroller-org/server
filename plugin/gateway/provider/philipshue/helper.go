@@ -28,9 +28,9 @@ func (p *Provider) getMsg(nodeID, sourceID string) *msgML.Message {
 	return &msg
 }
 
-func (p *Provider) getData(name string, value interface{}, metricType string) msgML.Data {
-	data := msgML.NewData()
-	data.Name = name
+func (p *Provider) getData(name string, value interface{}, metricType string) msgML.Payload {
+	data := msgML.NewPayload()
+	data.Key = name
 	data.Value = fmt.Sprintf("%v", value)
 	data.MetricType = metricType
 	return data

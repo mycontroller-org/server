@@ -8,9 +8,9 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 )
 
-func (p *Provider) getData(name string, value interface{}, metricType string) msgML.Data {
-	data := msgML.NewData()
-	data.Name = name
+func (p *Provider) getData(name string, value interface{}, metricType string) msgML.Payload {
+	data := msgML.NewPayload()
+	data.Key = name
 	data.Value = fmt.Sprintf("%v", value)
 	data.MetricType = metricType
 	return data
@@ -36,8 +36,8 @@ func (p *Provider) getSourcePresentationMsg(sourceID, sourceName string) msgML.M
 	msg.Timestamp = time.Now()
 
 	if sourceName != "" {
-		data := msgML.NewData()
-		data.Name = "name"
+		data := msgML.NewPayload()
+		data.Key = "name"
 		data.Value = sourceName
 		msg.Payloads = append(msg.Payloads, data)
 	}

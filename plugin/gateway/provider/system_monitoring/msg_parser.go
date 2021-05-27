@@ -7,8 +7,8 @@ import (
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 )
 
-// Process implementation
-func (p *Provider) Process(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
+// ProcessReceived implementation
+func (p *Provider) ProcessReceived(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
 	// gateway do not send a messages to queue, sends directly
 	return nil, nil
 }
@@ -26,7 +26,7 @@ func (p *Provider) Post(msg *msgml.Message) error {
 	payload := msg.Payloads[0]
 
 	if msg.Type == msgml.TypeAction {
-		switch payload.Name {
+		switch payload.Key {
 		case nodeML.ActionRefreshNodeInfo:
 			p.updateNodeDetails()
 

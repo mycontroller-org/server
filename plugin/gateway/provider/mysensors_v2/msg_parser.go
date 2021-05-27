@@ -59,13 +59,13 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 		msMsg.Type = payload.Labels.Get(LabelType)
 		if msMsg.Type == "" {
 			for k, v := range setReqFieldMapForRx {
-				if v == payload.Name {
+				if v == payload.Key {
 					msMsg.Type = k
 					break
 				}
 			}
 		}
-		if mt, ok := metricTypeAndUnit[payload.Name]; ok {
+		if mt, ok := metricTypeAndUnit[payload.Key]; ok {
 			if mt.Type == mtsml.MetricTypeBinary {
 				switch strings.ToLower(payload.Value) {
 				case "true", "on":
@@ -83,7 +83,7 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	case msgml.TypeAction:
 		msMsg.Command = cmdInternal
 		// call functions
-		err := handleActions(p.GatewayConfig, payload.Name, msg, &msMsg)
+		err := handleActions(p.GatewayConfig, payload.Key, msg, &msMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -114,7 +114,7 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 
 	// set acknowledgement request status
 	if msMsg.Ack == "1" {
-		rawMsg.AcknowledgeEnabled = true
+		rawMsg.IsAckEnabled = true
 	}
 
 	// set id for raw message
@@ -123,8 +123,8 @@ func (p *Provider) ToRawMessage(msg *msgml.Message) (*msgml.RawMessage, error) {
 	return rawMsg, nil
 }
 
-// Process converts to mycontroller specific
-func (p *Provider) Process(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
+// ProcessReceived converts to mycontroller specific
+func (p *Provider) ProcessReceived(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
 	messages := make([]*msgml.Message, 0)
 
 	msMsg, err := p.decodeRawMessage(rawMsg)
@@ -151,13 +151,13 @@ func (p *Provider) Process(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
 		Timestamp:  rawMsg.Timestamp,
 		Type:       cmdMapForRx[msMsg.Command],
 	}
-	msgPL := msgml.NewData()
+	msgPL := msgml.NewPayload()
 	msgPL.Value = msMsg.Payload
 
 	messages = append(messages, msg)
 
 	// update the payload details on return
-	includePayloads := func() { msg.Payloads = []msgml.Data{msgPL} }
+	includePayloads := func() { msg.Payloads = []msgml.Payload{msgPL} }
 	defer includePayloads()
 
 	err = verifyAndUpdateNodeSensorIDs(msMsg, msg)
@@ -181,7 +181,7 @@ func (p *Provider) Process(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
 		switch msMsg.Command {
 		case cmdPresentation:
 			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
-				msgPL.Name = ml.FieldName
+				msgPL.Key = ml.FieldName
 				msgPL.Labels.Set(LabelTypeString, _type)
 			}
 			// else: not supported? should I have to return from here?
@@ -204,7 +204,7 @@ func (p *Provider) Process(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
 			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
 				if _type == "S_ARDUINO_REPEATER_NODE" || _type == "S_ARDUINO_NODE" {
 					// this is a node lib version data
-					msgPL.Name = ml.FieldNone
+					msgPL.Key = ml.FieldNone
 					if _type == "S_ARDUINO_REPEATER_NODE" {
 						msgPL.Labels.Set(LabelNodeType, "repeater")
 					}
@@ -228,7 +228,7 @@ func (p *Provider) Process(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
 					return nil, nil
 				}
 				msg.Type = msgml.TypeAction
-				msgPL.Name = typeName
+				msgPL.Key = typeName
 			} else {
 				return nil, fmt.Errorf("message stream type not found: %s", msMsg.Type)
 			}
@@ -325,7 +325,7 @@ func verifyAndUpdateNodeSensorIDs(msMsg *message, msg *msgml.Message) error {
 }
 
 // update field name and unit
-func updateFieldAndUnit(msMsg *message, msgPL *msgml.Data) error {
+func updateFieldAndUnit(msMsg *message, msgPL *msgml.Payload) error {
 	fieldName, ok := setReqFieldMapForRx[msMsg.Type]
 	if ok {
 		msgPL.Labels.Set(LabelTypeString, fieldName)
@@ -336,7 +336,7 @@ func updateFieldAndUnit(msMsg *message, msgPL *msgml.Data) error {
 
 	// get type and unit
 	if typeUnit, ok := metricTypeAndUnit[fieldName]; ok {
-		msgPL.Name = fieldName
+		msgPL.Key = fieldName
 		msgPL.MetricType = typeUnit.Type
 		msgPL.Unit = typeUnit.Unit
 	}
@@ -347,7 +347,7 @@ func updateFieldAndUnit(msMsg *message, msgPL *msgml.Data) error {
 
 // updates node internal message data, return true, if further actions required
 // returns false, if the message can be dropped
-func updateNodeInternalMessages(msg *msgml.Message, msgPL *msgml.Data, msMsg *message) (bool, error) {
+func updateNodeInternalMessages(msg *msgml.Message, msgPL *msgml.Payload, msMsg *message) (bool, error) {
 	if msMsg.Ack == "1" { // do not care about internal ack messages
 		return false, nil
 	}
@@ -356,13 +356,13 @@ func updateNodeInternalMessages(msg *msgml.Message, msgPL *msgml.Data, msMsg *me
 		_, isActionRequest := ut.FindItem(customValidActions, typeName)
 		if isActionRequest {
 			msg.Type = msgml.TypeAction
-			msgPL.Name = typeName
+			msgPL.Key = typeName
 			return true, nil
 		}
 
 		// verify it is valid field to update
 		if fieldName, ok := internalValidFields[typeName]; ok {
-			msgPL.Name = fieldName
+			msgPL.Key = fieldName
 			msg.Type = msgml.TypeSet
 
 			if fieldName == ml.LabelNodeVersion {

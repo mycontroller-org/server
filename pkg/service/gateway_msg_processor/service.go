@@ -151,7 +151,7 @@ func updateNodeData(msg *msgML.Message) error {
 		// update labels
 		node.Labels.CopyFrom(d.Labels)
 
-		switch d.Name { // set node name
+		switch d.Key { // set node name
 		case model.FieldName:
 			if !node.Labels.GetIgnoreBool(model.LabelName) {
 				node.Name = d.Value
@@ -164,12 +164,12 @@ func updateNodeData(msg *msgML.Message) error {
 				zap.L().Error("unable to parse batter level", zap.Error(err))
 				return err
 			}
-			node.Others.Set(d.Name, bl, node.Labels)
+			node.Others.Set(d.Key, bl, node.Labels)
 			return writeNodeMetric(node, mtsML.MetricTypeGaugeFloat, model.FieldBatteryLevel, bl)
 
 		default:
-			if d.Name != model.FieldNone {
-				node.Others.Set(d.Name, d.Value, node.Labels)
+			if d.Key != model.FieldNone {
+				node.Others.Set(d.Key, d.Value, node.Labels)
 				// TODO: Do we need to report to metric strore?
 			}
 
@@ -211,15 +211,15 @@ func updateSourceDetail(msg *msgML.Message) error {
 	source.Others = source.Others.Init()
 
 	for _, payload := range msg.Payloads {
-		switch payload.Name {
+		switch payload.Key {
 		case model.FieldName: // set name
 			if !source.Labels.GetIgnoreBool(model.LabelName) {
 				source.Name = payload.Value
 			}
 
 		default: // set other variables
-			if payload.Name != model.FieldNone {
-				source.Others.Set(payload.Name, payload.Value, source.Labels)
+			if payload.Key != model.FieldNone {
+				source.Others.Set(payload.Key, payload.Value, source.Labels)
 				// TODO: Do we need to report to metric strore?
 			}
 		}
@@ -241,13 +241,13 @@ func updateSourceDetail(msg *msgML.Message) error {
 
 func setFieldData(msg *msgML.Message) error {
 	for _, payload := range msg.Payloads {
-		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, payload.Name)
+		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, payload.Key)
 		if err != nil { // TODO: check entry availability on error message
 			field = &fieldML.Field{
 				GatewayID: msg.GatewayID,
 				NodeID:    msg.NodeID,
 				SourceID:  msg.SourceID,
-				FieldID:   payload.Name,
+				FieldID:   payload.Key,
 			}
 		}
 
@@ -316,9 +316,9 @@ func setFieldData(msg *msgML.Message) error {
 				}
 			}
 		}
-		err = updateFieldData(field, payload.Name, payload.Name, payload.MetricType, payload.Unit, payload.Labels, payload.Others, value, msg)
+		err = updateFieldData(field, payload.Key, payload.Key, payload.MetricType, payload.Unit, payload.Labels, payload.Others, value, msg)
 		if err != nil {
-			zap.L().Error("error on updating field data", zap.Error(err), zap.String("gateway", msg.GatewayID), zap.String("node", msg.NodeID), zap.String("source", msg.SourceID), zap.String("field", payload.Name))
+			zap.L().Error("error on updating field data", zap.Error(err), zap.String("gateway", msg.GatewayID), zap.String("node", msg.NodeID), zap.String("source", msg.SourceID), zap.String("field", payload.Key))
 		}
 	}
 	return nil
@@ -503,9 +503,9 @@ func updateFieldData(
 }
 
 func requestFieldData(msg *msgML.Message) error {
-	payloads := make([]msgML.Data, 0)
+	payloads := make([]msgML.Payload, 0)
 	for _, payload := range msg.Payloads {
-		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, payload.Name)
+		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, payload.Key)
 		if err != nil {
 			// TODO: check availability error message from storage
 			continue

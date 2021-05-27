@@ -96,8 +96,8 @@ func (en *ESPHomeNode) Post(msg proto.Message) error {
 			return nil
 		}
 		streamResponse := getMessage(en.GatewayID, en.NodeID, entity.SourceID, msgML.TypeSet, time.Now())
-		data := msgML.NewData()
-		data.Name = FieldStream
+		data := msgML.NewPayload()
+		data.Key = FieldStream
 		data.Value = convertor.ToString(imageReq.Stream)
 		data.MetricType = metrics.MetricTypeNone
 		streamResponse.Payloads = append(streamResponse.Payloads, data)
@@ -191,8 +191,8 @@ func (en *ESPHomeNode) sendNodeInfo() {
 	}
 
 	nodeMsg := getMessage(en.GatewayID, en.NodeID, "", msgML.TypePresentation, time.Now())
-	data := msgML.NewData()
-	data.Name = model.FieldName
+	data := msgML.NewPayload()
+	data.Key = model.FieldName
 	data.Value = deviceInfo.Name
 	data.Labels.Set(model.LabelNodeLibraryVersion, deviceInfo.EsphomeVersion)
 	data.Others.Set("mac", deviceInfo.MacAddress, nil)

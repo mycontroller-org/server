@@ -15,6 +15,7 @@ import (
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/esphome"
 	mysensors "github.com/mycontroller-org/backend/v2/plugin/gateway/provider/mysensors_v2"
+	noopProvider "github.com/mycontroller-org/backend/v2/plugin/gateway/provider/noop"
 	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/philipshue"
 	systemMonitoring "github.com/mycontroller-org/backend/v2/plugin/gateway/provider/system_monitoring"
 	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/tasmota"
@@ -86,6 +87,9 @@ func GetService(gatewayCfg *gwML.Config) (*Service, error) {
 			return nil, err
 		}
 		provider = esphomeProvider
+
+	case TypeCustom:
+		provider = &noopProvider.Provider{GatewayID: gatewayCfg.ID}
 
 	default:
 		return nil, fmt.Errorf("unknown provider:%s", gatewayCfg.Provider.GetString(model.NameType))
@@ -230,7 +234,7 @@ func (s *Service) addToSleepingMessageQueue(msg *msgML.Message) {
 func (s *Service) rawMessageProcessor(data interface{}) {
 	rawMsg := data.(*msgML.RawMessage)
 	zap.L().Debug("RawMessage received", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
-	messages, err := s.provider.Process(rawMsg)
+	messages, err := s.provider.ProcessReceived(rawMsg)
 	if err != nil {
 		zap.L().Warn("Failed to parse", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 		return

@@ -1,15 +1,15 @@
 package provider
 
 import (
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 )
 
 // Provider interface
 type Provider interface {
-	Start(messageReceiveFunc func(rawMsg *msgml.RawMessage) error) error
-	Process(rawMesage *msgml.RawMessage) ([]*msgml.Message, error)
-	Post(message *msgml.Message) error
-	Close() error
+	Start(messageReceiveFunc func(rawMsg *msgML.RawMessage) error) error   // start the provider
+	Close() error                                                          // close the provider connection
+	Post(message *msgML.Message) error                                     // post a message to the provider
+	ProcessReceived(rawMesage *msgML.RawMessage) ([]*msgML.Message, error) // process the received messages
 }
 
 // Providers list
@@ -19,4 +19,5 @@ const (
 	TypeSystemMonitoring = "system_monitoring"
 	TypeTasmota          = "tasmota"
 	TypeEsphome          = "esphome"
+	TypeCustom           = "custom"
 )

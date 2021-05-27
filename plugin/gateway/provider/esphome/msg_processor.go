@@ -44,7 +44,7 @@ func (p *Provider) Post(message *msgML.Message) error {
 	}
 
 	payload := message.Payloads[0]
-	fieldID := strings.ToLower(payload.Name)
+	fieldID := strings.ToLower(payload.Key)
 
 	fields := make(map[string]interface{})
 	fields[FieldKey] = entity.Key
@@ -100,8 +100,8 @@ func (p *Provider) Post(message *msgML.Message) error {
 	return nil
 }
 
-// Process performs operation on raw message received from esphome node and returns multiple messages
-func (p *Provider) Process(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
+// ProcessReceived performs operation on raw message received from esphome node and returns multiple messages
+func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 	zap.L().Debug("processing a message", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("type", fmt.Sprintf("%T", rawMsg.Data)), zap.Any("rawMessage", rawMsg))
 	nodeID := rawMsg.Others.GetString(NodeID)
 	protoMsg := rawMsg.Data.(protoreflect.ProtoMessage)
@@ -318,8 +318,8 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 	messages := make([]*msgML.Message, 0)
 
 	msgSource := getMessage(p.GatewayConfig.ID, nodeID, sourceID, msgML.TypePresentation, timestamp)
-	sourceData := msgML.NewData()
-	sourceData.Name = model.FieldName
+	sourceData := msgML.NewPayload()
+	sourceData.Key = model.FieldName
 	sourceData.Value = name
 	sourceData.Labels.Set(LabelKey, keyString)
 	sourceData.Labels.Set(LabelType, entityType)
@@ -344,8 +344,8 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 		fieldID, validField := isField(field)
 		if validField {
 			metricMap := getMetricData(entityType, fieldID)
-			fieldData := msgML.NewData()
-			fieldData.Name = fieldID
+			fieldData := msgML.NewPayload()
+			fieldData.Key = fieldID
 			fieldData.Value = ""
 			fieldData.MetricType = metricMap.MetricType
 			fieldData.Unit = metricMap.Unit
@@ -410,8 +410,8 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 
 	// in camera, to enable or disable the stream, add 'stream' field manually
 	case EntityTypeCamera:
-		fieldStream := msgML.NewData()
-		fieldStream.Name = FieldStream
+		fieldStream := msgML.NewPayload()
+		fieldStream.Key = FieldStream
 		fieldStream.MetricType = metrics.MetricTypeNone
 		fieldStream.Labels.Set(LabelKey, keyString)
 		fieldStream.Labels.Set(LabelType, entity.Type)
@@ -453,8 +453,8 @@ func (p *Provider) getStateResponse(nodeID string, timestamp time.Time, fields m
 
 	for field, value := range fields {
 		metricMap := getMetricData(entity.Type, field)
-		data := msgML.NewData()
-		data.Name = field
+		data := msgML.NewPayload()
+		data.Key = field
 		data.Value = adjustValueToMyController(entity.Type, field, value)
 		data.MetricType = metricMap.MetricType
 		if entity.Unit != "" {
@@ -480,8 +480,8 @@ func (p *Provider) getStateResponse(nodeID string, timestamp time.Time, fields m
 func (p *Provider) getActionMessage(actionType, nodeID string, timestamp time.Time, fields map[string]interface{}) ([]*msgML.Message, error) {
 	messages := make([]*msgML.Message, 0)
 	msg := getMessage(p.GatewayConfig.ID, nodeID, "", msgML.TypeAction, timestamp)
-	data := msgML.NewData()
-	data.Name = actionType
+	data := msgML.NewPayload()
+	data.Key = actionType
 	msg.Payloads = append(msg.Payloads, data)
 	messages = append(messages, msg)
 	return messages, nil

@@ -18,7 +18,7 @@ func (p *Provider) handleActions(message *msgML.Message) error {
 		return nil
 	}
 
-	switch payload.Name {
+	switch payload.Key {
 	case nodeML.ActionReboot:
 		// TODO: check espnode api to perform a reboot operation
 		return nil
