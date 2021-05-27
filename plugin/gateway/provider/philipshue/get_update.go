@@ -33,10 +33,10 @@ func (p *Provider) updateLights() {
 func (p *Provider) updateLight(light *huego.Light) {
 	nodeID := fmt.Sprintf("light_%v", light.ID)
 	// update node presentation message
-	presnMsg := p.getPresnMsg(nodeID, "")
+	presnMsg := p.getPresentationMsg(nodeID, "")
 
 	nodeData := msgML.NewPayload()
-	nodeData.Key = "name"
+	nodeData.Key = model.FieldName
 	nodeData.Value = light.Name
 	nodeData.Labels.Set(model.LabelNodeVersion, light.SwVersion)
 	nodeData.Labels.Set("unique_id", light.UniqueID)
@@ -59,9 +59,9 @@ func (p *Provider) updateLight(light *huego.Light) {
 	}
 
 	// update source presentation messages
-	sourceMsg := p.getPresnMsg(nodeID, SourceState)
+	sourceMsg := p.getPresentationMsg(nodeID, SourceState)
 	stateMsgData := msgML.NewPayload()
-	stateMsgData.Key = "name"
+	stateMsgData.Key = model.FieldName
 	stateMsgData.Value = "State"
 
 	sourceMsg.Payloads = append(sourceMsg.Payloads, stateMsgData)
@@ -73,15 +73,15 @@ func (p *Provider) updateLight(light *huego.Light) {
 
 	// update state fields
 	stateMsg := p.getMsg(nodeID, SourceState)
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getData(FieldPower, light.State.On, metricsML.MetricTypeBinary))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getData(FieldBrightness, light.State.Bri, metricsML.MetricTypeNone))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getData(FieldHue, light.State.Hue, metricsML.MetricTypeNone))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getData(FieldSaturation, light.State.Sat, metricsML.MetricTypeNone))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getData(FieldColorTemperature, light.State.Ct, metricsML.MetricTypeNone))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getData(FieldAlert, light.State.Alert, metricsML.MetricTypeNone))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getData(FieldEffect, light.State.Effect, metricsML.MetricTypeNone))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getData(FieldColorMode, light.State.ColorMode, metricsML.MetricTypeNone))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getData(FieldReachable, light.State.Reachable, metricsML.MetricTypeNone))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldPower, light.State.On, metricsML.MetricTypeBinary, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldBrightness, light.State.Bri, metricsML.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldHue, light.State.Hue, metricsML.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldSaturation, light.State.Sat, metricsML.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldColorTemperature, light.State.Ct, metricsML.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldAlert, light.State.Alert, metricsML.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldEffect, light.State.Effect, metricsML.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldColorMode, light.State.ColorMode, metricsML.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldReachable, light.State.Reachable, metricsML.MetricTypeNone, true))
 	err = p.postMsg(stateMsg)
 	if err != nil {
 		zap.L().Error("error on posting message", zap.Error(err))
@@ -104,10 +104,10 @@ func (p *Provider) updateSensors() {
 func (p *Provider) updateSensor(sensor *huego.Sensor) {
 	nodeID := fmt.Sprintf("sensor_%v", sensor.ID)
 	// update node presentation message
-	presnMsg := p.getPresnMsg(nodeID, "")
+	presnMsg := p.getPresentationMsg(nodeID, "")
 
 	nodeData := msgML.NewPayload()
-	nodeData.Key = "name"
+	nodeData.Key = model.FieldName
 	nodeData.Value = sensor.Name
 	nodeData.Labels.Set(model.LabelNodeVersion, sensor.SwVersion)
 	nodeData.Labels.Set("unique_id", sensor.UniqueID)
@@ -128,9 +128,9 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 	}
 
 	// update source presentation messages
-	sourceStateMsg := p.getPresnMsg(nodeID, SourceState)
+	sourceStateMsg := p.getPresentationMsg(nodeID, SourceState)
 	stateMsgData := msgML.NewPayload()
-	stateMsgData.Key = "name"
+	stateMsgData.Key = model.FieldName
 	stateMsgData.Value = "State"
 
 	sourceStateMsg.Payloads = append(sourceStateMsg.Payloads, stateMsgData)
@@ -143,7 +143,7 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 	// update state fields
 	stateMsg := p.getMsg(nodeID, SourceState)
 	for key, value := range sensor.State {
-		stateMsg.Payloads = append(stateMsg.Payloads, p.getData(key, value, metricsML.MetricTypeNone))
+		stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(key, value, metricsML.MetricTypeNone, false))
 	}
 
 	err = p.postMsg(stateMsg)
@@ -153,9 +153,9 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 	}
 
 	// update config fields
-	sourceConfigMsg := p.getPresnMsg(nodeID, SourceConfig)
+	sourceConfigMsg := p.getPresentationMsg(nodeID, SourceConfig)
 	configMsgData := msgML.NewPayload()
-	configMsgData.Key = "name"
+	configMsgData.Key = model.FieldName
 	configMsgData.Value = "Config"
 
 	sourceConfigMsg.Payloads = append(sourceConfigMsg.Payloads, configMsgData)
@@ -168,7 +168,7 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 	// update config fields
 	configMsg := p.getMsg(nodeID, SourceConfig)
 	for key, value := range sensor.State {
-		configMsg.Payloads = append(stateMsg.Payloads, p.getData(key, value, metricsML.MetricTypeNone))
+		configMsg.Payloads = append(stateMsg.Payloads, p.getPayload(key, value, metricsML.MetricTypeNone, true))
 	}
 
 	err = p.postMsg(configMsg)
@@ -193,10 +193,10 @@ func (p *Provider) updateBridgeDetails() {
 	}
 
 	// update node presentation message
-	presnMsg := p.getPresnMsg(NodeBridge, "")
+	presnMsg := p.getPresentationMsg(NodeBridge, "")
 
 	nodeData := msgML.NewPayload()
-	nodeData.Key = "name"
+	nodeData.Key = model.FieldName
 	nodeData.Value = brCfg.Name
 	nodeData.Labels.Set(model.LabelNodeVersion, brCfg.SwVersion)
 	nodeData.Labels.Set("bridge_id", brCfg.BridgeID)

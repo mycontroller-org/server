@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"strings"
 
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	"go.uber.org/zap"
 )
 
 // Post func
-func (p *Provider) Post(msg *msgml.Message) error {
+func (p *Provider) Post(msg *msgML.Message) error {
 	if len(msg.Payloads) == 0 {
 		return errors.New("there is no payload details on the message")
 	}
 
 	payload := msg.Payloads[0]
 
-	if msg.Type == msgml.TypeAction {
+	if msg.Type == msgML.TypeAction {
 		switch payload.Key {
 		case nodeML.ActionRefreshNodeInfo:
 			p.actionRefreshNodeInfo(msg.NodeID)
@@ -27,14 +27,14 @@ func (p *Provider) Post(msg *msgml.Message) error {
 		case nodeML.ActionDiscover:
 			p.actionDiscover()
 		}
-	} else if msg.Type == msgml.TypeSet && strings.HasPrefix(msg.SourceID, "state") {
+	} else if msg.Type == msgML.TypeSet && strings.HasPrefix(msg.SourceID, "state") {
 		p.updateState(msg.NodeID, &payload)
 	}
 	return nil
 }
 
 // ProcessReceived implementation
-func (p *Provider) ProcessReceived(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
+func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
 	// not using the queue
 	return nil, nil
 }
@@ -49,7 +49,7 @@ func getID(nodeID string) (int, error) {
 	return int(intId), nil
 }
 
-func (p *Provider) updateState(nodeID string, data *msgml.Payload) {
+func (p *Provider) updateState(nodeID string, data *msgML.Payload) {
 	lightID, err := getID(nodeID)
 	if err != nil {
 		zap.L().Error("error on parsing light id", zap.Error(err))

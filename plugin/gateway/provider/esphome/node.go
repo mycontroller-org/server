@@ -194,7 +194,7 @@ func (en *ESPHomeNode) sendNodeInfo() {
 	data := msgML.NewPayload()
 	data.Key = model.FieldName
 	data.Value = deviceInfo.Name
-	data.Labels.Set(model.LabelNodeLibraryVersion, deviceInfo.EsphomeVersion)
+	data.Labels.Set(model.LabelNodeVersion, deviceInfo.EsphomeVersion)
 	data.Others.Set("mac", deviceInfo.MacAddress, nil)
 	data.Others.Set("compilation_time", deviceInfo.CompilationTime, nil)
 	data.Others.Set("has_deep_sleep", deviceInfo.HasDeepSleep, nil)

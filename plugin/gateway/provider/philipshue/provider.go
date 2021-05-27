@@ -96,7 +96,6 @@ func (p *Provider) Start(rxMessageFunc func(rawMsg *msgML.RawMessage) error) err
 
 // Close func
 func (p *Provider) Close() error {
-	// do internal works
 	p.unscheduleAll()
 	return nil
 }

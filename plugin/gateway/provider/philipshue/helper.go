@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 )
 
-func (p *Provider) getPresnMsg(nodeID, sourceID string) *msgML.Message {
+func (p *Provider) getPresentationMsg(nodeID, sourceID string) *msgML.Message {
 	msg := msgML.NewMessage(true)
 	msg.GatewayID = p.GatewayConfig.ID
 	msg.NodeID = nodeID
@@ -28,11 +29,14 @@ func (p *Provider) getMsg(nodeID, sourceID string) *msgML.Message {
 	return &msg
 }
 
-func (p *Provider) getData(name string, value interface{}, metricType string) msgML.Payload {
+func (p *Provider) getPayload(name string, value interface{}, metricType string, isReadOnly bool) msgML.Payload {
 	data := msgML.NewPayload()
 	data.Key = name
 	data.Value = fmt.Sprintf("%v", value)
 	data.MetricType = metricType
+	if isReadOnly {
+		data.Labels.Set(model.LabelReadOnly, "true")
+	}
 	return data
 }
 
