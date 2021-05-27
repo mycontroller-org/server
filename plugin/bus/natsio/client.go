@@ -12,7 +12,7 @@ import (
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
+	busPlugin "github.com/mycontroller-org/backend/v2/plugin/bus"
 	nats "github.com/nats-io/nats.go"
 	"go.uber.org/zap"
 )
@@ -55,7 +55,7 @@ const (
 )
 
 // Init nats.io client
-func Init(config cmap.CustomMap) (busml.Client, error) {
+func Init(config cmap.CustomMap) (busPlugin.Client, error) {
 	cfg := &Config{}
 	err := utils.MapToStruct(utils.TagNameYaml, config, cfg)
 	if err != nil {
@@ -134,7 +134,7 @@ func (c *Client) Publish(topic string, data interface{}) error {
 }
 
 // Subscribe a topic
-func (c *Client) Subscribe(topic string, handler busml.CallBackFunc) (int64, error) {
+func (c *Client) Subscribe(topic string, handler busPlugin.CallBackFunc) (int64, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -156,7 +156,7 @@ func (c *Client) Subscribe(topic string, handler busml.CallBackFunc) (int64, err
 	return newSubscriptionID, nil
 }
 
-func (c *Client) handlerWrapper(handler busml.CallBackFunc) func(natsMsg *nats.Msg) {
+func (c *Client) handlerWrapper(handler busPlugin.CallBackFunc) func(natsMsg *nats.Msg) {
 	return func(natsMsg *nats.Msg) {
 		PrintDebug("Receiving message", zap.String("topic", natsMsg.Sub.Subject))
 		handler(&busML.BusData{Topic: natsMsg.Subject, Data: natsMsg.Data})

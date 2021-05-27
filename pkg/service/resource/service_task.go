@@ -82,12 +82,12 @@ func disableTask(reqEvent *rsML.ServiceEvent) error {
 		return errors.New("id not supplied")
 	}
 
-	var id *string
-	err := reqEvent.LoadData(id)
+	id := ""
+	err := reqEvent.LoadData(&id)
 	if err != nil {
 		zap.L().Error("error on data conversion", zap.Any("reqEvent", reqEvent), zap.Error(err))
 		return err
 	}
 
-	return taskAPI.Disable([]string{*id})
+	return taskAPI.Disable([]string{id})
 }

@@ -147,7 +147,7 @@ func (cd CustomDate) MarshalYAML() (interface{}, error) {
 // UnmarshalJSON custom implementation
 func (cd *CustomDate) UnmarshalJSON(data []byte) error {
 	stringDate := strings.Trim(string(data), `"`)
-	return cd.unmarshal(stringDate)
+	return cd.Unmarshal(stringDate)
 }
 
 // UnmarshalYAML implementation
@@ -157,10 +157,10 @@ func (cd *CustomDate) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	if err != nil {
 		return nil
 	}
-	return cd.unmarshal(stringDate)
+	return cd.Unmarshal(stringDate)
 }
 
-func (cd *CustomDate) unmarshal(stringDate string) error {
+func (cd *CustomDate) Unmarshal(stringDate string) error {
 	var parsedDate time.Time
 
 	if stringDate != "" {
@@ -201,7 +201,7 @@ func (ct CustomTime) MarshalYAML() (interface{}, error) {
 // UnmarshalJSON custom implementation
 func (ct *CustomTime) UnmarshalJSON(data []byte) error {
 	stringTime := strings.Trim(string(data), `"`)
-	return ct.unmarshal(stringTime)
+	return ct.Unmarshal(stringTime)
 }
 
 // UnmarshalYAML implementation
@@ -211,10 +211,10 @@ func (ct *CustomTime) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	if err != nil {
 		return nil
 	}
-	return ct.unmarshal(stringTime)
+	return ct.Unmarshal(stringTime)
 }
 
-func (ct *CustomTime) unmarshal(stringTime string) error {
+func (ct *CustomTime) Unmarshal(stringTime string) error {
 	var parsedTime time.Time
 
 	if stringTime != "" {

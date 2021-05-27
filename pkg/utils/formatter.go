@@ -18,9 +18,11 @@ import (
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	"github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -100,7 +102,7 @@ func ByteToMap(data []byte) (map[string]interface{}, error) {
 
 // mapToStructDecodeHookFunc will be called on MapToStruct
 func mapToStructDecodeHookFunc(fromType reflect.Type, toType reflect.Type, value interface{}) (interface{}, error) {
-	// zap.L().Info("map decoder", zap.String("fromType", fromType.String()), zap.String("toType", toType.String()), zap.Any("value", value))
+	// zap.L().Info("mapToStructDecodeHookFunc decoder", zap.String("fromType", fromType.String()), zap.String("toType", toType.String()), zap.Any("value", value))
 	switch toType {
 	case reflect.TypeOf(time.Time{}):
 		value, err := time.Parse(time.RFC3339Nano, value.(string))
@@ -108,6 +110,22 @@ func mapToStructDecodeHookFunc(fromType reflect.Type, toType reflect.Type, value
 			return nil, err
 		}
 		return value, nil
+
+	case reflect.TypeOf(schedule.CustomDate{}):
+		cd := schedule.CustomDate{}
+		err := cd.Unmarshal(convertor.ToString(value))
+		if err != nil {
+			return nil, err
+		}
+		return &cd, nil
+
+	case reflect.TypeOf(schedule.CustomTime{}):
+		ct := schedule.CustomTime{}
+		err := ct.Unmarshal(convertor.ToString(value))
+		if err != nil {
+			return nil, err
+		}
+		return &ct, nil
 
 	}
 	return value, nil

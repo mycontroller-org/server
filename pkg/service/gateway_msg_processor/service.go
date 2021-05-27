@@ -46,16 +46,16 @@ func Init() error {
 	return nil
 }
 
-func onMessageReceive(event *busML.BusData) {
+func onMessageReceive(busData *busML.BusData) {
 	msg := &msgML.Message{}
-	err := event.LoadData(msg)
+	err := busData.LoadData(msg)
 	if err != nil {
-		zap.L().Warn("Failed to convet to target type", zap.Error(err))
+		zap.L().Warn("Failed to convet to target type", zap.Error(err), zap.Any("busData", busData))
 		return
 	}
 
 	if msg == nil {
-		zap.L().Warn("Received a nil message", zap.Any("event", event))
+		zap.L().Warn("Received a nil message", zap.Any("busData", busData))
 		return
 	}
 	zap.L().Debug("Message added into processing queue", zap.Any("message", msg))
