@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
@@ -69,7 +67,7 @@ func Close() {
 
 func onServiceEvent(event *busML.BusData) {
 	reqEvent := &rsML.ServiceEvent{}
-	err := event.ToStruct(reqEvent)
+	err := event.LoadData(reqEvent)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
 		return
@@ -138,10 +136,11 @@ func postProcessServiceEvent(event interface{}) {
 }
 
 func getConfig(reqEvent *rsML.ServiceEvent) *handlerML.Config {
-	cfg, ok := reqEvent.GetData().(handlerML.Config)
-	if !ok {
-		zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", reqEvent.GetData())))
+	cfg := &handlerML.Config{}
+	err := reqEvent.LoadData(cfg)
+	if err != nil {
+		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
 		return nil
 	}
-	return &cfg
+	return cfg
 }

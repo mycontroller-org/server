@@ -8,8 +8,8 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
@@ -33,20 +33,20 @@ const (
 
 // Service component of the provider
 type Service struct {
-	GatewayConfig                     *gwml.Config
+	GatewayConfig                     *gwML.Config
 	provider                          Provider
 	messageQueue                      *queueUtils.Queue
 	rawMessageQueue                   *queueUtils.Queue
 	topicListenFromCore               string
 	topicPostToCore                   string
 	topicListenFromCoreSubscriptionID int64
-	sleepingMessageQueue              map[string][]*msgml.Message
+	sleepingMessageQueue              map[string][]*msgML.Message
 	mutex                             sync.RWMutex
 	ctx                               context.Context
 }
 
 // GetService returns service instance
-func GetService(gatewayCfg *gwml.Config) (*Service, error) {
+func GetService(gatewayCfg *gwML.Config) (*Service, error) {
 	// verify default reconnect delay
 	gatewayCfg.ReconnectDelay = utils.ValidDuration(gatewayCfg.ReconnectDelay, defaultReconnectDelay)
 
@@ -109,7 +109,7 @@ func (s *Service) Start() error {
 	s.messageQueue = queueUtils.New(fmt.Sprintf("gateway_provider_message_%s", s.GatewayConfig.ID), queueSizeMessage, s.messageConsumer, workersMessage)
 	s.rawMessageQueue = queueUtils.New(fmt.Sprintf("gateway_provider_raw_message_%s", s.GatewayConfig.ID), queueSizeRawMessage, s.rawMessageProcessor, workersRawMessage)
 
-	s.sleepingMessageQueue = make(map[string][]*msgml.Message)
+	s.sleepingMessageQueue = make(map[string][]*msgML.Message)
 
 	// start message listener
 	s.startMessageListener()
@@ -151,7 +151,7 @@ func (s *Service) Stop() error {
 
 // this function supplied to protocol
 // rawMessages will be added directely here
-func (s *Service) addRawMessageToQueueFunc(rawMsg *msgml.RawMessage) error {
+func (s *Service) addRawMessageToQueueFunc(rawMsg *msgML.RawMessage) error {
 	status := s.rawMessageQueue.Produce(rawMsg)
 	if !status {
 		return errors.New("failed to add rawmessage in to queue")
@@ -162,8 +162,8 @@ func (s *Service) addRawMessageToQueueFunc(rawMsg *msgml.RawMessage) error {
 // listens messages from core componenet
 func (s *Service) startMessageListener() {
 	subscriptionID, err := mcbus.Subscribe(s.topicListenFromCore, func(event *busML.BusData) {
-		msg := &msgml.Message{}
-		err := event.ToStruct(msg)
+		msg := &msgML.Message{}
+		err := event.LoadData(msg)
 		if err != nil {
 			zap.L().Warn("Received invalid type", zap.Any("event", event))
 			return
@@ -183,7 +183,7 @@ func (s *Service) startMessageListener() {
 }
 
 func (s *Service) messageConsumer(item interface{}) {
-	msg, ok := item.(*msgml.Message)
+	msg, ok := item.(*msgML.Message)
 	if !ok {
 		zap.L().Error("invalid message type", zap.Any("received", item))
 		return
@@ -200,7 +200,7 @@ func (s *Service) messageConsumer(item interface{}) {
 }
 
 // converts and post the message to protocol
-func (s *Service) post(msg *msgml.Message) {
+func (s *Service) post(msg *msgML.Message) {
 	err := s.provider.Post(msg)
 	if err != nil {
 		zap.L().Warn("Failed to send", zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
@@ -208,13 +208,13 @@ func (s *Service) post(msg *msgml.Message) {
 }
 
 // add message in to sleeping queue
-func (s *Service) addToSleepingMessageQueue(msg *msgml.Message) {
+func (s *Service) addToSleepingMessageQueue(msg *msgML.Message) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	// add into sleeping queue
 	queue, ok := s.sleepingMessageQueue[msg.NodeID]
 	if !ok {
-		queue = make([]*msgml.Message, 0)
+		queue = make([]*msgML.Message, 0)
 		s.sleepingMessageQueue[msg.NodeID] = queue
 	}
 	queue = append(queue, msg)
@@ -228,7 +228,7 @@ func (s *Service) addToSleepingMessageQueue(msg *msgml.Message) {
 
 // process received raw messages from protocol
 func (s *Service) rawMessageProcessor(data interface{}) {
-	rawMsg := data.(*msgml.RawMessage)
+	rawMsg := data.(*msgML.RawMessage)
 	zap.L().Debug("RawMessage received", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
 	messages, err := s.provider.Process(rawMsg)
 	if err != nil {

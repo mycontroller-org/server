@@ -1,8 +1,6 @@
 package schedule
 
 import (
-	"fmt"
-
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
@@ -64,7 +62,7 @@ func Close() {
 
 func onServiceEvent(event *busML.BusData) {
 	reqEvent := &rsML.ServiceEvent{}
-	err := event.ToStruct(reqEvent)
+	err := event.LoadData(reqEvent)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
 		return
@@ -118,10 +116,11 @@ func processServiceEvent(event interface{}) {
 }
 
 func getConfig(reqEvent *rsML.ServiceEvent) *scheduleML.Config {
-	cfg, ok := reqEvent.GetData().(scheduleML.Config)
-	if !ok {
-		zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", reqEvent.GetData())))
+	cfg := &scheduleML.Config{}
+	err := reqEvent.LoadData(cfg)
+	if err != nil {
+		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
 		return nil
 	}
-	return &cfg
+	return cfg
 }

@@ -8,29 +8,32 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/plugin/storage"
+	"go.uber.org/zap"
 )
 
-func nodeService(reqEvent *rsModel.ServiceEvent) error {
-	resEvent := &rsModel.ServiceEvent{
+func nodeService(reqEvent *rsML.ServiceEvent) error {
+	resEvent := &rsML.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
 
 	switch reqEvent.Command {
-	case rsModel.CommandGet:
+	case rsML.CommandGet:
 		data, err := getNode(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
-	case rsModel.CommandSet:
-		node, ok := reqEvent.GetData().(nodeML.Node)
-		if !ok {
-			return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
+	case rsML.CommandSet:
+		node := &nodeML.Node{}
+		err := reqEvent.LoadData(node)
+		if err != nil {
+			zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
+			return err
 		}
 
 		nodeOrg, err := nodeAPI.GetByID(node.ID)
@@ -41,24 +44,32 @@ func nodeService(reqEvent *rsModel.ServiceEvent) error {
 		nodeOrg.Labels.CopyFrom(node.Labels)
 		return nodeAPI.Save(nodeOrg)
 
-	case rsModel.CommandGetIds:
+	case rsML.CommandGetIds:
 		data, err := getNodeIDs(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
-	case rsModel.CommandFirmwareState:
-		fwState, ok := reqEvent.GetData().(map[string]interface{})
-		if !ok {
-			return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
+	case rsML.CommandFirmwareState:
+		fwState := make(map[string]interface{})
+		err := reqEvent.LoadData(&fwState)
+		if err != nil {
+			zap.L().Error("error on data conversion", zap.Any("reqEvent", reqEvent), zap.Error(err))
+			return err
+		}
+		if fwState == nil {
+			zap.L().Error("nil data received", zap.Any("data", reqEvent))
+			return fmt.Errorf("nil data received")
 		}
 		return nodeAPI.UpdateFirmwareState(reqEvent.ID, fwState)
 
-	case rsModel.CommandSetLabel:
-		labels, ok := reqEvent.GetData().(cmap.CustomStringMap)
-		if !ok {
-			return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
+	case rsML.CommandSetLabel:
+		labels := cmap.CustomStringMap{}
+		err := reqEvent.LoadData(&labels)
+		if err != nil {
+			zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
+			return err
 		}
 		node, err := getNode(reqEvent)
 		if err != nil {
@@ -73,7 +84,7 @@ func nodeService(reqEvent *rsModel.ServiceEvent) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getNodeIDs(request *rsModel.ServiceEvent) ([]string, error) {
+func getNodeIDs(request *rsML.ServiceEvent) ([]string, error) {
 	var response *storage.Result
 	if len(request.Labels) > 0 {
 		filters := getLabelsFilter(request.Labels)
@@ -83,9 +94,11 @@ func getNodeIDs(request *rsModel.ServiceEvent) ([]string, error) {
 		}
 		response = result
 	} else {
-		ids, ok := request.GetData().(map[string]interface{})
-		if !ok {
-			return nil, fmt.Errorf("error on data conversion, receivedType: %T", request.GetData())
+		ids := make(map[string]interface{})
+		err := request.LoadData(&ids)
+		if err != nil {
+			zap.L().Error("error on data conversion", zap.Any("request", request), zap.Error(err))
+			return nil, err
 		}
 
 		// get NodeId and GatewayId
@@ -113,7 +126,7 @@ func getNodeIDs(request *rsModel.ServiceEvent) ([]string, error) {
 	return nodeIDs, nil
 }
 
-func getNode(request *rsModel.ServiceEvent) (*nodeML.Node, error) {
+func getNode(request *rsML.ServiceEvent) (*nodeML.Node, error) {
 	if request.ID != "" {
 		cfg, err := nodeAPI.GetByID(request.ID)
 		if err != nil {
@@ -122,9 +135,11 @@ func getNode(request *rsModel.ServiceEvent) (*nodeML.Node, error) {
 		return cfg, nil
 
 	} else {
-		ids, ok := request.GetData().(map[string]interface{})
-		if !ok {
-			return nil, fmt.Errorf("error on data conversion, receivedType: %T", request.GetData())
+		ids := make(map[string]interface{})
+		err := request.LoadData(&ids)
+		if err != nil {
+			zap.L().Error("error on data conversion", zap.Any("request", request), zap.Error(err))
+			return nil, err
 		}
 
 		// get NodeId and GatewayId

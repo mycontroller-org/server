@@ -57,7 +57,7 @@ func processEvent(item interface{}) {
 	data := item.(*busML.BusData)
 
 	event := &eventML.Event{}
-	err := data.ToStruct(event)
+	err := data.LoadData(event)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Any("topic", data.Topic), zap.Error(err))
 		return

@@ -1,5 +1,11 @@
 package event
 
+import (
+	"fmt"
+
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
+)
+
 // event types
 const (
 	TypeCreated   = "created"
@@ -15,4 +21,12 @@ type Event struct {
 	EntityID      string      `json:"entityId"`
 	EntityQuickID string      `json:"entityQuickId"`
 	Entity        interface{} `json:"entity"`
+}
+
+func (e *Event) LoadEntity(out interface{}) error {
+	mapData, ok := e.Entity.(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("invalid data type: %T", e.Entity)
+	}
+	return utils.MapToStruct(utils.TagNameJSON, mapData, out)
 }

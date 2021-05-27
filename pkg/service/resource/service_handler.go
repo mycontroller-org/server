@@ -2,35 +2,34 @@ package resource
 
 import (
 	"errors"
-	"fmt"
 
 	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"go.uber.org/zap"
 )
 
-func handlerService(reqEvent *rsModel.ServiceEvent) error {
-	resEvent := &rsModel.ServiceEvent{
+func handlerService(reqEvent *rsML.ServiceEvent) error {
+	resEvent := &rsML.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
 
 	switch reqEvent.Command {
-	case rsModel.CommandGet:
+	case rsML.CommandGet:
 		data, err := getHandler(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
-	case rsModel.CommandUpdateState:
+	case rsML.CommandUpdateState:
 		err := updateHandlerState(reqEvent)
 		if err != nil {
 			return err
 		}
 
-	case rsModel.CommandLoadAll:
+	case rsML.CommandLoadAll:
 		handlerAPI.LoadAll()
 
 	default:
@@ -39,7 +38,7 @@ func handlerService(reqEvent *rsModel.ServiceEvent) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getHandler(request *rsModel.ServiceEvent) (interface{}, error) {
+func getHandler(request *rsML.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
 		cfg, err := handlerAPI.GetByID(request.ID)
 		if err != nil {
@@ -57,15 +56,17 @@ func getHandler(request *rsModel.ServiceEvent) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func updateHandlerState(reqEvent *rsModel.ServiceEvent) error {
+func updateHandlerState(reqEvent *rsML.ServiceEvent) error {
 	if reqEvent.Data == nil {
 		zap.L().Error("handler state not supplied", zap.Any("event", reqEvent))
 		return errors.New("handler state not supplied")
 	}
-	state, ok := reqEvent.GetData().(model.State)
-	if !ok {
-		return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
+	state := &model.State{}
+	err := reqEvent.LoadData(state)
+	if err != nil {
+		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
+		return err
 	}
 
-	return handlerAPI.SetState(reqEvent.ID, &state)
+	return handlerAPI.SetState(reqEvent.ID, state)
 }

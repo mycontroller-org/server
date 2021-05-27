@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"encoding/gob"
+	"reflect"
 	"sync"
 	"time"
 
@@ -97,12 +98,32 @@ func ByteToMap(data []byte) (map[string]interface{}, error) {
 	return out, ByteToStruct(data, out)
 }
 
+// mapToStructDecodeHookFunc will be called on MapToStruct
+func mapToStructDecodeHookFunc(fromType reflect.Type, toType reflect.Type, value interface{}) (interface{}, error) {
+	// zap.L().Info("map decoder", zap.String("fromType", fromType.String()), zap.String("toType", toType.String()), zap.Any("value", value))
+	switch toType {
+	case reflect.TypeOf(time.Time{}):
+		value, err := time.Parse(time.RFC3339Nano, value.(string))
+		if err != nil {
+			return nil, err
+		}
+		return value, nil
+
+	}
+	return value, nil
+}
+
 // MapToStruct converts string to struct
 func MapToStruct(tagName string, in map[string]interface{}, out interface{}) error {
 	if tagName == "" {
 		return mapstructure.Decode(in, out)
 	}
-	cfg := &mapstructure.DecoderConfig{TagName: tagName, Result: out}
+	cfg := &mapstructure.DecoderConfig{
+		TagName:          tagName,
+		WeaklyTypedInput: true,
+		DecodeHook:       mapToStructDecodeHookFunc,
+		Result:           out,
+	}
 	decoder, err := mapstructure.NewDecoder(cfg)
 	if err != nil {
 		return err

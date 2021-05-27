@@ -41,11 +41,11 @@ func Init() error {
 	return nil
 }
 
-func onEventReceive(data *busML.BusData) {
+func onEventReceive(busData *busML.BusData) {
 	event := &eventML.Event{}
-	err := data.ToStruct(event)
+	err := busData.LoadData(event)
 	if err != nil {
-		zap.L().Warn("Error on convet to target type", zap.Any("topic", data.Topic), zap.Error(err))
+		zap.L().Warn("Error on convet to target type", zap.Any("topic", busData.Topic), zap.Error(err))
 		return
 	}
 
@@ -55,13 +55,14 @@ func onEventReceive(data *busML.BusData) {
 	}
 
 	if event.Entity == nil {
-		zap.L().Warn("Received a nil data", zap.Any("event", data))
+		zap.L().Warn("Received a nil data", zap.Any("busData", busData))
 		return
 	}
 
-	field, ok := event.Entity.(field.Field)
-	if !ok {
-		zap.L().Warn("received non field entity", zap.Any("entityType", event.EntityType), zap.Any("entity", event.Entity))
+	field := field.Field{}
+	err = event.LoadEntity(&field)
+	if err != nil {
+		zap.L().Warn("error on convertion", zap.Any("entity", event), zap.Error(err))
 		return
 	}
 

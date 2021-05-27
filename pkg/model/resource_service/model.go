@@ -1,9 +1,12 @@
 package model
 
 import (
+	"errors"
 	"reflect"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 )
 
 // Resource type details
@@ -41,15 +44,14 @@ const (
 
 // ServiceEvent details
 type ServiceEvent struct {
-	Type         string
-	Command      string
-	ReplyCommand string
-	ReplyTopic   string
-	ID           string
-	Labels       cmap.CustomStringMap
-	// 	Data         []byte `json:"-"` // ignore this field on logging
-	Data  interface{} `json:"-"` // ignore this field on logging
-	Error string
+	Type         string               `json:"type"`
+	Command      string               `json:"command"`
+	ReplyCommand string               `json:"replyCommand"`
+	ReplyTopic   string               `json:"replyTopic"`
+	ID           string               `json:"id"`
+	Labels       cmap.CustomStringMap `json:"lables"`
+	Data         interface{}          `json:"data"`
+	Error        string               `json:"error"`
 }
 
 func (e *ServiceEvent) SetData(data interface{}) {
@@ -68,4 +70,26 @@ func (e *ServiceEvent) GetData() interface{} {
 		return reflect.ValueOf(e.Data).Elem().Interface()
 	}
 	return e.Data
+}
+
+// LoadData loads the data to given interface
+func (e *ServiceEvent) LoadData(out interface{}) error {
+
+	switch out.(type) {
+	case string:
+		out = convertor.ToString(e.Data)
+		return nil
+
+	case []string:
+		if stringSlice, ok := e.Data.([]string); ok {
+			out = stringSlice
+			return nil
+		}
+	}
+
+	mapData, ok := e.Data.(map[string]interface{})
+	if !ok {
+		return errors.New("data is not in map[string]interface{} type")
+	}
+	return utils.MapToStruct(utils.TagNameJSON, mapData, out)
 }

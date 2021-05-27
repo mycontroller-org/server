@@ -34,7 +34,7 @@ func initMessageListener() error {
 
 func onMessageReceive(event *busML.BusData) {
 	msg := &handlerML.MessageWrapper{}
-	err := event.ToStruct(msg)
+	err := event.LoadData(msg)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
 		return

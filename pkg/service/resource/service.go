@@ -6,10 +6,10 @@ import (
 
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
@@ -43,8 +43,8 @@ func Close() {
 }
 
 func onEvent(data *busML.BusData) {
-	reqEvent := &rsModel.ServiceEvent{}
-	err := data.ToStruct(reqEvent)
+	reqEvent := &rsML.ServiceEvent{}
+	err := data.LoadData(reqEvent)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
 		return
@@ -63,47 +63,47 @@ func onEvent(data *busML.BusData) {
 
 // processEvent from the queue
 func processEvent(item interface{}) {
-	request := item.(*rsModel.ServiceEvent)
+	request := item.(*rsML.ServiceEvent)
 	zap.L().Debug("Processing an event", zap.Any("event", request))
 	start := time.Now()
 	switch request.Type {
-	case rsModel.TypeGateway:
+	case rsML.TypeGateway:
 		err := gatewayService(request)
 		if err != nil {
 			zap.L().Error("error on serving gateway request", zap.Error(err))
 		}
 
-	case rsModel.TypeNode:
+	case rsML.TypeNode:
 		err := nodeService(request)
 		if err != nil {
 			zap.L().Error("error on serving node request", zap.Error(err))
 		}
 
-	case rsModel.TypeTask:
+	case rsML.TypeTask:
 		err := taskService(request)
 		if err != nil {
 			zap.L().Error("error on serving task request", zap.Error(err))
 		}
 
-	case rsModel.TypeHandler:
+	case rsML.TypeHandler:
 		err := handlerService(request)
 		if err != nil {
 			zap.L().Error("error on serving handler request", zap.Error(err))
 		}
 
-	case rsModel.TypeScheduler:
+	case rsML.TypeScheduler:
 		err := schedulerService(request)
 		if err != nil {
 			zap.L().Error("error on serving scheduler request", zap.Error(err))
 		}
 
-	case rsModel.TypeResourceActionBySelector:
+	case rsML.TypeResourceActionBySelector:
 		err := resourceActionService(request)
 		if err != nil {
 			zap.L().Error("error on serving resource quickID request", zap.Error(err))
 		}
 
-	case rsModel.TypeFirmware:
+	case rsML.TypeFirmware:
 		err := firmwareService(request)
 		if err != nil {
 			zap.L().Error("error on serving firmware service request", zap.Error(err))
@@ -115,17 +115,17 @@ func processEvent(item interface{}) {
 	zap.L().Debug("completed a resource service", zap.String("timeTaken", time.Since(start).String()), zap.Any("data", request))
 }
 
-func postResponse(topic string, response *rsModel.ServiceEvent) error {
+func postResponse(topic string, response *rsML.ServiceEvent) error {
 	if topic == "" {
 		return nil
 	}
 	return mcbus.Publish(topic, response)
 }
 
-func getLabelsFilter(labels cmap.CustomStringMap) []stgml.Filter {
-	filters := make([]stgml.Filter, 0)
+func getLabelsFilter(labels cmap.CustomStringMap) []stgML.Filter {
+	filters := make([]stgML.Filter, 0)
 	for key, value := range labels {
-		filter := stgml.Filter{Key: fmt.Sprintf("labels.%s", key), Operator: stgml.OperatorEqual, Value: value}
+		filter := stgML.Filter{Key: fmt.Sprintf("labels.%s", key), Operator: stgML.OperatorEqual, Value: value}
 		filters = append(filters, filter)
 	}
 	return filters

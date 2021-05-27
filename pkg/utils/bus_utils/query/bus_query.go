@@ -15,12 +15,12 @@ import (
 )
 
 // QueryResource posts as request on response calls the callback
-func QueryResource(resourceID, resourceType, command string, data interface{}, callBack func(item interface{}) bool, timeout time.Duration) error {
+func QueryResource(resourceID, resourceType, command string, data interface{}, callBack func(item interface{}) bool, out interface{}, timeout time.Duration) error {
 	closeChan := concurrency.NewChannel(0)
 	defer closeChan.SafeClose()
 
 	replyTopic := mcbus.FormatTopic(fmt.Sprintf("query_response_%s", utils.RandIDWithLength(5)))
-	sID, err := mcbus.Subscribe(replyTopic, responseFunc(closeChan, callBack))
+	sID, err := mcbus.Subscribe(replyTopic, responseFunc(closeChan, callBack, out))
 	if err != nil {
 		return err
 	}
@@ -45,10 +45,10 @@ func QueryResource(resourceID, resourceType, command string, data interface{}, c
 	}
 }
 
-func responseFunc(closeChan *concurrency.Channel, callBack func(item interface{}) bool) func(data *busML.BusData) {
-	return func(data *busML.BusData) {
+func responseFunc(closeChan *concurrency.Channel, callBack func(item interface{}) bool, out interface{}) func(data *busML.BusData) {
+	return func(busData *busML.BusData) {
 		event := &rsML.ServiceEvent{}
-		err := data.ToStruct(event)
+		err := busData.LoadData(event)
 		if err != nil {
 			zap.L().Error("error on converting to event type", zap.Error(err))
 			closeChan.SafeSend(true)
@@ -62,7 +62,15 @@ func responseFunc(closeChan *concurrency.Channel, callBack func(item interface{}
 		}
 
 		if callBack != nil {
-			if !callBack(event.GetData()) { // continue?
+			// convert data to callback type
+			err := event.LoadData(out)
+			if err != nil {
+				zap.L().Error("error on converting to target type", zap.Error(err))
+				closeChan.SafeSend(true)
+				return
+			}
+
+			if !callBack(out) { // continue?
 				closeChan.SafeSend(true)
 				return
 			}

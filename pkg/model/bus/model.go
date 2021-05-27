@@ -1,6 +1,8 @@
 package event
 
-import "github.com/mycontroller-org/backend/v2/pkg/utils"
+import (
+	"github.com/mycontroller-org/backend/v2/pkg/json"
+)
 
 // BusData struct
 type BusData struct {
@@ -13,7 +15,7 @@ func (e *BusData) SetData(data interface{}) error {
 	if data == nil {
 		return nil
 	}
-	bytes, err := utils.StructToByte(data)
+	bytes, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
@@ -21,7 +23,8 @@ func (e *BusData) SetData(data interface{}) error {
 	return nil
 }
 
-// ToStruct converts data to target interface
-func (e *BusData) ToStruct(out interface{}) error {
-	return utils.ByteToStruct(e.Data, out)
+// LoadData converts data to target interface
+func (e *BusData) LoadData(out interface{}) error {
+	err := json.Unmarshal(e.Data, out)
+	return err
 }

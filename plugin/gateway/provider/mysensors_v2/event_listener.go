@@ -63,7 +63,7 @@ func closeEventListener() {
 
 func onEvent(data *busML.BusData) {
 	event := &eventML.Event{}
-	err := data.ToStruct(event)
+	err := data.LoadData(event)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
 		return

@@ -140,7 +140,7 @@ func getNodeID(gwCfg *gwML.Config) string {
 		return false
 	}
 	filter := map[string]interface{}{model.KeyGatewayID: gwCfg.ID}
-	err := query.QueryResource("", rsML.TypeNode, rsML.CommandGetIds, filter, updateNodeIDs, queryTimeout)
+	err := query.QueryResource("", rsML.TypeNode, rsML.CommandGetIds, filter, updateNodeIDs, make([]string, 0), queryTimeout)
 	if err != nil {
 		zap.L().Error("error on finding list of nodes", zap.String("gateway", gwCfg.ID), zap.Error(err))
 		return ""

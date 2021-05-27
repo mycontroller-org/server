@@ -1,12 +1,10 @@
 package service
 
 import (
-	"fmt"
-
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
@@ -45,9 +43,9 @@ func Init(config cmap.CustomMap) error {
 	}
 
 	// load gateways
-	reqEvent := rsml.ServiceEvent{
-		Type:    rsml.TypeGateway,
-		Command: rsml.CommandLoadAll,
+	reqEvent := rsML.ServiceEvent{
+		Type:    rsML.TypeGateway,
+		Command: rsML.CommandLoadAll,
 	}
 	topicResourceServer := mcbus.FormatTopic(mcbus.TopicServiceResourceServer)
 	return mcbus.Publish(topicResourceServer, reqEvent)
@@ -60,8 +58,8 @@ func Close() {
 }
 
 func onEvent(event *busML.BusData) {
-	reqEvent := &rsml.ServiceEvent{}
-	err := event.ToStruct(reqEvent)
+	reqEvent := &rsML.ServiceEvent{}
+	err := event.LoadData(reqEvent)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
 		return
@@ -79,15 +77,15 @@ func onEvent(event *busML.BusData) {
 
 // processEvent from the queue
 func processEvent(event interface{}) {
-	reqEvent := event.(*rsml.ServiceEvent)
+	reqEvent := event.(*rsML.ServiceEvent)
 	zap.L().Debug("Processing a request", zap.Any("event", reqEvent))
 
-	if reqEvent.Type != rsml.TypeGateway {
+	if reqEvent.Type != rsML.TypeGateway {
 		zap.L().Warn("unsupported event type", zap.Any("event", reqEvent))
 	}
 
 	switch reqEvent.Command {
-	case rsml.CommandStart:
+	case rsML.CommandStart:
 		gwCfg := getGatewayConfig(reqEvent)
 		if gwCfg != nil && helper.IsMine(cfg.IDs, cfg.Labels, gwCfg.ID, gwCfg.Labels) {
 			err := Start(gwCfg)
@@ -96,7 +94,7 @@ func processEvent(event interface{}) {
 			}
 		}
 
-	case rsml.CommandStop:
+	case rsML.CommandStop:
 		if reqEvent.ID != "" {
 			err := Stop(reqEvent.ID)
 			if err != nil {
@@ -112,7 +110,7 @@ func processEvent(event interface{}) {
 			}
 		}
 
-	case rsml.CommandReload:
+	case rsML.CommandReload:
 		gwCfg := getGatewayConfig(reqEvent)
 		if gwCfg != nil {
 			err := Stop(gwCfg.ID)
@@ -127,7 +125,7 @@ func processEvent(event interface{}) {
 			}
 		}
 
-	case rsml.CommandUnloadAll:
+	case rsML.CommandUnloadAll:
 		UnloadAll()
 
 	default:
@@ -135,11 +133,12 @@ func processEvent(event interface{}) {
 	}
 }
 
-func getGatewayConfig(reqEvent *rsml.ServiceEvent) *gwml.Config {
-	gwCfg, ok := reqEvent.GetData().(gwml.Config)
-	if !ok {
-		zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", reqEvent.GetData())))
+func getGatewayConfig(reqEvent *rsML.ServiceEvent) *gwML.Config {
+	cfg := &gwML.Config{}
+	err := reqEvent.LoadData(cfg)
+	if err != nil {
+		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
 		return nil
 	}
-	return &gwCfg
+	return cfg
 }

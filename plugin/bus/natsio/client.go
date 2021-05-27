@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mycontroller-org/backend/v2/pkg/json"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -124,7 +125,7 @@ func (c *Client) Close() error {
 
 // Publish a data to a topic
 func (c *Client) Publish(topic string, data interface{}) error {
-	bytes, err := utils.StructToByte(data)
+	bytes, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}

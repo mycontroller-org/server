@@ -2,7 +2,6 @@ package resource
 
 import (
 	"errors"
-	"fmt"
 
 	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
@@ -65,11 +64,15 @@ func updateSchedulerState(reqEvent *rsML.ServiceEvent) error {
 		zap.L().Error("state not supplied", zap.Any("event", reqEvent))
 		return errors.New("state not supplied")
 	}
-	state, ok := reqEvent.GetData().(scheduleML.State)
-	if !ok {
-		return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
+
+	state := &scheduleML.State{}
+	err := reqEvent.LoadData(state)
+	if err != nil {
+		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
+		return err
 	}
-	return scheduleAPI.SetState(reqEvent.ID, &state)
+
+	return scheduleAPI.SetState(reqEvent.ID, state)
 }
 
 func disableScheduler(reqEvent *rsML.ServiceEvent) error {
@@ -78,9 +81,12 @@ func disableScheduler(reqEvent *rsML.ServiceEvent) error {
 		return errors.New("id not supplied")
 	}
 
-	id, ok := reqEvent.GetData().(string)
-	if !ok {
-		return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
+	var id *string
+	err := reqEvent.LoadData(id)
+	if err != nil {
+		zap.L().Error("error on data conversion", zap.Any("reqEvent", reqEvent), zap.Error(err))
+		return err
 	}
-	return scheduleAPI.Disable([]string{id})
+
+	return scheduleAPI.Disable([]string{*id})
 }

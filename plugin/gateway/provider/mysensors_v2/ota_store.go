@@ -104,7 +104,7 @@ func updateNode(gatewayID, nodeID string) error {
 		nodeStore.Add(getNodeStoreID(node.GatewayID, node.NodeID), &node)
 		return false
 	}
-	return query.QueryResource("", rsML.TypeNode, rsML.CommandGet, ids, addToStore, queryTimeout)
+	return query.QueryResource("", rsML.TypeNode, rsML.CommandGet, ids, addToStore, &nodeML.Node{}, queryTimeout)
 }
 
 func updateFirmware(id string) error {
@@ -117,7 +117,7 @@ func updateFirmware(id string) error {
 		fwStore.Add(firmware.ID, &firmware)
 		return false
 	}
-	return query.QueryResource(id, rsML.TypeFirmware, rsML.CommandGet, nil, addToStore, queryTimeout)
+	return query.QueryResource(id, rsML.TypeFirmware, rsML.CommandGet, nil, addToStore, &firmwareML.Firmware{}, queryTimeout)
 }
 
 // getFirmwareRaw func
@@ -183,5 +183,5 @@ func updateFirmwareFile(id string, fwTypeID, fwVersionID uint16) error {
 		return true // continue
 	}
 
-	return query.QueryResource(id, rsML.TypeFirmware, rsML.CommandBlocks, nil, addToStore, queryFirmwareFileTimeout)
+	return query.QueryResource(id, rsML.TypeFirmware, rsML.CommandBlocks, nil, addToStore, &firmwareML.FirmwareBlock{}, queryFirmwareFileTimeout)
 }

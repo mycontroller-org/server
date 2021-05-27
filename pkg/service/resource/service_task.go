@@ -5,35 +5,35 @@ import (
 	"fmt"
 
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
-	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"go.uber.org/zap"
 )
 
-func taskService(reqEvent *rsModel.ServiceEvent) error {
-	resEvent := &rsModel.ServiceEvent{
+func taskService(reqEvent *rsML.ServiceEvent) error {
+	resEvent := &rsML.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
 
 	switch reqEvent.Command {
-	case rsModel.CommandGet:
+	case rsML.CommandGet:
 		data, err := getTask(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
-	case rsModel.CommandUpdateState:
+	case rsML.CommandUpdateState:
 		err := updateTaskState(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 
-	case rsModel.CommandLoadAll:
+	case rsML.CommandLoadAll:
 		taskAPI.LoadAll()
 
-	case rsModel.CommandDisable:
+	case rsML.CommandDisable:
 		return disableTask(reqEvent)
 
 	default:
@@ -42,7 +42,7 @@ func taskService(reqEvent *rsModel.ServiceEvent) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getTask(request *rsModel.ServiceEvent) (interface{}, error) {
+func getTask(request *rsML.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
 		cfg, err := taskAPI.GetByID(request.ID)
 		if err != nil {
@@ -60,29 +60,34 @@ func getTask(request *rsModel.ServiceEvent) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func updateTaskState(reqEvent *rsModel.ServiceEvent) error {
+func updateTaskState(reqEvent *rsML.ServiceEvent) error {
 	if reqEvent.Data == nil {
 		zap.L().Error("handler state not supplied", zap.Any("event", reqEvent))
 		return errors.New("handler state not supplied")
 	}
 
-	state, ok := reqEvent.GetData().(task.State)
-	if !ok {
-		return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
+	state := &task.State{}
+	err := reqEvent.LoadData(state)
+	if err != nil {
+		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
+		return err
 	}
 
-	return taskAPI.SetState(reqEvent.ID, &state)
+	return taskAPI.SetState(reqEvent.ID, state)
 }
 
-func disableTask(reqEvent *rsModel.ServiceEvent) error {
+func disableTask(reqEvent *rsML.ServiceEvent) error {
 	if reqEvent.Data == nil {
 		zap.L().Error("Task id not supplied", zap.Any("event", reqEvent))
 		return errors.New("id not supplied")
 	}
 
-	id, ok := reqEvent.GetData().(string)
-	if !ok {
-		return fmt.Errorf("error on data conversion, receivedType: %T", reqEvent.GetData())
+	var id *string
+	err := reqEvent.LoadData(id)
+	if err != nil {
+		zap.L().Error("error on data conversion", zap.Any("reqEvent", reqEvent), zap.Error(err))
+		return err
 	}
-	return taskAPI.Disable([]string{id})
+
+	return taskAPI.Disable([]string{*id})
 }
