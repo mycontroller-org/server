@@ -96,12 +96,12 @@ func updateNode(gatewayID, nodeID string) error {
 	}
 
 	addToStore := func(item interface{}) bool {
-		node, ok := item.(nodeML.Node)
+		node, ok := item.(*nodeML.Node)
 		if !ok {
 			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
 			return false
 		}
-		nodeStore.Add(getNodeStoreID(node.GatewayID, node.NodeID), &node)
+		nodeStore.Add(getNodeStoreID(node.GatewayID, node.NodeID), node)
 		return false
 	}
 	return query.QueryResource("", rsML.TypeNode, rsML.CommandGet, ids, addToStore, &nodeML.Node{}, queryTimeout)
@@ -109,12 +109,12 @@ func updateNode(gatewayID, nodeID string) error {
 
 func updateFirmware(id string) error {
 	addToStore := func(item interface{}) bool {
-		firmware, ok := item.(firmwareML.Firmware)
+		firmware, ok := item.(*firmwareML.Firmware)
 		if !ok {
 			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
 			return false
 		}
-		fwStore.Add(firmware.ID, &firmware)
+		fwStore.Add(firmware.ID, firmware)
 		return false
 	}
 	return query.QueryResource(id, rsML.TypeFirmware, rsML.CommandGet, nil, addToStore, &firmwareML.Firmware{}, queryTimeout)
@@ -148,7 +148,7 @@ func getFirmwareRaw(id string, fwTypeID, fwVersionID uint16) (*firmwareRaw, erro
 func updateFirmwareFile(id string, fwTypeID, fwVersionID uint16) error {
 	var hexBytes []byte
 	addToStore := func(item interface{}) bool {
-		fwBlock, ok := item.(firmwareML.FirmwareBlock)
+		fwBlock, ok := item.(*firmwareML.FirmwareBlock)
 		if !ok {
 			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
 			return false
