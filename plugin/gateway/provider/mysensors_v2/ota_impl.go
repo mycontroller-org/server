@@ -52,7 +52,7 @@ func executeFirmwareConfigRequest(msg *msgML.Message) (string, error) {
 
 	// if erase eeprom set for this node, update erase eeprom command and clear the label on the node detail
 	if node.Labels.GetBool(LabelEraseEEPROM) {
-		zap.L().Debug("Erase EEPROM enabled, sending erase EEPROM command to the node", zap.String("nodeId", node.ID))
+		zap.L().Debug("erase EEPROM enabled, sending erase EEPROM command to the node", zap.String("nodeId", node.ID))
 		// set erase command
 		fwCfgRes.SetEraseEEPROM()
 		// remove erase config data from node
@@ -65,7 +65,7 @@ func executeFirmwareConfigRequest(msg *msgML.Message) (string, error) {
 		fwCfgRes.Blocks = fwRaw.Blocks
 		fwCfgRes.CRC = fwRaw.CRC
 	}
-	zap.L().Debug("Sending a firmware config respose", zap.Any("request", fwCfgReq), zap.Any("response", fwCfgRes), zap.String("timeTaken", time.Since(startTime).String()))
+	zap.L().Debug("sending a firmware config respose", zap.Any("request", fwCfgReq), zap.Any("response", fwCfgRes), zap.String("timeTaken", time.Since(startTime).String()))
 
 	// convert the struct to hex string and return
 	return toHex(fwCfgRes)
@@ -93,8 +93,7 @@ func executeFirmwareRequest(msg *msgML.Message) (string, error) {
 	// get firmware raw format
 	fwRaw, err := fetchFirmware(node, fwReq.Type, fwReq.Version, true)
 	if err != nil {
-		zap.L().Error("error to get firmware", zap.Any("fwReq", fwReq), zap.Error(err))
-		return "", err
+		return "", fmt.Errorf("error on getting firmware. %s", err.Error())
 	}
 	fwRaw.LastAccess = time.Now()
 
@@ -108,7 +107,7 @@ func executeFirmwareRequest(msg *msgML.Message) (string, error) {
 	startAddr := fwReq.Block * firmwareBlockSize
 	endAddr := startAddr + firmwareBlockSize
 	copy(fwRes.Data[:], fwRaw.Data[startAddr:(endAddr+1)])
-	zap.L().Debug("Sending a firmware respose", zap.Any("request", fwReq), zap.Any("response", fwRes), zap.String("timeTaken", time.Since(startTime).String()))
+	zap.L().Debug("sending a firmware respose", zap.Any("request", fwReq), zap.Any("response", fwRes), zap.String("timeTaken", time.Since(startTime).String()))
 
 	updateFirmwareProgressStatus(node, int(fwReq.Block), len(fwRaw.Data))
 
@@ -122,7 +121,7 @@ func fetchFirmware(node *nodeML.Node, typeID, versionID uint16, verifyID bool) (
 	// get mapped firmware by id
 	fwID := node.Labels.Get(model.LabelNodeAssignedFirmware)
 	if fwID == "" {
-		return nil, errors.New("firmware not assigned for this node")
+		return nil, fmt.Errorf("firmware not assigned for this node. gatewayId:%s, nodeId:%s, typeId:%d, versionId:%d", node.GatewayID, node.NodeID, typeID, versionID)
 	}
 
 	// lambda function to load firmware

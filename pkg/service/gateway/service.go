@@ -23,7 +23,8 @@ func Start(gatewayCfg *gwml.Config) error {
 	}
 
 	if gwService.Get(gatewayCfg.ID) != nil {
-		return fmt.Errorf("a service is in running state. gateway:%s", gatewayCfg.ID)
+		zap.L().Info("no action needed. gateway service is in running state.", zap.String("gatewayId", gatewayCfg.ID))
+		return nil
 	}
 	if !gatewayCfg.Enabled { // this gateway is not enabled
 		return nil
