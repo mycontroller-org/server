@@ -20,7 +20,10 @@ func (p *Provider) handleActions(message *msgML.Message) error {
 
 	switch payload.Key {
 	case nodeML.ActionReboot:
-		// TODO: check espnode api to perform a reboot operation
+		// I do not see a direct option to reboot or restart
+		// a entity should be created on the espnose as mentioned in https://esphome.io/components/switch/restart.html
+		// Note: name of the switch should as 'restart'
+		espNode.sendRestartRequest()
 		return nil
 
 	case nodeML.ActionRefreshNodeInfo:
@@ -38,6 +41,9 @@ func (p *Provider) handleActions(message *msgML.Message) error {
 
 	case ActionPingRequest:
 		actionRequest = &esphomeAPI.PingResponse{}
+
+	default:
+		// noop
 	}
 
 	if actionRequest != nil {

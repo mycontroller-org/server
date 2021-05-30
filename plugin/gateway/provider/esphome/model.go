@@ -34,6 +34,9 @@ const (
 	EntityTypeSwitch       = "switch"
 	EntityTypeTextSensor   = "text_sensor"
 
+	// source id for restart
+	SourceIDRestart = "restart"
+
 	// response message common fields
 	FieldKey      = "key"
 	FieldObjectID = "object_id"

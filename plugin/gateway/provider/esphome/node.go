@@ -209,3 +209,17 @@ func (en *ESPHomeNode) sendNodeInfo() {
 		zap.L().Error("error on posting a message", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
 	}
 }
+
+// sendRestartRequest sends a restat request to esphome node
+func (en *ESPHomeNode) sendRestartRequest() {
+	entity := en.entityStore.GetBySourceID(en.NodeID, SourceIDRestart)
+	if entity != nil {
+		restartRequest := &esphomeAPI.SwitchCommandRequest{State: true, Key: entity.Key}
+		err := en.Post(restartRequest)
+		if err != nil {
+			zap.L().Error("error on sending restart request", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
+		}
+		return
+	}
+	zap.L().Info("seems 'restart' switch is not configured for this node", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID))
+}
