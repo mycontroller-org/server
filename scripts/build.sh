@@ -2,7 +2,7 @@
 
 # container registry
 REGISTRY='quay.io/mycontroller-org'
-ALT_REGISTRY='dokcer.io/mycontroller'
+ALT_REGISTRY='docker.io/mycontroller'
 IMAGE_ALL_IN_ONE="all-in-one"
 IMAGE_CORE="core"
 IMAGE_GATEWAY="gateway"
