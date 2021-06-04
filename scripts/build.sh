@@ -17,7 +17,7 @@ git branch
 
 TARGET_BINARY=${TARGET_BUILD:-all-in-one}
 
-# build conatiner image
+# build and push to quay.io
 docker buildx build --push \
   --progress=plain \
   --build-arg=GOPROXY=${GOPROXY} \
@@ -25,5 +25,11 @@ docker buildx build --push \
   --file docker/${TARGET_BINARY}.Dockerfile \
   --tag ${REGISTRY}/${IMAGE_CORE}:${IMAGE_TAG} .
 
-# copy image into docker hub
-skopeo copy docker://${REGISTRY}/${TARGET_BINARY}:${IMAGE_TAG} docker://${ALT_REGISTRY}/${TARGET_BINARY}:${IMAGE_TAG}
+# build and push to docker.io
+docker buildx build --push \
+  --progress=plain \
+  --build-arg=GOPROXY=${GOPROXY} \
+  --platform ${PLATFORMS} \
+  --file docker/${TARGET_BINARY}.Dockerfile \
+  --tag ${ALT_REGISTRY}/${IMAGE_CORE}:${IMAGE_TAG} .
+
