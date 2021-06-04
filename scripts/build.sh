@@ -23,7 +23,7 @@ docker buildx build --push \
   --build-arg=GOPROXY=${GOPROXY} \
   --platform ${PLATFORMS} \
   --file docker/${TARGET_BINARY}.Dockerfile \
-  --tag ${REGISTRY}/${IMAGE_CORE}:${IMAGE_TAG} .
+  --tag ${REGISTRY}/${TARGET_BINARY}:${IMAGE_TAG} .
 
 # build and push to docker.io
 docker buildx build --push \
@@ -31,5 +31,5 @@ docker buildx build --push \
   --build-arg=GOPROXY=${GOPROXY} \
   --platform ${PLATFORMS} \
   --file docker/${TARGET_BINARY}.Dockerfile \
-  --tag ${ALT_REGISTRY}/${IMAGE_CORE}:${IMAGE_TAG} .
+  --tag ${ALT_REGISTRY}/${TARGET_BINARY}:${IMAGE_TAG} .
 
