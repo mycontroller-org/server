@@ -7,7 +7,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func registerPProfRoutes(router *mux.Router) {
+// RegisterPProfRoutes registers pprof api
+func RegisterPProfRoutes(router *mux.Router) {
 	router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline).Methods(http.MethodGet)
 	router.HandleFunc("/debug/pprof/profile", pprof.Profile).Methods(http.MethodGet)
 	router.HandleFunc("/debug/pprof/symbol", pprof.Symbol).Methods(http.MethodGet)

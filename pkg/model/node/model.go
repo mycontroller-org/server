@@ -3,7 +3,7 @@ package node
 import (
 	"time"
 
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
 
@@ -25,7 +25,7 @@ type Node struct {
 	Name       string               `json:"name"`
 	Labels     cmap.CustomStringMap `json:"labels"`
 	Others     cmap.CustomMap       `json:"others"`
-	State      ml.State             `json:"state"`
+	State      model.State          `json:"state"`
 	LastSeen   time.Time            `json:"lastSeen"`
 	ModifiedOn time.Time            `json:"modifiedOn"`
 }

@@ -6,13 +6,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
 	ml "github.com/mycontroller-org/backend/v2/pkg/model"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
-func registerTaskRoutes(router *mux.Router) {
+// RegisterTaskRoutes registers task api
+func RegisterTaskRoutes(router *mux.Router) {
 	router.HandleFunc("/api/task", listTasks).Methods(http.MethodGet)
 	router.HandleFunc("/api/task/{id}", getTask).Methods(http.MethodGet)
 	router.HandleFunc("/api/task", updateTask).Methods(http.MethodPost)
@@ -22,16 +24,16 @@ func registerTaskRoutes(router *mux.Router) {
 }
 
 func listTasks(w http.ResponseWriter, r *http.Request) {
-	FindMany(w, r, ml.EntityTask, &[]taskML.Config{})
+	handlerUtils.FindMany(w, r, ml.EntityTask, &[]taskML.Config{})
 }
 
 func getTask(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, ml.EntityTask, &taskML.Config{})
+	handlerUtils.FindOne(w, r, ml.EntityTask, &taskML.Config{})
 }
 
 func updateTask(w http.ResponseWriter, r *http.Request) {
 	entity := &taskML.Config{}
-	err := LoadEntity(w, r, entity)
+	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -60,7 +62,7 @@ func deleteTasks(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply id(s)")
 	}
-	UpdateData(w, r, &IDs, updateFn)
+	handlerUtils.UpdateData(w, r, &IDs, updateFn)
 }
 
 func enableTask(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +77,7 @@ func enableTask(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply a task id")
 	}
-	UpdateData(w, r, &ids, updateFn)
+	handlerUtils.UpdateData(w, r, &ids, updateFn)
 }
 
 func disableTask(w http.ResponseWriter, r *http.Request) {
@@ -90,5 +92,5 @@ func disableTask(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply a task id")
 	}
-	UpdateData(w, r, &ids, updateFn)
+	handlerUtils.UpdateData(w, r, &ids, updateFn)
 }

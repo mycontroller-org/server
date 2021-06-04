@@ -9,9 +9,10 @@ const (
 	LabelFieldID   = "field_id"
 
 	// Common labels
-	LabelName     = "name"
-	LabelTimezone = "timezone"
-	LabelReadOnly = "readonly"
+	LabelName      = "name"
+	LabelTimezone  = "timezone"
+	LabelReadOnly  = "readonly"
+	LabelWriteOnly = "writeonly"
 
 	// Node specific labels
 	LabelNodeIsSleepingNode   = "is_sleeping_node"
@@ -23,4 +24,9 @@ const (
 	// Field specific labels
 	LabelMetricType = "metric_type"
 	LabelUnit       = "unit"
+
+	// device specific
+	LabelDeviceType = "device_type"
+	LabelTraitType  = "trait_type"
+	LabelParamType  = "param_type"
 )

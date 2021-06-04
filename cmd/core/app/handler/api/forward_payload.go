@@ -6,13 +6,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	fpAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
+	fwdpayloadAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	fwdPayloadML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
 	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
-func registerForwardPayloadRoutes(router *mux.Router) {
+// RegisterForwardPayloadRoutes registers forward payload api
+func RegisterForwardPayloadRoutes(router *mux.Router) {
 	router.HandleFunc("/api/forwardpayload", listForwardPayload).Methods(http.MethodGet)
 	router.HandleFunc("/api/forwardpayload/{id}", getForwardPayload).Methods(http.MethodGet)
 	router.HandleFunc("/api/forwardpayload", updateForwardPayload).Methods(http.MethodPost)
@@ -22,11 +24,11 @@ func registerForwardPayloadRoutes(router *mux.Router) {
 }
 
 func listForwardPayload(w http.ResponseWriter, r *http.Request) {
-	FindMany(w, r, model.EntityForwardPayload, &[]fwdPayloadML.Config{})
+	handlerUtils.FindMany(w, r, model.EntityForwardPayload, &[]fwdPayloadML.Config{})
 }
 
 func getForwardPayload(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, model.EntityForwardPayload, &fwdPayloadML.Config{})
+	handlerUtils.FindOne(w, r, model.EntityForwardPayload, &fwdPayloadML.Config{})
 }
 
 func updateForwardPayload(w http.ResponseWriter, r *http.Request) {
@@ -37,14 +39,14 @@ func updateForwardPayload(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	}
-	SaveEntity(w, r, model.EntityForwardPayload, &fwdPayloadML.Config{}, bwFunc)
+	handlerUtils.SaveEntity(w, r, model.EntityForwardPayload, &fwdPayloadML.Config{}, bwFunc)
 }
 
 func deleteForwardPayload(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
 	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
-			count, err := fpAPI.Delete(ids)
+			count, err := fwdpayloadAPI.Delete(ids)
 			if err != nil {
 				return nil, err
 			}
@@ -52,14 +54,14 @@ func deleteForwardPayload(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply id(s)")
 	}
-	UpdateData(w, r, &ids, updateFn)
+	handlerUtils.UpdateData(w, r, &ids, updateFn)
 }
 
 func enableForwardPayload(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
 	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
-			err := fpAPI.Enable(ids)
+			err := fwdpayloadAPI.Enable(ids)
 			if err != nil {
 				return nil, err
 			}
@@ -67,14 +69,14 @@ func enableForwardPayload(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply a mapping id")
 	}
-	UpdateData(w, r, &ids, updateFn)
+	handlerUtils.UpdateData(w, r, &ids, updateFn)
 }
 
 func disableForwardPayload(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
 	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
-			err := fpAPI.Disable(ids)
+			err := fwdpayloadAPI.Disable(ids)
 			if err != nil {
 				return nil, err
 			}
@@ -82,5 +84,5 @@ func disableForwardPayload(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply a mapping id")
 	}
-	UpdateData(w, r, &ids, updateFn)
+	handlerUtils.UpdateData(w, r, &ids, updateFn)
 }

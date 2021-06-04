@@ -6,13 +6,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
-func registerFieldRoutes(router *mux.Router) {
+// RegisterFieldRoutes registers field api
+func RegisterFieldRoutes(router *mux.Router) {
 	router.HandleFunc("/api/field", listFields).Methods(http.MethodGet)
 	router.HandleFunc("/api/field/{id}", getField).Methods(http.MethodGet)
 	router.HandleFunc("/api/field", updateField).Methods(http.MethodPost)
@@ -20,16 +22,16 @@ func registerFieldRoutes(router *mux.Router) {
 }
 
 func listFields(w http.ResponseWriter, r *http.Request) {
-	FindMany(w, r, model.EntityField, &[]fieldML.Field{})
+	handlerUtils.FindMany(w, r, model.EntityField, &[]fieldML.Field{})
 }
 
 func getField(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, model.EntityField, &fieldML.Field{})
+	handlerUtils.FindOne(w, r, model.EntityField, &fieldML.Field{})
 }
 
 func updateField(w http.ResponseWriter, r *http.Request) {
 	entity := &fieldML.Field{}
-	err := LoadEntity(w, r, entity)
+	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -58,5 +60,5 @@ func deleteFields(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply id(s)")
 	}
-	UpdateData(w, r, &IDs, updateFn)
+	handlerUtils.UpdateData(w, r, &IDs, updateFn)
 }

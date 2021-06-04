@@ -6,13 +6,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	dashboardAPI "github.com/mycontroller-org/backend/v2/pkg/api/dashboard"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	dbml "github.com/mycontroller-org/backend/v2/pkg/model/dashboard"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	dashboardML "github.com/mycontroller-org/backend/v2/pkg/model/dashboard"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
-func registerDashboardRoutes(router *mux.Router) {
+// RegisterDashboardRoutes registers dashboard api
+func RegisterDashboardRoutes(router *mux.Router) {
 	router.HandleFunc("/api/dashboard", listDashboards).Methods(http.MethodGet)
 	router.HandleFunc("/api/dashboard/{id}", getDashboard).Methods(http.MethodGet)
 	router.HandleFunc("/api/dashboard", updateDashboard).Methods(http.MethodPost)
@@ -20,27 +22,27 @@ func registerDashboardRoutes(router *mux.Router) {
 }
 
 func listDashboards(w http.ResponseWriter, r *http.Request) {
-	FindMany(w, r, ml.EntityDashboard, &[]dbml.Config{})
+	handlerUtils.FindMany(w, r, model.EntityDashboard, &[]dashboardML.Config{})
 }
 
 func getDashboard(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, ml.EntityDashboard, &dbml.Config{})
+	handlerUtils.FindOne(w, r, model.EntityDashboard, &dashboardML.Config{})
 }
 
 func updateDashboard(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]stgml.Filter) error {
-		entity := d.(*dbml.Config)
+	bwFunc := func(d interface{}, f *[]stgML.Filter) error {
+		entity := d.(*dashboardML.Config)
 		if entity.ID == "" {
 			return errors.New("id should not be an empty")
 		}
 		return nil
 	}
-	SaveEntity(w, r, ml.EntityDashboard, &dbml.Config{}, bwFunc)
+	handlerUtils.SaveEntity(w, r, model.EntityDashboard, &dashboardML.Config{}, bwFunc)
 }
 
 func deleteDashboards(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := dashboardAPI.Delete(IDs)
 			if err != nil {
@@ -50,5 +52,5 @@ func deleteDashboards(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply id(s)")
 	}
-	UpdateData(w, r, &IDs, updateFn)
+	handlerUtils.UpdateData(w, r, &IDs, updateFn)
 }

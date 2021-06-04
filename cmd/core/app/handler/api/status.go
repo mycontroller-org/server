@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
@@ -14,7 +15,8 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/version"
 )
 
-func registerStatusRoutes(router *mux.Router) {
+// RegisterStatusRoutes registers status,version api
+func RegisterStatusRoutes(router *mux.Router) {
 	router.HandleFunc("/api/version", versionData).Methods(http.MethodGet)
 	router.HandleFunc("/api/status", status).Methods(http.MethodGet)
 }
@@ -53,7 +55,7 @@ func status(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	WriteResponse(w, od)
+	handlerUtils.WriteResponse(w, od)
 }
 
 func versionData(w http.ResponseWriter, r *http.Request) {
@@ -64,5 +66,5 @@ func versionData(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	WriteResponse(w, od)
+	handlerUtils.WriteResponse(w, od)
 }

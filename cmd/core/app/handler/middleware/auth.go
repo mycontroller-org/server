@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/model/user"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
@@ -19,10 +20,13 @@ import (
 var (
 	// middler check vars
 	verifyPrefixes    = []string{"/api/", handlerML.SecureShareDirWebHandlerPath}
-	nonRestrictedAPIs = []string{"/api/status", "/api/user/registration", "/api/user/login"}
+	nonRestrictedAPIs = []string{
+		"/api/status", "/api/user/registration", "/api/user/login",
+		"/api/oauth/login", "/api/oauth/token"}
 )
 
-func middlewareAuthenticationVerification(next http.Handler) http.Handler {
+// MiddlewareAuthenticationVerification verifies user auth details
+func MiddlewareAuthenticationVerification(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 		isSecurePrefix := false
@@ -41,12 +45,12 @@ func middlewareAuthenticationVerification(next http.Handler) http.Handler {
 				}
 			}
 			// verify token and allow
-			if err := isValidToken(r); err == nil {
+			if err := IsValidToken(r); err == nil {
 				next.ServeHTTP(w, r)
 				return
 			}
 			w.Header().Set("Content-Type", "application/json")
-			postErrorResponse(w, "Authentication required", 401)
+			handlerUtils.PostErrorResponse(w, "Authentication required", 401)
 			return
 		}
 		next.ServeHTTP(w, r)
@@ -54,7 +58,7 @@ func middlewareAuthenticationVerification(next http.Handler) http.Handler {
 	})
 }
 
-func isValidToken(r *http.Request) error {
+func IsValidToken(r *http.Request) error {
 	token, claims, err := getJwtToken(r)
 	if err != nil {
 		return err
@@ -106,23 +110,29 @@ func extractJwtToken(r *http.Request) string {
 	// 	return authCookie.Value
 	// }
 
-	bearerToken := r.Header.Get(handlerML.HeaderAuthorization)
+	accessToken := r.Header.Get(handlerML.HeaderAuthorization)
 	// normally, Authorization: Bearer the_token_xxx
-	strArr := strings.Split(bearerToken, " ")
-	if len(strArr) == 2 {
-		return strArr[1]
+	if accessToken != "" {
+		if !strings.Contains(accessToken, " ") {
+			return accessToken
+		}
+		strArr := strings.Split(accessToken, " ")
+		if len(strArr) == 2 {
+			return strArr[1]
+		}
 	}
 
 	// verify query param has authorization token
-	authToken := r.URL.Query().Get(handlerML.AccessToken)
-	if authToken != "" {
-		return authToken
+	accessToken = r.URL.Query().Get(handlerML.AccessToken)
+	if accessToken != "" {
+		return accessToken
 	}
 
 	return ""
 }
 
-func createToken(user user.User, expiresIn string) (string, error) {
+// CreateToken creates a token for a user
+func CreateToken(user user.User, expiresIn string) (string, error) {
 	atClaims := jwt.MapClaims{}
 	atClaims[handlerML.KeyAuthorized] = true
 	atClaims[handlerML.KeyUserID] = user.ID
@@ -148,6 +158,7 @@ func createToken(user user.User, expiresIn string) (string, error) {
 	return token, nil
 }
 
-func getUserID(r *http.Request) string {
+// GetUserID returns the logged in user details
+func GetUserID(r *http.Request) string {
 	return r.Header.Get(handlerML.HeaderUserID)
 }

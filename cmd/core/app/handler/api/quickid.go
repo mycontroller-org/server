@@ -4,16 +4,18 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	quickIdAPI "github.com/mycontroller-org/backend/v2/pkg/api/quickid"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 )
 
-func registerQuickIDRoutes(router *mux.Router) {
+// RegisterQuickIDRoutes registers quickId api
+func RegisterQuickIDRoutes(router *mux.Router) {
 	router.HandleFunc("/api/quickid", getResources).Methods(http.MethodGet)
 }
 
 func getResources(w http.ResponseWriter, r *http.Request) {
-	query, err := ReceivedQueryMap(r)
+	query, err := handlerUtils.ReceivedQueryMap(r)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -37,5 +39,5 @@ func getResources(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	WriteResponse(w, data)
+	handlerUtils.WriteResponse(w, data)
 }

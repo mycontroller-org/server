@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/api/action"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 )
@@ -16,13 +17,14 @@ const (
 	keyID       = "id"
 )
 
-func registerActionRoutes(router *mux.Router) {
+// RegisterActionRoutes registers action api
+func RegisterActionRoutes(router *mux.Router) {
 	router.HandleFunc("/api/action", executeAction).Methods(http.MethodGet)
 	router.HandleFunc("/api/action/node", executeNodeAction).Methods(http.MethodGet)
 }
 
 func executeNodeAction(w http.ResponseWriter, r *http.Request) {
-	query, err := ReceivedQueryMap(r)
+	query, err := handlerUtils.ReceivedQueryMap(r)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -43,7 +45,7 @@ func executeNodeAction(w http.ResponseWriter, r *http.Request) {
 }
 
 func executeAction(w http.ResponseWriter, r *http.Request) {
-	query, err := ReceivedQueryMap(r)
+	query, err := handlerUtils.ReceivedQueryMap(r)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

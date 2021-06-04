@@ -6,13 +6,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	backupRestoreAPI "github.com/mycontroller-org/backend/v2/pkg/api/backup"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	backupML "github.com/mycontroller-org/backend/v2/pkg/model/backup"
 	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
-func registerImportExportRoutes(router *mux.Router) {
+// RegisterBackupRestoreRoutes registers backup/restore api
+func RegisterBackupRestoreRoutes(router *mux.Router) {
 	router.HandleFunc("/api/backup", listBackupFiles).Methods(http.MethodGet)
 	router.HandleFunc("/api/backup", deleteBackupFile).Methods(http.MethodDelete)
 	router.HandleFunc("/api/backup/run", runBackup).Methods(http.MethodPost)
@@ -22,7 +24,7 @@ func registerImportExportRoutes(router *mux.Router) {
 func listBackupFiles(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	f, p, err := Params(r)
+	f, p, err := handlerUtils.Params(r)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -38,7 +40,7 @@ func listBackupFiles(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	WriteResponse(w, od)
+	handlerUtils.WriteResponse(w, od)
 }
 
 func deleteBackupFile(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +55,7 @@ func deleteBackupFile(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply id(s)")
 	}
-	UpdateData(w, r, &ids, updateFn)
+	handlerUtils.UpdateData(w, r, &ids, updateFn)
 }
 
 func runRestore(w http.ResponseWriter, r *http.Request) {
@@ -92,12 +94,12 @@ func runRestore(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	WriteResponse(w, []byte("ok"))
+	handlerUtils.WriteResponse(w, []byte("ok"))
 }
 
 func runBackup(w http.ResponseWriter, r *http.Request) {
 	entity := &backupML.OnDemandBackupConfig{}
-	err := LoadEntity(w, r, entity)
+	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

@@ -6,13 +6,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	gwAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
-func registerGatewayRoutes(router *mux.Router) {
+// RegisterGatewayRoutes registers gateway api
+func RegisterGatewayRoutes(router *mux.Router) {
 	router.HandleFunc("/api/gateway", listGateways).Methods(http.MethodGet)
 	router.HandleFunc("/api/gateway/{id}", getGateway).Methods(http.MethodGet)
 	router.HandleFunc("/api/gateway", updateGateway).Methods(http.MethodPost)
@@ -23,19 +25,19 @@ func registerGatewayRoutes(router *mux.Router) {
 }
 
 func listGateways(w http.ResponseWriter, r *http.Request) {
-	entityFn := func(f []stgml.Filter, p *stgml.Pagination) (interface{}, error) {
+	entityFn := func(f []stgML.Filter, p *stgML.Pagination) (interface{}, error) {
 		return gwAPI.List(f, p)
 	}
-	LoadData(w, r, entityFn)
+	handlerUtils.LoadData(w, r, entityFn)
 }
 
 func getGateway(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, ml.EntityGateway, &gwml.Config{})
+	handlerUtils.FindOne(w, r, model.EntityGateway, &gwML.Config{})
 }
 
 func updateGateway(w http.ResponseWriter, r *http.Request) {
-	entity := &gwml.Config{}
-	err := LoadEntity(w, r, entity)
+	entity := &gwML.Config{}
+	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -54,7 +56,7 @@ func updateGateway(w http.ResponseWriter, r *http.Request) {
 
 func enableGateway(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := gwAPI.Enable(ids)
 			if err != nil {
@@ -64,12 +66,12 @@ func enableGateway(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply a gateway id")
 	}
-	UpdateData(w, r, &ids, updateFn)
+	handlerUtils.UpdateData(w, r, &ids, updateFn)
 }
 
 func disableGateway(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := gwAPI.Disable(ids)
 			if err != nil {
@@ -79,12 +81,12 @@ func disableGateway(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply a gateway id")
 	}
-	UpdateData(w, r, &ids, updateFn)
+	handlerUtils.UpdateData(w, r, &ids, updateFn)
 }
 
 func reloadGateway(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := gwAPI.Reload(ids)
 			if err != nil {
@@ -94,12 +96,12 @@ func reloadGateway(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply a gateway id")
 	}
-	UpdateData(w, r, &ids, updateFn)
+	handlerUtils.UpdateData(w, r, &ids, updateFn)
 }
 
 func deleteGateways(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := gwAPI.Delete(IDs)
 			if err != nil {
@@ -109,5 +111,5 @@ func deleteGateways(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply id(s)")
 	}
-	UpdateData(w, r, &IDs, updateFn)
+	handlerUtils.UpdateData(w, r, &IDs, updateFn)
 }

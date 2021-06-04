@@ -6,13 +6,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	nml "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
+	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
-func registerNodeRoutes(router *mux.Router) {
+// RegisterNodeRoutes registers node api
+func RegisterNodeRoutes(router *mux.Router) {
 	router.HandleFunc("/api/node", listnodes).Methods(http.MethodGet)
 	router.HandleFunc("/api/node/{id}", getnode).Methods(http.MethodGet)
 	router.HandleFunc("/api/node", updatenode).Methods(http.MethodPost)
@@ -20,16 +22,16 @@ func registerNodeRoutes(router *mux.Router) {
 }
 
 func listnodes(w http.ResponseWriter, r *http.Request) {
-	FindMany(w, r, ml.EntityNode, &[]nml.Node{})
+	handlerUtils.FindMany(w, r, model.EntityNode, &[]nodeML.Node{})
 }
 
 func getnode(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, ml.EntityNode, &nml.Node{})
+	handlerUtils.FindOne(w, r, model.EntityNode, &nodeML.Node{})
 }
 
 func updatenode(w http.ResponseWriter, r *http.Request) {
-	entity := &nml.Node{}
-	err := LoadEntity(w, r, entity)
+	entity := &nodeML.Node{}
+	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -48,7 +50,7 @@ func updatenode(w http.ResponseWriter, r *http.Request) {
 
 func deleteNodes(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := nodeAPI.Delete(IDs)
 			if err != nil {
@@ -58,5 +60,5 @@ func deleteNodes(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply id(s)")
 	}
-	UpdateData(w, r, &IDs, updateFn)
+	handlerUtils.UpdateData(w, r, &IDs, updateFn)
 }

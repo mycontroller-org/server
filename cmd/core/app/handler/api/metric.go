@@ -6,13 +6,14 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/api/field"
 	json "github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
-	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
+	"github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	quickIdUL "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
-	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
+	mtsML "github.com/mycontroller-org/backend/v2/plugin/metrics"
 )
 
 // global constants
@@ -20,14 +21,15 @@ const (
 	QuickID = "quick_id"
 )
 
-func registerMetricRoutes(router *mux.Router) {
+// RegisterMetricRoutes registers metric api
+func RegisterMetricRoutes(router *mux.Router) {
 	router.HandleFunc("/api/metric", getMetricList).Methods(http.MethodPost)
 	router.HandleFunc("/api/metric", getMetric).Methods(http.MethodGet)
 }
 
 func getMetric(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	params, err := ReceivedQueryMap(r)
+	params, err := handlerUtils.ReceivedQueryMap(r)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -52,8 +54,8 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 		return nil
 	}
 
-	queryConfig := &mtsml.QueryConfig{}
-	queryConfig.Individual = []mtsml.Query{{Name: QuickID, Tags: map[string]string{}}}
+	queryConfig := &mtsML.QueryConfig{}
+	queryConfig.Individual = []mtsML.Query{{Name: QuickID, Tags: map[string]string{}}}
 
 	if quickID, ok := params[QuickID]; ok {
 		if len(quickID) > 0 {
@@ -88,20 +90,20 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// update optional parameters
-	if value := getValue(mtsml.QueryKeyStart); value != "" {
+	if value := getValue(mtsML.QueryKeyStart); value != "" {
 		queryConfig.Global.Start = value
 	}
-	if value := getValue(mtsml.QueryKeyStop); value != "" {
+	if value := getValue(mtsML.QueryKeyStop); value != "" {
 		queryConfig.Global.Stop = value
 	}
-	if value := getValue(mtsml.QueryKeyWindow); value != "" {
+	if value := getValue(mtsML.QueryKeyWindow); value != "" {
 		queryConfig.Global.Window = value
 	}
-	if values := getValues(mtsml.QueryKeyFunctions); values != nil {
+	if values := getValues(mtsML.QueryKeyFunctions); values != nil {
 		queryConfig.Global.Functions = values
 	}
 
-	result, err := mts.SVC.Query(queryConfig)
+	result, err := metrics.SVC.Query(queryConfig)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -111,7 +113,7 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	WriteResponse(w, od)
+	handlerUtils.WriteResponse(w, od)
 }
 
 func getMetricList(w http.ResponseWriter, r *http.Request) {
@@ -124,7 +126,7 @@ func getMetricList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	queryConfig := &mtsml.QueryConfig{}
+	queryConfig := &mtsML.QueryConfig{}
 
 	err = json.Unmarshal(d, queryConfig)
 	if err != nil {
@@ -132,7 +134,7 @@ func getMetricList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := mts.SVC.Query(queryConfig)
+	result, err := metrics.SVC.Query(queryConfig)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -142,5 +144,5 @@ func getMetricList(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	WriteResponse(w, od)
+	handlerUtils.WriteResponse(w, od)
 }

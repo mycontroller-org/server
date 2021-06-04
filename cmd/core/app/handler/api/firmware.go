@@ -6,13 +6,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	fwAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	fwML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
 	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
-func registerFirmwareRoutes(router *mux.Router) {
+// RegisterFirmwareRoutes registers firmware api
+func RegisterFirmwareRoutes(router *mux.Router) {
 	router.HandleFunc("/api/firmware", listFirmwares).Methods(http.MethodGet)
 	router.HandleFunc("/api/firmware/{id}", getFirmware).Methods(http.MethodGet)
 	router.HandleFunc("/api/firmware", updateFirmware).Methods(http.MethodPost)
@@ -21,16 +23,16 @@ func registerFirmwareRoutes(router *mux.Router) {
 }
 
 func listFirmwares(w http.ResponseWriter, r *http.Request) {
-	FindMany(w, r, ml.EntityFirmware, &[]fwML.Firmware{})
+	handlerUtils.FindMany(w, r, model.EntityFirmware, &[]fwML.Firmware{})
 }
 
 func getFirmware(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, ml.EntityFirmware, &fwML.Firmware{})
+	handlerUtils.FindOne(w, r, model.EntityFirmware, &fwML.Firmware{})
 }
 
 func updateFirmware(w http.ResponseWriter, r *http.Request) {
 	entity := &fwML.Firmware{}
-	err := LoadEntity(w, r, entity)
+	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -59,7 +61,7 @@ func deleteFirmware(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply id(s)")
 	}
-	UpdateData(w, r, &ids, updateFn)
+	handlerUtils.UpdateData(w, r, &ids, updateFn)
 }
 
 func uploadFirmware(w http.ResponseWriter, r *http.Request) {

@@ -6,13 +6,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
 
-func registerSchedulerRoutes(router *mux.Router) {
+// RegisterSchedulerRoutes registers schedule api
+func RegisterSchedulerRoutes(router *mux.Router) {
 	router.HandleFunc("/api/schedule", listSchedule).Methods(http.MethodGet)
 	router.HandleFunc("/api/schedule/{id}", getSchedule).Methods(http.MethodGet)
 	router.HandleFunc("/api/schedule", updateSchedule).Methods(http.MethodPost)
@@ -22,16 +24,16 @@ func registerSchedulerRoutes(router *mux.Router) {
 }
 
 func listSchedule(w http.ResponseWriter, r *http.Request) {
-	FindMany(w, r, ml.EntitySchedule, &[]schedulerML.Config{})
+	handlerUtils.FindMany(w, r, model.EntitySchedule, &[]schedulerML.Config{})
 }
 
 func getSchedule(w http.ResponseWriter, r *http.Request) {
-	FindOne(w, r, ml.EntitySchedule, &schedulerML.Config{})
+	handlerUtils.FindOne(w, r, model.EntitySchedule, &schedulerML.Config{})
 }
 
 func updateSchedule(w http.ResponseWriter, r *http.Request) {
 	entity := &schedulerML.Config{}
-	err := LoadEntity(w, r, entity)
+	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -50,7 +52,7 @@ func updateSchedule(w http.ResponseWriter, r *http.Request) {
 
 func deleteSchedule(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := scheduleAPI.Delete(IDs)
 			if err != nil {
@@ -60,12 +62,12 @@ func deleteSchedule(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply id(s)")
 	}
-	UpdateData(w, r, &IDs, updateFn)
+	handlerUtils.UpdateData(w, r, &IDs, updateFn)
 }
 
 func enableSchedule(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := scheduleAPI.Enable(ids)
 			if err != nil {
@@ -75,12 +77,12 @@ func enableSchedule(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply a task id")
 	}
-	UpdateData(w, r, &ids, updateFn)
+	handlerUtils.UpdateData(w, r, &ids, updateFn)
 }
 
 func disableSchedule(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := scheduleAPI.Disable(ids)
 			if err != nil {
@@ -90,5 +92,5 @@ func disableSchedule(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil, errors.New("supply a task id")
 	}
-	UpdateData(w, r, &ids, updateFn)
+	handlerUtils.UpdateData(w, r, &ids, updateFn)
 }

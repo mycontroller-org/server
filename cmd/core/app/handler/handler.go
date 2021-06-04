@@ -5,13 +5,17 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
-	json "github.com/mycontroller-org/backend/v2/pkg/json"
+	handlerAPI "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/api"
+	handlerAuthAPI "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/api/auth"
+	middleware "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/middleware"
+	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/model/config"
 	webHandlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	mcWS "github.com/mycontroller-org/backend/v2/pkg/service/websocket"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
+	//	googleAssistantAPI "github.com/mycontroller-org/backend/v2/plugin/bot/google_assistant"
 )
 
 // GetHandler for http access
@@ -26,29 +30,31 @@ func GetHandler() (http.Handler, error) {
 
 	// Enable Profiling, if enabled
 	if webCfg.EnableProfiling {
-		registerPProfRoutes(router)
+		handlerAPI.RegisterPProfRoutes(router)
 	}
 
 	// register routes
-	registerAuthRoutes(router)
-	registerStatusRoutes(router)
+	handlerAuthAPI.RegisterAuthRoutes(router)
+	handlerAuthAPI.RegisterOAuthRoutes(router)
+	handlerAPI.RegisterStatusRoutes(router)
 	mcWS.RegisterWebsocketRoutes(router)
-	registerGatewayRoutes(router)
-	registerNodeRoutes(router)
-	registerSourceRoutes(router)
-	registerFieldRoutes(router)
-	registerFirmwareRoutes(router)
-	registerMetricRoutes(router)
-	registerActionRoutes(router)
-	registerDashboardRoutes(router)
-	registerForwardPayloadRoutes(router)
-	registerTaskRoutes(router)
-	registerNotifyHandlerRoutes(router)
-	registerSchedulerRoutes(router)
-	registerDataRepositoryRoutes(router)
-	registerSystemRoutes(router)
-	registerQuickIDRoutes(router)
-	registerImportExportRoutes(router)
+	handlerAPI.RegisterGatewayRoutes(router)
+	handlerAPI.RegisterNodeRoutes(router)
+	handlerAPI.RegisterSourceRoutes(router)
+	handlerAPI.RegisterFieldRoutes(router)
+	handlerAPI.RegisterFirmwareRoutes(router)
+	handlerAPI.RegisterMetricRoutes(router)
+	handlerAPI.RegisterActionRoutes(router)
+	handlerAPI.RegisterDashboardRoutes(router)
+	handlerAPI.RegisterForwardPayloadRoutes(router)
+	handlerAPI.RegisterTaskRoutes(router)
+	handlerAPI.RegisterHandlerRoutes(router)
+	handlerAPI.RegisterSchedulerRoutes(router)
+	handlerAPI.RegisterDataRepositoryRoutes(router)
+	handlerAPI.RegisterSystemRoutes(router)
+	handlerAPI.RegisterQuickIDRoutes(router)
+	handlerAPI.RegisterBackupRestoreRoutes(router)
+	// googleAssistantAPI.RegisterGoogleAssistantRoutes(router)
 
 	// add secure and insecure directories into handler
 	addFileServers(cfg.CFG.Directories, router)
@@ -60,7 +66,7 @@ func GetHandler() (http.Handler, error) {
 	} else {
 		defaultPage := func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "text/plain")
-			WriteResponse(w, []byte("Web directory not configured."))
+			handlerUtils.WriteResponse(w, []byte("Web directory not configured."))
 		}
 		router.HandleFunc("/", defaultPage)
 	}
@@ -75,32 +81,9 @@ func GetHandler() (http.Handler, error) {
 
 	// Insert the middleware
 	handler := c.Handler(router)
-	handler = middlewareAuthenticationVerification(handler)
+	handler = middleware.MiddlewareAuthenticationVerification(handler)
 
 	return handler, nil
-}
-
-func postErrorResponse(w http.ResponseWriter, message string, code int) {
-	response := &webHandlerML.Response{
-		Success: false,
-		Message: message,
-	}
-	out, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	http.Error(w, string(out), code)
-}
-
-func postSuccessResponse(w http.ResponseWriter, data interface{}) {
-	out, err := json.Marshal(data)
-	if err != nil {
-		postErrorResponse(w, err.Error(), 500)
-		return
-	}
-
-	WriteResponse(w, out)
 }
 
 // configure secure and insecure dir shares
