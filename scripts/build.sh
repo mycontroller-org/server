@@ -2,9 +2,11 @@
 
 # container registry
 REGISTRY='quay.io/mycontroller-org'
-IMAGE_ALL_IN_ONE="${REGISTRY}/all-in-one"
-IMAGE_CORE="${REGISTRY}/core"
-IMAGE_GATEWAY="${REGISTRY}/gateway"
+ALT_REGISTRY='dokcer.io/mycontroller'
+IMAGE_ALL_IN_ONE="all-in-one"
+IMAGE_CORE="core"
+IMAGE_GATEWAY="gateway"
+PLATFORMS="linux/arm/v6,linux/arm/v7,linux/arm64,linux/amd64"
 #IMAGE_TAG="master"  # application tag
 IMAGE_TAG=`git rev-parse --abbrev-ref HEAD`
 
@@ -15,16 +17,13 @@ git branch
 
 TARGET_BINARY=${TARGET_BUILD:-all-in-one}
 
-# build conatiner images
-if [[ "$TARGET_BINARY" == "core" ]]; then
-  # build core image
-  docker buildx build --push --progress=plain --build-arg=GOPROXY=${GOPROXY} --platform linux/arm/v6,linux/arm/v7,linux/arm64,linux/amd64 --file docker/core.Dockerfile --tag ${IMAGE_CORE}:${IMAGE_TAG} .
+# build conatiner image
+docker buildx build --push \
+  --progress=plain \
+  --build-arg=GOPROXY=${GOPROXY} \
+  --platform ${PLATFORMS} \
+  --file docker/${TARGET_BINARY}.Dockerfile \
+  --tag ${REGISTRY}/${IMAGE_CORE}:${IMAGE_TAG} .
 
-elif [[ "$TARGET_BINARY" == "gateway" ]]; then
-  # build gateway image
-  docker buildx build --push --progress=plain --build-arg=GOPROXY=${GOPROXY} --platform linux/arm/v6,linux/arm/v7,linux/arm64,linux/amd64 --file docker/gateway.Dockerfile --tag ${IMAGE_GATEWAY}:${IMAGE_TAG} .
-
-else
-  # build all-in-one image
-  docker buildx build --push --progress=plain --build-arg=GOPROXY=${GOPROXY} --platform linux/arm/v6,linux/arm/v7,linux/arm64,linux/amd64 --file docker/all-in-one.Dockerfile --tag ${IMAGE_ALL_IN_ONE}:${IMAGE_TAG} .
-fi
+# copy image into docker hub
+skopeo copy docker://${REGISTRY}/${TARGET_BINARY}:${IMAGE_TAG} docker://${ALT_REGISTRY}/${TARGET_BINARY}:${IMAGE_TAG}

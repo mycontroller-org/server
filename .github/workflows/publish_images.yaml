@@ -13,6 +13,11 @@ jobs:
         container_image: ["all-in-one", "core", "gateway"]
 
     steps:
+    - name: Install packages
+      run: |
+        sudo apt-get -y install skopeo
+        which skopeo
+
     - name: backend repository
       uses: actions/checkout@v2
 
