@@ -3,7 +3,12 @@
 # user command
 # command 'start' starts the service, if no input default command is 'start'
 # command 'stop' stops the service
-USER_COMMAND=${1:-"start"}
+USER_COMMAND=${1}
+
+if [ -z "${USER_COMMAND}" ];then
+  echo "there is no command specified, supported commands are [start, stop]"
+  exit 1
+fi
 
 # Get user current location
 USER_LOCATION=${PWD}

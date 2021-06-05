@@ -53,7 +53,11 @@ function package {
   # copy sample config file
   cp resources/sample-binary-${COMPONENT_NAME}.yaml ${PACKAGE_STAGING_DIR}/${CONFIG_FILE}
   # copy start/stop script
-  cp resources/control-scripts/start-${COMPONENT_NAME}.sh ${PACKAGE_STAGING_DIR}/start.sh
+  cp resources/control-scripts/mcctl-${COMPONENT_NAME}.sh ${PACKAGE_STAGING_DIR}/mcctl.sh
+  # copy readme text
+  cp resources/control-scripts/README.txt ${PACKAGE_STAGING_DIR}/README.txt
+  # copy license
+  cp LICENSE ${PACKAGE_STAGING_DIR}/LICENSE.txt
 
   ARCHIVE_NAME="${PACKAGE_STAGING_DIR}.tar.gz"
   # echo "Packaging into: ${ARCHIVE_NAME}"
