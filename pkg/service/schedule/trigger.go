@@ -34,7 +34,7 @@ func scheduleTriggerFunc(cfg *scheduleML.Config, spec string) {
 	cfg.State.ExecutedCount++
 	cfg.State.LastStatus = true
 	cfg.State.Message = ""
-	zap.L().Debug("Triggered", zap.String("ID", cfg.ID), zap.String("spec", spec))
+	zap.L().Debug("triggered", zap.String("ID", cfg.ID), zap.String("spec", spec))
 
 	// load variables
 	variables, err := variablesUtils.LoadVariables(cfg.Variables)
@@ -79,7 +79,7 @@ func scheduleTriggerFunc(cfg *scheduleML.Config, spec string) {
 		}
 
 	default:
-		zap.L().Error("Unknown custom variable loader type", zap.String("type", cfg.CustomVariableType))
+		zap.L().Error("unknown custom variable loader type", zap.String("type", cfg.CustomVariableType))
 	}
 
 	// post to handlers
@@ -105,7 +105,7 @@ func verifyAndDisableSchedule(cfg *scheduleML.Config, timeTaken time.Duration, e
 			return
 		}
 		if spec.RepeatCount != 0 && cfg.State.ExecutedCount >= spec.RepeatCount {
-			zap.L().Debug("Reached maximum execution count, disbling this job", zap.String("ScheduleID", cfg.ID), zap.Any("spec", cfg.Spec))
+			zap.L().Debug("reached the maximum execution count, disbling this job", zap.String("ScheduleID", cfg.ID), zap.Any("spec", cfg.Spec))
 			busUtils.DisableSchedule(cfg.ID)
 			// Sometimes setState updates as enabled
 			// To avoid this addind small sleep, but this is not good fix.
@@ -125,7 +125,7 @@ func verifyAndDisableSchedule(cfg *scheduleML.Config, timeTaken time.Duration, e
 		if err != nil {
 			zap.L().Error("error on loading spec", zap.String("schedulerID", cfg.ID), zap.Error(err))
 			cfg.State.LastStatus = false
-			cfg.State.Message = fmt.Sprintf("Error: %s", err.Error())
+			cfg.State.Message = fmt.Sprintf("error: %s", err.Error())
 			if executionError != "" {
 				cfg.State.Message = fmt.Sprintf("%s, executionError:%s", cfg.State.Message, executionError)
 			}

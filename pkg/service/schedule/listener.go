@@ -44,7 +44,7 @@ func Init(config cmap.CustomMap) error {
 		return err
 	}
 
-	zap.L().Debug("Scheduler started", zap.Any("config", svcCFG))
+	zap.L().Debug("scheduler started", zap.Any("config", svcCFG))
 	// load schedulers
 	reqEvent := rsML.ServiceEvent{
 		Type:    rsML.TypeScheduler,
@@ -64,24 +64,24 @@ func onServiceEvent(event *busML.BusData) {
 	reqEvent := &rsML.ServiceEvent{}
 	err := event.LoadData(reqEvent)
 	if err != nil {
-		zap.L().Warn("Failed to convet to target type", zap.Error(err))
+		zap.L().Warn("failed to convet to target type", zap.Error(err))
 		return
 	}
 	if reqEvent == nil {
-		zap.L().Warn("Received a nil message", zap.Any("event", event))
+		zap.L().Warn("received a nil message", zap.Any("event", event))
 		return
 	}
-	zap.L().Debug("Event added into processing queue", zap.Any("event", reqEvent))
+	zap.L().Debug("event added into processing queue", zap.Any("event", reqEvent))
 	status := serviceQueue.Produce(reqEvent)
 	if !status {
-		zap.L().Warn("Failed to store the event into queue", zap.Any("event", reqEvent))
+		zap.L().Warn("failed to store the event into queue", zap.Any("event", reqEvent))
 	}
 }
 
 // processServiceEvent from the queue
 func processServiceEvent(event interface{}) {
 	reqEvent := event.(*rsML.ServiceEvent)
-	zap.L().Debug("Processing a request", zap.Any("event", reqEvent))
+	zap.L().Debug("processing a request", zap.Any("event", reqEvent))
 
 	if reqEvent.Type != rsML.TypeScheduler {
 		zap.L().Warn("unsupported event type", zap.Any("event", reqEvent))

@@ -11,6 +11,6 @@ import (
 func Init() {
 	logger := loggerUtils.GetLogger(cfg.CFG.Logger.Mode, cfg.CFG.Logger.Level.Core, cfg.CFG.Logger.Encoding, false, 0)
 	zap.ReplaceGlobals(logger)
-	zap.L().Info("Welcome to MyController.org server :)")
-	zap.L().Info("Server detail", zap.Any("version", version.Get()), zap.Any("loggerConfig", cfg.CFG.Logger))
+	zap.L().Info("welcome to the MyController world :)")
+	zap.L().Info("server detail", zap.Any("version", version.Get()), zap.Any("loggerConfig", cfg.CFG.Logger))
 }

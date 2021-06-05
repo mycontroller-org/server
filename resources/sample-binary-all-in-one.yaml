@@ -1,0 +1,77 @@
+secret: 5a2f6ff25b0025aeae12ae096363b51a # !!! WARNING: CHANGE THIS SECRET !!!
+
+web:
+  web_directory: web_console
+  enable_profiling: false
+  http:
+    enabled: true 
+    bind_address: "0.0.0.0"
+    port: 8080
+  https_ssl:
+    enabled: false
+    bind_address: "0.0.0.0"
+    port: 8443
+    cert_dir: certs/https_ssl
+  https_acme:
+    enabled: false
+    bind_address: "0.0.0.0"
+    port: 9443
+    cache_dir: certs/https_acme
+    acme_directory: 
+    email: 
+    domains: []
+
+logger:
+  mode: development
+  encoding: console
+  level:
+    core: info
+    web_handler: info
+    storage: info
+    metrics: warn
+
+directories:
+  data: data
+  logs: logs
+  tmp: tmp
+  secure_share: secure_share
+  insecure_share: insecure_share
+
+bus:
+  type: embedded
+  topic_prefix: mc_all_in_one
+  server_url: nats://192.168.1.21:4222
+  tls_insecure_skip_verify: false
+  connection_timeout: 10s
+
+gateway:
+  ids: []
+  labels:
+    location: local
+
+database:
+  storage: memory_database
+  metrics: void_database
+
+databases:
+  - name: memory_database
+    type: memory
+    dump_enabled: true
+    dump_interval: 10m
+    dump_dir: "memory_db"
+    dump_format: ["yaml"]
+    load_format: "yaml"
+
+  - name: influx_database
+    type: influxdb_v2
+    uri: http://192.168.1.21:8086
+    token: 
+    username:
+    password:
+    organization: 
+    bucket: mycontroller
+    batch_size:
+    flush_interval: 1s
+
+  - name: void_database
+    type: void_db

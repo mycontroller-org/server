@@ -32,7 +32,7 @@ COPY --from=builder /app/mycontroller-gateway ${APP_HOME}/mycontroller-gateway
 RUN chmod +x ${APP_HOME}/mycontroller-gateway
 
 # copy default files
-COPY ./resources/default-gateway.yaml ${APP_HOME}/mycontroller.yaml
+COPY ./resources/sample-docker-gateway.yaml ${APP_HOME}/mycontroller.yaml
 
 WORKDIR ${APP_HOME}
 

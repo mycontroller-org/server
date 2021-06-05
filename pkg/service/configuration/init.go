@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	cfgml "github.com/mycontroller-org/backend/v2/pkg/model/config"
+	cfgML "github.com/mycontroller-org/backend/v2/pkg/model/config"
 	loggerUtils "github.com/mycontroller-org/backend/v2/pkg/utils/logger"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
@@ -13,7 +13,7 @@ import (
 
 // configuration globally accessable
 var (
-	CFG *cfgml.Config
+	CFG *cfgML.Config
 )
 
 // Init configuration
@@ -24,17 +24,17 @@ func Init() {
 	cf := flag.String("config", "./config.yaml", "Configuration file")
 	flag.Parse()
 	if cf == nil {
-		logger.Fatal("Configuration file not supplied")
+		logger.Fatal("configuration file not supplied")
 		return
 	}
 	d, err := ioutil.ReadFile(*cf)
 	if err != nil {
-		logger.Fatal("Error on reading configuration file", zap.Error(err))
+		logger.Fatal("error on reading configuration file", zap.Error(err))
 	}
 
 	err = yaml.Unmarshal(d, &CFG)
 	if err != nil {
-		logger.Fatal("Failed to unmarshal yaml data", zap.Error(err))
+		logger.Fatal("failed to parse yaml data", zap.Error(err))
 	}
 
 	// update encryption key length

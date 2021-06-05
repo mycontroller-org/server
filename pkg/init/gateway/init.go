@@ -16,7 +16,7 @@ func initServices() {
 	// init gateway listener
 	err := gwService.Init(cfg.CFG.Gateway)
 	if err != nil {
-		zap.L().Fatal("Failed to init gateway service listener", zap.Error(err))
+		zap.L().Fatal("failed to init gateway service listener", zap.Error(err))
 	}
 }
 

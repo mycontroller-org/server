@@ -59,7 +59,7 @@ func processEvent(item interface{}) {
 	event := &eventML.Event{}
 	err := data.LoadData(event)
 	if err != nil {
-		zap.L().Warn("Failed to convet to target type", zap.Any("topic", data.Topic), zap.Error(err))
+		zap.L().Warn("failed to convet to target type", zap.Any("topic", data.Topic), zap.Error(err))
 		return
 	}
 

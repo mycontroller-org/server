@@ -46,25 +46,25 @@ func onEvent(data *busML.BusData) {
 	reqEvent := &rsML.ServiceEvent{}
 	err := data.LoadData(reqEvent)
 	if err != nil {
-		zap.L().Warn("Failed to convet to target type", zap.Error(err))
+		zap.L().Warn("failed to convet to target type", zap.Error(err))
 		return
 	}
 
 	if reqEvent == nil {
-		zap.L().Warn("Received a nil event", zap.Any("event", data))
+		zap.L().Warn("received a nil event", zap.Any("event", data))
 		return
 	}
-	zap.L().Debug("Event added into processing queue", zap.Any("event", reqEvent))
+	zap.L().Debug("event added into processing queue", zap.Any("event", reqEvent))
 	status := eventQueue.Produce(reqEvent)
 	if !status {
-		zap.L().Warn("Failed to store the event into queue", zap.Any("event", reqEvent))
+		zap.L().Warn("failed to store the event into queue", zap.Any("event", reqEvent))
 	}
 }
 
 // processEvent from the queue
 func processEvent(item interface{}) {
 	request := item.(*rsML.ServiceEvent)
-	zap.L().Debug("Processing an event", zap.Any("event", request))
+	zap.L().Debug("processing an event", zap.Any("event", request))
 	start := time.Now()
 	switch request.Type {
 	case rsML.TypeGateway:

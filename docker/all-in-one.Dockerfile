@@ -37,7 +37,7 @@ COPY --from=builder /app/mycontroller-all-in-one ${APP_HOME}/mycontroller-all-in
 RUN chmod +x ${APP_HOME}/mycontroller-all-in-one
 
 # copy default files
-COPY ./resources/default-all-in-one.yaml ${APP_HOME}/mycontroller.yaml
+COPY ./resources/sample-docker-all-in-one.yaml ${APP_HOME}/mycontroller.yaml
 
 WORKDIR ${APP_HOME}
 

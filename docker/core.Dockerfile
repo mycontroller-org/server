@@ -35,7 +35,7 @@ COPY --from=builder /app/mycontroller-core ${APP_HOME}/mycontroller-core
 RUN chmod +x ${APP_HOME}/mycontroller-core
 
 # copy default files
-COPY ./resources/default-core.yaml ${APP_HOME}/mycontroller.yaml
+COPY ./resources/sample-docker-core.yaml ${APP_HOME}/mycontroller.yaml
 
 WORKDIR ${APP_HOME}
 

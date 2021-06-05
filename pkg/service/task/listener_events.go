@@ -63,7 +63,7 @@ func closeEventListener() error {
 func onEventReceive(busData *busML.BusData) {
 	status := preEventsQueue.Produce(busData)
 	if !status {
-		zap.L().Warn("Failed to store the event into queue", zap.Any("event", busData))
+		zap.L().Warn("failed to store the event into queue", zap.Any("event", busData))
 	}
 }
 
@@ -73,7 +73,7 @@ func processPreEvent(item interface{}) {
 	event := &eventML.Event{}
 	err := busData.LoadData(event)
 	if err != nil {
-		zap.L().Warn("Error on convet to target type", zap.Any("topic", busData.Topic), zap.Error(err))
+		zap.L().Warn("error on convet to target type", zap.Any("topic", busData.Topic), zap.Error(err))
 		return
 	}
 
@@ -108,7 +108,7 @@ func processPreEvent(item interface{}) {
 	resourceWrapper := &eventWrapper{Event: event}
 	err = resourcePreProcessor(resourceWrapper)
 	if err != nil {
-		zap.L().Error("Error on executing a resource", zap.Any("resource", resourceWrapper), zap.Error(err))
+		zap.L().Error("error on executing a resource", zap.Any("resource", resourceWrapper), zap.Error(err))
 		return
 	}
 

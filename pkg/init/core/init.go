@@ -101,14 +101,14 @@ func closeServices() {
 	if stg.SVC != nil {
 		err := stg.SVC.Close()
 		if err != nil {
-			zap.L().Error("Failed to close storage database")
+			zap.L().Error("failed to close storage database")
 		}
 	}
 	if mts.SVC != nil {
 		if mts.SVC != nil {
 			err := mts.SVC.Close()
 			if err != nil {
-				zap.L().Error("Failed to close metrics database")
+				zap.L().Error("failed to close metrics database")
 			}
 		}
 	}

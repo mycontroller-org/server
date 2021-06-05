@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"github.com/mycontroller-org/backend/v2/plugin/storage/memory"
 	"github.com/mycontroller-org/backend/v2/plugin/storage/mongodb"
 	"go.uber.org/zap"
@@ -12,7 +12,7 @@ import (
 
 // storage service
 var (
-	SVC stgml.Client
+	SVC stgML.Client
 )
 
 // Init storage service
@@ -20,7 +20,7 @@ func Init(importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error
 	// Get storage and metric database config
 	storageCfg, err := getDatabaseConfig(cfg.CFG.Database.Storage)
 	if err != nil {
-		zap.L().Fatal("Problem with storage database config", zap.String("name", cfg.CFG.Database.Storage), zap.Error(err))
+		zap.L().Fatal("problem with storage database config", zap.String("name", cfg.CFG.Database.Storage), zap.Error(err))
 	}
 
 	// include logger details
@@ -30,7 +30,7 @@ func Init(importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error
 	dbType, available := storageCfg["type"]
 	if available {
 		switch dbType {
-		case stgml.TypeMemory:
+		case stgML.TypeMemory:
 			client, err := memory.NewClient(storageCfg)
 			if err != nil {
 				zap.L().Fatal("error on storage database initialization", zap.Error(err), zap.String("database", cfg.CFG.Database.Storage))
@@ -42,7 +42,7 @@ func Init(importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error
 				zap.L().Fatal("error on run local import on memory database", zap.Error(err), zap.String("database", cfg.CFG.Database.Storage))
 			}
 
-		case stgml.TypeMongoDB:
+		case stgML.TypeMongoDB:
 			client, err := mongodb.NewClient(storageCfg)
 			if err != nil {
 				zap.L().Fatal("error on storage database initialization", zap.Error(err), zap.String("database", cfg.CFG.Database.Storage))
@@ -50,7 +50,7 @@ func Init(importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error
 			SVC = client
 
 		default:
-			zap.L().Fatal("Specified database type not implemented", zap.Any("type", dbType), zap.String("database", cfg.CFG.Database.Storage))
+			zap.L().Fatal("specified database type not implemented", zap.Any("type", dbType), zap.String("database", cfg.CFG.Database.Storage))
 		}
 		return
 	}
@@ -64,5 +64,5 @@ func getDatabaseConfig(name string) (map[string]interface{}, error) {
 			return d, nil
 		}
 	}
-	return nil, errors.New("Config not found")
+	return nil, errors.New("config not found")
 }

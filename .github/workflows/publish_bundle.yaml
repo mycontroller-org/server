@@ -1,0 +1,58 @@
+name: publish snapshot bundles
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  setup:
+    name: setup os
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout backend repository
+      uses: actions/checkout@v2
+
+    - uses: actions/setup-go@v2
+      with:
+        go-version: ^1.16  
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: setup web console repository
+      run: ./scripts/setup_ui.sh
+    
+    - name: cache node modules
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+    
+    - name: build web console
+      run: ./scripts/build_ui.sh
+
+    - name: Cache go modules
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: build bundles
+      run: ./scripts/generate_bundles.sh
+
+    - name: copy bundles to the remote system
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.MYC_SERVER_ADDRESS }}
+        username: ${{ secrets.MYC_SERVER_USER }}
+        key: ${{ secrets.MYC_SERVER_KEY }}
+        passphrase: ${{ secrets.MYC_SERVER_PASSPHRASE }}
+        source: "builds/*.tar.gz"
+        target: "github/v2/snapshot"

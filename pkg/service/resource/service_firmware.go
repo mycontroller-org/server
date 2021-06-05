@@ -6,26 +6,26 @@ import (
 	firmwareAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
-	rsModel "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 
-func firmwareService(reqEvent *rsModel.ServiceEvent) error {
-	resEvent := &rsModel.ServiceEvent{
+func firmwareService(reqEvent *rsML.ServiceEvent) error {
+	resEvent := &rsML.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
 
 	switch reqEvent.Command {
-	case rsModel.CommandGet:
+	case rsML.CommandGet:
 		data, err := getFirmware(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
-	case rsModel.CommandBlocks:
+	case rsML.CommandBlocks:
 		sendFirmwareBlocks(reqEvent)
 		return nil
 
@@ -35,7 +35,7 @@ func firmwareService(reqEvent *rsModel.ServiceEvent) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getFirmware(request *rsModel.ServiceEvent) (interface{}, error) {
+func getFirmware(request *rsML.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
 		cfg, err := firmwareAPI.GetByID(request.ID)
 		if err != nil {
@@ -53,7 +53,7 @@ func getFirmware(request *rsModel.ServiceEvent) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func sendFirmwareBlocks(reqEvent *rsModel.ServiceEvent) {
+func sendFirmwareBlocks(reqEvent *rsML.ServiceEvent) {
 	if reqEvent.ID == "" || reqEvent.ReplyTopic == "" {
 		return
 	}
@@ -98,9 +98,9 @@ func sendFirmwareBlocks(reqEvent *rsModel.ServiceEvent) {
 }
 
 func postFirmwareBlock(replyTopic, id string, bytes []byte, blockNumber, totalBytes int, isFinal bool) error {
-	resEvent := &rsModel.ServiceEvent{
-		Type:    rsModel.TypeFirmware,
-		Command: rsModel.CommandBlocks,
+	resEvent := &rsML.ServiceEvent{
+		Type:    rsML.TypeFirmware,
+		Command: rsML.CommandBlocks,
 		ID:      id,
 	}
 

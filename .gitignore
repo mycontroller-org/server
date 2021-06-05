@@ -1,7 +1,7 @@
 # ignore configurations files other than the template(config.yaml)
 /resources/*
-!/resources/config.yaml
-!/resources/default*.yaml
+!/resources/control-scripts
+!/resources/sample*.yaml
 /scripts/push_bin.sh
 binaries/*
 builds/*
