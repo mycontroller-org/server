@@ -6,7 +6,6 @@ on:
 
 jobs:
   setup:
-    name: setup os
     runs-on: ubuntu-latest
 
     steps:
