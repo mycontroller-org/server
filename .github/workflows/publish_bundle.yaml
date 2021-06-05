@@ -46,6 +46,11 @@ jobs:
     - name: build bundles
       run: ./scripts/generate_bundles.sh
 
+    - name: build bundles
+      run: |
+        echo `date -u +'%Y%m%d%H%M%S'` > builds/timestamp.txt  
+        echo `date -u +'%Y-%m-%dT%H:%M:%S%:z'` >> builds/timestamp.txt
+
     - name: copy bundles to the remote system
       uses: appleboy/scp-action@master
       with:
@@ -53,5 +58,7 @@ jobs:
         username: ${{ secrets.MYC_SERVER_USER }}
         key: ${{ secrets.MYC_SERVER_KEY }}
         passphrase: ${{ secrets.MYC_SERVER_PASSPHRASE }}
-        source: "builds/*.tar.gz"
-        target: "github/v2/snapshot"
+        source: "builds/*.tar.gz,builds/timestamp.txt"
+        target: "github/v2/master"
+        rm: true
+        strip_components: 1
