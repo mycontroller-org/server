@@ -30,7 +30,7 @@ func ReloadSystemJobs() {
 	// update analytics job
 	unschedule(idAnalyticsJob)
 	if configSVC.CFG.Analytics.Enabled {
-		schedule(idAnalyticsJob, "0  * * * * *", analyticsAPI.ReportAnalyticsData) // everyday at 1:10 AM
+		schedule(idAnalyticsJob, "0 15 1 * * *", analyticsAPI.ReportAnalyticsData) // everyday at 1:15 AM
 	}
 
 }
