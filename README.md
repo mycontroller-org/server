@@ -3,26 +3,26 @@
 ![publish container images](https://github.com/mycontroller-org/backend/actions/workflows/publish_container_images.yaml/badge.svg)
 ![publish executables](https://github.com/mycontroller-org/backend/actions/workflows/publish_executables.yaml/badge.svg)
 
-MyController 2.0 is in the alpha phase.
-
-**WARNING:** 
-Changes will be expected on each commit.
-At this moment this version is not ready for the production environment.
-You can give it a try in a non-production environment and report back the issues.
+MyController is an IoT automation controller for home, office, or any other place.
+* **Privacy first** - You can run the complete setup in your local environment.
+* **Lightweight** - Designed to run with limited resources.<br> You can run on the first generation Raspberry Pi. Works with `50MB` of Memory.
 
 ## Demo
 * https://demo-v2.mycontroller.org
 * default username and password to login: `admin` / `admin`
 
 ## Documentation
+* [Website](https://v2.mycontroller.org)
 * [Overview](https://v2.mycontroller.org/docs/overview/)
 * [Quick Installation](https://v2.mycontroller.org/docs/quick-installation/)
 
 ## Download
 ### Container images
-Both released and master container images are available in the following locations, `master` branch images are tagged as `:master`
-  * [docker hub](https://hub.docker.com/u/mycontroller)
-  * [quay.io](https://quay.io/organization/mycontroller)
+`master` branch images are tagged as `:master`<br>
+Both released and master branch container images are published in to the following registries,
+  * [Docker Hub](https://hub.docker.com/u/mycontroller)
+  * [Quay.io](https://quay.io/organization/mycontroller)
 
-### Executable bundles
-`master` branch builds are in https://download.mycontroller.org/v2/master/
+### Executables
+* [Released versions](https://github.com/mycontroller-org/backend/releases)
+* [Pre Release](https://download.mycontroller.org/v2/master/) - `master` branch executables
