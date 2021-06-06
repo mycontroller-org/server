@@ -16,7 +16,7 @@ var (
 type Scheduler struct {
 	cron      *cron.Cron
 	functions map[string]int
-	mutex     sync.RWMutex
+	mutex     *sync.RWMutex
 }
 
 // Close scheduler
@@ -33,6 +33,7 @@ func Init() {
 		SVC = &Scheduler{
 			cron:      cron.New(cron.WithSeconds()),
 			functions: map[string]int{},
+			mutex:     &sync.RWMutex{},
 		}
 		SVC.Start()
 	}

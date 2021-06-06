@@ -2,6 +2,7 @@ package esphome
 
 import (
 	"fmt"
+	"sync"
 
 	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
@@ -50,8 +51,8 @@ func Init(gatewayCfg *gwML.Config) (*Provider, error) {
 	provider := &Provider{
 		Config:        cfg,
 		GatewayConfig: gatewayCfg,
-		clientStore:   &ClientStore{nodes: make(map[string]*ESPHomeNode)},
-		entityStore:   &EntityStore{nodes: make(map[string]map[uint32]Entity)},
+		clientStore:   &ClientStore{nodes: make(map[string]*ESPHomeNode), mutex: &sync.RWMutex{}},
+		entityStore:   &EntityStore{nodes: make(map[string]map[uint32]Entity), mutex: &sync.RWMutex{}},
 		rxMessageFunc: nil,
 	}
 	zap.L().Debug("Config details", zap.Any("received", gatewayCfg.Provider), zap.Any("converted", cfg))

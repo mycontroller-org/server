@@ -7,7 +7,7 @@ import (
 // EntityStore keeps all the esphome node available entities with key and sourceID
 type EntityStore struct {
 	nodes map[string]map[uint32]Entity
-	mutex sync.RWMutex
+	mutex *sync.RWMutex
 }
 
 // AddEntity adds a entity to the store

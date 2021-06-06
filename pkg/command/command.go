@@ -12,7 +12,7 @@ import (
 
 var (
 	store = make(map[string]*Command)
-	mutex = sync.RWMutex{}
+	mutex = &sync.RWMutex{}
 )
 
 // command exit types

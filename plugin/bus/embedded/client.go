@@ -16,7 +16,7 @@ type Client struct {
 	topics              map[string][]int64
 	subscriptions       map[int64]busml.CallBackFunc
 	subscriptionCounter int64
-	mutex               sync.RWMutex
+	mutex               *sync.RWMutex
 }
 
 // Init func
@@ -25,6 +25,7 @@ func Init() (busml.Client, error) {
 		topics:              make(map[string][]int64),
 		subscriptions:       make(map[int64]busml.CallBackFunc),
 		subscriptionCounter: 0,
+		mutex:               &sync.RWMutex{},
 	}
 	return client, nil
 }

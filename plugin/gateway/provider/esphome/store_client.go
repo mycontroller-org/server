@@ -10,7 +10,7 @@ import (
 type ClientStore struct {
 	GatewayID string
 	nodes     map[string]*ESPHomeNode
-	mutex     sync.RWMutex
+	mutex     *sync.RWMutex
 }
 
 // AddNode adds a esphome node to the store

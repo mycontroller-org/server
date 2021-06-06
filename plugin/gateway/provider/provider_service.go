@@ -42,7 +42,7 @@ type Service struct {
 	topicPostToCore                   string
 	topicListenFromCoreSubscriptionID int64
 	sleepingMessageQueue              map[string][]*msgML.Message
-	mutex                             sync.RWMutex
+	mutex                             *sync.RWMutex
 	ctx                               context.Context
 }
 
@@ -98,6 +98,7 @@ func GetService(gatewayCfg *gwML.Config) (*Service, error) {
 		GatewayConfig: gatewayCfg,
 		provider:      provider,
 		ctx:           context.TODO(),
+		mutex:         &sync.RWMutex{},
 	}
 	return service, nil
 }

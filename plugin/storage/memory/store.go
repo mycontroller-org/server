@@ -36,7 +36,7 @@ type Config struct {
 
 // Store to keep all the entities
 type Store struct {
-	RWMutex  sync.RWMutex
+	RWMutex  *sync.RWMutex
 	Config   Config
 	data     map[string][]interface{} // entities map with entity name
 	lastSync time.Time
@@ -68,6 +68,7 @@ func NewClient(config map[string]interface{}) (*Store, error) {
 		Config:   cfg,
 		data:     make(map[string][]interface{}),
 		lastSync: time.Now(),
+		RWMutex:  &sync.RWMutex{},
 	}
 
 	return store, nil

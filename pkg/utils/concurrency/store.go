@@ -8,12 +8,15 @@ import (
 type Store struct {
 	Name  string
 	data  map[string]interface{}
-	mutex sync.RWMutex
+	mutex *sync.RWMutex
 }
 
 // NewStore returns brandnew store
 func NewStore() *Store {
-	return &Store{data: make(map[string]interface{})}
+	return &Store{
+		data:  make(map[string]interface{}),
+		mutex: &sync.RWMutex{},
+	}
 }
 
 // Add a value to the store

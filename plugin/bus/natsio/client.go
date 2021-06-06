@@ -43,7 +43,7 @@ type Client struct {
 	topics              map[string][]int64
 	subscriptions       map[int64]*nats.Subscription
 	subscriptionCounter int64
-	mutex               sync.RWMutex
+	mutex               *sync.RWMutex
 	config              *Config
 }
 
@@ -111,6 +111,7 @@ func Init(config cmap.CustomMap) (busPlugin.Client, error) {
 		subscriptions:       make(map[int64]*nats.Subscription),
 		subscriptionCounter: 0,
 		config:              cfg,
+		mutex:               &sync.RWMutex{},
 	}
 	return &client, nil
 }
