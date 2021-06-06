@@ -3,6 +3,9 @@
 # this script used to generate binary files
 # should be executed from the root locations of the repository
 
+
+source ./scripts/version.sh
+
 BUILD_DIR=builds
 BINARY_DIR=binary
 # clean builds directory
@@ -11,15 +14,6 @@ rm ${BUILD_DIR}/* -rf
 
 # create directories
 mkdir -p ${BUILD_DIR}/${BINARY_DIR}
-
-BUILD_DATE=`date -u +'%Y-%m-%dT%H:%M:%S%:z'`
-GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`
-GIT_SHA=`git rev-parse HEAD`
-GIT_SHA_SHORT=`git rev-parse --short HEAD`
-VERSION_PKG="github.com/mycontroller-org/backend/v2/pkg/version"
-
-LD_FLAGS="-X $VERSION_PKG.version=$GIT_BRANCH -X $VERSION_PKG.buildDate=$BUILD_DATE -X $VERSION_PKG.gitCommit=$GIT_SHA"
-
 
 # generate UI builds
 if [ "${BUILD_UI}" = true ] ; then
@@ -91,8 +85,8 @@ do
     FILE_EXTENSION='.exe'
   fi
 
-  package mycontroller-all-in-one-${GIT_BRANCH}-${GOOS}-${GOARCH} "all-in-one" ${package_all_in_one} ${FILE_EXTENSION}
-  package mycontroller-core-${GIT_BRANCH}-${GOOS}-${GOARCH} "core" ${package_core} ${FILE_EXTENSION}
-  package mycontroller-gateway-${GIT_BRANCH}-${GOOS}-${GOARCH} "gateway" ${package_gateway} ${FILE_EXTENSION}
+  package mycontroller-all-in-one-${VERSION}-${GOOS}-${GOARCH} "all-in-one" ${package_all_in_one} ${FILE_EXTENSION}
+  package mycontroller-core-${VERSION}-${GOOS}-${GOARCH} "core" ${package_core} ${FILE_EXTENSION}
+  package mycontroller-gateway-${VERSION}-${GOOS}-${GOARCH} "gateway" ${package_gateway} ${FILE_EXTENSION}
 done
 

@@ -1,8 +1,10 @@
-name: Publish images
+name: publish container images
 
 on:
   push:
     branches: [ master ]
+    tags:
+      - '*'
 
 jobs:
   setup:
@@ -39,7 +41,7 @@ jobs:
         password: ${{ secrets.QUAY_TOKEN }}
 
     - name: Setup Web UI Repository
-      run: ./scripts/setup_ui.sh
+      run: ./scripts/setup_web_console.sh
     
     - name: Cache node modules
       uses: actions/cache@v2
@@ -51,7 +53,7 @@ jobs:
         key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
     
     - name: Build Web UI Repository
-      run: ./scripts/build_ui.sh
+      run: ./scripts/build_web_console.sh
 
     - name: Cache go modules
       uses: actions/cache@v2
@@ -64,4 +66,4 @@ jobs:
     - name: Build container and push - ${{ matrix.container_image }}
       env:
         TARGET_BUILD: ${{ matrix.container_image }}
-      run: ./scripts/build.sh
+      run: ./scripts/publish_container_images.sh
