@@ -2,9 +2,8 @@ name: publish container images
 
 on:
   push:
-    branches: [ master ]
-    tags:
-      - '*'
+    branches: [master]
+    tags: ["*"]
 
 jobs:
   setup:
@@ -15,55 +14,55 @@ jobs:
         container_image: ["all-in-one", "core", "gateway"]
 
     steps:
-    - name: backend repository
-      uses: actions/checkout@v2
+      - name: backend repository
+        uses: actions/checkout@v2
 
-    - uses: actions/setup-go@v2
-      with:
-        go-version: ^1.16  
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ^1.16
 
-    # - uses: docker/setup-qemu-action@v1
-    - uses: docker/setup-buildx-action@v1
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '14'
+      # - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
 
-    - name: Login in to docker registry
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_TOKEN }}
-    - name: Login in to quay.io registry
-      uses: docker/login-action@v1
-      with:
-        registry: quay.io
-        username: ${{ secrets.QUAY_USERNAME }}
-        password: ${{ secrets.QUAY_TOKEN }}
+      - name: Login in to docker registry
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Login in to quay.io registry
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_TOKEN }}
 
-    - name: Setup Web UI Repository
-      run: ./scripts/setup_web_console.sh
-    
-    - name: Cache node modules
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-node-modules
-      with:
-        path: |
-          **/node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-    
-    - name: Build Web UI Repository
-      run: ./scripts/build_web_console.sh
+      - name: Setup Web UI Repository
+        run: ./scripts/setup_web_console.sh
 
-    - name: Cache go modules
-      uses: actions/cache@v2
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
 
-    - name: Build container and push - ${{ matrix.container_image }}
-      env:
-        TARGET_BUILD: ${{ matrix.container_image }}
-      run: ./scripts/publish_container_images.sh
+      - name: Build Web UI Repository
+        run: ./scripts/build_web_console.sh
+
+      - name: Cache go modules
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Build container and push - ${{ matrix.container_image }}
+        env:
+          TARGET_BUILD: ${{ matrix.container_image }}
+        run: ./scripts/publish_container_images.sh
