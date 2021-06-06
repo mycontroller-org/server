@@ -84,9 +84,9 @@ func UpdateProfile(userData *userML.UserProfileUpdate) error {
 		return err
 	}
 
-	if user.Username != userData.Username {
-		return errors.New("username not matching")
-	}
+	// if user.Username != userData.Username {
+	// 	return errors.New("username not matching")
+	// }
 
 	if userData.CurrentPassword == "" || !hashed.IsValidPassword(user.Password, userData.CurrentPassword) {
 		return errors.New("invalid current password")
