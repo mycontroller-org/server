@@ -11,9 +11,9 @@ RUN go mod download -x
 ARG TARGETOS
 ARG TARGETARCH
 ENV TARGET_BUILD="all-in-one"
-RUN scripts/generate_binary.sh
+RUN scripts/build_binary.sh
 
-FROM alpine:3.12.4
+FROM alpine:3.13
 
 LABEL maintainer="Jeeva Kandasamy <jkandasa@gmail.com>"
 
