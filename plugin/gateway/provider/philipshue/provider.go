@@ -16,7 +16,7 @@ const (
 	schedulePrefix            = "philipshue_status"
 	scheduleFormatSync        = "%s_sync"
 	scheduleFormatBridge      = "%s_bridge"
-	defaultSyncInterval       = "30m"
+	defaultSyncInterval       = "15m"
 	defaultBridgeSyncInterval = "10m"
 )
 
@@ -48,6 +48,9 @@ func Init(gatewayCfg *gwML.Config) (*Provider, error) {
 		zap.L().Debug("invalid sync interval supplied. set to default", zap.String("input", cfg.SyncInterval), zap.String("default", defaultSyncInterval))
 		cfg.SyncInterval = defaultSyncInterval
 	}
+
+	// using sync insterval for bridge sync too
+	cfg.BridgeSyncInterval = cfg.SyncInterval
 
 	_, err = time.ParseDuration(cfg.BridgeSyncInterval)
 	if err != nil {

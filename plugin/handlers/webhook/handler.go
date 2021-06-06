@@ -29,7 +29,7 @@ type Config struct {
 	Headers            map[string]string
 	QueryParameters    map[string]interface{}
 	ResponseCode       int
-	AllowOverride      bool
+	AllowOverwrite     bool
 }
 
 // Clone config data
@@ -41,7 +41,7 @@ func (cfg *Config) Clone() *Config {
 		Method:             cfg.Method,
 		QueryParameters:    make(map[string]interface{}),
 		Headers:            make(map[string]string),
-		AllowOverride:      cfg.AllowOverride,
+		AllowOverwrite:     cfg.AllowOverwrite,
 	}
 
 	// update query parameters
@@ -138,7 +138,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 		}
 
 		// overide basic config, if any
-		if config.AllowOverride {
+		if config.AllowOverwrite {
 			if webhookData.Server != "" {
 				config.Server = webhookData.Server
 			}
