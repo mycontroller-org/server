@@ -219,3 +219,20 @@ func update(settings *settingsML.Settings) error {
 	settings.ModifiedOn = time.Now()
 	return stg.SVC.Upsert(ml.EntitySettings, settings, filters)
 }
+
+// GetAnalytics returns analytics data
+func GetAnalytics() (*settingsML.AnalyticsConfig, error) {
+	settings, err := GetByID(settingsML.KeyAnalytics)
+	if err != nil {
+		return nil, err
+	}
+
+	// convert spec to analytics data
+	analyticsData := &settingsML.AnalyticsConfig{}
+	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, analyticsData)
+	if err != nil {
+		return nil, err
+	}
+
+	return analyticsData, nil
+}

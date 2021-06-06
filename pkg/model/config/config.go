@@ -9,10 +9,11 @@ const (
 
 // Config of the system
 type Config struct {
-	Web         WebConfig                `yaml:"web"`
-	Directories Directories              `yaml:"directories"`
-	Logger      LoggerConfig             `yaml:"logger"`
 	Secret      string                   `yaml:"secret"` // secret used to encrypt sensitive data
+	Analytics   AnalyticsConfig          `yaml:"analytics"`
+	Web         WebConfig                `yaml:"web"`
+	Logger      LoggerConfig             `yaml:"logger"`
+	Directories Directories              `yaml:"directories"`
 	Bus         cmap.CustomMap           `yaml:"bus"`
 	Gateway     cmap.CustomMap           `yaml:"gateway"`
 	Handler     cmap.CustomMap           `yaml:"handler"`
@@ -29,6 +30,11 @@ type WebConfig struct {
 	Http             HttpConfig      `yaml:"http"`
 	HttpsSSL         HttpsSSLConfig  `yaml:"https_ssl"`
 	HttpsACME        HttpsACMEConfig `yaml:"https_acme"`
+}
+
+// AnalyticsConfig input
+type AnalyticsConfig struct {
+	Enabled bool `yaml:"enabled"`
 }
 
 // HttpConfig struct

@@ -1,5 +1,8 @@
 secret: 5a2f6ff25b0025aeae12ae096363b51a # !!! WARNING: CHANGE THIS SECRET !!!
 
+analytics:
+  enabled: true 
+
 web:
   web_directory: web_console
   enable_profiling: false

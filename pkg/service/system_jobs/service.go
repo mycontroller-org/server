@@ -3,7 +3,9 @@ package systemjobs
 import (
 	"fmt"
 
+	analyticsAPI "github.com/mycontroller-org/backend/v2/pkg/analytics"
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
+	configSVC "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	coreScheduler "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
 
 	"go.uber.org/zap"
@@ -12,6 +14,7 @@ import (
 const (
 	systemJobPrefix = "system_job"
 	idSunrise       = "sunrise"
+	idAnalyticsJob  = "analytics_job"
 )
 
 // ReloadSystemJobs func
@@ -23,6 +26,12 @@ func ReloadSystemJobs() {
 
 	// update sunrise job
 	schedule(idSunrise, jobs.Sunrise, updateSunriseSchedules)
+
+	// update analytics job
+	unschedule(idAnalyticsJob)
+	if configSVC.CFG.Analytics.Enabled {
+		schedule(idAnalyticsJob, "0  * * * * *", analyticsAPI.ReportAnalyticsData) // everyday at 1:10 AM
+	}
 
 }
 

@@ -12,6 +12,7 @@ const (
 	KeySystemJobs            = "system_jobs"
 	KeySystemBackupLocations = "system_backup_locations"
 	KeyVersion               = "version"
+	KeyAnalytics             = "analytics"
 )
 
 // Settings struct
@@ -61,4 +62,9 @@ type BackupLocation struct {
 	Name   string         `json:"name"`
 	Type   string         `json:"type"`
 	Config cmap.CustomMap `json:"config"`
+}
+
+// AnalyticsConfig keeps data
+type AnalyticsConfig struct {
+	AnonymousID string `json:"anonymousId"`
 }
