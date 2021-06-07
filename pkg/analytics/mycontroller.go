@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	ANALYTICS_ID  = "MC-198501010915"
+	ANALYTICS_ID  = "MC198501010915"
 	ANALYTICS_URL = "https://analytics.mycontroller.org/event"
 	API_VERSION   = "1"
 )
