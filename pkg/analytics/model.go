@@ -21,6 +21,7 @@ type Application struct {
 	Handlers          []string `json:"handlers"`
 }
 
+// Location details
 type Location struct {
 	City    string `json:"city"`
 	Region  string `json:"region"`

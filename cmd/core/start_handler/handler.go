@@ -7,7 +7,6 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/mycontroller-org/backend/v2/cmd/core/app/handler"
 	"github.com/mycontroller-org/backend/v2/cmd/core/https"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 )
@@ -18,17 +17,12 @@ const (
 	LoggerPrefixACME = "HTTPS/ACME"
 )
 
-func StartHandler() {
+func StartHandler(handler http.Handler) {
 	loggerCfg := cfg.CFG.Logger
 	webCfg := cfg.CFG.Web
 
 	if !webCfg.Http.Enabled && !webCfg.HttpsSSL.Enabled && !webCfg.HttpsACME.Enabled {
 		zap.L().Fatal("web services are disabled. Enable at least a service HTTP, HTTPS/SSL or HTTPS/ACME")
-	}
-
-	handler, err := handler.GetHandler()
-	if err != nil {
-		zap.L().Fatal("Error on getting handler", zap.Error(err))
 	}
 
 	zap.L().Info("web console direcory location", zap.String("web_directory", webCfg.WebDirectory))
@@ -46,7 +40,7 @@ func StartHandler() {
 				ErrorLog: log.New(getLogger(LoggerPrefixHTTP, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
 			}
 
-			err = server.ListenAndServe()
+			err := server.ListenAndServe()
 			if err != nil {
 				zap.L().Error("Error on starting http handler", zap.Error(err))
 				errs <- err
@@ -111,6 +105,6 @@ func StartHandler() {
 	}
 
 	// This will run forever until channel receives error
-	err = <-errs
+	err := <-errs
 	zap.L().Fatal("Error on starting a handler service", zap.Error(err))
 }
