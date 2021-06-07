@@ -1,19 +1,19 @@
 package settings
 
 import (
-	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"go.uber.org/zap"
 )
 
 const geoLocationURL = "https://ipinfo.io/json"
 
-type geoLocationAPIResponse struct {
+type GeoLocationAPIResponse struct {
 	IP       string `json:"ip"`
 	City     string `json:"city"`
 	Region   string `json:"region"`
@@ -22,6 +22,29 @@ type geoLocationAPIResponse struct {
 	Org      string `json:"org"`
 	Postal   string `json:"postal"`
 	Timezone string `json:"timezone"`
+}
+
+func GetLocation() (*GeoLocationAPIResponse, error) {
+	response, err := http.Get(geoLocationURL)
+	if response != nil {
+		defer response.Body.Close()
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var geoData GeoLocationAPIResponse
+	err = json.Unmarshal(body, &geoData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &geoData, nil
 }
 
 // AutoUpdateSystemGEOLocation updates system location based on the ip
@@ -35,21 +58,8 @@ func AutoUpdateSystemGEOLocation() error {
 	if !location.AutoUpdate {
 		return nil
 	}
-	response, err := http.Get(geoLocationURL)
-	if response != nil {
-		defer response.Body.Close()
-	}
-	if err != nil {
-		return err
-	}
 
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return err
-	}
-
-	var geoData geoLocationAPIResponse
-	err = json.Unmarshal(body, &geoData)
+	geoData, err := GetLocation()
 	if err != nil {
 		return err
 	}

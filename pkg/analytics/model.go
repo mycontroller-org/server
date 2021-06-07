@@ -6,6 +6,7 @@ type Payload struct {
 	AnalyticsID string      `json:"analyticsId"`
 	UserID      string      `json:"userId"`
 	Application Application `json:"application"`
+	Location    Location    `json:"location"`
 }
 
 // Application details
@@ -18,4 +19,10 @@ type Application struct {
 	IsRunningInDocker bool     `json:"isRunningInDocker"`
 	Gateways          []string `json:"gateways"`
 	Handlers          []string `json:"handlers"`
+}
+
+type Location struct {
+	City    string `json:"city"`
+	Region  string `json:"region"`
+	Country string `json:"country"`
 }

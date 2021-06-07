@@ -56,6 +56,18 @@ func ReportAnalyticsData() {
 		},
 	}
 
+	// include city, region and country details
+	location, err := settingsAPI.GetLocation()
+	if err != nil {
+		zap.L().Debug("error on getting location details", zap.Error(err))
+	} else {
+		payload.Location = Location{
+			City:    location.City,
+			Region:  location.Region,
+			Country: location.Country,
+		}
+	}
+
 	enabledFilter := []storage.Filter{{Key: model.KeyEnabled, Operator: storage.OperatorEqual, Value: "true"}}
 	pagination := &storage.Pagination{Limit: 100, Offset: 0} // gets only the first 100
 
