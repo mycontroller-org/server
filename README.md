@@ -3,9 +3,10 @@
 ![publish container images](https://github.com/mycontroller-org/backend/actions/workflows/publish_container_images.yaml/badge.svg)
 ![publish executables](https://github.com/mycontroller-org/backend/actions/workflows/publish_executables.yaml/badge.svg)
 
-MyController is an IoT automation controller for home, office, or any other place.
-* **Privacy first** - You can run the complete setup in your local environment.
-* **Lightweight** - Designed to run with limited resources.<br> You can run on the first generation Raspberry Pi. Works with `50MB` of Memory.
+MyController is a flexible automation and sensor controller for IoT devices. Whether in the home, at work, or wherever you need it, MyController provides the solution!
+
+* **Privacy focused** - Working locally and not in the cloud means your data stays safely with you.
+* **Lightweight** - runs on both Windows and Linux including Raspberry Pi Zero, 1, 2, 3 and 4. Can run in 50MB of memory and 100MB of disk.
 
 ## Demo
 * https://demo-v2.mycontroller.org
