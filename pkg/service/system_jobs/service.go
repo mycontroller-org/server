@@ -30,6 +30,22 @@ func ReloadSystemJobs() {
 	// update analytics job
 	unschedule(idAnalyticsJob)
 	if configSVC.CFG.Analytics.Enabled {
+		zap.L().Info(`
+#=========================================================================================================#
+#                                   Non-PII data Processing Agreement                                     #
+#                                   ---------------------------------                                     #
+# Analytics enabled in your server, says you agreed that the non-PII data will be collected, processed,   #
+# and used by MyController.org to improve the quality of the software.                                    #
+# (non-PII - non Personally Identifiable Information)                                                     #
+#                                                                                                         #
+# If you do not like to share the non-PII data, you can disable it on the configuration file              #
+# and restart the server                                                                                  #
+#                                                                                                         #
+# file: mycontroller.yaml                                                                                 #
+# analytics:                                                                                              #
+#   enabled: false                                                                                        #
+#=========================================================================================================#
+`)
 		schedule(idAnalyticsJob, "0 15 1 * * *", analyticsAPI.ReportAnalyticsData) // everyday at 1:15 AM
 	}
 
