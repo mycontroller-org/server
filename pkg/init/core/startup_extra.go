@@ -1,7 +1,6 @@
 package core
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/analytics"
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
 	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
 	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
@@ -24,7 +23,6 @@ func StartupJobsExtra() {
 	UpdateInitialUser()
 	UpdateGeoLocation()
 	systemJobs.ReloadSystemJobs()
-	analytics.ReportAnalyticsData()
 }
 
 // UpdateInitialUser func
