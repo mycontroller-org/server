@@ -11,14 +11,14 @@ type Payload struct {
 
 // Application details
 type Application struct {
-	Version           string   `json:"version"`
-	GitCommit         string   `json:"gitCommit"`
-	Platform          string   `json:"platform"`
-	Arch              string   `json:"arch"`
-	GoLang            string   `json:"goLang"`
-	IsRunningInDocker bool     `json:"isRunningInDocker"`
-	Gateways          []string `json:"gateways"`
-	Handlers          []string `json:"handlers"`
+	Version   string   `json:"version"`
+	GitCommit string   `json:"gitCommit"`
+	Platform  string   `json:"platform"`
+	Arch      string   `json:"arch"`
+	GoLang    string   `json:"goLang"`
+	RunningIn string   `json:"runningIn"`
+	Gateways  []string `json:"gateways"`
+	Handlers  []string `json:"handlers"`
 }
 
 // Location details

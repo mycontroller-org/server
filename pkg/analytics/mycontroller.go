@@ -45,14 +45,14 @@ func ReportAnalyticsData() {
 		AnalyticsID: ANALYTICS_ID,
 		UserID:      analytics.AnonymousID,
 		Application: Application{
-			Version:           ver.Version,
-			GitCommit:         ver.GitCommit,
-			Platform:          ver.Platform,
-			Arch:              ver.Arch,
-			GoLang:            ver.GoLang,
-			IsRunningInDocker: version.IsRunningInDockerContainer(),
-			Gateways:          []string{},
-			Handlers:          []string{},
+			Version:   ver.Version,
+			GitCommit: ver.GitCommit,
+			Platform:  ver.Platform,
+			Arch:      ver.Arch,
+			GoLang:    ver.GoLang,
+			RunningIn: version.RunningIn(),
+			Gateways:  []string{},
+			Handlers:  []string{},
 		},
 	}
 
