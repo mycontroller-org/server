@@ -1,6 +1,8 @@
 package action
 
 import (
+	"strings"
+
 	dataRepoAPI "github.com/mycontroller-org/backend/v2/pkg/api/data_repository"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
@@ -14,7 +16,7 @@ func toDataRepository(id, selector, value string) error {
 		return err
 	}
 	if dataRepo.ReadOnly {
-		zap.L().Info("data repository is in readonly state", zap.String("id", id), zap.String("selector", selector), zap.String("value", value))
+		zap.L().Info("update failed: trying update a readonly repository", zap.String("id", id), zap.String("selector", selector), zap.String("value", value))
 		return nil
 	}
 
@@ -23,7 +25,26 @@ func toDataRepository(id, selector, value string) error {
 		return err
 	}
 
-	jsonString, err := sjson.Set(string(dataBytes), selector, value)
+	var finalValue interface{}
+
+	// if the supplied string is a json, convert it to map of interface and add it in to the data repository
+	// convert the value as map interface
+	mapValue := map[string]interface{}{}
+
+	updateValue := value
+	// ugly hack to remove the escaped double quote in json, conversion in template
+	if strings.Contains(value, "&#34;") {
+		updateValue = strings.ReplaceAll(value, "&#34;", "\"")
+	}
+	err = json.Unmarshal([]byte(updateValue), &mapValue)
+	if err != nil {
+		finalValue = value
+	} else {
+		finalValue = mapValue
+	}
+
+	// inject the final value
+	jsonString, err := sjson.Set(string(dataBytes), selector, finalValue)
 	if err != nil {
 		return err
 	}
