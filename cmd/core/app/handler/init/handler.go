@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/mycontroller-org/backend/v2/cmd/core/app/handler"
-	handlerInit "github.com/mycontroller-org/backend/v2/cmd/core/start_handler"
+	"github.com/mycontroller-org/backend/v2/cmd/core/listener"
 	"go.uber.org/zap"
 )
 
@@ -17,7 +17,7 @@ func InitHandler() {
 			zap.L().Fatal("Error on getting handler", zap.Error(err))
 		}
 		HANDLER = httpHandler
-		handlerInit.StartHandler(httpHandler)
+		listener.StartListener(httpHandler)
 		return
 	}
 	zap.L().Info("handler init service is called multiple times")

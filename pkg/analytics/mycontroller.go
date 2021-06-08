@@ -6,7 +6,7 @@ import (
 	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
 	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
-	"github.com/mycontroller-org/backend/v2/pkg/json"
+	statusAPI "github.com/mycontroller-org/backend/v2/pkg/api/status"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
@@ -50,7 +50,8 @@ func ReportAnalyticsData() {
 			Platform:  ver.Platform,
 			Arch:      ver.Arch,
 			GoLang:    ver.GoLang,
-			RunningIn: version.RunningIn(),
+			RunningIn: statusAPI.RunningIn(),
+			Uptime:    statusAPI.Get().Uptime,
 			Gateways:  []string{},
 			Handlers:  []string{},
 		},
@@ -108,16 +109,10 @@ func ReportAnalyticsData() {
 
 	zap.L().Debug("analytics data to be reported", zap.Any("data", payload))
 
-	responseBytes, err := json.Marshal(payload)
-	if err != nil {
-		zap.L().Debug("error on converting to json", zap.Error(err))
-		return
-	}
-
 	// publish the data
 	client := httpclient.GetClient(false)
-	resConfig, responseBody, err := client.Request(ANALYTICS_URL, http.MethodPost, nil, nil, string(responseBytes), http.StatusOK)
+	resConfig, responseBody, err := client.Request(ANALYTICS_URL, http.MethodPost, nil, nil, payload, http.StatusOK)
 	if err != nil {
-		zap.L().Debug("error on sending analytics data", zap.Error(err), zap.String("response", string(responseBody)), zap.Any("responseConfig", resConfig))
+		zap.L().Error("error on sending analytics data", zap.Error(err), zap.String("response", string(responseBody)), zap.Any("responseConfig", resConfig))
 	}
 }

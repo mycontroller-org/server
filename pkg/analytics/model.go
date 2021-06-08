@@ -17,6 +17,7 @@ type Application struct {
 	Arch      string   `json:"arch"`
 	GoLang    string   `json:"goLang"`
 	RunningIn string   `json:"runningIn"`
+	Uptime    uint64   `json:"uptime"`
 	Gateways  []string `json:"gateways"`
 	Handlers  []string `json:"handlers"`
 }

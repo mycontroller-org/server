@@ -236,3 +236,20 @@ func GetAnalytics() (*settingsML.AnalyticsConfig, error) {
 
 	return analyticsData, nil
 }
+
+// GetSystemSettings returns system settings data
+func GetSystemSettings() (*settingsML.SystemSettings, error) {
+	settings, err := GetByID(settingsML.KeySystemSettings)
+	if err != nil {
+		return nil, err
+	}
+
+	// convert spec to analytics data
+	systemSettings := &settingsML.SystemSettings{}
+	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, systemSettings)
+	if err != nil {
+		return nil, err
+	}
+
+	return systemSettings, nil
+}

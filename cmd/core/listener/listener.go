@@ -1,4 +1,4 @@
-package mainhandler
+package listener
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ const (
 	LoggerPrefixACME = "HTTPS/ACME"
 )
 
-func StartHandler(handler http.Handler) {
+func StartListener(handler http.Handler) {
 	loggerCfg := cfg.CFG.Logger
 	webCfg := cfg.CFG.Web
 
