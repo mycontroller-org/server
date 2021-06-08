@@ -29,18 +29,23 @@ func toDataRepository(id, selector, value string) error {
 
 	// if the supplied string is a json, convert it to map of interface and add it in to the data repository
 	// convert the value as map interface
-	mapValue := map[string]interface{}{}
+	var valueObject interface{}
+	if strings.HasPrefix(value, "[") { // it is an array of objects
+		valueObject = make([]interface{}, 0)
+	} else {
+		valueObject = make(map[string]interface{})
+	}
 
 	updateValue := value
 	// ugly hack to remove the escaped double quote in json, conversion in template
 	if strings.Contains(value, "&#34;") {
 		updateValue = strings.ReplaceAll(value, "&#34;", "\"")
 	}
-	err = json.Unmarshal([]byte(updateValue), &mapValue)
+	err = json.Unmarshal([]byte(updateValue), &valueObject)
 	if err != nil {
 		finalValue = value
 	} else {
-		finalValue = mapValue
+		finalValue = valueObject
 	}
 
 	// inject the final value
