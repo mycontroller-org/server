@@ -22,6 +22,8 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 
+	httpclient "github.com/mycontroller-org/backend/v2/pkg/utils/http_client_json"
+
 	cloneUtil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	quickIdUL "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
@@ -77,24 +79,64 @@ func getEntity(name, stringValue string) interface{} {
 	}
 
 	// process only for resource type data
-	if !strings.HasPrefix(genericData.Type, handlerML.DataTypeResource) {
+	if !strings.HasPrefix(genericData.Type, handlerML.DataTypeResource) &&
+		genericData.Type != handlerML.DataTypeWebhook {
 		return stringValue
 	}
 
-	rsData := handlerML.ResourceData{}
-	err = UnmarshalBase64Yaml(genericData.Data, &rsData)
-	if err != nil {
-		zap.L().Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
-		return err.Error()
-	}
+	// calls webhook and loads the response as is
+	if genericData.Type == handlerML.DataTypeWebhook {
+		webhookCfg := handlerML.WebhookData{}
+		err = UnmarshalBase64Yaml(genericData.Data, &webhookCfg)
+		if err != nil {
+			zap.L().Error("error on loading webhook data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
+			return err.Error()
+		}
+		return getWebhookData(name, &webhookCfg)
 
-	if rsData.QuickID != "" {
-		return getByQuickID(name, &rsData)
-	} else if rsData.ResourceType != "" && len(rsData.Labels) > 0 {
-		return getByLabels(name, &rsData)
+	} else {
+		rsData := handlerML.ResourceData{}
+		err = UnmarshalBase64Yaml(genericData.Data, &rsData)
+		if err != nil {
+			zap.L().Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
+			return err.Error()
+		}
+
+		if rsData.QuickID != "" {
+			return getByQuickID(name, &rsData)
+		} else if rsData.ResourceType != "" && len(rsData.Labels) > 0 {
+			return getByLabels(name, &rsData)
+		}
 	}
 
 	return stringValue
+}
+
+func getWebhookData(name string, whCfg *handlerML.WebhookData) interface{} {
+	client := httpclient.GetClient(whCfg.InsecureSkipVerify)
+
+	if whCfg.Method == "" {
+		whCfg.Method = http.MethodGet
+	}
+
+	res, resBody, err := client.Request(whCfg.Server, whCfg.Method, whCfg.Headers, whCfg.QueryParameters, whCfg.Data, whCfg.ResponseCode)
+	responseStatusCode := 0
+	if res != nil {
+		responseStatusCode = res.StatusCode
+	}
+	if err != nil {
+		zap.L().Error("error on executing webhook", zap.Error(err), zap.String("variableName", name), zap.String("server", whCfg.Server), zap.Int("responseStatusCode", responseStatusCode))
+		return nil
+	}
+
+	resultMap := make(map[string]interface{})
+
+	err = json.Unmarshal(resBody, &resultMap)
+	if err != nil {
+		zap.L().Error("error on converting to json", zap.Error(err), zap.String("response", string(resBody)))
+		return nil
+	}
+	return resultMap
 }
 
 func getByLabels(name string, rsData *handlerML.ResourceData) interface{} {
