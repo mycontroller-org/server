@@ -4,6 +4,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
+	dataRepositoryML "github.com/mycontroller-org/backend/v2/pkg/model/data_repository"
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
@@ -92,6 +93,9 @@ func processPreEvent(item interface{}) {
 
 	case model.EntityField:
 		out = &fieldML.Field{}
+
+	case model.EntityDataRepository:
+		out = &dataRepositoryML.Config{}
 
 	default:
 		// return do not proceed further
