@@ -97,7 +97,7 @@ func processEvent(item interface{}) {
 			zap.L().Error("error on serving scheduler request", zap.Error(err))
 		}
 
-	case rsML.TypeResourceActionBySelector:
+	case rsML.TypeResourceAction:
 		err := resourceActionService(request)
 		if err != nil {
 			zap.L().Error("error on serving resource quickID request", zap.Error(err))

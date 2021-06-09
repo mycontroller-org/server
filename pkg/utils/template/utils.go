@@ -14,14 +14,14 @@ import (
 )
 
 var funcMap = template.FuncMap{
-	"now":        time.Now,
-	"version":    version.Get,
-	"marshal":    marshal,
-	"toJson":     marshal,
-	"bySelector": bySelector,
-	"ternary":    ternary,
-	"sunrise":    sunrise.GetSunriseTime,
-	"sunset":     sunrise.GetSunsetTime,
+	"now":     time.Now,
+	"version": version.Get,
+	"marshal": marshal,
+	"toJson":  marshal,
+	"keyPath": byKeyPath,
+	"ternary": ternary,
+	"sunrise": sunrise.GetSunriseTime,
+	"sunset":  sunrise.GetSunsetTime,
 }
 
 func ternary(data interface{}, trueValue, falseValue string) string {
@@ -31,11 +31,11 @@ func ternary(data interface{}, trueValue, falseValue string) string {
 	return falseValue
 }
 
-func bySelector(data interface{}, selector string) template.JS {
+func byKeyPath(data interface{}, keyPath string) template.JS {
 	result := ""
-	_, value, err := helper.GetValueByKeyPath(data, selector)
+	_, value, err := helper.GetValueByKeyPath(data, keyPath)
 	if err != nil {
-		zap.L().Warn("error on getting a value", zap.Error(err), zap.String("selector", selector), zap.Any("data", data))
+		zap.L().Warn("error on getting a value", zap.Error(err), zap.String("keyPath", keyPath), zap.Any("data", data))
 		result = err.Error()
 	} else {
 		stringResult, ok := value.(string)
@@ -44,7 +44,7 @@ func bySelector(data interface{}, selector string) template.JS {
 		} else {
 			stringResult, err := json.Marshal(value)
 			if err != nil {
-				zap.L().Warn("error on converting to json", zap.Error(err), zap.String("selector", selector), zap.Any("data", data))
+				zap.L().Warn("error on converting to json", zap.Error(err), zap.String("keyPath", keyPath), zap.Any("data", data))
 			} else {
 				result = string(stringResult)
 			}

@@ -12,13 +12,13 @@ import (
 
 // Resource type details
 const (
-	TypeGateway                  = "gateway"
-	TypeNode                     = "node"
-	TypeTask                     = "task"
-	TypeHandler                  = "handler"
-	TypeScheduler                = "scheduler"
-	TypeResourceActionBySelector = "resource_action_by_selector"
-	TypeFirmware                 = "firmware"
+	TypeGateway        = "gateway"
+	TypeNode           = "node"
+	TypeTask           = "task"
+	TypeHandler        = "handler"
+	TypeScheduler      = "scheduler"
+	TypeFirmware       = "firmware"
+	TypeResourceAction = "resource_action"
 )
 
 // Command details

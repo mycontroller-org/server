@@ -10,13 +10,13 @@ import (
 	"go.uber.org/zap"
 )
 
-func toDataRepository(id, selector, value string) error {
+func toDataRepository(id, keyPath, value string) error {
 	dataRepo, err := dataRepoAPI.GetByID(id)
 	if err != nil {
 		return err
 	}
 	if dataRepo.ReadOnly {
-		zap.L().Info("update failed: trying update a readonly repository", zap.String("id", id), zap.String("selector", selector), zap.String("value", value))
+		zap.L().Info("update failed: trying update a readonly repository", zap.String("id", id), zap.String("keyPath", keyPath), zap.String("value", value))
 		return nil
 	}
 
@@ -49,7 +49,7 @@ func toDataRepository(id, selector, value string) error {
 	}
 
 	// inject the final value
-	jsonString, err := sjson.Set(string(dataBytes), selector, finalValue)
+	jsonString, err := sjson.Set(string(dataBytes), keyPath, finalValue)
 	if err != nil {
 		return err
 	}

@@ -14,7 +14,7 @@ import (
 	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
 	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
@@ -81,7 +81,7 @@ func ExecuteActionOnResourceByQuickID(data *handlerML.ResourceData) error {
 		return toHandler(kvMap[model.KeyID], data.Payload)
 
 	case utils.ContainsString(quickIdUL.QuickIDDataRepository, resourceType):
-		return toDataRepository(kvMap[model.KeyID], data.Selector, data.Payload)
+		return toDataRepository(kvMap[model.KeyID], data.KeyPath, data.Payload)
 
 	default:
 		return fmt.Errorf("unknown resource type: %s", resourceType)
@@ -193,7 +193,7 @@ func ExecuteActionOnResourceByLabels(data *handlerML.ResourceData) error {
 }
 
 // Post a message to gateway topic
-func Post(msg *msgml.Message) error {
+func Post(msg *msgML.Message) error {
 	if msg.GatewayID == "" {
 		return errors.New("gateway id can not be empty")
 	}

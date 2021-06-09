@@ -81,12 +81,12 @@ func (c *Client) Post(data map[string]interface{}) error {
 		}
 
 		zap.L().Debug("about to perform an action", zap.String("rawData", stringValue), zap.Any("finalData", rsData))
-		busUtils.PostToResourceService("resource_selector", rsData, rsML.TypeResourceActionBySelector, rsML.CommandSet, "")
+		busUtils.PostToResourceService("resource_fake_id", rsData, rsML.TypeResourceAction, rsML.CommandSet, "")
 	}
 	return nil
 }
 
-// preDelay scheduler helper
+// preDelay scheduler helpers
 
 func (c *Client) getScheduleTriggerFunc(name string, rsData handlerML.ResourceData) func() {
 	return func() {
@@ -94,8 +94,8 @@ func (c *Client) getScheduleTriggerFunc(name string, rsData handlerML.ResourceDa
 		c.unschedule(name)
 
 		// call the resource action
-		zap.L().Debug("scheduler triggere. about to perform an action", zap.String("name", name), zap.Any("rsData", rsData))
-		busUtils.PostToResourceService("resource_selector", rsData, rsML.TypeResourceActionBySelector, rsML.CommandSet, "")
+		zap.L().Debug("scheduler triggered. about to perform an action", zap.String("name", name), zap.Any("rsData", rsData))
+		busUtils.PostToResourceService("resource_fake_id", rsData, rsML.TypeResourceAction, rsML.CommandSet, "")
 	}
 }
 

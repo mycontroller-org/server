@@ -50,3 +50,10 @@ type Response struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 }
+
+// ActionConfig struct
+type ActionConfig struct {
+	Resource string `json:"resource"`
+	KayPath  string `json:"keypath"`
+	Payload  string `json:"payload"`
+}

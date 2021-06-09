@@ -41,7 +41,7 @@ const (
 
 // keys used in other locations
 const (
-	KeySelector    = "selector"
+	KeyKeyPath     = "keyPath"
 	KeyTemplate    = "template"
 	KeyTask        = "task"
 	KeySchedule    = "schedule"

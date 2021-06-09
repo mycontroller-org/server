@@ -92,7 +92,7 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 		}
 		data[model.KeyGatewayID] = normalizeValue(values[0])
 		if len(values) > expectedLength {
-			data[model.KeySelector] = normalizeValue(strings.Join(values[expectedLength:], "."))
+			data[model.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
 	case utils.ContainsString(QuickIDNode, entityType):
@@ -103,7 +103,7 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 		data[model.KeyGatewayID] = normalizeValue(values[0])
 		data[model.KeyNodeID] = normalizeValue(values[1])
 		if len(values) > expectedLength {
-			data[model.KeySelector] = normalizeValue(strings.Join(values[expectedLength:], "."))
+			data[model.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
 	case utils.ContainsString(QuickIDSource, entityType):
@@ -115,7 +115,7 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 		data[model.KeyNodeID] = normalizeValue(values[1])
 		data[model.KeySourceID] = normalizeValue(values[2])
 		if len(values) > expectedLength {
-			data[model.KeySelector] = normalizeValue(strings.Join(values[expectedLength:], "."))
+			data[model.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
 	case utils.ContainsString(QuickIDField, entityType):
@@ -128,7 +128,7 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 		data[model.KeySourceID] = normalizeValue(values[2])
 		data[model.KeyFieldID] = normalizeValue(values[3])
 		if len(values) > expectedLength {
-			data[model.KeySelector] = normalizeValue(strings.Join(values[expectedLength:], "."))
+			data[model.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
 	case utils.ContainsString(QuickIDTask, entityType),

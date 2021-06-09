@@ -28,12 +28,12 @@ import (
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	quickIdUL "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
 	templateUtils "github.com/mycontroller-org/backend/v2/pkg/utils/template"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
 type genericAPI struct {
-	List func(filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error)
+	List func(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error)
 }
 
 // LoadVariables loads all the defined variables
@@ -42,7 +42,7 @@ func LoadVariables(variablesPreMap map[string]string) (map[string]interface{}, e
 	for name, stringValue := range variablesPreMap {
 		value := getEntity(name, stringValue)
 		if value == nil {
-			return nil, fmt.Errorf("failed to load a variable. name: %s, selector:%s", name, stringValue)
+			return nil, fmt.Errorf("failed to load a variable. name: %s, keyPath:%s", name, stringValue)
 		}
 		variables[name] = value
 	}
@@ -169,12 +169,12 @@ func getByLabels(name string, rsData *handlerML.ResourceData) interface{} {
 	}
 
 	if apiImpl.List != nil {
-		filters := make([]stgml.Filter, 0)
+		filters := make([]stgML.Filter, 0)
 		for key, value := range rsData.Labels {
-			filter := stgml.Filter{Key: fmt.Sprintf("labels.%s", key), Operator: stgml.OperatorEqual, Value: value}
+			filter := stgML.Filter{Key: fmt.Sprintf("labels.%s", key), Operator: stgML.OperatorEqual, Value: value}
 			filters = append(filters, filter)
 		}
-		pagination := &stgml.Pagination{Limit: 1} // limit to one element
+		pagination := &stgML.Pagination{Limit: 1} // limit to one element
 		result, err := apiImpl.List(filters, pagination)
 		if err != nil {
 			zap.L().Warn("error on getting label based entity", zap.Error(err), zap.String("name", name), zap.Any("rsData", rsData))
@@ -191,10 +191,10 @@ func getByLabels(name string, rsData *handlerML.ResourceData) interface{} {
 				return nil
 			}
 			entity := s.Index(0)
-			if rsData.Selector != "" {
-				_, value, err := helper.GetValueByKeyPath(entity, rsData.Selector)
+			if rsData.KeyPath != "" {
+				_, value, err := helper.GetValueByKeyPath(entity, rsData.KeyPath)
 				if err != nil {
-					zap.L().Warn("error on getting data from a given selector", zap.Error(err), zap.String("selector", rsData.Selector), zap.Any("entity", entity))
+					zap.L().Warn("error on getting data from a given keyPath", zap.Error(err), zap.String("keyPath", rsData.KeyPath), zap.Any("entity", entity))
 					return nil
 				}
 				return value
@@ -210,7 +210,7 @@ func getByQuickID(name string, rsData *handlerML.ResourceData) interface{} {
 	quickID := fmt.Sprintf("%s:%s", rsData.ResourceType, rsData.QuickID)
 	resourceType, keys, err := quickIdUL.EntityKeyValueMap(quickID)
 	if err != nil {
-		zap.L().Warn("failed to parse variable", zap.Any("name", name), zap.Any("selector", rsData), zap.Error(err))
+		zap.L().Warn("failed to parse variable", zap.Any("name", name), zap.Any("data", rsData), zap.Error(err))
 		return nil
 	}
 	var entity interface{}
@@ -293,10 +293,10 @@ func getByQuickID(name string, rsData *handlerML.ResourceData) interface{} {
 		return nil
 	}
 
-	if rsData.Selector != "" {
-		_, value, err := helper.GetValueByKeyPath(entity, rsData.Selector)
+	if rsData.KeyPath != "" {
+		_, value, err := helper.GetValueByKeyPath(entity, rsData.KeyPath)
 		if err != nil {
-			zap.L().Error("error on getting data from a given selector", zap.Error(err), zap.String("selector", rsData.Selector), zap.Any("entity", entity))
+			zap.L().Error("error on getting data from a given keyPath", zap.Error(err), zap.String("keyPath", rsData.KeyPath), zap.Any("entity", entity))
 			return nil
 		}
 		return value

@@ -87,7 +87,7 @@ type ResourceData struct {
 	Labels       cmap.CustomStringMap `yaml:"labels"`
 	Payload      string               `yaml:"payload"`
 	PreDelay     string               `yaml:"preDelay"`
-	Selector     string               `yaml:"selector"`
+	KeyPath      string               `yaml:"keyPath"`
 }
 
 // WebhookData struct

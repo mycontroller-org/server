@@ -36,7 +36,7 @@ func ReloadSystemJobs() {
 		hour := (rand.Intn(4-0) + 0)
 		minute := (rand.Intn(59-0) + 0)
 		cronExpression := fmt.Sprintf("0 %d %d * * *", minute, hour)
-		zap.L().Debug("analytics job scheduled", zap.String("cron", cronExpression))
+		zap.L().Info("analytics data reporter job scheduled", zap.String("cron", cronExpression))
 
 		schedule(idAnalyticsJob, cronExpression, analyticsAPI.ReportAnalyticsData)
 

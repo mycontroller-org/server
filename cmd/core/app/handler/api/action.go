@@ -7,19 +7,21 @@ import (
 	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/core/app/handler/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/api/action"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
+	webHandlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
 )
 
 const (
 	keyResource = "resource"
 	keyPayload  = "payload"
-	keySelector = "selector"
+	keyKeyPath  = "keyPath"
 	keyAction   = "action"
 	keyID       = "id"
 )
 
 // RegisterActionRoutes registers action api
 func RegisterActionRoutes(router *mux.Router) {
-	router.HandleFunc("/api/action", executeAction).Methods(http.MethodGet)
+	router.HandleFunc("/api/action", executeGetAction).Methods(http.MethodGet)
+	router.HandleFunc("/api/action", executePostAction).Methods(http.MethodPost)
 	router.HandleFunc("/api/action/node", executeNodeAction).Methods(http.MethodGet)
 }
 
@@ -44,14 +46,14 @@ func executeNodeAction(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func executeAction(w http.ResponseWriter, r *http.Request) {
+func executeGetAction(w http.ResponseWriter, r *http.Request) {
 	query, err := handlerUtils.ReceivedQueryMap(r)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 	resourceArr := query[keyResource]
-	selectorArr := query[keySelector]
+	keyPathArr := query[keyKeyPath]
 	payloadArr := query[keyPayload]
 
 	if len(resourceArr) == 0 || len(payloadArr) == 0 {
@@ -63,12 +65,37 @@ func executeAction(w http.ResponseWriter, r *http.Request) {
 		QuickID: resourceArr[0],
 		Payload: payloadArr[0],
 	}
-	if len(selectorArr) > 0 {
-		resourceData.Selector = selectorArr[0]
+	if len(keyPathArr) > 0 {
+		resourceData.KeyPath = keyPathArr[0]
 	}
 	err = action.ExecuteActionOnResourceByQuickID(resourceData)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+}
+
+func executePostAction(w http.ResponseWriter, r *http.Request) {
+	actions := make([]webHandlerML.ActionConfig, 0)
+
+	handlerUtils.LoadEntity(w, r, actions)
+
+	if len(actions) == 0 {
+		http.Error(w, "there is no action supplied", 500)
+		return
+	}
+
+	for _, axn := range actions {
+		resourceData := &handlerML.ResourceData{
+			QuickID: axn.Resource,
+			KeyPath: axn.KayPath,
+			Payload: axn.Payload,
+		}
+		err := action.ExecuteActionOnResourceByQuickID(resourceData)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+	}
+
 }

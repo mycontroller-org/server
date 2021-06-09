@@ -10,7 +10,7 @@ import (
 	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	tplUtils "github.com/mycontroller-org/backend/v2/pkg/utils/template"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
@@ -58,11 +58,11 @@ func isTriggered(rule taskML.Rule, variables map[string]interface{}) bool {
 
 func getValueByVariableName(variables map[string]interface{}, variableName string) (interface{}, error) {
 	name := variableName
-	selector := ""
+	keyPath := ""
 	if strings.Contains(variableName, ".") {
 		keys := strings.SplitN(variableName, ".", 2)
 		name = keys[0]
-		selector = keys[1]
+		keyPath = keys[1]
 	}
 
 	entity, found := variables[name]
@@ -70,11 +70,11 @@ func getValueByVariableName(variables map[string]interface{}, variableName strin
 		return nil, fmt.Errorf("variable not loaded, variable:%s", name)
 	}
 
-	if selector != "" {
-		_, value, err := helper.GetValueByKeyPath(entity, selector)
+	if keyPath != "" {
+		_, value, err := helper.GetValueByKeyPath(entity, keyPath)
 		if err != nil {
-			zap.L().Warn("error to get a value for a variable", zap.Error(err), zap.String("variable", name), zap.String("selector", selector))
-			return nil, fmt.Errorf("invalid selector. variable:%s, selector:%s", name, selector)
+			zap.L().Warn("error to get a value for a variable", zap.Error(err), zap.String("variable", name), zap.String("keyPath", keyPath))
+			return nil, fmt.Errorf("invalid keyPath. variable:%s, keyPath:%s", name, keyPath)
 		}
 		return value, nil
 	}
@@ -84,7 +84,7 @@ func getValueByVariableName(variables map[string]interface{}, variableName strin
 
 func isMatching(value interface{}, operator string, expectedValue interface{}) bool {
 	if operator == "" {
-		operator = stgml.OperatorEqual
+		operator = stgML.OperatorEqual
 	}
 
 	var expectedValueUpdated interface{}
@@ -92,7 +92,7 @@ func isMatching(value interface{}, operator string, expectedValue interface{}) b
 	switch operator {
 
 	// convert json string to object, if required
-	case stgml.OperatorIn, stgml.OperatorNotIn, stgml.OperatorRangeIn, stgml.OperatorRangeNotIn:
+	case stgML.OperatorIn, stgML.OperatorNotIn, stgML.OperatorRangeIn, stgML.OperatorRangeNotIn:
 		stringValue := converterUtils.ToString(expectedValue)
 		updated := make([]interface{}, 0)
 		err := json.Unmarshal([]byte(stringValue), &updated)

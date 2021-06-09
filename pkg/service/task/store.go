@@ -9,7 +9,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 
@@ -121,7 +121,7 @@ func (s *store) filterTasks(evnWrapper *eventWrapper) []taskML.Config {
 			continue
 		}
 
-		filters := s.getFilters(task.EventFilter.Selectors)
+		filters := s.getFilters(task.EventFilter.Filters)
 		matching := false
 		zap.L().Debug("filterTasks", zap.Any("filters", filters), zap.Any("event", evnWrapper.Event))
 
@@ -138,10 +138,10 @@ func (s *store) filterTasks(evnWrapper *eventWrapper) []taskML.Config {
 	return filteredTasks
 }
 
-func (s *store) getFilters(filtersMap map[string]string) []stgml.Filter {
-	filters := make([]stgml.Filter, 0)
+func (s *store) getFilters(filtersMap map[string]string) []stgML.Filter {
+	filters := make([]stgML.Filter, 0)
 	for k, v := range filtersMap {
-		filters = append(filters, stgml.Filter{Key: k, Operator: stgml.OperatorEqual, Value: v})
+		filters = append(filters, stgML.Filter{Key: k, Operator: stgML.OperatorEqual, Value: v})
 	}
 	return filters
 }
