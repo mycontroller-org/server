@@ -78,7 +78,11 @@ func executeGetAction(w http.ResponseWriter, r *http.Request) {
 func executePostAction(w http.ResponseWriter, r *http.Request) {
 	actions := make([]webHandlerML.ActionConfig, 0)
 
-	handlerUtils.LoadEntity(w, r, actions)
+	err := handlerUtils.LoadEntity(w, r, actions)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 
 	if len(actions) == 0 {
 		http.Error(w, "there is no action supplied", 500)
