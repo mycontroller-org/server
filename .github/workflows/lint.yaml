@@ -20,5 +20,6 @@ jobs:
         with:
           version: latest
           skip-go-installation: true
+          args: "--build-tags core"
           # Optional: show only new issues if it's a pull request. The default value is `false`.
           # only-new-issues: true
