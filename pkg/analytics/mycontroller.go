@@ -113,6 +113,6 @@ func ReportAnalyticsData() {
 	client := httpclient.GetClient(false)
 	resConfig, responseBody, err := client.Request(ANALYTICS_URL, http.MethodPost, nil, nil, payload, http.StatusOK)
 	if err != nil {
-		zap.L().Error("error on sending analytics data", zap.Error(err), zap.String("response", string(responseBody)), zap.Any("responseConfig", resConfig))
+		zap.L().Debug("error on sending analytics data", zap.Error(err), zap.String("response", string(responseBody)), zap.Any("responseConfig", resConfig))
 	}
 }
