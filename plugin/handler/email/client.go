@@ -23,7 +23,7 @@ type Config struct {
 }
 
 const (
-	defaultSubject = "Email from MyController.org server"
+	defaultSubject = "Email from MyController server"
 )
 
 // Client for email service

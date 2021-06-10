@@ -1,3 +1,5 @@
+// +build core,!standalone
+
 package exporter
 
 import (
@@ -6,8 +8,8 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	"github.com/mycontroller-org/backend/v2/plugin/handlers/backup/disk"
-	backupUtil "github.com/mycontroller-org/backend/v2/plugin/handlers/backup/util"
+	"github.com/mycontroller-org/backend/v2/plugin/handler/backup/disk"
+	backupUtil "github.com/mycontroller-org/backend/v2/plugin/handler/backup/util"
 )
 
 // Config of backup service

@@ -2,9 +2,9 @@
 secret: 5a2f6ff25b0025aeae12ae096363b51a
 
 directories:
-  data: data
-  logs: logs
-  tmp: tmp
+  data: /mc_home/data
+  logs: /mc_home/logs
+  tmp: /mc_home/tmp
 
 logger:
   mode: development
@@ -19,7 +19,7 @@ bus:
   tls_insecure_skip_verify: false
   connection_timeout: 10s
 
-gateway:
+handler:
   ids: []
   labels: 
-    location: external_gw1
+    location: external_handler1

@@ -8,7 +8,7 @@ ARG GOPROXY
 RUN go mod download -x
 ARG TARGETOS
 ARG TARGETARCH
-ENV TARGET_BUILD="gateway"
+ENV TARGET_BUILD="handler"
 RUN scripts/build_binary.sh
 
 FROM alpine:3.13
@@ -27,13 +27,13 @@ RUN apk --no-cache add tzdata
 RUN mkdir -p ${APP_HOME} && mkdir -p ${DATA_HOME}
 
 # copy application bin file
-COPY --from=builder /app/mycontroller-gateway ${APP_HOME}/mycontroller-gateway
+COPY --from=builder /app/mycontroller-handler ${APP_HOME}/mycontroller-handler
 
-RUN chmod +x ${APP_HOME}/mycontroller-gateway
+RUN chmod +x ${APP_HOME}/mycontroller-handler
 
 # copy default files
-COPY ./resources/sample-docker-gateway.yaml ${APP_HOME}/gateway.yaml
+COPY ./resources/sample-docker-handler.yaml ${APP_HOME}/handler.yaml
 
 WORKDIR ${APP_HOME}
 
-CMD ["/app/mycontroller-gateway", "-config", "/app/gateway.yaml"]
+CMD ["/app/mycontroller-handler", "-config", "/app/handler.yaml"]

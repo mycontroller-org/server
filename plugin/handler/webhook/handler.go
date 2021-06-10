@@ -9,7 +9,7 @@ import (
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	httpclient "github.com/mycontroller-org/backend/v2/pkg/utils/http_client_json"
-	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
+	yamlUtils "github.com/mycontroller-org/backend/v2/pkg/utils/yaml"
 	"go.uber.org/zap"
 )
 
@@ -74,7 +74,7 @@ func Init(handlerCfg *handlerML.Config) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	zap.L().Debug("Webhook client", zap.String("ID", handlerCfg.ID), zap.Any("config", config))
+	zap.L().Debug("webhook client", zap.String("ID", handlerCfg.ID), zap.Any("config", config))
 
 	client := &Client{
 		HandlerCfg: handlerCfg,
@@ -131,7 +131,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 		}
 
 		webhookData := handlerML.WebhookData{}
-		err = variableUtils.UnmarshalBase64Yaml(genericData.Data, &webhookData)
+		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &webhookData)
 		if err != nil {
 			zap.L().Error("error on converting webhook data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
 			continue

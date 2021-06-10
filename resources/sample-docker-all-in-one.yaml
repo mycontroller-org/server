@@ -52,6 +52,11 @@ gateway:
   labels:
     location: local
 
+handler:
+  ids: []
+  labels:
+    location: local
+
 database:
   storage: memory_database
   metrics: void_database

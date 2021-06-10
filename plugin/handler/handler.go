@@ -5,12 +5,12 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	backupHandler "github.com/mycontroller-org/backend/v2/plugin/handlers/backup"
-	emailHandler "github.com/mycontroller-org/backend/v2/plugin/handlers/email"
-	noopHandler "github.com/mycontroller-org/backend/v2/plugin/handlers/noop"
-	resourceAction "github.com/mycontroller-org/backend/v2/plugin/handlers/resource"
-	telegramHandler "github.com/mycontroller-org/backend/v2/plugin/handlers/telegram"
-	webhookHandler "github.com/mycontroller-org/backend/v2/plugin/handlers/webhook"
+	backupHandler "github.com/mycontroller-org/backend/v2/plugin/handler/backup"
+	emailHandler "github.com/mycontroller-org/backend/v2/plugin/handler/email"
+	noopHandler "github.com/mycontroller-org/backend/v2/plugin/handler/noop"
+	resourceAction "github.com/mycontroller-org/backend/v2/plugin/handler/resource"
+	telegramHandler "github.com/mycontroller-org/backend/v2/plugin/handler/telegram"
+	webhookHandler "github.com/mycontroller-org/backend/v2/plugin/handler/webhook"
 )
 
 // Handler interface details for operation

@@ -10,7 +10,7 @@ import (
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	httpClient "github.com/mycontroller-org/backend/v2/pkg/utils/http_client_json"
-	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
+	yamlUtils "github.com/mycontroller-org/backend/v2/pkg/utils/yaml"
 	"go.uber.org/zap"
 )
 
@@ -40,7 +40,7 @@ func Init(cfg *handlerML.Config) (*Client, error) {
 		return nil, err
 	}
 
-	zap.L().Info("Telegram auth success", zap.String("handlerID", cfg.ID), zap.Any("firstname", user.FirstName))
+	zap.L().Info("telegram auth success", zap.String("handlerID", cfg.ID), zap.Any("firstname", user.FirstName))
 	return client, nil
 }
 
@@ -79,7 +79,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 		}
 
 		telegramData := handlerML.TelegramData{}
-		err = variableUtils.UnmarshalBase64Yaml(genericData.Data, &telegramData)
+		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &telegramData)
 		if err != nil {
 			zap.L().Error("error on converting telegram data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
 			continue

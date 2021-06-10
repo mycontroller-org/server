@@ -11,8 +11,8 @@ import (
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
-	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
-	backupUtil "github.com/mycontroller-org/backend/v2/plugin/handlers/backup/util"
+	yamlUtils "github.com/mycontroller-org/backend/v2/pkg/utils/yaml"
+	backupUtil "github.com/mycontroller-org/backend/v2/plugin/handler/backup/util"
 	"github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
@@ -87,7 +87,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 		}
 
 		backupConfigData := handlerML.BackupData{}
-		err = variableUtils.UnmarshalBase64Yaml(genericData.Data, &backupConfigData)
+		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &backupConfigData)
 		if err != nil {
 			zap.L().Error("error on converting backup config data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
 			continue

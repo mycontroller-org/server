@@ -5,9 +5,6 @@ source ./scripts/version.sh
 # container registry
 REGISTRY='quay.io/mycontroller'
 ALT_REGISTRY='docker.io/mycontroller'
-IMAGE_ALL_IN_ONE="all-in-one"
-IMAGE_CORE="core"
-IMAGE_GATEWAY="gateway"
 PLATFORMS="linux/arm/v6,linux/arm/v7,linux/arm64,linux/amd64"
 IMAGE_TAG=${VERSION}
 

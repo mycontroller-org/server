@@ -17,7 +17,6 @@ import (
 	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	"gopkg.in/yaml.v2"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
@@ -28,6 +27,7 @@ import (
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	quickIdUL "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
 	templateUtils "github.com/mycontroller-org/backend/v2/pkg/utils/template"
+	yamlUtils "github.com/mycontroller-org/backend/v2/pkg/utils/yaml"
 	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 	"go.uber.org/zap"
 )
@@ -87,7 +87,7 @@ func getEntity(name, stringValue string) interface{} {
 	// calls webhook and loads the response as is
 	if genericData.Type == handlerML.DataTypeWebhook {
 		webhookCfg := handlerML.WebhookData{}
-		err = UnmarshalBase64Yaml(genericData.Data, &webhookCfg)
+		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &webhookCfg)
 		if err != nil {
 			zap.L().Error("error on loading webhook data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
 			return err.Error()
@@ -96,7 +96,7 @@ func getEntity(name, stringValue string) interface{} {
 
 	} else {
 		rsData := handlerML.ResourceData{}
-		err = UnmarshalBase64Yaml(genericData.Data, &rsData)
+		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &rsData)
 		if err != nil {
 			zap.L().Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
 			return err.Error()
@@ -343,14 +343,14 @@ func UpdateParameters(variables map[string]interface{}, parameters map[string]st
 			// if it is a webhook data and customData not enabled, update variables on the data field
 			if genericData.Type == handlerML.DataTypeWebhook {
 				webhookData := handlerML.WebhookData{}
-				err = UnmarshalBase64Yaml(genericData.Data, &webhookData)
+				err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &webhookData)
 				if err != nil {
 					zap.L().Error("error on converting webhook data", zap.Error(err), zap.String("name", name))
 					continue
 				}
 				if webhookData.Method != http.MethodGet && !webhookData.CustomData {
 					webhookData.Data = variables
-					updatedString, err := MarshalBase64Yaml(webhookData)
+					updatedString, err := yamlUtils.MarshalBase64Yaml(webhookData)
 					if err != nil {
 						zap.L().Error("error on converting webhook data to yaml", zap.Error(err), zap.String("name", name))
 						continue
@@ -395,23 +395,4 @@ func Merge(variables map[string]interface{}, extra map[string]interface{}) map[s
 	}
 
 	return finalMap
-}
-
-// UnmarshalBase64Yaml converts base64 data into given interface
-func UnmarshalBase64Yaml(base64String string, out interface{}) error {
-	yamlBytes, err := base64.StdEncoding.DecodeString(base64String)
-	if err != nil {
-		return err
-	}
-	return yaml.Unmarshal(yamlBytes, out)
-}
-
-// MarshalBase64Yaml converts interface to base64
-func MarshalBase64Yaml(in interface{}) (string, error) {
-	yamlBytes, err := yaml.Marshal(in)
-	if err != nil {
-		return "", err
-	}
-	base64string := base64.StdEncoding.EncodeToString(yamlBytes)
-	return base64string, nil
 }

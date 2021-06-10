@@ -6,11 +6,11 @@ import (
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	fwdplSVC "github.com/mycontroller-org/backend/v2/pkg/service/forward_payload"
 	gwMsgProcessor "github.com/mycontroller-org/backend/v2/pkg/service/gateway_msg_processor"
-	handlerSVC "github.com/mycontroller-org/backend/v2/pkg/service/handlers"
-	mts "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
+	handlerSVC "github.com/mycontroller-org/backend/v2/pkg/service/handler"
+	metricsSVC "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
 	resourceSVC "github.com/mycontroller-org/backend/v2/pkg/service/resource"
 	scheduleSVC "github.com/mycontroller-org/backend/v2/pkg/service/schedule"
-	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
+	storageSVC "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	taskSVC "github.com/mycontroller-org/backend/v2/pkg/service/task"
 	"go.uber.org/zap"
 )
@@ -21,8 +21,8 @@ func Init(handlerFunc func()) {
 }
 
 func initServices() {
-	stg.Init(backupAPI.ExecuteImportStorage) // storage
-	mts.Init()                               // metrics
+	storageSVC.Init(backupAPI.ExecuteImportStorage) // storage
+	metricsSVC.Init()                               // metrics
 
 	StartupJobs()
 	StartupJobsExtra()
@@ -98,15 +98,15 @@ func closeServices() {
 	resourceSVC.Close()
 
 	// Close storage and metric database
-	if stg.SVC != nil {
-		err := stg.SVC.Close()
+	if storageSVC.SVC != nil {
+		err := storageSVC.SVC.Close()
 		if err != nil {
 			zap.L().Error("failed to close storage database")
 		}
 	}
-	if mts.SVC != nil {
-		if mts.SVC != nil {
-			err := mts.SVC.Close()
+	if metricsSVC.SVC != nil {
+		if metricsSVC.SVC != nil {
+			err := metricsSVC.SVC.Close()
 			if err != nil {
 				zap.L().Error("failed to close metrics database")
 			}

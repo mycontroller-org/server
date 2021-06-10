@@ -11,7 +11,7 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
+	yamlUtils "github.com/mycontroller-org/backend/v2/pkg/utils/yaml"
 	"go.uber.org/zap"
 )
 
@@ -39,7 +39,7 @@ func initSMTP(handlerCfg *handlerML.Config, cfg *Config) (Client, error) {
 		cfg:        cfg,
 		auth:       auth,
 	}
-	zap.L().Info("Init smtp email client success", zap.Any("handlerID", handlerCfg.ID))
+	zap.L().Info("init smtp email client success", zap.Any("handlerID", handlerCfg.ID))
 	return client, nil
 }
 
@@ -162,7 +162,7 @@ func (sc *smtpClient) Post(data map[string]interface{}) error {
 		}
 
 		emailData := handlerML.EmailData{}
-		err = variableUtils.UnmarshalBase64Yaml(genericData.Data, &emailData)
+		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &emailData)
 		if err != nil {
 			zap.L().Error("error on converting email data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
 			continue

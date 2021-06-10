@@ -11,7 +11,7 @@ import (
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
 	coreScheduler "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
+	yamlUtils "github.com/mycontroller-org/backend/v2/pkg/utils/yaml"
 	"go.uber.org/zap"
 )
 
@@ -63,7 +63,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 		}
 
 		rsData := handlerML.ResourceData{}
-		err = variableUtils.UnmarshalBase64Yaml(genericData.Data, &rsData)
+		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &rsData)
 		if err != nil {
 			zap.L().Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
 			continue

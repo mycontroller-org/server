@@ -11,9 +11,9 @@ import (
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	variableUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
-	"github.com/mycontroller-org/backend/v2/plugin/handlers/backup/disk"
-	backupUtil "github.com/mycontroller-org/backend/v2/plugin/handlers/backup/util"
+	yamlUtils "github.com/mycontroller-org/backend/v2/pkg/utils/yaml"
+	"github.com/mycontroller-org/backend/v2/plugin/handler/backup/disk"
+	backupUtil "github.com/mycontroller-org/backend/v2/plugin/handler/backup/util"
 	"go.uber.org/zap"
 )
 
@@ -27,7 +27,7 @@ func RunRestore(file backupML.BackupFile) error {
 		return err
 	}
 	// TODO: do shutdown
-	zap.L().Info("All set to start restore on startup. The server is going to down now. Start the server manually")
+	zap.L().Info("all set to start restore on startup. the server is going to down now. start the server manually")
 	busUtils.PostShutdownEvent()
 
 	return nil
@@ -49,7 +49,7 @@ func RunOnDemandBackup(input *backupML.OnDemandBackupConfig) error {
 		Spec:         utils.StructToMap(configData),
 	}
 
-	base64String, err := variableUtils.MarshalBase64Yaml(&exporterData)
+	base64String, err := yamlUtils.MarshalBase64Yaml(&exporterData)
 	if err != nil {
 		zap.L().Error("error on converting exporter data to base64", zap.Error(err))
 		return err

@@ -19,7 +19,7 @@ bus:
   tls_insecure_skip_verify: false
   connection_timeout: 10s
 
-gateway:
+handler:
   ids: []
   labels: 
-    location: external_gw1
+    location: external_handler1

@@ -47,6 +47,11 @@ bus:
   tls_insecure_skip_verify: false
   connection_timeout: 10s
 
+handler:
+  ids: []
+  labels:
+    location: local
+
 database:
   storage: memory_database
   metrics: void_database

@@ -8,7 +8,7 @@ import (
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
-	handlerPlugin "github.com/mycontroller-org/backend/v2/plugin/handlers"
+	handlerPlugin "github.com/mycontroller-org/backend/v2/plugin/handler"
 	"go.uber.org/zap"
 )
 
@@ -20,7 +20,7 @@ func Start(cfg *handlerML.Config) error {
 	if !cfg.Enabled { // this handler is not enabled
 		return nil
 	}
-	zap.L().Debug("Starting a gateway", zap.Any("id", cfg.ID))
+	zap.L().Debug("starting a handler", zap.Any("id", cfg.ID))
 	state := model.State{Since: time.Now()}
 
 	handler, err := loadHandler(cfg)
@@ -29,11 +29,11 @@ func Start(cfg *handlerML.Config) error {
 	}
 	err = handler.Start()
 	if err != nil {
-		zap.L().Error("Unable to start a handler service", zap.Any("id", cfg.ID), zap.Error(err))
+		zap.L().Error("unable to start a handler service", zap.Any("id", cfg.ID), zap.Error(err))
 		state.Message = err.Error()
 		state.Status = model.StatusDown
 	} else {
-		state.Message = "Started successfully"
+		state.Message = "started successfully"
 		state.Status = model.StatusUp
 		handlersStore.Add(cfg.ID, handler)
 	}
@@ -44,17 +44,17 @@ func Start(cfg *handlerML.Config) error {
 
 // Stop a handler
 func Stop(id string) error {
-	zap.L().Debug("Stopping a gateway", zap.Any("id", id))
+	zap.L().Debug("stopping a handler", zap.Any("id", id))
 	handler := handlersStore.Get(id)
 	if handler != nil {
 		err := handler.Close()
 		state := model.State{
 			Status:  model.StatusDown,
 			Since:   time.Now(),
-			Message: "Stopped by request",
+			Message: "stopped by request",
 		}
 		if err != nil {
-			zap.L().Error("Failed to stop gateway service", zap.String("id", id), zap.Error(err))
+			zap.L().Error("failed to stop handler service", zap.String("id", id), zap.Error(err))
 			state.Message = err.Error()
 		}
 		busUtils.SetHandlerState(id, state)
@@ -78,7 +78,7 @@ func UnloadAll() {
 	for _, id := range ids {
 		err := Stop(id)
 		if err != nil {
-			zap.L().Error("error on stopping a gateway", zap.String("id", id))
+			zap.L().Error("error on stopping a handler", zap.String("id", id))
 		}
 	}
 }

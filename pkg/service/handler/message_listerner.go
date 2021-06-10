@@ -36,18 +36,18 @@ func onMessageReceive(event *busML.BusData) {
 	msg := &handlerML.MessageWrapper{}
 	err := event.LoadData(msg)
 	if err != nil {
-		zap.L().Warn("Failed to convet to target type", zap.Error(err))
+		zap.L().Warn("failed to convet to target type", zap.Error(err))
 		return
 	}
 
 	if msg == nil {
-		zap.L().Warn("Received a nil message", zap.Any("event", event))
+		zap.L().Warn("received a nil message", zap.Any("event", event))
 		return
 	}
-	zap.L().Debug("Message added into processing queue", zap.Any("message", msg))
+	zap.L().Debug("message added into processing queue", zap.Any("message", msg))
 	status := msgQueue.Produce(msg)
 	if !status {
-		zap.L().Warn("Failed to store the message into queue", zap.Any("message", msg))
+		zap.L().Warn("failed to store the message into queue", zap.Any("message", msg))
 	}
 }
 
@@ -60,11 +60,11 @@ func processHandlerMessage(item interface{}) {
 	msg := item.(*handlerML.MessageWrapper)
 	start := time.Now()
 
-	zap.L().Debug("Starting Message Processing", zap.Any("handlerID", msg.ID))
+	zap.L().Debug("starting message processing", zap.Any("handlerID", msg.ID))
 
 	handler := handlersStore.Get(msg.ID)
 	if handler == nil {
-		zap.L().Warn("handler not available", zap.Any("handlerID", msg.ID), zap.Any("availableHandlers", handlersStore.ListIDs()))
+		zap.L().Info("handler not available", zap.Any("handlerID", msg.ID), zap.Any("availableHandlers", handlersStore.ListIDs()))
 		return
 	}
 
