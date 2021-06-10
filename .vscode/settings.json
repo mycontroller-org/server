@@ -1,0 +1,17 @@
+{
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "[go]": {
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    },
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+  },
+  "gopls": {
+    "buildFlags": [
+      "-tags=core"
+    ]
+  }
+}
