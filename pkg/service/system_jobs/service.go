@@ -6,8 +6,10 @@ import (
 
 	analyticsAPI "github.com/mycontroller-org/backend/v2/pkg/analytics"
 	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
+	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
 	configSVC "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
 	coreScheduler "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
+	"github.com/mycontroller-org/backend/v2/pkg/utils"
 
 	"go.uber.org/zap"
 )
@@ -15,7 +17,7 @@ import (
 const (
 	systemJobPrefix = "system_job"
 	idSunrise       = "sunrise"
-	idAnalyticsJob  = "analytics_job"
+	idAnalyticsJob  = "analytics"
 )
 
 // ReloadSystemJobs func
@@ -29,16 +31,29 @@ func ReloadSystemJobs() {
 	schedule(idSunrise, jobs.Sunrise, updateSunriseSchedules)
 
 	// update analytics job
-	unschedule(idAnalyticsJob)
+	analyticsJobName := fmt.Sprintf("%s_%s", systemJobPrefix, idAnalyticsJob)
+	unschedule(analyticsJobName)
 	if configSVC.CFG.Analytics.Enabled {
+		// generate analyticsId if not available
+		_, err := settingsAPI.GetAnalytics()
+		if err != nil {
+			// update analytics config
+			settingsAnalytics := &settingsML.Settings{ID: settingsML.KeyAnalytics}
+			settingsAnalytics.Spec = utils.StructToMap(&settingsML.AnalyticsConfig{AnonymousID: utils.RandUUID()})
+			err = settingsAPI.UpdateSettings(settingsAnalytics)
+			if err != nil {
+				zap.L().Error("error on updating analytics config", zap.Error(err))
+			}
+		}
+
 		// set everyday any time between 12:00 AM to 4:59 AM
 		// get random hour and minute
-		hour := (rand.Intn(4-0) + 0)
+		hour := (rand.Intn(2-0) + 6)
 		minute := (rand.Intn(59-0) + 0)
 		cronExpression := fmt.Sprintf("0 %d %d * * *", minute, hour)
 		zap.L().Info("analytics data reporter job scheduled", zap.String("cron", cronExpression))
 
-		schedule(idAnalyticsJob, cronExpression, analyticsAPI.ReportAnalyticsData)
+		schedule(analyticsJobName, cronExpression, analyticsAPI.ReportAnalyticsData)
 
 		zap.L().Info(`
 #=========================================================================================================#
@@ -56,6 +71,7 @@ func ReloadSystemJobs() {
 #   enabled: false                                                                                        #
 #=========================================================================================================#
 `)
+
 	}
 
 }
