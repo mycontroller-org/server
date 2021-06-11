@@ -48,8 +48,8 @@ func ReloadSystemJobs() {
 
 		// set everyday any time between 12:00 AM to 4:59 AM
 		// get random hour and minute
-		hour := (rand.Intn(2-0) + 6)
-		minute := (rand.Intn(59-0) + 0)
+		hour := rand.Intn(4)
+		minute := rand.Intn(59)
 		cronExpression := fmt.Sprintf("0 %d %d * * *", minute, hour)
 		zap.L().Info("analytics data reporter job scheduled", zap.String("cron", cronExpression))
 
