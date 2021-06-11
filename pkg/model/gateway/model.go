@@ -9,17 +9,18 @@ import (
 
 // Config struct
 type Config struct {
-	ID              string               `json:"id"`
-	Description     string               `json:"description"`
-	Enabled         bool                 `json:"enabled"`
-	ReconnectDelay  string               `json:"reconnectDelay"`
-	Provider        cmap.CustomMap       `json:"provider"`
-	MessageLogger   cmap.CustomMap       `json:"messageLogger"`
-	Labels          cmap.CustomStringMap `json:"labels"`
-	Others          cmap.CustomMap       `json:"others"`
-	State           *model.State         `json:"state"`
-	ModifiedOn      time.Time            `json:"modifiedOn"`
-	LastTransaction time.Time            `json:"lastTransaction"`
+	ID                 string               `json:"id"`
+	Description        string               `json:"description"`
+	Enabled            bool                 `json:"enabled"`
+	ReconnectDelay     string               `json:"reconnectDelay"`
+	QueueFailedMessage bool                 `json:"queueFailedMessage"`
+	Provider           cmap.CustomMap       `json:"provider"`
+	MessageLogger      cmap.CustomMap       `json:"messageLogger"`
+	Labels             cmap.CustomStringMap `json:"labels"`
+	Others             cmap.CustomMap       `json:"others"`
+	State              *model.State         `json:"state"`
+	ModifiedOn         time.Time            `json:"modifiedOn"`
+	LastTransaction    time.Time            `json:"lastTransaction"`
 }
 
 // GetReconnectDelay for this config

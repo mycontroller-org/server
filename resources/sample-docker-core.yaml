@@ -50,7 +50,7 @@ bus:
 handler:
   ids: []
   labels:
-    location: local
+    location: server
 
 database:
   storage: memory_database

@@ -159,12 +159,12 @@ func (p *Provider) Post(msg *msgML.Message) error {
 	if err != nil {
 		// failed to parse timeout, running with default
 		timeout = defaultTimeout
-		zap.L().Warn("Failed to parse timeout, running with default timeout", zap.String("timeout", p.Config.Timeout), zap.String("default", defaultTimeout.String()), zap.Error(err))
+		zap.L().Warn("failed to parse timeout, running with default timeout", zap.String("timeout", p.Config.Timeout), zap.String("default", defaultTimeout.String()), zap.Error(err))
 	}
 
 	// minimum timeout
 	if timeout < timeoutAllowedMinimumLevel {
-		zap.L().Info("adjesting timeout to mimimum allowed level", zap.String("supplied", timeout.String()), zap.String("minimum", timeoutAllowedMinimumLevel.String()))
+		zap.L().Info("adjusting timeout to mimimum allowed level", zap.String("supplied", timeout.String()), zap.String("minimum", timeoutAllowedMinimumLevel.String()))
 		timeout = timeoutAllowedMinimumLevel
 	}
 
@@ -172,7 +172,7 @@ func (p *Provider) Post(msg *msgML.Message) error {
 	// check retry count, and reset if invalid number set
 	if retryCount < 1 {
 		retryCount = 1
-		zap.L().Info("adjesting retry count", zap.Int("supplied", p.Config.RetryCount), zap.Int("updated", retryCount))
+		zap.L().Info("adjusting retry count", zap.Int("supplied", p.Config.RetryCount), zap.Int("updated", retryCount))
 	}
 
 	messageSent := false

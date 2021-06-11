@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/json"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
-	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
+	stgSVC "github.com/mycontroller-org/backend/v2/pkg/service/storage"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
 )
@@ -16,27 +16,27 @@ import (
 // List by filter and pagination
 func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
 	result := make([]settingsML.Settings, 0)
-	return stg.SVC.Find(ml.EntitySettings, &result, filters, pagination)
+	return stgSVC.SVC.Find(model.EntitySettings, &result, filters, pagination)
 }
 
 // Save a setting details
 func Save(settings *settingsML.Settings) error {
 	if settings.ID == "" {
-		return errors.New("ID should not be nil")
+		return errors.New("id should not be nil")
 	}
 	filters := []stgML.Filter{
-		{Key: ml.KeyID, Value: settings.ID},
+		{Key: model.KeyID, Value: settings.ID},
 	}
-	return stg.SVC.Upsert(ml.EntitySettings, settings, filters)
+	return stgSVC.SVC.Upsert(model.EntitySettings, settings, filters)
 }
 
 // GetByID returns a item
 func GetByID(ID string) (*settingsML.Settings, error) {
 	result := &settingsML.Settings{}
 	filters := []stgML.Filter{
-		{Key: ml.KeyID, Operator: stgML.OperatorEqual, Value: ID},
+		{Key: model.KeyID, Operator: stgML.OperatorEqual, Value: ID},
 	}
-	err := stg.SVC.FindOne(ml.EntitySettings, result, filters)
+	err := stgSVC.SVC.FindOne(model.EntitySettings, result, filters)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func UpdateSettings(settings *settingsML.Settings) error {
 	case settingsML.KeySystemSettings:
 		return UpdateSystemSettings(settings)
 
-	case settingsML.KeySystemJobs, settingsML.KeyVersion, settingsML.KeySystemBackupLocations:
+	case settingsML.KeySystemJobs, settingsML.KeyVersion, settingsML.KeySystemBackupLocations, settingsML.KeyAnalytics:
 		settings.ModifiedOn = time.Now()
 		return update(settings)
 
@@ -214,10 +214,10 @@ func GetBackupLocations() (*settingsML.BackupLocations, error) {
 // update is a common function to update a document in settings entity
 func update(settings *settingsML.Settings) error {
 	filters := []stgML.Filter{
-		{Key: ml.KeyID, Value: settings.ID},
+		{Key: model.KeyID, Value: settings.ID},
 	}
 	settings.ModifiedOn = time.Now()
-	return stg.SVC.Upsert(ml.EntitySettings, settings, filters)
+	return stgSVC.SVC.Upsert(model.EntitySettings, settings, filters)
 }
 
 // GetAnalytics returns analytics data

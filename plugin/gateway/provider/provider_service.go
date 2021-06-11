@@ -10,6 +10,7 @@ import (
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
 	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
@@ -23,11 +24,11 @@ import (
 )
 
 const (
-	queueSizeMessage    = 200
-	queueSizeRawMessage = 200
-	sleepingQueueLimit  = 100
-	workersMessage      = 1
-	workersRawMessage   = 1
+	queueSizeMessage          = 200
+	queueSizeRawMessage       = 200
+	sleepingQueuePerNodeLimit = 20
+	workersMessage            = 1
+	workersRawMessage         = 1
 
 	defaultReconnectDelay = "15s"
 )
@@ -41,7 +42,7 @@ type Service struct {
 	topicListenFromCore               string
 	topicPostToCore                   string
 	topicListenFromCoreSubscriptionID int64
-	sleepingMessageQueue              map[string][]*msgML.Message
+	sleepingMessageQueue              map[string][]msgML.Message
 	mutex                             *sync.RWMutex
 	ctx                               context.Context
 }
@@ -105,7 +106,7 @@ func GetService(gatewayCfg *gwML.Config) (*Service, error) {
 
 // Start gateway service
 func (s *Service) Start() error {
-	zap.L().Debug("Starting a provider service", zap.String("gateway", s.GatewayConfig.ID), zap.String("provider", s.GatewayConfig.Provider.GetString(model.NameType)))
+	zap.L().Debug("starting a provider service", zap.String("gateway", s.GatewayConfig.ID), zap.String("provider", s.GatewayConfig.Provider.GetString(model.NameType)))
 
 	// update topics
 	s.topicListenFromCore = mcbus.GetTopicPostMessageToProvider(s.GatewayConfig.ID)
@@ -114,7 +115,7 @@ func (s *Service) Start() error {
 	s.messageQueue = queueUtils.New(fmt.Sprintf("gateway_provider_message_%s", s.GatewayConfig.ID), queueSizeMessage, s.messageConsumer, workersMessage)
 	s.rawMessageQueue = queueUtils.New(fmt.Sprintf("gateway_provider_raw_message_%s", s.GatewayConfig.ID), queueSizeRawMessage, s.rawMessageProcessor, workersRawMessage)
 
-	s.sleepingMessageQueue = make(map[string][]*msgML.Message)
+	s.sleepingMessageQueue = make(map[string][]msgML.Message)
 
 	// start message listener
 	s.startMessageListener()
@@ -170,7 +171,7 @@ func (s *Service) startMessageListener() {
 		msg := &msgML.Message{}
 		err := event.LoadData(msg)
 		if err != nil {
-			zap.L().Warn("Received invalid type", zap.Any("event", event))
+			zap.L().Warn("received invalid type", zap.Any("event", event))
 			return
 		}
 		if msg == nil {
@@ -181,7 +182,7 @@ func (s *Service) startMessageListener() {
 	})
 
 	if err != nil {
-		zap.L().Error("Failed to subscribe", zap.String("topic", s.topicListenFromCore), zap.Error(err))
+		zap.L().Error("error on subscription", zap.String("topic", s.topicListenFromCore), zap.Error(err))
 	} else {
 		s.topicListenFromCoreSubscriptionID = subscriptionID
 	}
@@ -194,54 +195,42 @@ func (s *Service) messageConsumer(item interface{}) {
 		return
 	}
 
-	// for sleeping node message put it on sleeping queue and exit
-	if msg.IsPassiveNode {
+	// if it is awake message send the sleeping queue messages
+	if msg.Type == msgML.TypeAction && len(msg.Payloads) > 0 && msg.Payloads[0].Key == nodeML.ActionAwake {
+		s.publishSleepingMessageQueue(msg.NodeID)
+		return
+	} else if msg.IsPassiveNode {
+		// for sleeping node message put it on sleeping queue and exit
 		s.addToSleepingMessageQueue(msg)
 		return
+	} else {
+		s.postMessage(msg, true)
 	}
 
-	// post message to protocol
-	s.post(msg)
 }
 
-// converts and post the message to protocol
-func (s *Service) post(msg *msgML.Message) {
+// postMessage to the provider
+func (s *Service) postMessage(msg *msgML.Message, addToSleepingQueue bool) {
 	err := s.provider.Post(msg)
 	if err != nil {
-		zap.L().Warn("Failed to send", zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
-	}
-}
-
-// add message in to sleeping queue
-func (s *Service) addToSleepingMessageQueue(msg *msgML.Message) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-	// add into sleeping queue
-	queue, ok := s.sleepingMessageQueue[msg.NodeID]
-	if !ok {
-		queue = make([]*msgML.Message, 0)
-		s.sleepingMessageQueue[msg.NodeID] = queue
-	}
-	queue = append(queue, msg)
-	// if queue size exceeds maximum defined size, do resize
-	oldSize := len(queue)
-	if oldSize > sleepingQueueLimit {
-		queue = queue[:sleepingQueueLimit]
-		zap.L().Debug("Dropped messags from sleeping queue", zap.Int("oldSize", oldSize), zap.Int("newSize", len(queue)), zap.String("gatewayID", msg.GatewayID), zap.String("nodeID", msg.NodeID))
+		zap.L().Warn("error on sending", zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
+		if addToSleepingQueue && s.GatewayConfig.QueueFailedMessage {
+			s.addToSleepingMessageQueue(msg)
+		}
 	}
 }
 
 // process received raw messages from protocol
 func (s *Service) rawMessageProcessor(data interface{}) {
 	rawMsg := data.(*msgML.RawMessage)
-	zap.L().Debug("RawMessage received", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
+	zap.L().Debug("rawMessage received", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
 	messages, err := s.provider.ProcessReceived(rawMsg)
 	if err != nil {
-		zap.L().Warn("Failed to parse", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
+		zap.L().Warn("failed to parse", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 		return
 	}
 	if len(messages) == 0 {
-		zap.L().Debug("Messages not parsed", zap.String("gateway", s.GatewayConfig.ID), zap.Any("RawMessage", rawMsg))
+		zap.L().Debug("messages not parsed", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
 		return
 	}
 	// update gatewayID if not found
@@ -253,16 +242,59 @@ func (s *Service) rawMessageProcessor(data interface{}) {
 			}
 			err = mcbus.Publish(s.topicPostToCore, msg)
 			if err != nil {
-				zap.L().Debug("Messages failed to post on topic", zap.String("topic", s.topicPostToCore), zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
+				zap.L().Debug("messages failed to post on topic", zap.String("topic", s.topicPostToCore), zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
 				return
 			}
 		}
 	}
 }
 
-// ClearSleepingMessageQueue clears all the messages on the queue
-// func (s *Service) clearSleepingMessageQueue() {
-// 	s.mutex.Lock()
-// 	defer s.mutex.Unlock()
-// 	s.sleepingMessageQueue = make(map[string][]*msgml.Message)
-// }
+// add message in to sleeping queue
+func (s *Service) addToSleepingMessageQueue(msg *msgML.Message) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	// add into sleeping queue
+	queue, ok := s.sleepingMessageQueue[msg.NodeID]
+	if !ok {
+		queue = make([]msgML.Message, 0)
+		s.sleepingMessageQueue[msg.NodeID] = queue
+	}
+	// verify if the message already in the queue, if then remove it
+	newMsgId := msg.GetID()
+	for index, oldMsg := range queue {
+		if newMsgId == oldMsg.GetID() {
+			queue[index] = *msg
+			queue = append(queue[:index], queue[index+1:]...)
+			break
+		}
+	}
+
+	// add it to the queue
+	queue = append(queue, *msg)
+
+	// if queue size exceeds maximum defined size, do resize
+	oldSize := len(queue)
+	if oldSize > sleepingQueuePerNodeLimit {
+		queue = queue[:sleepingQueuePerNodeLimit]
+		zap.L().Debug("dropped messags from sleeping queue", zap.Int("oldSize", oldSize), zap.Int("newSize", len(queue)), zap.String("gatewayID", msg.GatewayID), zap.String("nodeID", msg.NodeID))
+	}
+	s.sleepingMessageQueue[msg.NodeID] = queue
+}
+
+// emptySleepingMessageQueue clears all the messages on the queue
+func (s *Service) publishSleepingMessageQueue(nodeID string) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
+	msgQueue, ok := s.sleepingMessageQueue[nodeID]
+	if !ok {
+		return
+	}
+	// post messages
+	for _, msg := range msgQueue {
+		s.postMessage(&msg, false)
+	}
+
+	// remove mesages from the map
+	s.sleepingMessageQueue[nodeID] = make([]msgML.Message, 0)
+}

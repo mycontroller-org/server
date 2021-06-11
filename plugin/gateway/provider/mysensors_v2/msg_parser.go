@@ -8,6 +8,7 @@ import (
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
@@ -214,9 +215,13 @@ func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, 
 			// else: return?
 
 		case cmdInternal:
-			proceedFurther, err := updateNodeInternalMessages(msg, &msgPL, msMsg)
+			proceedFurther, extraMessages, err := updateNodeInternalMessages(msg, &msgPL, msMsg)
 			if err != nil || !proceedFurther {
 				return nil, err
+			}
+
+			if len(extraMessages) > 0 {
+				messages = append(messages, extraMessages...)
 			}
 
 		case cmdStream:
@@ -347,17 +352,18 @@ func updateFieldAndUnit(msMsg *message, msgPL *msgML.Payload) error {
 
 // updates node internal message data, return true, if further actions required
 // returns false, if the message can be dropped
-func updateNodeInternalMessages(msg *msgML.Message, msgPL *msgML.Payload, msMsg *message) (bool, error) {
+func updateNodeInternalMessages(msg *msgML.Message, msgPL *msgML.Payload, msMsg *message) (bool, []*msgML.Message, error) {
 	if msMsg.Ack == "1" { // do not care about internal ack messages
-		return false, nil
+		return false, nil, nil
 	}
 	if typeName, ok := internalTypeMapForRx[msMsg.Type]; ok {
+		extraMessages := make([]*msgML.Message, 0)
 		// update the requested access
 		_, isActionRequest := utils.FindItem(customValidActions, typeName)
 		if isActionRequest {
 			msg.Type = msgML.TypeAction
 			msgPL.Key = typeName
-			return true, nil
+			return true, nil, nil
 		}
 
 		// verify it is valid field to update
@@ -365,21 +371,47 @@ func updateNodeInternalMessages(msg *msgML.Message, msgPL *msgML.Payload, msMsg 
 			msgPL.Key = fieldName
 			msg.Type = msgML.TypeSet
 
-			if fieldName == model.LabelNodeVersion {
+			switch fieldName {
+			case model.LabelNodeVersion:
 				msgPL.Labels.Set(model.LabelNodeVersion, msMsg.Payload)
-			}
 
-			if fieldName == model.FieldLocked { // update locked reason
+			case model.FieldLocked:
 				msgPL.Others.Set(LabelLockedReason, msMsg.Payload, nil)
 				msgPL.Value = "true"
+
+			case LabelSmartSleepingNode, model.FieldHeartbeat:
+				switch typeName {
+				case "I_PRE_SLEEP_NOTIFICATION", "I_HEARTBEAT_RESPONSE":
+					if typeName == "I_PRE_SLEEP_NOTIFICATION" {
+						msgPL.Others.Set(FieldAwakeDuration, msMsg.Payload, nil)
+					}
+					// post an action to sen the messages in the queue
+					awakeActionMsg := &msgML.Message{
+						GatewayID:  msg.GatewayID,
+						NodeID:     msMsg.NodeID,
+						IsAck:      false,
+						IsReceived: true,
+						Timestamp:  msg.Timestamp,
+						Type:       msgML.TypeAction,
+						Payloads:   []msgML.Payload{{Key: nodeML.ActionAwake, Value: nodeML.ActionAwake}},
+					}
+					extraMessages = append(extraMessages, awakeActionMsg)
+
+				case "I_POST_SLEEP_NOTIFICATION":
+					msgPL.Others.Set(FieldSleepDuration, msMsg.Payload, nil)
+
+				}
+			default:
+				// noop
 			}
-			return true, nil
+
+			return true, extraMessages, nil
 		}
 
 		// if non hits just return from here
-		return false, nil
+		return false, nil, nil
 	}
-	return false, fmt.Errorf("message internal type not found: %s", msMsg.Type)
+	return false, nil, fmt.Errorf("message internal type not found: %s", msMsg.Type)
 }
 
 // converts message to MySensors specific type

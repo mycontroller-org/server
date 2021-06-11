@@ -50,12 +50,12 @@ bus:
 gateway:
   ids: []
   labels:
-    location: local
+    location: server
 
 handler:
   ids: []
   labels:
-    location: local
+    location: server
 
 database:
   storage: memory_database

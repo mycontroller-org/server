@@ -8,18 +8,22 @@ import (
 	mtsML "github.com/mycontroller-org/backend/v2/plugin/metrics"
 )
 
-// Labels used in this provider
+// Labels and fields used in this provider
 const (
-	LabelImperialSystem    = "ms_imperial_system" // this is bool label, used to configure about the system metric or imperial
-	LabelNodeID            = "ms_node_id"         // MySensors node id
-	LabelSensorID          = "ms_sensor_id"       // MySensors sensor id
-	LabelType              = "ms_type"            // MySensors type reference, can be used for sensor fields
-	LabelTypeString        = "ms_type_string"     // MySensors type in string format
-	LabelNodeType          = "ms_node_type"       // MySensors node type
-	LabelLockedReason      = "ms_locked_reason"   // If the the node is locked, reason will be in this label
-	LabelEraseEEPROM       = "ms_erase_eeprom"    // Supports only for MYSBootloader, on a reboot of node, the node eeprom will be erased
-	LabelFirmwareTypeID    = "ms_type_id"         // MySensors firmware type id
-	LabelFirmwareVersionID = "ms_version_id"      // MySensors firmware version id
+	LabelImperialSystem    = "ms_imperial_system"     // this is bool label, used to configure about the system metric or imperial
+	LabelNodeID            = "ms_node_id"             // MySensors node id
+	LabelSensorID          = "ms_sensor_id"           // MySensors sensor id
+	LabelType              = "ms_type"                // MySensors type reference, can be used for sensor fields
+	LabelTypeString        = "ms_type_string"         // MySensors type in string format
+	LabelNodeType          = "ms_node_type"           // MySensors node type
+	LabelLockedReason      = "ms_locked_reason"       // If the the node is locked, reason will be in this label
+	LabelEraseEEPROM       = "ms_erase_eeprom"        // Supports only for MYSBootloader, on a reboot of node, the node eeprom will be erased
+	LabelFirmwareTypeID    = "ms_type_id"             // MySensors firmware type id
+	LabelFirmwareVersionID = "ms_version_id"          // MySensors firmware version id
+	LabelSmartSleepingNode = "ms_smart_sleeping_node" // set true, if it is a smart sleeping node
+
+	FieldAwakeDuration = "awake_duration" // smart sleep node awake duration
+	FieldSleepDuration = "sleep_duration" // smart sleep node sleep duration
 )
 
 // internal references
@@ -234,14 +238,16 @@ var internalTypeMapForRx = map[string]string{
 // messages received from this internal type considered as a field data on the node
 // Example battery level, isLocked?, RSSI, etc...
 var internalValidFields = map[string]string{
-	"I_BATTERY_LEVEL":          model.FieldBatteryLevel,
-	"I_DISCOVER_RESPONSE":      model.FieldParentID,
-	"I_HEARTBEAT_RESPONSE":     model.FieldHeartbeat,
-	"I_LOCKED":                 model.FieldLocked,
-	"I_SIGNAL_REPORT_RESPONSE": model.FieldSignalStrength,
-	"I_SKETCH_NAME":            model.FieldName,
-	"I_SKETCH_VERSION":         model.LabelNodeVersion,
-	"I_VERSION":                model.LabelNodeLibraryVersion,
+	"I_BATTERY_LEVEL":           model.FieldBatteryLevel,
+	"I_DISCOVER_RESPONSE":       model.FieldParentID,
+	"I_HEARTBEAT_RESPONSE":      model.FieldHeartbeat,
+	"I_LOCKED":                  model.FieldLocked,
+	"I_SIGNAL_REPORT_RESPONSE":  model.FieldSignalStrength,
+	"I_SKETCH_NAME":             model.FieldName,
+	"I_SKETCH_VERSION":          model.LabelNodeVersion,
+	"I_VERSION":                 model.LabelNodeLibraryVersion,
+	"I_PRE_SLEEP_NOTIFICATION":  LabelSmartSleepingNode,
+	"I_POST_SLEEP_NOTIFICATION": LabelSmartSleepingNode,
 }
 
 // MySensors should implement globally defined features for the request
