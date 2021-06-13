@@ -8,10 +8,15 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+const (
+	ModeDevelopment = "development"
+	ModeProduction  = "production"
+)
+
 // GetLogger returns a logger
 func GetLogger(mode, level, encoding string, showFullCaller bool, callerSkip int) *zap.Logger {
 	var zapCfg zap.Config
-	if strings.ToLower(mode) == "production" {
+	if strings.ToLower(mode) == ModeProduction {
 		zapCfg = zap.NewProductionConfig()
 	} else {
 		zapCfg = zap.NewDevelopmentConfig()

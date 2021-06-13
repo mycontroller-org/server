@@ -33,7 +33,7 @@ func NewCustomDialer(cfg *Config) (*CustomDialer, error) {
 func (cd *CustomDialer) Dial(network, address string) (net.Conn, error) {
 	PrintDebug("connecting via custom dialer", zap.String("server", cd.uri.String()))
 
-	timeout := utils.ToDuration(cd.config.ConnectionTimeout, connectionTimeoutDefault)
+	timeout := utils.ToDuration(cd.config.ConnectionTimeout, defaultConnectionTimeout)
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: cd.config.TLSInsecureSkipVerify,
 	}

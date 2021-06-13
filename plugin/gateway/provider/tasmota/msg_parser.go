@@ -61,6 +61,9 @@ func (p *Provider) ToRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
 
 // ProcessReceived converts raw message into message
 func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
+	if rawMsg == nil {
+		return nil, nil
+	}
 	// one raw message can contain multiple messages
 	messages := make([]*msgML.Message, 0)
 

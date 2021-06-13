@@ -126,11 +126,18 @@ func (p *Provider) toRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
 
 // ProcessReceived converts to mycontroller specific
 func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
+	if rawMsg == nil {
+		return nil, nil
+	}
 	messages := make([]*msgML.Message, 0)
 
 	msMsg, err := p.decodeRawMessage(rawMsg)
 	if err != nil {
 		return nil, err
+	}
+
+	if msMsg == nil {
+		return nil, nil
 	}
 
 	// if it is a acknowledgement message send it to acknowledgement topic and proceed further
@@ -264,7 +271,7 @@ func (p *Provider) decodeRawMessage(rawMsg *msgML.RawMessage) (*message, error) 
 		// out_rfm69/11/1/1/0/0
 		rData := strings.Split(string(rawMsg.Others.Get(gwPL.KeyMqttTopic).(string)), "/")
 		if len(rData) < 5 {
-			zap.L().Error("Invalid message format", zap.Any("rawMessage", rawMsg))
+			zap.L().Error("invalid message format", zap.Any("rawMessage", rawMsg))
 			return nil, nil
 		}
 		d = rData[len(rData)-5:]
@@ -273,7 +280,7 @@ func (p *Provider) decodeRawMessage(rawMsg *msgML.RawMessage) (*message, error) 
 		// node-id;child-sensor-id;command;ack;type;payload
 		_d := strings.Split(convertor.ToString(rawMsg.Data), ";")
 		if len(_d) < 6 {
-			zap.L().Error("Invalid message format", zap.String("rawMessage", convertor.ToString(rawMsg.Data)))
+			zap.L().Error("invalid message format", zap.String("rawMessage", convertor.ToString(rawMsg.Data)))
 			return nil, nil
 		}
 		payload = _d[5]

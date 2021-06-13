@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
@@ -54,7 +55,7 @@ func New(gwCfg *gwML.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgML.R
 	if err != nil {
 		return nil, err
 	}
-	zap.L().Debug("config:", zap.Any("converted", cfg))
+	zap.L().Debug("updated config data", zap.Any("config", cfg))
 
 	serverURL, err := url.Parse(cfg.Server)
 	if err != nil {
@@ -87,11 +88,12 @@ func New(gwCfg *gwML.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgML.R
 }
 
 func messageFormatter(rawMsg *msgML.RawMessage) string {
-	direction := "Sent"
+	direction := "sent"
 	if rawMsg.IsReceived {
-		direction = "Recd"
+		direction = "recd"
 	}
-	return fmt.Sprintf("%v\t%v\t%s\n", rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"), direction, convertor.ToString(rawMsg.Data))
+	data := strings.TrimSuffix(convertor.ToString(rawMsg.Data), "\n")
+	return fmt.Sprintf("%v\t%v\t%s\n", rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"), direction, data)
 }
 
 func (ep *Endpoint) Write(rawMsg *msgML.RawMessage) error {
@@ -114,7 +116,7 @@ func (ep *Endpoint) Close() error {
 	if ep.conn != nil {
 		err := ep.conn.Close()
 		if err != nil {
-			zap.L().Error("Error on closing a a connection", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server), zap.Error(err))
+			zap.L().Error("error on closing the connection", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server), zap.Error(err))
 		}
 		ep.conn = nil
 	}
@@ -128,22 +130,18 @@ func (ep *Endpoint) dataListener() {
 	for {
 		select {
 		case <-ep.safeClose.CH:
-			zap.L().Info("Received close signal.", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server))
+			zap.L().Info("received close signal.", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server))
 			return
 		default:
 			rxLength, err := ep.conn.Read(readBuf)
 			if err != nil {
-				zap.L().Error("Error on reading data from a ethernet connection", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server), zap.Error(err))
+				zap.L().Error("error on reading the data from the ethernet connection", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server), zap.Error(err))
 				state := model.State{
 					Status:  model.StatusDown,
 					Message: err.Error(),
 					Since:   time.Now(),
 				}
 				busUtils.SetGatewayState(ep.GwCfg.ID, state)
-
-				// channel close panic issue with internal reconnect
-				// let it reconnected from gateway service
-				// go ep.reconnect() // refer serial port protocol
 				return
 			}
 
@@ -156,11 +154,10 @@ func (ep *Endpoint) dataListener() {
 					copy(dataCloned, data)
 					data = nil // reset local buffer
 					rawMsg := msgML.NewRawMessage(true, dataCloned)
-					//	zap.L().Debug("new message received", zap.Any("rawMessage", rawMsg))
 					ep.messageLogger.AsyncWrite(rawMsg)
 					err := ep.receiveMsgFunc(rawMsg)
 					if err != nil {
-						zap.L().Error("Error on sending a raw message to queue", zap.String("gateway", ep.GwCfg.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
+						zap.L().Error("error on sending a raw message to queue", zap.String("gateway", ep.GwCfg.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 					}
 				} else {
 					data = append(data, b)

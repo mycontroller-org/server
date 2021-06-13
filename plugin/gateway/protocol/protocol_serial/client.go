@@ -2,18 +2,19 @@ package serial
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	gwml "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
+	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	msglogger "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/message_logger"
-	ser "github.com/tarm/serial"
+	serialDriver "github.com/tarm/serial"
 	"go.uber.org/zap"
 )
 
@@ -35,11 +36,11 @@ type Config struct {
 
 // Endpoint data
 type Endpoint struct {
-	GwCfg          *gwml.Config
+	GwCfg          *gwML.Config
 	Config         Config
-	serCfg         *ser.Config
-	Port           *ser.Port
-	receiveMsgFunc func(rm *msgml.RawMessage) error
+	serCfg         *serialDriver.Config
+	Port           *serialDriver.Port
+	receiveMsgFunc func(rm *msgML.RawMessage) error
 	safeClose      *concurrency.Channel
 	messageLogger  msglogger.MessageLogger
 	txPreDelay     time.Duration
@@ -47,18 +48,18 @@ type Endpoint struct {
 }
 
 // New serial client
-func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
+func New(gwCfg *gwML.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgML.RawMessage) error) (*Endpoint, error) {
 	var cfg Config
 	err := utils.MapToStruct(utils.TagNameNone, protocol, &cfg)
 	if err != nil {
 		return nil, err
 	}
-	zap.L().Debug("config:", zap.Any("converted", cfg))
+	zap.L().Debug("updated config data", zap.Any("config", cfg))
 
-	serCfg := &ser.Config{Name: cfg.Portname, Baud: cfg.BaudRate}
+	serCfg := &serialDriver.Config{Name: cfg.Portname, Baud: cfg.BaudRate}
 
-	zap.L().Info("Opening serial port", zap.String("gateway", gwCfg.ID), zap.String("port", cfg.Portname))
-	port, err := ser.OpenPort(serCfg)
+	zap.L().Info("opening a serial port", zap.String("gateway", gwCfg.ID), zap.String("port", cfg.Portname))
+	port, err := serialDriver.OpenPort(serCfg)
 	if err != nil {
 		// zap.L().Error("error on opening port", zap.String("gateway", gwCfg.ID), zap.String("port", serCfg.Name), zap.String("error", err.Error()))
 		return nil, err
@@ -84,15 +85,16 @@ func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.R
 	return endpoint, nil
 }
 
-func messageFormatter(rawMsg *msgml.RawMessage) string {
-	direction := "Sent"
+func messageFormatter(rawMsg *msgML.RawMessage) string {
+	direction := "sent"
 	if rawMsg.IsReceived {
-		direction = "Recd"
+		direction = "recd"
 	}
-	return fmt.Sprintf("%v\t%v\t%s\n", rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"), direction, convertor.ToString(rawMsg.Data))
+	data := strings.TrimSuffix(convertor.ToString(rawMsg.Data), "\n")
+	return fmt.Sprintf("%v\t%v\t%s\n", rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"), direction, data)
 }
 
-func (ep *Endpoint) Write(rawMsg *msgml.RawMessage) error {
+func (ep *Endpoint) Write(rawMsg *msgML.RawMessage) error {
 	time.Sleep(ep.txPreDelay) // transmit pre delay
 	ep.messageLogger.AsyncWrite(rawMsg)
 
@@ -111,11 +113,11 @@ func (ep *Endpoint) Close() error {
 
 	if ep.Port != nil {
 		if err := ep.Port.Flush(); err != nil {
-			zap.L().Error("Error on flushing a serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
+			zap.L().Error("error on flushing the serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
 		}
 		err := ep.Port.Close()
 		if err != nil {
-			zap.L().Error("Error on closing a serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
+			zap.L().Error("error on closing the serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
 		}
 		return err
 	}
@@ -129,12 +131,12 @@ func (ep *Endpoint) dataListener() {
 	for {
 		select {
 		case <-ep.safeClose.CH:
-			zap.L().Info("Received close signal.", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name))
+			zap.L().Info("received close signal.", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name))
 			return
 		default:
 			rxLength, err := ep.Port.Read(readBuf)
 			if err != nil {
-				zap.L().Error("Error on reading data from a serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
+				zap.L().Error("error on reading data from the serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
 				state := model.State{
 					Status:  model.StatusDown,
 					Message: err.Error(),
@@ -148,7 +150,6 @@ func (ep *Endpoint) dataListener() {
 
 				return
 			}
-			//zap.L().Debug("data", zap.Any("data", string(data)))
 			for index := 0; index < rxLength; index++ {
 				b := readBuf[index]
 				if b == ep.Config.MessageSplitter {
@@ -156,12 +157,11 @@ func (ep *Endpoint) dataListener() {
 					dataCloned := make([]byte, len(data))
 					copy(dataCloned, data)
 					data = nil // reset local buffer
-					rawMsg := msgml.NewRawMessage(true, dataCloned)
-					//	zap.L().Debug("new message received", zap.Any("rawMessage", rawMsg))
+					rawMsg := msgML.NewRawMessage(true, dataCloned)
 					ep.messageLogger.AsyncWrite(rawMsg)
 					err := ep.receiveMsgFunc(rawMsg)
 					if err != nil {
-						zap.L().Error("Error on sending a raw message to queue", zap.String("gateway", ep.GwCfg.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
+						zap.L().Error("error on sending a raw message to queue", zap.String("gateway", ep.GwCfg.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 					}
 				} else {
 					data = append(data, b)

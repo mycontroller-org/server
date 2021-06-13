@@ -102,6 +102,9 @@ func (p *Provider) Post(message *msgML.Message) error {
 
 // ProcessReceived performs operation on raw message received from esphome node and returns multiple messages
 func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
+	if rawMsg == nil {
+		return nil, nil
+	}
 	zap.L().Debug("processing a message", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("type", fmt.Sprintf("%T", rawMsg.Data)), zap.Any("rawMessage", rawMsg))
 	nodeID := rawMsg.Others.GetString(NodeID)
 	protoMsg := rawMsg.Data.(protoreflect.ProtoMessage)
