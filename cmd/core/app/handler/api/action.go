@@ -23,6 +23,7 @@ func RegisterActionRoutes(router *mux.Router) {
 	router.HandleFunc("/api/action", executeGetAction).Methods(http.MethodGet)
 	router.HandleFunc("/api/action", executePostAction).Methods(http.MethodPost)
 	router.HandleFunc("/api/action/node", executeNodeAction).Methods(http.MethodGet)
+	router.HandleFunc("/api/action/gateway", executeGatewayAction).Methods(http.MethodGet)
 }
 
 func executeNodeAction(w http.ResponseWriter, r *http.Request) {
@@ -40,6 +41,27 @@ func executeNodeAction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = action.ExecuteNodeAction(actionArr[0], idsArr)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+}
+
+func executeGatewayAction(w http.ResponseWriter, r *http.Request) {
+	query, err := handlerUtils.ReceivedQueryMap(r)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	actionArr := query[keyAction]
+	idsArr := query[keyID]
+
+	if len(actionArr) == 0 || len(idsArr) == 0 {
+		http.Error(w, "required field(s) missing", 400)
+		return
+	}
+
+	err = action.ExecuteGatewayAction(actionArr[0], idsArr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

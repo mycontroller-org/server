@@ -7,6 +7,11 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
 
+// Gateway actions
+const (
+	ActionDiscoverNodes = "discover_nodes"
+)
+
 // Config struct
 type Config struct {
 	ID                 string               `json:"id"`

@@ -7,9 +7,8 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 )
 
-// Node functions
+// Node actions
 const (
-	ActionDiscover         = "discover"
 	ActionFirmwareUpdate   = "firmware_update"
 	ActionHeartbeatRequest = "heartbeat_request"
 	ActionReboot           = "reboot"

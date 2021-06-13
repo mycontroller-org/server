@@ -24,7 +24,7 @@ import (
 func handleActions(gwCfg *gwML.Config, fn string, msg *msgML.Message, msMsg *message) error {
 	switch fn {
 
-	case nodeML.ActionDiscover:
+	case gwML.ActionDiscoverNodes:
 		msMsg.Type = actionDiscoverRequest
 		msMsg.Payload = payloadEmpty
 		msMsg.NodeID = idBroadcast

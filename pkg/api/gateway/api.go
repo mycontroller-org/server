@@ -25,6 +25,17 @@ func Get(filters []stgML.Filter) (*gwML.Config, error) {
 	return result, err
 }
 
+// GetByIDs returns a gateway details by id
+func GetByIDs(ids []string) ([]gwML.Config, error) {
+	filters := []stgML.Filter{
+		{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids},
+	}
+	pagination := &stgML.Pagination{Limit: int64(len(ids))}
+	gateways := make([]gwML.Config, 0)
+	_, err := stg.SVC.Find(model.EntityNode, &gateways, filters, pagination)
+	return gateways, err
+}
+
 // GetByID returns a gateway details
 func GetByID(id string) (*gwML.Config, error) {
 	filters := []stgML.Filter{

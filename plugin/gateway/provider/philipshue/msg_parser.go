@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
@@ -24,7 +25,7 @@ func (p *Provider) Post(msg *msgML.Message) error {
 		case nodeML.ActionRefreshNodeInfo:
 			p.actionRefreshNodeInfo(msg.NodeID)
 
-		case nodeML.ActionDiscover:
+		case gwML.ActionDiscoverNodes:
 			p.actionDiscover()
 		}
 	} else if msg.Type == msgML.TypeSet && strings.HasPrefix(msg.SourceID, "state") {

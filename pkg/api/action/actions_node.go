@@ -13,8 +13,7 @@ import (
 func ExecuteNodeAction(action string, nodeIDs []string) error {
 	// verify is a valid action?
 	switch action {
-	case nodeML.ActionDiscover,
-		nodeML.ActionFirmwareUpdate,
+	case nodeML.ActionFirmwareUpdate,
 		nodeML.ActionHeartbeatRequest,
 		nodeML.ActionReboot,
 		nodeML.ActionRefreshNodeInfo,
