@@ -14,12 +14,12 @@ web:
     enabled: false
     bind_address: "0.0.0.0"
     port: 8443
-    cert_dir: certs/https_ssl
+    cert_dir: ../mc_home/certs/https_ssl
   https_acme:
     enabled: false
     bind_address: "0.0.0.0"
     port: 9443
-    cache_dir: certs/https_acme
+    cache_dir: ../mc_home/certs/https_acme
     acme_directory: 
     email: 
     domains: []
@@ -34,15 +34,15 @@ logger:
     metrics: warn
 
 directories:
-  data: data
-  logs: logs
-  tmp: tmp
-  secure_share: secure_share
-  insecure_share: insecure_share
+  data: ../mc_home/data
+  logs: ../mc_home/logs
+  tmp: ../mc_home/tmp
+  secure_share: ../mc_home/secure_share
+  insecure_share: ../mc_home/insecure_share
 
 bus:
   type: embedded
-  topic_prefix: mc_all_in_one
+  topic_prefix: mc_server
   server_url: nats://192.168.1.21:4222
   tls_insecure_skip_verify: false
   connection_timeout: 10s

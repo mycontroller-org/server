@@ -42,7 +42,7 @@ directories:
 
 bus:
   type: embedded
-  topic_prefix: mc_all_in_one
+  topic_prefix: mc_server
   server_url: nats://192.168.1.21:4222
   tls_insecure_skip_verify: false
   connection_timeout: 10s

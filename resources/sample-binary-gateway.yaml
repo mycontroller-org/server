@@ -2,9 +2,9 @@
 secret: 5a2f6ff25b0025aeae12ae096363b51a
 
 directories:
-  data: data
-  logs: logs
-  tmp: tmp
+  data: mc_home/data
+  logs: mc_home/logs
+  tmp: mc_home/tmp
 
 logger:
   mode: development
@@ -14,7 +14,7 @@ logger:
 
 bus:
   type: natsio
-  topic_prefix: mc_core
+  topic_prefix: mc_server
   server_url: nats://192.168.1.21:4222
   tls_insecure_skip_verify: false
   connection_timeout: 10s
