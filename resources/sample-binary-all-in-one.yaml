@@ -11,7 +11,7 @@ web:
     bind_address: "0.0.0.0"
     port: 8080
   https_ssl:
-    enabled: false
+    enabled: true
     bind_address: "0.0.0.0"
     port: 8443
     cert_dir: ../mc_home/certs/https_ssl
@@ -21,8 +21,8 @@ web:
     port: 9443
     cache_dir: ../mc_home/certs/https_acme
     acme_directory: 
-    email: 
-    domains: []
+    email: hello@example.com
+    domains: ["mycontroller.example.com"]
 
 logger:
   mode: development
@@ -43,7 +43,7 @@ directories:
 bus:
   type: embedded
   topic_prefix: mc_server
-  server_url: nats://192.168.1.21:4222
+  server_url: nats://127.0.0.1:4222
   tls_insecure_skip_verify: false
   connection_timeout: 10s
 
@@ -72,7 +72,7 @@ databases:
 
   - name: influx_database
     type: influxdb_v2
-    uri: http://192.168.1.21:8086
+    uri: http://127.0.0.1:8086
     token: 
     username:
     password:

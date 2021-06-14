@@ -11,7 +11,7 @@ web:
     bind_address: "0.0.0.0"
     port: 8080
   https_ssl:
-    enabled: false
+    enabled: true
     bind_address: "0.0.0.0"
     port: 8443
     cert_dir: /mc_home/certs/https_ssl
@@ -21,8 +21,8 @@ web:
     port: 9443
     cache_dir: /mc_home/certs/https_acme
     acme_directory: 
-    email: 
-    domains: []
+    email: hello@example.com
+    domains: ["mycontroller.example.com"]
 
 logger:
   mode: development
