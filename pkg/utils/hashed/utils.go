@@ -36,7 +36,7 @@ func IsValidPassword(hashed, password string) bool {
 
 // Encrypt perform encryption on the plain text
 func Encrypt(plainText string) (string, error) {
-	if strings.HasPrefix(plainText, EncryptionIdentity) {
+	if strings.HasPrefix(plainText, EncryptionIdentity) || plainText == "" {
 		return plainText, nil
 	}
 	key := []byte(configuration.CFG.Secret)
