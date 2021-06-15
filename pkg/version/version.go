@@ -2,6 +2,8 @@ package version
 
 import (
 	"runtime"
+
+	"github.com/shirou/gopsutil/v3/host"
 )
 
 var (
@@ -18,10 +20,15 @@ type Version struct {
 	GoLang    string `json:"goLang"`
 	Platform  string `json:"platform"`
 	Arch      string `json:"arch"`
+	HostID    string `json:"hostId"`
 }
 
 // Get returns the Version object
 func Get() Version {
+	hostId, err := host.HostID()
+	if err != nil {
+		hostId = err.Error()
+	}
 	return Version{
 		GitCommit: gitCommit,
 		Version:   version,
@@ -29,5 +36,6 @@ func Get() Version {
 		GoLang:    runtime.Version(),
 		Platform:  runtime.GOOS,
 		Arch:      runtime.GOARCH,
+		HostID:    hostId,
 	}
 }
