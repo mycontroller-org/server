@@ -24,7 +24,8 @@ func (p *Provider) updateDisk() {
 			othersData := presentMsg.Payloads[0]
 			othersData.Others.Set("fstype", stat.Fstype, nil)
 			othersData.Others.Set("inodes_total", stat.InodesTotal, nil)
-			othersData.Others.Set("size", getValueByUnit(stat.Total, dataCFG.Unit), nil)
+			othersData.Others.Set("disk_size", getValueByUnit(stat.Total, dataCFG.Unit), nil)
+			othersData.Others.Set("disk_size_unit", dataCFG.Unit, nil)
 			presentMsg.Payloads[0] = othersData
 
 			err = p.postMsg(&presentMsg)

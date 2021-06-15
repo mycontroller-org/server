@@ -34,7 +34,7 @@ func (p *Provider) updateMemory() {
 		msg.Payloads = append(msg.Payloads, p.getData("used_percent", vm.UsedPercent, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
 	}
 
-	if !cfg.SwapMemoryDisabled {
+	if !cfg.SwapDisabled {
 		sm, err := mem.SwapMemory()
 		if err != nil {
 			zap.L().Error("error on getting swap memory usage", zap.Error(err))

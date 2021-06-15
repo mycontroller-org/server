@@ -10,17 +10,18 @@ import (
 )
 
 const (
-	defaultInterval = "1m"
+	defaultInterval          = "1m"
+	NodeDetailMetricInterval = "5m"
 )
 
 func (p *Provider) scheduleMonitoring() error {
 	cfg := p.HostConfig
 
 	// present node details every 5 minutes once
-	p.schedule("node-info", "5m", p.updateNodeDetails)
+	p.schedule("node-info", NodeDetailMetricInterval, p.updateNodeDetails)
 
 	// memory schedule
-	if !cfg.Memory.MemoryDisabled || !cfg.Memory.SwapMemoryDisabled {
+	if !cfg.Memory.MemoryDisabled || !cfg.Memory.SwapDisabled {
 		p.schedule(config.SourceTypeMemory, getInterval(cfg.Memory.Interval), p.updateMemory)
 	}
 

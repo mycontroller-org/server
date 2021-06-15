@@ -17,10 +17,10 @@ type HostConfig struct {
 
 // Memory details
 type MemoryConfig struct {
-	Interval           string
-	MemoryDisabled     bool
-	SwapMemoryDisabled bool
-	Unit               string
+	Interval       string
+	MemoryDisabled bool
+	SwapDisabled   bool
+	Unit           string
 }
 
 // CPU details
@@ -75,4 +75,28 @@ const (
 	SourceTypeTemperature = "temperature"
 	SourceTypeDisk        = "disk"
 	SourceTypeProcess     = "process"
+)
+
+const (
+	// process filter fields
+	ProcessFieldPid      = "pid"
+	ProcessFieldCmdLine  = "cmdline"
+	ProcessFieldCwd      = "cwd"
+	ProcessFieldEXE      = "exe"
+	ProcessFieldName     = "name"
+	ProcessFieldNice     = "nice"
+	ProcessFieldPPid     = "ppid"
+	ProcessFieldUsername = "username"
+
+	// process extra fields
+	ProcessFieldGids          = "gids"
+	ProcessFieldUids          = "uids"
+	ProcessFieldCpuPercent    = "cpu_percent"
+	ProcessFieldMemoryPercent = "memory_percent"
+	ProcessFieldRSS           = "rss"
+	ProcessFieldVMS           = "vms"
+	ProcessFieldSwap          = "swap"
+	ProcessFieldStack         = "stack"
+	ProcessFieldLocked        = "locked"
+	ProcessFieldData          = "data"
 )

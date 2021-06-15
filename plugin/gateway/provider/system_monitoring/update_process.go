@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
+	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/system_monitoring/config"
 	metricsML "github.com/mycontroller-org/backend/v2/plugin/metrics"
 	"github.com/shirou/gopsutil/v3/process"
 	"go.uber.org/zap"
@@ -33,40 +34,40 @@ func (p *Provider) updateProcess() {
 				actualValue := ""
 				var err error
 				switch strings.ToLower(key) {
-				case "pid":
+				case config.ProcessFieldPid:
 					actualValue = convertor.ToString(proc.Pid)
 
-				case "cmdline":
+				case config.ProcessFieldCmdLine:
 					value, e := proc.Cmdline()
 					actualValue = value
 					err = e
 
-				case "cwd":
+				case config.ProcessFieldCwd:
 					value, e := proc.Cwd()
 					actualValue = value
 					err = e
 
-				case "exe":
+				case config.ProcessFieldEXE:
 					value, e := proc.Exe()
 					actualValue = value
 					err = e
 
-				case "name":
+				case config.ProcessFieldName:
 					value, e := proc.Name()
 					actualValue = value
 					err = e
 
-				case "nice":
+				case config.ProcessFieldNice:
 					value, e := proc.Nice()
 					actualValue = convertor.ToString(value)
 					err = e
 
-				case "ppid":
+				case config.ProcessFieldPPid:
 					value, e := proc.Ppid()
 					actualValue = convertor.ToString(value)
 					err = e
 
-				case "username":
+				case config.ProcessFieldUsername:
 					value, e := proc.Username()
 					actualValue = value
 					err = e
@@ -102,8 +103,8 @@ func (p *Provider) updateProcess() {
 			presentMsg := p.getSourcePresentationMsg(sourceID, sourceName)
 			othersData := presentMsg.Payloads[0]
 
-			othersData.Others.Set("pid", proc.Pid, nil)
-			othersData.Labels.Set("pid", convertor.ToString(proc.Pid))
+			othersData.Others.Set(config.ProcessFieldPid, proc.Pid, nil)
+			othersData.Labels.Set(config.ProcessFieldPid, convertor.ToString(proc.Pid))
 
 			var value interface{}
 
@@ -112,63 +113,63 @@ func (p *Provider) updateProcess() {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			othersData.Others.Set("cmdLine", value, nil)
+			othersData.Others.Set(config.ProcessFieldCmdLine, value, nil)
 
 			value, err = proc.Cwd()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			othersData.Others.Set("cwd", value, nil)
+			othersData.Others.Set(config.ProcessFieldCwd, value, nil)
 
 			value, err = proc.Exe()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			othersData.Others.Set("exe", value, nil)
+			othersData.Others.Set(config.ProcessFieldEXE, value, nil)
 
 			value, err = proc.Name()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			othersData.Others.Set("name", value, nil)
+			othersData.Others.Set(config.ProcessFieldName, value, nil)
 
 			value, err = proc.Nice()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			othersData.Others.Set("nice", value, nil)
+			othersData.Others.Set(config.ProcessFieldNice, value, nil)
 
 			value, err = proc.Ppid()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			othersData.Others.Set("ppid", value, nil)
+			othersData.Others.Set(config.ProcessFieldPPid, value, nil)
 
 			value, err = proc.Username()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			othersData.Others.Set("username", value, nil)
+			othersData.Others.Set(config.ProcessFieldUsername, value, nil)
 
 			value, err = proc.Gids()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			othersData.Others.Set("gids", value, nil)
+			othersData.Others.Set(config.ProcessFieldGids, value, nil)
 
 			value, err = proc.Uids()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			othersData.Others.Set("uids", value, nil)
+			othersData.Others.Set(config.ProcessFieldUids, value, nil)
 
 			presentMsg.Payloads[0] = othersData
 
@@ -186,26 +187,26 @@ func (p *Provider) updateProcess() {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			msg.Payloads = append(msg.Payloads, p.getData("cpu_percent", value, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldCpuPercent, value, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
 
 			value, err = proc.MemoryPercent()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			msg.Payloads = append(msg.Payloads, p.getData("memory_percent", value, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldMemoryPercent, value, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
 
 			memInfo, err := proc.MemoryInfo()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			msg.Payloads = append(msg.Payloads, p.getData("rss", getValueByUnit(memInfo.RSS, dataCFG.Unit), metricsML.MetricTypeGaugeFloat, dataCFG.Unit, true))
-			msg.Payloads = append(msg.Payloads, p.getData("vms", getValueByUnit(memInfo.VMS, dataCFG.Unit), metricsML.MetricTypeNone, dataCFG.Unit, true))
-			msg.Payloads = append(msg.Payloads, p.getData("swap", getValueByUnit(memInfo.Swap, dataCFG.Unit), metricsML.MetricTypeNone, dataCFG.Unit, true))
-			msg.Payloads = append(msg.Payloads, p.getData("stack", memInfo.Stack, metricsML.MetricTypeNone, metricsML.UnitNone, true))
-			msg.Payloads = append(msg.Payloads, p.getData("locked", memInfo.Locked, metricsML.MetricTypeNone, metricsML.UnitNone, true))
-			msg.Payloads = append(msg.Payloads, p.getData("data", memInfo.Data, metricsML.MetricTypeNone, metricsML.UnitNone, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldRSS, getValueByUnit(memInfo.RSS, dataCFG.Unit), metricsML.MetricTypeGaugeFloat, dataCFG.Unit, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldVMS, getValueByUnit(memInfo.VMS, dataCFG.Unit), metricsML.MetricTypeNone, dataCFG.Unit, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldSwap, getValueByUnit(memInfo.Swap, dataCFG.Unit), metricsML.MetricTypeNone, dataCFG.Unit, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldStack, memInfo.Stack, metricsML.MetricTypeNone, metricsML.UnitNone, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldLocked, memInfo.Locked, metricsML.MetricTypeNone, metricsML.UnitNone, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldData, memInfo.Data, metricsML.MetricTypeNone, metricsML.UnitNone, true))
 
 			err = p.postMsg(&msg)
 			if err != nil {
