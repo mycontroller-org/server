@@ -83,7 +83,7 @@ func (p *Provider) Start(rxMessageFunc func(rawMsg *msgML.RawMessage) error) err
 
 		err := espNode.Connect()
 		if err != nil {
-			zap.L().Error("error on connecting a node", zap.Error(err), zap.String("gatewayId", espNode.GatewayID), zap.String("nodeId", nodeID))
+			zap.L().Info("error on connecting a node", zap.String("gatewayId", espNode.GatewayID), zap.String("nodeId", nodeID), zap.String("error", err.Error()))
 			espNode.ScheduleReconnect()
 		}
 

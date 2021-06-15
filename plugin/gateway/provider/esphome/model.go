@@ -46,7 +46,9 @@ const (
 	// response message fields
 	FieldState                 = "state"
 	FieldBrightness            = "brightness"
+	FieldRGB                   = "rgb"
 	FieldRed                   = "red"
+	FieldGreen                 = "green"
 	FieldBlue                  = "blue"
 	FieldWhite                 = "white"
 	FieldColorTemperature      = "color_temperature"

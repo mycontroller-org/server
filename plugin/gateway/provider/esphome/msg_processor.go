@@ -9,7 +9,9 @@ import (
 	"github.com/mycontroller-org/backend/v2/pkg/json"
 	"github.com/mycontroller-org/backend/v2/pkg/model"
 	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	colorUtils "github.com/mycontroller-org/backend/v2/pkg/utils/color"
 	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/backend/v2/plugin/metrics"
 	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
@@ -60,19 +62,19 @@ func (p *Provider) Post(message *msgML.Message) error {
 
 	case EntityTypeClimate:
 		request = &esphomeAPI.ClimateCommandRequest{}
-		fields[fieldID] = adjustValueToEsphomeNode(entity.Type, fieldID, payload.Value)
+		adjustValueToEsphomeNode(entity.Type, fieldID, payload.Value, fields)
 
 	case EntityTypeCover:
 		request = &esphomeAPI.CoverCommandRequest{}
-		fields[fieldID] = adjustValueToEsphomeNode(entity.Type, fieldID, payload.Value)
+		adjustValueToEsphomeNode(entity.Type, fieldID, payload.Value, fields)
 
 	case EntityTypeFan:
 		request = &esphomeAPI.FanCommandRequest{}
-		fields[fieldID] = adjustValueToEsphomeNode(entity.Type, fieldID, payload.Value)
+		adjustValueToEsphomeNode(entity.Type, fieldID, payload.Value, fields)
 
 	case EntityTypeLight:
 		request = &esphomeAPI.LightCommandRequest{}
-		fields[fieldID] = adjustValueToEsphomeNode(entity.Type, fieldID, payload.Value)
+		adjustValueToEsphomeNode(entity.Type, fieldID, payload.Value, fields)
 
 	case EntityTypeSwitch:
 		request = &esphomeAPI.SwitchCommandRequest{}
@@ -94,7 +96,24 @@ func (p *Provider) Post(message *msgML.Message) error {
 		if err != nil {
 			return err
 		}
-		return espNode.Post(request)
+		err = espNode.Post(request)
+		if err != nil {
+			return err
+		}
+		// create a echo to MyController to update the actual component
+		// this block will be used only, when the field not updated by the esphome node
+		if entity.Type == EntityTypeLight && fieldID == FieldRGB {
+			msgSource := getMessage(p.GatewayConfig.ID, message.NodeID, message.SourceID, msgML.TypeSet, time.Now())
+			sourceData := msgML.NewPayload()
+			sourceData.Key = fieldID
+			sourceData.Value = payload.Value
+			sourceData.MetricType = metrics.MetricTypeNone
+			msgSource.Payloads = append(msgSource.Payloads, sourceData)
+			err = mcbus.Publish(mcbus.GetTopicPostMessageToCore(), msgSource)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil
@@ -257,42 +276,80 @@ func adjustValueToMyController(entityType, fieldID string, value interface{}) st
 	return convertor.ToString(value)
 }
 
-func adjustValueToEsphomeNode(entityType, fieldID string, value interface{}) interface{} {
+func adjustValueToEsphomeNode(entityType, fieldID string, value interface{}, fields map[string]interface{}) {
 	switch entityType {
 
 	case EntityTypeClimate:
 		switch fieldID {
 		case FieldMode, FieldFanMode, FieldSwingMode:
-			return int32(convertor.ToInteger(value))
+			fields[fieldID] = int32(convertor.ToInteger(value))
+			return
 		case FieldAway:
-			return convertor.ToBool(value)
+			fields[fieldID] = convertor.ToBool(value)
+			return
 		default:
-			return float32(convertor.ToFloat(value))
+			fields[fieldID] = float32(convertor.ToFloat(value))
+			return
 		}
 
 	case EntityTypeCover:
-		return convertor.ToBool(value)
+		fields[fieldID] = convertor.ToBool(value)
+		return
 
 	case EntityTypeFan:
 		switch fieldID {
 		case FieldState, FieldOscillating:
-			return convertor.ToBool(value)
+			fields[fieldID] = convertor.ToBool(value)
+			return
 		default:
-			return int32(convertor.ToInteger(value))
+			fields[fieldID] = int32(convertor.ToInteger(value))
+			return
 		}
 
 	case EntityTypeLight:
 		switch fieldID {
 		case FieldState:
-			return convertor.ToBool(value)
+			fields[fieldID] = convertor.ToBool(value)
+			return
 		case FieldBrightness:
-			return float32(convertor.ToFloat(value) / 100.0)
+			fields[fieldID] = float32(convertor.ToFloat(value) / 100.0)
+			return
+		case FieldWhite:
+			fields[fieldID] = float32(convertor.ToFloat(value) / 100.0)
+			return
+		case FieldRGB:
+			// convert RGB to r,g,b and send it
+			red := float32(0)
+			green := float32(0)
+			blue := float32(0)
+
+			stringValue := convertor.ToString(value)
+			if strings.HasPrefix(stringValue, "#") && len(stringValue) == 7 {
+				// example: #ad4e00
+				red = colorUtils.HexToFloat32(stringValue[1:3])
+				green = colorUtils.HexToFloat32(stringValue[3:5])
+				blue = colorUtils.HexToFloat32(stringValue[5:])
+			} else { // example: 254 (hue)
+				// keeps saturation 99 all the time
+				red, green, blue = colorUtils.ToRGB(convertor.ToFloat(value), 99, 0.01)
+			}
+
+			fields[FieldRed] = red / 255
+			fields[FieldGreen] = green / 255
+			fields[FieldBlue] = blue / 255
+			return
+		case FieldRed, FieldGreen, FieldBlue:
+			fields["has_rgb"] = true
+			fields[fieldID] = float32(convertor.ToFloat(value)) / 255.0
+			return
+
 		default:
-			return float32(convertor.ToFloat(value))
+			fields[fieldID] = float32(convertor.ToFloat(value))
+			return
 		}
 
 	}
-	return convertor.ToString(value)
+	fields[fieldID] = convertor.ToString(value)
 }
 
 // getMessageEntitiesResponse returns the entities as multiple messages

@@ -150,7 +150,7 @@ func (en *ESPHomeNode) reconnect() {
 
 	err := en.Connect()
 	if err != nil {
-		zap.L().Info("error on reconnect", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.String("error", err.Error()))
+		zap.L().Debug("error on reconnect", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.String("error", err.Error()))
 	} else {
 		Unschedule(en.reconnectScheduleID())
 	}
