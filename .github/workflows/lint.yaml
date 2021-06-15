@@ -20,6 +20,6 @@ jobs:
         with:
           version: latest
           skip-go-installation: true
-          args: "--build-tags core"
+          args: "--build-tags core --timeout=10m"
           # Optional: show only new issues if it's a pull request. The default value is `false`.
           # only-new-issues: true
