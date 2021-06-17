@@ -20,8 +20,8 @@ var (
 	subscriptionID = int64(0)
 )
 
-// Init starts resource server listener
-func Init() error {
+// Start starts resource server listener
+func Start() error {
 	eventQueue = queueUtils.New("resource_service", queueSize, processEvent, queueWorkers)
 
 	// on event receive add it in to our local queue

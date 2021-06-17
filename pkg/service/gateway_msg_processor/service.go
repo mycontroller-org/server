@@ -33,12 +33,12 @@ var (
 	workers   = 1
 )
 
-// Init message process engine
-func Init() error {
+// Start message process engine
+func Start() error {
 	msgQueue = queueUtils.New("message_processor", queueSize, processMessage, workers)
 
 	// on message receive add it in to our local queue
-	_, err := mcbus.Subscribe(mcbus.GetTopicPostMessageToCore(), onMessageReceive)
+	_, err := mcbus.Subscribe(mcbus.GetTopicPostMessageToServer(), onMessageReceive)
 	if err != nil {
 		return err
 	}

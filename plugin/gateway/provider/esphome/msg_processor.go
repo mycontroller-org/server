@@ -109,7 +109,7 @@ func (p *Provider) Post(message *msgML.Message) error {
 			sourceData.Value = payload.Value
 			sourceData.MetricType = metrics.MetricTypeNone
 			msgSource.Payloads = append(msgSource.Payloads, sourceData)
-			err = mcbus.Publish(mcbus.GetTopicPostMessageToCore(), msgSource)
+			err = mcbus.Publish(mcbus.GetTopicPostMessageToServer(), msgSource)
 			if err != nil {
 				return err
 			}

@@ -39,8 +39,8 @@ type Service struct {
 	provider                          Provider
 	messageQueue                      *queueUtils.Queue
 	rawMessageQueue                   *queueUtils.Queue
-	topicListenFromCore               string
-	topicPostToCore                   string
+	topicListenFromServer             string
+	topicPostToServer                 string
 	topicListenFromCoreSubscriptionID int64
 	sleepingMessageQueue              map[string][]msgML.Message
 	mutex                             *sync.RWMutex
@@ -109,8 +109,8 @@ func (s *Service) Start() error {
 	zap.L().Debug("starting a provider service", zap.String("gateway", s.GatewayConfig.ID), zap.String("provider", s.GatewayConfig.Provider.GetString(model.NameType)))
 
 	// update topics
-	s.topicListenFromCore = mcbus.GetTopicPostMessageToProvider(s.GatewayConfig.ID)
-	s.topicPostToCore = mcbus.GetTopicPostMessageToCore()
+	s.topicListenFromServer = mcbus.GetTopicPostMessageToProvider(s.GatewayConfig.ID)
+	s.topicPostToServer = mcbus.GetTopicPostMessageToServer()
 
 	s.messageQueue = queueUtils.New(fmt.Sprintf("gateway_provider_message_%s", s.GatewayConfig.ID), queueSizeMessage, s.messageConsumer, workersMessage)
 	s.rawMessageQueue = queueUtils.New(fmt.Sprintf("gateway_provider_raw_message_%s", s.GatewayConfig.ID), queueSizeRawMessage, s.rawMessageProcessor, workersRawMessage)
@@ -124,9 +124,9 @@ func (s *Service) Start() error {
 	err := s.provider.Start(s.addRawMessageToQueueFunc)
 	if err != nil {
 		zap.L().Error("error", zap.Error(err))
-		err := mcbus.Unsubscribe(s.topicListenFromCore, s.topicListenFromCoreSubscriptionID)
+		err := mcbus.Unsubscribe(s.topicListenFromServer, s.topicListenFromCoreSubscriptionID)
 		if err != nil {
-			zap.L().Error("error on unsubscribing a topic", zap.Error(err), zap.String("topic", s.topicListenFromCore))
+			zap.L().Error("error on unsubscribing a topic", zap.Error(err), zap.String("topic", s.topicListenFromServer))
 		}
 
 		s.messageQueue.Close()
@@ -137,9 +137,9 @@ func (s *Service) Start() error {
 
 // unsubscribe and stop queues
 func (s *Service) stopService() {
-	err := mcbus.Unsubscribe(s.topicListenFromCore, s.topicListenFromCoreSubscriptionID)
+	err := mcbus.Unsubscribe(s.topicListenFromServer, s.topicListenFromCoreSubscriptionID)
 	if err != nil {
-		zap.L().Error("error on unsubscribe", zap.Error(err), zap.String("topic", s.topicListenFromCore))
+		zap.L().Error("error on unsubscribe", zap.Error(err), zap.String("topic", s.topicListenFromServer))
 	}
 	s.messageQueue.Close()
 	s.rawMessageQueue.Close()
@@ -165,9 +165,9 @@ func (s *Service) addRawMessageToQueueFunc(rawMsg *msgML.RawMessage) error {
 	return nil
 }
 
-// listens messages from core componenet
+// listens messages from server
 func (s *Service) startMessageListener() {
-	subscriptionID, err := mcbus.Subscribe(s.topicListenFromCore, func(event *busML.BusData) {
+	subscriptionID, err := mcbus.Subscribe(s.topicListenFromServer, func(event *busML.BusData) {
 		msg := &msgML.Message{}
 		err := event.LoadData(msg)
 		if err != nil {
@@ -182,7 +182,7 @@ func (s *Service) startMessageListener() {
 	})
 
 	if err != nil {
-		zap.L().Error("error on subscription", zap.String("topic", s.topicListenFromCore), zap.Error(err))
+		zap.L().Error("error on subscription", zap.String("topic", s.topicListenFromServer), zap.Error(err))
 	} else {
 		s.topicListenFromCoreSubscriptionID = subscriptionID
 	}
@@ -240,9 +240,9 @@ func (s *Service) rawMessageProcessor(data interface{}) {
 			if msg != nil && msg.GatewayID == "" {
 				msg.GatewayID = s.GatewayConfig.ID
 			}
-			err = mcbus.Publish(s.topicPostToCore, msg)
+			err = mcbus.Publish(s.topicPostToServer, msg)
 			if err != nil {
-				zap.L().Debug("messages failed to post on topic", zap.String("topic", s.topicPostToCore), zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
+				zap.L().Debug("messages failed to post on topic", zap.String("topic", s.topicPostToServer), zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
 				return
 			}
 		}

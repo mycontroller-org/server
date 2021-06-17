@@ -41,6 +41,6 @@ func (p *Provider) getPayload(name string, value interface{}, metricType string,
 }
 
 func (p *Provider) postMsg(msg *msgML.Message) error {
-	topic := mcbus.GetTopicPostMessageToCore()
+	topic := mcbus.GetTopicPostMessageToServer()
 	return mcbus.Publish(topic, msg)
 }

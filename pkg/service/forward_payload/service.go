@@ -25,8 +25,8 @@ var (
 	subscriptionID = int64(-1)
 )
 
-// Init message process engine
-func Init() error {
+// Start message process engine
+func Start() error {
 	queue = queueUtils.New("forward_payload", queueSize, processEvent, workerCount)
 
 	topic = mcbus.FormatTopic(mcbus.TopicEventField)

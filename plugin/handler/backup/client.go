@@ -1,4 +1,4 @@
-// +build all_in_one,!standalone
+// +build server,!standalone
 
 package exporter
 

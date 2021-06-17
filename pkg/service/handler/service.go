@@ -12,8 +12,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// Start notify handlers
-func Start(cfg *handlerML.Config) error {
+// StartHandler notify handlers
+func StartHandler(cfg *handlerML.Config) error {
 	if handlersStore.Get(cfg.ID) != nil {
 		return fmt.Errorf("a service is in running state. id:%s", cfg.ID)
 	}
@@ -42,8 +42,8 @@ func Start(cfg *handlerML.Config) error {
 	return nil
 }
 
-// Stop a handler
-func Stop(id string) error {
+// StopHandler a handler
+func StopHandler(id string) error {
 	zap.L().Debug("stopping a handler", zap.Any("id", id))
 	handler := handlersStore.Get(id)
 	if handler != nil {
@@ -63,20 +63,20 @@ func Stop(id string) error {
 	return nil
 }
 
-// Reload a handler
-func Reload(gwCfg *handlerML.Config) error {
-	err := Stop(gwCfg.ID)
+// ReloadHandler a handler
+func ReloadHandler(gwCfg *handlerML.Config) error {
+	err := StopHandler(gwCfg.ID)
 	if err != nil {
 		return err
 	}
-	return Start(gwCfg)
+	return StartHandler(gwCfg)
 }
 
 // UnloadAll stops all handlers
 func UnloadAll() {
 	ids := handlersStore.ListIDs()
 	for _, id := range ids {
-		err := Stop(id)
+		err := StopHandler(id)
 		if err != nil {
 			zap.L().Error("error on stopping a handler", zap.String("id", id))
 		}

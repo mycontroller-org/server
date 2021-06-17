@@ -21,8 +21,8 @@ var (
 	svcFilter  *sfML.ServiceFilter
 )
 
-// Init task service listener
-func Init(filter *sfML.ServiceFilter) error {
+// Start task service listener
+func Start(filter *sfML.ServiceFilter) error {
 	svcFilter = filter
 	if svcFilter.Disabled {
 		zap.L().Info("task service disabled")

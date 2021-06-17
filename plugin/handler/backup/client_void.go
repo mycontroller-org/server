@@ -1,4 +1,4 @@
-// +build !all_in_one,standalone
+// +build !server,standalone
 // added two tags to ignore vscode editor warning
 
 package exporter

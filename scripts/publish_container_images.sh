@@ -13,7 +13,7 @@ echo $PWD
 ls -alh
 git branch
 
-TARGET_BINARY=${TARGET_BUILD:-all-in-one}
+TARGET_BINARY=${TARGET_BUILD:-server}
 
 # build and push to quay.io
 docker buildx build --push \

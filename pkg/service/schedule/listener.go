@@ -21,8 +21,8 @@ var (
 	svcFilter    *sfML.ServiceFilter
 )
 
-// Init scheduler service listener
-func Init(filter *sfML.ServiceFilter) error {
+// Start scheduler service listener
+func Start(filter *sfML.ServiceFilter) error {
 	svcFilter = filter
 	if svcFilter.Disabled {
 		zap.L().Info("schedule service disabled")

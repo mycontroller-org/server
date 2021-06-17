@@ -21,8 +21,8 @@ var (
 	svcFilter    *sfML.ServiceFilter
 )
 
-// Init handler service listener
-func Init(filter *sfML.ServiceFilter) error {
+// Start handler service listener
+func Start(filter *sfML.ServiceFilter) error {
 	svcFilter = filter
 	if svcFilter.Disabled {
 		zap.L().Info("handler service disabled")
@@ -98,7 +98,7 @@ func postProcessServiceEvent(event interface{}) {
 	case rsML.CommandStart:
 		cfg := getConfig(reqEvent)
 		if cfg != nil && helper.IsMine(svcFilter, cfg.Type, cfg.ID, cfg.Labels) {
-			err := Start(cfg)
+			err := StartHandler(cfg)
 			if err != nil {
 				zap.L().Error("error on starting a handler", zap.Error(err), zap.String("handler", cfg.ID))
 			}
@@ -106,7 +106,7 @@ func postProcessServiceEvent(event interface{}) {
 
 	case rsML.CommandStop:
 		if reqEvent.ID != "" {
-			err := Stop(reqEvent.ID)
+			err := StopHandler(reqEvent.ID)
 			if err != nil {
 				zap.L().Error("error on stopping a service", zap.Error(err))
 			}
@@ -114,7 +114,7 @@ func postProcessServiceEvent(event interface{}) {
 		}
 		cfg := getConfig(reqEvent)
 		if cfg != nil {
-			err := Stop(cfg.ID)
+			err := StopHandler(cfg.ID)
 			if err != nil {
 				zap.L().Error("error on stopping a service", zap.Error(err))
 			}
@@ -123,7 +123,7 @@ func postProcessServiceEvent(event interface{}) {
 	case rsML.CommandReload:
 		cfg := getConfig(reqEvent)
 		if cfg != nil && helper.IsMine(svcFilter, cfg.Type, cfg.ID, cfg.Labels) {
-			err := Reload(cfg)
+			err := ReloadHandler(cfg)
 			if err != nil {
 				zap.L().Error("error on reload a service", zap.Error(err))
 			}

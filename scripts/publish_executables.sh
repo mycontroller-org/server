@@ -39,7 +39,7 @@ function package {
   local CONFIG_FILE=${COMPONENT_NAME}.yaml
 
   # include web console
-  if [ ${COMPONENT_NAME} = "all-in-one" ] || [ ${COMPONENT_NAME} = "core" ]; then
+  if [ ${COMPONENT_NAME} = "server" ]; then
     CONFIG_FILE="mycontroller.yaml"
     cp console-web/build ${PACKAGE_STAGING_DIR}/web_console -r
   fi
@@ -68,13 +68,11 @@ do
   platform_raw=(${platform//\// })
   GOOS=${platform_raw[0]}
   GOARCH=${platform_raw[1]}
-  package_all_in_one="mycontroller-all-in-one-${GOOS}-${GOARCH}"
-  # package_core="mycontroller-core-${GOOS}-${GOARCH}"
+  package_server="mycontroller-server-${GOOS}-${GOARCH}"
   package_gateway="mycontroller-gateway-${GOOS}-${GOARCH}"
   package_handler="mycontroller-handler-${GOOS}-${GOARCH}"
 
-  env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=all_in_one -o ${BUILD_DIR}/${BINARY_DIR}/${package_all_in_one} -ldflags "$LD_FLAGS" cmd/all-in-one/main.go
-  # env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=all_in_one -o ${BUILD_DIR}/${BINARY_DIR}/${package_core} -ldflags "$LD_FLAGS" cmd/core/main.go
+  env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=server -o ${BUILD_DIR}/${BINARY_DIR}/${package_server} -ldflags "$LD_FLAGS" cmd/server/main.go
   env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=standalone -o ${BUILD_DIR}/${BINARY_DIR}/${package_gateway} -ldflags "$LD_FLAGS" cmd/gateway/main.go
   env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=standalone -o ${BUILD_DIR}/${BINARY_DIR}/${package_handler} -ldflags "$LD_FLAGS" cmd/handler/main.go
   if [ $? -ne 0 ]; then
@@ -87,8 +85,7 @@ do
     FILE_EXTENSION='.exe'
   fi
 
-  package mycontroller-all-in-one-${VERSION}-${GOOS}-${GOARCH} "all-in-one" ${package_all_in_one} ${FILE_EXTENSION}
-  # package mycontroller-core-${VERSION}-${GOOS}-${GOARCH} "core" ${package_core} ${FILE_EXTENSION}
+  package mycontroller-server-${VERSION}-${GOOS}-${GOARCH} "server" ${package_server} ${FILE_EXTENSION}
   package mycontroller-gateway-${VERSION}-${GOOS}-${GOARCH} "gateway" ${package_gateway} ${FILE_EXTENSION}
   package mycontroller-handler-${VERSION}-${GOOS}-${GOARCH} "handler" ${package_handler} ${FILE_EXTENSION}
 done

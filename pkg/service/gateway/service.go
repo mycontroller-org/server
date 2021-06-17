@@ -12,8 +12,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// Start gateway
-func Start(gatewayCfg *gwml.Config) error {
+// StartGW gateway
+func StartGW(gatewayCfg *gwml.Config) error {
 	start := time.Now()
 
 	// descrypt the secrets, tokens
@@ -52,8 +52,8 @@ func Start(gatewayCfg *gwml.Config) error {
 	return nil
 }
 
-// Stop gateway
-func Stop(id string) error {
+// StopGW gateway
+func StopGW(id string) error {
 	start := time.Now()
 	zap.L().Info("stopping a gateway", zap.Any("id", id))
 	service := gwService.Get(id)
@@ -77,20 +77,20 @@ func Stop(id string) error {
 	return nil
 }
 
-// Reload gateway
-func Reload(gwCfg *gwml.Config) error {
-	err := Stop(gwCfg.ID)
+// ReloadGW gateway
+func ReloadGW(gwCfg *gwml.Config) error {
+	err := StopGW(gwCfg.ID)
 	if err != nil {
 		return err
 	}
-	return Start(gwCfg)
+	return StartGW(gwCfg)
 }
 
 // UnloadAll stops all the gateways
 func UnloadAll() {
 	ids := gwService.ListIDs()
 	for _, id := range ids {
-		err := Stop(id)
+		err := StopGW(id)
 		if err != nil {
 			zap.L().Error("error on stopping a gateway", zap.String("id", id))
 		}

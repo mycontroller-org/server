@@ -19,8 +19,8 @@ var (
 	svcFilter  *sfML.ServiceFilter
 )
 
-// Init starts resource server listener
-func Init(filter *sfML.ServiceFilter) error {
+// Start starts resource server listener
+func Start(filter *sfML.ServiceFilter) error {
 	svcFilter = filter
 	if svcFilter.Disabled {
 		zap.L().Info("gateway service disabled")
@@ -91,7 +91,7 @@ func processEvent(event interface{}) {
 	case rsML.CommandStart:
 		gwCfg := getGatewayConfig(reqEvent)
 		if gwCfg != nil && helper.IsMine(svcFilter, gwCfg.Provider.GetString(model.KeyType), gwCfg.ID, gwCfg.Labels) {
-			err := Start(gwCfg)
+			err := StartGW(gwCfg)
 			if err != nil {
 				zap.L().Error("error on starting a service", zap.Error(err), zap.String("id", gwCfg.ID))
 			}
@@ -99,7 +99,7 @@ func processEvent(event interface{}) {
 
 	case rsML.CommandStop:
 		if reqEvent.ID != "" {
-			err := Stop(reqEvent.ID)
+			err := StopGW(reqEvent.ID)
 			if err != nil {
 				zap.L().Error("error on stopping a service", zap.Error(err), zap.String("id", reqEvent.ID))
 			}
@@ -107,7 +107,7 @@ func processEvent(event interface{}) {
 		}
 		gwCfg := getGatewayConfig(reqEvent)
 		if gwCfg != nil {
-			err := Stop(gwCfg.ID)
+			err := StopGW(gwCfg.ID)
 			if err != nil {
 				zap.L().Error("error on stopping a service", zap.Error(err), zap.String("id", gwCfg.ID))
 			}
@@ -116,12 +116,12 @@ func processEvent(event interface{}) {
 	case rsML.CommandReload:
 		gwCfg := getGatewayConfig(reqEvent)
 		if gwCfg != nil {
-			err := Stop(gwCfg.ID)
+			err := StopGW(gwCfg.ID)
 			if err != nil {
 				zap.L().Error("error on stopping a service", zap.Error(err), zap.String("id", gwCfg.ID))
 			}
 			if helper.IsMine(svcFilter, gwCfg.Provider.GetString(model.KeyType), gwCfg.ID, gwCfg.Labels) {
-				err := Start(gwCfg)
+				err := StartGW(gwCfg)
 				if err != nil {
 					zap.L().Error("error on starting a service", zap.Error(err), zap.String("id", gwCfg.ID))
 				}

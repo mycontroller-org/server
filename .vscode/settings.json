@@ -11,7 +11,7 @@
   },
   "gopls": {
     "buildFlags": [
-      "-tags=all_in_one"
+      "-tags=server"
     ]
   },
   "go.lintTool": "golangci-lint",
