@@ -48,6 +48,8 @@ bus:
   connection_timeout: 10s
 
 handler:
+  disabled: false
+  types: []
   ids: []
   labels:
     location: server

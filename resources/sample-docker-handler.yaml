@@ -20,6 +20,8 @@ bus:
   connection_timeout: 10s
 
 handler:
+  disabled: false
+  types: []
   ids: []
-  labels: 
+  labels:
     location: external_handler1

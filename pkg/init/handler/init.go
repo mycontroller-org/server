@@ -14,7 +14,7 @@ func Init() {
 
 func initServices() {
 	// init handler listener
-	err := handlerSVC.Init(cfg.CFG.Handler)
+	err := handlerSVC.Init(&cfg.CFG.Handler)
 	if err != nil {
 		zap.L().Fatal("failed to init handler service listener", zap.Error(err))
 	}

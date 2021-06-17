@@ -30,7 +30,9 @@ const (
 	KeyHandlerType  = "Type"
 	KeyHandlerName  = "Name"
 	KeyEnabled      = "Enabled"
+	KeyDisabled     = "Disabled"
 	KeyScheduleType = "Type"
+	KeyType         = "Type"
 	KeySrcFieldID   = "SrcFieldID"
 )
 

@@ -1,12 +1,12 @@
 package service
 
 import (
+	"github.com/mycontroller-org/backend/v2/pkg/model"
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	sfML "github.com/mycontroller-org/backend/v2/pkg/model/service_filter"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	"go.uber.org/zap"
@@ -16,28 +16,28 @@ var (
 	eventQueue *queueUtils.Queue
 	queueSize  = int(50)
 	workers    = int(1)
-	cfg        *Config
+	svcFilter  *sfML.ServiceFilter
 )
 
-// Config of gateway service
-type Config struct {
-	IDs    []string
-	Labels cmap.CustomStringMap
-}
-
 // Init starts resource server listener
-func Init(config cmap.CustomMap) error {
-	cfg = &Config{}
-	err := utils.MapToStruct(utils.TagNameNone, config, cfg)
-	if err != nil {
-		return err
+func Init(filter *sfML.ServiceFilter) error {
+	svcFilter = filter
+	if svcFilter.Disabled {
+		zap.L().Info("gateway service disabled")
+		return nil
+	}
+
+	if svcFilter.HasFilter() {
+		zap.L().Info("gateway service filter config", zap.Any("filter", svcFilter))
+	} else {
+		zap.L().Debug("there is no filter applied to gateway service")
 	}
 
 	eventQueue = queueUtils.New("gateway_service", queueSize, processEvent, workers)
 
 	// on event receive add it in to our local queue
 	topic := mcbus.FormatTopic(mcbus.TopicServiceGateway)
-	_, err = mcbus.Subscribe(topic, onEvent)
+	_, err := mcbus.Subscribe(topic, onEvent)
 	if err != nil {
 		return err
 	}
@@ -53,6 +53,9 @@ func Init(config cmap.CustomMap) error {
 
 // Close the service
 func Close() {
+	if svcFilter.Disabled {
+		return
+	}
 	UnloadAll()
 	eventQueue.Close()
 }
@@ -87,7 +90,7 @@ func processEvent(event interface{}) {
 	switch reqEvent.Command {
 	case rsML.CommandStart:
 		gwCfg := getGatewayConfig(reqEvent)
-		if gwCfg != nil && helper.IsMine(cfg.IDs, cfg.Labels, gwCfg.ID, gwCfg.Labels) {
+		if gwCfg != nil && helper.IsMine(svcFilter, gwCfg.Provider.GetString(model.KeyType), gwCfg.ID, gwCfg.Labels) {
 			err := Start(gwCfg)
 			if err != nil {
 				zap.L().Error("error on starting a service", zap.Error(err), zap.String("id", gwCfg.ID))
@@ -117,7 +120,7 @@ func processEvent(event interface{}) {
 			if err != nil {
 				zap.L().Error("error on stopping a service", zap.Error(err), zap.String("id", gwCfg.ID))
 			}
-			if helper.IsMine(cfg.IDs, cfg.Labels, gwCfg.ID, gwCfg.Labels) {
+			if helper.IsMine(svcFilter, gwCfg.Provider.GetString(model.KeyType), gwCfg.ID, gwCfg.Labels) {
 				err := Start(gwCfg)
 				if err != nil {
 					zap.L().Error("error on starting a service", zap.Error(err), zap.String("id", gwCfg.ID))

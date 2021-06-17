@@ -2,11 +2,10 @@ package task
 
 import (
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	sfML "github.com/mycontroller-org/backend/v2/pkg/model/service_filter"
 	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	"go.uber.org/zap"
@@ -17,29 +16,29 @@ const (
 	serviceMessageQueueName  = "service_listener_tasks"
 )
 
-// Config of task service
-type Config struct {
-	IDs    []string
-	Labels cmap.CustomStringMap
-}
-
 var (
 	tasksQueue *queueUtils.Queue
-	svcCFG     *Config
+	svcFilter  *sfML.ServiceFilter
 )
 
 // Init task service listener
-func Init(config cmap.CustomMap) error {
-	svcCFG = &Config{}
-	err := utils.MapToStruct(utils.TagNameNone, config, svcCFG)
-	if err != nil {
-		return err
+func Init(filter *sfML.ServiceFilter) error {
+	svcFilter = filter
+	if svcFilter.Disabled {
+		zap.L().Info("task service disabled")
+		return nil
+	}
+
+	if svcFilter.HasFilter() {
+		zap.L().Info("task service filter config", zap.Any("filter", svcFilter))
+	} else {
+		zap.L().Debug("there is no filter applied to task service")
 	}
 
 	tasksQueue = queueUtils.New(serviceMessageQueueName, serviceMessageQueueLimit, processServiceEvent, 1)
 
 	// on message receive add it in to our local queue
-	_, err = mcbus.Subscribe(mcbus.FormatTopic(mcbus.TopicServiceTask), onServiceEvent)
+	_, err := mcbus.Subscribe(mcbus.FormatTopic(mcbus.TopicServiceTask), onServiceEvent)
 	if err != nil {
 		return err
 	}
@@ -60,6 +59,9 @@ func Init(config cmap.CustomMap) error {
 
 // Close the service listener
 func Close() {
+	if svcFilter.Disabled {
+		return
+	}
 	err := closeEventListener()
 	if err != nil {
 		zap.L().Error("error on closing event listener", zap.Error(err))
@@ -101,7 +103,7 @@ func processServiceEvent(event interface{}) {
 		if cfg != nil {
 			tasksStore.Remove(cfg.ID)
 		}
-		if cfg != nil && helper.IsMine(svcCFG.IDs, svcCFG.Labels, cfg.ID, cfg.Labels) {
+		if cfg != nil && helper.IsMine(svcFilter, cfg.EvaluationType, cfg.ID, cfg.Labels) {
 			tasksStore.Add(*cfg)
 		}
 
@@ -118,7 +120,7 @@ func processServiceEvent(event interface{}) {
 		cfg := getConfig(reqEvent)
 		if cfg != nil {
 			tasksStore.Remove(cfg.ID)
-			if helper.IsMine(svcCFG.IDs, svcCFG.Labels, cfg.ID, cfg.Labels) {
+			if helper.IsMine(svcFilter, cfg.EvaluationType, cfg.ID, cfg.Labels) {
 				tasksStore.Add(*cfg)
 			}
 		}

@@ -1,6 +1,9 @@
 package config
 
-import "github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+import (
+	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	sfML "github.com/mycontroller-org/backend/v2/pkg/model/service_filter"
+)
 
 const (
 	SystemStartJobsFilename = "system_startup_jobs.yaml"
@@ -15,9 +18,10 @@ type Config struct {
 	Logger      LoggerConfig             `yaml:"logger"`
 	Directories Directories              `yaml:"directories"`
 	Bus         cmap.CustomMap           `yaml:"bus"`
-	Gateway     cmap.CustomMap           `yaml:"gateway"`
-	Handler     cmap.CustomMap           `yaml:"handler"`
-	Task        cmap.CustomMap           `yaml:"task"`
+	Gateway     sfML.ServiceFilter       `yaml:"gateway"`
+	Handler     sfML.ServiceFilter       `yaml:"handler"`
+	Task        sfML.ServiceFilter       `yaml:"task"`
+	Schedule    sfML.ServiceFilter       `yaml:"schedule"`
 	Database    Database                 `yaml:"database"`
 	Databases   []map[string]interface{} `yaml:"databases"`
 }

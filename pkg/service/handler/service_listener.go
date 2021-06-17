@@ -2,11 +2,10 @@ package handler
 
 import (
 	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
 	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
 	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
+	sfML "github.com/mycontroller-org/backend/v2/pkg/model/service_filter"
 	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
 	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
 	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
 	"go.uber.org/zap"
@@ -17,29 +16,29 @@ const (
 	serviceMessageQueueName  = "service_listener_handler"
 )
 
-// Config of handler service
-type Config struct {
-	IDs    []string
-	Labels cmap.CustomStringMap
-}
-
 var (
 	serviceQueue *queueUtils.Queue
-	svcCFG       *Config
+	svcFilter    *sfML.ServiceFilter
 )
 
 // Init handler service listener
-func Init(config cmap.CustomMap) error {
-	svcCFG = &Config{}
-	err := utils.MapToStruct(utils.TagNameNone, config, svcCFG)
-	if err != nil {
-		return err
+func Init(filter *sfML.ServiceFilter) error {
+	svcFilter = filter
+	if svcFilter.Disabled {
+		zap.L().Info("handler service disabled")
+		return nil
+	}
+
+	if svcFilter.HasFilter() {
+		zap.L().Info("handler service filter config", zap.Any("filter", svcFilter))
+	} else {
+		zap.L().Debug("there is no filter applied to handler service")
 	}
 
 	serviceQueue = queueUtils.New(serviceMessageQueueName, serviceMessageQueueLimit, postProcessServiceEvent, 1)
 
 	// on message receive add it in to our local queue
-	_, err = mcbus.Subscribe(mcbus.FormatTopic(mcbus.TopicServiceHandler), onServiceEvent)
+	_, err := mcbus.Subscribe(mcbus.FormatTopic(mcbus.TopicServiceHandler), onServiceEvent)
 	if err != nil {
 		return err
 	}
@@ -60,6 +59,9 @@ func Init(config cmap.CustomMap) error {
 
 // Close the service listener
 func Close() {
+	if svcFilter.Disabled {
+		return
+	}
 	UnloadAll()
 	serviceQueue.Close()
 	closeMessageListener()
@@ -95,7 +97,7 @@ func postProcessServiceEvent(event interface{}) {
 	switch reqEvent.Command {
 	case rsML.CommandStart:
 		cfg := getConfig(reqEvent)
-		if cfg != nil && helper.IsMine(svcCFG.IDs, svcCFG.Labels, cfg.ID, cfg.Labels) {
+		if cfg != nil && helper.IsMine(svcFilter, cfg.Type, cfg.ID, cfg.Labels) {
 			err := Start(cfg)
 			if err != nil {
 				zap.L().Error("error on starting a handler", zap.Error(err), zap.String("handler", cfg.ID))
@@ -120,7 +122,7 @@ func postProcessServiceEvent(event interface{}) {
 
 	case rsML.CommandReload:
 		cfg := getConfig(reqEvent)
-		if cfg != nil && helper.IsMine(svcCFG.IDs, svcCFG.Labels, cfg.ID, cfg.Labels) {
+		if cfg != nil && helper.IsMine(svcFilter, cfg.Type, cfg.ID, cfg.Labels) {
 			err := Reload(cfg)
 			if err != nil {
 				zap.L().Error("error on reload a service", zap.Error(err))

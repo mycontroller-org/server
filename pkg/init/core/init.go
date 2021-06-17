@@ -40,19 +40,19 @@ func initServices() {
 	}
 
 	// load notify handlers
-	err = handlerSVC.Init(cfg.CFG.Handler)
+	err = handlerSVC.Init(&cfg.CFG.Handler)
 	if err != nil {
 		zap.L().Fatal("error on start notify handler service", zap.Error(err))
 	}
 
 	// init task engine
-	err = taskSVC.Init(cfg.CFG.Task)
+	err = taskSVC.Init(&cfg.CFG.Task)
 	if err != nil {
 		zap.L().Fatal("error on init task engine service", zap.Error(err))
 	}
 
 	// init scheduler engine
-	err = scheduleSVC.Init(cfg.CFG.Task)
+	err = scheduleSVC.Init(&cfg.CFG.Task)
 	if err != nil {
 		zap.L().Fatal("error on init scheduler service", zap.Error(err))
 	}

@@ -48,11 +48,15 @@ bus:
   connection_timeout: 10s
 
 gateway:
+  disabled: false
+  types: []
   ids: []
   labels:
     location: server
 
 handler:
+  disabled: false
+  types: []
   ids: []
   labels:
     location: server

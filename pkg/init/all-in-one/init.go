@@ -35,40 +35,40 @@ func initServices() {
 		zap.L().Fatal("error on init message process service", zap.Error(err))
 	}
 
-	// init resource server
+	// start resource server
 	err = resourceSVC.Init()
 	if err != nil {
-		zap.L().Fatal("error on init resource servicelistener", zap.Error(err))
+		zap.L().Fatal("error on starting resource service listener", zap.Error(err))
 	}
 
-	// load notify handlers
-	err = handlerSVC.Init(cfg.CFG.Handler)
+	// start handler service
+	err = handlerSVC.Init(&cfg.CFG.Handler)
 	if err != nil {
-		zap.L().Fatal("error on start notify handler service", zap.Error(err))
+		zap.L().Fatal("error on starting handler service", zap.Error(err))
 	}
 
 	// init task engine
-	err = taskSVC.Init(cfg.CFG.Task)
+	err = taskSVC.Init(&cfg.CFG.Task)
 	if err != nil {
-		zap.L().Fatal("error on init task engine service", zap.Error(err))
+		zap.L().Fatal("error on starting task engine service", zap.Error(err))
 	}
 
-	// init scheduler engine
-	err = scheduleSVC.Init(cfg.CFG.Task)
+	// start scheduler engine
+	err = scheduleSVC.Init(&cfg.CFG.Task)
 	if err != nil {
-		zap.L().Fatal("error on init scheduler service", zap.Error(err))
+		zap.L().Fatal("error on starting scheduler service", zap.Error(err))
 	}
 
-	// init payload forward service
+	// start payload forward service
 	err = fwdplSVC.Init()
 	if err != nil {
-		zap.L().Fatal("error on init forward payload service", zap.Error(err))
+		zap.L().Fatal("error on starting forward payload service", zap.Error(err))
 	}
 
-	// init gateway listener
-	err = gwService.Init(cfg.CFG.Gateway)
+	// start gateway listener
+	err = gwService.Init(&cfg.CFG.Gateway)
 	if err != nil {
-		zap.L().Fatal("error on init gateway service listener", zap.Error(err))
+		zap.L().Fatal("error on starting gateway service listener", zap.Error(err))
 	}
 }
 

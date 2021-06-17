@@ -20,6 +20,8 @@ bus:
   connection_timeout: 10s
 
 gateway:
+  disabled: false
+  types: []
   ids: []
   labels: 
     location: external_gw1
