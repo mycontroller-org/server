@@ -1,4 +1,4 @@
-// +build !core,standalone
+// +build !all_in_one,standalone
 // added two tags to ignore vscode editor warning
 
 package exporter
@@ -19,5 +19,5 @@ type Client interface {
 
 // Init backup client
 func Init(cfg interface{}) (Client, error) {
-	return nil, errors.New("backup handler will be available only with core or all-in-one package")
+	return nil, errors.New("backup handler will be available only with all-in-one package")
 }

@@ -11,7 +11,11 @@
   },
   "gopls": {
     "buildFlags": [
-      "-tags=core"
+      "-tags=all_in_one"
     ]
-  }
+  },
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": [
+    "--fast"
+  ]
 }

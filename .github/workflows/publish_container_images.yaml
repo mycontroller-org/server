@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        container_image: ["all-in-one", "core", "gateway", "handler"]
+        container_image: ["all-in-one", "gateway", "handler"]
 
     steps:
       - name: backend repository
