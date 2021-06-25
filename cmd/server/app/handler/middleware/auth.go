@@ -63,8 +63,8 @@ func IsValidToken(r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
-		return err
+	if !token.Valid {
+		return errors.New("invalid token")
 	}
 
 	// verify the validity

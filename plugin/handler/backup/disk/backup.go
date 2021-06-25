@@ -127,9 +127,7 @@ func (c *Client) triggerBackup(spec map[string]interface{}) error {
 		targetDirectory = newConfig.TargetDirectory
 	}
 
-	if strings.HasSuffix(targetDirectory, "/") {
-		targetDirectory = targetDirectory[:len(targetDirectory)-1]
-	}
+	targetDirectory = strings.TrimSuffix(targetDirectory, "/")
 
 	if newConfig.Prefix != "" {
 		prefix = newConfig.Prefix
