@@ -2,7 +2,7 @@ package systemmonitoring
 
 import (
 	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
-	metricsML "github.com/mycontroller-org/server/v2/plugin/metrics"
+	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	"github.com/shirou/gopsutil/v3/mem"
 	"go.uber.org/zap"
 )

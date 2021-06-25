@@ -10,7 +10,7 @@ import (
 	gwAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
 // RegisterGatewayRoutes registers gateway api

@@ -62,11 +62,7 @@ handler:
     location: server
 
 database:
-  storage: memory_database
-  metrics: void_database
-
-databases:
-  - name: memory_database
+  storage:
     type: memory
     dump_enabled: true
     dump_interval: 10m
@@ -74,16 +70,14 @@ databases:
     dump_format: ["yaml"]
     load_format: "yaml"
 
-  - name: influx_database
-    type: influxdb_v2
-    uri: http://127.0.0.1:8086
-    token: 
-    username:
-    password:
-    organization: 
-    bucket: mycontroller
-    batch_size:
-    flush_interval: 1s
-
-  - name: void_database
+  metrics:
     type: void_db
+    # type: influxdb_v2
+    # uri: http://127.0.0.1:8086
+    # token: 
+    # username:
+    # password:
+    # organization: 
+    # bucket: mycontroller
+    # batch_size:
+    # flush_interval: 1s

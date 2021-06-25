@@ -5,7 +5,7 @@ import (
 	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
 	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 	"go.uber.org/zap"
 )
 

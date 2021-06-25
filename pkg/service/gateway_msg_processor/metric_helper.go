@@ -10,7 +10,7 @@ import (
 	fml "github.com/mycontroller-org/server/v2/pkg/model/field"
 	nml "github.com/mycontroller-org/server/v2/pkg/model/node"
 	mts "github.com/mycontroller-org/server/v2/pkg/service/metrics"
-	mtsml "github.com/mycontroller-org/server/v2/plugin/metrics"
+	mtsml "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	"go.uber.org/zap"
 )
 

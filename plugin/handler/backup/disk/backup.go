@@ -13,7 +13,7 @@ import (
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
-	"github.com/mycontroller-org/server/v2/plugin/storage"
+	"github.com/mycontroller-org/server/v2/plugin/database/storage"
 	"go.uber.org/zap"
 )
 

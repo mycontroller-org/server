@@ -5,7 +5,7 @@ import (
 	"sort"
 	"time"
 
-	stgml "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
 // Sort given slice

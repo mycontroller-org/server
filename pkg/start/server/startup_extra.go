@@ -9,7 +9,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 	"github.com/mycontroller-org/server/v2/pkg/version"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 	"go.uber.org/zap"
 )
 

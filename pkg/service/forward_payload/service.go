@@ -13,7 +13,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 	"go.uber.org/zap"
 )
 

@@ -22,8 +22,8 @@ func Start(handlerFunc func()) {
 }
 
 func initServices() {
-	storageSVC.Init(backupAPI.ExecuteImportStorage) // storage
-	metricsSVC.Init()                               // metrics
+	storageSVC.Init(cfg.CFG.Database.Storage, backupAPI.ExecuteImportStorage) // storage
+	metricsSVC.Init(cfg.CFG.Database.Metrics)                                 // metrics
 
 	StartupJobs()
 	StartupJobsExtra()

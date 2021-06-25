@@ -4,7 +4,7 @@ import (
 	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 	"go.uber.org/zap"
 )
 

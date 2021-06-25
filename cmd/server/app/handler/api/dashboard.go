@@ -10,7 +10,7 @@ import (
 	dashboardAPI "github.com/mycontroller-org/server/v2/pkg/api/dashboard"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	dashboardML "github.com/mycontroller-org/server/v2/pkg/model/dashboard"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
 // RegisterDashboardRoutes registers dashboard api

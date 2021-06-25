@@ -7,7 +7,7 @@ import (
 
 	cloneutil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 	"go.uber.org/zap"
 )
 

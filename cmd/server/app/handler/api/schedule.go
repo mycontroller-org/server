@@ -10,7 +10,7 @@ import (
 	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	schedulerML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
 // RegisterSchedulerRoutes registers schedule api

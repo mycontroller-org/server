@@ -1,7 +1,7 @@
 package query
 
 import (
-	mtrml "github.com/mycontroller-org/server/v2/plugin/metrics"
+	mtrml "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 )
 
 // contants

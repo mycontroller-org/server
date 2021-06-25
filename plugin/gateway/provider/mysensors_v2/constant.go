@@ -5,7 +5,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
-	mtsML "github.com/mycontroller-org/server/v2/plugin/metrics"
+	mtsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 )
 
 // Labels and fields used in this provider

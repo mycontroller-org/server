@@ -12,18 +12,17 @@ const (
 
 // Config of the system
 type Config struct {
-	Secret      string                   `yaml:"secret"` // secret used to encrypt sensitive data
-	Analytics   AnalyticsConfig          `yaml:"analytics"`
-	Web         WebConfig                `yaml:"web"`
-	Logger      LoggerConfig             `yaml:"logger"`
-	Directories Directories              `yaml:"directories"`
-	Bus         cmap.CustomMap           `yaml:"bus"`
-	Gateway     sfML.ServiceFilter       `yaml:"gateway"`
-	Handler     sfML.ServiceFilter       `yaml:"handler"`
-	Task        sfML.ServiceFilter       `yaml:"task"`
-	Schedule    sfML.ServiceFilter       `yaml:"schedule"`
-	Database    Database                 `yaml:"database"`
-	Databases   []map[string]interface{} `yaml:"databases"`
+	Secret      string             `yaml:"secret"` // secret used to encrypt sensitive data
+	Analytics   AnalyticsConfig    `yaml:"analytics"`
+	Web         WebConfig          `yaml:"web"`
+	Logger      LoggerConfig       `yaml:"logger"`
+	Directories Directories        `yaml:"directories"`
+	Bus         cmap.CustomMap     `yaml:"bus"`
+	Gateway     sfML.ServiceFilter `yaml:"gateway"`
+	Handler     sfML.ServiceFilter `yaml:"handler"`
+	Task        sfML.ServiceFilter `yaml:"task"`
+	Schedule    sfML.ServiceFilter `yaml:"schedule"`
+	Database    Database           `yaml:"database"`
 }
 
 // WebConfig input
@@ -93,6 +92,6 @@ type LogLevelConfig struct {
 
 // Database to be used
 type Database struct {
-	Storage string `yaml:"storage"`
-	Metrics string `yaml:"metrics"`
+	Storage map[string]interface{} `yaml:"storage"`
+	Metrics map[string]interface{} `yaml:"metrics"`
 }

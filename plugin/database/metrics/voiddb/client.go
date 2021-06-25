@@ -1,7 +1,7 @@
 package voiddb
 
 import (
-	mtsml "github.com/mycontroller-org/server/v2/plugin/metrics"
+	mtsml "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 )
 
 // Client for voiddb

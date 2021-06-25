@@ -10,7 +10,7 @@ import (
 	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
-	storageML "github.com/mycontroller-org/server/v2/plugin/storage"
+	storageML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
 // RegisterSourceRoutes registers source api

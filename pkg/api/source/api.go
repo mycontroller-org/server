@@ -5,7 +5,7 @@ import (
 	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
 	"github.com/mycontroller-org/server/v2/pkg/service/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	storageML "github.com/mycontroller-org/server/v2/plugin/storage"
+	storageML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
 // List by filter and pagination

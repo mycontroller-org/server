@@ -10,7 +10,7 @@ import (
 	fieldAPI "github.com/mycontroller-org/server/v2/pkg/api/field"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
 // RegisterFieldRoutes registers field api

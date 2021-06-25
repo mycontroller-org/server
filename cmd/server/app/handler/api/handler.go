@@ -10,7 +10,7 @@ import (
 	handlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
 // RegisterHandlerRoutes registers handler api

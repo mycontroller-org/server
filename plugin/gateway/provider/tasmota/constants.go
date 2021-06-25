@@ -3,7 +3,7 @@ package tasmota
 import (
 	"fmt"
 
-	mtsML "github.com/mycontroller-org/server/v2/plugin/metrics"
+	mtsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 )
 
 // tasmota message data

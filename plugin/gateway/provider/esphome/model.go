@@ -5,7 +5,7 @@ import (
 
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	"github.com/mycontroller-org/server/v2/plugin/metrics"
+	"github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	esphomeClient "github.com/mycontroller-org/esphome_api/pkg/client"
 )
 

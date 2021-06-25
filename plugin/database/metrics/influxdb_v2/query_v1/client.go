@@ -13,7 +13,7 @@ import (
 	cloneutil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
-	mtsml "github.com/mycontroller-org/server/v2/plugin/metrics"
+	mtsml "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	"go.uber.org/zap"
 )
 

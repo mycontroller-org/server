@@ -5,7 +5,7 @@ import (
 	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	filterHelper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
 // List by filter and pagination

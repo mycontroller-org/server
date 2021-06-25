@@ -10,7 +10,7 @@ import (
 	stg "github.com/mycontroller-org/server/v2/pkg/service/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
 // List by filter and pagination

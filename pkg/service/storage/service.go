@@ -1,12 +1,10 @@
 package storage
 
 import (
-	"errors"
-
 	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
-	"github.com/mycontroller-org/server/v2/plugin/storage/memory"
-	"github.com/mycontroller-org/server/v2/plugin/storage/mongodb"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	"github.com/mycontroller-org/server/v2/plugin/database/storage/memory"
+	"github.com/mycontroller-org/server/v2/plugin/database/storage/mongodb"
 	"go.uber.org/zap"
 )
 
@@ -16,13 +14,7 @@ var (
 )
 
 // Init storage service
-func Init(importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error) {
-	// Get storage and metric database config
-	storageCfg, err := getDatabaseConfig(cfg.CFG.Database.Storage)
-	if err != nil {
-		zap.L().Fatal("problem with storage database config", zap.String("name", cfg.CFG.Database.Storage), zap.Error(err))
-	}
-
+func Init(storageCfg map[string]interface{}, importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error) {
 	// include logger details
 	storageCfg["logger"] = map[string]string{"mode": cfg.CFG.Logger.Mode, "encoding": cfg.CFG.Logger.Encoding, "level": cfg.CFG.Logger.Level.Storage}
 
@@ -33,36 +25,27 @@ func Init(importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error
 		case stgML.TypeMemory:
 			client, err := memory.NewClient(storageCfg)
 			if err != nil {
-				zap.L().Fatal("error on storage database initialization", zap.Error(err), zap.String("database", cfg.CFG.Database.Storage))
+				zap.L().Fatal("error on storage database initialization", zap.Error(err))
 			}
 			SVC = client
 			// run local import
 			err = client.LocalImport(importFunc)
 			if err != nil {
-				zap.L().Fatal("error on run local import on memory database", zap.Error(err), zap.String("database", cfg.CFG.Database.Storage))
+				zap.L().Fatal("error on run local import on memory database", zap.Error(err))
 			}
 
 		case stgML.TypeMongoDB:
 			client, err := mongodb.NewClient(storageCfg)
 			if err != nil {
-				zap.L().Fatal("error on storage database initialization", zap.Error(err), zap.String("database", cfg.CFG.Database.Storage))
+				zap.L().Fatal("error on storage database initialization", zap.Error(err))
 			}
 			SVC = client
 
 		default:
-			zap.L().Fatal("specified database type not implemented", zap.Any("type", dbType), zap.String("database", cfg.CFG.Database.Storage))
+			zap.L().Fatal("specified database type not implemented", zap.Any("type", dbType))
 		}
 		return
 	}
-	zap.L().Fatal("'type' field should be added on the database config", zap.String("database", cfg.CFG.Database.Storage))
+	zap.L().Fatal("'type' field should be added on the database config")
 
-}
-
-func getDatabaseConfig(name string) (map[string]interface{}, error) {
-	for _, d := range cfg.CFG.Databases {
-		if d["name"] == name {
-			return d, nil
-		}
-	}
-	return nil, errors.New("config not found")
 }

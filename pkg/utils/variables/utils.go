@@ -28,7 +28,7 @@ import (
 	quickIdUL "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
 	templateUtils "github.com/mycontroller-org/server/v2/pkg/utils/template"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 	"go.uber.org/zap"
 )
 

@@ -13,7 +13,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	colorUtils "github.com/mycontroller-org/server/v2/pkg/utils/color"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	"github.com/mycontroller-org/server/v2/plugin/metrics"
+	"github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/reflect/protoreflect"

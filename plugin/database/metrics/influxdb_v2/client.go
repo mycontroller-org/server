@@ -12,10 +12,10 @@ import (
 	influxdb2log "github.com/influxdata/influxdb-client-go/v2/log"
 	fml "github.com/mycontroller-org/server/v2/pkg/model/field"
 	ut "github.com/mycontroller-org/server/v2/pkg/utils"
-	mtsml "github.com/mycontroller-org/server/v2/plugin/metrics"
-	queryML "github.com/mycontroller-org/server/v2/plugin/metrics/influxdb_v2/query"
-	queryV1 "github.com/mycontroller-org/server/v2/plugin/metrics/influxdb_v2/query_v1"
-	queryV2 "github.com/mycontroller-org/server/v2/plugin/metrics/influxdb_v2/query_v2"
+	mtsml "github.com/mycontroller-org/server/v2/plugin/database/metrics"
+	queryML "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/query"
+	queryV1 "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/query_v1"
+	queryV2 "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/query_v2"
 	"go.uber.org/zap"
 )
 
@@ -27,7 +27,6 @@ const (
 
 // Config of the influxdb_v2
 type Config struct {
-	Name               string       `yaml:"name"`
 	Organization       string       `yaml:"organization"`
 	Bucket             string       `yaml:"bucket"`
 	URI                string       `yaml:"uri"`
@@ -137,7 +136,7 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 		if err != nil {
 			return nil, err
 		}
-		zap.L().Info("influxdb detected version data", zap.String("name", cfg.Name), zap.Any("health data", health))
+		zap.L().Info("influxdb detected version data", zap.Any("health data", health))
 		if health != nil && health.Version != nil {
 			detectedVersion := *health.Version
 			if strings.HasPrefix(detectedVersion, "1.8") { // 1.8.4

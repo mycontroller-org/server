@@ -10,7 +10,7 @@ import (
 	fwAPI "github.com/mycontroller-org/server/v2/pkg/api/firmware"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	fwML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
 // RegisterFirmwareRoutes registers firmware api

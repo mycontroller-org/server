@@ -13,7 +13,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	gwPL "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
-	mtsML "github.com/mycontroller-org/server/v2/plugin/metrics"
+	mtsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	"go.uber.org/zap"
 )
 

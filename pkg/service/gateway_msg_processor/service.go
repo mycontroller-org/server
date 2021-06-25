@@ -23,7 +23,7 @@ import (
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/server/v2/pkg/utils/javascript"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
-	mtsML "github.com/mycontroller-org/server/v2/plugin/metrics"
+	mtsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	"go.uber.org/zap"
 )
 

@@ -12,7 +12,7 @@ import (
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/server/v2/pkg/utils/normalize"
 	gwpl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
-	mtsML "github.com/mycontroller-org/server/v2/plugin/metrics"
+	mtsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	"go.uber.org/zap"
 )
 

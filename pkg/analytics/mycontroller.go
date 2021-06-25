@@ -14,7 +14,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	"github.com/mycontroller-org/server/v2/pkg/version"
-	"github.com/mycontroller-org/server/v2/plugin/storage"
+	"github.com/mycontroller-org/server/v2/plugin/database/storage"
 	"go.uber.org/zap"
 )
 

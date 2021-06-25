@@ -10,7 +10,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	"github.com/mycontroller-org/server/v2/plugin/metrics"
+	"github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
 	esphomeClient "github.com/mycontroller-org/esphome_api/pkg/client"
 	"go.uber.org/zap"

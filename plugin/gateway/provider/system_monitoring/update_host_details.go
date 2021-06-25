@@ -7,7 +7,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	metricsML "github.com/mycontroller-org/server/v2/plugin/metrics"
+	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	"github.com/shirou/gopsutil/v3/host"
 	"go.uber.org/zap"
 )

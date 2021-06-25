@@ -5,7 +5,7 @@ import (
 	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
 	rsml "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stgml "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage"
 	"go.uber.org/zap"
 )
 

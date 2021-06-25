@@ -8,7 +8,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 	sfML "github.com/mycontroller-org/server/v2/pkg/model/service_filter"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
+	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
 // FilterByStringMap filter
