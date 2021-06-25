@@ -3,13 +3,13 @@ package tasmota
 import (
 	"fmt"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	utils "github.com/mycontroller-org/backend/v2/pkg/utils"
-	gwPRL "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol"
-	mqtt "github.com/mycontroller-org/backend/v2/plugin/gateway/protocol/protocol_mqtt"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
+	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	utils "github.com/mycontroller-org/server/v2/pkg/utils"
+	gwPRL "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
+	mqtt "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_mqtt"
 )
 
 // Config of tasmota provider

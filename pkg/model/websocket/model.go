@@ -1,7 +1,7 @@
 package websocket
 
 import (
-	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
+	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 )
 
 // Request types

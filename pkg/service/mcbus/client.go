@@ -1,7 +1,7 @@
 package mcbus
 
 import (
-	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
+	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
 	"go.uber.org/zap"
 )
 

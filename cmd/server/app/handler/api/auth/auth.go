@@ -5,13 +5,13 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	middleware "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/middleware"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
-	json "github.com/mycontroller-org/backend/v2/pkg/json"
-	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/hashed"
+	middleware "github.com/mycontroller-org/server/v2/cmd/server/app/handler/middleware"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
+	json "github.com/mycontroller-org/server/v2/pkg/json"
+	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
+	handlerML "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
+	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 )
 
 // RegisterAuthRoutes registers auth api

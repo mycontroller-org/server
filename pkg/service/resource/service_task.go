@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	"github.com/mycontroller-org/backend/v2/pkg/model/task"
+	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/server/v2/pkg/model/task"
 	"go.uber.org/zap"
 )
 

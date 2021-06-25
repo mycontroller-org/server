@@ -1,14 +1,14 @@
 package service
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	sfML "github.com/mycontroller-org/backend/v2/pkg/model/service_filter"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
-	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
+	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	sfML "github.com/mycontroller-org/server/v2/pkg/model/service_filter"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	"go.uber.org/zap"
 )
 

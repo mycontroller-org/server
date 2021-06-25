@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 )
 
 func (p *Provider) getData(name string, value interface{}, metricType, unit string, isReadOnly bool) msgML.Payload {

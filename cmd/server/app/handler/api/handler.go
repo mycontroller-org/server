@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	handlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
 )
 
 // RegisterHandlerRoutes registers handler api

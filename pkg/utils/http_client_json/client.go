@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	json "github.com/mycontroller-org/backend/v2/pkg/json"
+	json "github.com/mycontroller-org/server/v2/pkg/json"
 )
 
 // ResponseConfig of a request

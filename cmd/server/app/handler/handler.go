@@ -5,17 +5,17 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
-	handlerAPI "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/api"
-	handlerAuthAPI "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/api/auth"
-	middleware "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/middleware"
-	webConsole "github.com/mycontroller-org/backend/v2/cmd/server/app/web-console"
-	"github.com/mycontroller-org/backend/v2/pkg/model/config"
-	webHandlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
-	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
-	mcWS "github.com/mycontroller-org/backend/v2/pkg/service/websocket"
+	handlerAPI "github.com/mycontroller-org/server/v2/cmd/server/app/handler/api"
+	handlerAuthAPI "github.com/mycontroller-org/server/v2/cmd/server/app/handler/api/auth"
+	middleware "github.com/mycontroller-org/server/v2/cmd/server/app/handler/middleware"
+	webConsole "github.com/mycontroller-org/server/v2/cmd/server/app/web-console"
+	"github.com/mycontroller-org/server/v2/pkg/model/config"
+	webHandlerML "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
+	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	mcWS "github.com/mycontroller-org/server/v2/pkg/service/websocket"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
-	//	googleAssistantAPI "github.com/mycontroller-org/backend/v2/plugin/bot/google_assistant"
+	//	googleAssistantAPI "github.com/mycontroller-org/server/v2/plugin/bot/google_assistant"
 )
 
 // GetHandler for http access

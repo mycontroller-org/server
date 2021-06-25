@@ -3,14 +3,14 @@ package handler
 import (
 	"fmt"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	backupHandler "github.com/mycontroller-org/backend/v2/plugin/handler/backup"
-	emailHandler "github.com/mycontroller-org/backend/v2/plugin/handler/email"
-	noopHandler "github.com/mycontroller-org/backend/v2/plugin/handler/noop"
-	resourceAction "github.com/mycontroller-org/backend/v2/plugin/handler/resource"
-	telegramHandler "github.com/mycontroller-org/backend/v2/plugin/handler/telegram"
-	webhookHandler "github.com/mycontroller-org/backend/v2/plugin/handler/webhook"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	backupHandler "github.com/mycontroller-org/server/v2/plugin/handler/backup"
+	emailHandler "github.com/mycontroller-org/server/v2/plugin/handler/email"
+	noopHandler "github.com/mycontroller-org/server/v2/plugin/handler/noop"
+	resourceAction "github.com/mycontroller-org/server/v2/plugin/handler/resource"
+	telegramHandler "github.com/mycontroller-org/server/v2/plugin/handler/telegram"
+	webhookHandler "github.com/mycontroller-org/server/v2/plugin/handler/webhook"
 )
 
 // Handler interface details for operation

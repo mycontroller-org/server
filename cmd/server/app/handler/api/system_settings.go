@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
-	json "github.com/mycontroller-org/backend/v2/pkg/json"
-	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
+	json "github.com/mycontroller-org/server/v2/pkg/json"
+	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
 )
 
 // RegisterSystemRoutes registers settings api

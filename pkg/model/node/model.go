@@ -3,8 +3,8 @@ package node
 import (
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 )
 
 // Node actions

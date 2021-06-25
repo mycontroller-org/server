@@ -3,16 +3,16 @@ package quickid
 import (
 	"fmt"
 
-	dataRepoAPI "github.com/mycontroller-org/backend/v2/pkg/api/data_repository"
-	fieldAPI "github.com/mycontroller-org/backend/v2/pkg/api/field"
-	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
-	handlerAPI "github.com/mycontroller-org/backend/v2/pkg/api/handler"
-	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
-	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
-	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	quickIdUtils "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
+	dataRepoAPI "github.com/mycontroller-org/server/v2/pkg/api/data_repository"
+	fieldAPI "github.com/mycontroller-org/server/v2/pkg/api/field"
+	gatewayAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
+	handlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
+	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
+	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
+	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
+	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
 )
 
 // GetResources returns resource

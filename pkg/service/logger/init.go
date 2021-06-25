@@ -1,9 +1,9 @@
 package logger
 
 import (
-	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
-	loggerUtils "github.com/mycontroller-org/backend/v2/pkg/utils/logger"
-	"github.com/mycontroller-org/backend/v2/pkg/version"
+	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
+	"github.com/mycontroller-org/server/v2/pkg/version"
 	"go.uber.org/zap"
 )
 

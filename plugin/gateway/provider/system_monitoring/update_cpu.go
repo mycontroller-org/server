@@ -3,11 +3,11 @@ package systemmonitoring
 import (
 	"fmt"
 
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
-	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/system_monitoring/config"
-	metricsML "github.com/mycontroller-org/backend/v2/plugin/metrics"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
+	metricsML "github.com/mycontroller-org/server/v2/plugin/metrics"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"go.uber.org/zap"
 )

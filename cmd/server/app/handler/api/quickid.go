@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	quickIdAPI "github.com/mycontroller-org/backend/v2/pkg/api/quickid"
-	"github.com/mycontroller-org/backend/v2/pkg/json"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	quickIdAPI "github.com/mycontroller-org/server/v2/pkg/api/quickid"
+	"github.com/mycontroller-org/server/v2/pkg/json"
 )
 
 // RegisterQuickIDRoutes registers quickId api

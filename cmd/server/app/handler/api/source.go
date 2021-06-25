@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	sourceAPI "github.com/mycontroller-org/backend/v2/pkg/api/source"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
-	storageML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
+	storageML "github.com/mycontroller-org/server/v2/plugin/storage"
 )
 
 // RegisterSourceRoutes registers source api

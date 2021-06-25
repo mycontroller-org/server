@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
+	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
+	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
 )
 

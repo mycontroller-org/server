@@ -3,9 +3,9 @@ package schedule
 import (
 	"fmt"
 
-	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
-	coreScheduler "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
-	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
+	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	"go.uber.org/zap"
 )
 

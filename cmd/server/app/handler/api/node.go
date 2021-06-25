@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
+	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
 )
 
 // RegisterNodeRoutes registers node api

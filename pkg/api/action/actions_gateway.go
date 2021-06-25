@@ -3,9 +3,9 @@ package action
 import (
 	"fmt"
 
-	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
-	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	gatewayAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
+	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"go.uber.org/zap"
 )
 

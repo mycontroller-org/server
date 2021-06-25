@@ -3,11 +3,11 @@ package resource
 import (
 	"errors"
 
-	firmwareAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	firmwareAPI "github.com/mycontroller-org/server/v2/pkg/api/firmware"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 

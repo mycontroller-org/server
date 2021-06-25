@@ -1,11 +1,11 @@
 package gateway
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 

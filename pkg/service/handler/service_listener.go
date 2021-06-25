@@ -1,13 +1,13 @@
 package handler
 
 import (
-	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	sfML "github.com/mycontroller-org/backend/v2/pkg/model/service_filter"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
-	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
+	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
+	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	sfML "github.com/mycontroller-org/server/v2/pkg/model/service_filter"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	"go.uber.org/zap"
 )
 

@@ -1,7 +1,7 @@
 package provider
 
 import (
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 )
 
 // Provider interface

@@ -3,7 +3,7 @@ package event
 import (
 	"fmt"
 
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 )
 
 // event types

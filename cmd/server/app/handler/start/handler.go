@@ -3,8 +3,8 @@ package init
 import (
 	"net/http"
 
-	"github.com/mycontroller-org/backend/v2/cmd/server/app/handler"
-	"github.com/mycontroller-org/backend/v2/cmd/server/listener"
+	"github.com/mycontroller-org/server/v2/cmd/server/app/handler"
+	"github.com/mycontroller-org/server/v2/cmd/server/listener"
 	"go.uber.org/zap"
 )
 

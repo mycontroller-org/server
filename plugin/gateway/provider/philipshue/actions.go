@@ -3,7 +3,7 @@ package philipshue
 import (
 	"strings"
 
-	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
+	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"go.uber.org/zap"
 )
 

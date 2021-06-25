@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	"go.uber.org/zap"
 )
 

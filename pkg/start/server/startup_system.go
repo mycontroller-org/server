@@ -3,10 +3,10 @@ package server
 import (
 	"fmt"
 
-	backupAPI "github.com/mycontroller-org/backend/v2/pkg/backup"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	"github.com/mycontroller-org/backend/v2/pkg/model/config"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/model/config"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )

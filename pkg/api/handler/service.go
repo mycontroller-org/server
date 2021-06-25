@@ -1,11 +1,11 @@
 package handler
 
 import (
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	rsml "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	ml "github.com/mycontroller-org/server/v2/pkg/model"
+	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	rsml "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	stgml "github.com/mycontroller-org/server/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 

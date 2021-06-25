@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	metricsML "github.com/mycontroller-org/backend/v2/plugin/metrics"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	metricsML "github.com/mycontroller-org/server/v2/plugin/metrics"
 	"github.com/shirou/gopsutil/v3/host"
 	"go.uber.org/zap"
 )

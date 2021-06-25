@@ -1,6 +1,6 @@
 package bus
 
-import busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
+import busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
 
 // bus client types
 const (

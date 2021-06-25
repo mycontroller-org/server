@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mycontroller-org/backend/v2/pkg/json"
+	"github.com/mycontroller-org/server/v2/pkg/json"
 	"go.uber.org/zap"
 )
 

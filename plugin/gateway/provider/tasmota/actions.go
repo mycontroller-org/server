@@ -3,9 +3,9 @@ package tasmota
 import (
 	"fmt"
 
-	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 )
 
 // This function is like route for globally defined features for the request like reboot, discover, etc.,

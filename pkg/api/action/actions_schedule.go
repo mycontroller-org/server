@@ -1,7 +1,7 @@
 package action
 
 import (
-	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
+	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
 )
 
 func toSchedule(id, action string) error {

@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	"github.com/mycontroller-org/backend/v2/pkg/api/action"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	webHandlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	"github.com/mycontroller-org/server/v2/pkg/api/action"
+	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	webHandlerML "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
 )
 
 const (

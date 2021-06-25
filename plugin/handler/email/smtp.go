@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/json"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	yamlUtils "github.com/mycontroller-org/backend/v2/pkg/utils/yaml"
+	"github.com/mycontroller-org/server/v2/pkg/json"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	"go.uber.org/zap"
 )
 

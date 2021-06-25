@@ -1,17 +1,17 @@
 package task
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
-	dataRepositoryML "github.com/mycontroller-org/backend/v2/pkg/model/data_repository"
-	fieldML "github.com/mycontroller-org/backend/v2/pkg/model/field"
-	gatewayML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	"github.com/mycontroller-org/backend/v2/pkg/model/source"
-	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
+	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
+	dataRepositoryML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
+	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
+	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
+	"github.com/mycontroller-org/server/v2/pkg/model/source"
+	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	"go.uber.org/zap"
 )
 

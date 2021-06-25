@@ -3,8 +3,8 @@ package systemmonitoring
 import (
 	"errors"
 
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	msgml "github.com/mycontroller-org/server/v2/pkg/model/message"
+	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 )
 
 // ProcessReceived implementation

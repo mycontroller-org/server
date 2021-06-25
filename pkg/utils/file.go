@@ -8,7 +8,7 @@ import (
 	"path"
 	"path/filepath"
 
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	ml "github.com/mycontroller-org/server/v2/pkg/model"
 	"go.uber.org/zap"
 )
 

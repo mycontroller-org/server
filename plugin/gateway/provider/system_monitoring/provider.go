@@ -1,10 +1,10 @@
 package systemmonitoring
 
 import (
-	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/system_monitoring/config"
+	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
 	"go.uber.org/zap"
 )
 

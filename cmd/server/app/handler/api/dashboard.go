@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	dashboardAPI "github.com/mycontroller-org/backend/v2/pkg/api/dashboard"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	dashboardML "github.com/mycontroller-org/backend/v2/pkg/model/dashboard"
-	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	dashboardAPI "github.com/mycontroller-org/server/v2/pkg/api/dashboard"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	dashboardML "github.com/mycontroller-org/server/v2/pkg/model/dashboard"
+	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
 )
 
 // RegisterDashboardRoutes registers dashboard api

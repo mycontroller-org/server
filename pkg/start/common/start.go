@@ -6,13 +6,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
-	sch "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
-	"github.com/mycontroller-org/backend/v2/pkg/service/logger"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
+	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	sch "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	"github.com/mycontroller-org/server/v2/pkg/service/logger"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 

@@ -1,9 +1,9 @@
 package handler
 
 import (
-	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
-	handlerSVC "github.com/mycontroller-org/backend/v2/pkg/service/handler"
-	"github.com/mycontroller-org/backend/v2/pkg/start/common"
+	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	handlerSVC "github.com/mycontroller-org/server/v2/pkg/service/handler"
+	"github.com/mycontroller-org/server/v2/pkg/start/common"
 	"go.uber.org/zap"
 )
 

@@ -1,11 +1,11 @@
 package schedule
 
 import (
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	ml "github.com/mycontroller-org/server/v2/pkg/model"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	stgml "github.com/mycontroller-org/server/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 

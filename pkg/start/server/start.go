@@ -1,18 +1,18 @@
 package server
 
 import (
-	backupAPI "github.com/mycontroller-org/backend/v2/pkg/backup"
-	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
-	fwdplSVC "github.com/mycontroller-org/backend/v2/pkg/service/forward_payload"
-	gwService "github.com/mycontroller-org/backend/v2/pkg/service/gateway"
-	gwMsgProcessor "github.com/mycontroller-org/backend/v2/pkg/service/gateway_msg_processor"
-	handlerSVC "github.com/mycontroller-org/backend/v2/pkg/service/handler"
-	metricsSVC "github.com/mycontroller-org/backend/v2/pkg/service/metrics"
-	resourceSVC "github.com/mycontroller-org/backend/v2/pkg/service/resource"
-	scheduleSVC "github.com/mycontroller-org/backend/v2/pkg/service/schedule"
-	storageSVC "github.com/mycontroller-org/backend/v2/pkg/service/storage"
-	taskSVC "github.com/mycontroller-org/backend/v2/pkg/service/task"
-	"github.com/mycontroller-org/backend/v2/pkg/start/common"
+	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
+	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	fwdplSVC "github.com/mycontroller-org/server/v2/pkg/service/forward_payload"
+	gwService "github.com/mycontroller-org/server/v2/pkg/service/gateway"
+	gwMsgProcessor "github.com/mycontroller-org/server/v2/pkg/service/gateway_msg_processor"
+	handlerSVC "github.com/mycontroller-org/server/v2/pkg/service/handler"
+	metricsSVC "github.com/mycontroller-org/server/v2/pkg/service/metrics"
+	resourceSVC "github.com/mycontroller-org/server/v2/pkg/service/resource"
+	scheduleSVC "github.com/mycontroller-org/server/v2/pkg/service/schedule"
+	storageSVC "github.com/mycontroller-org/server/v2/pkg/service/storage"
+	taskSVC "github.com/mycontroller-org/server/v2/pkg/service/task"
+	"github.com/mycontroller-org/server/v2/pkg/start/common"
 	"go.uber.org/zap"
 )
 

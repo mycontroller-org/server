@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	backupAPI "github.com/mycontroller-org/backend/v2/pkg/backup"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/ziputils"
+	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	"github.com/mycontroller-org/server/v2/pkg/utils/ziputils"
 	"go.uber.org/zap"
 )
 

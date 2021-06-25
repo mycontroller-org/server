@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	firmwareML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
-	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils/query"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
+	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/server/v2/pkg/utils/bus_utils/query"
+	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
 )
 

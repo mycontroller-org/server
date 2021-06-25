@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	httpclient "github.com/mycontroller-org/backend/v2/pkg/utils/http_client_json"
-	yamlUtils "github.com/mycontroller-org/backend/v2/pkg/utils/yaml"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
+	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	"go.uber.org/zap"
 )
 

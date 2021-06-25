@@ -3,12 +3,12 @@ package handler
 import (
 	"net/http"
 
-	statusAPI "github.com/mycontroller-org/backend/v2/pkg/api/status"
+	statusAPI "github.com/mycontroller-org/server/v2/pkg/api/status"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	json "github.com/mycontroller-org/backend/v2/pkg/json"
-	"github.com/mycontroller-org/backend/v2/pkg/version"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	json "github.com/mycontroller-org/server/v2/pkg/json"
+	"github.com/mycontroller-org/server/v2/pkg/version"
 )
 
 // RegisterStatusRoutes registers status,version api

@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 
-	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	"github.com/mycontroller-org/backend/v2/plugin/storage"
+	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
+	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	"github.com/mycontroller-org/server/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 

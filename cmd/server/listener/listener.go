@@ -7,8 +7,8 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/mycontroller-org/backend/v2/cmd/server/https"
-	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
+	"github.com/mycontroller-org/server/v2/cmd/server/https"
+	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
 )
 
 const (

@@ -5,11 +5,11 @@ import (
 	"html/template"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/api/sunrise"
-	"github.com/mycontroller-org/backend/v2/pkg/json"
-	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
-	helper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
-	"github.com/mycontroller-org/backend/v2/pkg/version"
+	"github.com/mycontroller-org/server/v2/pkg/api/sunrise"
+	"github.com/mycontroller-org/server/v2/pkg/json"
+	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	"github.com/mycontroller-org/server/v2/pkg/version"
 	"go.uber.org/zap"
 )
 

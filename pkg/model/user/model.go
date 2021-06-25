@@ -3,8 +3,8 @@ package user
 import (
 	"time"
 
-	json "github.com/mycontroller-org/backend/v2/pkg/json"
-	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	json "github.com/mycontroller-org/server/v2/pkg/json"
+	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 )
 
 // User model

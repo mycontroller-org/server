@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"errors"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model/config"
+	"github.com/mycontroller-org/server/v2/pkg/model/config"
 	"golang.org/x/crypto/acme"
 	"golang.org/x/crypto/acme/autocert"
 )

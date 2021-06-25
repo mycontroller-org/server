@@ -1,6 +1,6 @@
 package servicefilter
 
-import "github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+import "github.com/mycontroller-org/server/v2/pkg/model/cmap"
 
 // ServiceFilter struct
 type ServiceFilter struct {

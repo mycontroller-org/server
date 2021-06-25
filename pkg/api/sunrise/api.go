@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/btittelbach/astrotime"
-	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
+	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 )
 
 // GetSunriseTime returns sunrise time

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	coreScheduler "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
-	"github.com/mycontroller-org/backend/v2/plugin/gateway/provider/system_monitoring/config"
+	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
 	"go.uber.org/zap"
 )
 

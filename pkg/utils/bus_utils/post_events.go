@@ -1,10 +1,10 @@
 package busutils
 
 import (
-	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	filterHelper "github.com/mycontroller-org/backend/v2/pkg/utils/filter_sort"
-	quickid "github.com/mycontroller-org/backend/v2/pkg/utils/quick_id"
+	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	filterHelper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	quickid "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
 	"go.uber.org/zap"
 )
 

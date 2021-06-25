@@ -3,12 +3,12 @@ package mcbus
 import (
 	"fmt"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
-	busML "github.com/mycontroller-org/backend/v2/plugin/bus"
-	embedBus "github.com/mycontroller-org/backend/v2/plugin/bus/embedded"
-	"github.com/mycontroller-org/backend/v2/plugin/bus/natsio"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
+	busML "github.com/mycontroller-org/server/v2/plugin/bus"
+	embedBus "github.com/mycontroller-org/server/v2/plugin/bus/embedded"
+	"github.com/mycontroller-org/server/v2/plugin/bus/natsio"
 	"go.uber.org/zap"
 )
 

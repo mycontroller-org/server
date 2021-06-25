@@ -1,7 +1,7 @@
 package msglogger
 
 import (
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	msgml "github.com/mycontroller-org/server/v2/pkg/model/message"
 )
 
 // VoidMessageLogger struct

@@ -3,10 +3,10 @@ package metrics
 import (
 	"errors"
 
-	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
-	mtsML "github.com/mycontroller-org/backend/v2/plugin/metrics"
-	influx "github.com/mycontroller-org/backend/v2/plugin/metrics/influxdb_v2"
-	"github.com/mycontroller-org/backend/v2/plugin/metrics/voiddb"
+	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	mtsML "github.com/mycontroller-org/server/v2/plugin/metrics"
+	influx "github.com/mycontroller-org/server/v2/plugin/metrics/influxdb_v2"
+	"github.com/mycontroller-org/server/v2/plugin/metrics/voiddb"
 	"go.uber.org/zap"
 )
 

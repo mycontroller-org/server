@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/influxdata/influxdb-client-go/v2/api"
-	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
-	queryML "github.com/mycontroller-org/backend/v2/plugin/metrics/influxdb_v2/query"
+	mtsml "github.com/mycontroller-org/server/v2/plugin/metrics"
+	queryML "github.com/mycontroller-org/server/v2/plugin/metrics/influxdb_v2/query"
 	"go.uber.org/zap"
 )
 

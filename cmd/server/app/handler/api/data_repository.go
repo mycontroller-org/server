@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	dataRepositoryAPI "github.com/mycontroller-org/backend/v2/pkg/api/data_repository"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	dataRepositoryML "github.com/mycontroller-org/backend/v2/pkg/model/data_repository"
-	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	dataRepositoryAPI "github.com/mycontroller-org/server/v2/pkg/api/data_repository"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	dataRepositoryML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
+	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
 )
 
 // RegisterFieldRoutes registers data repository api

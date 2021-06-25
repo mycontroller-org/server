@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
-	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	busml "github.com/mycontroller-org/backend/v2/plugin/bus"
+	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
+	busml "github.com/mycontroller-org/server/v2/plugin/bus"
 	"go.uber.org/zap"
 )
 

@@ -3,9 +3,9 @@ package action
 import (
 	"fmt"
 
-	nodeAPI "github.com/mycontroller-org/backend/v2/pkg/api/node"
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	"go.uber.org/zap"
 )
 

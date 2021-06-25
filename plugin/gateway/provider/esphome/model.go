@@ -3,9 +3,9 @@ package esphome
 import (
 	"bytes"
 
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
-	"github.com/mycontroller-org/backend/v2/plugin/metrics"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	"github.com/mycontroller-org/server/v2/plugin/metrics"
 	esphomeClient "github.com/mycontroller-org/esphome_api/pkg/client"
 )
 

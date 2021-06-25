@@ -2,7 +2,7 @@ package queue
 
 import (
 	queue "github.com/jaegertracing/jaeger/pkg/queue"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
+	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
 )
 

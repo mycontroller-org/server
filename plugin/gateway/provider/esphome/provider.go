@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"sync"
 
-	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	coreScheduler "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 

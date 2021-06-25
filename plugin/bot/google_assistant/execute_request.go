@@ -1,10 +1,10 @@
 package googleassistant
 
 import (
-	actionAPI "github.com/mycontroller-org/backend/v2/pkg/api/action"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
-	gaML "github.com/mycontroller-org/backend/v2/plugin/bot/google_assistant/model"
+	actionAPI "github.com/mycontroller-org/server/v2/pkg/api/action"
+	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	gaML "github.com/mycontroller-org/server/v2/plugin/bot/google_assistant/model"
 	"go.uber.org/zap"
 )
 

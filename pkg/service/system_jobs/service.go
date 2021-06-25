@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"math/rand"
 
-	analyticsAPI "github.com/mycontroller-org/backend/v2/pkg/analytics"
-	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
-	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
-	configSVC "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
-	coreScheduler "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	analyticsAPI "github.com/mycontroller-org/server/v2/pkg/analytics"
+	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
+	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
+	configSVC "github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 
 	"go.uber.org/zap"
 )

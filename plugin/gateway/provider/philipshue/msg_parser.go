@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
+	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
+	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"go.uber.org/zap"
 )
 

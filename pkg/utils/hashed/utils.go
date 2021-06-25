@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mycontroller-org/backend/v2/pkg/service/configuration"
+	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	"golang.org/x/crypto/bcrypt"
 
 	"crypto/aes"

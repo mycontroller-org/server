@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	backupRestoreAPI "github.com/mycontroller-org/backend/v2/pkg/api/backup"
-	json "github.com/mycontroller-org/backend/v2/pkg/json"
-	backupML "github.com/mycontroller-org/backend/v2/pkg/model/backup"
-	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	backupRestoreAPI "github.com/mycontroller-org/server/v2/pkg/api/backup"
+	json "github.com/mycontroller-org/server/v2/pkg/json"
+	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
+	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
 )
 
 // RegisterBackupRestoreRoutes registers backup/restore api

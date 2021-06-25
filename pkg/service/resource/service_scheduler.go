@@ -3,9 +3,9 @@ package resource
 import (
 	"errors"
 
-	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
+	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
 	"go.uber.org/zap"
 )
 

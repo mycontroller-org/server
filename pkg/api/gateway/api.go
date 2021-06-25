@@ -1,15 +1,15 @@
 package gateway
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
-	gwML "github.com/mycontroller-org/backend/v2/pkg/model/gateway"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	stg "github.com/mycontroller-org/backend/v2/pkg/service/storage"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	cloneUtil "github.com/mycontroller-org/backend/v2/pkg/utils/clone"
-	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
+	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	stg "github.com/mycontroller-org/server/v2/pkg/service/storage"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
+	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
+	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
 )
 
 // List by filter and pagination

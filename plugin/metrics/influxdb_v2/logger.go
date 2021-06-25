@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	loggerUtils "github.com/mycontroller-org/backend/v2/pkg/utils/logger"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	"go.uber.org/zap"
 )
 

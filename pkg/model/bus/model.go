@@ -1,7 +1,7 @@
 package event
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/json"
+	"github.com/mycontroller-org/server/v2/pkg/json"
 )
 
 // BusData struct

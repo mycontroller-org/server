@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	taskAPI "github.com/mycontroller-org/backend/v2/pkg/api/task"
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
-	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
-	stgml "github.com/mycontroller-org/backend/v2/plugin/storage"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
+	ml "github.com/mycontroller-org/server/v2/pkg/model"
+	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
+	stgml "github.com/mycontroller-org/server/v2/plugin/storage"
 )
 
 // RegisterTaskRoutes registers task api

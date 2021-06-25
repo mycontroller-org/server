@@ -1,7 +1,7 @@
 package mongodb
 
 import (
-	ml "github.com/mycontroller-org/backend/v2/pkg/model"
+	ml "github.com/mycontroller-org/server/v2/pkg/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

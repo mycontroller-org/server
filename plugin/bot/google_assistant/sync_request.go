@@ -1,7 +1,7 @@
 package googleassistant
 
 import (
-	gaML "github.com/mycontroller-org/backend/v2/plugin/bot/google_assistant/model"
+	gaML "github.com/mycontroller-org/server/v2/plugin/bot/google_assistant/model"
 	"go.uber.org/zap"
 )
 

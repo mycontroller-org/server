@@ -6,14 +6,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/api/sunrise"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	scheduleML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	converterUtils "github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/javascript"
-	variablesUtils "github.com/mycontroller-org/backend/v2/pkg/utils/variables"
+	"github.com/mycontroller-org/server/v2/pkg/api/sunrise"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
+	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	"github.com/mycontroller-org/server/v2/pkg/utils/javascript"
+	variablesUtils "github.com/mycontroller-org/server/v2/pkg/utils/variables"
 	"go.uber.org/zap"
 )
 

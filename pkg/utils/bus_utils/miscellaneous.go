@@ -1,7 +1,7 @@
 package busutils
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"go.uber.org/zap"
 )
 

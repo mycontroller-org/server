@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	sfML "github.com/mycontroller-org/backend/v2/pkg/model/service_filter"
+	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
+	sfML "github.com/mycontroller-org/server/v2/pkg/model/service_filter"
 )
 
 const (

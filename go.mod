@@ -1,4 +1,4 @@
-module github.com/mycontroller-org/backend/v2
+module github.com/mycontroller-org/server/v2
 
 go 1.16
 

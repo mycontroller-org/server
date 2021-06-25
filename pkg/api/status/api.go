@@ -5,10 +5,10 @@ import (
 	"os"
 	"time"
 
-	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
-	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
-	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
+	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
+	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 

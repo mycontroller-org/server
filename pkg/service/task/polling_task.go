@@ -1,7 +1,7 @@
 package task
 
 import (
-	taskML "github.com/mycontroller-org/backend/v2/pkg/model/task"
+	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
 	"go.uber.org/zap"
 )
 

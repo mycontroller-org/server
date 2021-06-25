@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	"github.com/mycontroller-org/backend/v2/pkg/model/user"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/convertor"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	"github.com/mycontroller-org/server/v2/pkg/model/user"
+	handlerML "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
+	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"go.uber.org/zap"
 
 	"github.com/dgrijalva/jwt-go"

@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	fwAPI "github.com/mycontroller-org/backend/v2/pkg/api/firmware"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	fwML "github.com/mycontroller-org/backend/v2/pkg/model/firmware"
-	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	fwAPI "github.com/mycontroller-org/server/v2/pkg/api/firmware"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	fwML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
+	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
 )
 
 // RegisterFirmwareRoutes registers firmware api

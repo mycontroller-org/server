@@ -2,12 +2,12 @@ package mcwebsocket
 
 import (
 	ws "github.com/gorilla/websocket"
-	"github.com/mycontroller-org/backend/v2/pkg/json"
-	busML "github.com/mycontroller-org/backend/v2/pkg/model/bus"
-	eventML "github.com/mycontroller-org/backend/v2/pkg/model/bus/event"
-	wsML "github.com/mycontroller-org/backend/v2/pkg/model/websocket"
-	"github.com/mycontroller-org/backend/v2/pkg/service/mcbus"
-	queueUtils "github.com/mycontroller-org/backend/v2/pkg/utils/queue"
+	"github.com/mycontroller-org/server/v2/pkg/json"
+	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
+	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
+	wsML "github.com/mycontroller-org/server/v2/pkg/model/websocket"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	"go.uber.org/zap"
 )
 

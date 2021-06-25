@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	fwdpayloadAPI "github.com/mycontroller-org/backend/v2/pkg/api/forward_payload"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	fwdPayloadML "github.com/mycontroller-org/backend/v2/pkg/model/forward_payload"
-	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	fwdpayloadAPI "github.com/mycontroller-org/server/v2/pkg/api/forward_payload"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	fwdPayloadML "github.com/mycontroller-org/server/v2/pkg/model/forward_payload"
+	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
 )
 
 // RegisterForwardPayloadRoutes registers forward payload api

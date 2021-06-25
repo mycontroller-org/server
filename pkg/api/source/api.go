@@ -1,11 +1,11 @@
 package source
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	sourceML "github.com/mycontroller-org/backend/v2/pkg/model/source"
-	"github.com/mycontroller-org/backend/v2/pkg/service/storage"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	storageML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
+	"github.com/mycontroller-org/server/v2/pkg/service/storage"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	storageML "github.com/mycontroller-org/server/v2/plugin/storage"
 )
 
 // List by filter and pagination

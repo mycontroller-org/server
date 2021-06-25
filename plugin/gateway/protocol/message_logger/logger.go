@@ -1,9 +1,9 @@
 package msglogger
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
-	msgml "github.com/mycontroller-org/backend/v2/pkg/model/message"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
+	msgml "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"go.uber.org/zap"
 )
 

@@ -1,7 +1,7 @@
 package virtualdevice
 
 import (
-	"github.com/mycontroller-org/backend/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 )
 
 // virtual device work is in progress

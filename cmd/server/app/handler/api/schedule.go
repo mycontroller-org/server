@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	scheduleAPI "github.com/mycontroller-org/backend/v2/pkg/api/schedule"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	schedulerML "github.com/mycontroller-org/backend/v2/pkg/model/schedule"
-	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	schedulerML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
+	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
 )
 
 // RegisterSchedulerRoutes registers schedule api

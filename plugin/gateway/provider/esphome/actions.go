@@ -3,8 +3,8 @@ package esphome
 import (
 	"time"
 
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/backend/v2/pkg/model/node"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )

@@ -3,10 +3,10 @@ package resource
 import (
 	"errors"
 
-	gatewayAPI "github.com/mycontroller-org/backend/v2/pkg/api/gateway"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	concurrencyUtils "github.com/mycontroller-org/backend/v2/pkg/utils/concurrency"
+	gatewayAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	concurrencyUtils "github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
 )
 

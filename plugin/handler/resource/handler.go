@@ -5,13 +5,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/json"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/backend/v2/pkg/model/handler"
-	rsML "github.com/mycontroller-org/backend/v2/pkg/model/resource_service"
-	coreScheduler "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
-	busUtils "github.com/mycontroller-org/backend/v2/pkg/utils/bus_utils"
-	yamlUtils "github.com/mycontroller-org/backend/v2/pkg/utils/yaml"
+	"github.com/mycontroller-org/server/v2/pkg/json"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
+	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	"go.uber.org/zap"
 )
 

@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	json "github.com/mycontroller-org/backend/v2/pkg/json"
+	json "github.com/mycontroller-org/server/v2/pkg/json"
 )
 
 func (ep *Endpoint) newRequest(cfg RequestConfig, body interface{}) (*ResponseConfig, []byte, error) {

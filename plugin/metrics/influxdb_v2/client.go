@@ -10,12 +10,12 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	influxdb2log "github.com/influxdata/influxdb-client-go/v2/log"
-	fml "github.com/mycontroller-org/backend/v2/pkg/model/field"
-	ut "github.com/mycontroller-org/backend/v2/pkg/utils"
-	mtsml "github.com/mycontroller-org/backend/v2/plugin/metrics"
-	queryML "github.com/mycontroller-org/backend/v2/plugin/metrics/influxdb_v2/query"
-	queryV1 "github.com/mycontroller-org/backend/v2/plugin/metrics/influxdb_v2/query_v1"
-	queryV2 "github.com/mycontroller-org/backend/v2/plugin/metrics/influxdb_v2/query_v2"
+	fml "github.com/mycontroller-org/server/v2/pkg/model/field"
+	ut "github.com/mycontroller-org/server/v2/pkg/utils"
+	mtsml "github.com/mycontroller-org/server/v2/plugin/metrics"
+	queryML "github.com/mycontroller-org/server/v2/plugin/metrics/influxdb_v2/query"
+	queryV1 "github.com/mycontroller-org/server/v2/plugin/metrics/influxdb_v2/query_v1"
+	queryV2 "github.com/mycontroller-org/server/v2/plugin/metrics/influxdb_v2/query_v2"
 	"go.uber.org/zap"
 )
 

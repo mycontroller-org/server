@@ -3,7 +3,7 @@ package model
 import (
 	"path"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model/config"
+	"github.com/mycontroller-org/server/v2/pkg/model/config"
 )
 
 // Files, directory locations

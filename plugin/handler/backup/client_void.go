@@ -6,7 +6,7 @@ package exporter
 import (
 	"errors"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/model"
 )
 
 // Client for backup service

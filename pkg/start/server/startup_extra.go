@@ -1,15 +1,15 @@
 package server
 
 import (
-	settingsAPI "github.com/mycontroller-org/backend/v2/pkg/api/settings"
-	userAPI "github.com/mycontroller-org/backend/v2/pkg/api/user"
-	settingsML "github.com/mycontroller-org/backend/v2/pkg/model/settings"
-	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
-	systemJobs "github.com/mycontroller-org/backend/v2/pkg/service/system_jobs"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/hashed"
-	"github.com/mycontroller-org/backend/v2/pkg/version"
-	stgML "github.com/mycontroller-org/backend/v2/plugin/storage"
+	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
+	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
+	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
+	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
+	systemJobs "github.com/mycontroller-org/server/v2/pkg/service/system_jobs"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
+	"github.com/mycontroller-org/server/v2/pkg/version"
+	stgML "github.com/mycontroller-org/server/v2/plugin/storage"
 	"go.uber.org/zap"
 )
 

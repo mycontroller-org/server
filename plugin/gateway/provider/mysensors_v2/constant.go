@@ -3,9 +3,9 @@ package mysensors
 import (
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	msgML "github.com/mycontroller-org/backend/v2/pkg/model/message"
-	mtsML "github.com/mycontroller-org/backend/v2/plugin/metrics"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	mtsML "github.com/mycontroller-org/server/v2/plugin/metrics"
 )
 
 // Labels and fields used in this provider

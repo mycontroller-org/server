@@ -6,12 +6,12 @@ import (
 	"sync"
 	"time"
 
-	json "github.com/mycontroller-org/backend/v2/pkg/json"
-	"github.com/mycontroller-org/backend/v2/pkg/model"
-	backupML "github.com/mycontroller-org/backend/v2/pkg/model/backup"
-	userML "github.com/mycontroller-org/backend/v2/pkg/model/user"
-	sch "github.com/mycontroller-org/backend/v2/pkg/service/core_scheduler"
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
+	json "github.com/mycontroller-org/server/v2/pkg/json"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
+	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
+	sch "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )

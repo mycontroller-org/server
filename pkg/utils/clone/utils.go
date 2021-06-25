@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mycontroller-org/backend/v2/pkg/utils"
-	"github.com/mycontroller-org/backend/v2/pkg/utils/hashed"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 )
 
 // copied from https://gist.github.com/hvoecking/10772475

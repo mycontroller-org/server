@@ -3,7 +3,7 @@ package service
 import (
 	"sync"
 
-	gwpd "github.com/mycontroller-org/backend/v2/plugin/gateway/provider"
+	gwpd "github.com/mycontroller-org/server/v2/plugin/gateway/provider"
 )
 
 type store struct {

@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
-	"github.com/mycontroller-org/backend/v2/pkg/json"
-	"github.com/mycontroller-org/backend/v2/plugin/bot/google_assistant/model"
+	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	"github.com/mycontroller-org/server/v2/pkg/json"
+	"github.com/mycontroller-org/server/v2/plugin/bot/google_assistant/model"
 	"go.uber.org/zap"
 )
 

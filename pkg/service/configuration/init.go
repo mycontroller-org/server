@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	cfgML "github.com/mycontroller-org/backend/v2/pkg/model/config"
-	loggerUtils "github.com/mycontroller-org/backend/v2/pkg/utils/logger"
+	cfgML "github.com/mycontroller-org/server/v2/pkg/model/config"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )

@@ -1,7 +1,7 @@
 # MyController
-![lint workflow](https://github.com/mycontroller-org/backend/actions/workflows/lint.yaml/badge.svg)
-![publish container images](https://github.com/mycontroller-org/backend/actions/workflows/publish_container_images.yaml/badge.svg)
-![publish executables](https://github.com/mycontroller-org/backend/actions/workflows/publish_executables.yaml/badge.svg)
+![lint workflow](https://github.com/mycontroller-org/server/actions/workflows/lint.yaml/badge.svg)
+![publish container images](https://github.com/mycontroller-org/server/actions/workflows/publish_container_images.yaml/badge.svg)
+![publish executables](https://github.com/mycontroller-org/server/actions/workflows/publish_executables.yaml/badge.svg)
 
 MyController is a flexible automation and sensor controller for IoT devices. Whether in the home, at work, or wherever you need it, MyController provides the solution!
 
@@ -25,5 +25,5 @@ Both released and master branch container images are published in to the followi
   * [Quay.io](https://quay.io/organization/mycontroller)
 
 ### Executables
-* [Released versions](https://github.com/mycontroller-org/backend/releases)
+* [Released versions](https://github.com/mycontroller-org/server/releases)
 * [Pre Release](https://download.mycontroller.org/v2/master/) - `master` branch executables
