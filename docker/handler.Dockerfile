@@ -9,7 +9,7 @@ RUN go mod download -x
 ARG TARGETOS
 ARG TARGETARCH
 ENV TARGET_BUILD="handler"
-RUN scripts/build_binary.sh
+RUN scripts/container_binary.sh
 
 FROM alpine:3.13
 
