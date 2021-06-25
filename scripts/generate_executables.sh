@@ -17,7 +17,7 @@ mkdir -p ${BUILD_DIR}/${BINARY_DIR}
 
 # generate UI builds
 if [ "${BUILD_UI}" = true ] ; then
-  ./scripts/build_ui.sh
+  ./scripts/build_web_console.sh
 fi
 
 # download dependencies
@@ -40,8 +40,7 @@ function package {
 
   # include web console
   if [ ${COMPONENT_NAME} = "server" ]; then
-    CONFIG_FILE="mycontroller.yaml"
-    cp console-web/build ${PACKAGE_STAGING_DIR}/web_console -r
+    CONFIG_FILE="mycontroller.yaml"    
   fi
 
   # copy sample config file
@@ -72,7 +71,7 @@ do
   package_gateway="mycontroller-gateway-${GOOS}-${GOARCH}"
   package_handler="mycontroller-handler-${GOOS}-${GOARCH}"
 
-  env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=server -o ${BUILD_DIR}/${BINARY_DIR}/${package_server} -ldflags "$LD_FLAGS" cmd/server/main.go
+  env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=server,web -o ${BUILD_DIR}/${BINARY_DIR}/${package_server} -ldflags "$LD_FLAGS" cmd/server/main.go
   env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=standalone -o ${BUILD_DIR}/${BINARY_DIR}/${package_gateway} -ldflags "$LD_FLAGS" cmd/gateway/main.go
   env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=standalone -o ${BUILD_DIR}/${BINARY_DIR}/${package_handler} -ldflags "$LD_FLAGS" cmd/handler/main.go
   if [ $? -ne 0 ]; then

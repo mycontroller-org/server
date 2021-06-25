@@ -8,7 +8,7 @@ import (
 	handlerAPI "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/api"
 	handlerAuthAPI "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/api/auth"
 	middleware "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/middleware"
-	handlerUtils "github.com/mycontroller-org/backend/v2/cmd/server/app/handler/utils"
+	webConsole "github.com/mycontroller-org/backend/v2/cmd/server/app/web-console"
 	"github.com/mycontroller-org/backend/v2/pkg/model/config"
 	webHandlerML "github.com/mycontroller-org/backend/v2/pkg/model/web_handler"
 	cfg "github.com/mycontroller-org/backend/v2/pkg/service/configuration"
@@ -64,11 +64,13 @@ func GetHandler() (http.Handler, error) {
 		//router.Handle("/", fs)
 		router.PathPrefix("/").Handler(fs)
 	} else {
-		defaultPage := func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Type", "text/plain")
-			handlerUtils.WriteResponse(w, []byte("Web directory not configured."))
-		}
-		router.HandleFunc("/", defaultPage)
+		//defaultPage := func(w http.ResponseWriter, r *http.Request) {
+		//	w.Header().Set("Content-Type", "text/plain")
+		//	handlerUtils.WriteResponse(w, []byte("Web directory not configured."))
+		//}
+		// router.HandleFunc("/", defaultPage)
+		fs := http.FileServer(webConsole.StaticFiles)
+		router.PathPrefix("/").Handler(fs)
 	}
 
 	c := cors.New(cors.Options{

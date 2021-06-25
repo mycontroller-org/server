@@ -4,7 +4,7 @@ analytics:
   enabled: true 
 
 web:
-  web_directory: web_console
+  web_directory:
   enable_profiling: false
   http:
     enabled: true 
@@ -14,12 +14,12 @@ web:
     enabled: true
     bind_address: "0.0.0.0"
     port: 8443
-    cert_dir: ../mc_home/certs/https_ssl
+    cert_dir: mc_home/certs/https_ssl
   https_acme:
     enabled: false
     bind_address: "0.0.0.0"
     port: 9443
-    cache_dir: ../mc_home/certs/https_acme
+    cache_dir: mc_home/certs/https_acme
     acme_directory: 
     email: hello@example.com
     domains: ["mycontroller.example.com"]
@@ -34,11 +34,11 @@ logger:
     metrics: warn
 
 directories:
-  data: ../mc_home/data
-  logs: ../mc_home/logs
-  tmp: ../mc_home/tmp
-  secure_share: ../mc_home/secure_share
-  insecure_share: ../mc_home/insecure_share
+  data: mc_home/data
+  logs: mc_home/logs
+  tmp: mc_home/tmp
+  secure_share: mc_home/secure_share
+  insecure_share: mc_home/insecure_share
 
 bus:
   type: embedded

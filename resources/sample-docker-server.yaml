@@ -4,7 +4,7 @@ analytics:
   enabled: true 
 
 web:
-  web_directory: /ui
+  web_directory: 
   enable_profiling: false
   http:
     enabled: true 

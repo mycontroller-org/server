@@ -28,9 +28,6 @@ RUN apk --no-cache add tzdata
 # create a user and give permission for the locations
 RUN mkdir -p ${APP_HOME} && mkdir -p ${DATA_HOME}
 
-# copy Web console files
-COPY ./console-web/build /ui
-
 # copy application bin file
 COPY --from=builder /app/mycontroller-server ${APP_HOME}/mycontroller-server
 

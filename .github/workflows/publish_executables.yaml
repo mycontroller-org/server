@@ -45,7 +45,7 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: build bundles
-        run: ./scripts/publish_executables.sh
+        run: ./scripts/generate_executables.sh
 
       - name: add timestamp file
         run: |

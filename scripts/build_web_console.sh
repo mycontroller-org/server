@@ -3,7 +3,7 @@
 BUILDS_DIR=builds
 
 # sync the web console repository
-./scripts/setup_ui.sh
+./scripts/setup_web_console.sh
 
 # build web console
 cd console-web
@@ -20,3 +20,9 @@ cd ../
 # cd ..
 # remove copied ui build files
 # rm ${BUILDS_DIR}/web_console -rf
+
+# generate web console embedded assets into go file
+go get github.com/mjibson/esc
+go install github.com/mjibson/esc
+
+esc -pkg assets -o cmd/server/app/web-console/actual/generated_assets.go -prefix console-web/build console-web/build
