@@ -40,6 +40,7 @@ function package {
 
   # include web console
   if [ ${COMPONENT_NAME} = "server" ]; then
+    cp console-web/build ${PACKAGE_STAGING_DIR}/web_console -r
     CONFIG_FILE="mycontroller.yaml"    
   fi
 
@@ -71,7 +72,9 @@ do
   package_gateway="mycontroller-gateway-${GOOS}-${GOARCH}"
   package_handler="mycontroller-handler-${GOOS}-${GOARCH}"
 
-  env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=server,web -o ${BUILD_DIR}/${BINARY_DIR}/${package_server} -ldflags "$LD_FLAGS" cmd/server/main.go
+  # to use embed web assets use tag "web"
+  # embed assets takes extra ~40 MiB when running
+  env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=server -o ${BUILD_DIR}/${BINARY_DIR}/${package_server} -ldflags "$LD_FLAGS" cmd/server/main.go
   env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=standalone -o ${BUILD_DIR}/${BINARY_DIR}/${package_gateway} -ldflags "$LD_FLAGS" cmd/gateway/main.go
   env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=standalone -o ${BUILD_DIR}/${BINARY_DIR}/${package_handler} -ldflags "$LD_FLAGS" cmd/handler/main.go
   if [ $? -ne 0 ]; then
