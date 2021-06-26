@@ -8,7 +8,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
-	stgSVC "github.com/mycontroller-org/server/v2/pkg/service/storage"
+	stgSVC "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )

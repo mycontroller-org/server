@@ -7,7 +7,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/storage"
+	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"

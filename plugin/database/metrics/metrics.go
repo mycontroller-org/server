@@ -15,8 +15,8 @@ type Client interface {
 
 // Metrics database types
 const (
-	TypeInfluxdbV2 = "influxdb_v2"
-	TypeVoidDB     = "void_db"
+	TypeInfluxDB = "influxdb"
+	TypeVoidDB   = "void_db"
 )
 
 // Metric types

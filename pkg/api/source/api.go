@@ -3,7 +3,7 @@ package source
 import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
-	"github.com/mycontroller-org/server/v2/pkg/service/storage"
+	"github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	storageML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )

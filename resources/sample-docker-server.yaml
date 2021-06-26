@@ -71,13 +71,12 @@ database:
     load_format: "yaml"
 
   metrics:
-    type: void_db
-    # type: influxdb_v2
-    # uri: http://192.168.1.21:8086
-    # token: 
-    # username:
-    # password:
-    # organization: 
-    # bucket: mycontroller
-    # batch_size:
-    # flush_interval: 1s
+    type: influxdb # options: influxdb, void_db
+    uri: http://192.168.1.21:8086
+    token: 
+    username:
+    password:
+    organization: 
+    bucket: mycontroller
+    batch_size:
+    flush_interval: 1s

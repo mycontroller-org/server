@@ -30,7 +30,13 @@ if [ ${USER_COMMAND} = "start" ]; then
   else
     mkdir -p logs
     exec $START_COMMAND >> logs/mycontroller.log 2>&1 &
-    echo "start command issued to the MyController server"
+    status=$?
+    if [ $status -ne 0 ]; then
+      echo "failed to start MyController server: $status"
+      exit $status
+    elif
+      echo "start command issued to the MyController server"
+    fi
   fi
 elif [ ${USER_COMMAND} = "stop" ]; then
   if [ ${MYC_PID} ]; then

@@ -39,7 +39,7 @@ import (
 	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
 	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/server/v2/pkg/service/storage"
+	"github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"github.com/mycontroller-org/server/v2/pkg/utils/ziputils"

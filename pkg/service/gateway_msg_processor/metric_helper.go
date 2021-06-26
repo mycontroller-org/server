@@ -7,24 +7,24 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	fml "github.com/mycontroller-org/server/v2/pkg/model/field"
-	nml "github.com/mycontroller-org/server/v2/pkg/model/node"
-	mts "github.com/mycontroller-org/server/v2/pkg/service/metrics"
-	mtsml "github.com/mycontroller-org/server/v2/plugin/database/metrics"
+	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
+	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
+	metricsDB "github.com/mycontroller-org/server/v2/pkg/service/database/metrics"
+	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	"go.uber.org/zap"
 )
 
-func writeFieldMetric(field *fml.Field) error {
+func writeFieldMetric(field *fieldML.Field) error {
 	fields := make(map[string]interface{})
 	// update fields
-	if field.MetricType == mtsml.MetricTypeGEO {
+	if field.MetricType == metricsML.MetricTypeGEO {
 		_f, err := geoData(field.Current.Value)
 		if err != nil {
 			return err
 		}
 		fields = _f
 	} else {
-		fields[mtsml.FieldValue] = field.Current.Value
+		fields[metricsML.FieldValue] = field.Current.Value
 	}
 	// update tags
 	tags := map[string]string{
@@ -36,7 +36,7 @@ func writeFieldMetric(field *fml.Field) error {
 	}
 
 	// return data
-	metricData := &mtsml.InputData{
+	metricData := &metricsML.InputData{
 		MetricType: field.MetricType,
 		Time:       field.Current.Timestamp,
 		Tags:       tags,
@@ -70,17 +70,17 @@ func geoData(pl interface{}) (map[string]interface{}, error) {
 		}
 	}
 
-	d[mtsml.FieldLatitude] = lat
-	d[mtsml.FieldLongitude] = lon
-	d[mtsml.FieldAltitude] = alt
+	d[metricsML.FieldLatitude] = lat
+	d[metricsML.FieldLongitude] = lon
+	d[metricsML.FieldAltitude] = alt
 
 	return d, nil
 }
 
-func writeNodeMetric(node *nml.Node, metricType, fieldName string, value interface{}) error {
+func writeNodeMetric(node *nodeML.Node, metricType, fieldName string, value interface{}) error {
 	fields := make(map[string]interface{})
 	// update fields
-	fields[mtsml.FieldValue] = value
+	fields[metricsML.FieldValue] = value
 
 	// update tags
 	tags := map[string]string{
@@ -91,7 +91,7 @@ func writeNodeMetric(node *nml.Node, metricType, fieldName string, value interfa
 	}
 
 	// return data
-	metricData := &mtsml.InputData{
+	metricData := &metricsML.InputData{
 		MetricType: metricType,
 		Time:       node.LastSeen,
 		Tags:       tags,
@@ -101,9 +101,9 @@ func writeNodeMetric(node *nml.Node, metricType, fieldName string, value interfa
 	return writeMetric(metricData)
 }
 
-func writeMetric(metricData *mtsml.InputData) error {
+func writeMetric(metricData *metricsML.InputData) error {
 	startTime := time.Now()
-	err := mts.SVC.Write(metricData)
+	err := metricsDB.SVC.Write(metricData)
 	if err != nil {
 		zap.L().Error("failed to write into metrics database", zap.Error(err), zap.Any("metricData", metricData))
 		return err

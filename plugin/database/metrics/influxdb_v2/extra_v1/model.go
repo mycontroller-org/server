@@ -1,4 +1,4 @@
-package queryv1
+package extrav1
 
 // QueryInput struct
 type QueryInput struct {

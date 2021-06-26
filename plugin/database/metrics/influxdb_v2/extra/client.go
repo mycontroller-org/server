@@ -1,7 +1,7 @@
 package query
 
 import (
-	mtrml "github.com/mycontroller-org/server/v2/plugin/database/metrics"
+	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 )
 
 // contants
@@ -17,5 +17,10 @@ const (
 
 // QueryAPI interface
 type QueryAPI interface {
-	ExecuteQuery(queryConfig *mtrml.Query, measurement string) ([]mtrml.ResponseData, error)
+	ExecuteQuery(queryConfig *metricsML.Query, measurement string) ([]metricsML.ResponseData, error)
+}
+
+// AdminAPI interface
+type AdminAPI interface {
+	CreateBucket() error
 }

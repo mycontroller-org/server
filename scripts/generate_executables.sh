@@ -75,11 +75,22 @@ do
   # to use embed web assets use tag "web"
   # embed assets takes extra ~40 MiB when running
   env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=server -o ${BUILD_DIR}/${BINARY_DIR}/${package_server} -ldflags "$LD_FLAGS" cmd/server/main.go
+  build_status=$?
+  if [ $build_status -ne 0 ]; then
+      echo "an error has occurred. aborting the build process, status:${build_status}"
+      exit $status
+  fi
   env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=standalone -o ${BUILD_DIR}/${BINARY_DIR}/${package_gateway} -ldflags "$LD_FLAGS" cmd/gateway/main.go
+  build_status=$?
+  if [ $build_status -ne 0 ]; then
+      echo "an error has occurred. aborting the build process, status:${build_status}"
+      exit $status
+  fi
   env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=standalone -o ${BUILD_DIR}/${BINARY_DIR}/${package_handler} -ldflags "$LD_FLAGS" cmd/handler/main.go
-  if [ $? -ne 0 ]; then
-    echo 'an error has occurred. aborting the build process'
-    exit 1
+  build_status=$?
+  if [ $build_status -ne 0 ]; then
+      echo "an error has occurred. aborting the build process, status:${build_status}"
+      exit $status
   fi
 
   FILE_EXTENSION=""

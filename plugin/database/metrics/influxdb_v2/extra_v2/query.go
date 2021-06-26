@@ -1,4 +1,4 @@
-package queryv2
+package extrav2
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	mtsml "github.com/mycontroller-org/server/v2/plugin/database/metrics"
-	queryML "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/query"
+	queryML "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/extra"
 	"go.uber.org/zap"
 )
 
@@ -18,7 +18,7 @@ type QueryV2 struct {
 	bucket string
 }
 
-func InitQueryV2(api api.QueryAPI, bucket string) *QueryV2 {
+func NewQueryClient(api api.QueryAPI, bucket string) *QueryV2 {
 	return &QueryV2{api: api, bucket: bucket}
 }
 

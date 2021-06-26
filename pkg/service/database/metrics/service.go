@@ -21,7 +21,7 @@ func Init(metricsCfg map[string]interface{}) {
 	dbType, available := metricsCfg["type"]
 	if available {
 		switch dbType {
-		case mtsML.TypeInfluxdbV2:
+		case mtsML.TypeInfluxDB:
 			client, err := influx.NewClient(metricsCfg)
 			if err != nil {
 				zap.L().Fatal("error on metrics database initialization", zap.Error(err))

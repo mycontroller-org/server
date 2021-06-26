@@ -1,7 +1,6 @@
-package queryv1
+package extrav1
 
 import (
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"net/http"
@@ -10,10 +9,10 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	cloneutil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
+	cloneUtils "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
-	mtsml "github.com/mycontroller-org/server/v2/plugin/database/metrics"
+	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	"go.uber.org/zap"
 )
 
@@ -25,12 +24,8 @@ type QueryV1 struct {
 	queryParams map[string]interface{}
 }
 
-func InitClientV1(uri string, insecureSkipVerify bool, bucket, username, password string) *QueryV1 {
-	headers := make(map[string]string)
-	if username != "" {
-		base64String := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))
-		headers["Authorization"] = fmt.Sprintf("Basic %s", base64String)
-	}
+func NewQueryClient(uri string, insecureSkipVerify bool, bucket, username, password string) *QueryV1 {
+	headers, newClient := newClient(uri, insecureSkipVerify, username, password)
 
 	queryParams := map[string]interface{}{
 		"db":     bucket,
@@ -39,15 +34,15 @@ func InitClientV1(uri string, insecureSkipVerify bool, bucket, username, passwor
 	}
 
 	return &QueryV1{
-		client:      httpclient.GetClient(insecureSkipVerify),
+		client:      newClient,
 		url:         fmt.Sprintf("%s/query", uri),
 		headers:     headers,
 		queryParams: queryParams,
 	}
 }
 
-func (qv1 *QueryV1) ExecuteQuery(query *mtsml.Query, measurement string) ([]mtsml.ResponseData, error) {
-	queryParams, _ := cloneutil.Clone(qv1.queryParams).(map[string]interface{})
+func (qv1 *QueryV1) ExecuteQuery(query *metricsML.Query, measurement string) ([]metricsML.ResponseData, error) {
+	queryParams, _ := cloneUtils.Clone(qv1.queryParams).(map[string]interface{})
 
 	queryString := qv1.buildQuery(query, measurement)
 	queryParams["q"] = queryString
@@ -62,7 +57,7 @@ func (qv1 *QueryV1) ExecuteQuery(query *mtsml.Query, measurement string) ([]mtsm
 
 	zap.L().Debug("response", zap.String("body", string(responseBody)), zap.Any("qp", queryParams))
 
-	if resCfg.StatusCode != 200 {
+	if resCfg.StatusCode != http.StatusOK {
 		// call error response
 		return nil, fmt.Errorf("invalid status code:%v", resCfg.StatusCode)
 	}
@@ -73,7 +68,7 @@ func (qv1 *QueryV1) ExecuteQuery(query *mtsml.Query, measurement string) ([]mtsm
 		return nil, err
 	}
 
-	metrics := make([]mtsml.ResponseData, 0)
+	metrics := make([]metricsML.ResponseData, 0)
 
 	if queryResult.Error != "" {
 		return nil, errors.New(queryResult.Error)
@@ -105,7 +100,7 @@ func (qv1 *QueryV1) ExecuteQuery(query *mtsml.Query, measurement string) ([]mtsm
 			if column == "time" {
 				_time = values[vIndex]
 			} else {
-				if query.MetricType == mtsml.MetricTypeBinary && column == "value" {
+				if query.MetricType == metricsML.MetricTypeBinary && column == "value" {
 					value := converterUtils.ToBool(values[vIndex])
 					if value {
 						_metric[column] = int64(1)
@@ -123,13 +118,13 @@ func (qv1 *QueryV1) ExecuteQuery(query *mtsml.Query, measurement string) ([]mtsm
 		if finalTime.IsZero() {
 			return nil, fmt.Errorf("invalid timestamp, type:%T, value:%v, query:%+v", _time, _time, query)
 		}
-		metrics = append(metrics, mtsml.ResponseData{Time: finalTime, MetricType: query.MetricType, Metric: _metric})
+		metrics = append(metrics, metricsML.ResponseData{Time: finalTime, MetricType: query.MetricType, Metric: _metric})
 	}
 
 	return metrics, nil
 }
 
-func (qv1 *QueryV1) buildQuery(query *mtsml.Query, measurement string) string {
+func (qv1 *QueryV1) buildQuery(query *metricsML.Query, measurement string) string {
 	if len(query.Functions) == 0 {
 		query.Functions = []string{"mean", "min", "max"}
 	}
@@ -157,7 +152,7 @@ func (qv1 *QueryV1) buildQuery(query *mtsml.Query, measurement string) string {
 	qBuilder.WriteString("SELECT")
 
 	switch query.MetricType {
-	case mtsml.MetricTypeGauge, mtsml.MetricTypeGaugeFloat, mtsml.MetricTypeCounter:
+	case metricsML.MetricTypeGauge, metricsML.MetricTypeGaugeFloat, metricsML.MetricTypeCounter:
 		for index, fn := range functions {
 			if index != 0 {
 				qBuilder.WriteByte(',')
@@ -165,7 +160,7 @@ func (qv1 *QueryV1) buildQuery(query *mtsml.Query, measurement string) string {
 			fmt.Fprintf(&qBuilder, " %s", fn)
 		}
 
-	case mtsml.MetricTypeBinary:
+	case metricsML.MetricTypeBinary:
 		fmt.Fprint(&qBuilder, ` "value"`)
 
 	default:
@@ -211,7 +206,7 @@ func (qv1 *QueryV1) buildQuery(query *mtsml.Query, measurement string) string {
 	}
 
 	switch query.MetricType {
-	case mtsml.MetricTypeGauge, mtsml.MetricTypeGaugeFloat, mtsml.MetricTypeCounter:
+	case metricsML.MetricTypeGauge, metricsML.MetricTypeGaugeFloat, metricsML.MetricTypeCounter:
 		fmt.Fprintf(&qBuilder, " GROUP BY time(%s) fill(null)", query.Window)
 	}
 	return qBuilder.String()

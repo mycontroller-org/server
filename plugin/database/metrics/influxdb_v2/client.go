@@ -10,12 +10,12 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	influxdb2log "github.com/influxdata/influxdb-client-go/v2/log"
-	fml "github.com/mycontroller-org/server/v2/pkg/model/field"
-	ut "github.com/mycontroller-org/server/v2/pkg/utils"
-	mtsml "github.com/mycontroller-org/server/v2/plugin/database/metrics"
-	queryML "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/query"
-	queryV1 "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/query_v1"
-	queryV2 "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/query_v2"
+	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
+	extraML "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/extra"
+	extraV1 "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/extra_v1"
+	extraV2 "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/extra_v2"
 	"go.uber.org/zap"
 )
 
@@ -49,12 +49,14 @@ type LoggerConfig struct {
 // Client of the influxdb
 type Client struct {
 	Client      influxdb2.Client
-	queryClient queryML.QueryAPI
+	queryClient extraML.QueryAPI
+	adminClient extraML.AdminAPI
 	Config      Config
 	stop        chan bool
-	buffer      []*fml.Field
+	buffer      []*fieldML.Field
 	logger      *myLogger
 	mutex       *sync.RWMutex
+	ctx         context.Context
 }
 
 // global constants
@@ -73,7 +75,7 @@ const (
 // NewClient of influxdb
 func NewClient(config map[string]interface{}) (*Client, error) {
 	cfg := Config{}
-	err := ut.MapToStruct(ut.TagNameYaml, config, &cfg)
+	err := utils.MapToStruct(utils.TagNameYaml, config, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -106,10 +108,11 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 	c := &Client{
 		Config: cfg,
 		Client: iClient,
-		buffer: make([]*fml.Field, 0),
+		buffer: make([]*fieldML.Field, 0),
 		stop:   make(chan bool),
 		mutex:  &sync.RWMutex{},
 		logger: _logger,
+		ctx:    context.TODO(),
 	}
 
 	err = c.Ping()
@@ -117,20 +120,10 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 		return nil, err
 	}
 
-	selectedVersion := ""
+	influxAutoDetectVersion := ""
 
-	if cfg.QueryClientVersion != "" {
-		ver := strings.ToLower(cfg.QueryClientVersion)
-		if ver == QueryClientV1 || ver == QueryClientV2 {
-			selectedVersion = ver
-		} else {
-			zap.L().Warn("invalid query client version, going with auto detection", zap.String("input", cfg.QueryClientVersion))
-		}
-	}
-
-	if selectedVersion == "" {
-		selectedVersion = QueryClientV2 // update default route, if non works
-
+	if influxAutoDetectVersion == "" {
+		influxAutoDetectVersion = QueryClientV1 // update default route, if non works
 		// get version
 		health, err := c.Client.Health(ctx)
 		if err != nil {
@@ -140,19 +133,43 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 		if health != nil && health.Version != nil {
 			detectedVersion := *health.Version
 			if strings.HasPrefix(detectedVersion, "1.8") { // 1.8.4
-				selectedVersion = QueryClientV1
+				influxAutoDetectVersion = QueryClientV1
 			}
 		}
 	}
 
-	zap.L().Debug("selected query client", zap.String("query client version", selectedVersion))
+	zap.L().Debug("influx auto detect status", zap.String("version", influxAutoDetectVersion))
+
+	// update admin client
+	if influxAutoDetectVersion == QueryClientV1 {
+		c.adminClient = extraV1.NewAdminClient(cfg.URI, cfg.InsecureSkipVerify, cfg.Bucket, cfg.Username, cfg.Password)
+	} else {
+		c.adminClient = extraV2.NewAdminClient(c.ctx, iClient.BucketsAPI(), cfg.Organization, cfg.Bucket)
+	}
+
+	// update autodetect version to user version, if user forced
+	if cfg.QueryClientVersion != "" {
+		ver := strings.ToLower(cfg.QueryClientVersion)
+		if ver == QueryClientV1 || ver == QueryClientV2 {
+			influxAutoDetectVersion = ver
+		} else {
+			zap.L().Warn("invalid query client version, going with auto detection", zap.String("input", cfg.QueryClientVersion))
+		}
+	}
 
 	// update query client
-	if selectedVersion == QueryClientV1 {
-		c.queryClient = queryV1.InitClientV1(cfg.URI, cfg.InsecureSkipVerify, cfg.Bucket, cfg.Username, cfg.Password)
+	if influxAutoDetectVersion == QueryClientV1 {
+		c.queryClient = extraV1.NewQueryClient(cfg.URI, cfg.InsecureSkipVerify, cfg.Bucket, cfg.Username, cfg.Password)
 	} else {
-		c.queryClient = queryV2.InitQueryV2(iClient.QueryAPI(cfg.Organization), cfg.Bucket)
+		c.queryClient = extraV2.NewQueryClient(iClient.QueryAPI(cfg.Organization), cfg.Bucket)
 	}
+
+	// create bucket/database
+	err = c.adminClient.CreateBucket()
+	if err != nil {
+		return nil, err
+	}
+
 	return c, nil
 }
 
@@ -176,8 +193,8 @@ func (c *Client) Close() error {
 }
 
 // Query func implementation
-func (c *Client) Query(queryConfig *mtsml.QueryConfig) (map[string][]mtsml.ResponseData, error) {
-	metricsMap := make(map[string][]mtsml.ResponseData)
+func (c *Client) Query(queryConfig *metricsML.QueryConfig) (map[string][]metricsML.ResponseData, error) {
+	metricsMap := make(map[string][]metricsML.ResponseData)
 
 	// fetch metrics details for the given input
 	for _, q := range queryConfig.Individual {
@@ -188,12 +205,12 @@ func (c *Client) Query(queryConfig *mtsml.QueryConfig) (map[string][]mtsml.Respo
 
 		// add range
 		if query.Start == "" {
-			query.Start = queryML.DefaultStart
+			query.Start = extraML.DefaultStart
 		}
 
 		// add aggregateWindow
 		if query.Window == "" {
-			query.Window = queryML.DefaultWindow
+			query.Window = extraML.DefaultWindow
 		}
 
 		// get measurement
@@ -215,8 +232,8 @@ func (c *Client) Query(queryConfig *mtsml.QueryConfig) (map[string][]mtsml.Respo
 }
 
 // WriteBlocking implementation
-func (c *Client) WriteBlocking(data *mtsml.InputData) error {
-	if data.MetricType == mtsml.MetricTypeNone {
+func (c *Client) WriteBlocking(data *metricsML.InputData) error {
+	if data.MetricType == metricsML.MetricTypeNone {
 		return nil
 	}
 	p, err := getPoint(data)
@@ -227,8 +244,8 @@ func (c *Client) WriteBlocking(data *mtsml.InputData) error {
 	return wb.WritePoint(ctx, p)
 }
 
-func (c *Client) Write(data *mtsml.InputData) error {
-	if data.MetricType == mtsml.MetricTypeNone {
+func (c *Client) Write(data *metricsML.InputData) error {
+	if data.MetricType == metricsML.MetricTypeNone {
 		return nil
 	}
 	p, err := getPoint(data)
@@ -240,7 +257,7 @@ func (c *Client) Write(data *mtsml.InputData) error {
 	return nil
 }
 
-func getPoint(data *mtsml.InputData) (*write.Point, error) {
+func getPoint(data *metricsML.InputData) (*write.Point, error) {
 	measurementName, err := getMeasurementName(data.MetricType)
 	if err != nil {
 		return nil, err
@@ -263,22 +280,22 @@ func getPoint(data *mtsml.InputData) (*write.Point, error) {
 
 func getMeasurementName(metricType string) (string, error) {
 	switch metricType {
-	case mtsml.MetricTypeBinary:
+	case metricsML.MetricTypeBinary:
 		return MeasurementBinary, nil
 
-	case mtsml.MetricTypeGauge:
+	case metricsML.MetricTypeGauge:
 		return MeasurementGaugeInteger, nil
 
-	case mtsml.MetricTypeGaugeFloat:
+	case metricsML.MetricTypeGaugeFloat:
 		return MeasurementGaugeFloat, nil
 
-	case mtsml.MetricTypeCounter:
+	case metricsML.MetricTypeCounter:
 		return MeasurementCounter, nil
 
-	case mtsml.MetricTypeString:
+	case metricsML.MetricTypeString:
 		return MeasurementString, nil
 
-	case mtsml.MetricTypeGEO:
+	case metricsML.MetricTypeGEO:
 		return MeasurementGeo, nil
 
 	default:

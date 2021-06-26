@@ -9,7 +9,7 @@ import (
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 	repositoryML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/storage"
+	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"

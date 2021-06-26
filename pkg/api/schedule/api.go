@@ -5,7 +5,7 @@ import (
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/storage"
+	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"

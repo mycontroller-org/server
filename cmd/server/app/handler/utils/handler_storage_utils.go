@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/storage"
+	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
