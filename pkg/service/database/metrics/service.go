@@ -46,5 +46,4 @@ func Init(metricsCfg cmap.CustomMap) {
 	default:
 		zap.L().Fatal("specified database type not implemented", zap.Any("type", dbType))
 	}
-	return
 }
