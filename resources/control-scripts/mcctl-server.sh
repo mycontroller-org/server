@@ -34,7 +34,7 @@ if [ ${USER_COMMAND} = "start" ]; then
     if [ $status -ne 0 ]; then
       echo "failed to start MyController server: $status"
       exit $status
-    elif
+    else
       echo "start command issued to the MyController server"
     fi
   fi

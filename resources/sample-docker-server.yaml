@@ -71,7 +71,8 @@ database:
     load_format: "yaml"
 
   metrics:
-    type: influxdb # options: influxdb, void_db
+    disabled: true
+    type: influxdb
     uri: http://192.168.1.21:8086
     token: 
     username:

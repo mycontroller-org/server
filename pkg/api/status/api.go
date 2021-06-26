@@ -8,6 +8,7 @@ import (
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
 	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	metricsSVC "github.com/mycontroller-org/server/v2/pkg/service/database/metrics"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
@@ -27,18 +28,20 @@ func init() {
 }
 
 type Status struct {
-	Hostname         string           `json:"hostname"`
-	DocumentationURL string           `json:"documentationUrl"`
-	Login            settingsML.Login `json:"login"`
-	StartTime        time.Time        `json:"startTime"`
-	ServerTime       time.Time        `json:"serverTime"`
-	Uptime           uint64           `json:"uptime"` // in seconds
+	Hostname          string           `json:"hostname"`
+	DocumentationURL  string           `json:"documentationUrl"`
+	Login             settingsML.Login `json:"login"`
+	StartTime         time.Time        `json:"startTime"`
+	ServerTime        time.Time        `json:"serverTime"`
+	Uptime            uint64           `json:"uptime"` // in seconds
+	MetricsDBDisabled bool             `json:"metricsDBDisabled"`
 }
 
 func get(minimal bool) Status {
 	status := Status{
 		DocumentationURL: cfg.CFG.Web.DocumentationURL,
 	}
+	status.MetricsDBDisabled = metricsSVC.Disabled
 
 	if !minimal {
 		hostname, err := os.Hostname()

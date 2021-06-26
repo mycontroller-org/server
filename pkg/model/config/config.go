@@ -92,6 +92,6 @@ type LogLevelConfig struct {
 
 // Database to be used
 type Database struct {
-	Storage map[string]interface{} `yaml:"storage"`
-	Metrics map[string]interface{} `yaml:"metrics"`
+	Storage cmap.CustomMap `yaml:"storage"`
+	Metrics cmap.CustomMap `yaml:"metrics"`
 }
