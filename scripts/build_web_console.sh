@@ -22,7 +22,7 @@ cd ../
 # rm ${BUILDS_DIR}/web_console -rf
 
 # generate web console embedded assets into go file
-go get github.com/mjibson/esc
-go install github.com/mjibson/esc
-
-esc -pkg assets -o cmd/server/app/web-console/actual/generated_assets.go -prefix console-web/build console-web/build
+# embed web console assets disabled, enable this if required
+# go get github.com/mjibson/esc
+# go install github.com/mjibson/esc
+# esc -pkg assets -o cmd/server/app/web-console/actual/generated_assets.go -prefix console-web/build console-web/build
