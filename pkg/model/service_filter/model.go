@@ -8,7 +8,7 @@ type ServiceFilter struct {
 	MatchAll bool                 `yaml:"match_all"`
 	Types    []string             `yaml:"types"`
 	IDs      []string             `yaml:"ids"`
-	Labels   cmap.CustomStringMap `yaml:"lables"`
+	Labels   cmap.CustomStringMap `yaml:"labels"`
 }
 
 // HasFilter returns the filter status

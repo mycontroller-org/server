@@ -3,20 +3,20 @@ package service
 import (
 	"sync"
 
-	gwpd "github.com/mycontroller-org/server/v2/plugin/gateway/provider"
+	gwProvider "github.com/mycontroller-org/server/v2/plugin/gateway/provider"
 )
 
 type store struct {
-	services map[string]*gwpd.Service
+	services map[string]*gwProvider.Service
 	mutex    sync.Mutex
 }
 
 var gwService = store{
-	services: make(map[string]*gwpd.Service),
+	services: make(map[string]*gwProvider.Service),
 }
 
 // Add a service
-func (s *store) Add(service *gwpd.Service) {
+func (s *store) Add(service *gwProvider.Service) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -32,7 +32,7 @@ func (s *store) Remove(id string) {
 }
 
 // GetByID returns service by id
-func (s *store) Get(id string) *gwpd.Service {
+func (s *store) Get(id string) *gwProvider.Service {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 

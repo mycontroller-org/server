@@ -257,50 +257,65 @@ func IsMine(svcFilter *sfML.ServiceFilter, targetType, targetID string, targetLa
 		return true
 	}
 
-	validType := len(svcFilter.Types) == 0
-	validId := len(svcFilter.IDs) == 0
-	validLabel := len(svcFilter.Labels) == 0
+	matches := make([]bool, 0)
 
 	if len(svcFilter.Types) > 0 {
+		matched := false
 		for _, typeString := range svcFilter.Types {
 			if typeString == targetType {
 				if !svcFilter.MatchAll {
 					return true
 				}
-				validType = true
+				matched = true
 				break
 			}
 		}
+		matches = append(matches, matched)
 	}
 
 	if len(svcFilter.IDs) > 0 {
+		matched := false
 		for _, id := range svcFilter.IDs {
 			if id == targetID {
 				if !svcFilter.MatchAll {
 					return true
 				}
-				validId = true
+				matched = true
 				break
 			}
 		}
-
+		matches = append(matches, matched)
 	}
 
 	if len(svcFilter.Labels) > 0 {
+		matched := true
 		for key, value := range svcFilter.Labels {
-			receivedValue, found := targetLabels[key]
-			if !found || value != receivedValue {
+			receivedValue := targetLabels.Get(key)
+			if value != receivedValue {
 				if !svcFilter.MatchAll {
 					return false
 				}
-				validLabel = false
+				matched = false
 				break
 			}
 		}
+		matches = append(matches, matched)
 	}
 
 	if svcFilter.MatchAll {
-		return validType && validId && validLabel
+		for _, matched := range matches {
+			if !matched {
+				return false
+			}
+		}
+		return true
 	}
+
+	for _, matched := range matches {
+		if matched {
+			return true
+		}
+	}
+
 	return false
 }

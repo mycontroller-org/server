@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"time"
 
-	ml "github.com/mycontroller-org/server/v2/pkg/model"
-	gwml "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	"github.com/mycontroller-org/server/v2/pkg/model"
+	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
-	gwpd "github.com/mycontroller-org/server/v2/plugin/gateway/provider"
+	gwProvider "github.com/mycontroller-org/server/v2/plugin/gateway/provider"
 	"go.uber.org/zap"
 )
 
 // StartGW gateway
-func StartGW(gatewayCfg *gwml.Config) error {
+func StartGW(gatewayCfg *gwML.Config) error {
 	start := time.Now()
 
 	// descrypt the secrets, tokens
@@ -30,9 +30,9 @@ func StartGW(gatewayCfg *gwml.Config) error {
 		return nil
 	}
 	zap.L().Info("starting a gateway", zap.Any("id", gatewayCfg.ID))
-	state := ml.State{Since: time.Now()}
+	state := model.State{Since: time.Now()}
 
-	service, err := gwpd.GetService(gatewayCfg)
+	service, err := gwProvider.GetService(gatewayCfg)
 	if err != nil {
 		return err
 	}
@@ -40,11 +40,11 @@ func StartGW(gatewayCfg *gwml.Config) error {
 	if err != nil {
 		zap.L().Error("failed to start a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
 		state.Message = err.Error()
-		state.Status = ml.StatusDown
+		state.Status = model.StatusDown
 	} else {
 		zap.L().Info("started a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 		state.Message = "Started successfully"
-		state.Status = ml.StatusUp
+		state.Status = model.StatusUp
 		gwService.Add(service)
 	}
 
@@ -59,8 +59,8 @@ func StopGW(id string) error {
 	service := gwService.Get(id)
 	if service != nil {
 		err := service.Stop()
-		state := ml.State{
-			Status:  ml.StatusDown,
+		state := model.State{
+			Status:  model.StatusDown,
 			Since:   time.Now(),
 			Message: "Stopped by request",
 		}
@@ -78,7 +78,7 @@ func StopGW(id string) error {
 }
 
 // ReloadGW gateway
-func ReloadGW(gwCfg *gwml.Config) error {
+func ReloadGW(gwCfg *gwML.Config) error {
 	err := StopGW(gwCfg.ID)
 	if err != nil {
 		return err
