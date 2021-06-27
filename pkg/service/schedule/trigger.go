@@ -36,6 +36,12 @@ func scheduleTriggerFunc(cfg *scheduleML.Config, spec string) {
 	cfg.State.Message = ""
 	zap.L().Debug("triggered", zap.String("ID", cfg.ID), zap.String("spec", spec))
 
+	executionError := ""
+
+	// disable even there is a error on the schedule
+	// call it inside func to get updated "executionError" value
+	defer func() { verifyAndDisableSchedule(cfg, time.Since(start), executionError) }()
+
 	// load variables
 	variables, err := variablesUtils.LoadVariables(cfg.Variables)
 	if err != nil {
@@ -44,7 +50,7 @@ func scheduleTriggerFunc(cfg *scheduleML.Config, spec string) {
 		cfg.State.LastStatus = false
 		cfg.State.Message = fmt.Sprintf("Error: %s", err.Error())
 		busUtils.SetScheduleState(cfg.ID, *cfg.State)
-		verifyAndDisableSchedule(cfg, time.Since(start), err.Error())
+		executionError = err.Error()
 		return
 	}
 
@@ -62,7 +68,7 @@ func scheduleTriggerFunc(cfg *scheduleML.Config, spec string) {
 				cfg.State.LastStatus = false
 				cfg.State.Message = fmt.Sprintf("Error: %s", err.Error())
 				busUtils.SetScheduleState(cfg.ID, *cfg.State)
-				verifyAndDisableSchedule(cfg, time.Since(start), err.Error())
+				executionError = err.Error()
 				return
 			}
 
@@ -89,8 +95,6 @@ func scheduleTriggerFunc(cfg *scheduleML.Config, spec string) {
 	cfg.State.Message = fmt.Sprintf("time taken: %s", time.Since(start).String())
 	// update triggered count and update state
 	busUtils.SetScheduleState(cfg.ID, *cfg.State)
-
-	verifyAndDisableSchedule(cfg, time.Since(start), "")
 }
 
 func verifyAndDisableSchedule(cfg *scheduleML.Config, timeTaken time.Duration, executionError string) {
