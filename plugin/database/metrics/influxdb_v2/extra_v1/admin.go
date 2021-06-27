@@ -51,5 +51,6 @@ func (av1 *AdminV1) CreateBucket() error {
 		return errors.New(queryResult.Error)
 	}
 
+	zap.L().Info("metrics database available or created", zap.String("database", av1.bucket))
 	return nil
 }

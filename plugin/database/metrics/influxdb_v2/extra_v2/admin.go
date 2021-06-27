@@ -5,6 +5,7 @@ import (
 
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/influxdata/influxdb-client-go/v2/domain"
+	"go.uber.org/zap"
 )
 
 // AdminV2 struct
@@ -44,5 +45,7 @@ func (av2 *AdminV2) CreateBucket() error {
 	if err != nil {
 		return err
 	}
+
+	zap.L().Info("metrics bucket created", zap.String("organization", av2.orgID), zap.String("bucket", av2.bucket))
 	return nil
 }
