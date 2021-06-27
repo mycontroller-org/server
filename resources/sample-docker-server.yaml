@@ -81,3 +81,4 @@ database:
     bucket: mycontroller
     batch_size:
     flush_interval: 1s
+    query_client_version:
