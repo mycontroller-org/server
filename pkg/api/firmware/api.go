@@ -12,8 +12,9 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
@@ -53,7 +54,10 @@ func Save(firmware *firmwareML.Firmware, keepFile bool) error {
 	filters := []stgML.Filter{
 		{Key: model.KeyID, Value: firmware.ID},
 	}
-	firmware.ModifiedOn = time.Now()
+
+	if !configuration.PauseModifiedOnUpdate.IsSet() {
+		firmware.ModifiedOn = time.Now()
+	}
 
 	if keepFile {
 		firmwareOld, err := GetByID(firmware.ID)

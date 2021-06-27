@@ -7,6 +7,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
+	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
@@ -64,7 +65,9 @@ func Save(user *userML.User) error {
 	filters := []stgML.Filter{
 		{Key: model.KeyID, Value: user.ID},
 	}
-	user.ModifiedOn = time.Now()
+	if !configuration.PauseModifiedOnUpdate.IsSet() {
+		user.ModifiedOn = time.Now()
+	}
 	return stg.SVC.Upsert(model.EntityUser, user, filters)
 }
 

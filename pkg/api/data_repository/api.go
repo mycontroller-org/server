@@ -8,8 +8,9 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 	repositoryML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
@@ -43,7 +44,10 @@ func Save(data *repositoryML.Config) error {
 	filters := []stgML.Filter{
 		{Key: model.KeyID, Value: data.ID},
 	}
-	data.ModifiedOn = time.Now()
+
+	if !configuration.PauseModifiedOnUpdate.IsSet() {
+		data.ModifiedOn = time.Now()
+	}
 
 	// encrypt passwords, tokens
 	err := cloneUtil.UpdateSecrets(data, true)

@@ -7,8 +7,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// Init logger
-func Init() {
+// Load logger
+func Load() {
 	logger := loggerUtils.GetLogger(cfg.CFG.Logger.Mode, cfg.CFG.Logger.Level.Core, cfg.CFG.Logger.Encoding, false, 0)
 	zap.ReplaceGlobals(logger)
 	zap.L().Info("welcome to the MyController world :)")

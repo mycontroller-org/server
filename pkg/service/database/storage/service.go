@@ -1,10 +1,11 @@
 package storage
 
 import (
+	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 	"github.com/mycontroller-org/server/v2/plugin/database/storage/memory"
-	"github.com/mycontroller-org/server/v2/plugin/database/storage/mongodb"
+	mongoDB "github.com/mycontroller-org/server/v2/plugin/database/storage/mongodb"
 	"go.uber.org/zap"
 )
 
@@ -29,13 +30,16 @@ func Init(storageCfg map[string]interface{}, importFunc func(targetDir, fileType
 			}
 			SVC = client
 			// run local import
+			// Pause Timestamp Update and resume later
+			configuration.PauseModifiedOnUpdate.Set()
+			defer configuration.PauseModifiedOnUpdate.Reset()
 			err = client.LocalImport(importFunc)
 			if err != nil {
 				zap.L().Fatal("error on run local import on memory database", zap.Error(err))
 			}
 
 		case stgML.TypeMongoDB:
-			client, err := mongodb.NewClient(storageCfg)
+			client, err := mongoDB.NewClient(storageCfg)
 			if err != nil {
 				zap.L().Fatal("error on storage database initialization", zap.Error(err))
 			}

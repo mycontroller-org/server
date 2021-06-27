@@ -17,13 +17,13 @@ var (
 	pauseSRV  concurrency.SafeBool
 )
 
-// InitBus function
-func InitBus(config cmap.CustomMap) {
+// Start function
+func Start(config cmap.CustomMap) {
 	// update topic prefix
 	topicPrefix = config.GetString(keyTopicPrefix)
 
 	// update client
-	client, err := initBusImpl(config)
+	client, err := startBusImpl(config)
 	if err != nil {
 		zap.L().Fatal("failed to init bus client", zap.Error(err))
 	}
@@ -31,7 +31,7 @@ func InitBus(config cmap.CustomMap) {
 	pauseSRV = concurrency.SafeBool{}
 }
 
-func initBusImpl(config cmap.CustomMap) (busML.Client, error) {
+func startBusImpl(config cmap.CustomMap) (busML.Client, error) {
 	busType := config.GetString(model.NameType)
 
 	if busType == "" { // if non defined, update default

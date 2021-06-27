@@ -6,6 +6,7 @@ import (
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	"github.com/mycontroller-org/server/v2/pkg/model/config"
+	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
@@ -51,6 +52,10 @@ func systemRestoreOperation(cfg *config.StartupRestore) {
 	if !cfg.Enabled {
 		return
 	}
+
+	// pause modified timestamp service update and reset on exit
+	configuration.PauseModifiedOnUpdate.Set()
+	defer configuration.PauseModifiedOnUpdate.Reset()
 
 	zap.L().Info("found a restore setup on startup. Performaing restore operation", zap.Any("config", cfg))
 	err := backupAPI.ExecuteRestore(cfg.ExtractedDirectory)

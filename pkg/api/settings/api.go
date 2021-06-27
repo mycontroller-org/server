@@ -8,6 +8,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
+	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	stgSVC "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
@@ -102,7 +103,9 @@ func UpdateSettings(settings *settingsML.Settings) error {
 		return UpdateSystemSettings(settings)
 
 	case settingsML.KeySystemJobs, settingsML.KeyVersion, settingsML.KeySystemBackupLocations, settingsML.KeyAnalytics:
-		settings.ModifiedOn = time.Now()
+		if !configuration.PauseModifiedOnUpdate.IsSet() {
+			settings.ModifiedOn = time.Now()
+		}
 		return update(settings)
 
 	default:
@@ -128,7 +131,10 @@ func GetSystemJobs() (*settingsML.SystemJobsSettings, error) {
 // UpdateSystemSettings config into disk
 func UpdateSystemSettings(settings *settingsML.Settings) error {
 	settings.ID = settingsML.KeySystemSettings
-	settings.ModifiedOn = time.Now()
+	if !configuration.PauseModifiedOnUpdate.IsSet() {
+		settings.ModifiedOn = time.Now()
+	}
+
 	// TODO: verify required fields
 	err := update(settings)
 	if err != nil {
@@ -216,7 +222,9 @@ func update(settings *settingsML.Settings) error {
 	filters := []stgML.Filter{
 		{Key: model.KeyID, Value: settings.ID},
 	}
-	settings.ModifiedOn = time.Now()
+	if !configuration.PauseModifiedOnUpdate.IsSet() {
+		settings.ModifiedOn = time.Now()
+	}
 	return stgSVC.SVC.Upsert(model.EntitySettings, settings, filters)
 }
 

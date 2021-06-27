@@ -26,11 +26,11 @@ func InitBasicServices(initCustomServices, closeCustomServices func()) {
 	}()
 
 	start := time.Now()
-	cfg.Init()
-	logger.Init()
+	cfg.Load()
+	logger.Load()
 
-	mcbus.InitBus(cfg.CFG.Bus) // bus
-	sch.Init()                 // scheduler
+	mcbus.Start(cfg.CFG.Bus) // bus
+	sch.Init()               // scheduler
 
 	// load root directories
 	model.UpdateDirecotries(cfg.CFG.Directories)

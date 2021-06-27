@@ -3,14 +3,14 @@ package server
 import (
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
 	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	metricsSVC "github.com/mycontroller-org/server/v2/pkg/service/database/metrics"
+	storageSVC "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	fwdplSVC "github.com/mycontroller-org/server/v2/pkg/service/forward_payload"
 	gwService "github.com/mycontroller-org/server/v2/pkg/service/gateway"
 	gwMsgProcessor "github.com/mycontroller-org/server/v2/pkg/service/gateway_msg_processor"
 	handlerSVC "github.com/mycontroller-org/server/v2/pkg/service/handler"
-	metricsSVC "github.com/mycontroller-org/server/v2/pkg/service/database/metrics"
 	resourceSVC "github.com/mycontroller-org/server/v2/pkg/service/resource"
 	scheduleSVC "github.com/mycontroller-org/server/v2/pkg/service/schedule"
-	storageSVC "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	taskSVC "github.com/mycontroller-org/server/v2/pkg/service/task"
 	"github.com/mycontroller-org/server/v2/pkg/start/common"
 	"go.uber.org/zap"
@@ -21,7 +21,7 @@ func Start(handlerFunc func()) {
 	common.InitBasicServices(wrapHandlerFunc(handlerFunc), closeServices)
 }
 
-func initServices() {
+func startServices() {
 	storageSVC.Init(cfg.CFG.Database.Storage, backupAPI.ExecuteImportStorage) // storage
 	metricsSVC.Init(cfg.CFG.Database.Metrics)                                 // metrics
 
@@ -73,7 +73,7 @@ func initServices() {
 
 func wrapHandlerFunc(handlerFunc func()) func() {
 	return func() {
-		initServices()
+		startServices()
 		if handlerFunc != nil {
 			go handlerFunc()
 		}

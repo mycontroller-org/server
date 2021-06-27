@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 
 	cfgML "github.com/mycontroller-org/server/v2/pkg/model/config"
+	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
@@ -13,12 +14,13 @@ import (
 
 // configuration globally accessable
 var (
-	CFG *cfgML.Config
+	CFG                   *cfgML.Config
+	PauseModifiedOnUpdate = concurrency.SafeBool{}
 )
 
-// Init configuration
-func Init() {
-	// init a temp logger
+// Load configuration
+func Load() {
+	// load a temporary logger
 	logger := loggerUtils.GetLogger("development", "error", "console", false, 0)
 
 	cf := flag.String("config", "./config.yaml", "Configuration file")
@@ -40,6 +42,9 @@ func Init() {
 	// update encryption key length
 	// converts it to fixed size as 32 bytes
 	CFG.Secret = updatedKey(CFG.Secret)
+
+	// load default value
+	PauseModifiedOnUpdate.Reset()
 }
 
 // UpdatedKey returns fixed key size
