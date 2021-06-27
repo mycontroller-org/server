@@ -3,38 +3,53 @@ package mongodb
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	ut "github.com/mycontroller-org/server/v2/pkg/utils"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	mg "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 var ctx = context.TODO()
 
+const (
+	DefaultCollectionPrefix = "mc_"
+)
+
 // Config of the database
 type Config struct {
-	Name     string
-	Database string
-	URI      string
+	Name             string `yaml:"name"`
+	Database         string `yaml:"database"`
+	URI              string `yaml:"uri"`
+	CollectionPrefix string `yaml:"collection_prefix"`
 }
 
 // Client of the mongo db
 type Client struct {
 	Client *mg.Client
 	Config Config
+	ctx    context.Context
 }
 
 // NewClient mongodb
 func NewClient(config map[string]interface{}) (*Client, error) {
 	cfg := Config{}
-	err := ut.MapToStruct(ut.TagNameNone, config, &cfg)
+	err := ut.MapToStruct(ut.TagNameYaml, config, &cfg)
 	if err != nil {
 		return nil, err
 	}
+
+	// update collection prefix
+	if cfg.CollectionPrefix == "" {
+		cfg.CollectionPrefix = DefaultCollectionPrefix
+	}
+
 	clientOptions := options.Client().ApplyURI(cfg.URI)
 
 	mongoClient, err := mg.Connect(ctx, clientOptions)
@@ -44,6 +59,7 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 	client := &Client{
 		Config: cfg,
 		Client: mongoClient,
+		ctx:    context.TODO(),
 	}
 	err = client.initIndex()
 	return client, err
@@ -61,6 +77,20 @@ func (c *Client) Resume() error {
 
 // ClearDatabase removes all the data from the database
 func (c *Client) ClearDatabase() error {
+	filter := bson.D{{Key: "name", Value: primitive.Regex{Pattern: fmt.Sprintf("^%s*", c.Config.CollectionPrefix), Options: "i"}}}
+	collections, err := c.Client.Database(c.Config.Database).ListCollectionNames(c.ctx, filter)
+	if err != nil {
+		return err
+	}
+	zap.L().Info("about to drop the collections", zap.Any("collections", collections))
+
+	for _, collectionName := range collections {
+		err = c.Client.Database(c.Config.Database).Collection(collectionName).Drop(c.ctx)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -75,7 +105,8 @@ func (c *Client) Ping() error {
 }
 
 func (c *Client) getCollection(entityName string) *mg.Collection {
-	return c.Client.Database(c.Config.Database).Collection(entityName)
+	collectionName := fmt.Sprintf("%s%s", c.Config.CollectionPrefix, entityName)
+	return c.Client.Database(c.Config.Database).Collection(collectionName)
 }
 
 // Insert the entity
