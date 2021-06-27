@@ -7,6 +7,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	"github.com/mycontroller-org/server/v2/pkg/version"
 	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	"github.com/shirou/gopsutil/v3/host"
 	"go.uber.org/zap"
@@ -35,6 +36,15 @@ func (p *Provider) updateNodeDetails() {
 	for name, value := range infoMap {
 		msg.Payloads = append(msg.Payloads, p.getData(name, value, metricsML.MetricTypeNone, metricsML.UnitNone, false))
 	}
+
+	// update gateway version, gitcommit and build date
+	gwVersion := version.Get()
+	msg.Payloads = append(msg.Payloads, p.getData("gateway_version", gwVersion.Version, metricsML.MetricTypeNone, metricsML.UnitNone, false))
+	msg.Payloads = append(msg.Payloads, p.getData("gateway_git_commit", gwVersion.GitCommit, metricsML.MetricTypeNone, metricsML.UnitNone, false))
+	msg.Payloads = append(msg.Payloads, p.getData("gateway_build_date", gwVersion.BuildDate, metricsML.MetricTypeNone, metricsML.UnitNone, false))
+	msg.Payloads = append(msg.Payloads, p.getData("gateway_platform", gwVersion.Platform, metricsML.MetricTypeNone, metricsML.UnitNone, false))
+	msg.Payloads = append(msg.Payloads, p.getData("gateway_arch", gwVersion.Arch, metricsML.MetricTypeNone, metricsML.UnitNone, false))
+	msg.Payloads = append(msg.Payloads, p.getData("gateway_golang_version", gwVersion.GoLang, metricsML.MetricTypeNone, metricsML.UnitNone, false))
 
 	// include version details
 	// library_version
