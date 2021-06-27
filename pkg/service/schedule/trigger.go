@@ -109,7 +109,7 @@ func verifyAndDisableSchedule(cfg *scheduleML.Config, timeTaken time.Duration, e
 			busUtils.DisableSchedule(cfg.ID)
 			// Sometimes setState updates as enabled
 			// To avoid this addind small sleep, but this is not good fix.
-			time.Sleep(time.Millisecond * 50)
+			utils.SmartSleep(200 * time.Millisecond)
 			cfg.State.Message = fmt.Sprintf("time taken: %s, reached maximum execution count", timeTaken.String())
 			if executionError != "" {
 				cfg.State.Message = fmt.Sprintf("%s, executionError:%s", cfg.State.Message, executionError)

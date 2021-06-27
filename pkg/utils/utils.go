@@ -115,3 +115,10 @@ func DeepClone(data interface{}) interface{} {
 
 	return newData.Interface()
 }
+
+// SmartSleep waits till the duration reaches
+func SmartSleep(duration time.Duration) {
+	ticker := time.NewTicker(duration)
+	defer ticker.Stop()
+	<-ticker.C
+}

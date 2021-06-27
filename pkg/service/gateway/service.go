@@ -6,6 +6,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	gwProvider "github.com/mycontroller-org/server/v2/plugin/gateway/provider"
@@ -83,6 +84,7 @@ func ReloadGW(gwCfg *gwML.Config) error {
 	if err != nil {
 		return err
 	}
+	utils.SmartSleep(1 * time.Second)
 	return StartGW(gwCfg)
 }
 

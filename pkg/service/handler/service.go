@@ -6,6 +6,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	handlerPlugin "github.com/mycontroller-org/server/v2/plugin/handler"
@@ -69,6 +70,7 @@ func ReloadHandler(gwCfg *handlerML.Config) error {
 	if err != nil {
 		return err
 	}
+	utils.SmartSleep(1 * time.Second)
 	return StartHandler(gwCfg)
 }
 
