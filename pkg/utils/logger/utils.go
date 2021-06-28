@@ -9,14 +9,14 @@ import (
 )
 
 const (
-	ModeDevelopment = "development"
-	ModeProduction  = "production"
+	ModeRecordAll = "record_all"
+	ModeSampled   = "sampled"
 )
 
 // GetLogger returns a logger
 func GetLogger(mode, level, encoding string, showFullCaller bool, callerSkip int) *zap.Logger {
 	var zapCfg zap.Config
-	if strings.ToLower(mode) == ModeProduction {
+	if strings.ToLower(mode) == ModeSampled {
 		zapCfg = zap.NewProductionConfig()
 	} else {
 		zapCfg = zap.NewDevelopmentConfig()
@@ -57,6 +57,9 @@ func GetLogger(mode, level, encoding string, showFullCaller bool, callerSkip int
 	default:
 		zapCfg.Encoding = "console"
 	}
+
+	// print the logs on Stdout, default "Stderr"
+	zapCfg.OutputPaths = []string{"Stdout"}
 
 	logger, err := zapCfg.Build(zap.AddCaller(), zap.AddCallerSkip(callerSkip))
 	if err != nil {

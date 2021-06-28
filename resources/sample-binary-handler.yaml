@@ -7,7 +7,7 @@ directories:
   tmp: mc_home/tmp
 
 logger:
-  mode: development
+  mode: record_all
   encoding: console
   level:
     core: info

@@ -55,6 +55,16 @@ func Save(data *repositoryML.Config) error {
 		return err
 	}
 
+	// in mongodb can not save map[interface{}]interface{} type
+	// convert it to map[string]interface{} type
+	if configuration.CFG.Database.Storage.GetString(model.KeyType) == stgML.TypeMongoDB {
+		updatedResult, err := updateResult(data)
+		if err != nil {
+			return err
+		}
+		data = updatedResult
+	}
+
 	err = stg.SVC.Upsert(model.EntityDataRepository, data, filters)
 	if err != nil {
 		return err
@@ -71,11 +81,11 @@ func GetByID(id string) (*repositoryML.Config, error) {
 	out := &repositoryML.Config{}
 	err := stg.SVC.FindOne(model.EntityDataRepository, out, f)
 	if err == nil {
-		updateResult, err := updateResult(out)
+		updatedResult, err := updateResult(out)
 		if err != nil {
 			return nil, err
 		}
-		out = updateResult
+		out = updatedResult
 	}
 	return out, err
 }
