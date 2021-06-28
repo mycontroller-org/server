@@ -58,8 +58,8 @@ func GetLogger(mode, level, encoding string, showFullCaller bool, callerSkip int
 		zapCfg.Encoding = "console"
 	}
 
-	// print the logs on Stdout, default "Stderr"
-	zapCfg.OutputPaths = []string{"Stdout"}
+	// print the logs on 'stdout', default 'stderr'
+	zapCfg.OutputPaths = []string{"stdout"}
 
 	logger, err := zapCfg.Build(zap.AddCaller(), zap.AddCallerSkip(callerSkip))
 	if err != nil {
