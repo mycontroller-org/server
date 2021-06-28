@@ -26,7 +26,9 @@ func GetHandler() (http.Handler, error) {
 
 	// set JWT access secret in environment
 	// TODO: this should be updated dynamically
-	os.Setenv(webHandlerML.EnvJwtAccessSecret, "add2a90d-c7c5-4d93-96e2-e70eca62400d")
+	if os.Getenv(webHandlerML.EnvJwtAccessSecret) == "" {
+		os.Setenv(webHandlerML.EnvJwtAccessSecret, "add2a90d-c7c5-4d93-96e2-e70eca62400d")
+	}
 
 	// Enable Profiling, if enabled
 	if webCfg.EnableProfiling {
