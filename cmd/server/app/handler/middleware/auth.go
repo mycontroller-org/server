@@ -12,6 +12,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model/user"
 	handlerML "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	"github.com/mycontroller-org/server/v2/pkg/version"
 	"go.uber.org/zap"
 
 	"github.com/dgrijalva/jwt-go"
@@ -96,7 +97,7 @@ func getJwtToken(r *http.Request) (*jwt.Token, jwt.MapClaims, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(os.Getenv(handlerML.EnvJwtAccessSecret)), nil
+		return getJwtSecret(), nil
 	})
 	if err != nil {
 		return nil, nil, err
@@ -151,7 +152,7 @@ func CreateToken(user user.User, expiresIn string) (string, error) {
 
 	atClaims[handlerML.KeyExpiresAt] = time.Now().Add(expiresInDuration).Unix()
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	token, err := at.SignedString([]byte(os.Getenv(handlerML.EnvJwtAccessSecret)))
+	token, err := at.SignedString(getJwtSecret())
 	if err != nil {
 		return "", err
 	}
@@ -161,4 +162,8 @@ func CreateToken(user user.User, expiresIn string) (string, error) {
 // GetUserID returns the logged in user details
 func GetUserID(r *http.Request) string {
 	return r.Header.Get(handlerML.HeaderUserID)
+}
+
+func getJwtSecret() []byte {
+	return []byte(fmt.Sprintf("%s_%s", os.Getenv(handlerML.EnvJwtAccessSecret), version.Get().HostID))
 }
