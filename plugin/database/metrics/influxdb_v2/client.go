@@ -123,7 +123,13 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 	influxAutoDetectVersion := ""
 
 	if influxAutoDetectVersion == "" {
-		influxAutoDetectVersion = QueryClientV1 // update default route, if non works
+		// update default route, if non works
+		if cfg.Organization != "" {
+			influxAutoDetectVersion = QueryClientV2
+		} else {
+			influxAutoDetectVersion = QueryClientV1
+		}
+
 		// get version
 		health, err := c.Client.Health(ctx)
 		if err != nil {

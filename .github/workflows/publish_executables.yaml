@@ -73,3 +73,4 @@ jobs:
         with:
           files: |
             builds/*.tar.gz
+            builds/*.zip

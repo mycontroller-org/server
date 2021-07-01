@@ -53,9 +53,14 @@ function package {
   # copy license
   cp LICENSE ${PACKAGE_STAGING_DIR}/LICENSE.txt
 
-  ARCHIVE_NAME="${PACKAGE_STAGING_DIR}.tar.gz"
-  # echo "Packaging into: ${ARCHIVE_NAME}"
-  tar -czf ${BUILD_DIR}/${ARCHIVE_NAME} ${PACKAGE_STAGING_DIR}
+  if [[ ${PACKAGE_STAGING_DIR} =~ "windows" ]]; then
+    ARCHIVE_NAME="${PACKAGE_STAGING_DIR}.zip"
+    zip -r ${BUILD_DIR}/${ARCHIVE_NAME} ${PACKAGE_STAGING_DIR}
+  else
+    ARCHIVE_NAME="${PACKAGE_STAGING_DIR}.tar.gz"
+    tar -czf ${BUILD_DIR}/${ARCHIVE_NAME} ${PACKAGE_STAGING_DIR}
+  fi
+
   rm ${PACKAGE_STAGING_DIR} -rf
 }
 
