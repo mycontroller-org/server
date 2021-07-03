@@ -60,7 +60,7 @@ jobs:
           username: ${{ secrets.MYC_SERVER_USER }}
           key: ${{ secrets.MYC_SERVER_KEY }}
           passphrase: ${{ secrets.MYC_SERVER_PASSPHRASE }}
-          source: "builds/*.tar.gz,builds/timestamp.txt"
+          source: "builds/*.tar.gz,builds/*.zip,builds/timestamp.txt"
           target: "github/v2/master"
           rm: true
           strip_components: 1
