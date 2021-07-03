@@ -13,7 +13,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
 	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
@@ -50,7 +50,7 @@ func toResource(api resourceAPI, id, action string) error {
 }
 
 // ExecuteActionOnResourceByQuickID the given request
-func ExecuteActionOnResourceByQuickID(data *handlerML.ResourceData) error {
+func ExecuteActionOnResourceByQuickID(data *handlerType.ResourceData) error {
 	resourceType, kvMap, err := quickIdUL.EntityKeyValueMap(data.QuickID)
 	if err != nil {
 		return err
@@ -90,7 +90,7 @@ func ExecuteActionOnResourceByQuickID(data *handlerML.ResourceData) error {
 }
 
 // ExecuteActionOnResourceByLabels the given request
-func ExecuteActionOnResourceByLabels(data *handlerML.ResourceData) error {
+func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
 	if len(data.Labels) == 0 {
 		return errors.New("empty labels not allowed")
 	}

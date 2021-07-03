@@ -1,4 +1,4 @@
-package resource
+package handler
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
@@ -15,26 +15,40 @@ import (
 	"go.uber.org/zap"
 )
 
-// Client struct
-type Client struct {
-	HandlerCfg *handlerML.Config
-}
-
 const (
+	PluginResourceHandler = "resource"
+
 	schedulePrefix = "resource_handler"
 )
 
+func init() {
+	Register(PluginResourceHandler, NewResourcePlugin)
+}
+
+// ResourceClient struct
+type ResourceClient struct {
+	HandlerCfg *handlerType.Config
+}
+
+func NewResourcePlugin(config *handlerType.Config) (handlerType.Plugin, error) {
+	return &ResourceClient{HandlerCfg: config}, nil
+}
+
+func (p *ResourceClient) Name() string {
+	return PluginResourceHandler
+}
+
 // Start handler implementation
-func (c *Client) Start() error { return nil }
+func (c *ResourceClient) Start() error { return nil }
 
 // Close handler implementation
-func (c *Client) Close() error {
+func (c *ResourceClient) Close() error {
 	c.unloadAll()
 	return nil
 }
 
 // State implementation
-func (c *Client) State() *model.State {
+func (c *ResourceClient) State() *model.State {
 	if c.HandlerCfg != nil {
 		if c.HandlerCfg.State == nil {
 			c.HandlerCfg.State = &model.State{}
@@ -45,24 +59,24 @@ func (c *Client) State() *model.State {
 }
 
 // Post handler implementation
-func (c *Client) Post(data map[string]interface{}) error {
+func (c *ResourceClient) Post(data map[string]interface{}) error {
 	for name, value := range data {
 		stringValue, ok := value.(string)
 		if !ok {
 			continue
 		}
 
-		genericData := handlerML.GenericData{}
+		genericData := handlerType.GenericData{}
 		err := json.Unmarshal([]byte(stringValue), &genericData)
 		if err != nil {
 			continue
 		}
 
-		if !strings.HasPrefix(genericData.Type, handlerML.DataTypeResource) {
+		if !strings.HasPrefix(genericData.Type, handlerType.DataTypeResource) {
 			continue
 		}
 
-		rsData := handlerML.ResourceData{}
+		rsData := handlerType.ResourceData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &rsData)
 		if err != nil {
 			zap.L().Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
@@ -88,7 +102,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 
 // preDelay scheduler helpers
 
-func (c *Client) getScheduleTriggerFunc(name string, rsData handlerML.ResourceData) func() {
+func (c *ResourceClient) getScheduleTriggerFunc(name string, rsData handlerType.ResourceData) func() {
 	return func() {
 		// disable the schedule
 		c.unschedule(name)
@@ -99,7 +113,7 @@ func (c *Client) getScheduleTriggerFunc(name string, rsData handlerML.ResourceDa
 	}
 }
 
-func (c *Client) schedule(name string, rsData handlerML.ResourceData) {
+func (c *ResourceClient) schedule(name string, rsData handlerType.ResourceData) {
 	c.unschedule(name) // removes the existing schedule, if any
 	schedulerID := c.getScheduleID(name)
 	cronSpec := fmt.Sprintf("@every %s", rsData.PreDelay)
@@ -110,16 +124,16 @@ func (c *Client) schedule(name string, rsData handlerML.ResourceData) {
 	zap.L().Debug("added a schedule", zap.String("name", name), zap.String("schedulerID", schedulerID), zap.Any("resourceData", rsData))
 }
 
-func (c *Client) unschedule(name string) {
+func (c *ResourceClient) unschedule(name string) {
 	schedulerID := c.getScheduleID(name)
 	coreScheduler.SVC.RemoveFunc(schedulerID)
 	zap.L().Debug("removed a schedule", zap.String("name", name), zap.String("schedulerID", schedulerID))
 }
 
-func (c *Client) unloadAll() {
+func (c *ResourceClient) unloadAll() {
 	coreScheduler.SVC.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, c.HandlerCfg.ID))
 }
 
-func (c *Client) getScheduleID(name string) string {
+func (c *ResourceClient) getScheduleID(name string) string {
 	return fmt.Sprintf("%s_%s_%s", schedulePrefix, c.HandlerCfg.ID, name)
 }

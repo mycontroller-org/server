@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
@@ -14,7 +14,7 @@ import (
 )
 
 // StartHandler notify handlers
-func StartHandler(cfg *handlerML.Config) error {
+func StartHandler(cfg *handlerType.Config) error {
 	if handlersStore.Get(cfg.ID) != nil {
 		return fmt.Errorf("a service is in running state. id:%s", cfg.ID)
 	}
@@ -65,7 +65,7 @@ func StopHandler(id string) error {
 }
 
 // ReloadHandler a handler
-func ReloadHandler(gwCfg *handlerML.Config) error {
+func ReloadHandler(gwCfg *handlerType.Config) error {
 	err := StopHandler(gwCfg.ID)
 	if err != nil {
 		return err
@@ -85,14 +85,14 @@ func UnloadAll() {
 	}
 }
 
-func loadHandler(cfg *handlerML.Config) (handlerPlugin.Handler, error) {
+func loadHandler(cfg *handlerType.Config) (handlerType.Plugin, error) {
 	// descrypt the secrets, tokens
 	err := cloneUtil.UpdateSecrets(cfg, false)
 	if err != nil {
 		return nil, err
 	}
 
-	handler, err := handlerPlugin.GetHandler(cfg)
+	handler, err := handlerPlugin.Create(cfg.Type, cfg)
 	if err != nil {
 		return nil, err
 	}

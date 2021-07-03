@@ -16,7 +16,7 @@ import (
 	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
 	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
 	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	"github.com/mycontroller-org/server/v2/pkg/model/schedule"
 	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
@@ -49,8 +49,8 @@ func registerTypes() {
 	gob.Register(nodeML.Node{})
 	gob.Register(sourceML.Source{})
 	gob.Register(primitive.A{})
-	gob.Register(handlerML.Config{})
-	gob.Register(handlerML.ResourceData{})
+	gob.Register(handlerType.Config{})
+	gob.Register(handlerType.ResourceData{})
 	gob.Register(scheduleML.Config{})
 	gob.Register(scheduleML.Validity{})
 	gob.Register(scheduleML.DateRange{})

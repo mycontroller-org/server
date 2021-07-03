@@ -16,7 +16,7 @@ import (
 	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
@@ -66,7 +66,7 @@ func LoadVariables(variablesPreMap map[string]string) (map[string]interface{}, e
 }
 
 func getEntity(name, stringValue string) interface{} {
-	genericData := handlerML.GenericData{}
+	genericData := handlerType.GenericData{}
 	err := json.Unmarshal([]byte(stringValue), &genericData)
 	if err != nil {
 		// if error happens, this could be a normal string or templated string
@@ -79,14 +79,14 @@ func getEntity(name, stringValue string) interface{} {
 	}
 
 	// process only for resource type data
-	if !strings.HasPrefix(genericData.Type, handlerML.DataTypeResource) &&
-		genericData.Type != handlerML.DataTypeWebhook {
+	if !strings.HasPrefix(genericData.Type, handlerType.DataTypeResource) &&
+		genericData.Type != handlerType.DataTypeWebhook {
 		return stringValue
 	}
 
 	// calls webhook and loads the response as is
-	if genericData.Type == handlerML.DataTypeWebhook {
-		webhookCfg := handlerML.WebhookData{}
+	if genericData.Type == handlerType.DataTypeWebhook {
+		webhookCfg := handlerType.WebhookData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &webhookCfg)
 		if err != nil {
 			zap.L().Error("error on loading webhook data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
@@ -95,7 +95,7 @@ func getEntity(name, stringValue string) interface{} {
 		return getWebhookData(name, &webhookCfg)
 
 	} else {
-		rsData := handlerML.ResourceData{}
+		rsData := handlerType.ResourceData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &rsData)
 		if err != nil {
 			zap.L().Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
@@ -112,7 +112,7 @@ func getEntity(name, stringValue string) interface{} {
 	return stringValue
 }
 
-func getWebhookData(name string, whCfg *handlerML.WebhookData) interface{} {
+func getWebhookData(name string, whCfg *handlerType.WebhookData) interface{} {
 	client := httpclient.GetClient(whCfg.InsecureSkipVerify)
 
 	if whCfg.Method == "" {
@@ -139,7 +139,7 @@ func getWebhookData(name string, whCfg *handlerML.WebhookData) interface{} {
 	return resultMap
 }
 
-func getByLabels(name string, rsData *handlerML.ResourceData) interface{} {
+func getByLabels(name string, rsData *handlerType.ResourceData) interface{} {
 
 	apiImpl := genericAPI{}
 	switch {
@@ -206,7 +206,7 @@ func getByLabels(name string, rsData *handlerML.ResourceData) interface{} {
 	return nil
 }
 
-func getByQuickID(name string, rsData *handlerML.ResourceData) interface{} {
+func getByQuickID(name string, rsData *handlerType.ResourceData) interface{} {
 	quickID := fmt.Sprintf("%s:%s", rsData.ResourceType, rsData.QuickID)
 	resourceType, keys, err := quickIdUL.EntityKeyValueMap(quickID)
 	if err != nil {
@@ -311,7 +311,7 @@ func UpdateParameters(variables map[string]interface{}, parameters map[string]st
 		// load suplied string, this will be passed, if there is an error
 		updatedParameters[name] = value
 
-		genericData := handlerML.GenericData{}
+		genericData := handlerType.GenericData{}
 		err := json.Unmarshal([]byte(value), &genericData)
 		if err == nil {
 			// unpack base64 to normal string
@@ -341,8 +341,8 @@ func UpdateParameters(variables map[string]interface{}, parameters map[string]st
 			genericData.Data = base64.StdEncoding.EncodeToString([]byte(updatedValue))
 
 			// if it is a webhook data and customData not enabled, update variables on the data field
-			if genericData.Type == handlerML.DataTypeWebhook {
-				webhookData := handlerML.WebhookData{}
+			if genericData.Type == handlerType.DataTypeWebhook {
+				webhookData := handlerType.WebhookData{}
 				err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &webhookData)
 				if err != nil {
 					zap.L().Error("error on converting webhook data", zap.Error(err), zap.String("name", name))

@@ -2,7 +2,7 @@ package googleassistant
 
 import (
 	actionAPI "github.com/mycontroller-org/server/v2/pkg/api/action"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	gaML "github.com/mycontroller-org/server/v2/plugin/bot/google_assistant/model"
 	"go.uber.org/zap"
@@ -46,7 +46,7 @@ func executeCommand(device gaML.ExecuteRequestDevice, executions []gaML.ExecuteR
 		}
 
 		if value != nil {
-			data := handlerML.ResourceData{
+			data := handlerType.ResourceData{
 				QuickID: device.ID,
 				Payload: convertor.ToString(value),
 			}

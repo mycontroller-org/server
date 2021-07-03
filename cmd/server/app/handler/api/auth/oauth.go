@@ -12,7 +12,7 @@ import (
 	middleware "github.com/mycontroller-org/server/v2/cmd/server/app/handler/middleware"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
+	handlerType "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 	"go.uber.org/zap"
 )
@@ -43,7 +43,7 @@ func oAuthLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userLogin := handlerML.UserLogin{
+	userLogin := handlerType.UserLogin{
 		Username:  credentials.Get("username"),
 		Password:  credentials.Get("password"),
 		ExpiresIn: "168h", // 7 days
@@ -148,7 +148,7 @@ func oAuthToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.Header.Set(handlerML.HeaderAuthorization, accessToken)
+	r.Header.Set(handlerType.HeaderAuthorization, accessToken)
 	err = middleware.IsValidToken(r)
 	if err != nil {
 		zap.L().Info("invalid token", zap.Error(err))
@@ -156,7 +156,7 @@ func oAuthToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId := r.Header.Get(handlerML.HeaderUserID)
+	userId := r.Header.Get(handlerType.HeaderUserID)
 	if userId == "" {
 		zap.L().Info("userId not found")
 		http.Error(w, "invalid user", http.StatusUnauthorized)

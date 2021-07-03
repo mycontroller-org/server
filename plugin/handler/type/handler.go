@@ -7,18 +7,6 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 )
 
-// handler types
-const (
-	TypeNoop       = "noop"
-	TypeEmail      = "email"
-	TypeTelegram   = "telegram"
-	TypeWebhook    = "webhook"
-	TypeSMS        = "sms"
-	TypePushbullet = "pushbullet"
-	TypeResource   = "resource"
-	TypeBackup     = "backup"
-)
-
 // handler data types
 const (
 	DataTypeResource = "resource"
@@ -27,6 +15,15 @@ const (
 	DataTypeWebhook  = "webhook"
 	DataTypeBackup   = "backup"
 )
+
+// Plugin interface details for operation
+type Plugin interface {
+	Name() string
+	Start() error
+	Close() error
+	Post(variables map[string]interface{}) error
+	State() *model.State
+}
 
 // Config model
 type Config struct {

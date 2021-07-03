@@ -1,4 +1,4 @@
-package webhook
+package handler
 
 import (
 	"encoding/json"
@@ -6,22 +6,28 @@ import (
 	"net/http"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	"go.uber.org/zap"
 )
 
-// data format
 const (
-	DataTypeJSON = "json"
-	DataTypeYAML = "yaml"
-	DataTypeText = "text"
+	PluginWebhook = "webhook"
+
+	// data format
+	// DataTypeJSON = "json"
+	// DataTypeYAML = "yaml"
+	// DataTypeText = "text"
 )
 
-// Config for webhook
-type Config struct {
+func init() {
+	Register(PluginNOOP, NewNoopPlugin)
+}
+
+// WebhookConfig for webhook
+type WebhookConfig struct {
 	Server             string
 	API                string
 	Method             string
@@ -33,8 +39,8 @@ type Config struct {
 }
 
 // Clone config data
-func (cfg *Config) Clone() *Config {
-	config := &Config{
+func (cfg *WebhookConfig) Clone() *WebhookConfig {
+	config := &WebhookConfig{
 		Server:             cfg.Server,
 		API:                cfg.API,
 		InsecureSkipVerify: cfg.InsecureSkipVerify,
@@ -60,31 +66,34 @@ func (cfg *Config) Clone() *Config {
 	return config
 }
 
-// Client struct
-type Client struct {
-	HandlerCfg *handlerML.Config
-	Config     *Config
+// WebhookClient struct
+type WebhookClient struct {
+	HandlerCfg *handlerType.Config
+	Config     *WebhookConfig
 	httpClient *httpclient.Client
 }
 
-// Init the webhook client
-func Init(handlerCfg *handlerML.Config) (*Client, error) {
-	config := &Config{}
+func NewWebhookPlugin(handlerCfg *handlerType.Config) (handlerType.Plugin, error) {
+	config := &WebhookConfig{}
 	err := utils.MapToStruct(utils.TagNameNone, handlerCfg.Spec, config)
 	if err != nil {
 		return nil, err
 	}
 	zap.L().Debug("webhook client", zap.String("ID", handlerCfg.ID), zap.Any("config", config))
 
-	client := &Client{
+	client := &WebhookClient{
 		HandlerCfg: handlerCfg,
 		Config:     config,
 	}
 	return client, nil
 }
 
+func (p *WebhookClient) Name() string {
+	return PluginWebhook
+}
+
 // Start handler implementation
-func (c *Client) Start() error {
+func (c *WebhookClient) Start() error {
 	if c.httpClient == nil {
 		c.httpClient = httpclient.GetClient(c.Config.InsecureSkipVerify)
 	}
@@ -93,14 +102,14 @@ func (c *Client) Start() error {
 }
 
 // Close handler implementation
-func (c *Client) Close() error {
+func (c *WebhookClient) Close() error {
 	c.httpClient = nil
 	return nil
 
 }
 
 // State implementation
-func (c *Client) State() *model.State {
+func (c *WebhookClient) State() *model.State {
 	if c.HandlerCfg != nil {
 		if c.HandlerCfg.State == nil {
 			c.HandlerCfg.State = &model.State{}
@@ -111,7 +120,7 @@ func (c *Client) State() *model.State {
 }
 
 // Post handler implementation
-func (c *Client) Post(data map[string]interface{}) error {
+func (c *WebhookClient) Post(data map[string]interface{}) error {
 	config := c.Config.Clone()
 
 	for name, value := range data {
@@ -121,16 +130,16 @@ func (c *Client) Post(data map[string]interface{}) error {
 			continue
 		}
 
-		genericData := handlerML.GenericData{}
+		genericData := handlerType.GenericData{}
 		err := json.Unmarshal([]byte(stringValue), &genericData)
 		if err != nil {
 			continue
 		}
-		if genericData.Type != handlerML.DataTypeWebhook {
+		if genericData.Type != handlerType.DataTypeWebhook {
 			continue
 		}
 
-		webhookData := handlerML.WebhookData{}
+		webhookData := handlerType.WebhookData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &webhookData)
 		if err != nil {
 			zap.L().Error("error on converting webhook data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))

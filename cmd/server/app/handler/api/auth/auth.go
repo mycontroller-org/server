@@ -10,7 +10,7 @@ import (
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
+	handlerType "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 )
 
@@ -31,7 +31,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userLogin := handlerML.UserLogin{}
+	userLogin := handlerType.UserLogin{}
 
 	err = json.Unmarshal(d, &userLogin)
 	if err != nil {
@@ -62,7 +62,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	// tokenCookie := http.Cookie{Name: "authToken", Value: token, Expires: expiration, Path: "/"}
 	// http.SetCookie(w, &tokenCookie)
 
-	tokenResponse := &handlerML.JwtTokenResponse{
+	tokenResponse := &handlerType.JwtTokenResponse{
 		ID:       userDB.ID,
 		Username: userDB.Username,
 		Email:    userDB.Email,

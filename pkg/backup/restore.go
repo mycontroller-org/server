@@ -31,7 +31,7 @@ import (
 	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
 	fwdPayloadML "github.com/mycontroller-org/server/v2/pkg/model/forward_payload"
 	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
-	nhML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	nhML "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
 	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"

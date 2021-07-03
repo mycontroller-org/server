@@ -1,4 +1,4 @@
-package telegram
+package handler
 
 import (
 	"fmt"
@@ -7,29 +7,36 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpClient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
+	telegramType "github.com/mycontroller-org/server/v2/plugin/handler/telegram"
 	"go.uber.org/zap"
 )
 
-// Client struct
-type Client struct {
-	handlerCfg *handlerML.Config
-	Config     *Config
+const PluginTelegram = "telegram"
+
+func init() {
+	Register(PluginTelegram, NewTelegramPlugin)
+}
+
+// TelegramClient struct
+type TelegramClient struct {
+	handlerCfg *handlerType.Config
+	Config     *telegramType.Config
 	httpClient *httpClient.Client
 }
 
 // Init Telegram client
-func Init(cfg *handlerML.Config) (*Client, error) {
-	config := &Config{}
+func NewTelegramPlugin(cfg *handlerType.Config) (handlerType.Plugin, error) {
+	config := &telegramType.Config{}
 	err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
 	if err != nil {
 		return nil, err
 	}
 
-	client := &Client{
+	client := &TelegramClient{
 		httpClient: httpClient.GetClient(false),
 		handlerCfg: cfg,
 		Config:     config,
@@ -44,14 +51,18 @@ func Init(cfg *handlerML.Config) (*Client, error) {
 	return client, nil
 }
 
+func (p *TelegramClient) Name() string {
+	return PluginTelegram
+}
+
 // Start handler implementation
-func (c *Client) Start() error { return nil }
+func (c *TelegramClient) Start() error { return nil }
 
 // Close handler implementation
-func (c *Client) Close() error { return nil }
+func (c *TelegramClient) Close() error { return nil }
 
 // State implementation
-func (c *Client) State() *model.State {
+func (c *TelegramClient) State() *model.State {
 	if c.handlerCfg != nil {
 		if c.handlerCfg.State == nil {
 			c.handlerCfg.State = &model.State{}
@@ -62,23 +73,23 @@ func (c *Client) State() *model.State {
 }
 
 // Post handler implementation
-func (c *Client) Post(data map[string]interface{}) error {
+func (c *TelegramClient) Post(data map[string]interface{}) error {
 	for name, value := range data {
 		stringValue, ok := value.(string)
 		if !ok {
 			continue
 		}
 
-		genericData := handlerML.GenericData{}
+		genericData := handlerType.GenericData{}
 		err := json.Unmarshal([]byte(stringValue), &genericData)
 		if err != nil {
 			continue
 		}
-		if genericData.Type != handlerML.DataTypeTelegram {
+		if genericData.Type != handlerType.DataTypeTelegram {
 			continue
 		}
 
-		telegramData := handlerML.TelegramData{}
+		telegramData := handlerType.TelegramData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &telegramData)
 		if err != nil {
 			zap.L().Error("error on converting telegram data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
@@ -92,7 +103,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 		}
 
 		parseMode := telegramData.ParseMode
-		if parseMode == ParseModeText {
+		if parseMode == telegramType.ParseModeText {
 			parseMode = ""
 		}
 
@@ -103,7 +114,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 		start := time.Now()
 		errors := make([]error, 0)
 		for _, chatID := range chatIDs {
-			msg := &Message{
+			msg := &telegramType.Message{
 				ChatID:    chatID,
 				ParseMode: parseMode,
 				Text:      telegramData.Text,
@@ -127,13 +138,13 @@ func (c *Client) Post(data map[string]interface{}) error {
 }
 
 // SendMessage func
-func (c *Client) SendMessage(message *Message) error {
-	url := c.getURL(APISendMessage)
+func (c *TelegramClient) SendMessage(message *telegramType.Message) error {
+	url := c.getURL(telegramType.APISendMessage)
 	_, data, err := c.httpClient.Request(url, http.MethodPost, nil, nil, message, 200)
 	if err != nil {
 		return err
 	}
-	resp := &Response{}
+	resp := &telegramType.Response{}
 	err = json.Unmarshal(data, resp)
 	if err != nil {
 		return nil
@@ -146,13 +157,13 @@ func (c *Client) SendMessage(message *Message) error {
 }
 
 // GetMe returns about the user profile
-func (c *Client) GetMe() (*User, error) {
-	url := c.getURL(APIGetMe)
+func (c *TelegramClient) GetMe() (*telegramType.User, error) {
+	url := c.getURL(telegramType.APIGetMe)
 	_, data, err := c.httpClient.Request(url, http.MethodGet, nil, nil, nil, 200)
 	if err != nil {
 		return nil, err
 	}
-	resp := &Response{}
+	resp := &telegramType.Response{}
 	err = json.Unmarshal(data, resp)
 	if err != nil {
 		return nil, err
@@ -162,7 +173,7 @@ func (c *Client) GetMe() (*User, error) {
 		return nil, fmt.Errorf("request failed: %+v", resp)
 	}
 
-	user := &User{}
+	user := &telegramType.User{}
 	err = utils.MapToStruct(utils.TagNameJSON, resp.Result, user)
 	if err != nil {
 		return nil, err
@@ -170,6 +181,6 @@ func (c *Client) GetMe() (*User, error) {
 	return user, nil
 }
 
-func (c *Client) getURL(api string) string {
-	return fmt.Sprintf("%s/bot%s%s", ServerURL, c.Config.Token, api)
+func (c *TelegramClient) getURL(api string) string {
+	return fmt.Sprintf("%s/bot%s%s", telegramType.ServerURL, c.Config.Token, api)
 }

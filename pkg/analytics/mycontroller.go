@@ -9,7 +9,7 @@ import (
 	statusAPI "github.com/mycontroller-org/server/v2/pkg/api/status"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	configSVC "github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
@@ -95,7 +95,7 @@ func ReportAnalyticsData() {
 	if err != nil {
 		zap.L().Error("error on getting handler details", zap.Error(err))
 	} else if result.Count > 0 {
-		if data, ok := result.Data.(*[]handlerML.Config); ok {
+		if data, ok := result.Data.(*[]handlerType.Config); ok {
 			handlers := make([]string, 0)
 			for _, handler := range *data {
 				handlerType := handler.Type

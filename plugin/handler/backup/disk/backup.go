@@ -8,14 +8,16 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
-	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
 	"github.com/mycontroller-org/server/v2/plugin/database/storage"
+	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
 	"go.uber.org/zap"
 )
+
+const PluginBackupDisk = "backup_disk"
 
 // Config of disk backup client
 type Config struct {
@@ -27,12 +29,12 @@ type Config struct {
 
 // Client struct
 type Client struct {
-	handlerCfg *handlerML.Config
+	handlerCfg *handlerType.Config
 	cfg        *Config
 }
 
 // Init disk backup client
-func Init(cfg *handlerML.Config, spec map[string]interface{}) (*Client, error) {
+func Init(cfg *handlerType.Config, spec map[string]interface{}) (*Client, error) {
 	config := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, spec, config)
 	if err != nil {
@@ -45,6 +47,10 @@ func Init(cfg *handlerML.Config, spec map[string]interface{}) (*Client, error) {
 	}
 
 	return client, nil
+}
+
+func (p *Client) Name() string {
+	return PluginBackupDisk
 }
 
 // Start func
@@ -77,16 +83,16 @@ func (c *Client) Post(data map[string]interface{}) error {
 			continue
 		}
 
-		genericData := handlerML.GenericData{}
+		genericData := handlerType.GenericData{}
 		err := json.Unmarshal([]byte(stringValue), &genericData)
 		if err != nil {
 			continue
 		}
-		if genericData.Type != handlerML.DataTypeBackup {
+		if genericData.Type != handlerType.DataTypeBackup {
 			continue
 		}
 
-		backupConfigData := handlerML.BackupData{}
+		backupConfigData := handlerType.BackupData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &backupConfigData)
 		if err != nil {
 			zap.L().Error("error on converting backup config data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))

@@ -3,7 +3,7 @@ package busutils
 import (
 	"encoding/json"
 
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"go.uber.org/zap"
@@ -16,7 +16,7 @@ func PostToHandler(handlers []string, data map[string]string) {
 	// remove disabled parameters
 	updateData := make(map[string]interface{})
 	for name, value := range data {
-		genericData := handlerML.GenericData{}
+		genericData := handlerType.GenericData{}
 		err := json.Unmarshal([]byte(value), &genericData)
 		if err != nil {
 			continue
@@ -35,7 +35,7 @@ func PostToHandler(handlers []string, data map[string]string) {
 	}
 
 	for _, handlerID := range handlers {
-		msg := &handlerML.MessageWrapper{
+		msg := &handlerType.MessageWrapper{
 			ID:   handlerID,
 			Data: updateData,
 		}

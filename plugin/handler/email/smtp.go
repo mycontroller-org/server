@@ -10,20 +10,20 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	"go.uber.org/zap"
 )
 
 // smtp client
-type smtpClient struct {
-	handlerCfg *handlerML.Config
+type SmtpClient struct {
+	handlerCfg *handlerType.Config
 	cfg        *Config
 	auth       smtp.Auth
 }
 
 // init smtp client
-func initSMTP(handlerCfg *handlerML.Config, cfg *Config) (Client, error) {
+func NewSMTPClient(handlerCfg *handlerType.Config, cfg *Config) (Client, error) {
 	var auth smtp.Auth
 
 	if cfg.AuthType == AuthTypePlain || cfg.AuthType == "" {
@@ -34,7 +34,7 @@ func initSMTP(handlerCfg *handlerML.Config, cfg *Config) (Client, error) {
 		return nil, fmt.Errorf("unknown auth type:%s", cfg.AuthType)
 	}
 
-	client := &smtpClient{
+	client := &SmtpClient{
 		handlerCfg: handlerCfg,
 		cfg:        cfg,
 		auth:       auth,
@@ -43,17 +43,21 @@ func initSMTP(handlerCfg *handlerML.Config, cfg *Config) (Client, error) {
 	return client, nil
 }
 
-func (sc *smtpClient) Start() error {
+func (sc *SmtpClient) Name() string {
+	return PluginEmail
+}
+
+func (sc *SmtpClient) Start() error {
 	// nothing to do here
 	return nil
 }
 
 // Close func implementation
-func (sc *smtpClient) Close() error {
+func (sc *SmtpClient) Close() error {
 	return nil
 }
 
-func (sc *smtpClient) State() *model.State {
+func (sc *SmtpClient) State() *model.State {
 	if sc.handlerCfg != nil {
 		if sc.handlerCfg.State == nil {
 			sc.handlerCfg.State = &model.State{}
@@ -64,7 +68,7 @@ func (sc *smtpClient) State() *model.State {
 }
 
 // Send func implementation
-func (sc *smtpClient) Send(from string, to []string, subject, body string) error {
+func (sc *SmtpClient) Send(from string, to []string, subject, body string) error {
 	// set from address as username if non set
 	if from == "" {
 		from = sc.cfg.Username
@@ -76,7 +80,7 @@ func (sc *smtpClient) Send(from string, to []string, subject, body string) error
 	return smtp.SendMail(addr, sc.auth, from, to, msg)
 }
 
-func (sc *smtpClient) sendEmailSSL(from string, to []string, subject, body string) error {
+func (sc *SmtpClient) sendEmailSSL(from string, to []string, subject, body string) error {
 	// set from address as username if non set
 	if from == "" {
 		from = sc.cfg.Username
@@ -145,23 +149,23 @@ func (sc *smtpClient) sendEmailSSL(from string, to []string, subject, body strin
 }
 
 // Post performs send operation
-func (sc *smtpClient) Post(data map[string]interface{}) error {
+func (sc *SmtpClient) Post(data map[string]interface{}) error {
 	for name, value := range data {
 		stringValue, ok := value.(string)
 		if !ok {
 			continue
 		}
 
-		genericData := handlerML.GenericData{}
+		genericData := handlerType.GenericData{}
 		err := json.Unmarshal([]byte(stringValue), &genericData)
 		if err != nil {
 			continue
 		}
-		if genericData.Type != handlerML.DataTypeEmail {
+		if genericData.Type != handlerType.DataTypeEmail {
 			continue
 		}
 
-		emailData := handlerML.EmailData{}
+		emailData := handlerType.EmailData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &emailData)
 		if err != nil {
 			zap.L().Error("error on converting email data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))

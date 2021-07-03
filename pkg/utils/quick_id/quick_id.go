@@ -12,7 +12,7 @@ import (
 	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
 	fwdPayloadML "github.com/mycontroller-org/server/v2/pkg/model/forward_payload"
 	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
 	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
@@ -208,8 +208,8 @@ func GetQuickID(entity interface{}) (string, error) {
 			return fmt.Sprintf("%s:%s", QuickIDSchedule[0], res.ID), nil
 		}
 
-	case reflect.TypeOf(handlerML.Config{}):
-		res, ok := entity.(handlerML.Config)
+	case reflect.TypeOf(handlerType.Config{}):
+		res, ok := entity.(handlerType.Config)
 		if ok {
 			return fmt.Sprintf("%s:%s", QuickIDHandler[0], res.ID), nil
 		}

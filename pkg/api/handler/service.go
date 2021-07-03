@@ -2,7 +2,7 @@ package handler
 
 import (
 	ml "github.com/mycontroller-org/server/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	rsml "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage"
@@ -10,12 +10,12 @@ import (
 )
 
 // Start notifyHandler
-func Start(cfg *handlerML.Config) error {
+func Start(cfg *handlerType.Config) error {
 	return postCommand(cfg, rsml.CommandStart)
 }
 
 // Stop notifyHandler
-func Stop(cfg *handlerML.Config) error {
+func Stop(cfg *handlerType.Config) error {
 	return postCommand(cfg, rsml.CommandStop)
 }
 
@@ -26,7 +26,7 @@ func LoadAll() {
 		zap.L().Error("Failed to get list of handlers", zap.Error(err))
 		return
 	}
-	handlers := *result.Data.(*[]handlerML.Config)
+	handlers := *result.Data.(*[]handlerType.Config)
 	for index := 0; index < len(handlers); index++ {
 		cfg := handlers[index]
 		if cfg.Enabled {
@@ -108,7 +108,7 @@ func Reload(ids []string) error {
 	return nil
 }
 
-func postCommand(cfg *handlerML.Config, command string) error {
+func postCommand(cfg *handlerType.Config, command string) error {
 	reqEvent := rsml.ServiceEvent{
 		Type:    rsml.TypeHandler,
 		Command: command,
@@ -121,12 +121,12 @@ func postCommand(cfg *handlerML.Config, command string) error {
 	return mcbus.Publish(topic, reqEvent)
 }
 
-func getNotifyHandlerEntries(ids []string) ([]handlerML.Config, error) {
+func getNotifyHandlerEntries(ids []string) ([]handlerType.Config, error) {
 	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
 	pagination := &stgml.Pagination{Limit: 100}
 	result, err := List(filters, pagination)
 	if err != nil {
 		return nil, err
 	}
-	return *result.Data.(*[]handlerML.Config), nil
+	return *result.Data.(*[]handlerType.Config), nil
 }

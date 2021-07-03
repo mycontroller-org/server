@@ -9,7 +9,7 @@ import (
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	handlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
@@ -25,15 +25,15 @@ func RegisterHandlerRoutes(router *mux.Router) {
 }
 
 func listHandler(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindMany(w, r, model.EntityHandler, &[]handlerML.Config{})
+	handlerUtils.FindMany(w, r, model.EntityHandler, &[]handlerType.Config{})
 }
 
 func getHandler(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindOne(w, r, model.EntityHandler, &handlerML.Config{})
+	handlerUtils.FindOne(w, r, model.EntityHandler, &handlerType.Config{})
 }
 
 func updateHandler(w http.ResponseWriter, r *http.Request) {
-	entity := &handlerML.Config{}
+	entity := &handlerType.Config{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)

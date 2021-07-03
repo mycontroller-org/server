@@ -6,7 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	"github.com/mycontroller-org/server/v2/pkg/api/action"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	webHandlerML "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
 )
 
@@ -83,7 +83,7 @@ func executeGetAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resourceData := &handlerML.ResourceData{
+	resourceData := &handlerType.ResourceData{
 		QuickID: resourceArr[0],
 		Payload: payloadArr[0],
 	}
@@ -112,7 +112,7 @@ func executePostAction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, axn := range actions {
-		resourceData := &handlerML.ResourceData{
+		resourceData := &handlerType.ResourceData{
 			QuickID: axn.Resource,
 			KeyPath: axn.KayPath,
 			Payload: axn.Payload,

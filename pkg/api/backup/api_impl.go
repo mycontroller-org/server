@@ -8,7 +8,7 @@ import (
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
@@ -44,7 +44,7 @@ func RunOnDemandBackup(input *backupML.OnDemandBackupConfig) error {
 		RetentionCount:    0,
 	}
 
-	exporterData := handlerML.BackupData{
+	exporterData := handlerType.BackupData{
 		ProviderType: backupUtil.ProviderDisk,
 		Spec:         utils.StructToMap(configData),
 	}
@@ -55,9 +55,9 @@ func RunOnDemandBackup(input *backupML.OnDemandBackupConfig) error {
 		return err
 	}
 
-	data := handlerML.GenericData{
+	data := handlerType.GenericData{
 		Disabled: "false",
-		Type:     handlerML.DataTypeBackup,
+		Type:     handlerType.DataTypeBackup,
 		Data:     base64String,
 	}
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
@@ -24,15 +24,17 @@ type Config struct {
 
 const (
 	defaultSubject = "Email from MyController server"
+	PluginEmail    = "email"
 )
 
 // Client for email service
 type Client interface {
+	Name() string
 	Start() error
-	Post(variables map[string]interface{}) error
-	Send(from string, to []string, subject, body string) error
 	Close() error
+	Post(variables map[string]interface{}) error
 	State() *model.State
+	Send(from string, to []string, subject, body string) error
 }
 
 // service provider types
@@ -47,8 +49,8 @@ const (
 	AuthTypeCRAMMD5 = "crammd5"
 )
 
-// Init email client
-func Init(cfg *handlerML.Config) (Client, error) {
+// NewEmailPlugin email client
+func NewEmailPlugin(cfg *handlerType.Config) (handlerType.Plugin, error) {
 	config := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
 	if err != nil {
@@ -58,7 +60,7 @@ func Init(cfg *handlerML.Config) (Client, error) {
 
 	switch config.Type {
 	case TypeSMTP, TypeNone:
-		return initSMTP(cfg, config)
+		return NewSMTPClient(cfg, config)
 
 	default:
 		return nil, fmt.Errorf("unknown email client:%s", cfg.Type)

@@ -2,7 +2,7 @@ package handler
 
 import (
 	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	sfML "github.com/mycontroller-org/server/v2/pkg/model/service_filter"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
@@ -137,8 +137,8 @@ func postProcessServiceEvent(event interface{}) {
 	}
 }
 
-func getConfig(reqEvent *rsML.ServiceEvent) *handlerML.Config {
-	cfg := &handlerML.Config{}
+func getConfig(reqEvent *rsML.ServiceEvent) *handlerType.Config {
+	cfg := &handlerType.Config{}
 	err := reqEvent.LoadData(cfg)
 	if err != nil {
 		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))

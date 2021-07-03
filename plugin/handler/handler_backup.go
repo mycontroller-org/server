@@ -1,34 +1,40 @@
 // +build server,!standalone
 
-package exporter
+package handler
 
 import (
 	"fmt"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/plugin/handler/backup/disk"
 	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
 )
 
-// Config of backup service
-type Config struct {
+const PluginBackup = "backup"
+
+func init() {
+	Register(PluginBackup, NewBackupPlugin)
+}
+
+// BackupConfig of backup service
+type BackupConfig struct {
 	ProviderType string
 	Spec         map[string]interface{}
 }
 
 // Client for backup service
 type Client interface {
+	Name() string
 	Start() error
 	Post(variables map[string]interface{}) error
 	Close() error
 	State() *model.State
 }
 
-// Init backup client
-func Init(cfg *handlerML.Config) (Client, error) {
-	config := &Config{}
+func NewBackupPlugin(cfg *handlerType.Config) (handlerType.Plugin, error) {
+	config := &BackupConfig{}
 	err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
 	if err != nil {
 		return nil, err

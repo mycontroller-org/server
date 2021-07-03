@@ -6,7 +6,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
@@ -33,7 +33,7 @@ func initMessageListener() error {
 }
 
 func onMessageReceive(event *busML.BusData) {
-	msg := &handlerML.MessageWrapper{}
+	msg := &handlerType.MessageWrapper{}
 	err := event.LoadData(msg)
 	if err != nil {
 		zap.L().Warn("failed to convet to target type", zap.Error(err))
@@ -57,7 +57,7 @@ func closeMessageListener() {
 }
 
 func processHandlerMessage(item interface{}) {
-	msg := item.(*handlerML.MessageWrapper)
+	msg := item.(*handlerType.MessageWrapper)
 	start := time.Now()
 
 	zap.L().Debug("starting message processing", zap.Any("handlerID", msg.ID))

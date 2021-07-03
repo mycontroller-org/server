@@ -10,7 +10,7 @@ import (
 
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	"github.com/mycontroller-org/server/v2/pkg/model/user"
-	handlerML "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
+	handlerType "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	"go.uber.org/zap"
@@ -20,7 +20,7 @@ import (
 
 var (
 	// middler check vars
-	verifyPrefixes    = []string{"/api/", handlerML.SecureShareDirWebHandlerPath}
+	verifyPrefixes    = []string{"/api/", handlerType.SecureShareDirWebHandlerPath}
 	nonRestrictedAPIs = []string{
 		"/api/status", "/api/user/registration", "/api/user/login",
 		"/api/oauth/login", "/api/oauth/token"}
@@ -69,18 +69,18 @@ func IsValidToken(r *http.Request) error {
 	}
 
 	// verify the validity
-	expiresAt := convertor.ToInteger(claims[handlerML.KeyExpiresAt])
+	expiresAt := convertor.ToInteger(claims[handlerType.KeyExpiresAt])
 	if time.Now().Unix() >= expiresAt {
 		return errors.New("expired token")
 	}
 
 	// clear userID header, might be injected from external
 	// add userID into request header from here
-	r.Header.Del(handlerML.HeaderUserID)
-	if userID, ok := claims[handlerML.KeyUserID]; ok {
+	r.Header.Del(handlerType.HeaderUserID)
+	if userID, ok := claims[handlerType.KeyUserID]; ok {
 		id, ok := userID.(string)
 		if ok {
-			r.Header.Set(handlerML.HeaderUserID, id)
+			r.Header.Set(handlerType.HeaderUserID, id)
 		}
 	}
 	return nil
@@ -111,7 +111,7 @@ func extractJwtToken(r *http.Request) string {
 	// 	return authCookie.Value
 	// }
 
-	accessToken := r.Header.Get(handlerML.HeaderAuthorization)
+	accessToken := r.Header.Get(handlerType.HeaderAuthorization)
 	// normally, Authorization: Bearer the_token_xxx
 	if accessToken != "" {
 		if !strings.Contains(accessToken, " ") {
@@ -124,7 +124,7 @@ func extractJwtToken(r *http.Request) string {
 	}
 
 	// verify query param has authorization token
-	accessToken = r.URL.Query().Get(handlerML.AccessToken)
+	accessToken = r.URL.Query().Get(handlerType.AccessToken)
 	if accessToken != "" {
 		return accessToken
 	}
@@ -135,11 +135,11 @@ func extractJwtToken(r *http.Request) string {
 // CreateToken creates a token for a user
 func CreateToken(user user.User, expiresIn string) (string, error) {
 	atClaims := jwt.MapClaims{}
-	atClaims[handlerML.KeyAuthorized] = true
-	atClaims[handlerML.KeyUserID] = user.ID
-	atClaims[handlerML.KeyFullName] = user.FullName
+	atClaims[handlerType.KeyAuthorized] = true
+	atClaims[handlerType.KeyUserID] = user.ID
+	atClaims[handlerType.KeyFullName] = user.FullName
 
-	expiresInDuration := handlerML.DefaultExpiration
+	expiresInDuration := handlerType.DefaultExpiration
 
 	if expiresIn != "" {
 		expiresInReceived, err := time.ParseDuration(expiresIn)
@@ -150,7 +150,7 @@ func CreateToken(user user.User, expiresIn string) (string, error) {
 		}
 	}
 
-	atClaims[handlerML.KeyExpiresAt] = time.Now().Add(expiresInDuration).Unix()
+	atClaims[handlerType.KeyExpiresAt] = time.Now().Add(expiresInDuration).Unix()
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	token, err := at.SignedString(getJwtSecret())
 	if err != nil {
@@ -161,9 +161,9 @@ func CreateToken(user user.User, expiresIn string) (string, error) {
 
 // GetUserID returns the logged in user details
 func GetUserID(r *http.Request) string {
-	return r.Header.Get(handlerML.HeaderUserID)
+	return r.Header.Get(handlerType.HeaderUserID)
 }
 
 func getJwtSecret() []byte {
-	return []byte(fmt.Sprintf("%s_%s", os.Getenv(handlerML.EnvJwtAccessSecret), version.Get().HostID))
+	return []byte(fmt.Sprintf("%s_%s", os.Getenv(handlerType.EnvJwtAccessSecret), version.Get().HostID))
 }
