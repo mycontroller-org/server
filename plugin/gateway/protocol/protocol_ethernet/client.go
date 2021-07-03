@@ -9,7 +9,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
@@ -37,7 +37,7 @@ type Config struct {
 
 // Endpoint data
 type Endpoint struct {
-	GwCfg          *gwML.Config
+	GwCfg          *gwType.Config
 	Config         Config
 	connUrl        *url.URL
 	conn           net.Conn
@@ -49,7 +49,7 @@ type Endpoint struct {
 }
 
 // New ethernet driver
-func New(gwCfg *gwML.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgML.RawMessage) error) (*Endpoint, error) {
+func New(gwCfg *gwType.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgML.RawMessage) error) (*Endpoint, error) {
 	var cfg Config
 	err := utils.MapToStruct(utils.TagNameNone, protocol, &cfg)
 	if err != nil {

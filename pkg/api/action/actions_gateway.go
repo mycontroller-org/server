@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	gatewayAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
-	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"go.uber.org/zap"
 )

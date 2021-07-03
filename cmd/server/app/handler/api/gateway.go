@@ -9,7 +9,7 @@ import (
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	gwAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
 )
 
@@ -32,11 +32,11 @@ func listGateways(w http.ResponseWriter, r *http.Request) {
 }
 
 func getGateway(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindOne(w, r, model.EntityGateway, &gwML.Config{})
+	handlerUtils.FindOne(w, r, model.EntityGateway, &gwType.Config{})
 }
 
 func updateGateway(w http.ResponseWriter, r *http.Request) {
-	entity := &gwML.Config{}
+	entity := &gwType.Config{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)

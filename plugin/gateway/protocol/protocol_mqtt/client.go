@@ -8,7 +8,7 @@ import (
 	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	gwml "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gwml "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	msgml "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"

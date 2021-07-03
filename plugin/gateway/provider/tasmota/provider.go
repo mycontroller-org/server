@@ -5,12 +5,15 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	utils "github.com/mycontroller-org/server/v2/pkg/utils"
 	gwPRL "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	mqtt "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_mqtt"
+	providerType "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 )
+
+const PluginTasmota = "tasmota"
 
 // Config of tasmota provider
 type Config struct {
@@ -22,13 +25,13 @@ type Config struct {
 // Provider implementation
 type Provider struct {
 	Config        *Config
-	GatewayConfig *gwML.Config
+	GatewayConfig *gwType.Config
 	Protocol      gwPRL.Protocol
 	ProtocolType  string
 }
 
-// Init provider
-func Init(gatewayConfig *gwML.Config) (*Provider, error) {
+// NewPluginTasmota provider
+func NewPluginTasmota(gatewayConfig *gwType.Config) (providerType.Plugin, error) {
 	cfg := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gatewayConfig.Provider, cfg)
 	if err != nil {
@@ -40,6 +43,10 @@ func Init(gatewayConfig *gwML.Config) (*Provider, error) {
 		ProtocolType:  cfg.Protocol.GetString(model.NameType),
 	}
 	return provider, nil
+}
+
+func (p *Provider) Name() string {
+	return PluginTasmota
 }
 
 // Start func

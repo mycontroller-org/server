@@ -8,7 +8,7 @@ import (
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	statusAPI "github.com/mycontroller-org/server/v2/pkg/api/status"
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	configSVC "github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	"github.com/mycontroller-org/server/v2/pkg/utils"

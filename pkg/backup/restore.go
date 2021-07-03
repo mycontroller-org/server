@@ -30,7 +30,7 @@ import (
 	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
 	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
 	fwdPayloadML "github.com/mycontroller-org/server/v2/pkg/model/forward_payload"
-	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	nhML "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"

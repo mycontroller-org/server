@@ -2,7 +2,7 @@ package gateway
 
 import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
@@ -10,12 +10,12 @@ import (
 )
 
 // Start gateway
-func Start(gwCfg *gwML.Config) error {
+func Start(gwCfg *gwType.Config) error {
 	return postGatewayCommand(gwCfg, rsML.CommandStart)
 }
 
 // Stop gateway
-func Stop(gwCfg *gwML.Config) error {
+func Stop(gwCfg *gwType.Config) error {
 	return postGatewayCommand(gwCfg, rsML.CommandStop)
 }
 
@@ -26,7 +26,7 @@ func LoadAll() {
 		zap.L().Error("Failed to get list of gateways", zap.Error(err))
 		return
 	}
-	gateways := *gwsResult.Data.(*[]gwML.Config)
+	gateways := *gwsResult.Data.(*[]gwType.Config)
 	for index := 0; index < len(gateways); index++ {
 		gateway := gateways[index]
 		if gateway.Enabled {
@@ -110,7 +110,7 @@ func Reload(ids []string) error {
 	return nil
 }
 
-func postGatewayCommand(gwCfg *gwML.Config, command string) error {
+func postGatewayCommand(gwCfg *gwType.Config, command string) error {
 	reqEvent := rsML.ServiceEvent{
 		Type:    rsML.TypeGateway,
 		Command: command,
@@ -123,12 +123,12 @@ func postGatewayCommand(gwCfg *gwML.Config, command string) error {
 	return mcbus.Publish(topic, reqEvent)
 }
 
-func getGatewayEntries(ids []string) ([]gwML.Config, error) {
+func getGatewayEntries(ids []string) ([]gwType.Config, error) {
 	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
 	pagination := &stgML.Pagination{Limit: 100}
 	gwsResult, err := List(filters, pagination)
 	if err != nil {
 		return nil, err
 	}
-	return *gwsResult.Data.(*[]gwML.Config), nil
+	return *gwsResult.Data.(*[]gwType.Config), nil
 }

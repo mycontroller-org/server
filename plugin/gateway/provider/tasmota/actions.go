@@ -3,17 +3,17 @@ package tasmota
 import (
 	"fmt"
 
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 )
 
 // This function is like route for globally defined features for the request like reboot, discover, etc.,
 // And this should have addition request implementation defined in "internalValidRequests" map on constants.go file
-func handleActions(gwCfg *gwML.Config, action string, msg *msgML.Message, tmMsg *message) error {
+func handleActions(gwCfg *gwType.Config, action string, msg *msgML.Message, tmMsg *message) error {
 	switch action {
 
-	case gwML.ActionDiscoverNodes:
+	case gwType.ActionDiscoverNodes:
 		return fmt.Errorf("discover feature not implemented or not supported")
 
 	case nodeML.ActionHeartbeatRequest:

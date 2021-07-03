@@ -3,7 +3,7 @@ package gateway
 import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
@@ -14,40 +14,40 @@ import (
 
 // List by filter and pagination
 func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
-	result := make([]gwML.Config, 0)
+	result := make([]gwType.Config, 0)
 	return stg.SVC.Find(model.EntityGateway, &result, filters, pagination)
 }
 
 // Get returns a gateway
-func Get(filters []stgML.Filter) (*gwML.Config, error) {
-	result := &gwML.Config{}
+func Get(filters []stgML.Filter) (*gwType.Config, error) {
+	result := &gwType.Config{}
 	err := stg.SVC.FindOne(model.EntityGateway, result, filters)
 	return result, err
 }
 
 // GetByIDs returns a gateway details by id
-func GetByIDs(ids []string) ([]gwML.Config, error) {
+func GetByIDs(ids []string) ([]gwType.Config, error) {
 	filters := []stgML.Filter{
 		{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids},
 	}
 	pagination := &stgML.Pagination{Limit: int64(len(ids))}
-	gateways := make([]gwML.Config, 0)
+	gateways := make([]gwType.Config, 0)
 	_, err := stg.SVC.Find(model.EntityNode, &gateways, filters, pagination)
 	return gateways, err
 }
 
 // GetByID returns a gateway details
-func GetByID(id string) (*gwML.Config, error) {
+func GetByID(id string) (*gwType.Config, error) {
 	filters := []stgML.Filter{
 		{Key: model.KeyID, Value: id},
 	}
-	result := &gwML.Config{}
+	result := &gwType.Config{}
 	err := stg.SVC.FindOne(model.EntityGateway, result, filters)
 	return result, err
 }
 
 // SaveAndReload gateway
-func SaveAndReload(gwCfg *gwML.Config) error {
+func SaveAndReload(gwCfg *gwType.Config) error {
 	gwCfg.State = &model.State{} //reset state
 	err := Save(gwCfg)
 	if err != nil {
@@ -57,7 +57,7 @@ func SaveAndReload(gwCfg *gwML.Config) error {
 }
 
 // Save gateway config
-func Save(gwCfg *gwML.Config) error {
+func Save(gwCfg *gwType.Config) error {
 	eventType := eventML.TypeUpdated
 	if gwCfg.ID == "" {
 		gwCfg.ID = utils.RandID()

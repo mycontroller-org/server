@@ -8,18 +8,14 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
-	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/esphome"
-	mysensors "github.com/mycontroller-org/server/v2/plugin/gateway/provider/mysensors_v2"
-	noopProvider "github.com/mycontroller-org/server/v2/plugin/gateway/provider/noop"
-	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/philipshue"
-	systemMonitoring "github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring"
-	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/tasmota"
+	gwPlugin "github.com/mycontroller-org/server/v2/plugin/gateway"
+	providerType "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
@@ -35,8 +31,8 @@ const (
 
 // Service component of the provider
 type Service struct {
-	GatewayConfig                     *gwML.Config
-	provider                          Provider
+	GatewayConfig                     *gwType.Config
+	provider                          providerType.Plugin
 	messageQueue                      *queueUtils.Queue
 	rawMessageQueue                   *queueUtils.Queue
 	topicListenFromServer             string
@@ -48,52 +44,13 @@ type Service struct {
 }
 
 // GetService returns service instance
-func GetService(gatewayCfg *gwML.Config) (*Service, error) {
+func GetService(gatewayCfg *gwType.Config) (*Service, error) {
 	// verify default reconnect delay
 	gatewayCfg.ReconnectDelay = utils.ValidDuration(gatewayCfg.ReconnectDelay, defaultReconnectDelay)
 
-	var provider Provider
-	switch gatewayCfg.Provider.GetString(model.NameType) {
-	case TypeMySensorsV2:
-		mysProvider, err := mysensors.Init(gatewayCfg)
-		if err != nil {
-			return nil, err
-		}
-		provider = mysProvider
-
-	case TypeTasmota:
-		tasmotaProvider, err := tasmota.Init(gatewayCfg)
-		if err != nil {
-			return nil, err
-		}
-		provider = tasmotaProvider
-
-	case TypeSystemMonitoring:
-		smProvider, err := systemMonitoring.Init(gatewayCfg)
-		if err != nil {
-			return nil, err
-		}
-		provider = smProvider
-
-	case TypePhilipsHue:
-		philipsHueProvider, err := philipshue.Init(gatewayCfg)
-		if err != nil {
-			return nil, err
-		}
-		provider = philipsHueProvider
-
-	case TypeEsphome:
-		esphomeProvider, err := esphome.Init(gatewayCfg)
-		if err != nil {
-			return nil, err
-		}
-		provider = esphomeProvider
-
-	case TypeCustom:
-		provider = &noopProvider.Provider{GatewayID: gatewayCfg.ID}
-
-	default:
-		return nil, fmt.Errorf("unknown provider:%s", gatewayCfg.Provider.GetString(model.NameType))
+	provider, err := gwPlugin.Create(gatewayCfg.Provider.GetString(model.KeyType), gatewayCfg)
+	if err != nil {
+		return nil, err
 	}
 	service := &Service{
 		GatewayConfig: gatewayCfg,

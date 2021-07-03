@@ -7,7 +7,6 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	sch "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
@@ -17,8 +16,12 @@ import (
 	ethernet "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_ethernet"
 	mqtt "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_mqtt"
 	serial "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_serial"
+	providerType "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
+
+const PluginMySensorsV2 = "mysensors_v2"
 
 // Config of this provider
 type Config struct {
@@ -33,7 +36,7 @@ type Config struct {
 // Provider implementation
 type Provider struct {
 	Config        *Config
-	GatewayConfig *gwML.Config
+	GatewayConfig *gwType.Config
 	Protocol      gwpl.Protocol
 	ProtocolType  string
 }
@@ -43,8 +46,8 @@ const (
 	timeoutAllowedMinimumLevel = time.Millisecond * 10
 )
 
-// Init MySensors provider
-func Init(gatewayCfg *gwML.Config) (*Provider, error) {
+// NewPluginMySensorsV2 MySensors provider
+func NewPluginMySensorsV2(gatewayCfg *gwType.Config) (providerType.Plugin, error) {
 	cfg := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, cfg)
 	if err != nil {
@@ -57,6 +60,10 @@ func Init(gatewayCfg *gwML.Config) (*Provider, error) {
 	}
 	zap.L().Debug("Config details", zap.Any("received", gatewayCfg.Provider), zap.Any("converted", cfg))
 	return provider, nil
+}
+
+func (p *Provider) Name() string {
+	return PluginMySensorsV2
 }
 
 // Start func

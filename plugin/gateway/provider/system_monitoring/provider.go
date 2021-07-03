@@ -1,14 +1,17 @@
 package systemmonitoring
 
 import (
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
+	providerType "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
 const (
+	PluginSystemMonitoring = "system_monitoring"
+
 	schedulePrefix = "schedule_system_monitoring_gw_"
 )
 
@@ -16,12 +19,12 @@ const (
 type Provider struct {
 	Config        config.Config
 	HostConfig    *config.HostConfig
-	GatewayConfig *gwML.Config
+	GatewayConfig *gwType.Config
 	NodeID        string
 }
 
-// Init provider
-func Init(gatewayCfg *gwML.Config) (*Provider, error) {
+// NewPluginSystemMonitoring provider
+func NewPluginSystemMonitoring(gatewayCfg *gwType.Config) (providerType.Plugin, error) {
 	cfg := config.Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, &cfg)
 	if err != nil {
@@ -34,6 +37,10 @@ func Init(gatewayCfg *gwML.Config) (*Provider, error) {
 	}
 	zap.L().Debug("Config details", zap.Any("received", gatewayCfg.Provider), zap.Any("converted", cfg))
 	return provider, nil
+}
+
+func (p *Provider) Name() string {
+	return PluginSystemMonitoring
 }
 
 // Start func

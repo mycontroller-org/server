@@ -6,7 +6,7 @@ import (
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 	dataRepositoryML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
 	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
-	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	"github.com/mycontroller-org/server/v2/pkg/model/source"
 	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"

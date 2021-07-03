@@ -4,15 +4,18 @@ import (
 	"fmt"
 	"sync"
 
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	providerType "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
 // default values
 const (
+	PluginEspHome = "esphome"
+
 	defaultTimeout            = "5s"
 	defaultAliveCheckInterval = "15s"
 
@@ -30,14 +33,14 @@ type Config struct {
 // Provider data
 type Provider struct {
 	Config        Config
-	GatewayConfig *gwML.Config
+	GatewayConfig *gwType.Config
 	clientStore   *ClientStore
 	entityStore   *EntityStore
 	rxMessageFunc func(rawMsg *msgML.RawMessage) error
 }
 
-// Init provider
-func Init(gatewayCfg *gwML.Config) (*Provider, error) {
+// NewPluginEspHome provider
+func NewPluginEspHome(gatewayCfg *gwType.Config) (providerType.Plugin, error) {
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, &cfg)
 	if err != nil {
@@ -57,6 +60,10 @@ func Init(gatewayCfg *gwML.Config) (*Provider, error) {
 	}
 	zap.L().Debug("Config details", zap.Any("received", gatewayCfg.Provider), zap.Any("converted", cfg))
 	return provider, nil
+}
+
+func (p *Provider) Name() string {
+	return PluginEspHome
 }
 
 // Start func

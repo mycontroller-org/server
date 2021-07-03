@@ -15,7 +15,7 @@ import (
 	dataRepositoryML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
 	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
 	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
-	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	"github.com/mycontroller-org/server/v2/pkg/model/schedule"

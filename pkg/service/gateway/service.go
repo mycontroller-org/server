@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
@@ -14,7 +14,7 @@ import (
 )
 
 // StartGW gateway
-func StartGW(gatewayCfg *gwML.Config) error {
+func StartGW(gatewayCfg *gwType.Config) error {
 	start := time.Now()
 
 	// descrypt the secrets, tokens
@@ -79,7 +79,7 @@ func StopGW(id string) error {
 }
 
 // ReloadGW gateway
-func ReloadGW(gwCfg *gwML.Config) error {
+func ReloadGW(gwCfg *gwType.Config) error {
 	err := StopGW(gwCfg.ID)
 	if err != nil {
 		return err

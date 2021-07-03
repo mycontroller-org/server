@@ -9,7 +9,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
@@ -21,10 +21,10 @@ import (
 
 // This function is like route for globally defined features for the request like reboot, discover, etc.,
 // And this should have addition request implementation defined in "internalValidRequests" map on constants.go file
-func handleActions(gwCfg *gwML.Config, fn string, msg *msgML.Message, msMsg *message) error {
+func handleActions(gwCfg *gwType.Config, fn string, msg *msgML.Message, msMsg *message) error {
 	switch fn {
 
-	case gwML.ActionDiscoverNodes:
+	case gwType.ActionDiscoverNodes:
 		msMsg.Type = actionDiscoverRequest
 		msMsg.Payload = payloadEmpty
 		msMsg.NodeID = idBroadcast
@@ -103,7 +103,7 @@ func handleActions(gwCfg *gwML.Config, fn string, msg *msgML.Message, msMsg *mes
 // adds zone offset to the actual timestamp
 // user can specify different timezone as a gateway label
 // if non set, take system timezone
-func getTimestamp(gwCfg *gwML.Config) string {
+func getTimestamp(gwCfg *gwType.Config) string {
 	var loc *time.Location
 	// get user defined timezone from gateway label
 	tz := gwCfg.Labels.Get(model.LabelTimezone)

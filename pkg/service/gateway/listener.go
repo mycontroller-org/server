@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	gwML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	sfML "github.com/mycontroller-org/server/v2/pkg/model/service_filter"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
@@ -136,8 +136,8 @@ func processEvent(event interface{}) {
 	}
 }
 
-func getGatewayConfig(reqEvent *rsML.ServiceEvent) *gwML.Config {
-	cfg := &gwML.Config{}
+func getGatewayConfig(reqEvent *rsML.ServiceEvent) *gwType.Config {
+	cfg := &gwType.Config{}
 	err := reqEvent.LoadData(cfg)
 	if err != nil {
 		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))

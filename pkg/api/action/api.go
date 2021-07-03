@@ -12,7 +12,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
-	gatewayML "github.com/mycontroller-org/server/v2/pkg/model/gateway"
+	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
