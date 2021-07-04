@@ -6,7 +6,7 @@ import (
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // FindOne func
@@ -34,7 +34,7 @@ func FindOne(w http.ResponseWriter, r *http.Request, entityName string, entity i
 }
 
 // LoadData loads data
-func LoadData(w http.ResponseWriter, r *http.Request, entityFn func(f []stgML.Filter, p *stgML.Pagination) (interface{}, error)) {
+func LoadData(w http.ResponseWriter, r *http.Request, entityFn func(f []stgType.Filter, p *stgType.Pagination) (interface{}, error)) {
 	w.Header().Set("Content-Type", "application/json")
 
 	f, p, err := Params(r)
@@ -57,7 +57,7 @@ func LoadData(w http.ResponseWriter, r *http.Request, entityFn func(f []stgML.Fi
 }
 
 // UpdateData loads data
-func UpdateData(w http.ResponseWriter, r *http.Request, entity interface{}, updateFn func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error)) {
+func UpdateData(w http.ResponseWriter, r *http.Request, entity interface{}, updateFn func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error)) {
 	w.Header().Set("Content-Type", "application/json")
 
 	f, p, err := Params(r)
@@ -116,7 +116,7 @@ func FindMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 }
 
 // SaveEntity func
-func SaveEntity(w http.ResponseWriter, r *http.Request, entityName string, entity interface{}, bwFunc func(entity interface{}, filters *[]stgML.Filter) error) {
+func SaveEntity(w http.ResponseWriter, r *http.Request, entityName string, entity interface{}, bwFunc func(entity interface{}, filters *[]stgType.Filter) error) {
 	w.Header().Set("Content-Type", "application/json")
 
 	err := LoadEntity(w, r, entity)
@@ -125,7 +125,7 @@ func SaveEntity(w http.ResponseWriter, r *http.Request, entityName string, entit
 		return
 	}
 
-	filters := make([]stgML.Filter, 0)
+	filters := make([]stgType.Filter, 0)
 	if bwFunc != nil {
 		err = bwFunc(entity, &filters)
 		if err != nil {

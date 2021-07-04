@@ -9,7 +9,7 @@ import (
 	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -122,10 +122,10 @@ func postResponse(topic string, response *rsML.ServiceEvent) error {
 	return mcbus.Publish(topic, response)
 }
 
-func getLabelsFilter(labels cmap.CustomStringMap) []stgML.Filter {
-	filters := make([]stgML.Filter, 0)
+func getLabelsFilter(labels cmap.CustomStringMap) []stgType.Filter {
+	filters := make([]stgType.Filter, 0)
 	for key, value := range labels {
-		filter := stgML.Filter{Key: fmt.Sprintf("labels.%s", key), Operator: stgML.OperatorEqual, Value: value}
+		filter := stgType.Filter{Key: fmt.Sprintf("labels.%s", key), Operator: stgType.OperatorEqual, Value: value}
 		filters = append(filters, filter)
 	}
 	return filters

@@ -1,18 +1,20 @@
 package storage
 
-// Client interface storage
-type Client interface {
-	Close() error
+// Plugin interface storage
+type Plugin interface {
+	Name() string
 	Ping() error
+	Close() error
 	Insert(entityName string, data interface{}) error
 	Upsert(entityName string, data interface{}, filter []Filter) error
 	Update(entityName string, data interface{}, filter []Filter) error
 	FindOne(entityName string, out interface{}, filter []Filter) error
 	Find(entityName string, out interface{}, filter []Filter, pagination *Pagination) (*Result, error)
 	Delete(entityName string, filter []Filter) (int64, error)
-	ClearDatabase() error
 	Pause() error
 	Resume() error
+	ClearDatabase() error
+	DoStartupImport() (bool, string, string) // returns files location and files format
 }
 
 // Storage database types

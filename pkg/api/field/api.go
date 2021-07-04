@@ -8,17 +8,17 @@ import (
 	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]fieldML.Field, 0)
 	return stg.SVC.Find(model.EntityField, &result, filters, pagination)
 }
 
 // Get returns a field
-func Get(filters []stgML.Filter) (*fieldML.Field, error) {
+func Get(filters []stgType.Filter) (*fieldML.Field, error) {
 	result := &fieldML.Field{}
 	err := stg.SVC.FindOne(model.EntityField, result, filters)
 	return result, err
@@ -26,7 +26,7 @@ func Get(filters []stgML.Filter) (*fieldML.Field, error) {
 
 // GetByID returns a field
 func GetByID(id string) (*fieldML.Field, error) {
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: id},
 	}
 	result := &fieldML.Field{}
@@ -41,7 +41,7 @@ func Save(field *fieldML.Field, retainValue bool) error {
 		field.ID = utils.RandUUID()
 		eventType = eventML.TypeCreated
 	}
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: field.ID},
 	}
 
@@ -66,7 +66,7 @@ func Save(field *fieldML.Field, retainValue bool) error {
 
 // GetByIDs returns a field details by gatewayID, nodeId, sourceID and fieldName of a message
 func GetByIDs(gatewayID, nodeID, sourceID, fieldID string) (*fieldML.Field, error) {
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyGatewayID, Value: gatewayID},
 		{Key: model.KeyNodeID, Value: nodeID},
 		{Key: model.KeySourceID, Value: sourceID},
@@ -79,6 +79,6 @@ func GetByIDs(gatewayID, nodeID, sourceID, fieldID string) (*fieldML.Field, erro
 
 // Delete fields
 func Delete(IDs []string) (int64, error) {
-	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: IDs}}
+	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
 	return stg.SVC.Delete(model.EntityField, filters)
 }

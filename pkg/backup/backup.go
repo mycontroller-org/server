@@ -26,7 +26,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"github.com/mycontroller-org/server/v2/pkg/version"
-	pml "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	pml "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )

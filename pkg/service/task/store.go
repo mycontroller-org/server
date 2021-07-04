@@ -9,7 +9,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -138,10 +138,10 @@ func (s *store) filterTasks(evnWrapper *eventWrapper) []taskML.Config {
 	return filteredTasks
 }
 
-func (s *store) getFilters(filtersMap map[string]string) []stgML.Filter {
-	filters := make([]stgML.Filter, 0)
+func (s *store) getFilters(filtersMap map[string]string) []stgType.Filter {
+	filters := make([]stgType.Filter, 0)
 	for k, v := range filtersMap {
-		filters = append(filters, stgML.Filter{Key: k, Operator: stgML.OperatorEqual, Value: v})
+		filters = append(filters, stgType.Filter{Key: k, Operator: stgType.OperatorEqual, Value: v})
 	}
 	return filters
 }

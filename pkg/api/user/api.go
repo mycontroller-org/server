@@ -11,17 +11,17 @@ import (
 	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]userML.User, 0)
 	return stg.SVC.Find(model.EntityUser, &result, filters, pagination)
 }
 
 // Get returns a item
-func Get(filters []stgML.Filter) (userML.User, error) {
+func Get(filters []stgType.Filter) (userML.User, error) {
 	result := userML.User{}
 	err := stg.SVC.FindOne(model.EntityUser, &result, filters)
 	return result, err
@@ -30,7 +30,7 @@ func Get(filters []stgML.Filter) (userML.User, error) {
 // GetByID returns a item
 func GetByID(ID string) (userML.User, error) {
 	result := userML.User{}
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: ID},
 	}
 	err := stg.SVC.FindOne(model.EntityUser, &result, filters)
@@ -40,7 +40,7 @@ func GetByID(ID string) (userML.User, error) {
 // GetByUsername returns a item
 func GetByUsername(username string) (userML.User, error) {
 	result := userML.User{}
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyUsername, Value: username},
 	}
 	err := stg.SVC.FindOne(model.EntityUser, &result, filters)
@@ -50,7 +50,7 @@ func GetByUsername(username string) (userML.User, error) {
 // GetByEmail returns a item
 func GetByEmail(email string) (userML.User, error) {
 	result := userML.User{}
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyEmail, Value: email},
 	}
 	err := stg.SVC.FindOne(model.EntityUser, &result, filters)
@@ -62,7 +62,7 @@ func Save(user *userML.User) error {
 	if user.ID == "" {
 		user.ID = utils.RandUUID()
 	}
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: user.ID},
 	}
 	if !configuration.PauseModifiedOnUpdate.IsSet() {
@@ -73,7 +73,7 @@ func Save(user *userML.User) error {
 
 // Delete items
 func Delete(IDs []string) (int64, error) {
-	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: IDs}}
+	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
 	return stg.SVC.Delete(model.EntityUser, filters)
 }
 

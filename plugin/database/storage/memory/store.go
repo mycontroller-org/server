@@ -9,14 +9,18 @@ import (
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
+	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
 	sch "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	storageType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
 
 const (
+	PluginMemory = "memory"
+
 	defaultSyncInterval = "1m"
 	syncJobName         = "in-memory-db-sync-to-disk"
 
@@ -44,7 +48,7 @@ type Store struct {
 }
 
 // NewClient in-memory database
-func NewClient(config map[string]interface{}) (*Store, error) {
+func NewClient(config cmap.CustomMap) (storageType.Plugin, error) {
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameYaml, config, &cfg)
 	if err != nil {
@@ -74,22 +78,13 @@ func NewClient(config map[string]interface{}) (*Store, error) {
 	return store, nil
 }
 
-func (s *Store) LocalImport(importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error) error {
-	// load data from disk
-	dataDir := s.getStorageLocation(s.Config.LoadFormat)
-	err := utils.CreateDir(dataDir)
-	if err != nil {
-		zap.L().Error("error on create data dir", zap.String("dir", dataDir), zap.String("error", err.Error()))
-		return err
-	}
+func (s *Store) Name() string {
+	return PluginMemory
+}
 
-	err = importFunc(dataDir, s.Config.LoadFormat, true)
-	if err != nil {
-		zap.L().WithOptions(zap.AddCallerSkip(10)).Error("error on local import", zap.String("error", err.Error()))
-		return err
-	}
-
-	return s.loadDumpJob()
+// DoStartupImport returns the needs, files location, and file format
+func (s *Store) DoStartupImport() (bool, string, string) {
+	return true, s.getStorageLocation(s.Config.LoadFormat), s.Config.LoadFormat
 }
 
 func (s *Store) loadDumpJob() error {

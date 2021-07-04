@@ -21,7 +21,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	quickIdUL "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -95,7 +95,7 @@ func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
 		return errors.New("empty labels not allowed")
 	}
 	filters := getFilterFromLabel(data.Labels)
-	pagination := &stgML.Pagination{Limit: 100}
+	pagination := &stgType.Pagination{Limit: 100}
 
 	switch {
 	case utils.ContainsString(quickIdUL.QuickIDGateway, data.ResourceType):
@@ -201,10 +201,10 @@ func Post(msg *msgML.Message) error {
 	return mcbus.Publish(topic, msg)
 }
 
-func getFilterFromLabel(labels cmap.CustomStringMap) []stgML.Filter {
-	filters := make([]stgML.Filter, 0)
+func getFilterFromLabel(labels cmap.CustomStringMap) []stgType.Filter {
+	filters := make([]stgType.Filter, 0)
 	for key, value := range labels {
-		filters = append(filters, stgML.Filter{Key: fmt.Sprintf("labels.%s", key), Operator: stgML.OperatorEqual, Value: value})
+		filters = append(filters, stgType.Filter{Key: fmt.Sprintf("labels.%s", key), Operator: stgType.OperatorEqual, Value: value})
 	}
 	return filters
 }

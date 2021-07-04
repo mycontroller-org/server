@@ -28,12 +28,12 @@ import (
 	quickIdUL "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
 	templateUtils "github.com/mycontroller-org/server/v2/pkg/utils/template"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
 type genericAPI struct {
-	List func(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error)
+	List func(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error)
 }
 
 // LoadVariables loads all the defined variables
@@ -169,12 +169,12 @@ func getByLabels(name string, rsData *handlerType.ResourceData) interface{} {
 	}
 
 	if apiImpl.List != nil {
-		filters := make([]stgML.Filter, 0)
+		filters := make([]stgType.Filter, 0)
 		for key, value := range rsData.Labels {
-			filter := stgML.Filter{Key: fmt.Sprintf("labels.%s", key), Operator: stgML.OperatorEqual, Value: value}
+			filter := stgType.Filter{Key: fmt.Sprintf("labels.%s", key), Operator: stgType.OperatorEqual, Value: value}
 			filters = append(filters, filter)
 		}
-		pagination := &stgML.Pagination{Limit: 1} // limit to one element
+		pagination := &stgType.Pagination{Limit: 1} // limit to one element
 		result, err := apiImpl.List(filters, pagination)
 		if err != nil {
 			zap.L().Warn("error on getting label based entity", zap.Error(err), zap.String("name", name), zap.Any("rsData", rsData))

@@ -17,18 +17,18 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
 // List by filter and pagination
-func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]firmwareML.Firmware, 0)
 	return stg.SVC.Find(model.EntityFirmware, &result, filters, pagination)
 }
 
 // Get returns a item
-func Get(filters []stgML.Filter) (firmwareML.Firmware, error) {
+func Get(filters []stgType.Filter) (firmwareML.Firmware, error) {
 	result := firmwareML.Firmware{}
 	err := stg.SVC.FindOne(model.EntityFirmware, &result, filters)
 	return result, err
@@ -36,7 +36,7 @@ func Get(filters []stgML.Filter) (firmwareML.Firmware, error) {
 
 // GetByID returns a firmware details by ID
 func GetByID(id string) (firmwareML.Firmware, error) {
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: id},
 	}
 	result := firmwareML.Firmware{}
@@ -51,7 +51,7 @@ func Save(firmware *firmwareML.Firmware, keepFile bool) error {
 		firmware.ID = utils.RandID()
 		eventType = eventML.TypeCreated
 	}
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: firmware.ID},
 	}
 
@@ -76,8 +76,8 @@ func Save(firmware *firmwareML.Firmware, keepFile bool) error {
 
 // Delete firmwares
 func Delete(ids []string) (int64, error) {
-	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
-	pagination := &stgML.Pagination{Limit: 100}
+	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids}}
+	pagination := &stgType.Pagination{Limit: 100}
 
 	// delete firmwares
 	response, err := List(filters, pagination)

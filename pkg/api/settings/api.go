@@ -11,11 +11,11 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	stgSVC "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]settingsML.Settings, 0)
 	return stgSVC.SVC.Find(model.EntitySettings, &result, filters, pagination)
 }
@@ -25,7 +25,7 @@ func Save(settings *settingsML.Settings) error {
 	if settings.ID == "" {
 		return errors.New("id should not be nil")
 	}
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: settings.ID},
 	}
 	return stgSVC.SVC.Upsert(model.EntitySettings, settings, filters)
@@ -34,8 +34,8 @@ func Save(settings *settingsML.Settings) error {
 // GetByID returns a item
 func GetByID(ID string) (*settingsML.Settings, error) {
 	result := &settingsML.Settings{}
-	filters := []stgML.Filter{
-		{Key: model.KeyID, Operator: stgML.OperatorEqual, Value: ID},
+	filters := []stgType.Filter{
+		{Key: model.KeyID, Operator: stgType.OperatorEqual, Value: ID},
 	}
 	err := stgSVC.SVC.FindOne(model.EntitySettings, result, filters)
 	if err != nil {
@@ -219,7 +219,7 @@ func GetBackupLocations() (*settingsML.BackupLocations, error) {
 
 // update is a common function to update a document in settings entity
 func update(settings *settingsML.Settings) error {
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: settings.ID},
 	}
 	if !configuration.PauseModifiedOnUpdate.IsSet() {

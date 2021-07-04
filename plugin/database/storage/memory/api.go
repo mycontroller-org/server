@@ -7,7 +7,7 @@ import (
 
 	cloneutil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -42,7 +42,7 @@ func (s *Store) Insert(entityName string, data interface{}) error {
 }
 
 // Upsert Implementation
-func (s *Store) Upsert(entityName string, data interface{}, filters []stgML.Filter) error {
+func (s *Store) Upsert(entityName string, data interface{}, filters []stgType.Filter) error {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
@@ -51,7 +51,7 @@ func (s *Store) Upsert(entityName string, data interface{}, filters []stgML.Filt
 }
 
 // Update Implementation
-func (s *Store) Update(entityName string, data interface{}, filters []stgML.Filter) error {
+func (s *Store) Update(entityName string, data interface{}, filters []stgType.Filter) error {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
@@ -60,7 +60,7 @@ func (s *Store) Update(entityName string, data interface{}, filters []stgML.Filt
 }
 
 // Find Implementation
-func (s *Store) Find(entityName string, out interface{}, filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+func (s *Store) Find(entityName string, out interface{}, filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	s.RWMutex.RLock()
 	defer s.RWMutex.RUnlock()
 
@@ -95,7 +95,7 @@ func (s *Store) Find(entityName string, out interface{}, filters []stgML.Filter,
 		offset = pagination.Offset
 	}
 
-	result := &stgML.Result{
+	result := &stgType.Result{
 		Offset: offset,
 		Count:  count,
 		Data:   out,
@@ -107,7 +107,7 @@ func (s *Store) Find(entityName string, out interface{}, filters []stgML.Filter,
 }
 
 // FindOne Implementation
-func (s *Store) FindOne(entityName string, out interface{}, filters []stgML.Filter) error {
+func (s *Store) FindOne(entityName string, out interface{}, filters []stgType.Filter) error {
 	s.RWMutex.RLock()
 	defer s.RWMutex.RUnlock()
 
@@ -124,7 +124,7 @@ func (s *Store) FindOne(entityName string, out interface{}, filters []stgML.Filt
 }
 
 // Delete Implementation
-func (s *Store) Delete(entityName string, filters []stgML.Filter) (int64, error) {
+func (s *Store) Delete(entityName string, filters []stgType.Filter) (int64, error) {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
@@ -168,7 +168,7 @@ func (s *Store) addEntity(entityName string, entity interface{}) {
 	s.data[entityName] = append(s.data[entityName], entity)
 }
 
-func (s *Store) updateEntity(entityName string, entity interface{}, filters []stgML.Filter, forceUpdate bool) error {
+func (s *Store) updateEntity(entityName string, entity interface{}, filters []stgType.Filter, forceUpdate bool) error {
 	//zap.L().Info("received data for update", zap.String("entity", entityName), zap.Any("data", entity))
 	sourceID := ""
 	suppliedID := helper.GetID(entity)

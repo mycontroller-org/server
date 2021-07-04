@@ -10,7 +10,7 @@ import (
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	"github.com/mycontroller-org/server/v2/plugin/database/storage"
+	"github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 

@@ -13,17 +13,17 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]repositoryML.Config, 0)
 	return stg.SVC.Find(model.EntityDataRepository, &result, filters, pagination)
 }
 
 // Get returns a item
-func Get(filters []stgML.Filter) (*repositoryML.Config, error) {
+func Get(filters []stgType.Filter) (*repositoryML.Config, error) {
 	result := &repositoryML.Config{}
 	err := stg.SVC.FindOne(model.EntityDataRepository, result, filters)
 	if err == nil {
@@ -41,7 +41,7 @@ func Save(data *repositoryML.Config) error {
 	if data.ID == "" {
 		return errors.New("'id' can not be empty")
 	}
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: data.ID},
 	}
 
@@ -57,7 +57,7 @@ func Save(data *repositoryML.Config) error {
 
 	// in mongodb can not save map[interface{}]interface{} type
 	// convert it to map[string]interface{} type
-	if configuration.CFG.Database.Storage.GetString(model.KeyType) == stgML.TypeMongoDB {
+	if configuration.CFG.Database.Storage.GetString(model.KeyType) == stgType.TypeMongoDB {
 		updatedResult, err := updateResult(data)
 		if err != nil {
 			return err
@@ -75,7 +75,7 @@ func Save(data *repositoryML.Config) error {
 
 // GetByID returns a item by id
 func GetByID(id string) (*repositoryML.Config, error) {
-	f := []stgML.Filter{
+	f := []stgType.Filter{
 		{Key: model.KeyID, Value: id},
 	}
 	out := &repositoryML.Config{}
@@ -92,7 +92,7 @@ func GetByID(id string) (*repositoryML.Config, error) {
 
 // Delete items
 func Delete(IDs []string) (int64, error) {
-	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: IDs}}
+	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
 	return stg.SVC.Delete(model.EntityDataRepository, filters)
 }
 

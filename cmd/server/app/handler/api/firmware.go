@@ -10,7 +10,7 @@ import (
 	fwAPI "github.com/mycontroller-org/server/v2/pkg/api/firmware"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	fwML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterFirmwareRoutes registers firmware api
@@ -51,7 +51,7 @@ func updateFirmware(w http.ResponseWriter, r *http.Request) {
 
 func deleteFirmware(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			count, err := fwAPI.Delete(ids)
 			if err != nil {

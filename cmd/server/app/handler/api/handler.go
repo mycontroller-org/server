@@ -10,7 +10,7 @@ import (
 	handlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterHandlerRoutes registers handler api
@@ -53,7 +53,7 @@ func updateHandler(w http.ResponseWriter, r *http.Request) {
 
 func enableHandler(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := handlerAPI.Enable(ids)
 			if err != nil {
@@ -68,7 +68,7 @@ func enableHandler(w http.ResponseWriter, r *http.Request) {
 
 func disableHandler(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := handlerAPI.Disable(ids)
 			if err != nil {
@@ -83,7 +83,7 @@ func disableHandler(w http.ResponseWriter, r *http.Request) {
 
 func reloadHandler(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := handlerAPI.Reload(ids)
 			if err != nil {
@@ -98,7 +98,7 @@ func reloadHandler(w http.ResponseWriter, r *http.Request) {
 
 func deleteHandler(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := handlerAPI.Delete(IDs)
 			if err != nil {

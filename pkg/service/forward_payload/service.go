@@ -13,7 +13,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -94,10 +94,10 @@ func processEvent(item interface{}) {
 	}
 
 	// fetch mapped filed for this event
-	pagination := &stgML.Pagination{Limit: 50}
-	filters := []stgML.Filter{
-		{Key: model.KeySrcFieldID, Operator: stgML.OperatorEqual, Value: quickID},
-		{Key: model.KeyEnabled, Operator: stgML.OperatorEqual, Value: true},
+	pagination := &stgType.Pagination{Limit: 50}
+	filters := []stgType.Filter{
+		{Key: model.KeySrcFieldID, Operator: stgType.OperatorEqual, Value: quickID},
+		{Key: model.KeyEnabled, Operator: stgType.OperatorEqual, Value: true},
 	}
 	response, err := fwdpayloadAPI.List(filters, pagination)
 	if err != nil {

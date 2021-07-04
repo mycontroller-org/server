@@ -8,17 +8,17 @@ import (
 	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]fwdPayloadML.Config, 0)
 	return stg.SVC.Find(model.EntityForwardPayload, &result, filters, pagination)
 }
 
 // Get returns a item
-func Get(filters []stgML.Filter) (*fwdPayloadML.Config, error) {
+func Get(filters []stgType.Filter) (*fwdPayloadML.Config, error) {
 	result := &fwdPayloadML.Config{}
 	err := stg.SVC.FindOne(model.EntityForwardPayload, result, filters)
 	return result, err
@@ -31,7 +31,7 @@ func Save(fp *fwdPayloadML.Config) error {
 		fp.ID = utils.RandUUID()
 		eventType = eventML.TypeCreated
 	}
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: fp.ID},
 	}
 	err := stg.SVC.Upsert(model.EntityForwardPayload, fp, filters)
@@ -44,14 +44,14 @@ func Save(fp *fwdPayloadML.Config) error {
 
 // Delete items
 func Delete(IDs []string) (int64, error) {
-	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: IDs}}
+	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
 	return stg.SVC.Delete(model.EntityForwardPayload, filters)
 }
 
 // Enable forward payload entries
 func Enable(ids []string) error {
-	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
-	pagination := &stgML.Pagination{Limit: 100}
+	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids}}
+	pagination := &stgType.Pagination{Limit: 100}
 	response, err := List(filters, pagination)
 	if err != nil {
 		return err
@@ -73,8 +73,8 @@ func Enable(ids []string) error {
 
 // Disable forward entries
 func Disable(ids []string) error {
-	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
-	pagination := &stgML.Pagination{Limit: 100}
+	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids}}
+	pagination := &stgType.Pagination{Limit: 100}
 	response, err := List(filters, pagination)
 	if err != nil {
 		return err

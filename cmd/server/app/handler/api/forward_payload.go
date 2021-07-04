@@ -10,7 +10,7 @@ import (
 	fwdpayloadAPI "github.com/mycontroller-org/server/v2/pkg/api/forward_payload"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	fwdPayloadML "github.com/mycontroller-org/server/v2/pkg/model/forward_payload"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterForwardPayloadRoutes registers forward payload api
@@ -32,7 +32,7 @@ func getForwardPayload(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateForwardPayload(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]stgML.Filter) error {
+	bwFunc := func(d interface{}, f *[]stgType.Filter) error {
 		e := d.(*fwdPayloadML.Config)
 		if e.ID == "" {
 			return errors.New("id should not be an empty")
@@ -44,7 +44,7 @@ func updateForwardPayload(w http.ResponseWriter, r *http.Request) {
 
 func deleteForwardPayload(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			count, err := fwdpayloadAPI.Delete(ids)
 			if err != nil {
@@ -59,7 +59,7 @@ func deleteForwardPayload(w http.ResponseWriter, r *http.Request) {
 
 func enableForwardPayload(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := fwdpayloadAPI.Enable(ids)
 			if err != nil {
@@ -74,7 +74,7 @@ func enableForwardPayload(w http.ResponseWriter, r *http.Request) {
 
 func disableForwardPayload(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := fwdpayloadAPI.Disable(ids)
 			if err != nil {

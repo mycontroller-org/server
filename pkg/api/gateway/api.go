@@ -9,17 +9,17 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]gwType.Config, 0)
 	return stg.SVC.Find(model.EntityGateway, &result, filters, pagination)
 }
 
 // Get returns a gateway
-func Get(filters []stgML.Filter) (*gwType.Config, error) {
+func Get(filters []stgType.Filter) (*gwType.Config, error) {
 	result := &gwType.Config{}
 	err := stg.SVC.FindOne(model.EntityGateway, result, filters)
 	return result, err
@@ -27,10 +27,10 @@ func Get(filters []stgML.Filter) (*gwType.Config, error) {
 
 // GetByIDs returns a gateway details by id
 func GetByIDs(ids []string) ([]gwType.Config, error) {
-	filters := []stgML.Filter{
-		{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids},
+	filters := []stgType.Filter{
+		{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids},
 	}
-	pagination := &stgML.Pagination{Limit: int64(len(ids))}
+	pagination := &stgType.Pagination{Limit: int64(len(ids))}
 	gateways := make([]gwType.Config, 0)
 	_, err := stg.SVC.Find(model.EntityNode, &gateways, filters, pagination)
 	return gateways, err
@@ -38,7 +38,7 @@ func GetByIDs(ids []string) ([]gwType.Config, error) {
 
 // GetByID returns a gateway details
 func GetByID(id string) (*gwType.Config, error) {
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: id},
 	}
 	result := &gwType.Config{}
@@ -94,6 +94,6 @@ func Delete(ids []string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
+	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids}}
 	return stg.SVC.Delete(model.EntityGateway, filters)
 }

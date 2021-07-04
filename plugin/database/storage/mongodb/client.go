@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 	ut "github.com/mycontroller-org/server/v2/pkg/utils"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	mg "go.mongodb.org/mongo-driver/mongo"
@@ -19,6 +21,8 @@ import (
 var ctx = context.TODO()
 
 const (
+	PluginMongoDB = "mongodb"
+
 	DefaultCollectionPrefix = "mc_"
 )
 
@@ -38,7 +42,7 @@ type Client struct {
 }
 
 // NewClient mongodb
-func NewClient(config map[string]interface{}) (*Client, error) {
+func NewClient(config cmap.CustomMap) (storageType.Plugin, error) {
 	cfg := Config{}
 	err := ut.MapToStruct(ut.TagNameYaml, config, &cfg)
 	if err != nil {
@@ -63,6 +67,15 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 	}
 	err = client.initIndex()
 	return client, err
+}
+
+func (s *Client) Name() string {
+	return PluginMongoDB
+}
+
+// DoStartupImport returns the needs, files location, and file format
+func (s *Client) DoStartupImport() (bool, string, string) {
+	return false, "", ""
 }
 
 // Pause the database to perform import like jobs

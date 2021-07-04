@@ -8,17 +8,17 @@ import (
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]nodeML.Node, 0)
 	return stg.SVC.Find(model.EntityNode, &result, filters, pagination)
 }
 
 // Get returns a Node
-func Get(filters []stgML.Filter) (nodeML.Node, error) {
+func Get(filters []stgType.Filter) (nodeML.Node, error) {
 	result := nodeML.Node{}
 	err := stg.SVC.FindOne(model.EntityNode, &result, filters)
 	return result, err
@@ -29,7 +29,7 @@ func Save(node *nodeML.Node) error {
 	if node.ID == "" {
 		node.ID = utils.RandUUID()
 	}
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: node.ID},
 	}
 	return stg.SVC.Upsert(model.EntityNode, node, filters)
@@ -37,7 +37,7 @@ func Save(node *nodeML.Node) error {
 
 // GetByGatewayAndNodeID returns a node details by gatewayID and nodeId of a message
 func GetByGatewayAndNodeID(gatewayID, nodeID string) (*nodeML.Node, error) {
-	f := []stgML.Filter{
+	f := []stgType.Filter{
 		{Key: model.KeyGatewayID, Value: gatewayID},
 		{Key: model.KeyNodeID, Value: nodeID},
 	}
@@ -48,7 +48,7 @@ func GetByGatewayAndNodeID(gatewayID, nodeID string) (*nodeML.Node, error) {
 
 // GetByID returns a node details by id
 func GetByID(id string) (*nodeML.Node, error) {
-	f := []stgML.Filter{
+	f := []stgType.Filter{
 		{Key: model.KeyID, Value: id},
 	}
 	result := &nodeML.Node{}
@@ -58,10 +58,10 @@ func GetByID(id string) (*nodeML.Node, error) {
 
 // GetByIDs returns a node details by id
 func GetByIDs(ids []string) ([]nodeML.Node, error) {
-	filters := []stgML.Filter{
-		{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids},
+	filters := []stgType.Filter{
+		{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids},
 	}
-	pagination := &stgML.Pagination{Limit: int64(len(ids))}
+	pagination := &stgType.Pagination{Limit: int64(len(ids))}
 	nodes := make([]nodeML.Node, 0)
 	_, err := stg.SVC.Find(model.EntityNode, &nodes, filters, pagination)
 	return nodes, err
@@ -69,7 +69,7 @@ func GetByIDs(ids []string) ([]nodeML.Node, error) {
 
 // Delete node
 func Delete(IDs []string) (int64, error) {
-	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: IDs}}
+	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
 	return stg.SVC.Delete(model.EntityNode, filters)
 }
 

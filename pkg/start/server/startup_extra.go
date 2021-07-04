@@ -9,7 +9,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 	"github.com/mycontroller-org/server/v2/pkg/version"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -27,7 +27,7 @@ func StartupJobsExtra() {
 
 // UpdateInitialUser func
 func UpdateInitialUser() {
-	pagination := &stgML.Pagination{
+	pagination := &stgType.Pagination{
 		Limit: 1,
 	}
 	users, err := userAPI.List(nil, pagination)

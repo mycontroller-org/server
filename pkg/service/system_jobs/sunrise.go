@@ -4,14 +4,14 @@ import (
 	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
 // updateSunriseSchedules func
 func updateSunriseSchedules() {
-	filters := []stgML.Filter{{Key: model.KeyScheduleType, Operator: stgML.OperatorIn, Value: []string{scheduleML.TypeSunrise, scheduleML.TypeSunset}}}
-	pagination := &stgML.Pagination{Limit: 100}
+	filters := []stgType.Filter{{Key: model.KeyScheduleType, Operator: stgType.OperatorIn, Value: []string{scheduleML.TypeSunrise, scheduleML.TypeSunset}}}
+	pagination := &stgType.Pagination{Limit: 100}
 	result, err := scheduleAPI.List(filters, pagination)
 	if err != nil {
 		zap.L().Error("error on fetching schedule jobs", zap.Error(err))

@@ -48,6 +48,7 @@ func GetService(gatewayCfg *gwType.Config) (*Service, error) {
 	// verify default reconnect delay
 	gatewayCfg.ReconnectDelay = utils.ValidDuration(gatewayCfg.ReconnectDelay, defaultReconnectDelay)
 
+	// get a plugin
 	provider, err := gwPlugin.Create(gatewayCfg.Provider.GetString(model.KeyType), gatewayCfg)
 	if err != nil {
 		return nil, err

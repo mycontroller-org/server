@@ -5,11 +5,11 @@ import (
 	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	filterHelper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	files, err := GetBackupFilesList()
 	if err != nil {
 		return nil, err
@@ -19,10 +19,10 @@ func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, 
 	totalCount := int64(0)
 	if len(files) > 0 {
 		if pagination == nil {
-			pagination = &stgML.Pagination{
+			pagination = &stgType.Pagination{
 				Limit:  10,
 				Offset: 0,
-				SortBy: []stgML.Sort{{Field: "id", OrderBy: stgML.SortByASC}},
+				SortBy: []stgType.Sort{{Field: "id", OrderBy: stgType.SortByASC}},
 			}
 		}
 		sortedFiles, count := filterHelper.Sort(files, pagination)
@@ -30,7 +30,7 @@ func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, 
 		finalList = filterHelper.Filter(sortedFiles, filters, false)
 	}
 
-	result := &stgML.Result{
+	result := &stgType.Result{
 		Count:  totalCount,
 		Limit:  pagination.Limit,
 		Offset: pagination.Offset,
@@ -42,7 +42,7 @@ func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, 
 
 // Delete backup files
 func Delete(IDs []string) (int64, error) {
-	filters := []stgML.Filter{{Key: ml.KeyID, Operator: stgML.OperatorIn, Value: IDs}}
+	filters := []stgType.Filter{{Key: ml.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
 
 	files, err := GetBackupFilesList()
 	if err != nil {

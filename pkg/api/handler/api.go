@@ -8,18 +8,18 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 )
 
 // List by filter and pagination
-func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	out := make([]handlerType.Config, 0)
 	return stg.SVC.Find(model.EntityHandler, &out, filters, pagination)
 }
 
 // Get a config
-func Get(f []stgML.Filter) (handlerType.Config, error) {
+func Get(f []stgType.Filter) (handlerType.Config, error) {
 	out := handlerType.Config{}
 	err := stg.SVC.FindOne(model.EntityHandler, &out, f)
 	return out, err
@@ -49,7 +49,7 @@ func Save(cfg *handlerType.Config) error {
 		return err
 	}
 
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: cfg.ID},
 	}
 	err = stg.SVC.Upsert(model.EntityHandler, cfg, filters)
@@ -72,7 +72,7 @@ func SetState(id string, state *model.State) error {
 
 // GetByTypeName returns a handler by type and name
 func GetByTypeName(handlerPluginType, name string) (*handlerType.Config, error) {
-	f := []stgML.Filter{
+	f := []stgType.Filter{
 		{Key: model.KeyHandlerType, Value: handlerPluginType},
 		{Key: model.KeyHandlerName, Value: name},
 	}
@@ -83,7 +83,7 @@ func GetByTypeName(handlerPluginType, name string) (*handlerType.Config, error) 
 
 // GetByID returns a handler by id
 func GetByID(ID string) (*handlerType.Config, error) {
-	f := []stgML.Filter{
+	f := []stgType.Filter{
 		{Key: model.KeyID, Value: ID},
 	}
 	out := &handlerType.Config{}
@@ -97,6 +97,6 @@ func Delete(ids []string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	f := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
+	f := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids}}
 	return stg.SVC.Delete(model.EntityHandler, f)
 }

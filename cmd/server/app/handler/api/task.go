@@ -10,7 +10,7 @@ import (
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
 	ml "github.com/mycontroller-org/server/v2/pkg/model"
 	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
-	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterTaskRoutes registers task api

@@ -8,14 +8,14 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 	sfML "github.com/mycontroller-org/server/v2/pkg/model/service_filter"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // FilterByStringMap filter
 func FilterByStringMap(entities []interface{}, filtersMap map[string]string) []interface{} {
-	filters := make([]stgML.Filter, 0)
+	filters := make([]stgType.Filter, 0)
 	for k, v := range filtersMap {
-		filters = append(filters, stgML.Filter{Key: k, Operator: stgML.OperatorEqual, Value: v})
+		filters = append(filters, stgType.Filter{Key: k, Operator: stgType.OperatorEqual, Value: v})
 	}
 	if len(filters) == 0 {
 		return entities
@@ -24,7 +24,7 @@ func FilterByStringMap(entities []interface{}, filtersMap map[string]string) []i
 }
 
 // Filter filters the given slice
-func Filter(entities []interface{}, filters []stgML.Filter, returnSingle bool) []interface{} {
+func Filter(entities []interface{}, filters []stgType.Filter, returnSingle bool) []interface{} {
 	filteredEntities := make([]interface{}, 0)
 	if len(filters) == 0 {
 		return entities
@@ -43,7 +43,7 @@ func Filter(entities []interface{}, filters []stgML.Filter, returnSingle bool) [
 }
 
 // IsMatching returns matching status
-func IsMatching(entity interface{}, filters []stgML.Filter) bool {
+func IsMatching(entity interface{}, filters []stgType.Filter) bool {
 	match := true
 	for index := 0; index < len(filters); index++ {
 		filter := filters[index]
@@ -88,13 +88,13 @@ func VerifyStringSlice(value string, operator string, filterValue interface{}) b
 	}
 
 	switch operator {
-	case stgML.OperatorIn:
+	case stgType.OperatorIn:
 		for _, fValue := range stringSlice {
 			if value == fValue {
 				return true
 			}
 		}
-	case stgML.OperatorNotIn:
+	case stgType.OperatorNotIn:
 		for _, fValue := range stringSlice {
 			if value == fValue {
 				return false
@@ -109,20 +109,20 @@ func VerifyStringSlice(value string, operator string, filterValue interface{}) b
 func CompareString(value interface{}, operator string, filterValue interface{}) bool {
 	valueString := converterUtils.ToString(value)
 	switch operator {
-	case stgML.OperatorEqual, stgML.OperatorNone:
+	case stgType.OperatorEqual, stgType.OperatorNone:
 		return converterUtils.ToString(filterValue) == valueString
-	case stgML.OperatorNotEqual:
+	case stgType.OperatorNotEqual:
 		return converterUtils.ToString(filterValue) != valueString
-	case stgML.OperatorRegex:
+	case stgType.OperatorRegex:
 		expression := fmt.Sprintf("(?i)%s", converterUtils.ToString(filterValue))
 		compiled, err := regexp.Compile(expression)
 		if err != nil {
 			return false
 		}
 		return compiled.MatchString(valueString)
-	case stgML.OperatorExists:
+	case stgType.OperatorExists:
 		return valueString != ""
-	case stgML.OperatorIn, stgML.OperatorNotIn:
+	case stgType.OperatorIn, stgType.OperatorNotIn:
 		return VerifyStringSlice(valueString, operator, filterValue)
 	}
 	return false
@@ -140,13 +140,13 @@ func VerifyBoolSlice(value bool, operator string, filterValue interface{}) bool 
 	}
 
 	switch operator {
-	case stgML.OperatorIn:
+	case stgType.OperatorIn:
 		for _, fValue := range boolSlice {
 			if value == fValue {
 				return true
 			}
 		}
-	case stgML.OperatorNotIn:
+	case stgType.OperatorNotIn:
 		for _, fValue := range boolSlice {
 			if value == fValue {
 				return false
@@ -160,13 +160,13 @@ func VerifyBoolSlice(value bool, operator string, filterValue interface{}) bool 
 // CompareBool compares strings
 func CompareBool(value interface{}, operator string, expectedValue interface{}) bool {
 	switch operator {
-	case stgML.OperatorEqual, stgML.OperatorNone:
+	case stgType.OperatorEqual, stgType.OperatorNone:
 		return converterUtils.ToBool(value) == converterUtils.ToBool(expectedValue)
-	case stgML.OperatorNotEqual:
+	case stgType.OperatorNotEqual:
 		return converterUtils.ToBool(value) != converterUtils.ToBool(expectedValue)
-	case stgML.OperatorExists:
+	case stgType.OperatorExists:
 		return len(converterUtils.ToString(value)) > 0
-	case stgML.OperatorIn, stgML.OperatorNotIn:
+	case stgType.OperatorIn, stgType.OperatorNotIn:
 		return VerifyBoolSlice(converterUtils.ToBool(value), operator, expectedValue)
 	}
 	return false
@@ -176,25 +176,25 @@ func CompareBool(value interface{}, operator string, expectedValue interface{}) 
 func CompareFloat(value interface{}, operator string, expectedValue interface{}) bool {
 	valueFloat := converterUtils.ToFloat(value)
 	switch operator {
-	case stgML.OperatorEqual, stgML.OperatorNone:
+	case stgType.OperatorEqual, stgType.OperatorNone:
 		return valueFloat == converterUtils.ToFloat(expectedValue)
 
-	case stgML.OperatorNotEqual:
+	case stgType.OperatorNotEqual:
 		return valueFloat != converterUtils.ToFloat(expectedValue)
 
-	case stgML.OperatorGreaterThan:
+	case stgType.OperatorGreaterThan:
 		return valueFloat > converterUtils.ToFloat(expectedValue)
 
-	case stgML.OperatorGreaterThanEqual:
+	case stgType.OperatorGreaterThanEqual:
 		return valueFloat >= converterUtils.ToFloat(expectedValue)
 
-	case stgML.OperatorLessThan:
+	case stgType.OperatorLessThan:
 		return valueFloat < converterUtils.ToFloat(expectedValue)
 
-	case stgML.OperatorLessThanEqual:
+	case stgType.OperatorLessThanEqual:
 		return valueFloat <= converterUtils.ToFloat(expectedValue)
 
-	case stgML.OperatorIn, stgML.OperatorNotIn, stgML.OperatorRangeIn, stgML.OperatorRangeNotIn:
+	case stgType.OperatorIn, stgType.OperatorNotIn, stgType.OperatorRangeIn, stgType.OperatorRangeNotIn:
 		return VerifyFloatSlice(valueFloat, operator, expectedValue)
 	}
 	return false
@@ -216,14 +216,14 @@ func VerifyFloatSlice(value float64, operator string, expectedValue interface{})
 	}
 
 	switch operator {
-	case stgML.OperatorIn:
+	case stgType.OperatorIn:
 		for _, fValue := range floatSlice {
 			if value == fValue {
 				return true
 			}
 		}
 
-	case stgML.OperatorNotIn:
+	case stgType.OperatorNotIn:
 		for _, fValue := range floatSlice {
 			if value == fValue {
 				return false
@@ -231,7 +231,7 @@ func VerifyFloatSlice(value float64, operator string, expectedValue interface{})
 		}
 		return true
 
-	case stgML.OperatorRangeIn:
+	case stgType.OperatorRangeIn:
 		if len(floatSlice) != 2 {
 			return false
 		}
@@ -239,7 +239,7 @@ func VerifyFloatSlice(value float64, operator string, expectedValue interface{})
 		highRange := floatSlice[1]
 		return value > lowRange && value < highRange
 
-	case stgML.OperatorRangeNotIn:
+	case stgType.OperatorRangeNotIn:
 		if len(floatSlice) != 2 {
 			return false
 		}

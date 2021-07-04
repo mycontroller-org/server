@@ -10,7 +10,7 @@ import (
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	tplUtils "github.com/mycontroller-org/server/v2/pkg/utils/template"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -84,7 +84,7 @@ func getValueByVariableName(variables map[string]interface{}, variableName strin
 
 func isMatching(value interface{}, operator string, expectedValue interface{}) bool {
 	if operator == "" {
-		operator = stgML.OperatorEqual
+		operator = stgType.OperatorEqual
 	}
 
 	var expectedValueUpdated interface{}
@@ -92,7 +92,7 @@ func isMatching(value interface{}, operator string, expectedValue interface{}) b
 	switch operator {
 
 	// convert json string to object, if required
-	case stgML.OperatorIn, stgML.OperatorNotIn, stgML.OperatorRangeIn, stgML.OperatorRangeNotIn:
+	case stgType.OperatorIn, stgType.OperatorNotIn, stgType.OperatorRangeIn, stgType.OperatorRangeNotIn:
 		stringValue := converterUtils.ToString(expectedValue)
 		updated := make([]interface{}, 0)
 		err := json.Unmarshal([]byte(stringValue), &updated)

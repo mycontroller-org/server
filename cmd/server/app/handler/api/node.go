@@ -10,7 +10,7 @@ import (
 	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterNodeRoutes registers node api
@@ -50,7 +50,7 @@ func updatenode(w http.ResponseWriter, r *http.Request) {
 
 func deleteNodes(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := nodeAPI.Delete(IDs)
 			if err != nil {

@@ -10,7 +10,7 @@ import (
 	fieldAPI "github.com/mycontroller-org/server/v2/pkg/api/field"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterFieldRoutes registers field api
@@ -50,7 +50,7 @@ func updateField(w http.ResponseWriter, r *http.Request) {
 
 func deleteFields(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := fieldAPI.Delete(IDs)
 			if err != nil {

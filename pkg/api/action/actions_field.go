@@ -6,12 +6,12 @@ import (
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // ToFieldByID sends the payload to the given field
 func ToFieldByID(id string, payload string) error {
-	filters := []stgML.Filter{{Key: model.KeyID, Value: id}}
+	filters := []stgType.Filter{{Key: model.KeyID, Value: id}}
 	field, err := fieldAPI.Get(filters)
 	if err != nil {
 		return err

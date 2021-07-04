@@ -5,7 +5,7 @@ import (
 	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -124,8 +124,8 @@ func postGatewayCommand(gwCfg *gwType.Config, command string) error {
 }
 
 func getGatewayEntries(ids []string) ([]gwType.Config, error) {
-	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: ids}}
-	pagination := &stgML.Pagination{Limit: 100}
+	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids}}
+	pagination := &stgType.Pagination{Limit: 100}
 	gwsResult, err := List(filters, pagination)
 	if err != nil {
 		return nil, err

@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // contants

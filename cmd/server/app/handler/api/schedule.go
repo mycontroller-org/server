@@ -10,7 +10,7 @@ import (
 	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	schedulerML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterSchedulerRoutes registers schedule api
@@ -52,7 +52,7 @@ func updateSchedule(w http.ResponseWriter, r *http.Request) {
 
 func deleteSchedule(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := scheduleAPI.Delete(IDs)
 			if err != nil {
@@ -67,7 +67,7 @@ func deleteSchedule(w http.ResponseWriter, r *http.Request) {
 
 func enableSchedule(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := scheduleAPI.Enable(ids)
 			if err != nil {
@@ -82,7 +82,7 @@ func enableSchedule(w http.ResponseWriter, r *http.Request) {
 
 func disableSchedule(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := scheduleAPI.Disable(ids)
 			if err != nil {

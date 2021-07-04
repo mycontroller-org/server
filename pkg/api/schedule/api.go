@@ -8,17 +8,17 @@ import (
 	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgML.Filter, pagination *stgML.Pagination) (*stgML.Result, error) {
+func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]scheduleML.Config, 0)
 	return stg.SVC.Find(model.EntitySchedule, &result, filters, pagination)
 }
 
 // Get returns a scheduler
-func Get(filters []stgML.Filter) (*scheduleML.Config, error) {
+func Get(filters []stgType.Filter) (*scheduleML.Config, error) {
 	result := &scheduleML.Config{}
 	err := stg.SVC.FindOne(model.EntitySchedule, result, filters)
 	return result, err
@@ -32,7 +32,7 @@ func Save(schedule *scheduleML.Config) error {
 		eventType = eventML.TypeCreated
 	}
 
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: schedule.ID},
 	}
 	err := stg.SVC.Upsert(model.EntitySchedule, schedule, filters)
@@ -55,7 +55,7 @@ func SaveAndReload(cfg *scheduleML.Config) error {
 
 // GetByID returns a scheduler by id
 func GetByID(id string) (*scheduleML.Config, error) {
-	filters := []stgML.Filter{
+	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: id},
 	}
 	out := &scheduleML.Config{}
@@ -80,6 +80,6 @@ func Delete(IDs []string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	filters := []stgML.Filter{{Key: model.KeyID, Operator: stgML.OperatorIn, Value: IDs}}
+	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
 	return stg.SVC.Delete(model.EntitySchedule, filters)
 }

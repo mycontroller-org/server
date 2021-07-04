@@ -10,7 +10,7 @@ import (
 	backupRestoreAPI "github.com/mycontroller-org/server/v2/pkg/api/backup"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
-	stgML "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterBackupRestoreRoutes registers backup/restore api
@@ -45,7 +45,7 @@ func listBackupFiles(w http.ResponseWriter, r *http.Request) {
 
 func deleteBackupFile(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgML.Filter, p *stgML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			count, err := backupRestoreAPI.Delete(ids)
 			if err != nil {
@@ -63,9 +63,9 @@ func runRestore(w http.ResponseWriter, r *http.Request) {
 
 	id := r.URL.Query().Get("id")
 
-	filter := stgML.Filter{Key: "id", Operator: stgML.OperatorEqual, Value: id}
+	filter := stgType.Filter{Key: "id", Operator: stgType.OperatorEqual, Value: id}
 
-	result, err := backupRestoreAPI.List([]stgML.Filter{filter}, nil)
+	result, err := backupRestoreAPI.List([]stgType.Filter{filter}, nil)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
