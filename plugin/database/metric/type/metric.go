@@ -14,12 +14,6 @@ type Plugin interface {
 	Query(queryConfig *QueryConfig) (map[string][]ResponseData, error)
 }
 
-// Metrics database types
-const (
-	TypeInfluxDB = "influxdb"
-	TypeVoidDB   = "void_db"
-)
-
 // Metric types
 const (
 	MetricTypeNone       = "none"
