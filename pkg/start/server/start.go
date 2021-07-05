@@ -3,7 +3,7 @@ package server
 import (
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
 	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
-	metricsSVC "github.com/mycontroller-org/server/v2/pkg/service/database/metrics"
+	metricSVC "github.com/mycontroller-org/server/v2/pkg/service/database/metrics"
 	storageSVC "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	fwdplSVC "github.com/mycontroller-org/server/v2/pkg/service/forward_payload"
 	gwService "github.com/mycontroller-org/server/v2/pkg/service/gateway"
@@ -23,7 +23,7 @@ func Start(handlerFunc func()) {
 
 func startServices() {
 	storageSVC.Init(cfg.CFG.Database.Storage, backupAPI.ExecuteImportStorage) // storage
-	metricsSVC.Init(cfg.CFG.Database.Metrics)                                 // metrics
+	metricSVC.Init(cfg.CFG.Database.Metric)                                   // metrics
 
 	StartupJobs()
 	StartupJobsExtra()
@@ -114,9 +114,9 @@ func closeServices() {
 			zap.L().Error("failed to close storage database")
 		}
 	}
-	if metricsSVC.SVC != nil {
-		if metricsSVC.SVC != nil {
-			err := metricsSVC.SVC.Close()
+	if metricSVC.SVC != nil {
+		if metricSVC.SVC != nil {
+			err := metricSVC.SVC.Close()
 			if err != nil {
 				zap.L().Error("failed to close metrics database")
 			}

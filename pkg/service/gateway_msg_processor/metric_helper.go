@@ -10,21 +10,21 @@ import (
 	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	metricsDB "github.com/mycontroller-org/server/v2/pkg/service/database/metrics"
-	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 )
 
 func writeFieldMetric(field *fieldML.Field) error {
 	fields := make(map[string]interface{})
 	// update fields
-	if field.MetricType == metricsML.MetricTypeGEO {
+	if field.MetricType == metricType.MetricTypeGEO {
 		_f, err := geoData(field.Current.Value)
 		if err != nil {
 			return err
 		}
 		fields = _f
 	} else {
-		fields[metricsML.FieldValue] = field.Current.Value
+		fields[metricType.FieldValue] = field.Current.Value
 	}
 	// update tags
 	tags := map[string]string{
@@ -36,7 +36,7 @@ func writeFieldMetric(field *fieldML.Field) error {
 	}
 
 	// return data
-	metricData := &metricsML.InputData{
+	metricData := &metricType.InputData{
 		MetricType: field.MetricType,
 		Time:       field.Current.Timestamp,
 		Tags:       tags,
@@ -70,17 +70,17 @@ func geoData(pl interface{}) (map[string]interface{}, error) {
 		}
 	}
 
-	d[metricsML.FieldLatitude] = lat
-	d[metricsML.FieldLongitude] = lon
-	d[metricsML.FieldAltitude] = alt
+	d[metricType.FieldLatitude] = lat
+	d[metricType.FieldLongitude] = lon
+	d[metricType.FieldAltitude] = alt
 
 	return d, nil
 }
 
-func writeNodeMetric(node *nodeML.Node, metricType, fieldName string, value interface{}) error {
+func writeNodeMetric(node *nodeML.Node, suppliedMetricType, fieldName string, value interface{}) error {
 	fields := make(map[string]interface{})
 	// update fields
-	fields[metricsML.FieldValue] = value
+	fields[metricType.FieldValue] = value
 
 	// update tags
 	tags := map[string]string{
@@ -91,8 +91,8 @@ func writeNodeMetric(node *nodeML.Node, metricType, fieldName string, value inte
 	}
 
 	// return data
-	metricData := &metricsML.InputData{
-		MetricType: metricType,
+	metricData := &metricType.InputData{
+		MetricType: suppliedMetricType,
 		Time:       node.LastSeen,
 		Tags:       tags,
 		Fields:     fields,
@@ -101,7 +101,7 @@ func writeNodeMetric(node *nodeML.Node, metricType, fieldName string, value inte
 	return writeMetric(metricData)
 }
 
-func writeMetric(metricData *metricsML.InputData) error {
+func writeMetric(metricData *metricType.InputData) error {
 	startTime := time.Now()
 	err := metricsDB.SVC.Write(metricData)
 	if err != nil {

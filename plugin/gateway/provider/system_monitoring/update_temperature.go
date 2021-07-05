@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"github.com/shirou/gopsutil/v3/host"
 	"go.uber.org/zap"
 )
@@ -52,7 +52,7 @@ func (p *Provider) updateTemperature() {
 		}
 
 		// include temperature data
-		data := p.getData(fieldID, temp.Temperature, metricsML.MetricTypeGaugeFloat, metricsML.UnitCelsius, true)
+		data := p.getData(fieldID, temp.Temperature, metricType.MetricTypeGaugeFloat, metricType.UnitCelsius, true)
 		data.Others.Set("high", temp.High, nil)
 		data.Others.Set("critical", temp.Critical, nil)
 		data.Others.Set("index", index, nil)

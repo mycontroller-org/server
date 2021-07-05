@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
@@ -13,8 +14,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	colorUtils "github.com/mycontroller-org/server/v2/pkg/utils/color"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	"github.com/mycontroller-org/server/v2/plugin/database/metrics"
-	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -107,7 +107,7 @@ func (p *Provider) Post(message *msgML.Message) error {
 			sourceData := msgML.NewPayload()
 			sourceData.Key = fieldID
 			sourceData.Value = payload.Value
-			sourceData.MetricType = metrics.MetricTypeNone
+			sourceData.MetricType = metricType.MetricTypeNone
 			msgSource.Payloads = append(msgSource.Payloads, sourceData)
 			err = mcbus.Publish(mcbus.GetTopicPostMessageToServer(), msgSource)
 			if err != nil {
@@ -472,7 +472,7 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 	case EntityTypeCamera:
 		fieldStream := msgML.NewPayload()
 		fieldStream.Key = FieldStream
-		fieldStream.MetricType = metrics.MetricTypeNone
+		fieldStream.MetricType = metricType.MetricTypeNone
 		fieldStream.Labels.Set(LabelKey, keyString)
 		fieldStream.Labels.Set(LabelType, entity.Type)
 		fieldStream.Labels.Set(model.LabelReadOnly, "false")

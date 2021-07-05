@@ -1,4 +1,4 @@
-package metrics
+package metric
 
 // units used across providers
 const (

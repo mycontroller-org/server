@@ -70,7 +70,7 @@ database:
     dump_format: ["yaml"]
     load_format: "yaml"
 
-  metrics:
+  metric:
     disabled: true
     type: influxdb
     uri: http://192.168.1.21:8086

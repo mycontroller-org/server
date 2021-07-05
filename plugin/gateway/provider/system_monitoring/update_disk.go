@@ -1,7 +1,7 @@
 package systemmonitoring
 
 import (
-	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"github.com/shirou/gopsutil/v3/disk"
 	"go.uber.org/zap"
 )
@@ -36,12 +36,12 @@ func (p *Provider) updateDisk() {
 
 			// send data
 			msg := p.getMsg(sourceID)
-			inodeData := p.getData("inodes_used_percent", stat.InodesUsedPercent, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true)
+			inodeData := p.getData("inodes_used_percent", stat.InodesUsedPercent, metricType.MetricTypeGaugeFloat, metricType.UnitPercent, true)
 			inodeData.Others.Set("used", stat.InodesUsed, nil)
 			inodeData.Others.Set("total", stat.InodesTotal, nil)
 			msg.Payloads = append(msg.Payloads, inodeData)
 
-			usedData := p.getData("used_percent", stat.UsedPercent, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true)
+			usedData := p.getData("used_percent", stat.UsedPercent, metricType.MetricTypeGaugeFloat, metricType.UnitPercent, true)
 			usedData.Others.Set("used", getValueByUnit(stat.Used, dataCFG.Unit), nil)
 			usedData.Others.Set("total", getValueByUnit(stat.Total, dataCFG.Unit), nil)
 			msg.Payloads = append(msg.Payloads, usedData)

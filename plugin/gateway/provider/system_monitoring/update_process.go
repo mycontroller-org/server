@@ -6,7 +6,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
-	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"github.com/shirou/gopsutil/v3/process"
 	"go.uber.org/zap"
 )
@@ -187,26 +187,26 @@ func (p *Provider) updateProcess() {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldCpuPercent, value, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldCpuPercent, value, metricType.MetricTypeGaugeFloat, metricType.UnitPercent, true))
 
 			value, err = proc.MemoryPercent()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldMemoryPercent, value, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldMemoryPercent, value, metricType.MetricTypeGaugeFloat, metricType.UnitPercent, true))
 
 			memInfo, err := proc.MemoryInfo()
 			if err != nil {
 				zap.L().Error("error on collecting process data", zap.Error(err))
 				continue
 			}
-			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldRSS, getValueByUnit(memInfo.RSS, dataCFG.Unit), metricsML.MetricTypeGaugeFloat, dataCFG.Unit, true))
-			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldVMS, getValueByUnit(memInfo.VMS, dataCFG.Unit), metricsML.MetricTypeNone, dataCFG.Unit, true))
-			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldSwap, getValueByUnit(memInfo.Swap, dataCFG.Unit), metricsML.MetricTypeNone, dataCFG.Unit, true))
-			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldStack, memInfo.Stack, metricsML.MetricTypeNone, metricsML.UnitNone, true))
-			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldLocked, memInfo.Locked, metricsML.MetricTypeNone, metricsML.UnitNone, true))
-			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldData, memInfo.Data, metricsML.MetricTypeNone, metricsML.UnitNone, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldRSS, getValueByUnit(memInfo.RSS, dataCFG.Unit), metricType.MetricTypeGaugeFloat, dataCFG.Unit, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldVMS, getValueByUnit(memInfo.VMS, dataCFG.Unit), metricType.MetricTypeNone, dataCFG.Unit, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldSwap, getValueByUnit(memInfo.Swap, dataCFG.Unit), metricType.MetricTypeNone, dataCFG.Unit, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldStack, memInfo.Stack, metricType.MetricTypeNone, metricType.UnitNone, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldLocked, memInfo.Locked, metricType.MetricTypeNone, metricType.UnitNone, true))
+			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldData, memInfo.Data, metricType.MetricTypeNone, metricType.UnitNone, true))
 
 			err = p.postMsg(&msg)
 			if err != nil {

@@ -9,7 +9,7 @@ import (
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 )
 
@@ -73,15 +73,15 @@ func (p *Provider) updateLight(light *huego.Light) {
 
 	// update state fields
 	stateMsg := p.getMsg(nodeID, SourceState)
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldPower, light.State.On, metricsML.MetricTypeBinary, false))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldBrightness, light.State.Bri, metricsML.MetricTypeNone, false))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldHue, light.State.Hue, metricsML.MetricTypeNone, false))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldSaturation, light.State.Sat, metricsML.MetricTypeNone, false))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldColorTemperature, light.State.Ct, metricsML.MetricTypeNone, false))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldAlert, light.State.Alert, metricsML.MetricTypeNone, false))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldEffect, light.State.Effect, metricsML.MetricTypeNone, false))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldColorMode, light.State.ColorMode, metricsML.MetricTypeNone, false))
-	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldReachable, light.State.Reachable, metricsML.MetricTypeNone, true))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldPower, light.State.On, metricType.MetricTypeBinary, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldBrightness, light.State.Bri, metricType.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldHue, light.State.Hue, metricType.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldSaturation, light.State.Sat, metricType.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldColorTemperature, light.State.Ct, metricType.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldAlert, light.State.Alert, metricType.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldEffect, light.State.Effect, metricType.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldColorMode, light.State.ColorMode, metricType.MetricTypeNone, false))
+	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldReachable, light.State.Reachable, metricType.MetricTypeNone, true))
 	err = p.postMsg(stateMsg)
 	if err != nil {
 		zap.L().Error("error on posting message", zap.Error(err))
@@ -143,7 +143,7 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 	// update state fields
 	stateMsg := p.getMsg(nodeID, SourceState)
 	for key, value := range sensor.State {
-		stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(key, value, metricsML.MetricTypeNone, false))
+		stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(key, value, metricType.MetricTypeNone, false))
 	}
 
 	err = p.postMsg(stateMsg)
@@ -168,7 +168,7 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 	// update config fields
 	configMsg := p.getMsg(nodeID, SourceConfig)
 	for key, value := range sensor.State {
-		configMsg.Payloads = append(stateMsg.Payloads, p.getPayload(key, value, metricsML.MetricTypeNone, true))
+		configMsg.Payloads = append(stateMsg.Payloads, p.getPayload(key, value, metricType.MetricTypeNone, true))
 	}
 
 	err = p.postMsg(configMsg)

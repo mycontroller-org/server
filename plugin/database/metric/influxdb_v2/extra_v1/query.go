@@ -12,7 +12,7 @@ import (
 	cloneUtils "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
-	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 )
 
@@ -41,7 +41,7 @@ func NewQueryClient(uri string, insecureSkipVerify bool, bucket, username, passw
 	}
 }
 
-func (qv1 *QueryV1) ExecuteQuery(query *metricsML.Query, measurement string) ([]metricsML.ResponseData, error) {
+func (qv1 *QueryV1) ExecuteQuery(query *metricType.Query, measurement string) ([]metricType.ResponseData, error) {
 	queryParams, _ := cloneUtils.Clone(qv1.queryParams).(map[string]interface{})
 
 	queryString := qv1.buildQuery(query, measurement)
@@ -68,7 +68,7 @@ func (qv1 *QueryV1) ExecuteQuery(query *metricsML.Query, measurement string) ([]
 		return nil, err
 	}
 
-	metrics := make([]metricsML.ResponseData, 0)
+	metrics := make([]metricType.ResponseData, 0)
 
 	if queryResult.Error != "" {
 		return nil, errors.New(queryResult.Error)
@@ -100,7 +100,7 @@ func (qv1 *QueryV1) ExecuteQuery(query *metricsML.Query, measurement string) ([]
 			if column == "time" {
 				_time = values[vIndex]
 			} else {
-				if query.MetricType == metricsML.MetricTypeBinary && column == "value" {
+				if query.MetricType == metricType.MetricTypeBinary && column == "value" {
 					value := converterUtils.ToBool(values[vIndex])
 					if value {
 						_metric[column] = int64(1)
@@ -118,13 +118,13 @@ func (qv1 *QueryV1) ExecuteQuery(query *metricsML.Query, measurement string) ([]
 		if finalTime.IsZero() {
 			return nil, fmt.Errorf("invalid timestamp, type:%T, value:%v, query:%+v", _time, _time, query)
 		}
-		metrics = append(metrics, metricsML.ResponseData{Time: finalTime, MetricType: query.MetricType, Metric: _metric})
+		metrics = append(metrics, metricType.ResponseData{Time: finalTime, MetricType: query.MetricType, Metric: _metric})
 	}
 
 	return metrics, nil
 }
 
-func (qv1 *QueryV1) buildQuery(query *metricsML.Query, measurement string) string {
+func (qv1 *QueryV1) buildQuery(query *metricType.Query, measurement string) string {
 	if len(query.Functions) == 0 {
 		query.Functions = []string{"mean", "min", "max"}
 	}
@@ -152,7 +152,7 @@ func (qv1 *QueryV1) buildQuery(query *metricsML.Query, measurement string) strin
 	qBuilder.WriteString("SELECT")
 
 	switch query.MetricType {
-	case metricsML.MetricTypeGauge, metricsML.MetricTypeGaugeFloat, metricsML.MetricTypeCounter:
+	case metricType.MetricTypeGauge, metricType.MetricTypeGaugeFloat, metricType.MetricTypeCounter:
 		for index, fn := range functions {
 			if index != 0 {
 				qBuilder.WriteByte(',')
@@ -160,7 +160,7 @@ func (qv1 *QueryV1) buildQuery(query *metricsML.Query, measurement string) strin
 			fmt.Fprintf(&qBuilder, " %s", fn)
 		}
 
-	case metricsML.MetricTypeBinary:
+	case metricType.MetricTypeBinary:
 		fmt.Fprint(&qBuilder, ` "value"`)
 
 	default:
@@ -206,7 +206,7 @@ func (qv1 *QueryV1) buildQuery(query *metricsML.Query, measurement string) strin
 	}
 
 	switch query.MetricType {
-	case metricsML.MetricTypeGauge, metricsML.MetricTypeGaugeFloat, metricsML.MetricTypeCounter:
+	case metricType.MetricTypeGauge, metricType.MetricTypeGaugeFloat, metricType.MetricTypeCounter:
 		fmt.Fprintf(&qBuilder, " GROUP BY time(%s) fill(null)", query.Window)
 	}
 	return qBuilder.String()

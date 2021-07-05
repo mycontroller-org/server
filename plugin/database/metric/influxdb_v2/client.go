@@ -10,16 +10,32 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	influxdb2log "github.com/influxdata/influxdb-client-go/v2/log"
+	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
-	extraML "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/extra"
-	extraV1 "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/extra_v1"
-	extraV2 "github.com/mycontroller-org/server/v2/plugin/database/metrics/influxdb_v2/extra_v2"
+	extraML "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra"
+	extraV1 "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra_v1"
+	extraV2 "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra_v2"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 )
 
 var ctx = context.TODO()
+
+// global constants
+const (
+	PluginInfluxdbV2 = "influxdb"
+
+	MeasurementBinary       = "mc_binary_data"
+	MeasurementGaugeInteger = "mc_gauge_int_data"
+	MeasurementGaugeFloat   = "mc_gauge_float_data"
+	MeasurementCounter      = "mc_counter_data"
+	MeasurementString       = "mc_string_data"
+	MeasurementGeo          = "mc_geo_data"
+
+	QueryClientV1 = "v1"
+	QueryClientV2 = "v2"
+)
 
 const (
 	defaultFlushInterval = 1 * time.Second
@@ -59,21 +75,8 @@ type Client struct {
 	ctx         context.Context
 }
 
-// global constants
-const (
-	MeasurementBinary       = "mc_binary_data"
-	MeasurementGaugeInteger = "mc_gauge_int_data"
-	MeasurementGaugeFloat   = "mc_gauge_float_data"
-	MeasurementCounter      = "mc_counter_data"
-	MeasurementString       = "mc_string_data"
-	MeasurementGeo          = "mc_geo_data"
-
-	QueryClientV1 = "v1"
-	QueryClientV2 = "v2"
-)
-
 // NewClient of influxdb
-func NewClient(config map[string]interface{}) (*Client, error) {
+func NewClient(config cmap.CustomMap) (metricType.Plugin, error) {
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameYaml, config, &cfg)
 	if err != nil {
@@ -179,6 +182,10 @@ func NewClient(config map[string]interface{}) (*Client, error) {
 	return c, nil
 }
 
+func (c *Client) Name() string {
+	return PluginInfluxdbV2
+}
+
 // Ping to target database
 func (c *Client) Ping() error {
 	health, err := c.Client.Health(ctx)
@@ -199,8 +206,8 @@ func (c *Client) Close() error {
 }
 
 // Query func implementation
-func (c *Client) Query(queryConfig *metricsML.QueryConfig) (map[string][]metricsML.ResponseData, error) {
-	metricsMap := make(map[string][]metricsML.ResponseData)
+func (c *Client) Query(queryConfig *metricType.QueryConfig) (map[string][]metricType.ResponseData, error) {
+	metricsMap := make(map[string][]metricType.ResponseData)
 
 	// fetch metrics details for the given input
 	for _, q := range queryConfig.Individual {
@@ -238,8 +245,8 @@ func (c *Client) Query(queryConfig *metricsML.QueryConfig) (map[string][]metrics
 }
 
 // WriteBlocking implementation
-func (c *Client) WriteBlocking(data *metricsML.InputData) error {
-	if data.MetricType == metricsML.MetricTypeNone {
+func (c *Client) WriteBlocking(data *metricType.InputData) error {
+	if data.MetricType == metricType.MetricTypeNone {
 		return nil
 	}
 	p, err := getPoint(data)
@@ -250,8 +257,8 @@ func (c *Client) WriteBlocking(data *metricsML.InputData) error {
 	return wb.WritePoint(ctx, p)
 }
 
-func (c *Client) Write(data *metricsML.InputData) error {
-	if data.MetricType == metricsML.MetricTypeNone {
+func (c *Client) Write(data *metricType.InputData) error {
+	if data.MetricType == metricType.MetricTypeNone {
 		return nil
 	}
 	p, err := getPoint(data)
@@ -263,7 +270,7 @@ func (c *Client) Write(data *metricsML.InputData) error {
 	return nil
 }
 
-func getPoint(data *metricsML.InputData) (*write.Point, error) {
+func getPoint(data *metricType.InputData) (*write.Point, error) {
 	measurementName, err := getMeasurementName(data.MetricType)
 	if err != nil {
 		return nil, err
@@ -284,27 +291,27 @@ func getPoint(data *metricsML.InputData) (*write.Point, error) {
 	return p, nil
 }
 
-func getMeasurementName(metricType string) (string, error) {
-	switch metricType {
-	case metricsML.MetricTypeBinary:
+func getMeasurementName(suppliedType string) (string, error) {
+	switch suppliedType {
+	case metricType.MetricTypeBinary:
 		return MeasurementBinary, nil
 
-	case metricsML.MetricTypeGauge:
+	case metricType.MetricTypeGauge:
 		return MeasurementGaugeInteger, nil
 
-	case metricsML.MetricTypeGaugeFloat:
+	case metricType.MetricTypeGaugeFloat:
 		return MeasurementGaugeFloat, nil
 
-	case metricsML.MetricTypeCounter:
+	case metricType.MetricTypeCounter:
 		return MeasurementCounter, nil
 
-	case metricsML.MetricTypeString:
+	case metricType.MetricTypeString:
 		return MeasurementString, nil
 
-	case metricsML.MetricTypeGEO:
+	case metricType.MetricTypeGEO:
 		return MeasurementGeo, nil
 
 	default:
-		return "", fmt.Errorf("unknown metric type: %s", metricType)
+		return "", fmt.Errorf("unknown metric type: %s", suppliedType)
 	}
 }

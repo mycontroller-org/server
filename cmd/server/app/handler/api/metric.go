@@ -13,7 +13,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/service/database/metrics"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	quickIdUL "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	mtsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
+	mtsML "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 )
 
 // global constants

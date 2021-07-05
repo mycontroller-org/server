@@ -3,10 +3,10 @@ package esphome
 import (
 	"bytes"
 
+	esphomeClient "github.com/mycontroller-org/esphome_api/pkg/client"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	"github.com/mycontroller-org/server/v2/plugin/database/metrics"
-	esphomeClient "github.com/mycontroller-org/esphome_api/pkg/client"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 )
 
 const (
@@ -134,44 +134,44 @@ func getMetricData(entityType, fieldID string) MetricMap {
 	case EntityTypeClimate:
 		switch fieldID {
 		case FieldCurrentTemperature:
-			return newMetricMap(metrics.MetricTypeGaugeFloat, "°C", true)
+			return newMetricMap(metricType.MetricTypeGaugeFloat, "°C", true)
 		case FieldTargetTemperature, FieldTargetTemperatureLow, FieldTargetTemperatureHigh:
-			return newMetricMap(metrics.MetricTypeGaugeFloat, "°C", false)
+			return newMetricMap(metricType.MetricTypeGaugeFloat, "°C", false)
 		default:
-			return newMetricMap(metrics.MetricTypeNone, "", false)
+			return newMetricMap(metricType.MetricTypeNone, "", false)
 		}
 
 	case EntityTypeFan:
 		switch fieldID {
 		case FieldState:
-			return newMetricMap(metrics.MetricTypeBinary, "", false)
+			return newMetricMap(metricType.MetricTypeBinary, "", false)
 		default:
-			return newMetricMap(metrics.MetricTypeNone, "", false)
+			return newMetricMap(metricType.MetricTypeNone, "", false)
 		}
 
 	case EntityTypeBinarySensor:
-		return newMetricMap(metrics.MetricTypeBinary, "", true)
+		return newMetricMap(metricType.MetricTypeBinary, "", true)
 
 	case EntityTypeSwitch:
-		return newMetricMap(metrics.MetricTypeBinary, "", false)
+		return newMetricMap(metricType.MetricTypeBinary, "", false)
 
 	case EntityTypeLight:
 		switch fieldID {
 		case FieldState:
-			return newMetricMap(metrics.MetricTypeBinary, "", false)
+			return newMetricMap(metricType.MetricTypeBinary, "", false)
 		case FieldBrightness:
-			return newMetricMap(metrics.MetricTypeNone, "%", false)
+			return newMetricMap(metricType.MetricTypeNone, "%", false)
 		default:
-			return newMetricMap(metrics.MetricTypeNone, "", false)
+			return newMetricMap(metricType.MetricTypeNone, "", false)
 		}
 
 	case EntityTypeTextSensor:
-		return newMetricMap(metrics.MetricTypeNone, "", true)
+		return newMetricMap(metricType.MetricTypeNone, "", true)
 
 	case EntityTypeSensor:
-		return newMetricMap(metrics.MetricTypeGaugeFloat, "", true)
+		return newMetricMap(metricType.MetricTypeGaugeFloat, "", true)
 
 	}
 
-	return newMetricMap(metrics.MetricTypeNone, "", true)
+	return newMetricMap(metricType.MetricTypeNone, "", true)
 }

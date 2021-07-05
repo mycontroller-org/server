@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"time"
 
+	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
+	esphomeClient "github.com/mycontroller-org/esphome_api/pkg/client"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	"github.com/mycontroller-org/server/v2/plugin/database/metrics"
-	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
-	esphomeClient "github.com/mycontroller-org/esphome_api/pkg/client"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 )
@@ -99,7 +99,7 @@ func (en *ESPHomeNode) Post(msg proto.Message) error {
 		data := msgML.NewPayload()
 		data.Key = FieldStream
 		data.Value = convertor.ToString(imageReq.Stream)
-		data.MetricType = metrics.MetricTypeNone
+		data.MetricType = metricType.MetricTypeNone
 		streamResponse.Payloads = append(streamResponse.Payloads, data)
 		topic := mcbus.GetTopicPostMessageToServer()
 		err = mcbus.Publish(topic, streamResponse)

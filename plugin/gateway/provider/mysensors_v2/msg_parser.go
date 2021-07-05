@@ -12,8 +12,8 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	gwPL "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
-	mtsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	"go.uber.org/zap"
 )
 
@@ -67,7 +67,7 @@ func (p *Provider) toRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
 			}
 		}
 		if mt, ok := metricTypeAndUnit[payload.Key]; ok {
-			if mt.Type == mtsML.MetricTypeBinary {
+			if mt.Type == metricType.MetricTypeBinary {
 				switch strings.ToLower(payload.Value) {
 				case "true", "on":
 					msMsg.Payload = payloadON

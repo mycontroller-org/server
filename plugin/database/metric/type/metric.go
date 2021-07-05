@@ -1,11 +1,12 @@
-package metrics
+package metric
 
 import (
 	"time"
 )
 
-// Client interface
-type Client interface {
+// Plugin interface
+type Plugin interface {
+	Name() string
 	Close() error
 	Ping() error
 	Write(data *InputData) error

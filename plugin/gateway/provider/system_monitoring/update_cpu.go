@@ -6,8 +6,8 @@ import (
 	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
-	metricsML "github.com/mycontroller-org/server/v2/plugin/database/metrics"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"go.uber.org/zap"
 )
@@ -36,7 +36,7 @@ func (p *Provider) updateCPU() {
 		}
 
 		msg := p.getMsg(config.SourceTypeCPU)
-		msg.Payloads = append(msg.Payloads, p.getData("used_percent", usage[0], metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
+		msg.Payloads = append(msg.Payloads, p.getData("used_percent", usage[0], metricType.MetricTypeGaugeFloat, metricType.UnitPercent, true))
 
 		err = p.postMsg(&msg)
 		if err != nil {
@@ -72,7 +72,7 @@ func (p *Provider) updateCPU() {
 		for index, usage := range usageList {
 			sourceID := fmt.Sprintf("%s_%v", config.SourceTypeCPU, index)
 			msg := p.getMsg(sourceID)
-			msg.Payloads = append(msg.Payloads, p.getData("used_percent", usage, metricsML.MetricTypeGaugeFloat, metricsML.UnitPercent, true))
+			msg.Payloads = append(msg.Payloads, p.getData("used_percent", usage, metricType.MetricTypeGaugeFloat, metricType.UnitPercent, true))
 
 			err = p.postMsg(&msg)
 			if err != nil {
@@ -101,7 +101,7 @@ func sendCPUInfo(p *Provider, cpuInfo *cpu.InfoStat, cpuIndex, cpuCount int) {
 	if len(presentMsg.Payloads) > 0 {
 		data = presentMsg.Payloads[0]
 	} else {
-		data = p.getData(sourceID, sourceName, metricsML.MetricTypeNone, metricsML.UnitNone, true)
+		data = p.getData(sourceID, sourceName, metricType.MetricTypeNone, metricType.UnitNone, true)
 		presentMsg.Payloads = append(presentMsg.Payloads, data)
 	}
 
