@@ -12,12 +12,14 @@ import (
 	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	busPlugin "github.com/mycontroller-org/server/v2/plugin/bus"
+	busType "github.com/mycontroller-org/server/v2/plugin/bus/type"
 	natsIO "github.com/nats-io/nats.go"
 	"go.uber.org/zap"
 )
 
 const (
+	PluginNATSIO = "natsio"
+
 	defaultReconnectWait     = 5 * time.Second
 	defaultConnectionTimeout = 10 * time.Second
 	defaultMaximumReconnect  = 100
@@ -57,8 +59,8 @@ type Client struct {
 	config              *Config
 }
 
-// Init nats.io client
-func Init(config cmap.CustomMap) (busPlugin.Client, error) {
+// NewClient nats.io client
+func NewClient(config cmap.CustomMap) (busType.Plugin, error) {
 	cfg := &Config{}
 	err := utils.MapToStruct(utils.TagNameYaml, config, cfg)
 	if err != nil {
@@ -131,6 +133,10 @@ func Init(config cmap.CustomMap) (busPlugin.Client, error) {
 	return &client, nil
 }
 
+func (c *Client) Name() string {
+	return PluginNATSIO
+}
+
 // Close implementation
 func (c *Client) Close() error {
 	if c.natConn != nil {
@@ -150,7 +156,7 @@ func (c *Client) Publish(topic string, data interface{}) error {
 }
 
 // Subscribe a topic
-func (c *Client) Subscribe(topic string, handler busPlugin.CallBackFunc) (int64, error) {
+func (c *Client) Subscribe(topic string, handler busType.CallBackFunc) (int64, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -172,7 +178,7 @@ func (c *Client) Subscribe(topic string, handler busPlugin.CallBackFunc) (int64,
 	return newSubscriptionID, nil
 }
 
-func (c *Client) handlerWrapper(handler busPlugin.CallBackFunc) func(natsMsg *natsIO.Msg) {
+func (c *Client) handlerWrapper(handler busType.CallBackFunc) func(natsMsg *natsIO.Msg) {
 	return func(natsMsg *natsIO.Msg) {
 		PrintDebug("receiving message", zap.String("topic", natsMsg.Sub.Subject))
 		handler(&busML.BusData{Topic: natsMsg.Subject, Data: natsMsg.Data})

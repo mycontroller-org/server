@@ -1,49 +1,37 @@
 package mcbus
 
 import (
-	"fmt"
-
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
-	busML "github.com/mycontroller-org/server/v2/plugin/bus"
-	embedBus "github.com/mycontroller-org/server/v2/plugin/bus/embedded"
-	"github.com/mycontroller-org/server/v2/plugin/bus/natsio"
+	busPlugin "github.com/mycontroller-org/server/v2/plugin/bus"
+	busType "github.com/mycontroller-org/server/v2/plugin/bus/type"
 	"go.uber.org/zap"
 )
 
 var (
-	busClient busML.Client
+	busClient busType.Plugin
 	pauseSRV  concurrency.SafeBool
 )
 
 // Start function
 func Start(config cmap.CustomMap) {
+	// get plugin type
+	pluginType := config.GetString(model.KeyType)
+	if pluginType == "" {
+		zap.L().Fatal("bus plugin type is not defined")
+		return
+	}
+
 	// update topic prefix
 	topicPrefix = config.GetString(keyTopicPrefix)
 
 	// update client
-	client, err := startBusImpl(config)
+	plugin, err := busPlugin.Create(pluginType, config)
 	if err != nil {
-		zap.L().Fatal("failed to init bus client", zap.Error(err))
+		zap.L().Fatal("failed to get bus client", zap.Error(err))
 	}
-	busClient = client
+
 	pauseSRV = concurrency.SafeBool{}
-}
-
-func startBusImpl(config cmap.CustomMap) (busML.Client, error) {
-	busType := config.GetString(model.NameType)
-
-	if busType == "" { // if non defined, update default
-		busType = busML.TypeEmbedded
-	}
-
-	switch busType {
-	case busML.TypeEmbedded:
-		return embedBus.Init()
-	case busML.TypeNatsIO:
-		return natsio.Init(config)
-	default:
-		return nil, fmt.Errorf("specified bus type not implemented. %s", busType)
-	}
+	busClient = plugin
 }

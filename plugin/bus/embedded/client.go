@@ -7,27 +7,34 @@ import (
 	"sync"
 
 	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	busml "github.com/mycontroller-org/server/v2/plugin/bus"
+	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
+	busType "github.com/mycontroller-org/server/v2/plugin/bus/type"
 	"go.uber.org/zap"
 )
+
+const PluginEmbedded = "embedded"
 
 // Client struct
 type Client struct {
 	topics              map[string][]int64
-	subscriptions       map[int64]busml.CallBackFunc
+	subscriptions       map[int64]busType.CallBackFunc
 	subscriptionCounter int64
 	mutex               *sync.RWMutex
 }
 
-// Init func
-func Init() (busml.Client, error) {
+// NewClient func
+func NewClient(config cmap.CustomMap) (busType.Plugin, error) {
 	client := &Client{
 		topics:              make(map[string][]int64),
-		subscriptions:       make(map[int64]busml.CallBackFunc),
+		subscriptions:       make(map[int64]busType.CallBackFunc),
 		subscriptionCounter: 0,
 		mutex:               &sync.RWMutex{},
 	}
 	return client, nil
+}
+
+func (c *Client) Name() string {
+	return PluginEmbedded
 }
 
 // Close implementation
@@ -38,7 +45,7 @@ func (c *Client) Close() error {
 	// clear all the call backs and topics
 	c.subscriptionCounter = 0
 	c.topics = make(map[string][]int64)
-	c.subscriptions = make(map[int64]busml.CallBackFunc)
+	c.subscriptions = make(map[int64]busType.CallBackFunc)
 	return nil
 }
 
@@ -76,7 +83,7 @@ func (c *Client) Publish(topic string, data interface{}) error {
 }
 
 // Subscribe a topic
-func (c *Client) Subscribe(topic string, handler busml.CallBackFunc) (int64, error) {
+func (c *Client) Subscribe(topic string, handler busType.CallBackFunc) (int64, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
