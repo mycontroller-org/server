@@ -5,6 +5,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
 	busType "github.com/mycontroller-org/server/v2/plugin/bus/type"
+	"go.uber.org/zap"
 )
 
 // CreatorFn func type
@@ -14,6 +15,10 @@ type CreatorFn func(config cmap.CustomMap) (busType.Plugin, error)
 var creators = make(map[string]CreatorFn)
 
 func Register(name string, fn CreatorFn) {
+	if _, found := creators[name]; found {
+		zap.L().Fatal("duplicate plugin found", zap.String("pluginName", name))
+		return
+	}
 	creators[name] = fn
 }
 

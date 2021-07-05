@@ -5,6 +5,7 @@ import (
 
 	providerType "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
 	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	"go.uber.org/zap"
 )
 
 // CreatorFn func type
@@ -14,6 +15,10 @@ type CreatorFn func(config *gwType.Config) (providerType.Plugin, error)
 var creators = make(map[string]CreatorFn)
 
 func Register(name string, fn CreatorFn) {
+	if _, found := creators[name]; found {
+		zap.L().Fatal("duplicate plugin found", zap.String("pluginName", name))
+		return
+	}
 	creators[name] = fn
 }
 

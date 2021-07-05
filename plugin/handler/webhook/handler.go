@@ -1,4 +1,4 @@
-package handler
+package webhook
 
 import (
 	"encoding/json"
@@ -6,10 +6,10 @@ import (
 	"net/http"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -21,10 +21,6 @@ const (
 	// DataTypeYAML = "yaml"
 	// DataTypeText = "text"
 )
-
-func init() {
-	Register(PluginNOOP, NewNoopPlugin)
-}
 
 // WebhookConfig for webhook
 type WebhookConfig struct {

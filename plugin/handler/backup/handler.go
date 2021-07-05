@@ -1,22 +1,16 @@
-// +build server,!standalone
-
-package handler
+package backup
 
 import (
 	"fmt"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/plugin/handler/backup/disk"
 	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 )
 
 const PluginBackup = "backup"
-
-func init() {
-	Register(PluginBackup, NewBackupPlugin)
-}
 
 // BackupConfig of backup service
 type BackupConfig struct {

@@ -1,4 +1,4 @@
-package handler
+package resource
 
 import (
 	"fmt"
@@ -7,11 +7,11 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -20,10 +20,6 @@ const (
 
 	schedulePrefix = "resource_handler"
 )
-
-func init() {
-	Register(PluginResourceHandler, NewResourcePlugin)
-}
 
 // ResourceClient struct
 type ResourceClient struct {
