@@ -81,7 +81,7 @@ jobs:
           repo_token: "${{ secrets.GH_TOKEN }}"
           automatic_release_tag: master
           prerelease: true
-          title: "Development Build - master branch"
+          title: "master branch build - Pre Release"
           files: |
             builds/*.tar.gz
             builds/*.zip
