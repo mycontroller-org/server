@@ -26,4 +26,4 @@ Both released and master branch container images are published in to the followi
 
 ### Executables
 * [Released versions](https://github.com/mycontroller-org/server/releases)
-* [Pre Release](https://download.mycontroller.org/v2/master/) - `master` branch executables
+* [Pre Release](https://github.com/mycontroller-org/server/releases/tag/master) - `master` branch executables
