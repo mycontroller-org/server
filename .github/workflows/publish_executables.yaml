@@ -46,23 +46,12 @@ jobs:
       - name: build bundles
         run: ./scripts/generate_executables.sh
 
-      - name: add timestamp file
+      - name: create build timestamp and sha file
         run: |
-          echo `date -u +'%Y%m%d%H%M%S'` > builds/timestamp.txt  
-          echo `date -u +'%Y-%m-%dT%H:%M:%S%:z'` >> builds/timestamp.txt
-
-      - name: copy executables to the remote system
-        uses: appleboy/scp-action@master
-        if: github.ref == 'refs/heads/master' # executes only for master branch
-        with:
-          host: ${{ secrets.MYC_SERVER_ADDRESS }}
-          username: ${{ secrets.MYC_SERVER_USER }}
-          key: ${{ secrets.MYC_SERVER_KEY }}
-          passphrase: ${{ secrets.MYC_SERVER_PASSPHRASE }}
-          source: "builds/*.tar.gz,builds/*.zip,builds/timestamp.txt"
-          target: "github/v2/master"
-          rm: true
-          strip_components: 1
+          echo `date -u +'%Y%m%d%H%M%S'` > builds/build_timestamp.txt  
+          echo `date -u +'%Y-%m-%dT%H:%M:%S%:z'` >> builds/build_timestamp.txt
+          sha256sum *.tar.gz > builds/SHA256SUMS.txt
+          sha256sum *.zip >> builds/SHA256SUMS.txt
 
       - name: Update release notes and executables
         uses: softprops/action-gh-release@v1
@@ -73,6 +62,8 @@ jobs:
           files: |
             builds/*.tar.gz
             builds/*.zip
+            builds/build_timestamp.txt
+            builds/SHA256SUMS.txt
 
       - name: Update executables for master branch changes
         if: startsWith(github.ref, 'refs/heads/master') # executes only for changes in master
@@ -85,3 +76,5 @@ jobs:
           files: |
             builds/*.tar.gz
             builds/*.zip
+            builds/build_timestamp.txt
+            builds/SHA256SUMS.txt
