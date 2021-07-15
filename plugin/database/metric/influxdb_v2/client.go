@@ -43,8 +43,8 @@ const (
 
 // Config of the influxdb_v2
 type Config struct {
-	Organization       string       `yaml:"organization"`
-	Bucket             string       `yaml:"bucket"`
+	OrganizationName   string       `yaml:"organization_name"`
+	BucketName         string       `yaml:"bucket_name"`
 	URI                string       `yaml:"uri"`
 	Token              string       `yaml:"token"`
 	Username           string       `yaml:"username"`
@@ -127,7 +127,7 @@ func NewClient(config cmap.CustomMap) (metricType.Plugin, error) {
 
 	if influxAutoDetectVersion == "" {
 		// update default route, if non works
-		if cfg.Organization != "" {
+		if cfg.OrganizationName != "" {
 			influxAutoDetectVersion = QueryClientV2
 		} else {
 			influxAutoDetectVersion = QueryClientV1
@@ -151,9 +151,9 @@ func NewClient(config cmap.CustomMap) (metricType.Plugin, error) {
 
 	// update admin client
 	if influxAutoDetectVersion == QueryClientV1 {
-		c.adminClient = extraV1.NewAdminClient(cfg.URI, cfg.InsecureSkipVerify, cfg.Bucket, cfg.Username, cfg.Password)
+		c.adminClient = extraV1.NewAdminClient(cfg.URI, cfg.InsecureSkipVerify, cfg.BucketName, cfg.Username, cfg.Password)
 	} else {
-		c.adminClient = extraV2.NewAdminClient(c.ctx, iClient.BucketsAPI(), cfg.Organization, cfg.Bucket)
+		c.adminClient = extraV2.NewAdminClient(c.ctx, iClient, cfg.OrganizationName, cfg.BucketName)
 	}
 
 	// update autodetect version to user version, if user forced
@@ -168,9 +168,9 @@ func NewClient(config cmap.CustomMap) (metricType.Plugin, error) {
 
 	// update query client
 	if influxAutoDetectVersion == QueryClientV1 {
-		c.queryClient = extraV1.NewQueryClient(cfg.URI, cfg.InsecureSkipVerify, cfg.Bucket, cfg.Username, cfg.Password)
+		c.queryClient = extraV1.NewQueryClient(cfg.URI, cfg.InsecureSkipVerify, cfg.BucketName, cfg.Username, cfg.Password)
 	} else {
-		c.queryClient = extraV2.NewQueryClient(iClient.QueryAPI(cfg.Organization), cfg.Bucket)
+		c.queryClient = extraV2.NewQueryClient(iClient.QueryAPI(cfg.OrganizationName), cfg.BucketName)
 	}
 
 	// create bucket/database
@@ -253,7 +253,7 @@ func (c *Client) WriteBlocking(data *metricType.InputData) error {
 	if err != nil {
 		return err
 	}
-	wb := c.Client.WriteAPIBlocking(c.Config.Organization, c.Config.Bucket)
+	wb := c.Client.WriteAPIBlocking(c.Config.OrganizationName, c.Config.BucketName)
 	return wb.WritePoint(ctx, p)
 }
 
@@ -265,7 +265,7 @@ func (c *Client) Write(data *metricType.InputData) error {
 	if err != nil {
 		return err
 	}
-	w := c.Client.WriteAPI(c.Config.Organization, c.Config.Bucket)
+	w := c.Client.WriteAPI(c.Config.OrganizationName, c.Config.BucketName)
 	w.WritePoint(p)
 	return nil
 }
