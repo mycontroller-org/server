@@ -8,7 +8,7 @@ import (
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
 	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
-	metricsSVC "github.com/mycontroller-org/server/v2/pkg/service/database/metrics"
+	metricSVC "github.com/mycontroller-org/server/v2/pkg/service/database/metric"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
@@ -41,7 +41,7 @@ func get(minimal bool) Status {
 	status := Status{
 		DocumentationURL: cfg.CFG.Web.DocumentationURL,
 	}
-	status.MetricsDBDisabled = metricsSVC.Disabled
+	status.MetricsDBDisabled = metricSVC.Disabled
 
 	if !minimal {
 		hostname, err := os.Hostname()

@@ -87,7 +87,7 @@ type LogLevelConfig struct {
 	Core       string `yaml:"core"`
 	WebHandler string `yaml:"web_handler"`
 	Storage    string `yaml:"storage"`
-	Metrics    string `yaml:"metrics"`
+	Metric     string `yaml:"metric"`
 }
 
 // Database to be used

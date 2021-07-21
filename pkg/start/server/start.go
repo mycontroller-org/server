@@ -3,7 +3,7 @@ package server
 import (
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
 	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
-	metricSVC "github.com/mycontroller-org/server/v2/pkg/service/database/metrics"
+	metricSVC "github.com/mycontroller-org/server/v2/pkg/service/database/metric"
 	storageSVC "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	fwdplSVC "github.com/mycontroller-org/server/v2/pkg/service/forward_payload"
 	gwService "github.com/mycontroller-org/server/v2/pkg/service/gateway"
@@ -23,7 +23,7 @@ func Start(handlerFunc func()) {
 
 func startServices() {
 	storageSVC.Init(cfg.CFG.Database.Storage, backupAPI.ExecuteImportStorage) // storage
-	metricSVC.Init(cfg.CFG.Database.Metric)                                   // metrics
+	metricSVC.Init(cfg.CFG.Database.Metric)                                   // metric
 
 	StartupJobs()
 	StartupJobsExtra()

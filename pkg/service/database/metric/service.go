@@ -15,10 +15,10 @@ var (
 	Disabled bool
 )
 
-// Init metrics database
+// Init metric database
 func Init(metricCfg cmap.CustomMap) {
 	// include logger details
-	metricCfg["logger"] = map[string]string{"mode": cfg.CFG.Logger.Mode, "encoding": cfg.CFG.Logger.Encoding, "level": cfg.CFG.Logger.Level.Metrics}
+	metricCfg["logger"] = map[string]string{"mode": cfg.CFG.Logger.Mode, "encoding": cfg.CFG.Logger.Encoding, "level": cfg.CFG.Logger.Level.Metric}
 
 	pluginType := metricCfg.GetString(model.KeyType)
 

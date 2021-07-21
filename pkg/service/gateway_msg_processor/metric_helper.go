@@ -9,7 +9,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	metricsDB "github.com/mycontroller-org/server/v2/pkg/service/database/metrics"
+	metricDB "github.com/mycontroller-org/server/v2/pkg/service/database/metric"
 	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 )
@@ -103,7 +103,7 @@ func writeNodeMetric(node *nodeML.Node, suppliedMetricType, fieldName string, va
 
 func writeMetric(metricData *metricType.InputData) error {
 	startTime := time.Now()
-	err := metricsDB.SVC.Write(metricData)
+	err := metricDB.SVC.Write(metricData)
 	if err != nil {
 		zap.L().Error("failed to write into metrics database", zap.Error(err), zap.Any("metricData", metricData))
 		return err
