@@ -87,10 +87,6 @@ func UpdateProfile(userData *userML.UserProfileUpdate) error {
 		return err
 	}
 
-	// if user.Username != userData.Username {
-	// 	return errors.New("username not matching")
-	// }
-
 	if userData.CurrentPassword == "" || !hashed.IsValidPassword(user.Password, userData.CurrentPassword) {
 		return errors.New("invalid current password")
 	}
@@ -100,7 +96,7 @@ func UpdateProfile(userData *userML.UserProfileUpdate) error {
 
 	if newPassword != "" {
 		if newPassword != userData.ConfirmPassword {
-			return errors.New("new password and confirm password not matching")
+			return errors.New("new password and confirm password are not matching")
 		}
 		hashedNewPassword, err := hashed.GenerateHash(newPassword)
 		if err != nil {
@@ -110,7 +106,14 @@ func UpdateProfile(userData *userML.UserProfileUpdate) error {
 	}
 
 	user.Password = hashedPassword
-	user.Email = userData.Email
+
+	if userData.Username != "" {
+		user.Username = userData.Username
+	}
+	if userData.Email != "" {
+		user.Email = userData.Email
+	}
+
 	user.FullName = userData.FullName
 	user.Labels = userData.Labels
 
