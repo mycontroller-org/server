@@ -37,10 +37,6 @@ func updateField(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if entity.ID == "" {
-		http.Error(w, "id should not be empty", 400)
-		return
-	}
 	err = fieldAPI.Save(entity, true)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
