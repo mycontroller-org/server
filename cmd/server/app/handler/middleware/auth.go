@@ -15,7 +15,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	"go.uber.org/zap"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 )
 
 var (

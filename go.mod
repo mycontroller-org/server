@@ -5,12 +5,12 @@ go 1.16
 require (
 	github.com/amimof/huego v1.2.0
 	github.com/btittelbach/astrotime v0.0.0-20160515101311-7ddba43aa26e
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dop251/goja v0.0.0-20210614154742-14a1ffa82844
 	github.com/dop251/goja_nodejs v0.0.0-20210225215109-d91c329300e7
 	github.com/eclipse/paho.mqtt.golang v1.3.5
 	github.com/fatih/structs v1.1.0
 	github.com/go-cmd/cmd v1.3.0
+	github.com/golang-jwt/jwt v3.2.1+incompatible
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/mux v1.8.0
