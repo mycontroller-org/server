@@ -275,7 +275,7 @@ var metricTypeAndUnit = map[string]payloadMetricTypeUnit{
 	"V_STATUS":             {metricType.MetricTypeBinary, metricType.UnitNone},
 	"V_PERCENTAGE":         {metricType.MetricTypeGaugeFloat, metricType.UnitPercent},
 	"V_PRESSURE":           {metricType.MetricTypeGaugeFloat, metricType.UnitNone},
-	"V_FORECAST":           {metricType.MetricTypeGaugeFloat, metricType.UnitNone},
+	"V_FORECAST":           {metricType.MetricTypeString, metricType.UnitNone},
 	"V_RAIN":               {metricType.MetricTypeGaugeFloat, metricType.UnitNone},
 	"V_RAINRATE":           {metricType.MetricTypeGaugeFloat, metricType.UnitNone},
 	"V_WIND":               {metricType.MetricTypeGaugeFloat, metricType.UnitNone},
