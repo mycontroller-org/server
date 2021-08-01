@@ -165,7 +165,10 @@ func updateNodeData(msg *msgML.Message) error {
 				return err
 			}
 			node.Others.Set(d.Key, bl, node.Labels)
-			return writeNodeMetric(node, mtsML.MetricTypeGaugeFloat, model.FieldBatteryLevel, bl)
+			err = writeNodeMetric(node, mtsML.MetricTypeGaugeFloat, model.FieldBatteryLevel, bl)
+			if err != nil {
+				zap.L().Error("error on writing metric data", zap.Error(err))
+			}
 
 		default:
 			if d.Key != model.FieldNone {
