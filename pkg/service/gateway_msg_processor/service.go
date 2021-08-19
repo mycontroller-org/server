@@ -3,7 +3,6 @@ package gatewaymessageprocessor
 import (
 	"errors"
 	"fmt"
-	"strconv"
 	"time"
 
 	fieldAPI "github.com/mycontroller-org/server/v2/pkg/api/field"
@@ -159,13 +158,9 @@ func updateNodeData(msg *msgML.Message) error {
 
 		case model.FieldBatteryLevel: // set battery level
 			// update battery level
-			bl, err := strconv.ParseFloat(d.Value, 64)
-			if err != nil {
-				zap.L().Error("unable to parse batter level", zap.Error(err))
-				return err
-			}
-			node.Others.Set(d.Key, bl, node.Labels)
-			err = writeNodeMetric(node, mtsML.MetricTypeGaugeFloat, model.FieldBatteryLevel, bl)
+			batteryLevel := converterUtils.ToFloat(d.Value)
+			node.Others.Set(d.Key, batteryLevel, node.Labels)
+			err = writeNodeMetric(node, mtsML.MetricTypeGaugeFloat, model.FieldBatteryLevel, batteryLevel)
 			if err != nil {
 				zap.L().Error("error on writing metric data", zap.Error(err))
 			}
