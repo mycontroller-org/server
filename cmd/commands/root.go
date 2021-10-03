@@ -8,6 +8,7 @@ import (
 const (
 	CommandVersion        = "version"
 	CommandGenerateConfig = "config"
+	CommandConfigFlag     = "-config"
 
 	CallerServer  = "server"
 	CallerGateway = "gateway"
@@ -18,6 +19,9 @@ const (
 func ExecuteCommand(caller string) {
 	if len(os.Args) > 1 {
 		switch strings.ToLower(os.Args[1]) {
+		case CommandConfigFlag:
+			return
+
 		case CommandVersion:
 			PrintVersion(caller)
 
