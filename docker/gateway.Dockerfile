@@ -36,4 +36,5 @@ COPY ./resources/sample-docker-gateway.yaml ${APP_HOME}/gateway.yaml
 
 WORKDIR ${APP_HOME}
 
-CMD ["/app/mycontroller-gateway", "-config", "/app/gateway.yaml"]
+ENTRYPOINT [ "/app/mycontroller-gateway" ]
+CMD [ "-config", "/app/gateway.yaml" ]
