@@ -1,6 +1,6 @@
 module github.com/mycontroller-org/server/v2
 
-go 1.16
+go 1.17
 
 require (
 	github.com/amimof/huego v1.2.0
