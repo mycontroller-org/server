@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/amimof/huego v1.2.0
 	github.com/btittelbach/astrotime v0.0.0-20160515101311-7ddba43aa26e
-	github.com/dop251/goja v0.0.0-20211011172007-d99e4b8cbf48
+	github.com/dop251/goja v0.0.0-20211019164913-00bb30d12573
 	github.com/dop251/goja_nodejs v0.0.0-20210920152751-582170a1676b
 	github.com/eclipse/paho.mqtt.golang v1.3.5
 	github.com/fatih/structs v1.1.0
