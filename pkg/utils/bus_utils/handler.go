@@ -3,9 +3,9 @@ package busutils
 import (
 	"encoding/json"
 
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -35,6 +35,9 @@ func PostToHandler(handlers []string, data map[string]string) {
 	}
 
 	for _, handlerID := range handlers {
+		if handlerID == "" {
+			continue
+		}
 		msg := &handlerType.MessageWrapper{
 			ID:   handlerID,
 			Data: updateData,
