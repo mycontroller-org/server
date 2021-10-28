@@ -24,7 +24,7 @@ require (
 	github.com/rs/cors v1.8.0
 	github.com/shirou/gopsutil/v3 v3.21.9
 	github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07
-	github.com/tidwall/sjson v1.2.2
+	github.com/tidwall/sjson v1.2.3
 	go.mongodb.org/mongo-driver v1.7.3
 	go.uber.org/zap v1.19.1
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
@@ -49,8 +49,8 @@ require (
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/tidwall/gjson v1.9.1 // indirect
-	github.com/tidwall/match v1.0.3 // indirect
+	github.com/tidwall/gjson v1.10.2 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.9 // indirect
 	github.com/tklauser/numcpus v0.3.0 // indirect
