@@ -35,6 +35,7 @@ type Status struct {
 	ServerTime        time.Time        `json:"serverTime"`
 	Uptime            uint64           `json:"uptime"` // in seconds
 	MetricsDBDisabled bool             `json:"metricsDBDisabled"`
+	Language          string           `json:"language"`
 }
 
 func get(minimal bool) Status {
@@ -64,6 +65,7 @@ func get(minimal bool) Status {
 		login.Message = fmt.Sprintf("error on getting login message: %s", err.Error())
 	} else {
 		login = sysSettings.Login
+		status.Language = sysSettings.Language
 	}
 	status.Login = login
 

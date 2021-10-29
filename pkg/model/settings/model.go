@@ -26,6 +26,7 @@ type Settings struct {
 type SystemSettings struct {
 	GeoLocation GeoLocation `json:"geoLocation"`
 	Login       Login       `json:"login"`
+	Language    string      `json:"language"`
 }
 
 // GeoLocation struct
