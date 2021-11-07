@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"io/ioutil"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -15,7 +16,8 @@ import (
 )
 
 const (
-	store_filename = "handler/resource"
+	store_directory = "handler"
+	store_filename  = "resource"
 )
 
 type store struct {
@@ -33,7 +35,9 @@ type JobsConfig struct {
 }
 
 func (s *store) getName() string {
-	return fmt.Sprintf("%s/%s_%s.yaml", model.GetDirectoryDataRoot(), store_filename, s.handlerID)
+	dir := filepath.Join(model.GetDirectoryDataRoot(), store_directory)
+	utils.CreateDir(dir)
+	return filepath.Join(dir, fmt.Sprintf("%s_%s.yaml", store_filename, s.handlerID))
 }
 
 func (s *store) remove(name string) {
@@ -89,6 +93,7 @@ func (s *store) loadFromDisk(client *ResourceClient) error {
 		job := s.jobs[name]
 		jobTime := job.CreatedAt.Add(job.Delay)
 		if jobTime.Before(currentTime) { // verify the validity
+			zap.L().Debug("Expired job", zap.Any("job", job))
 			delete(s.jobs, name)
 		} else {
 			// update delay time
@@ -105,17 +110,10 @@ func (s *store) saveToDisk() error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	if len(s.jobs) == 0 {
-		zap.L().Debug("No jobs available to save", zap.String("handler", s.handlerID))
-
-		return nil
-	}
-
 	data, err := yaml.Marshal(s.jobs)
 	if err != nil {
 		return err
 	}
 	zap.L().Debug("Saving the jobs data", zap.String("filename", s.getName()), zap.String("handler", s.handlerID))
-
 	return ioutil.WriteFile(s.getName(), data, fs.ModePerm)
 }

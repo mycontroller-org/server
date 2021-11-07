@@ -105,6 +105,7 @@ func (c *ResourceClient) Post(data map[string]interface{}) error {
 				return fmt.Errorf("invalid preDelay. name:%s, preDelay:%s", name, rsData.PreDelay)
 			}
 			if delayDuration > 0 {
+				c.store.add(name, rsData)
 				c.schedule(name, rsData)
 				continue
 			}
@@ -131,7 +132,6 @@ func (c *ResourceClient) getScheduleTriggerFunc(name string, rsData handlerType.
 
 func (c *ResourceClient) schedule(name string, rsData handlerType.ResourceData) {
 	c.unschedule(name) // removes the existing schedule, if any
-	c.store.add(name, rsData)
 
 	schedulerID := c.getScheduleID(name)
 	cronSpec := fmt.Sprintf("@every %s", rsData.PreDelay)
@@ -143,7 +143,6 @@ func (c *ResourceClient) schedule(name string, rsData handlerType.ResourceData) 
 }
 
 func (c *ResourceClient) unschedule(name string) {
-	c.store.remove(name)
 	schedulerID := c.getScheduleID(name)
 	coreScheduler.SVC.RemoveFunc(schedulerID)
 	zap.L().Debug("removed a schedule", zap.String("name", name), zap.String("schedulerID", schedulerID))
