@@ -3,6 +3,7 @@ package resource
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
@@ -24,10 +25,14 @@ const (
 // ResourceClient struct
 type ResourceClient struct {
 	HandlerCfg *handlerType.Config
+	store      *store
 }
 
 func NewResourcePlugin(config *handlerType.Config) (handlerType.Plugin, error) {
-	return &ResourceClient{HandlerCfg: config}, nil
+	return &ResourceClient{
+		HandlerCfg: config,
+		store:      &store{mutex: sync.RWMutex{}, handlerID: config.ID, jobs: map[string]JobsConfig{}},
+	}, nil
 }
 
 func (p *ResourceClient) Name() string {
@@ -35,11 +40,26 @@ func (p *ResourceClient) Name() string {
 }
 
 // Start handler implementation
-func (c *ResourceClient) Start() error { return nil }
+func (c *ResourceClient) Start() error {
+	// load handler data from disk
+	err := c.store.loadFromDisk(c)
+	if err != nil {
+		zap.L().Error("failed to load handler data", zap.String("diskLocation", c.store.getName()), zap.Error(err))
+		return nil
+	}
+
+	return nil
+}
 
 // Close handler implementation
 func (c *ResourceClient) Close() error {
 	c.unloadAll()
+
+	// save jobs to disk location
+	err := c.store.saveToDisk()
+	if err != nil {
+		zap.L().Error("failed to save handler data", zap.String("diskLocation", c.store.getName()), zap.Error(err))
+	}
 	return nil
 }
 
