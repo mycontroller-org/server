@@ -43,13 +43,13 @@ func (s *store) remove(name string) {
 	delete(s.jobs, name)
 }
 
-func (s *store) add(name string, rsData handlerType.ResourceData, delayStr string) {
+func (s *store) add(name string, rsData handlerType.ResourceData) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	delay, err := time.ParseDuration(delayStr)
+	delay, err := time.ParseDuration(rsData.PreDelay)
 	if err != nil {
-		zap.L().Error("invalid delay", zap.String("delayString", delayStr))
+		zap.L().Error("invalid delay", zap.String("quickID", rsData.QuickID), zap.String("preDelay", rsData.PreDelay))
 		return
 	}
 

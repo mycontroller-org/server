@@ -131,6 +131,8 @@ func (c *ResourceClient) getScheduleTriggerFunc(name string, rsData handlerType.
 
 func (c *ResourceClient) schedule(name string, rsData handlerType.ResourceData) {
 	c.unschedule(name) // removes the existing schedule, if any
+	c.store.add(name, rsData)
+
 	schedulerID := c.getScheduleID(name)
 	cronSpec := fmt.Sprintf("@every %s", rsData.PreDelay)
 	err := coreScheduler.SVC.AddFunc(schedulerID, cronSpec, c.getScheduleTriggerFunc(name, rsData))
@@ -141,6 +143,7 @@ func (c *ResourceClient) schedule(name string, rsData handlerType.ResourceData) 
 }
 
 func (c *ResourceClient) unschedule(name string) {
+	c.store.remove(name)
 	schedulerID := c.getScheduleID(name)
 	coreScheduler.SVC.RemoveFunc(schedulerID)
 	zap.L().Debug("removed a schedule", zap.String("name", name), zap.String("schedulerID", schedulerID))
