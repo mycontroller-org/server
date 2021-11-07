@@ -36,15 +36,11 @@ type JobsConfig struct {
 
 func (s *store) getName() string {
 	dir := filepath.Join(model.GetDirectoryDataRoot(), store_directory)
-	utils.CreateDir(dir)
+	err := utils.CreateDir(dir)
+	if err != nil {
+		zap.L().Error("failed to create handler data persistence directory", zap.String("direcotry", dir))
+	}
 	return filepath.Join(dir, fmt.Sprintf("%s_%s.yaml", store_filename, s.handlerID))
-}
-
-func (s *store) remove(name string) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-
-	delete(s.jobs, name)
 }
 
 func (s *store) add(name string, rsData handlerType.ResourceData) {
