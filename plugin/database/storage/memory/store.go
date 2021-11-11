@@ -40,7 +40,7 @@ type Config struct {
 
 // Store to keep all the entities
 type Store struct {
-	RWMutex  *sync.RWMutex
+	mutex    *sync.RWMutex
 	Config   Config
 	data     map[string][]interface{} // entities map with entity name
 	lastSync time.Time
@@ -72,7 +72,7 @@ func NewClient(config cmap.CustomMap) (storageType.Plugin, error) {
 		Config:   cfg,
 		data:     make(map[string][]interface{}),
 		lastSync: time.Now(),
-		RWMutex:  &sync.RWMutex{},
+		mutex:    &sync.RWMutex{},
 	}
 
 	return store, nil
@@ -108,8 +108,8 @@ func (s *Store) loadDumpJob() error {
 
 // Pause the storage to perform import like jobs
 func (s *Store) Pause() error {
-	s.RWMutex.Lock()
-	defer s.RWMutex.Unlock()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
 	s.paused = true
 	// stop dump job
@@ -120,8 +120,8 @@ func (s *Store) Pause() error {
 
 // Resume the storage if Paused
 func (s *Store) Resume() error {
-	s.RWMutex.Lock()
-	defer s.RWMutex.Unlock()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
 	s.paused = false
 	return s.loadDumpJob()
@@ -129,8 +129,8 @@ func (s *Store) Resume() error {
 
 // ClearDatabase removes all the data from the database
 func (s *Store) ClearDatabase() error {
-	s.RWMutex.Lock()
-	defer s.RWMutex.Unlock()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
 	// remove all the data
 	s.data = make(map[string][]interface{})
@@ -141,8 +141,8 @@ func (s *Store) ClearDatabase() error {
 }
 
 func (s *Store) writeToDisk() {
-	s.RWMutex.Lock()
-	defer s.RWMutex.Unlock()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 	for entityName, data := range s.data {
 		for _, format := range s.Config.DumpFormat {
 			itemsCount := len(data)

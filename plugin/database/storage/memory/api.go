@@ -27,8 +27,8 @@ func (s *Store) Ping() error {
 
 // Insert Implementation
 func (s *Store) Insert(entityName string, data interface{}) error {
-	s.RWMutex.Lock()
-	defer s.RWMutex.Unlock()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
 	newID := helper.GetID(data)
 	entity := s.getByID(entityName, newID)
@@ -43,8 +43,8 @@ func (s *Store) Insert(entityName string, data interface{}) error {
 
 // Upsert Implementation
 func (s *Store) Upsert(entityName string, data interface{}, filters []stgType.Filter) error {
-	s.RWMutex.Lock()
-	defer s.RWMutex.Unlock()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
 	clonedData := cloneutil.Clone(data)
 	return s.updateEntity(entityName, clonedData, filters, true)
@@ -52,8 +52,8 @@ func (s *Store) Upsert(entityName string, data interface{}, filters []stgType.Fi
 
 // Update Implementation
 func (s *Store) Update(entityName string, data interface{}, filters []stgType.Filter) error {
-	s.RWMutex.Lock()
-	defer s.RWMutex.Unlock()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
 	clonedData := cloneutil.Clone(data)
 	return s.updateEntity(entityName, clonedData, filters, false)
@@ -61,8 +61,8 @@ func (s *Store) Update(entityName string, data interface{}, filters []stgType.Fi
 
 // Find Implementation
 func (s *Store) Find(entityName string, out interface{}, filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
-	s.RWMutex.RLock()
-	defer s.RWMutex.RUnlock()
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
 
 	outVal := reflect.ValueOf(out)
 	if outVal.Kind() != reflect.Ptr {
@@ -108,8 +108,8 @@ func (s *Store) Find(entityName string, out interface{}, filters []stgType.Filte
 
 // FindOne Implementation
 func (s *Store) FindOne(entityName string, out interface{}, filters []stgType.Filter) error {
-	s.RWMutex.RLock()
-	defer s.RWMutex.RUnlock()
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
 
 	entities := s.getEntities(entityName)
 	entities = helper.Filter(entities, filters, true)
@@ -125,8 +125,8 @@ func (s *Store) FindOne(entityName string, out interface{}, filters []stgType.Fi
 
 // Delete Implementation
 func (s *Store) Delete(entityName string, filters []stgType.Filter) (int64, error) {
-	s.RWMutex.Lock()
-	defer s.RWMutex.Unlock()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
 	entities := s.getEntities(entityName)
 	filteredEntities := helper.Filter(entities, filters, false)
