@@ -1,22 +1,19 @@
 package mongodb
 
 import (
-	ml "github.com/mycontroller-org/server/v2/pkg/model"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 )
 
 // modelIndex for entities
 var modelIndex = map[string][]mongo.IndexModel{
-	ml.EntityGateway: {
-		{Keys: bson.M{"name": -1}, Options: options.Index().SetName("index_name")},
-		// Error: Only one text index allowed
-		// {Keys: bson.M{"location": "text", "date": -1}, Options: options.Index().SetName("location_date_index").SetUnique(true)},
-	},
-	// model.EntityNode: {
-	// 	{Keys: bson.M{"name": "text"}, Options: options.Index().SetName("index_name").SetUnique(false)},
+	//	ml.EntityGateway: {
+	//		{Keys: bson.M{"name": -1}, Options: options.Index().SetName("index_name")},
+	// // Error: Only one text index allowed
+	// //{Keys: bson.M{"location": "text", "date": -1}, Options: options.Index().SetName("location_date_index").SetUnique(true)},
+	// //},
+	// // model.EntityNode: {
+	// //	{Keys: bson.M{"name": "text"}, Options: options.Index().SetName("index_name").SetUnique(false)},
 	// },
 }
 
