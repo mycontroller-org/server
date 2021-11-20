@@ -125,12 +125,12 @@ var (
 	secretKeys = []string{"password", "token", "access_token", "authorization", "authentication"}
 )
 
-func UpdateSecrets(source interface{}, encrypt bool) error {
+func UpdateSecrets(source interface{}, secret string, encrypt bool) error {
 	original := reflect.ValueOf(source)
-	return updateSecretRecursive(original, encrypt)
+	return updateSecretRecursive(original, secret, encrypt)
 }
 
-func updateSecretRecursive(value reflect.Value, encrypt bool) error {
+func updateSecretRecursive(value reflect.Value, secret string, encrypt bool) error {
 	switch value.Kind() {
 
 	case reflect.Ptr:
@@ -139,7 +139,7 @@ func updateSecretRecursive(value reflect.Value, encrypt bool) error {
 		if !originalValue.IsValid() {
 			return nil
 		}
-		err := updateSecretRecursive(originalValue, encrypt)
+		err := updateSecretRecursive(originalValue, secret, encrypt)
 		if err != nil {
 			return err
 		}
@@ -149,7 +149,7 @@ func updateSecretRecursive(value reflect.Value, encrypt bool) error {
 		if !originalValue.IsValid() {
 			return nil
 		}
-		err := updateSecretRecursive(originalValue, encrypt)
+		err := updateSecretRecursive(originalValue, secret, encrypt)
 		if err != nil {
 			return err
 		}
@@ -165,13 +165,13 @@ func updateSecretRecursive(value reflect.Value, encrypt bool) error {
 			if originalValue.CanSet() || originalValue.CanInterface() {
 				if originalValue.Kind() == reflect.String { // update secret
 					fieldName := value.Type().Field(index).Name
-					newValue, err := updateStringSecret(fieldName, originalValue.String(), encrypt)
+					newValue, err := updateStringSecret(fieldName, originalValue.String(), secret, encrypt)
 					if err != nil {
 						return err
 					}
 					value.Field(index).SetString(newValue)
 				} else {
-					err := updateSecretRecursive(originalValue, encrypt)
+					err := updateSecretRecursive(originalValue, secret, encrypt)
 					if err != nil {
 						return err
 					}
@@ -183,7 +183,7 @@ func updateSecretRecursive(value reflect.Value, encrypt bool) error {
 		for index := 0; index < value.Len(); index++ {
 			originalValue := value.Index(index)
 			if originalValue.Kind() != reflect.String {
-				err := updateSecretRecursive(originalValue, encrypt)
+				err := updateSecretRecursive(originalValue, secret, encrypt)
 				if err != nil {
 					return err
 				}
@@ -203,13 +203,13 @@ func updateSecretRecursive(value reflect.Value, encrypt bool) error {
 			}
 
 			if originalValue.Kind() == reflect.String { // update secret
-				newValue, err := updateStringSecret(keyString, originalValue.String(), encrypt)
+				newValue, err := updateStringSecret(keyString, originalValue.String(), secret, encrypt)
 				if err != nil {
 					return err
 				}
 				value.SetMapIndex(key, reflect.ValueOf(newValue))
 			} else {
-				err := updateSecretRecursive(originalValue, encrypt)
+				err := updateSecretRecursive(originalValue, secret, encrypt)
 				if err != nil {
 					return err
 				}
@@ -223,14 +223,14 @@ func updateSecretRecursive(value reflect.Value, encrypt bool) error {
 	return nil
 }
 
-func updateStringSecret(fieldName, value string, encrypt bool) (string, error) {
+func updateStringSecret(fieldName, value, secret string, encrypt bool) (string, error) {
 	// zap.L().Info("updating field", zap.String("fieldName", fieldName), zap.String("value", value))
 	if !utils.ContainsString(secretKeys, strings.ToLower(fieldName)) {
 		return value, nil
 	}
 	if encrypt {
-		return hashed.Encrypt(value)
+		return hashed.Encrypt(value, secret)
 	} else {
-		return hashed.Decrypt(value)
+		return hashed.Decrypt(value, secret)
 	}
 }

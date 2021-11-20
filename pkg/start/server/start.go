@@ -2,7 +2,6 @@ package server
 
 import (
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
-	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	metricSVC "github.com/mycontroller-org/server/v2/pkg/service/database/metric"
 	storageSVC "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	fwdplSVC "github.com/mycontroller-org/server/v2/pkg/service/forward_payload"
@@ -13,6 +12,7 @@ import (
 	scheduleSVC "github.com/mycontroller-org/server/v2/pkg/service/schedule"
 	taskSVC "github.com/mycontroller-org/server/v2/pkg/service/task"
 	"github.com/mycontroller-org/server/v2/pkg/start/common"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"go.uber.org/zap"
 )
 
@@ -22,14 +22,27 @@ func Start(handlerFunc func()) {
 }
 
 func startServices() {
-	storageSVC.Init(cfg.CFG.Database.Storage, backupAPI.ExecuteImportStorage) // storage
-	metricSVC.Init(cfg.CFG.Database.Metric)                                   // metric
+	stgSVC, err := storageSVC.Init(store.CFG.Database.Storage, store.CFG.Logger) // storage
+	if err != nil {
+		zap.L().Fatal("error on init storage database", zap.Error(err))
+	}
+	store.InitStorage(stgSVC) // load storage database client
+	err = storageSVC.RunImport(store.STORAGE, backupAPI.ExecuteImportStorage)
+	if err != nil {
+		zap.L().Fatal("error on import", zap.Error(err))
+	}
+
+	mtgSVC, err := metricSVC.Init(store.CFG.Database.Metric, store.CFG.Logger) // metric
+	if err != nil {
+		zap.L().Fatal("error on init metric database", zap.Error(err))
+	}
+	store.InitMetric(mtgSVC) // load storage database client
 
 	StartupJobs()
 	StartupJobsExtra()
 
 	// start message processing engine
-	err := gwMsgProcessor.Start()
+	err = gwMsgProcessor.Start()
 	if err != nil {
 		zap.L().Fatal("error on init message process service", zap.Error(err))
 	}
@@ -41,19 +54,19 @@ func startServices() {
 	}
 
 	// load notify handlers
-	err = handlerSVC.Start(&cfg.CFG.Handler)
+	err = handlerSVC.Start(&store.CFG.Handler)
 	if err != nil {
 		zap.L().Fatal("error on start notify handler service", zap.Error(err))
 	}
 
 	// init task engine
-	err = taskSVC.Start(&cfg.CFG.Task)
+	err = taskSVC.Start(&store.CFG.Task)
 	if err != nil {
 		zap.L().Fatal("error on init task engine service", zap.Error(err))
 	}
 
 	// init scheduler engine
-	err = scheduleSVC.Start(&cfg.CFG.Task)
+	err = scheduleSVC.Start(&store.CFG.Task)
 	if err != nil {
 		zap.L().Fatal("error on init scheduler service", zap.Error(err))
 	}
@@ -65,7 +78,7 @@ func startServices() {
 	}
 
 	// start gateway listener
-	err = gwService.Start(&cfg.CFG.Gateway)
+	err = gwService.Start(&store.CFG.Gateway)
 	if err != nil {
 		zap.L().Fatal("error on starting gateway service listener", zap.Error(err))
 	}
@@ -108,18 +121,17 @@ func closeServices() {
 	resourceSVC.Close()
 
 	// Close storage and metric database
-	if storageSVC.SVC != nil {
-		err := storageSVC.SVC.Close()
+	if store.STORAGE != nil {
+		err := store.STORAGE.Close()
 		if err != nil {
 			zap.L().Error("failed to close storage database")
 		}
 	}
-	if metricSVC.SVC != nil {
-		if metricSVC.SVC != nil {
-			err := metricSVC.SVC.Close()
-			if err != nil {
-				zap.L().Error("failed to close metrics database")
-			}
+	if store.METRIC != nil {
+		err := store.METRIC.Close()
+		if err != nil {
+			zap.L().Error("failed to close metrics database")
 		}
 	}
+
 }

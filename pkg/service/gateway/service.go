@@ -5,11 +5,12 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	commonStore "github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	gwProvider "github.com/mycontroller-org/server/v2/plugin/gateway/provider"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
@@ -18,7 +19,7 @@ func StartGW(gatewayCfg *gwType.Config) error {
 	start := time.Now()
 
 	// descrypt the secrets, tokens
-	err := cloneUtil.UpdateSecrets(gatewayCfg, false)
+	err := cloneUtil.UpdateSecrets(gatewayCfg, commonStore.CFG.Secret, false)
 	if err != nil {
 		return err
 	}

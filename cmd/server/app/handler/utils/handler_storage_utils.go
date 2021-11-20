@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
@@ -19,7 +19,7 @@ func FindOne(w http.ResponseWriter, r *http.Request, entityName string, entity i
 		return
 	}
 
-	err = stg.SVC.FindOne(entityName, entity, filters)
+	err = store.STORAGE.FindOne(entityName, entity, filters)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -102,7 +102,7 @@ func FindMany(w http.ResponseWriter, r *http.Request, entityName string, entitie
 		return
 	}
 
-	result, err := stg.SVC.Find(entityName, entities, f, p)
+	result, err := store.STORAGE.Find(entityName, entities, f, p)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -134,7 +134,7 @@ func SaveEntity(w http.ResponseWriter, r *http.Request, entityName string, entit
 		}
 	}
 
-	err = stg.SVC.Upsert(entityName, entity, filters)
+	err = store.STORAGE.Upsert(entityName, entity, filters)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

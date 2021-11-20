@@ -1,9 +1,9 @@
 package gateway
 
 import (
-	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	gwService "github.com/mycontroller-org/server/v2/pkg/service/gateway"
 	"github.com/mycontroller-org/server/v2/pkg/start/common"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"go.uber.org/zap"
 )
 
@@ -14,7 +14,7 @@ func Init() {
 
 func initServices() {
 	// init gateway listener
-	err := gwService.Start(&cfg.CFG.Gateway)
+	err := gwService.Start(&store.CFG.Gateway)
 	if err != nil {
 		zap.L().Fatal("failed to init gateway service listener", zap.Error(err))
 	}

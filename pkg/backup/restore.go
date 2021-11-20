@@ -30,8 +30,6 @@ import (
 	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
 	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
 	fwdPayloadML "github.com/mycontroller-org/server/v2/pkg/model/forward_payload"
-	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	nhML "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
 	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
@@ -39,10 +37,12 @@ import (
 	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
 	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"github.com/mycontroller-org/server/v2/pkg/utils/ziputils"
+	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	nhML "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -53,13 +53,13 @@ func ExecuteRestore(extractedDir string) error {
 	start := time.Now()
 	zap.L().Info("Restore job triggered", zap.String("extractedDirectory", extractedDir))
 
-	err := storage.SVC.Pause()
+	err := store.STORAGE.Pause()
 	if err != nil {
 		zap.L().Fatal("error on pause a database", zap.Error(err))
 		return err
 	}
 
-	err = storage.SVC.ClearDatabase()
+	err = store.STORAGE.ClearDatabase()
 	if err != nil {
 		zap.L().Fatal("error on emptying database", zap.Error(err))
 		return err
@@ -87,7 +87,7 @@ func ExecuteRestore(extractedDir string) error {
 		return err
 	}
 
-	err = storage.SVC.Resume()
+	err = store.STORAGE.Resume()
 	if err != nil {
 		zap.L().Fatal("error on resume a database service", zap.Error(err))
 		return err

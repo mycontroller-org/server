@@ -9,7 +9,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
-	stgSVC "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
@@ -17,7 +17,7 @@ import (
 // List by filter and pagination
 func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]settingsML.Settings, 0)
-	return stgSVC.SVC.Find(model.EntitySettings, &result, filters, pagination)
+	return store.STORAGE.Find(model.EntitySettings, &result, filters, pagination)
 }
 
 // Save a setting details
@@ -28,7 +28,7 @@ func Save(settings *settingsML.Settings) error {
 	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: settings.ID},
 	}
-	return stgSVC.SVC.Upsert(model.EntitySettings, settings, filters)
+	return store.STORAGE.Upsert(model.EntitySettings, settings, filters)
 }
 
 // GetByID returns a item
@@ -37,7 +37,7 @@ func GetByID(ID string) (*settingsML.Settings, error) {
 	filters := []stgType.Filter{
 		{Key: model.KeyID, Operator: stgType.OperatorEqual, Value: ID},
 	}
-	err := stgSVC.SVC.FindOne(model.EntitySettings, result, filters)
+	err := store.STORAGE.FindOne(model.EntitySettings, result, filters)
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +225,7 @@ func update(settings *settingsML.Settings) error {
 	if !configuration.PauseModifiedOnUpdate.IsSet() {
 		settings.ModifiedOn = time.Now()
 	}
-	return stgSVC.SVC.Upsert(model.EntitySettings, settings, filters)
+	return store.STORAGE.Upsert(model.EntitySettings, settings, filters)
 }
 
 // GetAnalytics returns analytics data

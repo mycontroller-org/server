@@ -6,6 +6,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
+	commonStore "github.com/mycontroller-org/server/v2/pkg/store"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	variablesUtils "github.com/mycontroller-org/server/v2/pkg/utils/variables"
 	"go.uber.org/zap"
@@ -20,7 +21,7 @@ func executeTask(task *taskML.Config, evntWrapper *eventWrapper) {
 
 	zap.L().Debug("executing a task", zap.String("id", task.ID), zap.String("description", task.Description))
 	// load variables
-	variables, err := variablesUtils.LoadVariables(task.Variables)
+	variables, err := variablesUtils.LoadVariables(task.Variables, commonStore.CFG.Secret)
 	if err != nil {
 		zap.L().Warn("failed to load variables", zap.Error(err), zap.String("taskID", task.ID), zap.String("taskDescription", task.Description))
 		// update failure message for state and send it

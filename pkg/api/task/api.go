@@ -5,7 +5,7 @@ import (
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
@@ -14,13 +14,13 @@ import (
 // List by filter and pagination
 func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]taskML.Config, 0)
-	return stg.SVC.Find(model.EntityTask, &result, filters, pagination)
+	return store.STORAGE.Find(model.EntityTask, &result, filters, pagination)
 }
 
 // Get returns a task
 func Get(filters []stgType.Filter) (*taskML.Config, error) {
 	result := &taskML.Config{}
-	err := stg.SVC.FindOne(model.EntityTask, result, filters)
+	err := store.STORAGE.FindOne(model.EntityTask, result, filters)
 	return result, err
 }
 
@@ -34,7 +34,7 @@ func Save(task *taskML.Config) error {
 	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: task.ID},
 	}
-	err := stg.SVC.Upsert(model.EntityTask, task, filters)
+	err := store.STORAGE.Upsert(model.EntityTask, task, filters)
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func GetByID(id string) (*taskML.Config, error) {
 		{Key: model.KeyID, Value: id},
 	}
 	out := &taskML.Config{}
-	err := stg.SVC.FindOne(model.EntityTask, out, f)
+	err := store.STORAGE.FindOne(model.EntityTask, out, f)
 	return out, err
 }
 
@@ -79,5 +79,5 @@ func Delete(IDs []string) (int64, error) {
 		return 0, err
 	}
 	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
-	return stg.SVC.Delete(model.EntityTask, filters)
+	return store.STORAGE.Delete(model.EntityTask, filters)
 }

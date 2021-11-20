@@ -10,7 +10,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/api/field"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	metric "github.com/mycontroller-org/server/v2/pkg/service/database/metric"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	quickIdUL "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
 	mtsML "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
@@ -103,7 +103,7 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 		queryConfig.Global.Functions = values
 	}
 
-	result, err := metric.SVC.Query(queryConfig)
+	result, err := store.METRIC.Query(queryConfig)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -134,7 +134,7 @@ func getMetricList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := metric.SVC.Query(queryConfig)
+	result, err := store.METRIC.Query(queryConfig)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

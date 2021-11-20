@@ -7,8 +7,8 @@ import (
 	analyticsAPI "github.com/mycontroller-org/server/v2/pkg/analytics"
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
-	configSVC "github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 
 	"go.uber.org/zap"
@@ -33,7 +33,7 @@ func ReloadSystemJobs() {
 	// update analytics job
 	analyticsJobName := fmt.Sprintf("%s_%s", systemJobPrefix, idAnalyticsJob)
 	unschedule(analyticsJobName)
-	if configSVC.CFG.Analytics.Enabled {
+	if store.CFG.Analytics.Enabled {
 		// generate analyticsId if not available
 		_, err := settingsAPI.GetAnalytics()
 		if err != nil {

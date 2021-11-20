@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	"golang.org/x/crypto/bcrypt"
 
 	"crypto/aes"
@@ -35,11 +34,11 @@ func IsValidPassword(hashed, password string) bool {
 }
 
 // Encrypt perform encryption on the plain text
-func Encrypt(plainText string) (string, error) {
+func Encrypt(plainText, secret string) (string, error) {
 	if strings.HasPrefix(plainText, EncryptionIdentity) || plainText == "" {
 		return plainText, nil
 	}
-	key := []byte(configuration.CFG.Secret)
+	key := []byte(secret)
 	c, err := aes.NewCipher(key)
 	if err != nil {
 		return "", err
@@ -64,7 +63,7 @@ func Encrypt(plainText string) (string, error) {
 }
 
 // Decrypt performs decryption and return plan text
-func Decrypt(cipherText string) (string, error) {
+func Decrypt(cipherText, secret string) (string, error) {
 	if !strings.HasPrefix(cipherText, EncryptionIdentity) {
 		return cipherText, nil
 	}
@@ -74,7 +73,7 @@ func Decrypt(cipherText string) (string, error) {
 		return "", err
 	}
 
-	key := []byte(configuration.CFG.Secret)
+	key := []byte(secret)
 	chiperBlock, err := aes.NewCipher(key)
 	if err != nil {
 		return "", err

@@ -8,7 +8,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
@@ -17,13 +17,13 @@ import (
 // List by filter and pagination
 func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]userML.User, 0)
-	return stg.SVC.Find(model.EntityUser, &result, filters, pagination)
+	return store.STORAGE.Find(model.EntityUser, &result, filters, pagination)
 }
 
 // Get returns a item
 func Get(filters []stgType.Filter) (userML.User, error) {
 	result := userML.User{}
-	err := stg.SVC.FindOne(model.EntityUser, &result, filters)
+	err := store.STORAGE.FindOne(model.EntityUser, &result, filters)
 	return result, err
 }
 
@@ -33,7 +33,7 @@ func GetByID(ID string) (userML.User, error) {
 	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: ID},
 	}
-	err := stg.SVC.FindOne(model.EntityUser, &result, filters)
+	err := store.STORAGE.FindOne(model.EntityUser, &result, filters)
 	return result, err
 }
 
@@ -43,7 +43,7 @@ func GetByUsername(username string) (userML.User, error) {
 	filters := []stgType.Filter{
 		{Key: model.KeyUsername, Value: username},
 	}
-	err := stg.SVC.FindOne(model.EntityUser, &result, filters)
+	err := store.STORAGE.FindOne(model.EntityUser, &result, filters)
 	return result, err
 }
 
@@ -53,7 +53,7 @@ func GetByEmail(email string) (userML.User, error) {
 	filters := []stgType.Filter{
 		{Key: model.KeyEmail, Value: email},
 	}
-	err := stg.SVC.FindOne(model.EntityUser, &result, filters)
+	err := store.STORAGE.FindOne(model.EntityUser, &result, filters)
 	return result, err
 }
 
@@ -68,13 +68,13 @@ func Save(user *userML.User) error {
 	if !configuration.PauseModifiedOnUpdate.IsSet() {
 		user.ModifiedOn = time.Now()
 	}
-	return stg.SVC.Upsert(model.EntityUser, user, filters)
+	return store.STORAGE.Upsert(model.EntityUser, user, filters)
 }
 
 // Delete items
 func Delete(IDs []string) (int64, error) {
 	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
-	return stg.SVC.Delete(model.EntityUser, filters)
+	return store.STORAGE.Delete(model.EntityUser, filters)
 }
 
 // UpdateProfile updates the user profile

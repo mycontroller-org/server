@@ -1,16 +1,17 @@
 package logger
 
 import (
-	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	"fmt"
+
+	cfgML "github.com/mycontroller-org/server/v2/pkg/model/config"
 	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
-	"github.com/mycontroller-org/server/v2/pkg/version"
 	"go.uber.org/zap"
 )
 
 // Load logger
-func Load() {
-	logger := loggerUtils.GetLogger(cfg.CFG.Logger.Mode, cfg.CFG.Logger.Level.Core, cfg.CFG.Logger.Encoding, false, 0)
+func Load(loggerCfg cfgML.LoggerConfig, component string) {
+	logger := loggerUtils.GetLogger(loggerCfg.Mode, loggerCfg.Level.Core, loggerCfg.Encoding, false, 0)
 	zap.ReplaceGlobals(logger)
-	zap.L().Info("welcome to the MyController world :)")
-	zap.L().Info("server detail", zap.Any("version", version.Get()), zap.Any("loggerConfig", cfg.CFG.Logger))
+	zap.L().Info(fmt.Sprintf("welcome to %s :)", component))
+	//	zap.L().Info("server detail", zap.Any("version", version.Get()), zap.Any("loggerConfig", loggerCfg))
 }

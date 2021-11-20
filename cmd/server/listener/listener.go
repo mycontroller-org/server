@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/mycontroller-org/server/v2/cmd/server/https"
-	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 )
 
 const (
@@ -18,8 +18,8 @@ const (
 )
 
 func StartListener(handler http.Handler) {
-	loggerCfg := cfg.CFG.Logger
-	webCfg := cfg.CFG.Web
+	loggerCfg := store.CFG.Logger
+	webCfg := store.CFG.Web
 
 	if !webCfg.Http.Enabled && !webCfg.HttpsSSL.Enabled && !webCfg.HttpsACME.Enabled {
 		zap.L().Fatal("web services are disabled. Enable at least a service HTTP, HTTPS/SSL or HTTPS/ACME")

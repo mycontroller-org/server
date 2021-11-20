@@ -8,13 +8,12 @@ import (
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	statusAPI "github.com/mycontroller-org/server/v2/pkg/api/status"
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
-	configSVC "github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	"github.com/mycontroller-org/server/v2/pkg/version"
-	"github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storage "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -26,9 +25,6 @@ const (
 
 // ReportAnalyticsData to the analytics server
 func ReportAnalyticsData() {
-	if !configSVC.CFG.Analytics.Enabled {
-		return
-	}
 	zap.L().Debug("collecting analytics data")
 
 	// create and update version details

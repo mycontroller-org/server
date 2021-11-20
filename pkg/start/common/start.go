@@ -12,30 +12,39 @@ import (
 	sch "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/service/logger"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 
 // InitBasicServices func
-func InitBasicServices(initCustomServices, closeCustomServices func()) {
-	defer func() {
-		err := zap.L().Sync()
-		if err != nil {
-			zap.L().Error("error on sync", zap.Error(err))
-		}
-	}()
+func InitBasicServices(initCustomServices func(), closeCustomServices func()) {
+	// 	defer func() {
+	// 		err := zap.L().Sync()
+	// 		if err != nil {
+	// 			zap.L().Error("error on sync", zap.Error(err))
+	// 		}
+	// 	}()
 
 	start := time.Now()
-	cfg.Load()
-	logger.Load()
 
-	mcbus.Start(cfg.CFG.Bus) // bus
-	sch.Init()               // scheduler
+	// load configuration
+	cfg, err := cfg.Load()
+	if err != nil {
+		zap.L().Fatal("failed to load configuration", zap.Error(err))
+		return
+	}
+	store.InitConfig(cfg) // add config in to the common store
+
+	logger.Load(cfg.Logger, "the MyController world")
+
+	mcbus.Start(cfg.Bus) // bus
+	sch.Init()           // scheduler
 
 	// load root directories
-	model.UpdateDirecotries(cfg.CFG.Directories)
+	model.UpdateDirecotries(cfg.Directories)
 	// create root directories
-	err := utils.CreateDir(model.GetDirectoryDataRoot())
+	err = utils.CreateDir(model.GetDirectoryDataRoot())
 	if err != nil {
 		zap.L().Fatal("failed to create root directory", zap.Error(err))
 	}

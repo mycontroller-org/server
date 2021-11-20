@@ -5,7 +5,7 @@ import (
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
@@ -14,13 +14,13 @@ import (
 // List by filter and pagination
 func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]scheduleML.Config, 0)
-	return stg.SVC.Find(model.EntitySchedule, &result, filters, pagination)
+	return store.STORAGE.Find(model.EntitySchedule, &result, filters, pagination)
 }
 
 // Get returns a scheduler
 func Get(filters []stgType.Filter) (*scheduleML.Config, error) {
 	result := &scheduleML.Config{}
-	err := stg.SVC.FindOne(model.EntitySchedule, result, filters)
+	err := store.STORAGE.FindOne(model.EntitySchedule, result, filters)
 	return result, err
 }
 
@@ -35,7 +35,7 @@ func Save(schedule *scheduleML.Config) error {
 	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: schedule.ID},
 	}
-	err := stg.SVC.Upsert(model.EntitySchedule, schedule, filters)
+	err := store.STORAGE.Upsert(model.EntitySchedule, schedule, filters)
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func GetByID(id string) (*scheduleML.Config, error) {
 		{Key: model.KeyID, Value: id},
 	}
 	out := &scheduleML.Config{}
-	err := stg.SVC.FindOne(model.EntitySchedule, out, filters)
+	err := store.STORAGE.FindOne(model.EntitySchedule, out, filters)
 	return out, err
 }
 
@@ -81,5 +81,5 @@ func Delete(IDs []string) (int64, error) {
 		return 0, err
 	}
 	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
-	return stg.SVC.Delete(model.EntitySchedule, filters)
+	return store.STORAGE.Delete(model.EntitySchedule, filters)
 }

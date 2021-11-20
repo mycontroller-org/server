@@ -3,8 +3,8 @@ package handler
 import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
@@ -15,13 +15,13 @@ import (
 // List by filter and pagination
 func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	out := make([]handlerType.Config, 0)
-	return stg.SVC.Find(model.EntityHandler, &out, filters, pagination)
+	return store.STORAGE.Find(model.EntityHandler, &out, filters, pagination)
 }
 
 // Get a config
 func Get(f []stgType.Filter) (handlerType.Config, error) {
 	out := handlerType.Config{}
-	err := stg.SVC.FindOne(model.EntityHandler, &out, f)
+	err := store.STORAGE.FindOne(model.EntityHandler, &out, f)
 	return out, err
 }
 
@@ -44,7 +44,7 @@ func Save(cfg *handlerType.Config) error {
 	}
 
 	// encrypt passwords
-	err := cloneUtil.UpdateSecrets(cfg, true)
+	err := cloneUtil.UpdateSecrets(cfg, store.CFG.Secret, true)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func Save(cfg *handlerType.Config) error {
 	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: cfg.ID},
 	}
-	err = stg.SVC.Upsert(model.EntityHandler, cfg, filters)
+	err = store.STORAGE.Upsert(model.EntityHandler, cfg, filters)
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func GetByTypeName(handlerPluginType, name string) (*handlerType.Config, error) 
 		{Key: model.KeyHandlerName, Value: name},
 	}
 	out := &handlerType.Config{}
-	err := stg.SVC.FindOne(model.EntityHandler, out, f)
+	err := store.STORAGE.FindOne(model.EntityHandler, out, f)
 	return out, err
 }
 
@@ -87,7 +87,7 @@ func GetByID(ID string) (*handlerType.Config, error) {
 		{Key: model.KeyID, Value: ID},
 	}
 	out := &handlerType.Config{}
-	err := stg.SVC.FindOne(model.EntityHandler, out, f)
+	err := store.STORAGE.FindOne(model.EntityHandler, out, f)
 	return out, err
 }
 
@@ -98,5 +98,5 @@ func Delete(ids []string) (int64, error) {
 		return 0, err
 	}
 	f := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids}}
-	return stg.SVC.Delete(model.EntityHandler, f)
+	return store.STORAGE.Delete(model.EntityHandler, f)
 }

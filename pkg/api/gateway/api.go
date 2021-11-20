@@ -3,25 +3,25 @@ package gateway
 import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 )
 
 // List by filter and pagination
 func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]gwType.Config, 0)
-	return stg.SVC.Find(model.EntityGateway, &result, filters, pagination)
+	return store.STORAGE.Find(model.EntityGateway, &result, filters, pagination)
 }
 
 // Get returns a gateway
 func Get(filters []stgType.Filter) (*gwType.Config, error) {
 	result := &gwType.Config{}
-	err := stg.SVC.FindOne(model.EntityGateway, result, filters)
+	err := store.STORAGE.FindOne(model.EntityGateway, result, filters)
 	return result, err
 }
 
@@ -32,7 +32,7 @@ func GetByIDs(ids []string) ([]gwType.Config, error) {
 	}
 	pagination := &stgType.Pagination{Limit: int64(len(ids))}
 	gateways := make([]gwType.Config, 0)
-	_, err := stg.SVC.Find(model.EntityNode, &gateways, filters, pagination)
+	_, err := store.STORAGE.Find(model.EntityNode, &gateways, filters, pagination)
 	return gateways, err
 }
 
@@ -42,7 +42,7 @@ func GetByID(id string) (*gwType.Config, error) {
 		{Key: model.KeyID, Value: id},
 	}
 	result := &gwType.Config{}
-	err := stg.SVC.FindOne(model.EntityGateway, result, filters)
+	err := store.STORAGE.FindOne(model.EntityGateway, result, filters)
 	return result, err
 }
 
@@ -65,12 +65,12 @@ func Save(gwCfg *gwType.Config) error {
 	}
 
 	// encrypt passwords, tokens
-	err := cloneUtil.UpdateSecrets(gwCfg, true)
+	err := cloneUtil.UpdateSecrets(gwCfg, store.CFG.Secret, true)
 	if err != nil {
 		return err
 	}
 
-	err = stg.SVC.Upsert(model.EntityGateway, gwCfg, nil)
+	err = store.STORAGE.Upsert(model.EntityGateway, gwCfg, nil)
 	if err != nil {
 		return err
 	}
@@ -95,5 +95,5 @@ func Delete(ids []string) (int64, error) {
 		return 0, err
 	}
 	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids}}
-	return stg.SVC.Delete(model.EntityGateway, filters)
+	return store.STORAGE.Delete(model.EntityGateway, filters)
 }

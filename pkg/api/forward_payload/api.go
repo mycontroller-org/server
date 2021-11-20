@@ -5,7 +5,7 @@ import (
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 	fwdPayloadML "github.com/mycontroller-org/server/v2/pkg/model/forward_payload"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
@@ -14,13 +14,13 @@ import (
 // List by filter and pagination
 func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]fwdPayloadML.Config, 0)
-	return stg.SVC.Find(model.EntityForwardPayload, &result, filters, pagination)
+	return store.STORAGE.Find(model.EntityForwardPayload, &result, filters, pagination)
 }
 
 // Get returns a item
 func Get(filters []stgType.Filter) (*fwdPayloadML.Config, error) {
 	result := &fwdPayloadML.Config{}
-	err := stg.SVC.FindOne(model.EntityForwardPayload, result, filters)
+	err := store.STORAGE.FindOne(model.EntityForwardPayload, result, filters)
 	return result, err
 }
 
@@ -34,7 +34,7 @@ func Save(fp *fwdPayloadML.Config) error {
 	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: fp.ID},
 	}
-	err := stg.SVC.Upsert(model.EntityForwardPayload, fp, filters)
+	err := store.STORAGE.Upsert(model.EntityForwardPayload, fp, filters)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func Save(fp *fwdPayloadML.Config) error {
 // Delete items
 func Delete(IDs []string) (int64, error) {
 	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
-	return stg.SVC.Delete(model.EntityForwardPayload, filters)
+	return store.STORAGE.Delete(model.EntityForwardPayload, filters)
 }
 
 // Enable forward payload entries

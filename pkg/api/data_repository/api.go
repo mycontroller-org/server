@@ -9,8 +9,8 @@ import (
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 	repositoryML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
@@ -19,13 +19,13 @@ import (
 // List by filter and pagination
 func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]repositoryML.Config, 0)
-	return stg.SVC.Find(model.EntityDataRepository, &result, filters, pagination)
+	return store.STORAGE.Find(model.EntityDataRepository, &result, filters, pagination)
 }
 
 // Get returns a item
 func Get(filters []stgType.Filter) (*repositoryML.Config, error) {
 	result := &repositoryML.Config{}
-	err := stg.SVC.FindOne(model.EntityDataRepository, result, filters)
+	err := store.STORAGE.FindOne(model.EntityDataRepository, result, filters)
 	if err == nil {
 		updateResult, err := updateResult(result)
 		if err != nil {
@@ -50,14 +50,14 @@ func Save(data *repositoryML.Config) error {
 	}
 
 	// encrypt passwords, tokens
-	err := cloneUtil.UpdateSecrets(data, true)
+	err := cloneUtil.UpdateSecrets(data, store.CFG.Secret, true)
 	if err != nil {
 		return err
 	}
 
 	// in mongodb can not save map[interface{}]interface{} type
 	// convert it to map[string]interface{} type
-	if configuration.CFG.Database.Storage.GetString(model.KeyType) == stgType.TypeMongoDB {
+	if store.CFG.Database.Storage.GetString(model.KeyType) == stgType.TypeMongoDB {
 		updatedResult, err := updateResult(data)
 		if err != nil {
 			return err
@@ -65,7 +65,7 @@ func Save(data *repositoryML.Config) error {
 		data = updatedResult
 	}
 
-	err = stg.SVC.Upsert(model.EntityDataRepository, data, filters)
+	err = store.STORAGE.Upsert(model.EntityDataRepository, data, filters)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func GetByID(id string) (*repositoryML.Config, error) {
 		{Key: model.KeyID, Value: id},
 	}
 	out := &repositoryML.Config{}
-	err := stg.SVC.FindOne(model.EntityDataRepository, out, f)
+	err := store.STORAGE.FindOne(model.EntityDataRepository, out, f)
 	if err == nil {
 		updatedResult, err := updateResult(out)
 		if err != nil {
@@ -93,7 +93,7 @@ func GetByID(id string) (*repositoryML.Config, error) {
 // Delete items
 func Delete(IDs []string) (int64, error) {
 	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
-	return stg.SVC.Delete(model.EntityDataRepository, filters)
+	return store.STORAGE.Delete(model.EntityDataRepository, filters)
 }
 
 // map[interface{}]interface{} type not working as expected in javascript in task module

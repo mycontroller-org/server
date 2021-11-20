@@ -6,7 +6,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
@@ -14,13 +14,13 @@ import (
 // List by filter and pagination
 func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]nodeML.Node, 0)
-	return stg.SVC.Find(model.EntityNode, &result, filters, pagination)
+	return store.STORAGE.Find(model.EntityNode, &result, filters, pagination)
 }
 
 // Get returns a Node
 func Get(filters []stgType.Filter) (nodeML.Node, error) {
 	result := nodeML.Node{}
-	err := stg.SVC.FindOne(model.EntityNode, &result, filters)
+	err := store.STORAGE.FindOne(model.EntityNode, &result, filters)
 	return result, err
 }
 
@@ -32,7 +32,7 @@ func Save(node *nodeML.Node) error {
 	filters := []stgType.Filter{
 		{Key: model.KeyID, Value: node.ID},
 	}
-	return stg.SVC.Upsert(model.EntityNode, node, filters)
+	return store.STORAGE.Upsert(model.EntityNode, node, filters)
 }
 
 // GetByGatewayAndNodeID returns a node details by gatewayID and nodeId of a message
@@ -42,7 +42,7 @@ func GetByGatewayAndNodeID(gatewayID, nodeID string) (*nodeML.Node, error) {
 		{Key: model.KeyNodeID, Value: nodeID},
 	}
 	result := &nodeML.Node{}
-	err := stg.SVC.FindOne(model.EntityNode, result, f)
+	err := store.STORAGE.FindOne(model.EntityNode, result, f)
 	return result, err
 }
 
@@ -52,7 +52,7 @@ func GetByID(id string) (*nodeML.Node, error) {
 		{Key: model.KeyID, Value: id},
 	}
 	result := &nodeML.Node{}
-	err := stg.SVC.FindOne(model.EntityNode, result, f)
+	err := store.STORAGE.FindOne(model.EntityNode, result, f)
 	return result, err
 }
 
@@ -63,14 +63,14 @@ func GetByIDs(ids []string) ([]nodeML.Node, error) {
 	}
 	pagination := &stgType.Pagination{Limit: int64(len(ids))}
 	nodes := make([]nodeML.Node, 0)
-	_, err := stg.SVC.Find(model.EntityNode, &nodes, filters, pagination)
+	_, err := store.STORAGE.Find(model.EntityNode, &nodes, filters, pagination)
 	return nodes, err
 }
 
 // Delete node
 func Delete(IDs []string) (int64, error) {
 	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
-	return stg.SVC.Delete(model.EntityNode, filters)
+	return store.STORAGE.Delete(model.EntityNode, filters)
 }
 
 // UpdateFirmwareState func

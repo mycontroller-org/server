@@ -3,7 +3,7 @@ package source
 import (
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
-	"github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	storageML "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
@@ -11,13 +11,13 @@ import (
 // List by filter and pagination
 func List(filters []storageML.Filter, pagination *storageML.Pagination) (*storageML.Result, error) {
 	result := make([]sourceML.Source, 0)
-	return storage.SVC.Find(model.EntitySource, &result, filters, pagination)
+	return store.STORAGE.Find(model.EntitySource, &result, filters, pagination)
 }
 
 // Get returns a source
 func Get(filters []storageML.Filter) (*sourceML.Source, error) {
 	result := &sourceML.Source{}
-	err := storage.SVC.FindOne(model.EntitySource, result, filters)
+	err := store.STORAGE.FindOne(model.EntitySource, result, filters)
 	return result, err
 }
 
@@ -29,7 +29,7 @@ func Save(source *sourceML.Source) error {
 	f := []storageML.Filter{
 		{Key: model.KeyID, Value: source.ID},
 	}
-	return storage.SVC.Upsert(model.EntitySource, source, f)
+	return store.STORAGE.Upsert(model.EntitySource, source, f)
 }
 
 // GetByIDs returns a source details by gatewayID, nodeId and sourceID of a message
@@ -40,12 +40,12 @@ func GetByIDs(gatewayID, nodeID, sourceID string) (*sourceML.Source, error) {
 		{Key: model.KeySourceID, Value: sourceID},
 	}
 	result := &sourceML.Source{}
-	err := storage.SVC.FindOne(model.EntitySource, result, filters)
+	err := store.STORAGE.FindOne(model.EntitySource, result, filters)
 	return result, err
 }
 
 // Delete source
 func Delete(IDs []string) (int64, error) {
 	filters := []storageML.Filter{{Key: model.KeyID, Operator: storageML.OperatorIn, Value: IDs}}
-	return storage.SVC.Delete(model.EntitySource, filters)
+	return store.STORAGE.Delete(model.EntitySource, filters)
 }

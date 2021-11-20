@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -14,12 +15,12 @@ import (
 
 // configuration globally accessable
 var (
-	CFG                   *cfgML.Config
+	// CFG                   *cfgML.Config
 	PauseModifiedOnUpdate = concurrency.SafeBool{}
 )
 
 // Load configuration
-func Load() {
+func Load() (*cfgML.Config, error) {
 	// load a temporary logger
 	logger := loggerUtils.GetLogger("development", "error", "console", false, 0)
 
@@ -27,16 +28,18 @@ func Load() {
 	flag.Parse()
 	if cf == nil {
 		logger.Fatal("configuration file not supplied")
-		return
+		return nil, errors.New("configuration file not supplied")
 	}
 	d, err := ioutil.ReadFile(*cf)
 	if err != nil {
 		logger.Fatal("error on reading configuration file", zap.Error(err))
 	}
 
+	CFG := cfgML.Config{}
 	err = yaml.Unmarshal(d, &CFG)
 	if err != nil {
 		logger.Fatal("failed to parse yaml data", zap.Error(err))
+		return nil, err
 	}
 
 	// update encryption key length
@@ -45,6 +48,7 @@ func Load() {
 
 	// load default value
 	PauseModifiedOnUpdate.Reset()
+	return &CFG, nil
 }
 
 // UpdatedKey returns fixed key size

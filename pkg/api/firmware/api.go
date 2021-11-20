@@ -13,8 +13,8 @@ import (
 	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
-	stg "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
@@ -24,13 +24,13 @@ import (
 // List by filter and pagination
 func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
 	result := make([]firmwareML.Firmware, 0)
-	return stg.SVC.Find(model.EntityFirmware, &result, filters, pagination)
+	return store.STORAGE.Find(model.EntityFirmware, &result, filters, pagination)
 }
 
 // Get returns a item
 func Get(filters []stgType.Filter) (firmwareML.Firmware, error) {
 	result := firmwareML.Firmware{}
-	err := stg.SVC.FindOne(model.EntityFirmware, &result, filters)
+	err := store.STORAGE.FindOne(model.EntityFirmware, &result, filters)
 	return result, err
 }
 
@@ -40,7 +40,7 @@ func GetByID(id string) (firmwareML.Firmware, error) {
 		{Key: model.KeyID, Value: id},
 	}
 	result := firmwareML.Firmware{}
-	err := stg.SVC.FindOne(model.EntityFirmware, &result, filters)
+	err := store.STORAGE.FindOne(model.EntityFirmware, &result, filters)
 	return result, err
 }
 
@@ -66,7 +66,7 @@ func Save(firmware *firmwareML.Firmware, keepFile bool) error {
 		}
 	}
 
-	err := stg.SVC.Upsert(model.EntityFirmware, firmware, filters)
+	err := store.STORAGE.Upsert(model.EntityFirmware, firmware, filters)
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func Delete(ids []string) (int64, error) {
 	}
 
 	// delete entries
-	return stg.SVC.Delete(model.EntityFirmware, filters)
+	return store.STORAGE.Delete(model.EntityFirmware, filters)
 }
 
 // Upload a firmware file

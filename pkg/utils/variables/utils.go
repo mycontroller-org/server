@@ -37,7 +37,7 @@ type genericAPI struct {
 }
 
 // LoadVariables loads all the defined variables
-func LoadVariables(variablesPreMap map[string]string) (map[string]interface{}, error) {
+func LoadVariables(variablesPreMap map[string]string, secret string) (map[string]interface{}, error) {
 	variables := make(map[string]interface{})
 	for name, stringValue := range variablesPreMap {
 		value := getEntity(name, stringValue)
@@ -53,7 +53,7 @@ func LoadVariables(variablesPreMap map[string]string) (map[string]interface{}, e
 	backToVariables, ok := clonedVariables.(map[string]interface{})
 	if ok {
 		// descrypt the secrets, tokens
-		err := cloneUtil.UpdateSecrets(backToVariables, false)
+		err := cloneUtil.UpdateSecrets(backToVariables, secret, false)
 		if err != nil {
 			return nil, err
 		}

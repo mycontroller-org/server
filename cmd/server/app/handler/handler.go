@@ -11,8 +11,8 @@ import (
 	webConsole "github.com/mycontroller-org/server/v2/cmd/server/app/web-console"
 	"github.com/mycontroller-org/server/v2/pkg/model/config"
 	webHandlerML "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
-	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	mcWS "github.com/mycontroller-org/server/v2/pkg/service/websocket"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
 	//	googleAssistantAPI "github.com/mycontroller-org/server/v2/plugin/bot/google_assistant"
@@ -22,7 +22,7 @@ import (
 func GetHandler() (http.Handler, error) {
 	router := mux.NewRouter()
 
-	webCfg := cfg.CFG.Web
+	webCfg := store.CFG.Web
 
 	// set JWT access secret in environment
 	// TODO: this should be updated dynamically
@@ -59,7 +59,7 @@ func GetHandler() (http.Handler, error) {
 	// googleAssistantAPI.RegisterGoogleAssistantRoutes(router)
 
 	// add secure and insecure directories into handler
-	addFileServers(cfg.CFG.Directories, router)
+	addFileServers(store.CFG.Directories, router)
 
 	if webCfg.WebDirectory != "" {
 		fs := http.FileServer(http.Dir(webCfg.WebDirectory))

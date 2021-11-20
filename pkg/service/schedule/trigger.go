@@ -9,6 +9,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/api/sunrise"
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
@@ -43,7 +44,7 @@ func scheduleTriggerFunc(cfg *scheduleML.Config, spec string) {
 	defer func() { verifyAndDisableSchedule(cfg, time.Since(start), executionError) }()
 
 	// load variables
-	variables, err := variablesUtils.LoadVariables(cfg.Variables)
+	variables, err := variablesUtils.LoadVariables(cfg.Variables, store.CFG.Secret)
 	if err != nil {
 		zap.L().Error("error on loading variables", zap.String("schedulerID", cfg.ID), zap.Error(err))
 		// update triggered count and update state

@@ -5,11 +5,12 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	commonStore "github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	handlerPlugin "github.com/mycontroller-org/server/v2/plugin/handler"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -87,7 +88,7 @@ func UnloadAll() {
 
 func loadHandler(cfg *handlerType.Config) (handlerType.Plugin, error) {
 	// descrypt the secrets, tokens
-	err := cloneUtil.UpdateSecrets(cfg, false)
+	err := cloneUtil.UpdateSecrets(cfg, commonStore.CFG.Secret, false)
 	if err != nil {
 		return nil, err
 	}
