@@ -15,7 +15,6 @@ import (
 
 // configuration globally accessable
 var (
-	// CFG                   *cfgML.Config
 	PauseModifiedOnUpdate = concurrency.SafeBool{}
 )
 

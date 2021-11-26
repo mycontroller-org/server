@@ -44,7 +44,7 @@ func Save(cfg *handlerType.Config) error {
 	}
 
 	// encrypt passwords
-	err := cloneUtil.UpdateSecrets(cfg, store.CFG.Secret, true)
+	err := cloneUtil.UpdateSecrets(cfg, store.CFG.Secret, true, cloneUtil.DefaultSpecialKeys)
 	if err != nil {
 		return err
 	}

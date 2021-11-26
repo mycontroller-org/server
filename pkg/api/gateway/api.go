@@ -65,7 +65,7 @@ func Save(gwCfg *gwType.Config) error {
 	}
 
 	// encrypt passwords, tokens
-	err := cloneUtil.UpdateSecrets(gwCfg, store.CFG.Secret, true)
+	err := cloneUtil.UpdateSecrets(gwCfg, store.CFG.Secret, true, cloneUtil.DefaultSpecialKeys)
 	if err != nil {
 		return err
 	}

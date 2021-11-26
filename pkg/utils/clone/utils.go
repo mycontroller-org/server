@@ -122,15 +122,17 @@ func translateRecursive(copy, original reflect.Value) {
 }
 
 var (
-	secretKeys = []string{"password", "token", "access_token", "authorization", "authentication"}
+	DefaultSpecialKeys = []string{"password", "token", "access_token", "accesstoken", "authorization", "authentication"}
 )
 
-func UpdateSecrets(source interface{}, secret string, encrypt bool) error {
+// UpdateSecrets encrypts or decrypts the spacial keys
+// special keys should be in lower case
+func UpdateSecrets(source interface{}, secret string, encrypt bool, specialKeys []string) error {
 	original := reflect.ValueOf(source)
-	return updateSecretRecursive(original, secret, encrypt)
+	return updateSecretRecursive(original, secret, encrypt, specialKeys)
 }
 
-func updateSecretRecursive(value reflect.Value, secret string, encrypt bool) error {
+func updateSecretRecursive(value reflect.Value, secret string, encrypt bool, specialKeys []string) error {
 	switch value.Kind() {
 
 	case reflect.Ptr:
@@ -139,7 +141,7 @@ func updateSecretRecursive(value reflect.Value, secret string, encrypt bool) err
 		if !originalValue.IsValid() {
 			return nil
 		}
-		err := updateSecretRecursive(originalValue, secret, encrypt)
+		err := updateSecretRecursive(originalValue, secret, encrypt, specialKeys)
 		if err != nil {
 			return err
 		}
@@ -149,7 +151,7 @@ func updateSecretRecursive(value reflect.Value, secret string, encrypt bool) err
 		if !originalValue.IsValid() {
 			return nil
 		}
-		err := updateSecretRecursive(originalValue, secret, encrypt)
+		err := updateSecretRecursive(originalValue, secret, encrypt, specialKeys)
 		if err != nil {
 			return err
 		}
@@ -165,13 +167,13 @@ func updateSecretRecursive(value reflect.Value, secret string, encrypt bool) err
 			if originalValue.CanSet() || originalValue.CanInterface() {
 				if originalValue.Kind() == reflect.String { // update secret
 					fieldName := value.Type().Field(index).Name
-					newValue, err := updateStringSecret(fieldName, originalValue.String(), secret, encrypt)
+					newValue, err := updateStringSecret(fieldName, originalValue.String(), secret, encrypt, specialKeys)
 					if err != nil {
 						return err
 					}
 					value.Field(index).SetString(newValue)
 				} else {
-					err := updateSecretRecursive(originalValue, secret, encrypt)
+					err := updateSecretRecursive(originalValue, secret, encrypt, specialKeys)
 					if err != nil {
 						return err
 					}
@@ -183,7 +185,7 @@ func updateSecretRecursive(value reflect.Value, secret string, encrypt bool) err
 		for index := 0; index < value.Len(); index++ {
 			originalValue := value.Index(index)
 			if originalValue.Kind() != reflect.String {
-				err := updateSecretRecursive(originalValue, secret, encrypt)
+				err := updateSecretRecursive(originalValue, secret, encrypt, specialKeys)
 				if err != nil {
 					return err
 				}
@@ -203,13 +205,13 @@ func updateSecretRecursive(value reflect.Value, secret string, encrypt bool) err
 			}
 
 			if originalValue.Kind() == reflect.String { // update secret
-				newValue, err := updateStringSecret(keyString, originalValue.String(), secret, encrypt)
+				newValue, err := updateStringSecret(keyString, originalValue.String(), secret, encrypt, specialKeys)
 				if err != nil {
 					return err
 				}
 				value.SetMapIndex(key, reflect.ValueOf(newValue))
 			} else {
-				err := updateSecretRecursive(originalValue, secret, encrypt)
+				err := updateSecretRecursive(originalValue, secret, encrypt, specialKeys)
 				if err != nil {
 					return err
 				}
@@ -223,9 +225,9 @@ func updateSecretRecursive(value reflect.Value, secret string, encrypt bool) err
 	return nil
 }
 
-func updateStringSecret(fieldName, value, secret string, encrypt bool) (string, error) {
+func updateStringSecret(fieldName, value, secret string, encrypt bool, specialKeys []string) (string, error) {
 	// zap.L().Info("updating field", zap.String("fieldName", fieldName), zap.String("value", value))
-	if !utils.ContainsString(secretKeys, strings.ToLower(fieldName)) {
+	if !utils.ContainsString(specialKeys, strings.ToLower(fieldName)) {
 		return value, nil
 	}
 	if encrypt {

@@ -19,7 +19,7 @@ func StartGW(gatewayCfg *gwType.Config) error {
 	start := time.Now()
 
 	// descrypt the secrets, tokens
-	err := cloneUtil.UpdateSecrets(gatewayCfg, commonStore.CFG.Secret, false)
+	err := cloneUtil.UpdateSecrets(gatewayCfg, commonStore.CFG.Secret, false, cloneUtil.DefaultSpecialKeys)
 	if err != nil {
 		return err
 	}
