@@ -6,6 +6,7 @@ import (
 	"time"
 
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
+	"github.com/mycontroller-org/server/v2/pkg/model"
 	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
 	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
@@ -41,7 +42,7 @@ func get(minimal bool) Status {
 	status := Status{
 		DocumentationURL: store.CFG.Web.DocumentationURL,
 	}
-	status.MetricsDBDisabled = store.CFG.Database.Metric.GetBool("disabled")
+	status.MetricsDBDisabled = store.CFG.Database.Metric.GetBool(model.KeyDisabled)
 
 	if !minimal {
 		hostname, err := os.Hostname()
