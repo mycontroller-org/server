@@ -7,9 +7,12 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 )
+
+const DefaultTimeout = time.Second * 30
 
 // ResponseConfig of a request
 type ResponseConfig struct {
@@ -25,7 +28,7 @@ type Client struct {
 }
 
 // GetClient returns http client
-func GetClient(insecure bool) *Client {
+func GetClient(insecure bool, timeout time.Duration) *Client {
 	var httpClient *http.Client
 	if insecure {
 		customTransport := http.DefaultTransport.(*http.Transport).Clone()
@@ -33,6 +36,11 @@ func GetClient(insecure bool) *Client {
 		httpClient = &http.Client{Transport: customTransport}
 	} else {
 		httpClient = http.DefaultClient
+	}
+	if timeout > 0 {
+		httpClient.Timeout = timeout
+	} else {
+		httpClient.Timeout = DefaultTimeout
 	}
 	return &Client{httpClient: httpClient}
 }

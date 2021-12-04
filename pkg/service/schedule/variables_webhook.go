@@ -2,6 +2,7 @@ package schedule
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/model"
@@ -10,9 +11,11 @@ import (
 	"go.uber.org/zap"
 )
 
+const timeout = time.Second * 10
+
 func loadWebhookVariables(scheduleID string, config scheduleML.CustomVariableConfig, variables map[string]interface{}) map[string]interface{} {
 	whCfg := config.Webhook
-	client := httpclient.GetClient(whCfg.InsecureSkipVerify)
+	client := httpclient.GetClient(whCfg.InsecureSkipVerify, timeout)
 	if !whCfg.IncludeConfig {
 		delete(variables, model.KeySchedule)
 	}

@@ -14,7 +14,11 @@ import (
 	"go.uber.org/zap"
 )
 
-const PluginTelegram = "telegram"
+const (
+	PluginTelegram = "telegram"
+
+	timeout = time.Second * 15
+)
 
 // TelegramClient struct
 type TelegramClient struct {
@@ -32,7 +36,7 @@ func NewTelegramPlugin(cfg *handlerType.Config) (handlerType.Plugin, error) {
 	}
 
 	client := &TelegramClient{
-		httpClient: httpClient.GetClient(false),
+		httpClient: httpClient.GetClient(false, timeout),
 		handlerCfg: cfg,
 		Config:     config,
 	}

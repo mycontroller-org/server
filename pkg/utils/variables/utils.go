@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"time"
 
 	dataRepositoryAPI "github.com/mycontroller-org/server/v2/pkg/api/data_repository"
 	fieldAPI "github.com/mycontroller-org/server/v2/pkg/api/field"
@@ -30,6 +31,10 @@ import (
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
+)
+
+const (
+	webhookTimeout = time.Second * 10
 )
 
 type genericAPI struct {
@@ -113,7 +118,7 @@ func getEntity(name, stringValue string) interface{} {
 }
 
 func getWebhookData(name string, whCfg *handlerType.WebhookData) interface{} {
-	client := httpclient.GetClient(whCfg.InsecureSkipVerify)
+	client := httpclient.GetClient(whCfg.InsecureSkipVerify, webhookTimeout)
 
 	if whCfg.Method == "" {
 		whCfg.Method = http.MethodGet

@@ -3,8 +3,13 @@ package extrav1
 import (
 	"encoding/base64"
 	"fmt"
+	"time"
 
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
+)
+
+const (
+	timeout = time.Second * 15
 )
 
 func newClient(uri string, insecureSkipVerify bool, username, password string) (map[string]string, *httpclient.Client) {
@@ -13,5 +18,5 @@ func newClient(uri string, insecureSkipVerify bool, username, password string) (
 		base64String := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))
 		headers["Authorization"] = fmt.Sprintf("Basic %s", base64String)
 	}
-	return headers, httpclient.GetClient(insecureSkipVerify)
+	return headers, httpclient.GetClient(insecureSkipVerify, timeout)
 }

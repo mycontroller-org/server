@@ -2,6 +2,7 @@ package task
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/model"
@@ -11,9 +12,11 @@ import (
 	"go.uber.org/zap"
 )
 
+const timeout = time.Second * 10
+
 func isTriggeredWebhook(taskID string, config taskML.EvaluationConfig, variables map[string]interface{}) (map[string]interface{}, bool) {
 	whCfg := config.Webhook
-	client := httpclient.GetClient(whCfg.InsecureSkipVerify)
+	client := httpclient.GetClient(whCfg.InsecureSkipVerify, timeout)
 	if !whCfg.IncludeConfig {
 		delete(variables, model.KeyTask)
 	}

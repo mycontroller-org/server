@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/model"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
@@ -15,6 +16,8 @@ import (
 
 const (
 	PluginWebhook = "webhook"
+
+	timeout = time.Second * 10
 
 	// data format
 	// DataTypeJSON = "json"
@@ -91,7 +94,7 @@ func (p *WebhookClient) Name() string {
 // Start handler implementation
 func (c *WebhookClient) Start() error {
 	if c.httpClient == nil {
-		c.httpClient = httpclient.GetClient(c.Config.InsecureSkipVerify)
+		c.httpClient = httpclient.GetClient(c.Config.InsecureSkipVerify, timeout)
 	}
 
 	return nil
