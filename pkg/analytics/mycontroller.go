@@ -2,6 +2,7 @@ package analytics
 
 import (
 	"net/http"
+	"time"
 
 	gatewayAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
 	handlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
@@ -21,6 +22,7 @@ const (
 	ANALYTICS_ID  = "MC198501010915"
 	ANALYTICS_URL = "https://analytics.mycontroller.org/event"
 	API_VERSION   = "1"
+	timeout       = time.Second * 10
 )
 
 // ReportAnalyticsData to the analytics server
@@ -106,7 +108,7 @@ func ReportAnalyticsData() {
 	zap.L().Debug("analytics data to be reported", zap.Any("data", payload))
 
 	// publish the data
-	client := httpclient.GetClient(false)
+	client := httpclient.GetClient(false, timeout)
 	resConfig, responseBody, err := client.Request(ANALYTICS_URL, http.MethodPost, nil, nil, payload, http.StatusOK)
 	if err != nil {
 		zap.L().Debug("error on sending analytics data", zap.Error(err), zap.String("response", string(responseBody)), zap.Any("responseConfig", resConfig))
