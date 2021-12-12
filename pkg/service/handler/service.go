@@ -88,7 +88,7 @@ func UnloadAll() {
 
 func loadHandler(cfg *handlerType.Config) (handlerType.Plugin, error) {
 	// descrypt the secrets, tokens
-	err := cloneUtil.UpdateSecrets(cfg, commonStore.CFG.Secret, false, cloneUtil.DefaultSpecialKeys)
+	err := cloneUtil.UpdateSecrets(cfg, commonStore.CFG.Secret, "", false, cloneUtil.DefaultSpecialKeys)
 	if err != nil {
 		return nil, err
 	}

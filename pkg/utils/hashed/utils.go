@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	EncryptionIdentity = "ENCRYPTED;MC;AES256;BASE64;"
+	DefaultEncryptionPrefix = "ENCRYPTED;MC;AES256;BASE64;"
 )
 
 // GenerateHash returns hashed string of the password
@@ -34,8 +34,11 @@ func IsValidPassword(hashed, password string) bool {
 }
 
 // Encrypt perform encryption on the plain text
-func Encrypt(plainText, secret string) (string, error) {
-	if strings.HasPrefix(plainText, EncryptionIdentity) || plainText == "" {
+func Encrypt(plainText, secret, encryptionPrefix string) (string, error) {
+	if encryptionPrefix == "" {
+		encryptionPrefix = DefaultEncryptionPrefix
+	}
+	if strings.HasPrefix(plainText, encryptionPrefix) || plainText == "" {
 		return plainText, nil
 	}
 	key := []byte(secret)
@@ -59,16 +62,19 @@ func Encrypt(plainText, secret string) (string, error) {
 		return "", err
 	}
 
-	return fmt.Sprintf("%s%s", EncryptionIdentity, base64.StdEncoding.EncodeToString(bytes)), nil
+	return fmt.Sprintf("%s%s", DefaultEncryptionPrefix, base64.StdEncoding.EncodeToString(bytes)), nil
 }
 
 // Decrypt performs decryption and return plan text
-func Decrypt(cipherText, secret string) (string, error) {
-	if !strings.HasPrefix(cipherText, EncryptionIdentity) {
+func Decrypt(cipherText, secret, encryptionPrefix string) (string, error) {
+	if encryptionPrefix == "" {
+		encryptionPrefix = DefaultEncryptionPrefix
+	}
+	if !strings.HasPrefix(cipherText, encryptionPrefix) {
 		return cipherText, nil
 	}
 
-	cipherTextBytes, err := base64.StdEncoding.DecodeString(cipherText[len(EncryptionIdentity):])
+	cipherTextBytes, err := base64.StdEncoding.DecodeString(cipherText[len(encryptionPrefix):])
 	if err != nil {
 		return "", err
 	}

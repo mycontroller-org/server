@@ -127,12 +127,12 @@ var (
 
 // UpdateSecrets encrypts or decrypts the spacial keys
 // special keys should be in lower case
-func UpdateSecrets(source interface{}, secret string, encrypt bool, specialKeys []string) error {
+func UpdateSecrets(source interface{}, secret, encryptionPrefix string, encrypt bool, specialKeys []string) error {
 	original := reflect.ValueOf(source)
-	return updateSecretRecursive(original, secret, encrypt, specialKeys)
+	return updateSecretRecursive(original, secret, encryptionPrefix, encrypt, specialKeys)
 }
 
-func updateSecretRecursive(value reflect.Value, secret string, encrypt bool, specialKeys []string) error {
+func updateSecretRecursive(value reflect.Value, secret, encryptionPrefix string, encrypt bool, specialKeys []string) error {
 	switch value.Kind() {
 
 	case reflect.Ptr:
@@ -141,7 +141,7 @@ func updateSecretRecursive(value reflect.Value, secret string, encrypt bool, spe
 		if !originalValue.IsValid() {
 			return nil
 		}
-		err := updateSecretRecursive(originalValue, secret, encrypt, specialKeys)
+		err := updateSecretRecursive(originalValue, secret, encryptionPrefix, encrypt, specialKeys)
 		if err != nil {
 			return err
 		}
@@ -151,7 +151,7 @@ func updateSecretRecursive(value reflect.Value, secret string, encrypt bool, spe
 		if !originalValue.IsValid() {
 			return nil
 		}
-		err := updateSecretRecursive(originalValue, secret, encrypt, specialKeys)
+		err := updateSecretRecursive(originalValue, secret, encryptionPrefix, encrypt, specialKeys)
 		if err != nil {
 			return err
 		}
@@ -167,13 +167,13 @@ func updateSecretRecursive(value reflect.Value, secret string, encrypt bool, spe
 			if originalValue.CanSet() || originalValue.CanInterface() {
 				if originalValue.Kind() == reflect.String { // update secret
 					fieldName := value.Type().Field(index).Name
-					newValue, err := updateStringSecret(fieldName, originalValue.String(), secret, encrypt, specialKeys)
+					newValue, err := updateStringSecret(fieldName, originalValue.String(), secret, encryptionPrefix, encrypt, specialKeys)
 					if err != nil {
 						return err
 					}
 					value.Field(index).SetString(newValue)
 				} else {
-					err := updateSecretRecursive(originalValue, secret, encrypt, specialKeys)
+					err := updateSecretRecursive(originalValue, secret, encryptionPrefix, encrypt, specialKeys)
 					if err != nil {
 						return err
 					}
@@ -185,7 +185,7 @@ func updateSecretRecursive(value reflect.Value, secret string, encrypt bool, spe
 		for index := 0; index < value.Len(); index++ {
 			originalValue := value.Index(index)
 			if originalValue.Kind() != reflect.String {
-				err := updateSecretRecursive(originalValue, secret, encrypt, specialKeys)
+				err := updateSecretRecursive(originalValue, secret, encryptionPrefix, encrypt, specialKeys)
 				if err != nil {
 					return err
 				}
@@ -205,13 +205,13 @@ func updateSecretRecursive(value reflect.Value, secret string, encrypt bool, spe
 			}
 
 			if originalValue.Kind() == reflect.String { // update secret
-				newValue, err := updateStringSecret(keyString, originalValue.String(), secret, encrypt, specialKeys)
+				newValue, err := updateStringSecret(keyString, originalValue.String(), secret, encryptionPrefix, encrypt, specialKeys)
 				if err != nil {
 					return err
 				}
 				value.SetMapIndex(key, reflect.ValueOf(newValue))
 			} else {
-				err := updateSecretRecursive(originalValue, secret, encrypt, specialKeys)
+				err := updateSecretRecursive(originalValue, secret, encryptionPrefix, encrypt, specialKeys)
 				if err != nil {
 					return err
 				}
@@ -225,14 +225,14 @@ func updateSecretRecursive(value reflect.Value, secret string, encrypt bool, spe
 	return nil
 }
 
-func updateStringSecret(fieldName, value, secret string, encrypt bool, specialKeys []string) (string, error) {
+func updateStringSecret(fieldName, value, secret, encryptionPrefix string, encrypt bool, specialKeys []string) (string, error) {
 	// zap.L().Info("updating field", zap.String("fieldName", fieldName), zap.String("value", value))
 	if !utils.ContainsString(specialKeys, strings.ToLower(fieldName)) {
 		return value, nil
 	}
 	if encrypt {
-		return hashed.Encrypt(value, secret)
+		return hashed.Encrypt(value, secret, encryptionPrefix)
 	} else {
-		return hashed.Decrypt(value, secret)
+		return hashed.Decrypt(value, secret, encryptionPrefix)
 	}
 }
