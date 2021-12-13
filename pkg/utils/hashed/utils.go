@@ -62,7 +62,7 @@ func Encrypt(plainText, secret, encryptionPrefix string) (string, error) {
 		return "", err
 	}
 
-	return fmt.Sprintf("%s%s", DefaultEncryptionPrefix, base64.StdEncoding.EncodeToString(bytes)), nil
+	return fmt.Sprintf("%s%s", encryptionPrefix, base64.StdEncoding.EncodeToString(bytes)), nil
 }
 
 // Decrypt performs decryption and return plan text
