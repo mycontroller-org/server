@@ -166,12 +166,14 @@ func updateSecretRecursive(value reflect.Value, secret, encryptionPrefix string,
 			originalValue := value.Field(index)
 			if originalValue.CanSet() || originalValue.CanInterface() {
 				if originalValue.Kind() == reflect.String { // update secret
-					fieldName := value.Type().Field(index).Name
-					newValue, err := updateStringSecret(fieldName, originalValue.String(), secret, encryptionPrefix, encrypt, specialKeys)
-					if err != nil {
-						return err
+					if originalValue.CanAddr() { // set only if it is addressable
+						fieldName := value.Type().Field(index).Name
+						newValue, err := updateStringSecret(fieldName, originalValue.String(), secret, encryptionPrefix, encrypt, specialKeys)
+						if err != nil {
+							return err
+						}
+						value.Field(index).SetString(newValue)
 					}
-					value.Field(index).SetString(newValue)
 				} else {
 					err := updateSecretRecursive(originalValue, secret, encryptionPrefix, encrypt, specialKeys)
 					if err != nil {
