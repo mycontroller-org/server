@@ -36,11 +36,12 @@ func GetHandler() (http.Handler, error) {
 		handlerAPI.RegisterPProfRoutes(router)
 	}
 
-	// register routes
+	// authentication routes
 	handlerAuthAPI.RegisterAuthRoutes(router)
 	handlerAuthAPI.RegisterOAuthRoutes(router)
+
+	// other routes
 	handlerAPI.RegisterStatusRoutes(router)
-	mcWS.RegisterWebsocketRoutes(router)
 	handlerAPI.RegisterGatewayRoutes(router)
 	handlerAPI.RegisterNodeRoutes(router)
 	handlerAPI.RegisterSourceRoutes(router)
@@ -57,7 +58,11 @@ func GetHandler() (http.Handler, error) {
 	handlerAPI.RegisterSystemRoutes(router)
 	handlerAPI.RegisterQuickIDRoutes(router)
 	handlerAPI.RegisterBackupRestoreRoutes(router)
+
 	// googleAssistantAPI.RegisterGoogleAssistantRoutes(router)
+
+	// websocket router
+	mcWS.RegisterWebsocketRoutes(router)
 
 	// add secure and insecure directories into handler
 	addFileServers(store.CFG.Directories, router)
@@ -77,19 +82,19 @@ func GetHandler() (http.Handler, error) {
 	}
 
 	// pre flight middleware
-	c := cors.New(cors.Options{
+	withCors := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"*"},
 		// Enable Debugging for testing, consider disabling in production
 		Debug: false,
 	})
-	withPreflight := c.Handler(router)
+	withPreflight := withCors.Handler(router)
 
 	// include authentication middleware
 	withAuthentication := middleware.MiddlewareAuthenticationVerification(withPreflight)
 
-	// include gzip handler middleware
+	// include gzip middleware
 	withGzip := gziphandler.GzipHandler(withAuthentication)
 
 	return withGzip, nil
