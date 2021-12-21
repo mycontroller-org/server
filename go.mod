@@ -3,6 +3,7 @@ module github.com/mycontroller-org/server/v2
 go 1.17
 
 require (
+	github.com/NYTimes/gziphandler v1.1.1
 	github.com/amimof/huego v1.2.0
 	github.com/btittelbach/astrotime v0.0.0-20160515101311-7ddba43aa26e
 	github.com/dop251/goja v0.0.0-20211019164913-00bb30d12573

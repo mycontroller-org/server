@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/NYTimes/gziphandler"
 	"github.com/gorilla/mux"
 	handlerAPI "github.com/mycontroller-org/server/v2/cmd/server/app/handler/api"
 	handlerAuthAPI "github.com/mycontroller-org/server/v2/cmd/server/app/handler/api/auth"
@@ -75,6 +76,7 @@ func GetHandler() (http.Handler, error) {
 		router.PathPrefix("/").Handler(fs)
 	}
 
+	// pre flight middleware
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "DELETE", "OPTIONS"},
@@ -82,12 +84,15 @@ func GetHandler() (http.Handler, error) {
 		// Enable Debugging for testing, consider disabling in production
 		Debug: false,
 	})
+	withPreflight := c.Handler(router)
 
-	// Insert the middleware
-	handler := c.Handler(router)
-	handler = middleware.MiddlewareAuthenticationVerification(handler)
+	// include authentication middleware
+	withAuthentication := middleware.MiddlewareAuthenticationVerification(withPreflight)
 
-	return handler, nil
+	// include gzip handler middleware
+	withGzip := gziphandler.GzipHandler(withAuthentication)
+
+	return withGzip, nil
 }
 
 // configure secure and insecure dir shares
