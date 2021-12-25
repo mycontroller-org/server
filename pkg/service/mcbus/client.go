@@ -32,6 +32,16 @@ func Unsubscribe(topic string, subscriptionID int64) error {
 	return busClient.Unsubscribe(topic, subscriptionID)
 }
 
+// QueueSubscribe a topic
+func QueueSubscribe(topic, queueName string, handler func(data *busML.BusData)) (int64, error) {
+	return busClient.QueueSubscribe(topic, queueName, handler)
+}
+
+// QueueUnsubscribe a topic
+func QueueUnsubscribe(topic, queueName string, subscriptionID int64) error {
+	return busClient.QueueUnsubscribe(topic, queueName, subscriptionID)
+}
+
 // Pause bus service
 func Pause() {
 	pauseSRV.Set()
