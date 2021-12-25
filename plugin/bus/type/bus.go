@@ -12,5 +12,7 @@ type Plugin interface {
 	Publish(topic string, data interface{}) error
 	Subscribe(topic string, handler CallBackFunc) (int64, error)
 	Unsubscribe(topic string, subscriptionID int64) error
+	QueueSubscribe(topic, queueName string, handler CallBackFunc) (int64, error)
+	QueueUnsubscribe(topic, queueName string, subscriptionID int64) error
 	UnsubscribeAll(topic string) error
 }

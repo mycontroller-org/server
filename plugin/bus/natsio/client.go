@@ -3,6 +3,7 @@ package natsio
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"sync"
@@ -157,24 +158,43 @@ func (c *Client) Publish(topic string, data interface{}) error {
 
 // Subscribe a topic
 func (c *Client) Subscribe(topic string, handler busType.CallBackFunc) (int64, error) {
+	return c.QueueSubscribe(topic, "", handler)
+}
+
+// QueueSubscribe a topic with queue name
+func (c *Client) QueueSubscribe(topic, queueName string, handler busType.CallBackFunc) (int64, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	subscriptionIDs, found := c.topics[topic]
+	topicName := getTopicName(topic, queueName)
+
+	subscriptionIDs, found := c.topics[topicName]
 	if !found {
 		subscriptionIDs = make([]int64, 0)
 	}
 
 	newSubscriptionID := c.generateSubscriptionID()
 	wrappedHandler := c.handlerWrapper(handler)
-	subscription, err := c.natConn.Subscribe(topic, wrappedHandler)
-	if err != nil {
-		return -1, err
+
+	var subscription *natsIO.Subscription
+	if queueName != "" {
+		queueSubscription, err := c.natConn.QueueSubscribe(topic, queueName, wrappedHandler)
+		if err != nil {
+			return -1, err
+		}
+		subscription = queueSubscription
+	} else {
+		normalSubscription, err := c.natConn.Subscribe(topic, wrappedHandler)
+		if err != nil {
+			return -1, err
+		}
+		subscription = normalSubscription
 	}
+
 	c.subscriptions[newSubscriptionID] = subscription
 	subscriptionIDs = append(subscriptionIDs, newSubscriptionID)
-	c.topics[topic] = subscriptionIDs
-	PrintDebug("subscription created", zap.String("topic", subscription.Subject), zap.Int64("subscriptionId", newSubscriptionID))
+	c.topics[topicName] = subscriptionIDs
+	PrintDebug("subscription created", zap.String("topic", subscription.Subject), zap.String("queueName", queueName), zap.Int64("subscriptionId", newSubscriptionID))
 	return newSubscriptionID, nil
 }
 
@@ -185,19 +205,26 @@ func (c *Client) handlerWrapper(handler busType.CallBackFunc) func(natsMsg *nats
 	}
 }
 
-// Unsubscribe a topic
+// QueueUnsubscribe a topic
 func (c *Client) Unsubscribe(topic string, subscriptionID int64) error {
+	return c.QueueUnsubscribe(topic, "", subscriptionID)
+}
+
+// QueueUnsubscribe a topic
+func (c *Client) QueueUnsubscribe(topic, queueName string, subscriptionID int64) error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
+	topicName := getTopicName(topic, queueName)
+
 	var subscription *natsIO.Subscription
 	// remove subscription id
-	if subscriptionIDs, found := c.topics[topic]; found {
+	if subscriptionIDs, found := c.topics[topicName]; found {
 		for index, id := range subscriptionIDs {
 			if id == subscriptionID {
 				subscription = c.subscriptions[id]
-				c.topics[topic] = append(subscriptionIDs[:index], subscriptionIDs[index+1:]...)
-				PrintDebug("subscription removed", zap.String("topic", topic), zap.Int64("subscriptionId", subscriptionID))
+				c.topics[topicName] = append(subscriptionIDs[:index], subscriptionIDs[index+1:]...)
+				PrintDebug("subscription removed", zap.String("topic", topic), zap.String("queueName", queueName), zap.Int64("subscriptionId", subscriptionID))
 				break
 			}
 		}
@@ -238,4 +265,8 @@ func (c *Client) generateSubscriptionID() int64 {
 	// increment counter id
 	c.subscriptionCounter++
 	return c.subscriptionCounter
+}
+
+func getTopicName(topic, queueName string) string {
+	return fmt.Sprintf("%s_%s", topic, queueName)
 }

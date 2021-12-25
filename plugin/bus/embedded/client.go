@@ -103,6 +103,16 @@ func (c *Client) Subscribe(topic string, handler busType.CallBackFunc) (int64, e
 	return newSubscriptionID, nil
 }
 
+// QueueSubscribe not supported in embedded bus, just call subscribe
+func (c *Client) QueueSubscribe(topic, _queueName string, handler busType.CallBackFunc) (int64, error) {
+	return c.Subscribe(topic, handler)
+}
+
+// QueueUnsubscribe not supported in embedded bus, just call subscribe
+func (c *Client) QueueUnsubscribe(topic, _queueName string, subscriptionID int64) error {
+	return c.Unsubscribe(topic, subscriptionID)
+}
+
 // Unsubscribe a topic
 func (c *Client) Unsubscribe(topic string, subscriptionID int64) error {
 	c.mutex.Lock()
