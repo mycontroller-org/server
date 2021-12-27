@@ -26,15 +26,17 @@ var ctx = context.TODO()
 const (
 	PluginInfluxdbV2 = "influxdb"
 
-	MeasurementBinary       = "mc_binary_data"
-	MeasurementGaugeInteger = "mc_gauge_int_data"
-	MeasurementGaugeFloat   = "mc_gauge_float_data"
-	MeasurementCounter      = "mc_counter_data"
-	MeasurementString       = "mc_string_data"
-	MeasurementGeo          = "mc_geo_data"
+	MeasurementBinary       = "binary_data"
+	MeasurementGaugeInteger = "gauge_int_data"
+	MeasurementGaugeFloat   = "gauge_float_data"
+	MeasurementCounter      = "counter_data"
+	MeasurementString       = "string_data"
+	MeasurementGeo          = "geo_data"
 
 	QueryClientV1 = "v1"
 	QueryClientV2 = "v2"
+
+	DefaultMeasurementPrefix = "mc"
 )
 
 const (
@@ -45,6 +47,7 @@ const (
 type Config struct {
 	OrganizationName   string       `yaml:"organization_name"`
 	BucketName         string       `yaml:"bucket_name"`
+	MeasurementPrefix  string       `yaml:"measurement_prefix"`
 	URI                string       `yaml:"uri"`
 	Token              string       `yaml:"token"`
 	Username           string       `yaml:"username"`
@@ -81,6 +84,11 @@ func NewClient(config cmap.CustomMap) (metricType.Plugin, error) {
 	err := utils.MapToStruct(utils.TagNameYaml, config, &cfg)
 	if err != nil {
 		return nil, err
+	}
+
+	// update default values
+	if cfg.MeasurementPrefix == "" {
+		cfg.MeasurementPrefix = DefaultMeasurementPrefix
 	}
 
 	if cfg.Token == "" && cfg.Username != "" {
@@ -227,7 +235,7 @@ func (c *Client) Query(queryConfig *metricType.QueryConfig) (map[string][]metric
 		}
 
 		// get measurement
-		measurement, err := getMeasurementName(query.MetricType)
+		measurement, err := c.getMeasurementName(query.MetricType)
 		if err != nil {
 			zap.L().Error("error on getting measurement name", zap.Error(err))
 			return nil, err
@@ -249,7 +257,7 @@ func (c *Client) WriteBlocking(data *metricType.InputData) error {
 	if data.MetricType == metricType.MetricTypeNone {
 		return nil
 	}
-	p, err := getPoint(data)
+	p, err := c.getPoint(data)
 	if err != nil {
 		return err
 	}
@@ -261,7 +269,7 @@ func (c *Client) Write(data *metricType.InputData) error {
 	if data.MetricType == metricType.MetricTypeNone {
 		return nil
 	}
-	p, err := getPoint(data)
+	p, err := c.getPoint(data)
 	if err != nil {
 		return err
 	}
@@ -270,8 +278,8 @@ func (c *Client) Write(data *metricType.InputData) error {
 	return nil
 }
 
-func getPoint(data *metricType.InputData) (*write.Point, error) {
-	measurementName, err := getMeasurementName(data.MetricType)
+func (c *Client) getPoint(data *metricType.InputData) (*write.Point, error) {
+	measurementName, err := c.getMeasurementName(data.MetricType)
 	if err != nil {
 		return nil, err
 	}
@@ -291,27 +299,30 @@ func getPoint(data *metricType.InputData) (*write.Point, error) {
 	return p, nil
 }
 
-func getMeasurementName(suppliedType string) (string, error) {
+func (c *Client) getMeasurementName(suppliedType string) (string, error) {
+	measurement := ""
 	switch suppliedType {
 	case metricType.MetricTypeBinary:
-		return MeasurementBinary, nil
+		measurement = MeasurementBinary
 
 	case metricType.MetricTypeGauge:
-		return MeasurementGaugeInteger, nil
+		measurement = MeasurementGaugeInteger
 
 	case metricType.MetricTypeGaugeFloat:
-		return MeasurementGaugeFloat, nil
+		measurement = MeasurementGaugeFloat
 
 	case metricType.MetricTypeCounter:
-		return MeasurementCounter, nil
+		measurement = MeasurementCounter
 
 	case metricType.MetricTypeString:
-		return MeasurementString, nil
+		measurement = MeasurementString
 
 	case metricType.MetricTypeGEO:
-		return MeasurementGeo, nil
+		measurement = MeasurementGeo
 
 	default:
 		return "", fmt.Errorf("unknown metric type: %s", suppliedType)
 	}
+
+	return fmt.Sprintf("%s_%s", c.Config.MeasurementPrefix, measurement), nil
 }
