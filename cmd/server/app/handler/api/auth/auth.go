@@ -1,17 +1,17 @@
 package auth
 
 import (
-	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	middleware "github.com/mycontroller-org/server/v2/cmd/server/app/handler/middleware"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
-	json "github.com/mycontroller-org/server/v2/pkg/json"
 	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
-	handlerType "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
+	handlerTY "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
+	"go.uber.org/zap"
 )
 
 // RegisterAuthRoutes registers auth api
@@ -24,49 +24,55 @@ func RegisterAuthRoutes(router *mux.Router) {
 func login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	d, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		handlerUtils.PostErrorResponse(w, err.Error(), 500)
-		return
-	}
+	login := &handlerTY.UserLogin{}
 
-	userLogin := handlerType.UserLogin{}
-
-	err = json.Unmarshal(d, &userLogin)
+	err := handlerUtils.LoadEntity(w, r, login)
 	if err != nil {
-		handlerUtils.PostErrorResponse(w, err.Error(), 500)
+		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// get user details
-	userDB, err := userAPI.GetByUsername(userLogin.Username)
+	userInDB, err := userAPI.GetByUsername(login.Username)
 	if err != nil {
-		handlerUtils.PostErrorResponse(w, "Invalid user or password!", 401)
+		handlerUtils.PostErrorResponse(w, "Invalid credentails", http.StatusUnauthorized)
 		return
 	}
 
-	//compare the user from the request, with the one we defined:
-	if userLogin.Username != userDB.Username || !hashed.IsValidPassword(userDB.Password, userLogin.Password) {
-		handlerUtils.PostErrorResponse(w, "Please provide valid login details", 401)
+	// compare the user from the request, with the one we have in database
+	if login.Username != userInDB.Username || !hashed.IsValidPassword(userInDB.Password, login.Password) {
+		handlerUtils.PostErrorResponse(w, "Invalid credentails", http.StatusUnauthorized)
 		return
 	}
-	token, err := middleware.CreateToken(userDB, userLogin.ExpiresIn)
+	token, err := middleware.CreateToken(userInDB, login.ExpiresIn)
 	if err != nil {
-		handlerUtils.PostErrorResponse(w, err.Error(), 500)
+		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// update in cookies
-	// expiration := time.Now().Add(7 * 24 * time.Hour)
-	// tokenCookie := http.Cookie{Name: "authToken", Value: token, Expires: expiration, Path: "/"}
-	// http.SetCookie(w, &tokenCookie)
+	// set authorization cookie
+	// cookie validity
+	cookieValidity, err := time.ParseDuration(login.ExpiresIn)
+	if err != nil { // take default validity
+		zap.L().Error("invalid validity", zap.String("input", login.ExpiresIn), zap.Error(err))
+		cookieValidity = handlerTY.DefaultTokenExpiration
+	}
 
-	tokenResponse := &handlerType.JwtTokenResponse{
-		ID:       userDB.ID,
-		Username: userDB.Username,
-		Email:    userDB.Email,
-		FullName: userDB.FullName,
+	generatedCookie := &http.Cookie{
+		Name:    handlerTY.AUTH_COOKIE_NAME,
+		Path:    "/",
+		Domain:  r.Host,
+		Expires: time.Now().Add(cookieValidity),
+		Value:   token,
+	}
+	http.SetCookie(w, generatedCookie)
+
+	// token response in the response body
+	tokenResponse := &handlerTY.JwtTokenResponse{
+		ID:       userInDB.ID,
+		Username: userInDB.Username,
+		Email:    userInDB.Email,
+		FullName: userInDB.FullName,
 		Token:    token,
 	}
 	handlerUtils.PostSuccessResponse(w, tokenResponse)
@@ -76,13 +82,13 @@ func profile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	userID := middleware.GetUserID(r)
 	if userID == "" {
-		handlerUtils.PostErrorResponse(w, "UserID missing in the request", 400)
+		handlerUtils.PostErrorResponse(w, "UserID missing in the request", http.StatusBadRequest)
 		return
 	}
 
 	user, err := userAPI.GetByID(userID)
 	if err != nil {
-		handlerUtils.PostErrorResponse(w, err.Error(), 400)
+		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusBadRequest)
 	}
 	handlerUtils.PostSuccessResponse(w, &user)
 }
@@ -91,30 +97,30 @@ func updateProfile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	userID := middleware.GetUserID(r)
 	if userID == "" {
-		handlerUtils.PostErrorResponse(w, "UserID missing in the request", 400)
+		handlerUtils.PostErrorResponse(w, "UserID missing in the request", http.StatusBadRequest)
 		return
 	}
 
 	user, err := userAPI.GetByID(userID)
 	if err != nil {
-		handlerUtils.PostErrorResponse(w, err.Error(), 400)
+		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusBadRequest)
 	}
 
 	entity := &userML.UserProfileUpdate{}
 	err = handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if user.ID != entity.ID {
-		http.Error(w, "You can not change ID", 400)
+		http.Error(w, "You can not change ID", http.StatusBadRequest)
 		return
 	}
 
 	err = userAPI.UpdateProfile(entity)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

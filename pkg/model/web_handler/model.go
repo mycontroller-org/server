@@ -16,7 +16,9 @@ const (
 
 	AccessToken = "access_token"
 
-	DefaultExpiration = time.Hour * 24 * 7 // 24 * 7 days
+	DefaultTokenExpiration = time.Hour * 24 // 24 hours
+	AUTH_COOKIE_NAME       = "__mc_auth"
+	SIGNOUT_PATH           = "/mc_auth/sign_out"
 
 	SecureShareDirWebHandlerPath   = "/secure_share"
 	InsecureShareDirWebHandlerPath = "/insecure_share"
