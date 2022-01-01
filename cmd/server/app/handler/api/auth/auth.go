@@ -61,7 +61,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	generatedCookie := &http.Cookie{
 		Name:    handlerTY.AUTH_COOKIE_NAME,
 		Path:    "/",
-		Domain:  r.Host,
+		Domain:  handlerUtils.ExtractHost(r.Host),
 		Expires: time.Now().Add(cookieValidity),
 		Value:   token,
 	}

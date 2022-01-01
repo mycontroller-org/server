@@ -190,7 +190,7 @@ func doSignOut(w http.ResponseWriter, r *http.Request) {
 	clearCookie := &http.Cookie{
 		Name:   handlerTY.AUTH_COOKIE_NAME,
 		Path:   "/",
-		Domain: r.Host,
+		Domain: handlerUtils.ExtractHost(r.Host),
 		MaxAge: -1,
 		Value:  "",
 	}
