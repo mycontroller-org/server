@@ -11,7 +11,6 @@ import (
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	influxdb2log "github.com/influxdata/influxdb-client-go/v2/log"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
-	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	extraTY "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra"
 	extraV1 "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra_v1"
@@ -72,7 +71,6 @@ type Client struct {
 	adminClient extraTY.AdminAPI
 	Config      Config
 	stop        chan bool
-	buffer      []*fieldTY.Field
 	logger      *myLogger
 	mutex       *sync.RWMutex
 	ctx         context.Context
@@ -119,7 +117,6 @@ func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
 	c := &Client{
 		Config: cfg,
 		Client: iClient,
-		buffer: make([]*fieldTY.Field, 0),
 		stop:   make(chan bool),
 		mutex:  &sync.RWMutex{},
 		logger: _logger,
