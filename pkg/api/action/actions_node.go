@@ -45,7 +45,7 @@ func toNode(node *nodeTY.Node, gatewayID, nodeID, action string) error {
 	// get node details and update isSleepNode
 	if node == nil {
 		node, err := nodeAPI.GetByGatewayAndNodeID(gatewayID, nodeID)
-		if err != nil {
+		if err == nil {
 			msg.IsSleepNode = node.IsSleepNode()
 		}
 	} else {

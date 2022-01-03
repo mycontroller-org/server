@@ -47,7 +47,7 @@ func toField(gatewayID, nodeID, sourceID, fieldID, payload string) error {
 
 	// get node details and update isPassiveNode
 	node, err := nodeAPI.GetByGatewayAndNodeID(gatewayID, nodeID)
-	if err != nil {
+	if err == nil {
 		msg.IsSleepNode = node.IsSleepNode()
 	}
 
