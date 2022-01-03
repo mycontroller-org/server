@@ -3,21 +3,21 @@ package handler
 import (
 	"sync"
 
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
 type store struct {
-	handlers map[string]handlerType.Plugin
+	handlers map[string]handlerTY.Plugin
 	mutex    sync.Mutex
 }
 
 var handlersStore = store{
-	handlers: make(map[string]handlerType.Plugin),
+	handlers: make(map[string]handlerTY.Plugin),
 }
 
 // Add a handler
-func (s *store) Add(id string, handler handlerType.Plugin) {
+func (s *store) Add(id string, handler handlerTY.Plugin) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -33,7 +33,7 @@ func (s *store) Remove(id string) {
 }
 
 // GetByID returns handler by id
-func (s *store) Get(id string) handlerType.Plugin {
+func (s *store) Get(id string) handlerTY.Plugin {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -51,7 +51,7 @@ func (s *store) CloseHandlers() {
 			zap.L().Error("error on close a handler", zap.String("id", id), zap.Error(err))
 		}
 	}
-	handlersStore.handlers = make(map[string]handlerType.Plugin)
+	handlersStore.handlers = make(map[string]handlerTY.Plugin)
 }
 
 func (s *store) ListIDs() []string {

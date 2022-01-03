@@ -1,22 +1,22 @@
 package schedule
 
 import (
-	ml "github.com/mycontroller-org/server/v2/pkg/model"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
-	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
+	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
 // Add scheduler
-func Add(cfg *scheduleML.Config) error {
-	return postCommand(cfg, rsML.CommandAdd)
+func Add(cfg *scheduleTY.Config) error {
+	return postCommand(cfg, rsTY.CommandAdd)
 }
 
 // Remove scheduler
-func Remove(cfg *scheduleML.Config) error {
-	return postCommand(cfg, rsML.CommandRemove)
+func Remove(cfg *scheduleTY.Config) error {
+	return postCommand(cfg, rsTY.CommandRemove)
 }
 
 // LoadAll makes schedulers alive
@@ -26,7 +26,7 @@ func LoadAll() {
 		zap.L().Error("Failed to get list of schedules", zap.Error(err))
 		return
 	}
-	schedulers := *result.Data.(*[]scheduleML.Config)
+	schedulers := *result.Data.(*[]scheduleTY.Config)
 	for index := 0; index < len(schedulers); index++ {
 		cfg := schedulers[index]
 		if cfg.Enabled {
@@ -40,7 +40,7 @@ func LoadAll() {
 
 // UnloadAll makes stop all schedulers
 func UnloadAll() {
-	err := postCommand(nil, rsML.CommandUnloadAll)
+	err := postCommand(nil, rsTY.CommandUnloadAll)
 	if err != nil {
 		zap.L().Error("error on unloadall scheduler command", zap.Error(err))
 	}
@@ -112,9 +112,9 @@ func Reload(ids []string) error {
 	return nil
 }
 
-func postCommand(cfg *scheduleML.Config, command string) error {
-	reqEvent := rsML.ServiceEvent{
-		Type:    rsML.TypeScheduler,
+func postCommand(cfg *scheduleTY.Config, command string) error {
+	reqEvent := rsTY.ServiceEvent{
+		Type:    rsTY.TypeScheduler,
 		Command: command,
 	}
 	if cfg != nil {
@@ -125,12 +125,12 @@ func postCommand(cfg *scheduleML.Config, command string) error {
 	return mcbus.Publish(topic, reqEvent)
 }
 
-func getSchedulerEntries(ids []string) ([]scheduleML.Config, error) {
-	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
-	pagination := &stgml.Pagination{Limit: 100}
+func getSchedulerEntries(ids []string) ([]scheduleTY.Config, error) {
+	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids}}
+	pagination := &storageTY.Pagination{Limit: 100}
 	result, err := List(filters, pagination)
 	if err != nil {
 		return nil, err
 	}
-	return *result.Data.(*[]scheduleML.Config), nil
+	return *result.Data.(*[]scheduleTY.Config), nil
 }

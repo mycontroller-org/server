@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	dataRepositoryAPI "github.com/mycontroller-org/server/v2/pkg/api/data_repository"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	dataRepositoryML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	dataRepositoryTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterFieldRoutes registers data repository api
@@ -22,15 +22,15 @@ func RegisterDataRepositoryRoutes(router *mux.Router) {
 }
 
 func listDataRepositoryItems(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindMany(w, r, model.EntityDataRepository, &[]dataRepositoryML.Config{})
+	handlerUtils.FindMany(w, r, types.EntityDataRepository, &[]dataRepositoryTY.Config{})
 }
 
 func getDataRepositoryItem(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindOne(w, r, model.EntityDataRepository, &dataRepositoryML.Config{})
+	handlerUtils.FindOne(w, r, types.EntityDataRepository, &dataRepositoryTY.Config{})
 }
 
 func updateDataRepositoryItem(w http.ResponseWriter, r *http.Request) {
-	entity := &dataRepositoryML.Config{}
+	entity := &dataRepositoryTY.Config{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -50,7 +50,7 @@ func updateDataRepositoryItem(w http.ResponseWriter, r *http.Request) {
 
 func deleteDataRepositoryItems(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := dataRepositoryAPI.Delete(IDs)
 			if err != nil {

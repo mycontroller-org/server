@@ -1,11 +1,11 @@
 package systemmonitoring
 
 import (
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
-	providerType "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
@@ -19,12 +19,12 @@ const (
 type Provider struct {
 	Config        config.Config
 	HostConfig    *config.HostConfig
-	GatewayConfig *gwType.Config
+	GatewayConfig *gwTY.Config
 	NodeID        string
 }
 
 // NewPluginSystemMonitoring provider
-func NewPluginSystemMonitoring(gatewayCfg *gwType.Config) (providerType.Plugin, error) {
+func NewPluginSystemMonitoring(gatewayCfg *gwTY.Config) (providerTY.Plugin, error) {
 	cfg := config.Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, &cfg)
 	if err != nil {
@@ -44,7 +44,7 @@ func (p *Provider) Name() string {
 }
 
 // Start func
-func (p *Provider) Start(rxMessageFunc func(rawMsg *msgML.RawMessage) error) error {
+func (p *Provider) Start(rxMessageFunc func(rawMsg *msgTY.RawMessage) error) error {
 	// update node id
 	nodeID, err := p.HostID()
 	if err != nil {

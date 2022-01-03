@@ -1,7 +1,7 @@
 package msglogger
 
 import (
-	msgml "github.com/mycontroller-org/server/v2/pkg/model/message"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 )
 
 // VoidMessageLogger struct
@@ -15,4 +15,4 @@ func (vm *VoidMessageLogger) Start() {}
 func (vm *VoidMessageLogger) Close() {}
 
 // AsyncWrite implementation
-func (vm *VoidMessageLogger) AsyncWrite(rawMsg *msgml.RawMessage) {}
+func (vm *VoidMessageLogger) AsyncWrite(rawMsg *msgTY.RawMessage) {}

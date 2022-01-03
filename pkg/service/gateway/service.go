@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
 	commonStore "github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	gwProvider "github.com/mycontroller-org/server/v2/plugin/gateway/provider"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
 // StartGW gateway
-func StartGW(gatewayCfg *gwType.Config) error {
+func StartGW(gatewayCfg *gwTY.Config) error {
 	start := time.Now()
 
 	// descrypt the secrets, tokens
@@ -32,7 +32,7 @@ func StartGW(gatewayCfg *gwType.Config) error {
 		return nil
 	}
 	zap.L().Info("starting a gateway", zap.Any("id", gatewayCfg.ID))
-	state := model.State{Since: time.Now()}
+	state := types.State{Since: time.Now()}
 
 	service, err := gwProvider.GetService(gatewayCfg)
 	if err != nil {
@@ -42,11 +42,11 @@ func StartGW(gatewayCfg *gwType.Config) error {
 	if err != nil {
 		zap.L().Error("failed to start a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
 		state.Message = err.Error()
-		state.Status = model.StatusDown
+		state.Status = types.StatusDown
 	} else {
 		zap.L().Info("started a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 		state.Message = "Started successfully"
-		state.Status = model.StatusUp
+		state.Status = types.StatusUp
 		gwService.Add(service)
 	}
 
@@ -61,8 +61,8 @@ func StopGW(id string) error {
 	service := gwService.Get(id)
 	if service != nil {
 		err := service.Stop()
-		state := model.State{
-			Status:  model.StatusDown,
+		state := types.State{
+			Status:  types.StatusDown,
 			Since:   time.Now(),
 			Message: "Stopped by request",
 		}
@@ -80,7 +80,7 @@ func StopGW(id string) error {
 }
 
 // ReloadGW gateway
-func ReloadGW(gwCfg *gwType.Config) error {
+func ReloadGW(gwCfg *gwTY.Config) error {
 	err := StopGW(gwCfg.ID)
 	if err != nil {
 		return err

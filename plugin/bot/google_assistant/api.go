@@ -7,12 +7,12 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/plugin/bot/google_assistant/model"
+	gaTY "github.com/mycontroller-org/server/v2/plugin/bot/google_assistant/types"
 	"go.uber.org/zap"
 )
 
 // Google Assistant support is in progress
-// Needs to complete VirtualDevice model and implementation to support this feature
+// Needs to complete VirtualDevice struct and implementation to support this feature
 // for now this is incomplete and not usable
 
 func RegisterGoogleAssistantRoutes(router *mux.Router) {
@@ -30,7 +30,7 @@ func processRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	zap.L().Info("received a request from google assistant", zap.Any("body", string(d)))
 
-	request := model.Request{}
+	request := gaTY.Request{}
 	err = json.Unmarshal(d, &request)
 	if err != nil {
 		http.Error(w, "error on parsing", 500)
@@ -41,8 +41,8 @@ func processRequest(w http.ResponseWriter, r *http.Request) {
 
 	for _, input := range request.Inputs {
 		switch input.Intent {
-		case model.IntentQuery:
-			queryRequest := model.QueryRequest{}
+		case gaTY.IntentQuery:
+			queryRequest := gaTY.QueryRequest{}
 			err = json.Unmarshal(d, &queryRequest)
 			if err != nil {
 				http.Error(w, "error on parsing", 500)
@@ -50,8 +50,8 @@ func processRequest(w http.ResponseWriter, r *http.Request) {
 			}
 			response = runQueryRequest(queryRequest)
 
-		case model.IntentExecute:
-			executeRequest := model.ExecuteRequest{}
+		case gaTY.IntentExecute:
+			executeRequest := gaTY.ExecuteRequest{}
 			err = json.Unmarshal(d, &executeRequest)
 			if err != nil {
 				http.Error(w, "error on parsing", 500)
@@ -59,10 +59,10 @@ func processRequest(w http.ResponseWriter, r *http.Request) {
 			}
 			response = runExecuteRequest(executeRequest)
 
-		case model.IntentSync:
+		case gaTY.IntentSync:
 			response = runSyncRequest(request)
 
-		case model.IntentDisconnect:
+		case gaTY.IntentDisconnect:
 			runDisconnectRequest(request)
 
 		default:

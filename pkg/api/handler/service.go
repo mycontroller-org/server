@@ -1,22 +1,22 @@
 package handler
 
 import (
-	ml "github.com/mycontroller-org/server/v2/pkg/model"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
-	rsml "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
 // Start notifyHandler
-func Start(cfg *handlerType.Config) error {
-	return postCommand(cfg, rsml.CommandStart)
+func Start(cfg *handlerTY.Config) error {
+	return postCommand(cfg, rsTY.CommandStart)
 }
 
 // Stop notifyHandler
-func Stop(cfg *handlerType.Config) error {
-	return postCommand(cfg, rsml.CommandStop)
+func Stop(cfg *handlerTY.Config) error {
+	return postCommand(cfg, rsTY.CommandStop)
 }
 
 // LoadAll makes notifyHandlers alive
@@ -26,7 +26,7 @@ func LoadAll() {
 		zap.L().Error("Failed to get list of handlers", zap.Error(err))
 		return
 	}
-	handlers := *result.Data.(*[]handlerType.Config)
+	handlers := *result.Data.(*[]handlerTY.Config)
 	for index := 0; index < len(handlers); index++ {
 		cfg := handlers[index]
 		if cfg.Enabled {
@@ -40,7 +40,7 @@ func LoadAll() {
 
 // UnloadAll makes stop all notifyHandlers
 func UnloadAll() {
-	err := postCommand(nil, rsml.CommandUnloadAll)
+	err := postCommand(nil, rsTY.CommandUnloadAll)
 	if err != nil {
 		zap.L().Error("error on unloadall handlers command", zap.Error(err))
 	}
@@ -99,7 +99,7 @@ func Reload(ids []string) error {
 	for index := 0; index < len(notifyHandlers); index++ {
 		cfg := notifyHandlers[index]
 		if cfg.Enabled {
-			err = postCommand(&cfg, rsml.CommandReload)
+			err = postCommand(&cfg, rsTY.CommandReload)
 			if err != nil {
 				zap.L().Error("error on reload handler command", zap.Error(err), zap.String("id", cfg.ID))
 			}
@@ -108,9 +108,9 @@ func Reload(ids []string) error {
 	return nil
 }
 
-func postCommand(cfg *handlerType.Config, command string) error {
-	reqEvent := rsml.ServiceEvent{
-		Type:    rsml.TypeHandler,
+func postCommand(cfg *handlerTY.Config, command string) error {
+	reqEvent := rsTY.ServiceEvent{
+		Type:    rsTY.TypeHandler,
 		Command: command,
 	}
 	if cfg != nil {
@@ -121,12 +121,12 @@ func postCommand(cfg *handlerType.Config, command string) error {
 	return mcbus.Publish(topic, reqEvent)
 }
 
-func getNotifyHandlerEntries(ids []string) ([]handlerType.Config, error) {
-	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
-	pagination := &stgml.Pagination{Limit: 100}
+func getNotifyHandlerEntries(ids []string) ([]handlerTY.Config, error) {
+	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids}}
+	pagination := &storageTY.Pagination{Limit: 100}
 	result, err := List(filters, pagination)
 	if err != nil {
 		return nil, err
 	}
-	return *result.Data.(*[]handlerType.Config), nil
+	return *result.Data.(*[]handlerTY.Config), nil
 }

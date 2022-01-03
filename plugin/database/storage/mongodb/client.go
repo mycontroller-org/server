@@ -6,14 +6,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	ut "github.com/mycontroller-org/server/v2/pkg/utils"
-	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
-	storageType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	mg "go.mongodb.org/mongo-driver/mongo"
+	mongoDriver "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 )
@@ -36,15 +35,15 @@ type Config struct {
 
 // Client of the mongo db
 type Client struct {
-	Client *mg.Client
+	Client *mongoDriver.Client
 	Config Config
 	ctx    context.Context
 }
 
 // NewClient mongodb
-func NewClient(config cmap.CustomMap) (storageType.Plugin, error) {
+func NewClient(config cmap.CustomMap) (storageTY.Plugin, error) {
 	cfg := Config{}
-	err := ut.MapToStruct(ut.TagNameYaml, config, &cfg)
+	err := utils.MapToStruct(utils.TagNameYaml, config, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +55,7 @@ func NewClient(config cmap.CustomMap) (storageType.Plugin, error) {
 
 	clientOptions := options.Client().ApplyURI(cfg.URI)
 
-	mongoClient, err := mg.Connect(ctx, clientOptions)
+	mongoClient, err := mongoDriver.Connect(ctx, clientOptions)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +116,7 @@ func (c *Client) Ping() error {
 	return c.Client.Ping(ctx, nil)
 }
 
-func (c *Client) getCollection(entityName string) *mg.Collection {
+func (c *Client) getCollection(entityName string) *mongoDriver.Collection {
 	collectionName := fmt.Sprintf("%s%s", c.Config.CollectionPrefix, entityName)
 	return c.Client.Database(c.Config.Database).Collection(collectionName)
 }
@@ -133,7 +132,7 @@ func (c *Client) Insert(entityName string, data interface{}) error {
 }
 
 // Update the entity
-func (c *Client) Update(entityName string, data interface{}, filters []stgml.Filter) error {
+func (c *Client) Update(entityName string, data interface{}, filters []storageTY.Filter) error {
 	if data == nil {
 		return errors.New("No data provided")
 	}
@@ -143,7 +142,7 @@ func (c *Client) Update(entityName string, data interface{}, filters []stgml.Fil
 }
 
 // Upsert date into database
-func (c *Client) Upsert(entityName string, data interface{}, filters []stgml.Filter) error {
+func (c *Client) Upsert(entityName string, data interface{}, filters []storageTY.Filter) error {
 	if data == nil {
 		return errors.New("No data provided")
 	}
@@ -164,7 +163,7 @@ func (c *Client) Upsert(entityName string, data interface{}, filters []stgml.Fil
 }
 
 // FindOne returns data
-func (c *Client) FindOne(entityName string, out interface{}, filters []stgml.Filter) error {
+func (c *Client) FindOne(entityName string, out interface{}, filters []storageTY.Filter) error {
 	cl := c.getCollection(entityName)
 	result := cl.FindOne(ctx, filter(filters))
 	if result.Err() != nil {
@@ -174,7 +173,7 @@ func (c *Client) FindOne(entityName string, out interface{}, filters []stgml.Fil
 }
 
 // Delete by filter
-func (c *Client) Delete(entityName string, filters []stgml.Filter) (int64, error) {
+func (c *Client) Delete(entityName string, filters []storageTY.Filter) (int64, error) {
 	if filters == nil {
 		return -1, errors.New("Filter should not be nil")
 	}
@@ -188,15 +187,15 @@ func (c *Client) Delete(entityName string, filters []stgml.Filter) (int64, error
 }
 
 // Count returns available documents count from a collection
-func (c *Client) Count(entityName string, filters []stgml.Filter) (int64, error) {
+func (c *Client) Count(entityName string, filters []storageTY.Filter) (int64, error) {
 	collection := c.getCollection(entityName)
 	filterOption := filter(filters)
 	return collection.CountDocuments(ctx, filterOption)
 }
 
 // Find returns data
-func (c *Client) Find(entityName string, out interface{}, filters []stgml.Filter, pagination *stgml.Pagination) (*stgml.Result, error) {
-	pagination = ut.UpdatePagination(pagination)
+func (c *Client) Find(entityName string, out interface{}, filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	pagination = utils.UpdatePagination(pagination)
 	collection := c.getCollection(entityName)
 	sortOption := sort(pagination.SortBy)
 	findOption := options.Find()
@@ -220,7 +219,7 @@ func (c *Client) Find(entityName string, out interface{}, filters []stgml.Filter
 	if err != nil {
 		return nil, err
 	}
-	result := &stgml.Result{
+	result := &storageTY.Result{
 		Count:  count,
 		Limit:  pagination.Limit,
 		Offset: pagination.Offset,
@@ -230,21 +229,21 @@ func (c *Client) Find(entityName string, out interface{}, filters []stgml.Filter
 }
 
 func idFilter(data interface{}) *bson.M {
-	id := helper.GetID(data)
+	id := filterUtils.GetID(data)
 	if id == "" {
 		return &bson.M{}
 	}
 	return &bson.M{"id": id}
 }
 
-func defaultFilter(filters []stgml.Filter, data interface{}) *bson.M {
+func defaultFilter(filters []storageTY.Filter, data interface{}) *bson.M {
 	if len(filters) == 0 {
 		return idFilter(data)
 	}
 	return filter(filters)
 }
 
-func filter(filters []stgml.Filter) *bson.M {
+func filter(filters []storageTY.Filter) *bson.M {
 	bm := bson.M{}
 	if len(filters) == 0 {
 		return &bm
@@ -252,44 +251,44 @@ func filter(filters []stgml.Filter) *bson.M {
 	for _, _f := range filters {
 		fl := strings.ToLower(_f.Key)
 		switch strings.ToLower(_f.Operator) {
-		case stgml.OperatorNone:
+		case storageTY.OperatorNone:
 			bm[fl] = _f.Value
 
-		case stgml.OperatorEqual:
+		case storageTY.OperatorEqual:
 			bm[fl] = bson.M{"$eq": _f.Value}
 
-		case stgml.OperatorNotEqual:
+		case storageTY.OperatorNotEqual:
 			bm[fl] = bson.M{"$ne": _f.Value}
 
-		case stgml.OperatorIn:
+		case storageTY.OperatorIn:
 			bm[fl] = bson.M{"$in": _f.Value}
 
-		case stgml.OperatorNotIn:
+		case storageTY.OperatorNotIn:
 			bm[fl] = bson.M{"$nin": _f.Value}
 
-		case stgml.OperatorGreaterThan:
+		case storageTY.OperatorGreaterThan:
 			bm[fl] = bson.M{"$gt": _f.Value}
 
-		case stgml.OperatorLessThan:
+		case storageTY.OperatorLessThan:
 			bm[fl] = bson.M{"$lt": _f.Value}
 
-		case stgml.OperatorGreaterThanEqual:
+		case storageTY.OperatorGreaterThanEqual:
 			bm[fl] = bson.M{"$gte": _f.Value}
 
-		case stgml.OperatorLessThanEqual:
+		case storageTY.OperatorLessThanEqual:
 			bm[fl] = bson.M{"$lte": _f.Value}
 
-		case stgml.OperatorExists:
+		case storageTY.OperatorExists:
 			bm[fl] = bson.M{"$exists": _f.Value}
 
-		case stgml.OperatorRegex:
+		case storageTY.OperatorRegex:
 			bm[fl] = bson.M{"$regex": _f.Value, "$options": "i"}
 		}
 	}
 	return &bm
 }
 
-func sort(sort []stgml.Sort) *bson.M {
+func sort(sort []storageTY.Sort) *bson.M {
 	bm := bson.M{}
 	if len(sort) == 0 {
 		return &bm
@@ -297,9 +296,9 @@ func sort(sort []stgml.Sort) *bson.M {
 	for _, _s := range sort {
 		filed := strings.ToLower(_s.Field)
 		switch strings.ToLower(_s.OrderBy) {
-		case "", stgml.SortByASC:
+		case "", storageTY.SortByASC:
 			bm[filed] = 1
-		case stgml.SortByDESC:
+		case storageTY.SortByDESC:
 			bm[filed] = -1
 		}
 	}

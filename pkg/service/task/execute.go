@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
 	commonStore "github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	variablesUtils "github.com/mycontroller-org/server/v2/pkg/utils/variables"
 	"go.uber.org/zap"
 )
 
-func executeTask(task *taskML.Config, evntWrapper *eventWrapper) {
+func executeTask(task *taskTY.Config, evntWrapper *eventWrapper) {
 	start := time.Now()
 
 	state := task.State
@@ -33,22 +33,22 @@ func executeTask(task *taskML.Config, evntWrapper *eventWrapper) {
 
 	// user can access event
 	if evntWrapper != nil {
-		variables[model.KeyEvent] = evntWrapper.Event
+		variables[types.KeyEvent] = evntWrapper.Event
 	}
-	variables[model.KeyTask] = task // include task in to the variables list
+	variables[types.KeyTask] = task // include task in to the variables list
 
 	triggered := false
 	// execute conditions
 	switch task.EvaluationType {
-	case taskML.EvaluationTypeRule:
+	case taskTY.EvaluationTypeRule:
 		triggered = isTriggered(task.EvaluationConfig.Rule, variables)
 
-	case taskML.EvaluationTypeJavascript:
+	case taskTY.EvaluationTypeJavascript:
 		responseMap, triggeredStatus := isTriggeredJavascript(task.ID, task.EvaluationConfig, variables)
 		triggered = triggeredStatus
 		variables = variablesUtils.Merge(variables, responseMap)
 
-	case taskML.EvaluationTypeWebhook:
+	case taskTY.EvaluationTypeWebhook:
 		responseMap, triggeredStatus := isTriggeredWebhook(task.ID, task.EvaluationConfig, variables)
 		triggered = triggeredStatus
 		variables = variablesUtils.Merge(variables, responseMap)

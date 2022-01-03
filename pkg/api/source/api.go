@@ -1,51 +1,51 @@
 package source
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	storageML "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []storageML.Filter, pagination *storageML.Pagination) (*storageML.Result, error) {
-	result := make([]sourceML.Source, 0)
-	return store.STORAGE.Find(model.EntitySource, &result, filters, pagination)
+func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	result := make([]sourceTY.Source, 0)
+	return store.STORAGE.Find(types.EntitySource, &result, filters, pagination)
 }
 
 // Get returns a source
-func Get(filters []storageML.Filter) (*sourceML.Source, error) {
-	result := &sourceML.Source{}
-	err := store.STORAGE.FindOne(model.EntitySource, result, filters)
+func Get(filters []storageTY.Filter) (*sourceTY.Source, error) {
+	result := &sourceTY.Source{}
+	err := store.STORAGE.FindOne(types.EntitySource, result, filters)
 	return result, err
 }
 
 // Save a source details
-func Save(source *sourceML.Source) error {
+func Save(source *sourceTY.Source) error {
 	if source.ID == "" {
 		source.ID = utils.RandUUID()
 	}
-	f := []storageML.Filter{
-		{Key: model.KeyID, Value: source.ID},
+	f := []storageTY.Filter{
+		{Key: types.KeyID, Value: source.ID},
 	}
-	return store.STORAGE.Upsert(model.EntitySource, source, f)
+	return store.STORAGE.Upsert(types.EntitySource, source, f)
 }
 
 // GetByIDs returns a source details by gatewayID, nodeId and sourceID of a message
-func GetByIDs(gatewayID, nodeID, sourceID string) (*sourceML.Source, error) {
-	filters := []storageML.Filter{
-		{Key: model.KeyGatewayID, Value: gatewayID},
-		{Key: model.KeyNodeID, Value: nodeID},
-		{Key: model.KeySourceID, Value: sourceID},
+func GetByIDs(gatewayID, nodeID, sourceID string) (*sourceTY.Source, error) {
+	filters := []storageTY.Filter{
+		{Key: types.KeyGatewayID, Value: gatewayID},
+		{Key: types.KeyNodeID, Value: nodeID},
+		{Key: types.KeySourceID, Value: sourceID},
 	}
-	result := &sourceML.Source{}
-	err := store.STORAGE.FindOne(model.EntitySource, result, filters)
+	result := &sourceTY.Source{}
+	err := store.STORAGE.FindOne(types.EntitySource, result, filters)
 	return result, err
 }
 
 // Delete source
 func Delete(IDs []string) (int64, error) {
-	filters := []storageML.Filter{{Key: model.KeyID, Operator: storageML.OperatorIn, Value: IDs}}
-	return store.STORAGE.Delete(model.EntitySource, filters)
+	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
+	return store.STORAGE.Delete(types.EntitySource, filters)
 }

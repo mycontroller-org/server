@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	msgml "github.com/mycontroller-org/server/v2/pkg/model/message"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	utils "github.com/mycontroller-org/server/v2/pkg/utils"
 	concurrencyUtils "github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
@@ -19,10 +19,10 @@ import (
 // FileMessageLogger struct
 type FileMessageLogger struct {
 	GatewayID        string                                // Gateway id
-	MsgFormatterFunc func(rawMsg *msgml.RawMessage) string // should supply a func to return parsed message
+	MsgFormatterFunc func(rawMsg *msgTY.RawMessage) string // should supply a func to return parsed message
 	runnerFlushLog   *concurrencyUtils.Runner              // this runner used to call flush log func
 	runnerRotateLog  *concurrencyUtils.Runner              // this runner used to call rotate log func
-	msgQueue         []*msgml.RawMessage                   // Messages will be added in to this queue and dump into the file N seconds once
+	msgQueue         []*msgTY.RawMessage                   // Messages will be added in to this queue and dump into the file N seconds once
 	mutex            sync.Mutex                            // lock to access the queue
 	Config           fileMessageLoggerConfig               // self configurations
 	maxSize          int64                                 // maximum size of the file in bytes
@@ -51,7 +51,7 @@ const (
 )
 
 // InitFileMessageLogger file logger
-func InitFileMessageLogger(gatewayID string, config cmap.CustomMap, formatterFunc func(rawMsg *msgml.RawMessage) string) (*FileMessageLogger, error) {
+func InitFileMessageLogger(gatewayID string, config cmap.CustomMap, formatterFunc func(rawMsg *msgTY.RawMessage) string) (*FileMessageLogger, error) {
 	cfg := fileMessageLoggerConfig{}
 	err := utils.MapToStruct(utils.TagNameNone, config, &cfg)
 	if err != nil {
@@ -61,7 +61,7 @@ func InitFileMessageLogger(gatewayID string, config cmap.CustomMap, formatterFun
 	fileLogger := &FileMessageLogger{
 		GatewayID:        gatewayID,
 		MsgFormatterFunc: formatterFunc,
-		msgQueue:         make([]*msgml.RawMessage, 0),
+		msgQueue:         make([]*msgTY.RawMessage, 0),
 		Config:           cfg,
 	}
 
@@ -115,7 +115,7 @@ func (rml *FileMessageLogger) Close() {
 
 // AsyncWrite func
 // adds the message into the queue and returns immediately
-func (rml *FileMessageLogger) AsyncWrite(rawMsg *msgml.RawMessage) {
+func (rml *FileMessageLogger) AsyncWrite(rawMsg *msgTY.RawMessage) {
 	cloned := rawMsg.Clone()
 	cloned.Timestamp = time.Now()
 
@@ -131,7 +131,7 @@ func (rml *FileMessageLogger) workerFlushLog() {
 	if len(rml.msgQueue) > 0 {
 		for _, rawMsg := range rml.msgQueue {
 			msgStr := rml.MsgFormatterFunc(rawMsg)
-			err := utils.AppendFile(model.GetLogsDirectoryGatewayLog(), rml.getFilename(), []byte(msgStr))
+			err := utils.AppendFile(types.GetLogsDirectoryGatewayLog(), rml.getFilename(), []byte(msgStr))
 			if err != nil {
 				zap.L().Error("Failed to write", zap.Error(err), zap.String("gateway", rml.GatewayID))
 			}
@@ -144,9 +144,9 @@ func (rml *FileMessageLogger) workerRotateLog() {
 	rml.mutex.Lock()
 	defer rml.mutex.Unlock()
 
-	files, err := utils.ListFiles(model.GetLogsDirectoryGatewayLog())
+	files, err := utils.ListFiles(types.GetLogsDirectoryGatewayLog())
 	if err != nil {
-		zap.L().Error("Failed to get log files", zap.Error(err), zap.String("gateway", rml.GatewayID), zap.String("directory", model.GetLogsDirectoryGatewayLog()))
+		zap.L().Error("Failed to get log files", zap.Error(err), zap.String("gateway", rml.GatewayID), zap.String("directory", types.GetLogsDirectoryGatewayLog()))
 		return
 	}
 
@@ -156,8 +156,8 @@ func (rml *FileMessageLogger) workerRotateLog() {
 	for _, file := range files {
 		if file.Name == liveFilename {
 			if file.Size >= rml.maxSize {
-				newFilenameFull := fmt.Sprintf("%s/%s.%s", model.GetLogsDirectoryGatewayLog(), liveFilename, time.Now().Format(filenameFormatBackup))
-				liveFilenameFull := fmt.Sprintf("%s/%s", model.GetLogsDirectoryGatewayLog(), liveFilename)
+				newFilenameFull := fmt.Sprintf("%s/%s.%s", types.GetLogsDirectoryGatewayLog(), liveFilename, time.Now().Format(filenameFormatBackup))
+				liveFilenameFull := fmt.Sprintf("%s/%s", types.GetLogsDirectoryGatewayLog(), liveFilename)
 				zap.L().Debug("Renaming file", zap.Any("size", file.Size), zap.Any("new name", newFilenameFull))
 				err = os.Rename(liveFilenameFull, newFilenameFull)
 				if err != nil {
@@ -172,7 +172,7 @@ func (rml *FileMessageLogger) workerRotateLog() {
 	maxAgeTime := time.Now().Add(-1 * rml.maxAge)
 	for _, file := range files {
 		if strings.HasPrefix(file.Name, liveFilename+".") && file.ModifiedTime.Before(maxAgeTime) {
-			filenameFull := fmt.Sprintf("%s/%s", model.GetLogsDirectoryGatewayLog(), file.Name)
+			filenameFull := fmt.Sprintf("%s/%s", types.GetLogsDirectoryGatewayLog(), file.Name)
 			zap.L().Debug("Files for deletion, max age", zap.Any("filename", file.Name))
 			err = os.Remove(filenameFull)
 			if err != nil {
@@ -197,7 +197,7 @@ func (rml *FileMessageLogger) workerRotateLog() {
 			deletionFilenames := filenames[:len(filenames)-rml.maxBackup]
 			zap.L().Debug("Log files for deletion", zap.Any("all", filenames), zap.Any("deletion", deletionFilenames))
 			for _, filename := range deletionFilenames {
-				filenameFull := fmt.Sprintf("%s/%s", model.GetLogsDirectoryGatewayLog(), filename)
+				filenameFull := fmt.Sprintf("%s/%s", types.GetLogsDirectoryGatewayLog(), filename)
 				err = os.Remove(filenameFull)
 				if err != nil {
 					zap.L().Error("Failed to delete log file", zap.Error(err), zap.String("gateway", rml.GatewayID), zap.String("filename", filenameFull))

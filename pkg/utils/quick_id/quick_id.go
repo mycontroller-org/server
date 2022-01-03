@@ -6,18 +6,18 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	dataRepoML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
-	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
-	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
-	fwdPayloadML "github.com/mycontroller-org/server/v2/pkg/model/forward_payload"
-	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
-	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
-	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	dataRepoTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
+	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
+	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
+	fwdPayloadTY "github.com/mycontroller-org/server/v2/pkg/types/forward_payload"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
+	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 )
 
 // entity quick id prefix
@@ -90,9 +90,9 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 		if len(values) < expectedLength {
 			return "", nil, fmt.Errorf("invalid gateway quick_id: %s, check the format", quickID)
 		}
-		data[model.KeyGatewayID] = normalizeValue(values[0])
+		data[types.KeyGatewayID] = normalizeValue(values[0])
 		if len(values) > expectedLength {
-			data[model.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
+			data[types.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
 	case utils.ContainsString(QuickIDNode, entityType):
@@ -100,10 +100,10 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 		if len(values) < expectedLength {
 			return "", nil, fmt.Errorf("invalid node quick_id: %s, check the format", quickID)
 		}
-		data[model.KeyGatewayID] = normalizeValue(values[0])
-		data[model.KeyNodeID] = normalizeValue(values[1])
+		data[types.KeyGatewayID] = normalizeValue(values[0])
+		data[types.KeyNodeID] = normalizeValue(values[1])
 		if len(values) > expectedLength {
-			data[model.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
+			data[types.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
 	case utils.ContainsString(QuickIDSource, entityType):
@@ -111,11 +111,11 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 		if len(values) < expectedLength {
 			return "", nil, fmt.Errorf("invalid source quick_id: %s, check the format", quickID)
 		}
-		data[model.KeyGatewayID] = normalizeValue(values[0])
-		data[model.KeyNodeID] = normalizeValue(values[1])
-		data[model.KeySourceID] = normalizeValue(values[2])
+		data[types.KeyGatewayID] = normalizeValue(values[0])
+		data[types.KeyNodeID] = normalizeValue(values[1])
+		data[types.KeySourceID] = normalizeValue(values[2])
 		if len(values) > expectedLength {
-			data[model.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
+			data[types.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
 	case utils.ContainsString(QuickIDField, entityType):
@@ -123,12 +123,12 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 		if len(values) < expectedLength {
 			return "", nil, fmt.Errorf("invalid field quick_id: %s, check the format", quickID)
 		}
-		data[model.KeyGatewayID] = normalizeValue(values[0])
-		data[model.KeyNodeID] = normalizeValue(values[1])
-		data[model.KeySourceID] = normalizeValue(values[2])
-		data[model.KeyFieldID] = normalizeValue(values[3])
+		data[types.KeyGatewayID] = normalizeValue(values[0])
+		data[types.KeyNodeID] = normalizeValue(values[1])
+		data[types.KeySourceID] = normalizeValue(values[2])
+		data[types.KeyFieldID] = normalizeValue(values[3])
 		if len(values) > expectedLength {
-			data[model.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
+			data[types.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
 	case utils.ContainsString(QuickIDTask, entityType),
@@ -140,7 +140,7 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 		if typeID[1] == "" {
 			return "", nil, fmt.Errorf("invalid data. quickID:%s", quickID)
 		}
-		data[model.KeyID] = typeID[1]
+		data[types.KeyID] = typeID[1]
 
 	default:
 		return "", nil, fmt.Errorf("invalid resource type quick_id: %s, check the format", quickID)
@@ -172,62 +172,62 @@ func GetQuickID(entity interface{}) (string, error) {
 	itemType := reflect.TypeOf(entity)
 
 	switch itemType {
-	case reflect.TypeOf(fieldML.Field{}):
-		res, ok := entity.(fieldML.Field)
+	case reflect.TypeOf(fieldTY.Field{}):
+		res, ok := entity.(fieldTY.Field)
 		if ok {
 			return fmt.Sprintf("%s:%s.%s.%s.%s", QuickIDField[0], res.GatewayID, res.NodeID, res.SourceID, res.FieldID), nil
 		}
 
-	case reflect.TypeOf(sourceML.Source{}):
-		res, ok := entity.(sourceML.Source)
+	case reflect.TypeOf(sourceTY.Source{}):
+		res, ok := entity.(sourceTY.Source)
 		if ok {
 			return fmt.Sprintf("%s:%s.%s.%s", QuickIDSource[0], res.GatewayID, res.NodeID, res.SourceID), nil
 		}
 
-	case reflect.TypeOf(nodeML.Node{}):
-		res, ok := entity.(nodeML.Node)
+	case reflect.TypeOf(nodeTY.Node{}):
+		res, ok := entity.(nodeTY.Node)
 		if ok {
 			return fmt.Sprintf("%s:%s.%s", QuickIDNode[0], res.GatewayID, res.NodeID), nil
 		}
 
-	case reflect.TypeOf(gatewayML.Config{}):
-		res, ok := entity.(gatewayML.Config)
+	case reflect.TypeOf(gatewayTY.Config{}):
+		res, ok := entity.(gatewayTY.Config)
 		if ok {
 			return fmt.Sprintf("%s:%s", QuickIDGateway[0], res.ID), nil
 		}
 
-	case reflect.TypeOf(taskML.Config{}):
-		res, ok := entity.(taskML.Config)
+	case reflect.TypeOf(taskTY.Config{}):
+		res, ok := entity.(taskTY.Config)
 		if ok {
 			return fmt.Sprintf("%s:%s", QuickIDTask[0], res.ID), nil
 		}
 
-	case reflect.TypeOf(scheduleML.Config{}):
-		res, ok := entity.(scheduleML.Config)
+	case reflect.TypeOf(scheduleTY.Config{}):
+		res, ok := entity.(scheduleTY.Config)
 		if ok {
 			return fmt.Sprintf("%s:%s", QuickIDSchedule[0], res.ID), nil
 		}
 
-	case reflect.TypeOf(handlerType.Config{}):
-		res, ok := entity.(handlerType.Config)
+	case reflect.TypeOf(handlerTY.Config{}):
+		res, ok := entity.(handlerTY.Config)
 		if ok {
 			return fmt.Sprintf("%s:%s", QuickIDHandler[0], res.ID), nil
 		}
 
-	case reflect.TypeOf(firmwareML.Firmware{}):
-		res, ok := entity.(firmwareML.Firmware)
+	case reflect.TypeOf(firmwareTY.Firmware{}):
+		res, ok := entity.(firmwareTY.Firmware)
 		if ok {
 			return fmt.Sprintf("%s:%s", QuickIDFirmware[0], res.ID), nil
 		}
 
-	case reflect.TypeOf(dataRepoML.Config{}):
-		res, ok := entity.(dataRepoML.Config)
+	case reflect.TypeOf(dataRepoTY.Config{}):
+		res, ok := entity.(dataRepoTY.Config)
 		if ok {
 			return fmt.Sprintf("%s:%s", QuickIDDataRepository[0], res.ID), nil
 		}
 
-	case reflect.TypeOf(fwdPayloadML.Config{}):
-		res, ok := entity.(fwdPayloadML.Config)
+	case reflect.TypeOf(fwdPayloadTY.Config{}):
+		res, ok := entity.(fwdPayloadTY.Config)
 		if ok {
 			return fmt.Sprintf("%s:%s", QuickIDForwardPayload[0], res.ID), nil
 		}

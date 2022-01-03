@@ -5,19 +5,19 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	"go.uber.org/zap"
 )
 
 const timeout = time.Second * 10
 
-func loadWebhookVariables(scheduleID string, config scheduleML.CustomVariableConfig, variables map[string]interface{}) map[string]interface{} {
+func loadWebhookVariables(scheduleID string, config scheduleTY.CustomVariableConfig, variables map[string]interface{}) map[string]interface{} {
 	whCfg := config.Webhook
 	client := httpclient.GetClient(whCfg.InsecureSkipVerify, timeout)
 	if !whCfg.IncludeConfig {
-		delete(variables, model.KeySchedule)
+		delete(variables, types.KeySchedule)
 	}
 
 	if whCfg.Method == "" {

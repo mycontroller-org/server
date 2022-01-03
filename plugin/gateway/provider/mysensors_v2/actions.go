@@ -7,41 +7,41 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/bus_utils/query"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
 // This function is like route for globally defined features for the request like reboot, discover, etc.,
 // And this should have addition request implementation defined in "internalValidRequests" map on constants.go file
-func handleActions(gwCfg *gwType.Config, fn string, msg *msgML.Message, msMsg *message) error {
+func handleActions(gwCfg *gwTY.Config, fn string, msg *msgTY.Message, msMsg *message) error {
 	switch fn {
 
-	case gwType.ActionDiscoverNodes:
+	case gwTY.ActionDiscoverNodes:
 		msMsg.Type = actionDiscoverRequest
 		msMsg.Payload = payloadEmpty
 		msMsg.NodeID = idBroadcast
 
-	case nodeML.ActionHeartbeatRequest:
+	case nodeTY.ActionHeartbeatRequest:
 		msMsg.Type = actionHeartBeatRequest
 		msMsg.Payload = payloadEmpty
 
-	case nodeML.ActionReboot:
+	case nodeTY.ActionReboot:
 		msMsg.Type = actionReboot
 		msMsg.Payload = payloadEmpty
 
-	case nodeML.ActionRefreshNodeInfo:
+	case nodeTY.ActionRefreshNodeInfo:
 		msMsg.Type = actionRequestPresentation
 		msMsg.Payload = payloadEmpty
 
-	case nodeML.ActionReset:
+	case nodeTY.ActionReset:
 		// NOTE: This feature supports only for MySensorsBootloaderRF24
 		// set reset flag on the node labels
 		// reboot the node
@@ -75,7 +75,7 @@ func handleActions(gwCfg *gwType.Config, fn string, msg *msgML.Message, msMsg *m
 		msMsg.Payload = getTimestamp(gwCfg)
 		msMsg.Type = actionTime
 
-	case nodeML.ActionFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST":
+	case nodeTY.ActionFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST":
 		pl, err := executeFirmwareConfigRequest(msg)
 		if err != nil {
 			return err
@@ -103,10 +103,10 @@ func handleActions(gwCfg *gwType.Config, fn string, msg *msgML.Message, msMsg *m
 // adds zone offset to the actual timestamp
 // user can specify different timezone as a gateway label
 // if non set, take system timezone
-func getTimestamp(gwCfg *gwType.Config) string {
+func getTimestamp(gwCfg *gwTY.Config) string {
 	var loc *time.Location
 	// get user defined timezone from gateway label
-	tz := gwCfg.Labels.Get(model.LabelTimezone)
+	tz := gwCfg.Labels.Get(types.LabelTimezone)
 	if tz != "" {
 		_loc, err := time.LoadLocation(tz)
 		if err != nil {
@@ -139,9 +139,9 @@ func getNodeID(gatewayID string) string {
 		reservedIDsString = *ids
 		return false
 	}
-	filter := map[string]interface{}{model.KeyGatewayID: gatewayID}
+	filter := map[string]interface{}{types.KeyGatewayID: gatewayID}
 	out := make([]string, 0)
-	err := query.QueryResource("", rsML.TypeNode, rsML.CommandGetIds, filter, updateNodeIDs, &out, queryTimeout)
+	err := query.QueryResource("", rsTY.TypeNode, rsTY.CommandGetIds, filter, updateNodeIDs, &out, queryTimeout)
 	if err != nil {
 		zap.L().Error("error on finding list of nodes", zap.String("gatewayId", gatewayID), zap.Error(err))
 		return ""
@@ -180,7 +180,7 @@ func getNodeID(gatewayID string) string {
 	return strconv.Itoa(electedID)
 }
 
-func updateResetFlag(msg *msgML.Message) error {
+func updateResetFlag(msg *msgTY.Message) error {
 	// get the node details
 	node, err := getNode(msg.GatewayID, msg.NodeID)
 	if err != nil {
@@ -191,7 +191,7 @@ func updateResetFlag(msg *msgML.Message) error {
 	labels = labels.Init()
 	labels.Set(LabelEraseEEPROM, "true")
 
-	busUtils.PostToResourceService(node.ID, labels, rsML.TypeNode, rsML.CommandSetLabel, "")
+	busUtils.PostToResourceService(node.ID, labels, rsTY.TypeNode, rsTY.CommandSetLabel, "")
 
 	return nil
 }

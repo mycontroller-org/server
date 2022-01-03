@@ -1,15 +1,15 @@
 package importexport
 
 import (
-	ml "github.com/mycontroller-org/server/v2/pkg/model"
-	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	filterHelper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
+func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
 	files, err := GetBackupFilesList()
 	if err != nil {
 		return nil, err
@@ -19,18 +19,18 @@ func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Re
 	totalCount := int64(0)
 	if len(files) > 0 {
 		if pagination == nil {
-			pagination = &stgType.Pagination{
+			pagination = &storageTY.Pagination{
 				Limit:  10,
 				Offset: 0,
-				SortBy: []stgType.Sort{{Field: "id", OrderBy: stgType.SortByASC}},
+				SortBy: []storageTY.Sort{{Field: "id", OrderBy: storageTY.SortByASC}},
 			}
 		}
-		sortedFiles, count := filterHelper.Sort(files, pagination)
+		sortedFiles, count := filterUtils.Sort(files, pagination)
 		totalCount = count
-		finalList = filterHelper.Filter(sortedFiles, filters, false)
+		finalList = filterUtils.Filter(sortedFiles, filters, false)
 	}
 
-	result := &stgType.Result{
+	result := &storageTY.Result{
 		Count:  totalCount,
 		Limit:  pagination.Limit,
 		Offset: pagination.Offset,
@@ -42,7 +42,7 @@ func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Re
 
 // Delete backup files
 func Delete(IDs []string) (int64, error) {
-	filters := []stgType.Filter{{Key: ml.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
+	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
 
 	files, err := GetBackupFilesList()
 	if err != nil {
@@ -51,12 +51,12 @@ func Delete(IDs []string) (int64, error) {
 
 	finalList := make([]interface{}, 0)
 	if len(files) > 0 {
-		finalList = filterHelper.Filter(files, filters, false)
+		finalList = filterUtils.Filter(files, filters, false)
 	}
 
 	deletedCount := int64(0)
 	for _, file := range finalList {
-		exportedFile, ok := file.(backupML.BackupFile)
+		exportedFile, ok := file.(backupTY.BackupFile)
 		if !ok {
 			continue
 		}

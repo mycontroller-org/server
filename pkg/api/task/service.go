@@ -1,22 +1,22 @@
 package task
 
 import (
-	ml "github.com/mycontroller-org/server/v2/pkg/model"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
-	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
+	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
 // Add task
-func Add(cfg *taskML.Config) error {
-	return postCommand(cfg, rsML.CommandAdd)
+func Add(cfg *taskTY.Config) error {
+	return postCommand(cfg, rsTY.CommandAdd)
 }
 
 // Remove task
-func Remove(cfg *taskML.Config) error {
-	return postCommand(cfg, rsML.CommandRemove)
+func Remove(cfg *taskTY.Config) error {
+	return postCommand(cfg, rsTY.CommandRemove)
 }
 
 // LoadAll makes tasks alive
@@ -26,7 +26,7 @@ func LoadAll() {
 		zap.L().Error("Failed to get list of tasks", zap.Error(err))
 		return
 	}
-	tasks := *result.Data.(*[]taskML.Config)
+	tasks := *result.Data.(*[]taskTY.Config)
 	for index := 0; index < len(tasks); index++ {
 		task := tasks[index]
 		if task.Enabled {
@@ -40,7 +40,7 @@ func LoadAll() {
 
 // UnloadAll makes stop all tasks
 func UnloadAll() {
-	err := postCommand(nil, rsML.CommandUnloadAll)
+	err := postCommand(nil, rsTY.CommandUnloadAll)
 	if err != nil {
 		zap.L().Error("error on unload tasks command", zap.Error(err))
 	}
@@ -112,9 +112,9 @@ func Reload(ids []string) error {
 	return nil
 }
 
-func postCommand(cfg *taskML.Config, command string) error {
-	reqEvent := rsML.ServiceEvent{
-		Type:    rsML.TypeTask,
+func postCommand(cfg *taskTY.Config, command string) error {
+	reqEvent := rsTY.ServiceEvent{
+		Type:    rsTY.TypeTask,
 		Command: command,
 	}
 	if cfg != nil {
@@ -125,12 +125,12 @@ func postCommand(cfg *taskML.Config, command string) error {
 	return mcbus.Publish(topic, reqEvent)
 }
 
-func getTaskEntries(ids []string) ([]taskML.Config, error) {
-	filters := []stgml.Filter{{Key: ml.KeyID, Operator: stgml.OperatorIn, Value: ids}}
-	pagination := &stgml.Pagination{Limit: 100}
+func getTaskEntries(ids []string) ([]taskTY.Config, error) {
+	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids}}
+	pagination := &storageTY.Pagination{Limit: 100}
 	result, err := List(filters, pagination)
 	if err != nil {
 		return nil, err
 	}
-	return *result.Data.(*[]taskML.Config), nil
+	return *result.Data.(*[]taskTY.Config), nil
 }

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/utils/bus_utils/query"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
@@ -34,11 +34,11 @@ func firmwareRawPurge() {
 }
 
 // getNode returns the node
-func getNode(gatewayID, nodeID string) (*nodeML.Node, error) {
+func getNode(gatewayID, nodeID string) (*nodeTY.Node, error) {
 	id := getNodeStoreID(gatewayID, nodeID)
 
-	toNode := func(item interface{}) (*nodeML.Node, error) {
-		if node, ok := item.(*nodeML.Node); ok {
+	toNode := func(item interface{}) (*nodeTY.Node, error) {
+		if node, ok := item.(*nodeTY.Node); ok {
 			return node, nil
 		}
 		return nil, fmt.Errorf("unknown data received in the place node: %T", item)
@@ -61,9 +61,9 @@ func getNode(gatewayID, nodeID string) (*nodeML.Node, error) {
 }
 
 // getNode returns the node
-func getFirmware(id string) (*firmwareML.Firmware, error) {
-	toFirmware := func(item interface{}) (*firmwareML.Firmware, error) {
-		if fw, ok := item.(*firmwareML.Firmware); ok {
+func getFirmware(id string) (*firmwareTY.Firmware, error) {
+	toFirmware := func(item interface{}) (*firmwareTY.Firmware, error) {
+		if fw, ok := item.(*firmwareTY.Firmware); ok {
 			return fw, nil
 		}
 		return nil, fmt.Errorf("unknown data received in the place node: %T", item)
@@ -91,12 +91,12 @@ func getNodeStoreID(gatewayID, nodeID string) string {
 
 func updateNode(gatewayID, nodeID string) error {
 	ids := map[string]interface{}{
-		model.KeyGatewayID: gatewayID,
-		model.KeyNodeID:    nodeID,
+		types.KeyGatewayID: gatewayID,
+		types.KeyNodeID:    nodeID,
 	}
 
 	addToStore := func(item interface{}) bool {
-		node, ok := item.(*nodeML.Node)
+		node, ok := item.(*nodeTY.Node)
 		if !ok {
 			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
 			return false
@@ -104,12 +104,12 @@ func updateNode(gatewayID, nodeID string) error {
 		nodeStore.Add(getNodeStoreID(node.GatewayID, node.NodeID), node)
 		return false
 	}
-	return query.QueryResource("", rsML.TypeNode, rsML.CommandGet, ids, addToStore, &nodeML.Node{}, queryTimeout)
+	return query.QueryResource("", rsTY.TypeNode, rsTY.CommandGet, ids, addToStore, &nodeTY.Node{}, queryTimeout)
 }
 
 func updateFirmware(id string) error {
 	addToStore := func(item interface{}) bool {
-		firmware, ok := item.(*firmwareML.Firmware)
+		firmware, ok := item.(*firmwareTY.Firmware)
 		if !ok {
 			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
 			return false
@@ -117,7 +117,7 @@ func updateFirmware(id string) error {
 		fwStore.Add(firmware.ID, firmware)
 		return false
 	}
-	return query.QueryResource(id, rsML.TypeFirmware, rsML.CommandGet, nil, addToStore, &firmwareML.Firmware{}, queryTimeout)
+	return query.QueryResource(id, rsTY.TypeFirmware, rsTY.CommandGet, nil, addToStore, &firmwareTY.Firmware{}, queryTimeout)
 }
 
 // getFirmwareRaw func
@@ -148,7 +148,7 @@ func getFirmwareRaw(id string, fwTypeID, fwVersionID uint16) (*firmwareRaw, erro
 func updateFirmwareFile(id string, fwTypeID, fwVersionID uint16) error {
 	var hexBytes []byte
 	addToStore := func(item interface{}) bool {
-		fwBlock, ok := item.(*firmwareML.FirmwareBlock)
+		fwBlock, ok := item.(*firmwareTY.FirmwareBlock)
 		if !ok {
 			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
 			return false
@@ -156,7 +156,7 @@ func updateFirmwareFile(id string, fwTypeID, fwVersionID uint16) error {
 		if hexBytes == nil {
 			hexBytes = make([]byte, fwBlock.TotalBytes)
 		}
-		startPos := int(firmwareML.BlockSize * fwBlock.BlockNumber)
+		startPos := int(firmwareTY.BlockSize * fwBlock.BlockNumber)
 		for offset, byteData := range fwBlock.Data {
 			hexBytes[startPos+offset] = byteData
 		}
@@ -183,5 +183,5 @@ func updateFirmwareFile(id string, fwTypeID, fwVersionID uint16) error {
 		return true // continue
 	}
 
-	return query.QueryResource(id, rsML.TypeFirmware, rsML.CommandBlocks, nil, addToStore, &firmwareML.FirmwareBlock{}, queryFirmwareFileTimeout)
+	return query.QueryResource(id, rsTY.TypeFirmware, rsTY.CommandBlocks, nil, addToStore, &firmwareTY.FirmwareBlock{}, queryFirmwareFileTimeout)
 }

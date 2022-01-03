@@ -5,27 +5,27 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
-	repositoryML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	repositoryTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
-	result := make([]repositoryML.Config, 0)
-	return store.STORAGE.Find(model.EntityDataRepository, &result, filters, pagination)
+func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	result := make([]repositoryTY.Config, 0)
+	return store.STORAGE.Find(types.EntityDataRepository, &result, filters, pagination)
 }
 
 // Get returns a item
-func Get(filters []stgType.Filter) (*repositoryML.Config, error) {
-	result := &repositoryML.Config{}
-	err := store.STORAGE.FindOne(model.EntityDataRepository, result, filters)
+func Get(filters []storageTY.Filter) (*repositoryTY.Config, error) {
+	result := &repositoryTY.Config{}
+	err := store.STORAGE.FindOne(types.EntityDataRepository, result, filters)
 	if err == nil {
 		updateResult, err := updateResult(result)
 		if err != nil {
@@ -37,12 +37,12 @@ func Get(filters []stgType.Filter) (*repositoryML.Config, error) {
 }
 
 // Save is used to update items from UI
-func Save(data *repositoryML.Config) error {
+func Save(data *repositoryTY.Config) error {
 	if data.ID == "" {
 		return errors.New("'id' can not be empty")
 	}
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Value: data.ID},
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: data.ID},
 	}
 
 	if !configuration.PauseModifiedOnUpdate.IsSet() {
@@ -57,7 +57,7 @@ func Save(data *repositoryML.Config) error {
 
 	// in mongodb can not save map[interface{}]interface{} type
 	// convert it to map[string]interface{} type
-	if store.CFG.Database.Storage.GetString(model.KeyType) == stgType.TypeMongoDB {
+	if store.CFG.Database.Storage.GetString(types.KeyType) == storageTY.TypeMongoDB {
 		updatedResult, err := updateResult(data)
 		if err != nil {
 			return err
@@ -65,21 +65,21 @@ func Save(data *repositoryML.Config) error {
 		data = updatedResult
 	}
 
-	err = store.STORAGE.Upsert(model.EntityDataRepository, data, filters)
+	err = store.STORAGE.Upsert(types.EntityDataRepository, data, filters)
 	if err != nil {
 		return err
 	}
-	busUtils.PostEvent(mcbus.TopicEventDataRepository, eventML.TypeUpdated, model.EntityDataRepository, data)
+	busUtils.PostEvent(mcbus.TopicEventDataRepository, eventTY.TypeUpdated, types.EntityDataRepository, data)
 	return nil
 }
 
 // GetByID returns a item by id
-func GetByID(id string) (*repositoryML.Config, error) {
-	f := []stgType.Filter{
-		{Key: model.KeyID, Value: id},
+func GetByID(id string) (*repositoryTY.Config, error) {
+	f := []storageTY.Filter{
+		{Key: types.KeyID, Value: id},
 	}
-	out := &repositoryML.Config{}
-	err := store.STORAGE.FindOne(model.EntityDataRepository, out, f)
+	out := &repositoryTY.Config{}
+	err := store.STORAGE.FindOne(types.EntityDataRepository, out, f)
 	if err == nil {
 		updatedResult, err := updateResult(out)
 		if err != nil {
@@ -92,14 +92,14 @@ func GetByID(id string) (*repositoryML.Config, error) {
 
 // Delete items
 func Delete(IDs []string) (int64, error) {
-	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
-	return store.STORAGE.Delete(model.EntityDataRepository, filters)
+	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
+	return store.STORAGE.Delete(types.EntityDataRepository, filters)
 }
 
 // map[interface{}]interface{} type not working as expected in javascript in task module
 // convert it to map[string]interface{}, by calling json Marshal and Unmarshal
-func updateResult(data *repositoryML.Config) (*repositoryML.Config, error) {
-	updateResult := &repositoryML.Config{}
+func updateResult(data *repositoryTY.Config) (*repositoryTY.Config, error) {
+	updateResult := &repositoryTY.Config{}
 	dataBytes, err := json.Marshal(data)
 	if err != nil {
 		return nil, err

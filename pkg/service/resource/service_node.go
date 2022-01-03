@@ -5,31 +5,31 @@ import (
 	"fmt"
 
 	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	"github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
-func nodeService(reqEvent *rsML.ServiceEvent) error {
-	resEvent := &rsML.ServiceEvent{
+func nodeService(reqEvent *rsTY.ServiceEvent) error {
+	resEvent := &rsTY.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
 
 	switch reqEvent.Command {
-	case rsML.CommandGet:
+	case rsTY.CommandGet:
 		data, err := getNode(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
-	case rsML.CommandSet:
-		node := &nodeML.Node{}
+	case rsTY.CommandSet:
+		node := &nodeTY.Node{}
 		err := reqEvent.LoadData(node)
 		if err != nil {
 			zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
@@ -44,14 +44,14 @@ func nodeService(reqEvent *rsML.ServiceEvent) error {
 		nodeOrg.Labels.CopyFrom(node.Labels)
 		return nodeAPI.Save(nodeOrg)
 
-	case rsML.CommandGetIds:
+	case rsTY.CommandGetIds:
 		data, err := getNodeIDs(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
-	case rsML.CommandFirmwareState:
+	case rsTY.CommandFirmwareState:
 		fwState := make(map[string]interface{})
 		err := reqEvent.LoadData(&fwState)
 		if err != nil {
@@ -64,7 +64,7 @@ func nodeService(reqEvent *rsML.ServiceEvent) error {
 		}
 		return nodeAPI.UpdateFirmwareState(reqEvent.ID, fwState)
 
-	case rsML.CommandSetLabel:
+	case rsTY.CommandSetLabel:
 		labels := cmap.CustomStringMap{}
 		err := reqEvent.LoadData(&labels)
 		if err != nil {
@@ -84,8 +84,8 @@ func nodeService(reqEvent *rsML.ServiceEvent) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getNodeIDs(request *rsML.ServiceEvent) ([]string, error) {
-	var response *storage.Result
+func getNodeIDs(request *rsTY.ServiceEvent) ([]string, error) {
+	var response *storageTY.Result
 	if len(request.Labels) > 0 {
 		filters := getLabelsFilter(request.Labels)
 		result, err := nodeAPI.List(filters, nil)
@@ -102,11 +102,11 @@ func getNodeIDs(request *rsML.ServiceEvent) ([]string, error) {
 		}
 
 		// get NodeId and GatewayId
-		gatewayId := utils.GetMapValueString(ids, model.KeyGatewayID, "")
+		gatewayId := utils.GetMapValueString(ids, types.KeyGatewayID, "")
 		if gatewayId == "" {
-			return nil, fmt.Errorf("%v not supplied", model.KeyGatewayID)
+			return nil, fmt.Errorf("%v not supplied", types.KeyGatewayID)
 		}
-		filters := []storage.Filter{{Key: model.KeyGatewayID, Operator: storage.OperatorEqual, Value: gatewayId}}
+		filters := []storageTY.Filter{{Key: types.KeyGatewayID, Operator: storageTY.OperatorEqual, Value: gatewayId}}
 		result, err := nodeAPI.List(filters, nil)
 		if err != nil {
 			return nil, err
@@ -118,7 +118,7 @@ func getNodeIDs(request *rsML.ServiceEvent) ([]string, error) {
 		return nil, errors.New("nil data supplied")
 	}
 	nodeIDs := make([]string, 0)
-	if nodes, ok := response.Data.(*[]nodeML.Node); ok {
+	if nodes, ok := response.Data.(*[]nodeTY.Node); ok {
 		for _, node := range *nodes {
 			nodeIDs = append(nodeIDs, node.NodeID)
 		}
@@ -126,7 +126,7 @@ func getNodeIDs(request *rsML.ServiceEvent) ([]string, error) {
 	return nodeIDs, nil
 }
 
-func getNode(request *rsML.ServiceEvent) (*nodeML.Node, error) {
+func getNode(request *rsTY.ServiceEvent) (*nodeTY.Node, error) {
 	if request.ID != "" {
 		cfg, err := nodeAPI.GetByID(request.ID)
 		if err != nil {
@@ -143,8 +143,8 @@ func getNode(request *rsML.ServiceEvent) (*nodeML.Node, error) {
 		}
 
 		// get NodeId and GatewayId
-		nodeId := utils.GetMapValueString(ids, model.KeyNodeID, "")
-		gatewayId := utils.GetMapValueString(ids, model.KeyGatewayID, "")
+		nodeId := utils.GetMapValueString(ids, types.KeyNodeID, "")
+		gatewayId := utils.GetMapValueString(ids, types.KeyGatewayID, "")
 		return nodeAPI.GetByGatewayAndNodeID(gatewayId, nodeId)
 	}
 }

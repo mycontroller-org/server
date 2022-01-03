@@ -7,18 +7,18 @@ import (
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	"github.com/mycontroller-org/server/v2/plugin/handler/backup/disk"
 	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
 // RunRestore func
-func RunRestore(file backupML.BackupFile) error {
+func RunRestore(file backupTY.BackupFile) error {
 	zap.L().Info("restore data request received", zap.Any("backupFile", file))
 
 	err := backupAPI.ExtractExportedZipfile(file.FullPath)
@@ -34,7 +34,7 @@ func RunRestore(file backupML.BackupFile) error {
 }
 
 // RunOnDemandBackup triggers on demand export
-func RunOnDemandBackup(input *backupML.OnDemandBackupConfig) error {
+func RunOnDemandBackup(input *backupTY.OnDemandBackupConfig) error {
 	zap.L().Debug("on-demand backup request received", zap.Any("config", input))
 
 	configData := disk.Config{
@@ -44,7 +44,7 @@ func RunOnDemandBackup(input *backupML.OnDemandBackupConfig) error {
 		RetentionCount:    0,
 	}
 
-	exporterData := handlerType.BackupData{
+	exporterData := handlerTY.BackupData{
 		ProviderType: backupUtil.ProviderDisk,
 		Spec:         utils.StructToMap(configData),
 	}
@@ -55,9 +55,9 @@ func RunOnDemandBackup(input *backupML.OnDemandBackupConfig) error {
 		return err
 	}
 
-	data := handlerType.GenericData{
+	data := handlerTY.GenericData{
 		Disabled: "false",
-		Type:     handlerType.DataTypeBackup,
+		Type:     handlerTY.DataTypeBackup,
 		Data:     base64String,
 	}
 
@@ -86,7 +86,7 @@ func GetBackupFilesList() ([]interface{}, error) {
 
 	for _, location := range locations {
 		if location.Type == backupUtil.ProviderDisk {
-			diskLocation := &backupML.BackupLocationDisk{}
+			diskLocation := &backupTY.BackupLocationDisk{}
 			err = utils.MapToStruct(utils.TagNameNone, location.Config, diskLocation)
 			if err != nil {
 				return exportedFiles, err
@@ -99,7 +99,7 @@ func GetBackupFilesList() ([]interface{}, error) {
 				if rawFile.IsDir || !strings.Contains(rawFile.Name, backupUtil.BackupIdentifier) {
 					continue
 				}
-				exportedFile := backupML.BackupFile{
+				exportedFile := backupTY.BackupFile{
 					ID:           rawFile.FullPath,
 					LocationName: location.Name,
 					ProviderType: location.Type,

@@ -3,14 +3,14 @@ package esphome
 import (
 	"time"
 
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 // handleActions performs actions on a node
-func (p *Provider) handleActions(message *msgML.Message) error {
+func (p *Provider) handleActions(message *msgTY.Message) error {
 	payload := message.Payloads[0]
 	var actionRequest protoreflect.ProtoMessage
 	espNode := p.clientStore.Get(message.NodeID)
@@ -19,18 +19,18 @@ func (p *Provider) handleActions(message *msgML.Message) error {
 	}
 
 	switch payload.Key {
-	case nodeML.ActionReboot:
+	case nodeTY.ActionReboot:
 		// I do not see a direct option to reboot or restart
 		// a entity should be created on the espnose as mentioned in https://esphome.io/components/switch/restart.html
 		// Note: name of the switch should as 'restart'
 		espNode.sendRestartRequest()
 		return nil
 
-	case nodeML.ActionRefreshNodeInfo:
+	case nodeTY.ActionRefreshNodeInfo:
 		espNode.sendNodeInfo()
 		return nil
 
-	case nodeML.ActionHeartbeatRequest:
+	case nodeTY.ActionHeartbeatRequest:
 		espNode.doAliveCheck()
 		return nil
 

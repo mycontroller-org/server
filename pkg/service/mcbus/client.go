@@ -1,7 +1,7 @@
 package mcbus
 
 import (
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
 	"go.uber.org/zap"
 )
 
@@ -23,7 +23,7 @@ func Publish(topic string, data interface{}) error {
 }
 
 // Subscribe a topic
-func Subscribe(topic string, handler func(data *busML.BusData)) (int64, error) {
+func Subscribe(topic string, handler func(data *busTY.BusData)) (int64, error) {
 	return busClient.Subscribe(topic, handler)
 }
 
@@ -33,7 +33,7 @@ func Unsubscribe(topic string, subscriptionID int64) error {
 }
 
 // QueueSubscribe a topic
-func QueueSubscribe(topic, queueName string, handler func(data *busML.BusData)) (int64, error) {
+func QueueSubscribe(topic, queueName string, handler func(data *busTY.BusData)) (int64, error) {
 	return busClient.QueueSubscribe(topic, queueName, handler)
 }
 

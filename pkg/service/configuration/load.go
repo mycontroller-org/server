@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	cfgML "github.com/mycontroller-org/server/v2/pkg/model/config"
+	cfgTY "github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	"go.uber.org/zap"
@@ -19,7 +19,7 @@ var (
 )
 
 // Load configuration
-func Load() (*cfgML.Config, error) {
+func Load() (*cfgTY.Config, error) {
 	// load a temporary logger
 	logger := loggerUtils.GetLogger("development", "error", "console", false, 0)
 
@@ -34,7 +34,7 @@ func Load() (*cfgML.Config, error) {
 		logger.Fatal("error on reading configuration file", zap.Error(err))
 	}
 
-	CFG := cfgML.Config{}
+	CFG := cfgTY.Config{}
 	err = yaml.Unmarshal(d, &CFG)
 	if err != nil {
 		logger.Fatal("failed to parse yaml data", zap.Error(err))

@@ -10,19 +10,19 @@ import (
 	"github.com/fatih/structs"
 	"github.com/mitchellh/mapstructure"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	dataRepositoryML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
-	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
-	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
-	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	"github.com/mycontroller-org/server/v2/pkg/model/schedule"
-	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
-	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
-	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	dataRepositoryTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
+	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
+	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	"github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
+	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -35,33 +35,33 @@ func registerTypes() {
 	gob.Register(map[interface{}]interface{}{})
 	gob.Register(cmap.CustomMap{})
 	gob.Register(cmap.CustomStringMap{})
-	gob.Register(fieldML.Field{})
-	gob.Register(fieldML.Payload{})
-	gob.Register(fieldML.PayloadFormatter{})
-	gob.Register(taskML.Config{})
-	gob.Register(taskML.Dampening{})
-	gob.Register(taskML.EventFilter{})
-	gob.Register(taskML.EvaluationConfig{})
-	gob.Register(taskML.Rule{})
-	gob.Register(taskML.Conditions{})
-	gob.Register(taskML.State{})
-	gob.Register(gatewayML.Config{})
-	gob.Register(nodeML.Node{})
-	gob.Register(sourceML.Source{})
+	gob.Register(fieldTY.Field{})
+	gob.Register(fieldTY.Payload{})
+	gob.Register(fieldTY.PayloadFormatter{})
+	gob.Register(taskTY.Config{})
+	gob.Register(taskTY.Dampening{})
+	gob.Register(taskTY.EventFilter{})
+	gob.Register(taskTY.EvaluationConfig{})
+	gob.Register(taskTY.Rule{})
+	gob.Register(taskTY.Conditions{})
+	gob.Register(taskTY.State{})
+	gob.Register(gatewayTY.Config{})
+	gob.Register(nodeTY.Node{})
+	gob.Register(sourceTY.Source{})
 	gob.Register(primitive.A{})
-	gob.Register(handlerType.Config{})
-	gob.Register(handlerType.ResourceData{})
-	gob.Register(scheduleML.Config{})
-	gob.Register(scheduleML.Validity{})
-	gob.Register(scheduleML.DateRange{})
-	gob.Register(scheduleML.TimeRange{})
-	gob.Register(scheduleML.CustomVariableConfig{})
-	gob.Register(scheduleML.State{})
-	gob.Register(dataRepositoryML.Config{})
-	gob.Register(firmwareML.Firmware{})
-	gob.Register(firmwareML.FileConfig{})
-	gob.Register(firmwareML.FirmwareBlock{})
-	gob.Register(model.State{})
+	gob.Register(handlerTY.Config{})
+	gob.Register(handlerTY.ResourceData{})
+	gob.Register(scheduleTY.Config{})
+	gob.Register(scheduleTY.Validity{})
+	gob.Register(scheduleTY.DateRange{})
+	gob.Register(scheduleTY.TimeRange{})
+	gob.Register(scheduleTY.CustomVariableConfig{})
+	gob.Register(scheduleTY.State{})
+	gob.Register(dataRepositoryTY.Config{})
+	gob.Register(firmwareTY.Firmware{})
+	gob.Register(firmwareTY.FileConfig{})
+	gob.Register(firmwareTY.FirmwareBlock{})
+	gob.Register(types.State{})
 	gob.Register(time.Time{})
 }
 

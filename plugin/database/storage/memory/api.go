@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"reflect"
 
-	cloneutil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
-	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	cloneUtils "github.com/mycontroller-org/server/v2/pkg/utils/clone"
+	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -30,37 +30,37 @@ func (s *Store) Insert(entityName string, data interface{}) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	newID := helper.GetID(data)
+	newID := filterUtils.GetID(data)
 	entity := s.getByID(entityName, newID)
 	if entity != nil {
 		return fmt.Errorf("a entity found with the id: %s", newID)
 	}
 
-	clonedData := cloneutil.Clone(data)
+	clonedData := cloneUtils.Clone(data)
 	s.addEntity(entityName, clonedData)
 	return nil
 }
 
 // Upsert Implementation
-func (s *Store) Upsert(entityName string, data interface{}, filters []stgType.Filter) error {
+func (s *Store) Upsert(entityName string, data interface{}, filters []storageTY.Filter) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	clonedData := cloneutil.Clone(data)
+	clonedData := cloneUtils.Clone(data)
 	return s.updateEntity(entityName, clonedData, filters, true)
 }
 
 // Update Implementation
-func (s *Store) Update(entityName string, data interface{}, filters []stgType.Filter) error {
+func (s *Store) Update(entityName string, data interface{}, filters []storageTY.Filter) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	clonedData := cloneutil.Clone(data)
+	clonedData := cloneUtils.Clone(data)
 	return s.updateEntity(entityName, clonedData, filters, false)
 }
 
 // Find Implementation
-func (s *Store) Find(entityName string, out interface{}, filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
+func (s *Store) Find(entityName string, out interface{}, filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
@@ -73,11 +73,11 @@ func (s *Store) Find(entityName string, out interface{}, filters []stgType.Filte
 	elementType := sliceVal.Type().Elem()
 	entities := s.getEntities(entityName)
 
-	filteredEntities := helper.Filter(entities, filters, false)
-	entitiesSorted, count := helper.Sort(filteredEntities, pagination)
+	filteredEntities := filterUtils.Filter(entities, filters, false)
+	entitiesSorted, count := filterUtils.Sort(filteredEntities, pagination)
 
 	for index, entity := range entitiesSorted {
-		clonedEntity := cloneutil.Clone(entity)
+		clonedEntity := cloneUtils.Clone(entity)
 
 		if sliceVal.Len() == index {
 			// slice is full
@@ -95,7 +95,7 @@ func (s *Store) Find(entityName string, out interface{}, filters []stgType.Filte
 		offset = pagination.Offset
 	}
 
-	result := &stgType.Result{
+	result := &storageTY.Result{
 		Offset: offset,
 		Count:  count,
 		Data:   out,
@@ -107,15 +107,15 @@ func (s *Store) Find(entityName string, out interface{}, filters []stgType.Filte
 }
 
 // FindOne Implementation
-func (s *Store) FindOne(entityName string, out interface{}, filters []stgType.Filter) error {
+func (s *Store) FindOne(entityName string, out interface{}, filters []storageTY.Filter) error {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
 	entities := s.getEntities(entityName)
-	entities = helper.Filter(entities, filters, true)
+	entities = filterUtils.Filter(entities, filters, true)
 
 	if len(entities) > 0 {
-		clonedEntity := cloneutil.Clone(entities[0])
+		clonedEntity := cloneUtils.Clone(entities[0])
 		outVal := reflect.ValueOf(out)
 		outVal.Elem().Set(reflect.ValueOf(clonedEntity).Elem())
 		return nil
@@ -124,16 +124,16 @@ func (s *Store) FindOne(entityName string, out interface{}, filters []stgType.Fi
 }
 
 // Delete Implementation
-func (s *Store) Delete(entityName string, filters []stgType.Filter) (int64, error) {
+func (s *Store) Delete(entityName string, filters []storageTY.Filter) (int64, error) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
 	entities := s.getEntities(entityName)
-	filteredEntities := helper.Filter(entities, filters, false)
+	filteredEntities := filterUtils.Filter(entities, filters, false)
 
 	if len(filteredEntities) > 0 {
 		for _, entity := range filteredEntities {
-			id := helper.GetID(entity)
+			id := filterUtils.GetID(entity)
 			s.removeEntity(entityName, id)
 		}
 		return int64(len(filteredEntities)), nil
@@ -153,7 +153,7 @@ func (s *Store) getEntities(entityName string) []interface{} {
 func (s *Store) getByID(entityName, id string) interface{} {
 	entities := s.getEntities(entityName)
 	for _, entity := range entities {
-		eID := helper.GetID(entity)
+		eID := filterUtils.GetID(entity)
 		if eID == id {
 			return entity
 		}
@@ -168,10 +168,10 @@ func (s *Store) addEntity(entityName string, entity interface{}) {
 	s.data[entityName] = append(s.data[entityName], entity)
 }
 
-func (s *Store) updateEntity(entityName string, entity interface{}, filters []stgType.Filter, forceUpdate bool) error {
+func (s *Store) updateEntity(entityName string, entity interface{}, filters []storageTY.Filter, forceUpdate bool) error {
 	//zap.L().Info("received data for update", zap.String("entity", entityName), zap.Any("data", entity))
 	sourceID := ""
-	suppliedID := helper.GetID(entity)
+	suppliedID := filterUtils.GetID(entity)
 	if suppliedID != "" {
 		if s.getByID(entityName, suppliedID) != nil {
 			sourceID = suppliedID
@@ -180,17 +180,17 @@ func (s *Store) updateEntity(entityName string, entity interface{}, filters []st
 
 	if sourceID == "" && len(filters) > 0 { // with filters find a entity
 		entities := s.getEntities(entityName)
-		entities = helper.Filter(entities, filters, true)
+		entities = filterUtils.Filter(entities, filters, true)
 		if len(entities) > 1 {
 			return errors.New("more than one entities found, with the supplied filter")
 		} else if len(entities) > 0 {
-			sourceID = helper.GetID(entities[0])
+			sourceID = filterUtils.GetID(entities[0])
 		}
 	}
 
 	if sourceID != "" {
 		for index, entry := range s.data[entityName] {
-			eID := helper.GetID(entry)
+			eID := filterUtils.GetID(entry)
 			if sourceID == eID {
 				s.data[entityName][index] = entity
 				//	zap.L().Info("Updated on the existing entity", zap.Any("old", entry), zap.Any("new", entity))
@@ -209,7 +209,7 @@ func (s *Store) updateEntity(entityName string, entity interface{}, filters []st
 func (s *Store) removeEntity(entityName, id string) {
 	entities := s.getEntities(entityName)
 	for index, entry := range entities {
-		eID := helper.GetID(entry)
+		eID := filterUtils.GetID(entry)
 		if id == eID {
 			s.data[entityName] = append(s.data[entityName][:index], s.data[entityName][index+1:]...)
 			return

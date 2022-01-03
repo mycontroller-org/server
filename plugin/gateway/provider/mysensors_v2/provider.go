@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	sch "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	utils "github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
-	gwpl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
+	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	ethernet "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_ethernet"
 	mqtt "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_mqtt"
 	serial "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_serial"
-	providerType "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
@@ -36,8 +36,8 @@ type Config struct {
 // Provider implementation
 type Provider struct {
 	Config        *Config
-	GatewayConfig *gwType.Config
-	Protocol      gwpl.Protocol
+	GatewayConfig *gwTY.Config
+	Protocol      gwPtl.Protocol
 	ProtocolType  string
 }
 
@@ -47,7 +47,7 @@ const (
 )
 
 // NewPluginMySensorsV2 MySensors provider
-func NewPluginMySensorsV2(gatewayCfg *gwType.Config) (providerType.Plugin, error) {
+func NewPluginMySensorsV2(gatewayCfg *gwTY.Config) (providerTY.Plugin, error) {
 	cfg := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, cfg)
 	if err != nil {
@@ -56,7 +56,7 @@ func NewPluginMySensorsV2(gatewayCfg *gwType.Config) (providerType.Plugin, error
 	provider := &Provider{
 		Config:        cfg,
 		GatewayConfig: gatewayCfg,
-		ProtocolType:  cfg.Protocol.GetString(model.NameType),
+		ProtocolType:  cfg.Protocol.GetString(types.NameType),
 	}
 	zap.L().Debug("Config details", zap.Any("received", gatewayCfg.Provider), zap.Any("converted", cfg))
 	return provider, nil
@@ -67,22 +67,22 @@ func (p *Provider) Name() string {
 }
 
 // Start func
-func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgML.RawMessage) error) error {
+func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) error) error {
 	var err error
 	switch p.ProtocolType {
-	case gwpl.TypeMQTT:
+	case gwPtl.TypeMQTT:
 		protocol, _err := mqtt.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
 		err = _err
 		p.Protocol = protocol
 
-	case gwpl.TypeSerial:
+	case gwPtl.TypeSerial:
 		// update serial message splitter
 		p.Config.Protocol.Set(serial.KeyMessageSplitter, serialMessageSplitter, nil)
 		protocol, _err := serial.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
 		err = _err
 		p.Protocol = protocol
 
-	case gwpl.TypeEthernet:
+	case gwPtl.TypeEthernet:
 		// update ethernet message splitter
 		p.Config.Protocol.Set(serial.KeyMessageSplitter, ethernetMessageSplitter, nil)
 		protocol, _err := ethernet.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
@@ -118,7 +118,7 @@ func (p *Provider) Close() error {
 
 // Post func
 // returns the status and error message if any
-func (p *Provider) Post(msg *msgML.Message) error {
+func (p *Provider) Post(msg *msgTY.Message) error {
 	rawMsg, err := p.toRawMessage(msg)
 	if err != nil {
 		zap.L().Error("error on converting to raw message", zap.Error(err), zap.String("gatewayId", p.GatewayConfig.ID))
@@ -144,7 +144,7 @@ func (p *Provider) Post(msg *msgML.Message) error {
 	ackTopic := mcbus.GetTopicPostRawMessageAcknowledgement(p.GatewayConfig.ID, rawMsg.ID)
 	ackSubscriptionID, err := mcbus.Subscribe(
 		ackTopic,
-		func(event *busML.BusData) {
+		func(event *busTY.BusData) {
 			zap.L().Debug("acknowledgement status", zap.Any("event", event))
 			ackChannel.SafeSend(true)
 		},

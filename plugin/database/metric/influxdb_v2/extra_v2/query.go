@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/influxdata/influxdb-client-go/v2/api"
-	queryML "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra"
-	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	queryTY "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 )
 
@@ -89,7 +89,7 @@ func (qv2 *QueryV2) buildQuery(suppliedMetricType, name, bucket, start, stop, wi
 	query += `  |> toFloat()`
 
 	switch suppliedMetricType {
-	case metricType.MetricTypeGaugeFloat, metricType.MetricTypeGauge:
+	case metricTY.MetricTypeGaugeFloat, metricTY.MetricTypeGauge:
 		// add default functions, if none available
 		if len(functions) == 0 {
 			functions = []string{"mean", "min", "max"}
@@ -111,20 +111,20 @@ func (qv2 *QueryV2) buildQuery(suppliedMetricType, name, bucket, start, stop, wi
 		// add union
 		query += qv2.union(name, fns)
 
-	case metricType.MetricTypeBinary:
+	case metricTY.MetricTypeBinary:
 		query += fmt.Sprintf(
 			`data
 				|> toFloat()
 				|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
 				|> drop(fn: (column) => not contains(value: column, set: ["_time", "%[1]s"]))
-				|> yield(name: "%[2]s")`, queryML.FieldValue, name)
+				|> yield(name: "%[2]s")`, queryTY.FieldValue, name)
 	}
 
 	// final query
 	return query
 }
 
-func (qv2 *QueryV2) ExecuteQuery(q *metricType.Query, measurement string) ([]metricType.ResponseData, error) {
+func (qv2 *QueryV2) ExecuteQuery(q *metricTY.Query, measurement string) ([]metricTY.ResponseData, error) {
 	filters := make(map[string]string)
 
 	// add measurement
@@ -136,7 +136,7 @@ func (qv2 *QueryV2) ExecuteQuery(q *metricType.Query, measurement string) ([]met
 	}
 
 	// add field value
-	filters["_field"] = queryML.FieldValue
+	filters["_field"] = queryTY.FieldValue
 
 	query := qv2.buildQuery(q.MetricType, q.Name, qv2.bucket, q.Start, q.Stop, q.Window, filters, q.Functions)
 
@@ -147,7 +147,7 @@ func (qv2 *QueryV2) ExecuteQuery(q *metricType.Query, measurement string) ([]met
 		return nil, err
 	}
 
-	metrics := make([]metricType.ResponseData, 0)
+	metrics := make([]metricTY.ResponseData, 0)
 
 	// Use Next() to iterate over query result lines
 	for tableResult.Next() {
@@ -171,7 +171,7 @@ func (qv2 *QueryV2) ExecuteQuery(q *metricType.Query, measurement string) ([]met
 			}
 		}
 
-		metrics = append(metrics, metricType.ResponseData{Time: record.Time(), MetricType: q.MetricType, Metric: _metric})
+		metrics = append(metrics, metricTY.ResponseData{Time: record.Time(), MetricType: q.MetricType, Metric: _metric})
 
 		if tableResult.Err() != nil {
 			zap.L().Error("Query error", zap.String("name", q.Name), zap.Error(tableResult.Err()))

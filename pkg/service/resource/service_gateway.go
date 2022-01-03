@@ -4,35 +4,35 @@ import (
 	"errors"
 
 	gatewayAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	concurrencyUtils "github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
 )
 
 var gwReconnectStore = concurrencyUtils.NewStore()
 
-func gatewayService(reqEvent *rsML.ServiceEvent) error {
-	resEvent := &rsML.ServiceEvent{
+func gatewayService(reqEvent *rsTY.ServiceEvent) error {
+	resEvent := &rsTY.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
 
 	switch reqEvent.Command {
-	case rsML.CommandGet:
+	case rsTY.CommandGet:
 		data, err := getGateway(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
-	case rsML.CommandUpdateState:
+	case rsTY.CommandUpdateState:
 		err := updateGatewayState(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 
-	case rsML.CommandLoadAll:
+	case rsTY.CommandLoadAll:
 		gatewayAPI.LoadAll()
 
 	default:
@@ -41,7 +41,7 @@ func gatewayService(reqEvent *rsML.ServiceEvent) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getGateway(request *rsML.ServiceEvent) (interface{}, error) {
+func getGateway(request *rsTY.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
 		gwConfig, err := gatewayAPI.GetByID(request.ID)
 		if err != nil {
@@ -59,13 +59,13 @@ func getGateway(request *rsML.ServiceEvent) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func updateGatewayState(reqEvent *rsML.ServiceEvent) error {
+func updateGatewayState(reqEvent *rsTY.ServiceEvent) error {
 	if reqEvent.Data == nil {
 		zap.L().Error("gateway state not supplied", zap.Any("event", reqEvent))
 		return errors.New("gateway state not supplied")
 	}
 
-	state := &model.State{}
+	state := &types.State{}
 	err := reqEvent.LoadData(state)
 	if err != nil {
 		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
@@ -77,7 +77,7 @@ func updateGatewayState(reqEvent *rsML.ServiceEvent) error {
 		return err
 	}
 
-	if state.Status == model.StatusUp {
+	if state.Status == types.StatusUp {
 		if gwReconnectStore.IsAvailable(reqEvent.ID) {
 			jobInterface := gwReconnectStore.Get(reqEvent.ID)
 			if jobInterface != nil {
@@ -115,7 +115,7 @@ func getTriggerGatewayStartFunc(gatewayID string) func() {
 			zap.L().Debug("error on getting gateway instance. may be deleted?", zap.String("gateway", gatewayID), zap.String("error", err.Error()))
 			return
 		}
-		if !gw.Enabled || gw.State.Status == model.StatusUp {
+		if !gw.Enabled || gw.State.Status == types.StatusUp {
 			return
 		}
 

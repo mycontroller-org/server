@@ -3,13 +3,13 @@ package gateway
 import (
 	"fmt"
 
-	providerType "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
 // CreatorFn func type
-type CreatorFn func(config *gwType.Config) (providerType.Plugin, error)
+type CreatorFn func(config *gwTY.Config) (providerTY.Plugin, error)
 
 // Creators is used for create plugins.
 var creators = make(map[string]CreatorFn)
@@ -22,7 +22,7 @@ func Register(name string, fn CreatorFn) {
 	creators[name] = fn
 }
 
-func Create(name string, config *gwType.Config) (p providerType.Plugin, err error) {
+func Create(name string, config *gwTY.Config) (p providerTY.Plugin, err error) {
 	if fn, ok := creators[name]; ok {
 		p, err = fn(config)
 	} else {

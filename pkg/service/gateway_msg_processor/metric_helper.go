@@ -6,37 +6,37 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	"github.com/mycontroller-org/server/v2/pkg/store"
-	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 )
 
-func writeFieldMetric(field *fieldML.Field) error {
+func writeFieldMetric(field *fieldTY.Field) error {
 	fields := make(map[string]interface{})
 	// update fields
-	if field.MetricType == metricType.MetricTypeGEO {
+	if field.MetricType == metricTY.MetricTypeGEO {
 		_f, err := geoData(field.Current.Value)
 		if err != nil {
 			return err
 		}
 		fields = _f
 	} else {
-		fields[metricType.FieldValue] = field.Current.Value
+		fields[metricTY.FieldValue] = field.Current.Value
 	}
 	// update tags
 	tags := map[string]string{
-		model.KeyID:        field.ID,
-		model.KeyGatewayID: field.GatewayID,
-		model.KeyNodeID:    field.NodeID,
-		model.KeySourceID:  field.SourceID,
-		model.KeyFieldID:   field.FieldID,
+		types.KeyID:        field.ID,
+		types.KeyGatewayID: field.GatewayID,
+		types.KeyNodeID:    field.NodeID,
+		types.KeySourceID:  field.SourceID,
+		types.KeyFieldID:   field.FieldID,
 	}
 
 	// return data
-	metricData := &metricType.InputData{
+	metricData := &metricTY.InputData{
 		MetricType: field.MetricType,
 		Time:       field.Current.Timestamp,
 		Tags:       tags,
@@ -70,28 +70,28 @@ func geoData(pl interface{}) (map[string]interface{}, error) {
 		}
 	}
 
-	d[metricType.FieldLatitude] = lat
-	d[metricType.FieldLongitude] = lon
-	d[metricType.FieldAltitude] = alt
+	d[metricTY.FieldLatitude] = lat
+	d[metricTY.FieldLongitude] = lon
+	d[metricTY.FieldAltitude] = alt
 
 	return d, nil
 }
 
-func writeNodeMetric(node *nodeML.Node, suppliedMetricType, fieldName string, value interface{}) error {
+func writeNodeMetric(node *nodeTY.Node, suppliedMetricType, fieldName string, value interface{}) error {
 	fields := make(map[string]interface{})
 	// update fields
-	fields[metricType.FieldValue] = value
+	fields[metricTY.FieldValue] = value
 
 	// update tags
 	tags := map[string]string{
-		model.KeyID:        node.ID,
-		model.KeyGatewayID: node.GatewayID,
-		model.KeyNodeID:    node.NodeID,
-		model.KeyFieldName: fieldName,
+		types.KeyID:        node.ID,
+		types.KeyGatewayID: node.GatewayID,
+		types.KeyNodeID:    node.NodeID,
+		types.KeyFieldName: fieldName,
 	}
 
 	// return data
-	metricData := &metricType.InputData{
+	metricData := &metricTY.InputData{
 		MetricType: suppliedMetricType,
 		Time:       node.LastSeen,
 		Tags:       tags,
@@ -101,7 +101,7 @@ func writeNodeMetric(node *nodeML.Node, suppliedMetricType, fieldName string, va
 	return writeMetric(metricData)
 }
 
-func writeMetric(metricData *metricType.InputData) error {
+func writeMetric(metricData *metricTY.InputData) error {
 	startTime := time.Now()
 	err := store.METRIC.Write(metricData)
 	if err != nil {

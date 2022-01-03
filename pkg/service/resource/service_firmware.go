@@ -4,28 +4,28 @@ import (
 	"errors"
 
 	firmwareAPI "github.com/mycontroller-org/server/v2/pkg/api/firmware"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 
-func firmwareService(reqEvent *rsML.ServiceEvent) error {
-	resEvent := &rsML.ServiceEvent{
+func firmwareService(reqEvent *rsTY.ServiceEvent) error {
+	resEvent := &rsTY.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
 
 	switch reqEvent.Command {
-	case rsML.CommandGet:
+	case rsTY.CommandGet:
 		data, err := getFirmware(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
-	case rsML.CommandBlocks:
+	case rsTY.CommandBlocks:
 		sendFirmwareBlocks(reqEvent)
 		return nil
 
@@ -35,7 +35,7 @@ func firmwareService(reqEvent *rsML.ServiceEvent) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getFirmware(request *rsML.ServiceEvent) (interface{}, error) {
+func getFirmware(request *rsTY.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
 		cfg, err := firmwareAPI.GetByID(request.ID)
 		if err != nil {
@@ -53,7 +53,7 @@ func getFirmware(request *rsML.ServiceEvent) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func sendFirmwareBlocks(reqEvent *rsML.ServiceEvent) {
+func sendFirmwareBlocks(reqEvent *rsTY.ServiceEvent) {
 	if reqEvent.ID == "" || reqEvent.ReplyTopic == "" {
 		return
 	}
@@ -63,17 +63,17 @@ func sendFirmwareBlocks(reqEvent *rsML.ServiceEvent) {
 		return
 	}
 
-	fwBytes, err := utils.ReadFile(model.GetDataDirectoryFirmware(), fw.File.InternalName)
+	fwBytes, err := utils.ReadFile(types.GetDataDirectoryFirmware(), fw.File.InternalName)
 	if err != nil {
-		zap.L().Error("error on reading a firmware file", zap.String("directory", model.GetDataDirectoryFirmware()), zap.String("fileName", fw.File.InternalName), zap.Error(err))
+		zap.L().Error("error on reading a firmware file", zap.String("directory", types.GetDataDirectoryFirmware()), zap.String("fileName", fw.File.InternalName), zap.Error(err))
 		return
 	}
 
 	blockNumber := 0
 	totalBytes := len(fwBytes)
 	for {
-		positionStart := blockNumber * firmwareML.BlockSize
-		positionEnd := positionStart + firmwareML.BlockSize
+		positionStart := blockNumber * firmwareTY.BlockSize
+		positionEnd := positionStart + firmwareTY.BlockSize
 
 		reachedEnd := false
 		var bytes []byte
@@ -98,13 +98,13 @@ func sendFirmwareBlocks(reqEvent *rsML.ServiceEvent) {
 }
 
 func postFirmwareBlock(replyTopic, id string, bytes []byte, blockNumber, totalBytes int, isFinal bool) error {
-	resEvent := &rsML.ServiceEvent{
-		Type:    rsML.TypeFirmware,
-		Command: rsML.CommandBlocks,
+	resEvent := &rsTY.ServiceEvent{
+		Type:    rsTY.TypeFirmware,
+		Command: rsTY.CommandBlocks,
 		ID:      id,
 	}
 
-	fwBlock := firmwareML.FirmwareBlock{
+	fwBlock := firmwareTY.FirmwareBlock{
 		ID:          id,
 		BlockNumber: blockNumber,
 		TotalBytes:  totalBytes,

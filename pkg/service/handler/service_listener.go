@@ -1,13 +1,13 @@
 package handler
 
 import (
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
-	sfML "github.com/mycontroller-org/server/v2/pkg/model/service_filter"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
+	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -18,11 +18,11 @@ const (
 
 var (
 	serviceQueue *queueUtils.Queue
-	svcFilter    *sfML.ServiceFilter
+	svcFilter    *sfTY.ServiceFilter
 )
 
 // Start handler service listener
-func Start(filter *sfML.ServiceFilter) error {
+func Start(filter *sfTY.ServiceFilter) error {
 	svcFilter = filter
 	if svcFilter.Disabled {
 		zap.L().Info("handler service disabled")
@@ -49,9 +49,9 @@ func Start(filter *sfML.ServiceFilter) error {
 	}
 
 	// load handlers
-	reqEvent := rsML.ServiceEvent{
-		Type:    rsML.TypeHandler,
-		Command: rsML.CommandLoadAll,
+	reqEvent := rsTY.ServiceEvent{
+		Type:    rsTY.TypeHandler,
+		Command: rsTY.CommandLoadAll,
 	}
 	topicResourceServer := mcbus.FormatTopic(mcbus.TopicServiceResourceServer)
 	return mcbus.Publish(topicResourceServer, reqEvent)
@@ -67,8 +67,8 @@ func Close() {
 	closeMessageListener()
 }
 
-func onServiceEvent(event *busML.BusData) {
-	reqEvent := &rsML.ServiceEvent{}
+func onServiceEvent(event *busTY.BusData) {
+	reqEvent := &rsTY.ServiceEvent{}
 	err := event.LoadData(reqEvent)
 	if err != nil {
 		zap.L().Warn("failed to convet to target type", zap.Error(err))
@@ -87,15 +87,15 @@ func onServiceEvent(event *busML.BusData) {
 
 // postProcessServiceEvent from the queue
 func postProcessServiceEvent(event interface{}) {
-	reqEvent := event.(*rsML.ServiceEvent)
+	reqEvent := event.(*rsTY.ServiceEvent)
 	zap.L().Debug("processing a request", zap.Any("event", reqEvent))
 
-	if reqEvent.Type != rsML.TypeHandler {
+	if reqEvent.Type != rsTY.TypeHandler {
 		zap.L().Warn("unsupported event type", zap.Any("event", reqEvent))
 	}
 
 	switch reqEvent.Command {
-	case rsML.CommandStart:
+	case rsTY.CommandStart:
 		cfg := getConfig(reqEvent)
 		if cfg != nil && helper.IsMine(svcFilter, cfg.Type, cfg.ID, cfg.Labels) {
 			err := StartHandler(cfg)
@@ -104,7 +104,7 @@ func postProcessServiceEvent(event interface{}) {
 			}
 		}
 
-	case rsML.CommandStop:
+	case rsTY.CommandStop:
 		if reqEvent.ID != "" {
 			err := StopHandler(reqEvent.ID)
 			if err != nil {
@@ -120,7 +120,7 @@ func postProcessServiceEvent(event interface{}) {
 			}
 		}
 
-	case rsML.CommandReload:
+	case rsTY.CommandReload:
 		cfg := getConfig(reqEvent)
 		if cfg != nil && helper.IsMine(svcFilter, cfg.Type, cfg.ID, cfg.Labels) {
 			err := ReloadHandler(cfg)
@@ -129,7 +129,7 @@ func postProcessServiceEvent(event interface{}) {
 			}
 		}
 
-	case rsML.CommandUnloadAll:
+	case rsTY.CommandUnloadAll:
 		UnloadAll()
 
 	default:
@@ -137,8 +137,8 @@ func postProcessServiceEvent(event interface{}) {
 	}
 }
 
-func getConfig(reqEvent *rsML.ServiceEvent) *handlerType.Config {
-	cfg := &handlerType.Config{}
+func getConfig(reqEvent *rsTY.ServiceEvent) *handlerTY.Config {
+	cfg := &handlerTY.Config{}
 	err := reqEvent.LoadData(cfg)
 	if err != nil {
 		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))

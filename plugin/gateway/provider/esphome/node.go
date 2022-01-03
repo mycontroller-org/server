@@ -7,18 +7,18 @@ import (
 
 	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
 	esphomeClient "github.com/mycontroller-org/esphome_api/pkg/client"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 )
 
 // NewESPHomeNode creates a esphome node instance
-func NewESPHomeNode(gatewayID, nodeID string, config ESPHomeNodeConfig, entityStore *EntityStore, rxMessageFunc func(rawMsg *msgML.RawMessage) error) *ESPHomeNode {
+func NewESPHomeNode(gatewayID, nodeID string, config ESPHomeNodeConfig, entityStore *EntityStore, rxMessageFunc func(rawMsg *msgTY.RawMessage) error) *ESPHomeNode {
 	client := &ESPHomeNode{
 		GatewayID:     gatewayID,
 		NodeID:        nodeID,
@@ -95,11 +95,11 @@ func (en *ESPHomeNode) Post(msg proto.Message) error {
 		if entity == nil {
 			return nil
 		}
-		streamResponse := getMessage(en.GatewayID, en.NodeID, entity.SourceID, msgML.TypeSet, time.Now())
-		data := msgML.NewPayload()
+		streamResponse := getMessage(en.GatewayID, en.NodeID, entity.SourceID, msgTY.TypeSet, time.Now())
+		data := msgTY.NewPayload()
 		data.Key = FieldStream
 		data.Value = convertor.ToString(imageReq.Stream)
-		data.MetricType = metricType.MetricTypeNone
+		data.MetricType = metricTY.MetricTypeNone
 		streamResponse.Payloads = append(streamResponse.Payloads, data)
 		topic := mcbus.GetTopicPostMessageToServer()
 		err = mcbus.Publish(topic, streamResponse)
@@ -126,7 +126,7 @@ func (en *ESPHomeNode) onReceive(msg proto.Message) {
 	}
 
 	// create a raw message and post into queue
-	rawMsg := msgML.NewRawMessage(true, nil)
+	rawMsg := msgTY.NewRawMessage(true, nil)
 	rawMsg.Data = msg
 	msgTypeID := esphomeAPI.TypeID(msg)
 	rawMsg.Others.Set(MessageTypeID, msgTypeID, nil)
@@ -190,11 +190,11 @@ func (en *ESPHomeNode) sendNodeInfo() {
 		return
 	}
 
-	nodeMsg := getMessage(en.GatewayID, en.NodeID, "", msgML.TypePresentation, time.Now())
-	data := msgML.NewPayload()
-	data.Key = model.FieldName
+	nodeMsg := getMessage(en.GatewayID, en.NodeID, "", msgTY.TypePresentation, time.Now())
+	data := msgTY.NewPayload()
+	data.Key = types.FieldName
 	data.Value = deviceInfo.Name
-	data.Labels.Set(model.LabelNodeVersion, deviceInfo.EsphomeVersion)
+	data.Labels.Set(types.LabelNodeVersion, deviceInfo.EsphomeVersion)
 	data.Others.Set("mac", deviceInfo.MacAddress, nil)
 	data.Others.Set("compilation_time", deviceInfo.CompilationTime, nil)
 	data.Others.Set("has_deep_sleep", deviceInfo.HasDeepSleep, nil)

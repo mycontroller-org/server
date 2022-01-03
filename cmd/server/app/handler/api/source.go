@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
-	storageML "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterSourceRoutes registers source api
@@ -22,15 +22,15 @@ func RegisterSourceRoutes(router *mux.Router) {
 }
 
 func listSources(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindMany(w, r, model.EntitySource, &[]sourceML.Source{})
+	handlerUtils.FindMany(w, r, types.EntitySource, &[]sourceTY.Source{})
 }
 
 func getSource(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindOne(w, r, model.EntitySource, &sourceML.Source{})
+	handlerUtils.FindOne(w, r, types.EntitySource, &sourceTY.Source{})
 }
 
 func updateSource(w http.ResponseWriter, r *http.Request) {
-	entity := &sourceML.Source{}
+	entity := &sourceTY.Source{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -50,7 +50,7 @@ func updateSource(w http.ResponseWriter, r *http.Request) {
 
 func deleteSources(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []storageML.Filter, p *storageML.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := sourceAPI.Delete(IDs)
 			if err != nil {

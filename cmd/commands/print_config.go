@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	"github.com/mycontroller-org/server/v2/pkg/model/config"
-	servicefilter "github.com/mycontroller-org/server/v2/pkg/model/service_filter"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	"github.com/mycontroller-org/server/v2/pkg/types/config"
+	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"gopkg.in/yaml.v2"
 )
@@ -78,12 +78,12 @@ func getDefaultServerConfig() *config.Config {
 			"tls_insecure_skip_verify": false,
 			"connection_timeout":       "10s",
 		},
-		Gateway: servicefilter.ServiceFilter{
+		Gateway: sfTY.ServiceFilter{
 			Disabled: false,
 			IDs:      []string{},
 			Labels:   cmap.CustomStringMap{"location": "server"},
 		},
-		Handler: servicefilter.ServiceFilter{
+		Handler: sfTY.ServiceFilter{
 			Disabled: false,
 			IDs:      []string{},
 			Labels:   cmap.CustomStringMap{"location": "server"},

@@ -4,43 +4,43 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 )
 
-func (p *Provider) getData(name string, value interface{}, metricType, unit string, isReadOnly bool) msgML.Payload {
-	data := msgML.NewPayload()
+func (p *Provider) getData(name string, value interface{}, metricType, unit string, isReadOnly bool) msgTY.Payload {
+	data := msgTY.NewPayload()
 	data.Key = name
 	data.Value = fmt.Sprintf("%v", value)
 	data.MetricType = metricType
 	if isReadOnly {
-		data.Labels.Set(model.LabelReadOnly, "true")
+		data.Labels.Set(types.LabelReadOnly, "true")
 	}
 	return data
 }
 
-func (p *Provider) getMsg(sourceID string) msgML.Message {
-	msg := msgML.NewMessage(true)
+func (p *Provider) getMsg(sourceID string) msgTY.Message {
+	msg := msgTY.NewMessage(true)
 	msg.GatewayID = p.GatewayConfig.ID
 	msg.NodeID = p.NodeID
 	msg.SourceID = sourceID
-	msg.Type = msgML.TypeSet
+	msg.Type = msgTY.TypeSet
 	msg.Timestamp = time.Now()
 
 	return msg
 }
 
-func (p *Provider) getSourcePresentationMsg(sourceID, sourceName string) msgML.Message {
-	msg := msgML.NewMessage(true)
+func (p *Provider) getSourcePresentationMsg(sourceID, sourceName string) msgTY.Message {
+	msg := msgTY.NewMessage(true)
 	msg.GatewayID = p.GatewayConfig.ID
 	msg.NodeID = p.NodeID
 	msg.SourceID = sourceID
-	msg.Type = msgML.TypePresentation
+	msg.Type = msgTY.TypePresentation
 	msg.Timestamp = time.Now()
 
 	if sourceName != "" {
-		data := msgML.NewPayload()
+		data := msgTY.NewPayload()
 		data.Key = "name"
 		data.Value = sourceName
 		msg.Payloads = append(msg.Payloads, data)
@@ -49,7 +49,7 @@ func (p *Provider) getSourcePresentationMsg(sourceID, sourceName string) msgML.M
 	return msg
 }
 
-func (p *Provider) postMsg(msg *msgML.Message) error {
+func (p *Provider) postMsg(msg *msgTY.Message) error {
 	topic := mcbus.GetTopicPostMessageToServer()
 	return mcbus.Publish(topic, msg)
 }

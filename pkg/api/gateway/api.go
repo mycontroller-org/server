@@ -1,54 +1,54 @@
 package gateway
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 )
 
 // List by filter and pagination
-func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
-	result := make([]gwType.Config, 0)
-	return store.STORAGE.Find(model.EntityGateway, &result, filters, pagination)
+func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	result := make([]gwTY.Config, 0)
+	return store.STORAGE.Find(types.EntityGateway, &result, filters, pagination)
 }
 
 // Get returns a gateway
-func Get(filters []stgType.Filter) (*gwType.Config, error) {
-	result := &gwType.Config{}
-	err := store.STORAGE.FindOne(model.EntityGateway, result, filters)
+func Get(filters []storageTY.Filter) (*gwTY.Config, error) {
+	result := &gwTY.Config{}
+	err := store.STORAGE.FindOne(types.EntityGateway, result, filters)
 	return result, err
 }
 
 // GetByIDs returns a gateway details by id
-func GetByIDs(ids []string) ([]gwType.Config, error) {
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids},
+func GetByIDs(ids []string) ([]gwTY.Config, error) {
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids},
 	}
-	pagination := &stgType.Pagination{Limit: int64(len(ids))}
-	gateways := make([]gwType.Config, 0)
-	_, err := store.STORAGE.Find(model.EntityNode, &gateways, filters, pagination)
+	pagination := &storageTY.Pagination{Limit: int64(len(ids))}
+	gateways := make([]gwTY.Config, 0)
+	_, err := store.STORAGE.Find(types.EntityNode, &gateways, filters, pagination)
 	return gateways, err
 }
 
 // GetByID returns a gateway details
-func GetByID(id string) (*gwType.Config, error) {
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Value: id},
+func GetByID(id string) (*gwTY.Config, error) {
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: id},
 	}
-	result := &gwType.Config{}
-	err := store.STORAGE.FindOne(model.EntityGateway, result, filters)
+	result := &gwTY.Config{}
+	err := store.STORAGE.FindOne(types.EntityGateway, result, filters)
 	return result, err
 }
 
 // SaveAndReload gateway
-func SaveAndReload(gwCfg *gwType.Config) error {
-	gwCfg.State = &model.State{} //reset state
+func SaveAndReload(gwCfg *gwTY.Config) error {
+	gwCfg.State = &types.State{} //reset state
 	err := Save(gwCfg)
 	if err != nil {
 		return err
@@ -57,11 +57,11 @@ func SaveAndReload(gwCfg *gwType.Config) error {
 }
 
 // Save gateway config
-func Save(gwCfg *gwType.Config) error {
-	eventType := eventML.TypeUpdated
+func Save(gwCfg *gwTY.Config) error {
+	eventType := eventTY.TypeUpdated
 	if gwCfg.ID == "" {
 		gwCfg.ID = utils.RandID()
-		eventType = eventML.TypeCreated
+		eventType = eventTY.TypeCreated
 	}
 
 	// encrypt passwords, tokens
@@ -70,16 +70,16 @@ func Save(gwCfg *gwType.Config) error {
 		return err
 	}
 
-	err = store.STORAGE.Upsert(model.EntityGateway, gwCfg, nil)
+	err = store.STORAGE.Upsert(types.EntityGateway, gwCfg, nil)
 	if err != nil {
 		return err
 	}
-	busUtils.PostEvent(mcbus.TopicEventGateway, eventType, model.EntityGateway, gwCfg)
+	busUtils.PostEvent(mcbus.TopicEventGateway, eventType, types.EntityGateway, gwCfg)
 	return nil
 }
 
 // SetState Updates state data
-func SetState(id string, state *model.State) error {
+func SetState(id string, state *types.State) error {
 	gwCfg, err := GetByID(id)
 	if err != nil {
 		return err
@@ -94,6 +94,6 @@ func Delete(ids []string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids}}
-	return store.STORAGE.Delete(model.EntityGateway, filters)
+	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids}}
+	return store.STORAGE.Delete(types.EntityGateway, filters)
 }

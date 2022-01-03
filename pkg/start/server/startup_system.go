@@ -4,16 +4,16 @@ import (
 	"fmt"
 
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/config"
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
 
 func RunSystemStartJobs() {
-	dir := model.GetDataDirectoryInternal()
+	dir := types.GetDataDirectoryInternal()
 	filename := fmt.Sprintf("%s/%s", dir, config.SystemStartJobsFilename)
 	if !utils.IsFileExists(filename) {
 		return
@@ -42,9 +42,9 @@ func RunSystemStartJobs() {
 	}
 
 	// remove internal directory
-	err = utils.RemoveDir(model.GetDataDirectoryInternal())
+	err = utils.RemoveDir(types.GetDataDirectoryInternal())
 	if err != nil {
-		zap.L().Fatal("error on removing internal direcotry", zap.String("path", model.GetDataDirectoryInternal()), zap.Error(err))
+		zap.L().Fatal("error on removing internal direcotry", zap.String("path", types.GetDataDirectoryInternal()), zap.Error(err))
 	}
 }
 

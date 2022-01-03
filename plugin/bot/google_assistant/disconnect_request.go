@@ -1,11 +1,11 @@
 package googleassistant
 
 import (
-	"github.com/mycontroller-org/server/v2/plugin/bot/google_assistant/model"
+	gaTY "github.com/mycontroller-org/server/v2/plugin/bot/google_assistant/types"
 	"go.uber.org/zap"
 )
 
-func runDisconnectRequest(request model.Request) {
+func runDisconnectRequest(request gaTY.Request) {
 	zap.L().Info("*** received disconnect request ***", zap.Any("request", request))
 
 }

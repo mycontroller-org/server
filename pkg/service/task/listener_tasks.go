@@ -1,12 +1,12 @@
 package task
 
 import (
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
-	sfML "github.com/mycontroller-org/server/v2/pkg/model/service_filter"
-	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
+	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
+	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
+	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	"go.uber.org/zap"
 )
@@ -18,11 +18,11 @@ const (
 
 var (
 	tasksQueue *queueUtils.Queue
-	svcFilter  *sfML.ServiceFilter
+	svcFilter  *sfTY.ServiceFilter
 )
 
 // Start task service listener
-func Start(filter *sfML.ServiceFilter) error {
+func Start(filter *sfTY.ServiceFilter) error {
 	svcFilter = filter
 	if svcFilter.Disabled {
 		zap.L().Info("task service disabled")
@@ -49,9 +49,9 @@ func Start(filter *sfML.ServiceFilter) error {
 	}
 
 	// load tasks
-	reqEvent := rsML.ServiceEvent{
-		Type:    rsML.TypeTask,
-		Command: rsML.CommandLoadAll,
+	reqEvent := rsTY.ServiceEvent{
+		Type:    rsTY.TypeTask,
+		Command: rsTY.CommandLoadAll,
 	}
 	topicResourceServer := mcbus.FormatTopic(mcbus.TopicServiceResourceServer)
 	return mcbus.Publish(topicResourceServer, reqEvent)
@@ -70,8 +70,8 @@ func Close() {
 	tasksQueue.Close()
 }
 
-func onServiceEvent(busData *busML.BusData) {
-	reqEvent := &rsML.ServiceEvent{}
+func onServiceEvent(busData *busTY.BusData) {
+	reqEvent := &rsTY.ServiceEvent{}
 	err := busData.LoadData(reqEvent)
 	if err != nil {
 		zap.L().Warn("failed to convet to target type", zap.Error(err))
@@ -90,37 +90,37 @@ func onServiceEvent(busData *busML.BusData) {
 
 // processServiceEvent from the queue
 func processServiceEvent(event interface{}) {
-	reqEvent := event.(*rsML.ServiceEvent)
+	reqEvent := event.(*rsTY.ServiceEvent)
 	zap.L().Debug("processing a request", zap.Any("event", reqEvent))
 
-	if reqEvent.Type != rsML.TypeTask {
+	if reqEvent.Type != rsTY.TypeTask {
 		zap.L().Warn("unsupported event type", zap.Any("event", reqEvent))
 	}
 
 	switch reqEvent.Command {
-	case rsML.CommandAdd:
+	case rsTY.CommandAdd:
 		cfg := getConfig(reqEvent)
 		if cfg != nil {
 			tasksStore.Remove(cfg.ID)
 		}
-		if cfg != nil && helper.IsMine(svcFilter, cfg.EvaluationType, cfg.ID, cfg.Labels) {
+		if cfg != nil && filterUtils.IsMine(svcFilter, cfg.EvaluationType, cfg.ID, cfg.Labels) {
 			tasksStore.Add(*cfg)
 		}
 
-	case rsML.CommandRemove:
+	case rsTY.CommandRemove:
 		cfg := getConfig(reqEvent)
 		if cfg != nil {
 			tasksStore.Remove(cfg.ID)
 		}
 
-	case rsML.CommandUnloadAll:
+	case rsTY.CommandUnloadAll:
 		tasksStore.RemoveAll()
 
-	case rsML.CommandReload:
+	case rsTY.CommandReload:
 		cfg := getConfig(reqEvent)
 		if cfg != nil {
 			tasksStore.Remove(cfg.ID)
-			if helper.IsMine(svcFilter, cfg.EvaluationType, cfg.ID, cfg.Labels) {
+			if filterUtils.IsMine(svcFilter, cfg.EvaluationType, cfg.ID, cfg.Labels) {
 				tasksStore.Add(*cfg)
 			}
 		}
@@ -130,8 +130,8 @@ func processServiceEvent(event interface{}) {
 	}
 }
 
-func getConfig(reqEvent *rsML.ServiceEvent) *taskML.Config {
-	cfg := &taskML.Config{}
+func getConfig(reqEvent *rsTY.ServiceEvent) *taskTY.Config {
+	cfg := &taskTY.Config{}
 	err := reqEvent.LoadData(cfg)
 	if err != nil {
 		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))

@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpClient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -22,13 +22,13 @@ const (
 
 // TelegramClient struct
 type TelegramClient struct {
-	handlerCfg *handlerType.Config
+	handlerCfg *handlerTY.Config
 	Config     *Config
 	httpClient *httpClient.Client
 }
 
 // Init Telegram client
-func NewTelegramPlugin(cfg *handlerType.Config) (handlerType.Plugin, error) {
+func NewTelegramPlugin(cfg *handlerTY.Config) (handlerTY.Plugin, error) {
 	config := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
 	if err != nil {
@@ -61,14 +61,14 @@ func (c *TelegramClient) Start() error { return nil }
 func (c *TelegramClient) Close() error { return nil }
 
 // State implementation
-func (c *TelegramClient) State() *model.State {
+func (c *TelegramClient) State() *types.State {
 	if c.handlerCfg != nil {
 		if c.handlerCfg.State == nil {
-			c.handlerCfg.State = &model.State{}
+			c.handlerCfg.State = &types.State{}
 		}
 		return c.handlerCfg.State
 	}
-	return &model.State{}
+	return &types.State{}
 }
 
 // Post handler implementation
@@ -79,16 +79,16 @@ func (c *TelegramClient) Post(data map[string]interface{}) error {
 			continue
 		}
 
-		genericData := handlerType.GenericData{}
+		genericData := handlerTY.GenericData{}
 		err := json.Unmarshal([]byte(stringValue), &genericData)
 		if err != nil {
 			continue
 		}
-		if genericData.Type != handlerType.DataTypeTelegram {
+		if genericData.Type != handlerTY.DataTypeTelegram {
 			continue
 		}
 
-		telegramData := handlerType.TelegramData{}
+		telegramData := handlerTY.TelegramData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &telegramData)
 		if err != nil {
 			zap.L().Error("error on converting telegram data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))

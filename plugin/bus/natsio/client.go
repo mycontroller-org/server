@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	busType "github.com/mycontroller-org/server/v2/plugin/bus/type"
+	busPluginTY "github.com/mycontroller-org/server/v2/plugin/bus/type"
 	natsIO "github.com/nats-io/nats.go"
 	"go.uber.org/zap"
 )
@@ -61,7 +61,7 @@ type Client struct {
 }
 
 // NewClient nats.io client
-func NewClient(config cmap.CustomMap) (busType.Plugin, error) {
+func NewClient(config cmap.CustomMap) (busPluginTY.Plugin, error) {
 	cfg := &Config{}
 	err := utils.MapToStruct(utils.TagNameYaml, config, cfg)
 	if err != nil {
@@ -157,12 +157,12 @@ func (c *Client) Publish(topic string, data interface{}) error {
 }
 
 // Subscribe a topic
-func (c *Client) Subscribe(topic string, handler busType.CallBackFunc) (int64, error) {
+func (c *Client) Subscribe(topic string, handler busPluginTY.CallBackFunc) (int64, error) {
 	return c.QueueSubscribe(topic, "", handler)
 }
 
 // QueueSubscribe a topic with queue name
-func (c *Client) QueueSubscribe(topic, queueName string, handler busType.CallBackFunc) (int64, error) {
+func (c *Client) QueueSubscribe(topic, queueName string, handler busPluginTY.CallBackFunc) (int64, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -198,10 +198,10 @@ func (c *Client) QueueSubscribe(topic, queueName string, handler busType.CallBac
 	return newSubscriptionID, nil
 }
 
-func (c *Client) handlerWrapper(handler busType.CallBackFunc) func(natsMsg *natsIO.Msg) {
+func (c *Client) handlerWrapper(handler busPluginTY.CallBackFunc) func(natsMsg *natsIO.Msg) {
 	return func(natsMsg *natsIO.Msg) {
 		PrintDebug("receiving message", zap.String("topic", natsMsg.Sub.Subject))
-		handler(&busML.BusData{Topic: natsMsg.Subject, Data: natsMsg.Data})
+		handler(&busTY.BusData{Topic: natsMsg.Subject, Data: natsMsg.Data})
 	}
 }
 

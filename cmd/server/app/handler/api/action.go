@@ -6,8 +6,8 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	"github.com/mycontroller-org/server/v2/pkg/api/action"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
-	webHandlerML "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
+	webHandlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 )
 
 const (
@@ -83,7 +83,7 @@ func executeGetAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resourceData := &handlerType.ResourceData{
+	resourceData := &handlerTY.ResourceData{
 		QuickID: resourceArr[0],
 		Payload: payloadArr[0],
 	}
@@ -98,7 +98,7 @@ func executeGetAction(w http.ResponseWriter, r *http.Request) {
 }
 
 func executePostAction(w http.ResponseWriter, r *http.Request) {
-	actions := make([]webHandlerML.ActionConfig, 0)
+	actions := make([]webHandlerTY.ActionConfig, 0)
 
 	err := handlerUtils.LoadEntity(w, r, actions)
 	if err != nil {
@@ -112,7 +112,7 @@ func executePostAction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, axn := range actions {
-		resourceData := &handlerType.ResourceData{
+		resourceData := &handlerTY.ResourceData{
 			QuickID: axn.Resource,
 			KeyPath: axn.KayPath,
 			Payload: axn.Payload,

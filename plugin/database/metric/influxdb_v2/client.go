@@ -10,13 +10,13 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	influxdb2log "github.com/influxdata/influxdb-client-go/v2/log"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	extraML "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra"
+	extraTY "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra"
 	extraV1 "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra_v1"
 	extraV2 "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra_v2"
-	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 )
 
@@ -68,18 +68,18 @@ type LoggerConfig struct {
 // Client of the influxdb
 type Client struct {
 	Client      influxdb2.Client
-	queryClient extraML.QueryAPI
-	adminClient extraML.AdminAPI
+	queryClient extraTY.QueryAPI
+	adminClient extraTY.AdminAPI
 	Config      Config
 	stop        chan bool
-	buffer      []*fieldML.Field
+	buffer      []*fieldTY.Field
 	logger      *myLogger
 	mutex       *sync.RWMutex
 	ctx         context.Context
 }
 
 // NewClient of influxdb
-func NewClient(config cmap.CustomMap) (metricType.Plugin, error) {
+func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameYaml, config, &cfg)
 	if err != nil {
@@ -119,7 +119,7 @@ func NewClient(config cmap.CustomMap) (metricType.Plugin, error) {
 	c := &Client{
 		Config: cfg,
 		Client: iClient,
-		buffer: make([]*fieldML.Field, 0),
+		buffer: make([]*fieldTY.Field, 0),
 		stop:   make(chan bool),
 		mutex:  &sync.RWMutex{},
 		logger: _logger,
@@ -214,8 +214,8 @@ func (c *Client) Close() error {
 }
 
 // Query func implementation
-func (c *Client) Query(queryConfig *metricType.QueryConfig) (map[string][]metricType.ResponseData, error) {
-	metricsMap := make(map[string][]metricType.ResponseData)
+func (c *Client) Query(queryConfig *metricTY.QueryConfig) (map[string][]metricTY.ResponseData, error) {
+	metricsMap := make(map[string][]metricTY.ResponseData)
 
 	// fetch metrics details for the given input
 	for _, q := range queryConfig.Individual {
@@ -226,12 +226,12 @@ func (c *Client) Query(queryConfig *metricType.QueryConfig) (map[string][]metric
 
 		// add range
 		if query.Start == "" {
-			query.Start = extraML.DefaultStart
+			query.Start = extraTY.DefaultStart
 		}
 
 		// add aggregateWindow
 		if query.Window == "" {
-			query.Window = extraML.DefaultWindow
+			query.Window = extraTY.DefaultWindow
 		}
 
 		// get measurement
@@ -253,8 +253,8 @@ func (c *Client) Query(queryConfig *metricType.QueryConfig) (map[string][]metric
 }
 
 // WriteBlocking implementation
-func (c *Client) WriteBlocking(data *metricType.InputData) error {
-	if data.MetricType == metricType.MetricTypeNone {
+func (c *Client) WriteBlocking(data *metricTY.InputData) error {
+	if data.MetricType == metricTY.MetricTypeNone {
 		return nil
 	}
 	p, err := c.getPoint(data)
@@ -265,8 +265,8 @@ func (c *Client) WriteBlocking(data *metricType.InputData) error {
 	return wb.WritePoint(ctx, p)
 }
 
-func (c *Client) Write(data *metricType.InputData) error {
-	if data.MetricType == metricType.MetricTypeNone {
+func (c *Client) Write(data *metricTY.InputData) error {
+	if data.MetricType == metricTY.MetricTypeNone {
 		return nil
 	}
 	p, err := c.getPoint(data)
@@ -278,7 +278,7 @@ func (c *Client) Write(data *metricType.InputData) error {
 	return nil
 }
 
-func (c *Client) getPoint(data *metricType.InputData) (*write.Point, error) {
+func (c *Client) getPoint(data *metricTY.InputData) (*write.Point, error) {
 	measurementName, err := c.getMeasurementName(data.MetricType)
 	if err != nil {
 		return nil, err
@@ -302,22 +302,22 @@ func (c *Client) getPoint(data *metricType.InputData) (*write.Point, error) {
 func (c *Client) getMeasurementName(suppliedType string) (string, error) {
 	measurement := ""
 	switch suppliedType {
-	case metricType.MetricTypeBinary:
+	case metricTY.MetricTypeBinary:
 		measurement = MeasurementBinary
 
-	case metricType.MetricTypeGauge:
+	case metricTY.MetricTypeGauge:
 		measurement = MeasurementGaugeInteger
 
-	case metricType.MetricTypeGaugeFloat:
+	case metricTY.MetricTypeGaugeFloat:
 		measurement = MeasurementGaugeFloat
 
-	case metricType.MetricTypeCounter:
+	case metricTY.MetricTypeCounter:
 		measurement = MeasurementCounter
 
-	case metricType.MetricTypeString:
+	case metricTY.MetricTypeString:
 		measurement = MeasurementString
 
-	case metricType.MetricTypeGEO:
+	case metricTY.MetricTypeGEO:
 		measurement = MeasurementGeo
 
 	default:

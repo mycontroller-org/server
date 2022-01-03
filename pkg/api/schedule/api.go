@@ -1,51 +1,51 @@
 package schedule
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
-	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
-	result := make([]scheduleML.Config, 0)
-	return store.STORAGE.Find(model.EntitySchedule, &result, filters, pagination)
+func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	result := make([]scheduleTY.Config, 0)
+	return store.STORAGE.Find(types.EntitySchedule, &result, filters, pagination)
 }
 
 // Get returns a scheduler
-func Get(filters []stgType.Filter) (*scheduleML.Config, error) {
-	result := &scheduleML.Config{}
-	err := store.STORAGE.FindOne(model.EntitySchedule, result, filters)
+func Get(filters []storageTY.Filter) (*scheduleTY.Config, error) {
+	result := &scheduleTY.Config{}
+	err := store.STORAGE.FindOne(types.EntitySchedule, result, filters)
 	return result, err
 }
 
 // Save a scheduler details
-func Save(schedule *scheduleML.Config) error {
-	eventType := eventML.TypeUpdated
+func Save(schedule *scheduleTY.Config) error {
+	eventType := eventTY.TypeUpdated
 	if schedule.ID == "" {
 		schedule.ID = utils.RandUUID()
-		eventType = eventML.TypeCreated
+		eventType = eventTY.TypeCreated
 	}
 
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Value: schedule.ID},
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: schedule.ID},
 	}
-	err := store.STORAGE.Upsert(model.EntitySchedule, schedule, filters)
+	err := store.STORAGE.Upsert(types.EntitySchedule, schedule, filters)
 	if err != nil {
 		return err
 	}
-	busUtils.PostEvent(mcbus.TopicEventSchedule, eventType, model.EntityHandler, *schedule)
+	busUtils.PostEvent(mcbus.TopicEventSchedule, eventType, types.EntityHandler, *schedule)
 	return nil
 }
 
 // SaveAndReload scheduler
-func SaveAndReload(cfg *scheduleML.Config) error {
-	cfg.State = &scheduleML.State{} // reset state
+func SaveAndReload(cfg *scheduleTY.Config) error {
+	cfg.State = &scheduleTY.State{} // reset state
 	err := Save(cfg)
 	if err != nil {
 		return err
@@ -54,17 +54,17 @@ func SaveAndReload(cfg *scheduleML.Config) error {
 }
 
 // GetByID returns a scheduler by id
-func GetByID(id string) (*scheduleML.Config, error) {
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Value: id},
+func GetByID(id string) (*scheduleTY.Config, error) {
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: id},
 	}
-	out := &scheduleML.Config{}
-	err := store.STORAGE.FindOne(model.EntitySchedule, out, filters)
+	out := &scheduleTY.Config{}
+	err := store.STORAGE.FindOne(types.EntitySchedule, out, filters)
 	return out, err
 }
 
 // SetState Updates state data
-func SetState(id string, state *scheduleML.State) error {
+func SetState(id string, state *scheduleTY.State) error {
 	scheduler, err := GetByID(id)
 	if err != nil {
 		return err
@@ -80,6 +80,6 @@ func Delete(IDs []string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
-	return store.STORAGE.Delete(model.EntitySchedule, filters)
+	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
+	return store.STORAGE.Delete(types.EntitySchedule, filters)
 }

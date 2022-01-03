@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
@@ -45,9 +45,9 @@ func QueryResource(resourceID, resourceType, command string, data interface{}, c
 	}
 }
 
-func responseFunc(closeChan *concurrency.Channel, callBack func(item interface{}) bool, out interface{}) func(data *busML.BusData) {
-	return func(busData *busML.BusData) {
-		event := &rsML.ServiceEvent{}
+func responseFunc(closeChan *concurrency.Channel, callBack func(item interface{}) bool, out interface{}) func(data *busTY.BusData) {
+	return func(busData *busTY.BusData) {
+		event := &rsTY.ServiceEvent{}
 		err := busData.LoadData(event)
 		if err != nil {
 			zap.L().Error("error on converting to event type", zap.Error(err))

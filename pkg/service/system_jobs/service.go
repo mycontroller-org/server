@@ -6,9 +6,9 @@ import (
 
 	analyticsAPI "github.com/mycontroller-org/server/v2/pkg/analytics"
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
-	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
 	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 
 	"go.uber.org/zap"
@@ -38,8 +38,8 @@ func ReloadSystemJobs() {
 		_, err := settingsAPI.GetAnalytics()
 		if err != nil {
 			// update analytics config
-			settingsAnalytics := &settingsML.Settings{ID: settingsML.KeyAnalytics}
-			settingsAnalytics.Spec = utils.StructToMap(&settingsML.AnalyticsConfig{AnonymousID: utils.RandUUID()})
+			settingsAnalytics := &settingsTY.Settings{ID: settingsTY.KeyAnalytics}
+			settingsAnalytics.Spec = utils.StructToMap(&settingsTY.AnalyticsConfig{AnonymousID: utils.RandUUID()})
 			err = settingsAPI.UpdateSettings(settingsAnalytics)
 			if err != nil {
 				zap.L().Error("error on updating analytics config", zap.Error(err))

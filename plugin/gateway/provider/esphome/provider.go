@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"sync"
 
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	providerType "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
@@ -33,14 +33,14 @@ type Config struct {
 // Provider data
 type Provider struct {
 	Config        Config
-	GatewayConfig *gwType.Config
+	GatewayConfig *gwTY.Config
 	clientStore   *ClientStore
 	entityStore   *EntityStore
-	rxMessageFunc func(rawMsg *msgML.RawMessage) error
+	rxMessageFunc func(rawMsg *msgTY.RawMessage) error
 }
 
 // NewPluginEspHome provider
-func NewPluginEspHome(gatewayCfg *gwType.Config) (providerType.Plugin, error) {
+func NewPluginEspHome(gatewayCfg *gwTY.Config) (providerTY.Plugin, error) {
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, &cfg)
 	if err != nil {
@@ -67,7 +67,7 @@ func (p *Provider) Name() string {
 }
 
 // Start func
-func (p *Provider) Start(rxMessageFunc func(rawMsg *msgML.RawMessage) error) error {
+func (p *Provider) Start(rxMessageFunc func(rawMsg *msgTY.RawMessage) error) error {
 	// update receive message function
 	p.rxMessageFunc = rxMessageFunc
 

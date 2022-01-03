@@ -3,9 +3,9 @@ package email
 import (
 	"fmt"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -33,7 +33,7 @@ type Client interface {
 	Start() error
 	Close() error
 	Post(variables map[string]interface{}) error
-	State() *model.State
+	State() *types.State
 	Send(from string, to []string, subject, body string) error
 }
 
@@ -50,7 +50,7 @@ const (
 )
 
 // NewEmailPlugin email client
-func NewEmailPlugin(cfg *handlerType.Config) (handlerType.Plugin, error) {
+func NewEmailPlugin(cfg *handlerTY.Config) (handlerTY.Plugin, error) {
 	config := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
 	if err != nil {

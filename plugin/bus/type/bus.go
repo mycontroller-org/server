@@ -1,9 +1,9 @@
 package bus
 
-import busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
+import busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
 
 // CallBackFunc message passed to this func
-type CallBackFunc func(data *busML.BusData)
+type CallBackFunc func(data *busTY.BusData)
 
 // Plugin interface
 type Plugin interface {

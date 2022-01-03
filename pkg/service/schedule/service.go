@@ -3,8 +3,8 @@ package schedule
 import (
 	"fmt"
 
-	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
 	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	"go.uber.org/zap"
 )
@@ -13,9 +13,9 @@ const (
 	schedulePrefix = "user_schedule"
 )
 
-func schedule(cfg *scheduleML.Config) {
+func schedule(cfg *scheduleTY.Config) {
 	if cfg.State == nil {
-		cfg.State = &scheduleML.State{}
+		cfg.State = &scheduleTY.State{}
 	}
 	name := getScheduleID(cfg.ID)
 

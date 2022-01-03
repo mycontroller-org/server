@@ -1,23 +1,23 @@
 package mcbus
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	busPlugin "github.com/mycontroller-org/server/v2/plugin/bus"
-	busType "github.com/mycontroller-org/server/v2/plugin/bus/type"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/type"
 	"go.uber.org/zap"
 )
 
 var (
-	busClient busType.Plugin
+	busClient busTY.Plugin
 	pauseSRV  concurrency.SafeBool
 )
 
 // Start function
 func Start(config cmap.CustomMap) {
 	// get plugin type
-	pluginType := config.GetString(model.KeyType)
+	pluginType := config.GetString(types.KeyType)
 	if pluginType == "" {
 		zap.L().Fatal("bus plugin type is not defined")
 		return

@@ -3,8 +3,8 @@ package gateway
 import (
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 )
 
 // Gateway actions
@@ -23,7 +23,7 @@ type Config struct {
 	MessageLogger      cmap.CustomMap       `json:"messageLogger"`
 	Labels             cmap.CustomStringMap `json:"labels"`
 	Others             cmap.CustomMap       `json:"others"`
-	State              *model.State         `json:"state"`
+	State              *types.State         `json:"state"`
 	ModifiedOn         time.Time            `json:"modifiedOn"`
 	LastTransaction    time.Time            `json:"lastTransaction"`
 }

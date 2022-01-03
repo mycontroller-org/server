@@ -5,15 +5,15 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/api/action"
 	fwdpayloadAPI "github.com/mycontroller-org/server/v2/pkg/api/forward_payload"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
-	"github.com/mycontroller-org/server/v2/pkg/model/field"
-	fedPayloadML "github.com/mycontroller-org/server/v2/pkg/model/forward_payload"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	"github.com/mycontroller-org/server/v2/pkg/types/field"
+	fedPayloadTY "github.com/mycontroller-org/server/v2/pkg/types/forward_payload"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -41,15 +41,15 @@ func Start() error {
 	return nil
 }
 
-func onEventReceive(busData *busML.BusData) {
-	event := &eventML.Event{}
+func onEventReceive(busData *busTY.BusData) {
+	event := &eventTY.Event{}
 	err := busData.LoadData(event)
 	if err != nil {
 		zap.L().Warn("Error on convet to target type", zap.Any("topic", busData.Topic), zap.Error(err))
 		return
 	}
 
-	if event.EntityType != model.EntityField || event.Type != eventML.TypeUpdated {
+	if event.EntityType != types.EntityField || event.Type != eventTY.TypeUpdated {
 		// this data is not for us
 		return
 	}
@@ -94,10 +94,10 @@ func processEvent(item interface{}) {
 	}
 
 	// fetch mapped filed for this event
-	pagination := &stgType.Pagination{Limit: 50}
-	filters := []stgType.Filter{
-		{Key: model.KeySrcFieldID, Operator: stgType.OperatorEqual, Value: quickID},
-		{Key: model.KeyEnabled, Operator: stgType.OperatorEqual, Value: true},
+	pagination := &storageTY.Pagination{Limit: 50}
+	filters := []storageTY.Filter{
+		{Key: types.KeySrcFieldID, Operator: storageTY.OperatorEqual, Value: quickID},
+		{Key: types.KeyEnabled, Operator: storageTY.OperatorEqual, Value: true},
 	}
 	response, err := fwdpayloadAPI.List(filters, pagination)
 	if err != nil {
@@ -111,7 +111,7 @@ func processEvent(item interface{}) {
 
 	zap.L().Debug("Starting data forwarding", zap.Any("data", field))
 
-	mappings := *response.Data.(*[]fedPayloadML.Config)
+	mappings := *response.Data.(*[]fedPayloadTY.Config)
 	for index := 0; index < len(mappings); index++ {
 		mapping := mappings[index]
 		// send payload

@@ -1,14 +1,14 @@
 package service
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
-	sfML "github.com/mycontroller-org/server/v2/pkg/model/service_filter"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
+	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
@@ -16,11 +16,11 @@ var (
 	eventQueue *queueUtils.Queue
 	queueSize  = int(50)
 	workers    = int(1)
-	svcFilter  *sfML.ServiceFilter
+	svcFilter  *sfTY.ServiceFilter
 )
 
 // Start starts resource server listener
-func Start(filter *sfML.ServiceFilter) error {
+func Start(filter *sfTY.ServiceFilter) error {
 	svcFilter = filter
 	if svcFilter.Disabled {
 		zap.L().Info("gateway service disabled")
@@ -43,9 +43,9 @@ func Start(filter *sfML.ServiceFilter) error {
 	}
 
 	// load gateways
-	reqEvent := rsML.ServiceEvent{
-		Type:    rsML.TypeGateway,
-		Command: rsML.CommandLoadAll,
+	reqEvent := rsTY.ServiceEvent{
+		Type:    rsTY.TypeGateway,
+		Command: rsTY.CommandLoadAll,
 	}
 	topicResourceServer := mcbus.FormatTopic(mcbus.TopicServiceResourceServer)
 	return mcbus.Publish(topicResourceServer, reqEvent)
@@ -60,8 +60,8 @@ func Close() {
 	eventQueue.Close()
 }
 
-func onEvent(event *busML.BusData) {
-	reqEvent := &rsML.ServiceEvent{}
+func onEvent(event *busTY.BusData) {
+	reqEvent := &rsTY.ServiceEvent{}
 	err := event.LoadData(reqEvent)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
@@ -80,24 +80,24 @@ func onEvent(event *busML.BusData) {
 
 // processEvent from the queue
 func processEvent(event interface{}) {
-	reqEvent := event.(*rsML.ServiceEvent)
+	reqEvent := event.(*rsTY.ServiceEvent)
 	zap.L().Debug("Processing a request", zap.Any("event", reqEvent))
 
-	if reqEvent.Type != rsML.TypeGateway {
+	if reqEvent.Type != rsTY.TypeGateway {
 		zap.L().Warn("unsupported event type", zap.Any("event", reqEvent))
 	}
 
 	switch reqEvent.Command {
-	case rsML.CommandStart:
+	case rsTY.CommandStart:
 		gwCfg := getGatewayConfig(reqEvent)
-		if gwCfg != nil && helper.IsMine(svcFilter, gwCfg.Provider.GetString(model.KeyType), gwCfg.ID, gwCfg.Labels) {
+		if gwCfg != nil && helper.IsMine(svcFilter, gwCfg.Provider.GetString(types.KeyType), gwCfg.ID, gwCfg.Labels) {
 			err := StartGW(gwCfg)
 			if err != nil {
 				zap.L().Error("error on starting a service", zap.Error(err), zap.String("id", gwCfg.ID))
 			}
 		}
 
-	case rsML.CommandStop:
+	case rsTY.CommandStop:
 		if reqEvent.ID != "" {
 			err := StopGW(reqEvent.ID)
 			if err != nil {
@@ -113,14 +113,14 @@ func processEvent(event interface{}) {
 			}
 		}
 
-	case rsML.CommandReload:
+	case rsTY.CommandReload:
 		gwCfg := getGatewayConfig(reqEvent)
 		if gwCfg != nil {
 			err := StopGW(gwCfg.ID)
 			if err != nil {
 				zap.L().Error("error on stopping a service", zap.Error(err), zap.String("id", gwCfg.ID))
 			}
-			if helper.IsMine(svcFilter, gwCfg.Provider.GetString(model.KeyType), gwCfg.ID, gwCfg.Labels) {
+			if helper.IsMine(svcFilter, gwCfg.Provider.GetString(types.KeyType), gwCfg.ID, gwCfg.Labels) {
 				err := StartGW(gwCfg)
 				if err != nil {
 					zap.L().Error("error on starting a service", zap.Error(err), zap.String("id", gwCfg.ID))
@@ -128,7 +128,7 @@ func processEvent(event interface{}) {
 			}
 		}
 
-	case rsML.CommandUnloadAll:
+	case rsTY.CommandUnloadAll:
 		UnloadAll()
 
 	default:
@@ -136,8 +136,8 @@ func processEvent(event interface{}) {
 	}
 }
 
-func getGatewayConfig(reqEvent *rsML.ServiceEvent) *gwType.Config {
-	cfg := &gwType.Config{}
+func getGatewayConfig(reqEvent *rsTY.ServiceEvent) *gwTY.Config {
+	cfg := &gwTY.Config{}
 	err := reqEvent.LoadData(cfg)
 	if err != nil {
 		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))

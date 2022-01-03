@@ -9,11 +9,11 @@ import (
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	"github.com/mycontroller-org/server/v2/pkg/api/field"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	quickIdUL "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	mtsML "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	mtsTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 )
 
 // global constants
@@ -54,8 +54,8 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 		return nil
 	}
 
-	queryConfig := &mtsML.QueryConfig{}
-	queryConfig.Individual = []mtsML.Query{{Name: QuickID, Tags: map[string]string{}}}
+	queryConfig := &mtsTY.QueryConfig{}
+	queryConfig.Individual = []mtsTY.Query{{Name: QuickID, Tags: map[string]string{}}}
 
 	if quickID, ok := params[QuickID]; ok {
 		if len(quickID) > 0 {
@@ -68,12 +68,12 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 			switch {
 			case utils.ContainsString(quickIdUL.QuickIDField, rt):
 				// get field details
-				field, err := field.GetByIDs(kvMap[model.KeyGatewayID], kvMap[model.KeyNodeID], kvMap[model.KeySourceID], kvMap[model.KeyFieldID])
+				field, err := field.GetByIDs(kvMap[types.KeyGatewayID], kvMap[types.KeyNodeID], kvMap[types.KeySourceID], kvMap[types.KeyFieldID])
 				if err != nil {
 					http.Error(w, err.Error(), 500)
 					return
 				}
-				queryConfig.Individual[0].Tags[model.KeyID] = field.ID
+				queryConfig.Individual[0].Tags[types.KeyID] = field.ID
 				queryConfig.Individual[0].MetricType = field.MetricType
 
 			default:
@@ -90,16 +90,16 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// update optional parameters
-	if value := getValue(mtsML.QueryKeyStart); value != "" {
+	if value := getValue(mtsTY.QueryKeyStart); value != "" {
 		queryConfig.Global.Start = value
 	}
-	if value := getValue(mtsML.QueryKeyStop); value != "" {
+	if value := getValue(mtsTY.QueryKeyStop); value != "" {
 		queryConfig.Global.Stop = value
 	}
-	if value := getValue(mtsML.QueryKeyWindow); value != "" {
+	if value := getValue(mtsTY.QueryKeyWindow); value != "" {
 		queryConfig.Global.Window = value
 	}
-	if values := getValues(mtsML.QueryKeyFunctions); values != nil {
+	if values := getValues(mtsTY.QueryKeyFunctions); values != nil {
 		queryConfig.Global.Functions = values
 	}
 
@@ -126,7 +126,7 @@ func getMetricList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	queryConfig := &mtsML.QueryConfig{}
+	queryConfig := &mtsTY.QueryConfig{}
 
 	err = json.Unmarshal(d, queryConfig)
 	if err != nil {

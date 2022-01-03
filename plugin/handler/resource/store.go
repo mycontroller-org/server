@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -28,14 +28,14 @@ type store struct {
 
 // JobsConfig used to keep the pre-delayed jobs
 type JobsConfig struct {
-	Name      string                   `yaml:"name"`
-	Data      handlerType.ResourceData `yaml:"data"`
-	Delay     time.Duration            `yaml:"delay"`
-	CreatedAt time.Time                `yaml:"created_at"`
+	Name      string                 `yaml:"name"`
+	Data      handlerTY.ResourceData `yaml:"data"`
+	Delay     time.Duration          `yaml:"delay"`
+	CreatedAt time.Time              `yaml:"created_at"`
 }
 
 func (s *store) getName() string {
-	dir := filepath.Join(model.GetDirectoryDataRoot(), store_directory)
+	dir := filepath.Join(types.GetDirectoryDataRoot(), store_directory)
 	err := utils.CreateDir(dir)
 	if err != nil {
 		zap.L().Error("failed to create handler data persistence directory", zap.String("direcotry", dir))
@@ -43,7 +43,7 @@ func (s *store) getName() string {
 	return filepath.Join(dir, fmt.Sprintf("%s_%s.yaml", store_filename, s.handlerID))
 }
 
-func (s *store) add(name string, rsData handlerType.ResourceData) {
+func (s *store) add(name string, rsData handlerTY.ResourceData) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 

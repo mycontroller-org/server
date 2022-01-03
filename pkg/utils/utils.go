@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // contants
@@ -41,12 +41,12 @@ func RandIDWithLength(length int) string {
 }
 
 // UpdatePagination updates if nil
-func UpdatePagination(pagination *stgml.Pagination) *stgml.Pagination {
+func UpdatePagination(pagination *storageTY.Pagination) *storageTY.Pagination {
 	if pagination == nil {
-		pagination = &stgml.Pagination{Limit: -1, Offset: -1}
+		pagination = &storageTY.Pagination{Limit: -1, Offset: -1}
 	}
 	if len(pagination.SortBy) == 0 {
-		pagination.SortBy = []stgml.Sort{{Field: "ID", OrderBy: "ASC"}}
+		pagination.SortBy = []storageTY.Sort{{Field: "ID", OrderBy: "ASC"}}
 	}
 	if pagination.Limit == 0 {
 		pagination.Limit = -1

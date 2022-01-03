@@ -8,13 +8,13 @@ import (
 	handlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	statusAPI "github.com/mycontroller-org/server/v2/pkg/api/status"
-	"github.com/mycontroller-org/server/v2/pkg/model"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	"github.com/mycontroller-org/server/v2/pkg/version"
-	storage "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
-	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -67,15 +67,15 @@ func ReportAnalyticsData() {
 		}
 	}
 
-	enabledFilter := []storage.Filter{{Key: model.KeyEnabled, Operator: storage.OperatorEqual, Value: "true"}}
-	pagination := &storage.Pagination{Limit: 100, Offset: 0} // gets only the first 100
+	enabledFilter := []storageTY.Filter{{Key: types.KeyEnabled, Operator: storageTY.OperatorEqual, Value: "true"}}
+	pagination := &storageTY.Pagination{Limit: 100, Offset: 0} // gets only the first 100
 
 	// update gateways type in use
 	result, err := gatewayAPI.List(enabledFilter, pagination)
 	if err != nil {
 		zap.L().Error("error on getting gateway details", zap.Error(err))
 	} else if result.Count > 0 {
-		if data, ok := result.Data.(*[]gatewayML.Config); ok {
+		if data, ok := result.Data.(*[]gatewayTY.Config); ok {
 			gateways := make([]string, 0)
 			for _, gw := range *data {
 				gwType := gw.Provider.GetString("type")
@@ -93,7 +93,7 @@ func ReportAnalyticsData() {
 	if err != nil {
 		zap.L().Error("error on getting handler details", zap.Error(err))
 	} else if result.Count > 0 {
-		if data, ok := result.Data.(*[]handlerType.Config); ok {
+		if data, ok := result.Data.(*[]handlerTY.Config); ok {
 			handlers := make([]string, 0)
 			for _, handler := range *data {
 				handlerType := handler.Type

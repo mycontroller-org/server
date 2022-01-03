@@ -2,16 +2,16 @@ package action
 
 import (
 	fieldAPI "github.com/mycontroller-org/server/v2/pkg/api/field"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // ToFieldByID sends the payload to the given field
 func ToFieldByID(id string, payload string) error {
-	filters := []stgType.Filter{{Key: model.KeyID, Value: id}}
+	filters := []storageTY.Filter{{Key: types.KeyID, Value: id}}
 	field, err := fieldAPI.Get(filters)
 	if err != nil {
 		return err
@@ -27,7 +27,7 @@ func ToFieldByQuickID(quickID string, payload string) error {
 	}
 
 	// really needs to check these ids on internal database?
-	field, err := fieldAPI.GetByIDs(idsMap[model.KeyGatewayID], idsMap[model.KeyNodeID], idsMap[model.KeySourceID], idsMap[model.KeyFieldID])
+	field, err := fieldAPI.GetByIDs(idsMap[types.KeyGatewayID], idsMap[types.KeyNodeID], idsMap[types.KeySourceID], idsMap[types.KeyFieldID])
 	if err != nil {
 		return err
 	}
@@ -36,7 +36,7 @@ func ToFieldByQuickID(quickID string, payload string) error {
 
 // ToField sends the payload to the given ids
 func ToField(gatewayID, nodeID, sourceID, fieldID, payload string) error {
-	if payload == model.ActionToggle {
+	if payload == types.ActionToggle {
 		// get field current data
 		field, err := fieldAPI.GetByIDs(gatewayID, nodeID, sourceID, fieldID)
 		if err != nil {
@@ -50,14 +50,14 @@ func ToField(gatewayID, nodeID, sourceID, fieldID, payload string) error {
 		}
 	}
 
-	msg := msgML.NewMessage(false)
+	msg := msgTY.NewMessage(false)
 	msg.GatewayID = gatewayID
 	msg.NodeID = nodeID
 	msg.SourceID = sourceID
-	pl := msgML.NewPayload()
+	pl := msgTY.NewPayload()
 	pl.Key = fieldID
 	pl.Value = payload
 	msg.Payloads = append(msg.Payloads, pl)
-	msg.Type = msgML.TypeSet
+	msg.Type = msgTY.TypeSet
 	return Post(&msg)
 }

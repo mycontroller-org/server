@@ -1,3 +1,4 @@
+//go:build server && !standalone
 // +build server,!standalone
 
 package handler

@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -24,11 +24,11 @@ const (
 
 // ResourceClient struct
 type ResourceClient struct {
-	HandlerCfg *handlerType.Config
+	HandlerCfg *handlerTY.Config
 	store      *store
 }
 
-func NewResourcePlugin(config *handlerType.Config) (handlerType.Plugin, error) {
+func NewResourcePlugin(config *handlerTY.Config) (handlerTY.Plugin, error) {
 	return &ResourceClient{
 		HandlerCfg: config,
 		store:      &store{mutex: sync.RWMutex{}, handlerID: config.ID, jobs: map[string]JobsConfig{}},
@@ -64,14 +64,14 @@ func (c *ResourceClient) Close() error {
 }
 
 // State implementation
-func (c *ResourceClient) State() *model.State {
+func (c *ResourceClient) State() *types.State {
 	if c.HandlerCfg != nil {
 		if c.HandlerCfg.State == nil {
-			c.HandlerCfg.State = &model.State{}
+			c.HandlerCfg.State = &types.State{}
 		}
 		return c.HandlerCfg.State
 	}
-	return &model.State{}
+	return &types.State{}
 }
 
 // Post handler implementation
@@ -82,17 +82,17 @@ func (c *ResourceClient) Post(data map[string]interface{}) error {
 			continue
 		}
 
-		genericData := handlerType.GenericData{}
+		genericData := handlerTY.GenericData{}
 		err := json.Unmarshal([]byte(stringValue), &genericData)
 		if err != nil {
 			continue
 		}
 
-		if !strings.HasPrefix(genericData.Type, handlerType.DataTypeResource) {
+		if !strings.HasPrefix(genericData.Type, handlerTY.DataTypeResource) {
 			continue
 		}
 
-		rsData := handlerType.ResourceData{}
+		rsData := handlerTY.ResourceData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &rsData)
 		if err != nil {
 			zap.L().Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
@@ -112,25 +112,25 @@ func (c *ResourceClient) Post(data map[string]interface{}) error {
 		}
 
 		zap.L().Debug("about to perform an action", zap.String("rawData", stringValue), zap.Any("finalData", rsData))
-		busUtils.PostToResourceService("resource_fake_id", rsData, rsML.TypeResourceAction, rsML.CommandSet, "")
+		busUtils.PostToResourceService("resource_fake_id", rsData, rsTY.TypeResourceAction, rsTY.CommandSet, "")
 	}
 	return nil
 }
 
 // preDelay scheduler helpers
 
-func (c *ResourceClient) getScheduleTriggerFunc(name string, rsData handlerType.ResourceData) func() {
+func (c *ResourceClient) getScheduleTriggerFunc(name string, rsData handlerTY.ResourceData) func() {
 	return func() {
 		// disable the schedule
 		c.unschedule(name)
 
 		// call the resource action
 		zap.L().Debug("scheduler triggered. about to perform an action", zap.String("name", name), zap.Any("rsData", rsData))
-		busUtils.PostToResourceService("resource_fake_id", rsData, rsML.TypeResourceAction, rsML.CommandSet, "")
+		busUtils.PostToResourceService("resource_fake_id", rsData, rsTY.TypeResourceAction, rsTY.CommandSet, "")
 	}
 }
 
-func (c *ResourceClient) schedule(name string, rsData handlerType.ResourceData) {
+func (c *ResourceClient) schedule(name string, rsData handlerTY.ResourceData) {
 	c.unschedule(name) // removes the existing schedule, if any
 
 	schedulerID := c.getScheduleID(name)

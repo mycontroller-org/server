@@ -3,11 +3,11 @@ package backup
 import (
 	"fmt"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/plugin/handler/backup/disk"
-	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	backupUtils "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 )
 
 const PluginBackup = "backup"
@@ -24,10 +24,10 @@ type Client interface {
 	Start() error
 	Post(variables map[string]interface{}) error
 	Close() error
-	State() *model.State
+	State() *types.State
 }
 
-func NewBackupPlugin(cfg *handlerType.Config) (handlerType.Plugin, error) {
+func NewBackupPlugin(cfg *handlerTY.Config) (handlerTY.Plugin, error) {
 	config := &BackupConfig{}
 	err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
 	if err != nil {
@@ -35,7 +35,7 @@ func NewBackupPlugin(cfg *handlerType.Config) (handlerType.Plugin, error) {
 	}
 
 	switch config.ProviderType {
-	case backupUtil.ProviderDisk:
+	case backupUtils.ProviderDisk:
 		return disk.Init(cfg, config.Spec)
 
 	default:

@@ -1,8 +1,8 @@
 package voiddb
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 )
 
 const (
@@ -14,7 +14,7 @@ type Client struct {
 }
 
 // NewClient creates a dummy client
-func NewClient(config cmap.CustomMap) (metricType.Plugin, error) {
+func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
 	return &Client{}, nil
 }
 
@@ -29,12 +29,12 @@ func (c *Client) Close() error { return nil }
 func (c *Client) Ping() error { return nil }
 
 // Write function
-func (c *Client) Write(data *metricType.InputData) error { return nil }
+func (c *Client) Write(data *metricTY.InputData) error { return nil }
 
 // WriteBlocking function
-func (c *Client) WriteBlocking(data *metricType.InputData) error { return nil }
+func (c *Client) WriteBlocking(data *metricTY.InputData) error { return nil }
 
 // Query function
-func (c *Client) Query(queryConfig *metricType.QueryConfig) (map[string][]metricType.ResponseData, error) {
+func (c *Client) Query(queryConfig *metricTY.QueryConfig) (map[string][]metricTY.ResponseData, error) {
 	return nil, nil
 }

@@ -1,33 +1,33 @@
 package handler
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 )
 
 // List by filter and pagination
-func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
-	out := make([]handlerType.Config, 0)
-	return store.STORAGE.Find(model.EntityHandler, &out, filters, pagination)
+func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	out := make([]handlerTY.Config, 0)
+	return store.STORAGE.Find(types.EntityHandler, &out, filters, pagination)
 }
 
 // Get a config
-func Get(f []stgType.Filter) (handlerType.Config, error) {
-	out := handlerType.Config{}
-	err := store.STORAGE.FindOne(model.EntityHandler, &out, f)
+func Get(f []storageTY.Filter) (handlerTY.Config, error) {
+	out := handlerTY.Config{}
+	err := store.STORAGE.FindOne(types.EntityHandler, &out, f)
 	return out, err
 }
 
 // SaveAndReload handler
-func SaveAndReload(cfg *handlerType.Config) error {
-	cfg.State = &model.State{} // reset state
+func SaveAndReload(cfg *handlerTY.Config) error {
+	cfg.State = &types.State{} // reset state
 	err := Save(cfg)
 	if err != nil {
 		return err
@@ -36,11 +36,11 @@ func SaveAndReload(cfg *handlerType.Config) error {
 }
 
 // Save config
-func Save(cfg *handlerType.Config) error {
-	eventType := eventML.TypeUpdated
+func Save(cfg *handlerTY.Config) error {
+	eventType := eventTY.TypeUpdated
 	if cfg.ID == "" {
 		cfg.ID = utils.RandUUID()
-		eventType = eventML.TypeCreated
+		eventType = eventTY.TypeCreated
 	}
 
 	// encrypt passwords
@@ -49,19 +49,19 @@ func Save(cfg *handlerType.Config) error {
 		return err
 	}
 
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Value: cfg.ID},
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: cfg.ID},
 	}
-	err = store.STORAGE.Upsert(model.EntityHandler, cfg, filters)
+	err = store.STORAGE.Upsert(types.EntityHandler, cfg, filters)
 	if err != nil {
 		return err
 	}
-	busUtils.PostEvent(mcbus.TopicEventHandler, eventType, model.EntityHandler, cfg)
+	busUtils.PostEvent(mcbus.TopicEventHandler, eventType, types.EntityHandler, cfg)
 	return nil
 }
 
 // SetState Updates state data
-func SetState(id string, state *model.State) error {
+func SetState(id string, state *types.State) error {
 	cfg, err := GetByID(id)
 	if err != nil {
 		return err
@@ -71,23 +71,23 @@ func SetState(id string, state *model.State) error {
 }
 
 // GetByTypeName returns a handler by type and name
-func GetByTypeName(handlerPluginType, name string) (*handlerType.Config, error) {
-	f := []stgType.Filter{
-		{Key: model.KeyHandlerType, Value: handlerPluginType},
-		{Key: model.KeyHandlerName, Value: name},
+func GetByTypeName(handlerPluginType, name string) (*handlerTY.Config, error) {
+	f := []storageTY.Filter{
+		{Key: types.KeyHandlerType, Value: handlerPluginType},
+		{Key: types.KeyHandlerName, Value: name},
 	}
-	out := &handlerType.Config{}
-	err := store.STORAGE.FindOne(model.EntityHandler, out, f)
+	out := &handlerTY.Config{}
+	err := store.STORAGE.FindOne(types.EntityHandler, out, f)
 	return out, err
 }
 
 // GetByID returns a handler by id
-func GetByID(ID string) (*handlerType.Config, error) {
-	f := []stgType.Filter{
-		{Key: model.KeyID, Value: ID},
+func GetByID(ID string) (*handlerTY.Config, error) {
+	f := []storageTY.Filter{
+		{Key: types.KeyID, Value: ID},
 	}
-	out := &handlerType.Config{}
-	err := store.STORAGE.FindOne(model.EntityHandler, out, f)
+	out := &handlerTY.Config{}
+	err := store.STORAGE.FindOne(types.EntityHandler, out, f)
 	return out, err
 }
 
@@ -97,6 +97,6 @@ func Delete(ids []string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	f := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids}}
-	return store.STORAGE.Delete(model.EntityHandler, f)
+	f := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids}}
+	return store.STORAGE.Delete(types.EntityHandler, f)
 }

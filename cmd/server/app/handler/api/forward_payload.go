@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	fwdpayloadAPI "github.com/mycontroller-org/server/v2/pkg/api/forward_payload"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	fwdPayloadML "github.com/mycontroller-org/server/v2/pkg/model/forward_payload"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	fwdPayloadTY "github.com/mycontroller-org/server/v2/pkg/types/forward_payload"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterForwardPayloadRoutes registers forward payload api
@@ -24,27 +24,27 @@ func RegisterForwardPayloadRoutes(router *mux.Router) {
 }
 
 func listForwardPayload(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindMany(w, r, model.EntityForwardPayload, &[]fwdPayloadML.Config{})
+	handlerUtils.FindMany(w, r, types.EntityForwardPayload, &[]fwdPayloadTY.Config{})
 }
 
 func getForwardPayload(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindOne(w, r, model.EntityForwardPayload, &fwdPayloadML.Config{})
+	handlerUtils.FindOne(w, r, types.EntityForwardPayload, &fwdPayloadTY.Config{})
 }
 
 func updateForwardPayload(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]stgType.Filter) error {
-		e := d.(*fwdPayloadML.Config)
+	bwFunc := func(d interface{}, f *[]storageTY.Filter) error {
+		e := d.(*fwdPayloadTY.Config)
 		if e.ID == "" {
 			return errors.New("id should not be an empty")
 		}
 		return nil
 	}
-	handlerUtils.SaveEntity(w, r, model.EntityForwardPayload, &fwdPayloadML.Config{}, bwFunc)
+	handlerUtils.SaveEntity(w, r, types.EntityForwardPayload, &fwdPayloadTY.Config{}, bwFunc)
 }
 
 func deleteForwardPayload(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			count, err := fwdpayloadAPI.Delete(ids)
 			if err != nil {
@@ -59,7 +59,7 @@ func deleteForwardPayload(w http.ResponseWriter, r *http.Request) {
 
 func enableForwardPayload(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := fwdpayloadAPI.Enable(ids)
 			if err != nil {
@@ -74,7 +74,7 @@ func enableForwardPayload(w http.ResponseWriter, r *http.Request) {
 
 func disableForwardPayload(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := fwdpayloadAPI.Disable(ids)
 			if err != nil {

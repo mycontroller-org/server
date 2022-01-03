@@ -7,7 +7,7 @@ import (
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
+	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
 )
 
 // RegisterSystemRoutes registers settings api
@@ -18,11 +18,11 @@ func RegisterSystemRoutes(router *mux.Router) {
 }
 
 func getSystemBackupLocations(w http.ResponseWriter, r *http.Request) {
-	getSettings(settingsML.KeySystemBackupLocations, w, r)
+	getSettings(settingsTY.KeySystemBackupLocations, w, r)
 }
 
 func getSystemSettings(w http.ResponseWriter, r *http.Request) {
-	getSettings(settingsML.KeySystemSettings, w, r)
+	getSettings(settingsTY.KeySystemSettings, w, r)
 }
 
 func getSettings(key string, w http.ResponseWriter, r *http.Request) {
@@ -43,7 +43,7 @@ func getSettings(key string, w http.ResponseWriter, r *http.Request) {
 }
 
 func updateSettings(w http.ResponseWriter, r *http.Request) {
-	entity := &settingsML.Settings{}
+	entity := &settingsTY.Settings{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)

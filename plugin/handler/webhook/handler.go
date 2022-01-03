@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -67,12 +67,12 @@ func (cfg *WebhookConfig) Clone() *WebhookConfig {
 
 // WebhookClient struct
 type WebhookClient struct {
-	HandlerCfg *handlerType.Config
+	HandlerCfg *handlerTY.Config
 	Config     *WebhookConfig
 	httpClient *httpclient.Client
 }
 
-func NewWebhookPlugin(handlerCfg *handlerType.Config) (handlerType.Plugin, error) {
+func NewWebhookPlugin(handlerCfg *handlerTY.Config) (handlerTY.Plugin, error) {
 	config := &WebhookConfig{}
 	err := utils.MapToStruct(utils.TagNameNone, handlerCfg.Spec, config)
 	if err != nil {
@@ -108,14 +108,14 @@ func (c *WebhookClient) Close() error {
 }
 
 // State implementation
-func (c *WebhookClient) State() *model.State {
+func (c *WebhookClient) State() *types.State {
 	if c.HandlerCfg != nil {
 		if c.HandlerCfg.State == nil {
-			c.HandlerCfg.State = &model.State{}
+			c.HandlerCfg.State = &types.State{}
 		}
 		return c.HandlerCfg.State
 	}
-	return &model.State{}
+	return &types.State{}
 }
 
 // Post handler implementation
@@ -129,16 +129,16 @@ func (c *WebhookClient) Post(data map[string]interface{}) error {
 			continue
 		}
 
-		genericData := handlerType.GenericData{}
+		genericData := handlerTY.GenericData{}
 		err := json.Unmarshal([]byte(stringValue), &genericData)
 		if err != nil {
 			continue
 		}
-		if genericData.Type != handlerType.DataTypeWebhook {
+		if genericData.Type != handlerTY.DataTypeWebhook {
 			continue
 		}
 
-		webhookData := handlerType.WebhookData{}
+		webhookData := handlerTY.WebhookData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &webhookData)
 		if err != nil {
 			zap.L().Error("error on converting webhook data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))

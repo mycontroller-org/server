@@ -5,7 +5,7 @@ import (
 
 	dataRepoAPI "github.com/mycontroller-org/server/v2/pkg/api/data_repository"
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	"github.com/tidwall/sjson"
 	"go.uber.org/zap"
 )

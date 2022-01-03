@@ -11,7 +11,7 @@ import (
 	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
 	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
-	"github.com/mycontroller-org/server/v2/pkg/model"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
 )
 
@@ -27,29 +27,29 @@ func GetResources(quickIDs []string) (map[string]interface{}, error) {
 		var item interface{}
 
 		switch resourceType {
-		case model.EntityGateway:
-			item, err = gatewayAPI.GetByID(keys[model.KeyGatewayID])
+		case types.EntityGateway:
+			item, err = gatewayAPI.GetByID(keys[types.KeyGatewayID])
 
-		case model.EntityNode:
-			item, err = nodeAPI.GetByGatewayAndNodeID(keys[model.KeyGatewayID], keys[model.KeyNodeID])
+		case types.EntityNode:
+			item, err = nodeAPI.GetByGatewayAndNodeID(keys[types.KeyGatewayID], keys[types.KeyNodeID])
 
-		case model.EntitySource:
-			item, err = sourceAPI.GetByIDs(keys[model.KeyGatewayID], keys[model.KeyNodeID], keys[model.KeySourceID])
+		case types.EntitySource:
+			item, err = sourceAPI.GetByIDs(keys[types.KeyGatewayID], keys[types.KeyNodeID], keys[types.KeySourceID])
 
-		case model.EntityField:
-			item, err = fieldAPI.GetByIDs(keys[model.KeyGatewayID], keys[model.KeyNodeID], keys[model.KeySourceID], keys[model.KeyFieldID])
+		case types.EntityField:
+			item, err = fieldAPI.GetByIDs(keys[types.KeyGatewayID], keys[types.KeyNodeID], keys[types.KeySourceID], keys[types.KeyFieldID])
 
-		case model.EntityTask:
-			item, err = taskAPI.GetByID(keys[model.KeyID])
+		case types.EntityTask:
+			item, err = taskAPI.GetByID(keys[types.KeyID])
 
-		case model.EntitySchedule:
-			item, err = scheduleAPI.GetByID(keys[model.KeyID])
+		case types.EntitySchedule:
+			item, err = scheduleAPI.GetByID(keys[types.KeyID])
 
-		case model.EntityHandler:
-			item, err = handlerAPI.GetByID(keys[model.KeyID])
+		case types.EntityHandler:
+			item, err = handlerAPI.GetByID(keys[types.KeyID])
 
-		case model.EntityDataRepository:
-			item, err = dataRepoAPI.GetByID(keys[model.KeyID])
+		case types.EntityDataRepository:
+			item, err = dataRepoAPI.GetByID(keys[types.KeyID])
 
 		default:
 			return nil, fmt.Errorf("unknown resource type: %s, quickID: %s", resourceType, quickID)

@@ -7,13 +7,13 @@ import (
 	"time"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
 	sch "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	storageType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -25,7 +25,7 @@ const (
 	syncJobName         = "in-memory-db-sync-to-disk"
 
 	defaultDumpDir    = "memory_db"
-	defaultDumpFormat = backupML.TypeJSON
+	defaultDumpFormat = backupTY.TypeJSON
 )
 
 // Config of the memory storage
@@ -48,7 +48,7 @@ type Store struct {
 }
 
 // NewClient in-memory database
-func NewClient(config cmap.CustomMap) (storageType.Plugin, error) {
+func NewClient(config cmap.CustomMap) (storageTY.Plugin, error) {
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameYaml, config, &cfg)
 	if err != nil {
@@ -136,7 +136,7 @@ func (s *Store) ClearDatabase() error {
 	s.data = make(map[string][]interface{})
 
 	// remove all the files from disk
-	storageDir := path.Join(model.GetDataDirectoryStorage(), s.Config.DumpDir)
+	storageDir := path.Join(types.GetDataDirectoryStorage(), s.Config.DumpDir)
 	return utils.RemoveDir(storageDir)
 }
 
@@ -151,9 +151,9 @@ func (s *Store) writeToDisk() {
 			}
 			index := 0
 			for {
-				positionStart := index * backupML.LimitPerFile
+				positionStart := index * backupTY.LimitPerFile
 				index++
-				positionEnd := (index * backupML.LimitPerFile)
+				positionEnd := (index * backupTY.LimitPerFile)
 
 				if positionEnd < itemsCount {
 					s.dump(entityName, index, data[positionStart:positionEnd], format)
@@ -168,16 +168,16 @@ func (s *Store) writeToDisk() {
 
 func (s *Store) dump(entityName string, index int, data interface{}, extension string) {
 	// update user to userPassword to keep the password on the json export
-	if entityName == model.EntityUser {
+	if entityName == types.EntityUser {
 		if users, ok := data.([]interface{}); ok {
-			usersWithPasswd := make([]userML.UserWithPassword, 0)
+			usersWithPasswd := make([]userTY.UserWithPassword, 0)
 			for _, userInterface := range users {
-				user, ok := userInterface.(*userML.User)
+				user, ok := userInterface.(*userTY.User)
 				if !ok {
 					zap.L().Error("error on converting the data to user slice, continue with default data type", zap.String("inputType", fmt.Sprintf("%T", userInterface)))
 					break
 				}
-				usersWithPasswd = append(usersWithPasswd, userML.UserWithPassword(*user))
+				usersWithPasswd = append(usersWithPasswd, userTY.UserWithPassword(*user))
 			}
 			if len(usersWithPasswd) > 0 {
 				data = usersWithPasswd
@@ -190,13 +190,13 @@ func (s *Store) dump(entityName string, index int, data interface{}, extension s
 	var dataBytes []byte
 	var err error
 	switch extension {
-	case backupML.TypeJSON:
+	case backupTY.TypeJSON:
 		dataBytes, err = json.Marshal(data)
 		if err != nil {
 			zap.L().Error("failed to convert to target extension", zap.String("extension", extension), zap.Error(err))
 			return
 		}
-	case backupML.TypeYAML:
+	case backupTY.TypeYAML:
 		dataBytes, err = yaml.Marshal(data)
 		if err != nil {
 			zap.L().Error("failed to convert to target extension", zap.String("extension", extension), zap.Error(err))
@@ -208,7 +208,7 @@ func (s *Store) dump(entityName string, index int, data interface{}, extension s
 		return
 	}
 
-	filename := fmt.Sprintf("%s%s%d.%s", entityName, backupML.EntityNameIndexSplit, index, extension)
+	filename := fmt.Sprintf("%s%s%d.%s", entityName, backupTY.EntityNameIndexSplit, index, extension)
 	dir := s.getStorageLocation(extension)
 	err = utils.WriteFile(dir, filename, dataBytes)
 	if err != nil {
@@ -217,5 +217,5 @@ func (s *Store) dump(entityName string, index int, data interface{}, extension s
 }
 
 func (s *Store) getStorageLocation(provider string) string {
-	return path.Join(model.GetDataDirectoryStorage(), s.Config.DumpDir, provider)
+	return path.Join(types.GetDataDirectoryStorage(), s.Config.DumpDir, provider)
 }

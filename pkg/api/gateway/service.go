@@ -1,22 +1,22 @@
 package gateway
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
 // Start gateway
-func Start(gwCfg *gwType.Config) error {
-	return postGatewayCommand(gwCfg, rsML.CommandStart)
+func Start(gwCfg *gwTY.Config) error {
+	return postGatewayCommand(gwCfg, rsTY.CommandStart)
 }
 
 // Stop gateway
-func Stop(gwCfg *gwType.Config) error {
-	return postGatewayCommand(gwCfg, rsML.CommandStop)
+func Stop(gwCfg *gwTY.Config) error {
+	return postGatewayCommand(gwCfg, rsTY.CommandStop)
 }
 
 // LoadAll makes gateways alive
@@ -26,7 +26,7 @@ func LoadAll() {
 		zap.L().Error("Failed to get list of gateways", zap.Error(err))
 		return
 	}
-	gateways := *gwsResult.Data.(*[]gwType.Config)
+	gateways := *gwsResult.Data.(*[]gwTY.Config)
 	for index := 0; index < len(gateways); index++ {
 		gateway := gateways[index]
 		if gateway.Enabled {
@@ -40,7 +40,7 @@ func LoadAll() {
 
 // UnloadAll makes stop all gateways
 func UnloadAll() {
-	err := postGatewayCommand(nil, rsML.CommandUnloadAll)
+	err := postGatewayCommand(nil, rsTY.CommandUnloadAll)
 	if err != nil {
 		zap.L().Error("error on unload gateways command", zap.Error(err))
 	}
@@ -110,9 +110,9 @@ func Reload(ids []string) error {
 	return nil
 }
 
-func postGatewayCommand(gwCfg *gwType.Config, command string) error {
-	reqEvent := rsML.ServiceEvent{
-		Type:    rsML.TypeGateway,
+func postGatewayCommand(gwCfg *gwTY.Config, command string) error {
+	reqEvent := rsTY.ServiceEvent{
+		Type:    rsTY.TypeGateway,
 		Command: command,
 	}
 	if gwCfg != nil {
@@ -123,12 +123,12 @@ func postGatewayCommand(gwCfg *gwType.Config, command string) error {
 	return mcbus.Publish(topic, reqEvent)
 }
 
-func getGatewayEntries(ids []string) ([]gwType.Config, error) {
-	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids}}
-	pagination := &stgType.Pagination{Limit: 100}
+func getGatewayEntries(ids []string) ([]gwTY.Config, error) {
+	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids}}
+	pagination := &storageTY.Pagination{Limit: 100}
 	gwsResult, err := List(filters, pagination)
 	if err != nil {
 		return nil, err
 	}
-	return *gwsResult.Data.(*[]gwType.Config), nil
+	return *gwsResult.Data.(*[]gwTY.Config), nil
 }

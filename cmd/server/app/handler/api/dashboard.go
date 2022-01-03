@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	dashboardAPI "github.com/mycontroller-org/server/v2/pkg/api/dashboard"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	dashboardML "github.com/mycontroller-org/server/v2/pkg/model/dashboard"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	dashboardTY "github.com/mycontroller-org/server/v2/pkg/types/dashboard"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterDashboardRoutes registers dashboard api
@@ -22,27 +22,27 @@ func RegisterDashboardRoutes(router *mux.Router) {
 }
 
 func listDashboards(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindMany(w, r, model.EntityDashboard, &[]dashboardML.Config{})
+	handlerUtils.FindMany(w, r, types.EntityDashboard, &[]dashboardTY.Config{})
 }
 
 func getDashboard(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindOne(w, r, model.EntityDashboard, &dashboardML.Config{})
+	handlerUtils.FindOne(w, r, types.EntityDashboard, &dashboardTY.Config{})
 }
 
 func updateDashboard(w http.ResponseWriter, r *http.Request) {
-	bwFunc := func(d interface{}, f *[]stgType.Filter) error {
-		entity := d.(*dashboardML.Config)
+	bwFunc := func(d interface{}, f *[]storageTY.Filter) error {
+		entity := d.(*dashboardTY.Config)
 		if entity.ID == "" {
 			return errors.New("id should not be an empty")
 		}
 		return nil
 	}
-	handlerUtils.SaveEntity(w, r, model.EntityDashboard, &dashboardML.Config{}, bwFunc)
+	handlerUtils.SaveEntity(w, r, types.EntityDashboard, &dashboardTY.Config{}, bwFunc)
 }
 
 func deleteDashboards(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := dashboardAPI.Delete(IDs)
 			if err != nil {

@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 )
 
 // GetID returns ID from the interface
 func GetID(data interface{}) string {
-	_, value, err := GetValueByKeyPath(data, model.KeyID)
+	_, value, err := GetValueByKeyPath(data, types.KeyID)
 	if err != nil {
 		return ""
 	}

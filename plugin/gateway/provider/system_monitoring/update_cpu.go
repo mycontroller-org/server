@@ -3,10 +3,10 @@ package systemmonitoring
 import (
 	"fmt"
 
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"go.uber.org/zap"
@@ -36,7 +36,7 @@ func (p *Provider) updateCPU() {
 		}
 
 		msg := p.getMsg(config.SourceTypeCPU)
-		msg.Payloads = append(msg.Payloads, p.getData("used_percent", usage[0], metricType.MetricTypeGaugeFloat, metricType.UnitPercent, true))
+		msg.Payloads = append(msg.Payloads, p.getData("used_percent", usage[0], metricTY.MetricTypeGaugeFloat, metricTY.UnitPercent, true))
 
 		err = p.postMsg(&msg)
 		if err != nil {
@@ -72,7 +72,7 @@ func (p *Provider) updateCPU() {
 		for index, usage := range usageList {
 			sourceID := fmt.Sprintf("%s_%v", config.SourceTypeCPU, index)
 			msg := p.getMsg(sourceID)
-			msg.Payloads = append(msg.Payloads, p.getData("used_percent", usage, metricType.MetricTypeGaugeFloat, metricType.UnitPercent, true))
+			msg.Payloads = append(msg.Payloads, p.getData("used_percent", usage, metricTY.MetricTypeGaugeFloat, metricTY.UnitPercent, true))
 
 			err = p.postMsg(&msg)
 			if err != nil {
@@ -97,11 +97,11 @@ func sendCPUInfo(p *Provider, cpuInfo *cpu.InfoStat, cpuIndex, cpuCount int) {
 	// presentation message
 	presentMsg := p.getSourcePresentationMsg(sourceID, sourceName)
 
-	var data msgML.Payload
+	var data msgTY.Payload
 	if len(presentMsg.Payloads) > 0 {
 		data = presentMsg.Payloads[0]
 	} else {
-		data = p.getData(sourceID, sourceName, metricType.MetricTypeNone, metricType.UnitNone, true)
+		data = p.getData(sourceID, sourceName, metricTY.MetricTypeNone, metricTY.UnitNone, true)
 		presentMsg.Payloads = append(presentMsg.Payloads, data)
 	}
 

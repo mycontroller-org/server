@@ -9,19 +9,19 @@ import (
 	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
 	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
-	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
-	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	quickIdUL "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -32,15 +32,15 @@ type resourceAPI struct {
 }
 
 func toResource(api resourceAPI, id, action string) error {
-	action = model.GetAction(action)
+	action = types.GetAction(action)
 	switch action {
-	case model.ActionEnable:
+	case types.ActionEnable:
 		return api.Enable([]string{id})
 
-	case model.ActionDisable:
+	case types.ActionDisable:
 		return api.Disable([]string{id})
 
-	case model.ActionReload:
+	case types.ActionReload:
 		return api.Reload([]string{id})
 
 	default:
@@ -50,38 +50,38 @@ func toResource(api resourceAPI, id, action string) error {
 }
 
 // ExecuteActionOnResourceByQuickID the given request
-func ExecuteActionOnResourceByQuickID(data *handlerType.ResourceData) error {
-	resourceType, kvMap, err := quickIdUL.EntityKeyValueMap(data.QuickID)
+func ExecuteActionOnResourceByQuickID(data *handlerTY.ResourceData) error {
+	resourceType, kvMap, err := quickIdUtils.EntityKeyValueMap(data.QuickID)
 	if err != nil {
 		return err
 	}
 
 	switch {
-	case utils.ContainsString(quickIdUL.QuickIDGateway, resourceType):
-		return toGateway(kvMap[model.KeyGatewayID], data.Payload)
+	case utils.ContainsString(quickIdUtils.QuickIDGateway, resourceType):
+		return toGateway(kvMap[types.KeyGatewayID], data.Payload)
 
-	case utils.ContainsString(quickIdUL.QuickIDNode, resourceType):
-		gatewayID := kvMap[model.KeyGatewayID]
-		nodeID := kvMap[model.KeyNodeID]
+	case utils.ContainsString(quickIdUtils.QuickIDNode, resourceType):
+		gatewayID := kvMap[types.KeyGatewayID]
+		nodeID := kvMap[types.KeyNodeID]
 		return toNode(gatewayID, nodeID, data.Payload)
 
-	case utils.ContainsString(quickIdUL.QuickIDSource, resourceType):
+	case utils.ContainsString(quickIdUtils.QuickIDSource, resourceType):
 		// no action needed
 
-	case utils.ContainsString(quickIdUL.QuickIDField, resourceType):
-		return ToField(kvMap[model.KeyGatewayID], kvMap[model.KeyNodeID], kvMap[model.KeySourceID], kvMap[model.KeyFieldID], data.Payload)
+	case utils.ContainsString(quickIdUtils.QuickIDField, resourceType):
+		return ToField(kvMap[types.KeyGatewayID], kvMap[types.KeyNodeID], kvMap[types.KeySourceID], kvMap[types.KeyFieldID], data.Payload)
 
-	case utils.ContainsString(quickIdUL.QuickIDTask, resourceType):
-		return toTask(kvMap[model.KeyID], data.Payload)
+	case utils.ContainsString(quickIdUtils.QuickIDTask, resourceType):
+		return toTask(kvMap[types.KeyID], data.Payload)
 
-	case utils.ContainsString(quickIdUL.QuickIDSchedule, resourceType):
-		return toSchedule(kvMap[model.KeyID], data.Payload)
+	case utils.ContainsString(quickIdUtils.QuickIDSchedule, resourceType):
+		return toSchedule(kvMap[types.KeyID], data.Payload)
 
-	case utils.ContainsString(quickIdUL.QuickIDHandler, resourceType):
-		return toHandler(kvMap[model.KeyID], data.Payload)
+	case utils.ContainsString(quickIdUtils.QuickIDHandler, resourceType):
+		return toHandler(kvMap[types.KeyID], data.Payload)
 
-	case utils.ContainsString(quickIdUL.QuickIDDataRepository, resourceType):
-		return toDataRepository(kvMap[model.KeyID], data.KeyPath, data.Payload)
+	case utils.ContainsString(quickIdUtils.QuickIDDataRepository, resourceType):
+		return toDataRepository(kvMap[types.KeyID], data.KeyPath, data.Payload)
 
 	default:
 		return fmt.Errorf("unknown resource type: %s", resourceType)
@@ -90,15 +90,15 @@ func ExecuteActionOnResourceByQuickID(data *handlerType.ResourceData) error {
 }
 
 // ExecuteActionOnResourceByLabels the given request
-func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
+func ExecuteActionOnResourceByLabels(data *handlerTY.ResourceData) error {
 	if len(data.Labels) == 0 {
 		return errors.New("empty labels not allowed")
 	}
 	filters := getFilterFromLabel(data.Labels)
-	pagination := &stgType.Pagination{Limit: 100}
+	pagination := &storageTY.Pagination{Limit: 100}
 
 	switch {
-	case utils.ContainsString(quickIdUL.QuickIDGateway, data.ResourceType):
+	case utils.ContainsString(quickIdUtils.QuickIDGateway, data.ResourceType):
 		result, err := gatewayAPI.List(filters, pagination)
 		if err != nil {
 			return err
@@ -106,7 +106,7 @@ func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
 		if result.Count == 0 {
 			return nil
 		}
-		items := result.Data.(*[]gatewayML.Config)
+		items := result.Data.(*[]gatewayTY.Config)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
 			err = toGateway(item.ID, data.Payload)
@@ -115,7 +115,7 @@ func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
 			}
 		}
 
-	case utils.ContainsString(quickIdUL.QuickIDNode, data.ResourceType):
+	case utils.ContainsString(quickIdUtils.QuickIDNode, data.ResourceType):
 		result, err := nodeAPI.List(filters, pagination)
 		if err != nil {
 			return err
@@ -123,7 +123,7 @@ func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
 		if result.Count == 0 {
 			return nil
 		}
-		items := result.Data.(*[]nodeML.Node)
+		items := result.Data.(*[]nodeTY.Node)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
 			err = toNode(item.GatewayID, item.NodeID, data.Payload)
@@ -132,10 +132,10 @@ func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
 			}
 		}
 
-	case utils.ContainsString(quickIdUL.QuickIDSource, data.ResourceType):
+	case utils.ContainsString(quickIdUtils.QuickIDSource, data.ResourceType):
 		// no action needed
 
-	case utils.ContainsString(quickIdUL.QuickIDField, data.ResourceType):
+	case utils.ContainsString(quickIdUtils.QuickIDField, data.ResourceType):
 		result, err := fieldAPI.List(filters, pagination)
 		if err != nil {
 			return err
@@ -143,7 +143,7 @@ func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
 		if result.Count == 0 {
 			return nil
 		}
-		items := result.Data.(*[]fieldML.Field)
+		items := result.Data.(*[]fieldTY.Field)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
 			err = ToField(item.GatewayID, item.NodeID, item.SourceID, item.FieldID, data.Payload)
@@ -152,7 +152,7 @@ func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
 			}
 		}
 
-	case utils.ContainsString(quickIdUL.QuickIDTask, data.ResourceType):
+	case utils.ContainsString(quickIdUtils.QuickIDTask, data.ResourceType):
 		result, err := taskAPI.List(filters, pagination)
 		if err != nil {
 			return err
@@ -160,7 +160,7 @@ func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
 		if result.Count == 0 {
 			return nil
 		}
-		items := result.Data.(*[]taskML.Config)
+		items := result.Data.(*[]taskTY.Config)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
 			err = toTask(item.ID, data.Payload)
@@ -169,7 +169,7 @@ func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
 			}
 		}
 
-	case utils.ContainsString(quickIdUL.QuickIDSchedule, data.ResourceType):
+	case utils.ContainsString(quickIdUtils.QuickIDSchedule, data.ResourceType):
 		result, err := scheduleAPI.List(filters, pagination)
 		if err != nil {
 			return err
@@ -177,7 +177,7 @@ func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
 		if result.Count == 0 {
 			return nil
 		}
-		items := result.Data.(*[]scheduleML.Config)
+		items := result.Data.(*[]scheduleTY.Config)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
 			err = toSchedule(item.ID, data.Payload)
@@ -193,7 +193,7 @@ func ExecuteActionOnResourceByLabels(data *handlerType.ResourceData) error {
 }
 
 // Post a message to gateway topic
-func Post(msg *msgML.Message) error {
+func Post(msg *msgTY.Message) error {
 	if msg.GatewayID == "" {
 		return errors.New("gateway id can not be empty")
 	}
@@ -201,10 +201,10 @@ func Post(msg *msgML.Message) error {
 	return mcbus.Publish(topic, msg)
 }
 
-func getFilterFromLabel(labels cmap.CustomStringMap) []stgType.Filter {
-	filters := make([]stgType.Filter, 0)
+func getFilterFromLabel(labels cmap.CustomStringMap) []storageTY.Filter {
+	filters := make([]storageTY.Filter, 0)
 	for key, value := range labels {
-		filters = append(filters, stgType.Filter{Key: fmt.Sprintf("labels.%s", key), Operator: stgType.OperatorEqual, Value: value})
+		filters = append(filters, storageTY.Filter{Key: fmt.Sprintf("labels.%s", key), Operator: storageTY.OperatorEqual, Value: value})
 	}
 	return filters
 }

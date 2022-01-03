@@ -10,16 +10,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	"go.uber.org/zap"
 )
 
 // executeFirmwareConfigRequest executes firmware config request and response with hex payload
-func executeFirmwareConfigRequest(msg *msgML.Message) (string, error) {
+func executeFirmwareConfigRequest(msg *msgTY.Message) (string, error) {
 	startTime := time.Now()
 	rxPL := msg.Payloads[0].Value
 
@@ -72,7 +72,7 @@ func executeFirmwareConfigRequest(msg *msgML.Message) (string, error) {
 }
 
 // executeFirmwareRequest executes firmware request and response with hex payload
-func executeFirmwareRequest(msg *msgML.Message) (string, error) {
+func executeFirmwareRequest(msg *msgTY.Message) (string, error) {
 	rxPL := msg.Payloads[0].Value
 	startTime := time.Now()
 
@@ -117,9 +117,9 @@ func executeFirmwareRequest(msg *msgML.Message) (string, error) {
 
 // fetchFirmware looks requested firmware on memory store,
 // if not available, loads it from disk
-func fetchFirmware(node *nodeML.Node, typeID, versionID uint16, verifyID bool) (*firmwareRaw, error) {
+func fetchFirmware(node *nodeTY.Node, typeID, versionID uint16, verifyID bool) (*firmwareRaw, error) {
 	// get mapped firmware by id
-	fwID := node.Labels.Get(model.LabelNodeAssignedFirmware)
+	fwID := node.Labels.Get(types.LabelNodeAssignedFirmware)
 	if fwID == "" {
 		return nil, fmt.Errorf("firmware not assigned for this node. gatewayId:%s, nodeId:%s, typeId:%d, versionId:%d", node.GatewayID, node.NodeID, typeID, versionID)
 	}
@@ -267,8 +267,8 @@ func hexByteToLocalFormat(typeID, versionID uint16, hexByte []byte, blockSize in
 	return fw, nil
 }
 
-func setNodeLabels(node *nodeML.Node) {
-	busUtils.PostToResourceService(node.ID, node, rsML.TypeNode, rsML.CommandSet, "")
+func setNodeLabels(node *nodeTY.Node) {
+	busUtils.PostToResourceService(node.ID, node, rsTY.TypeNode, rsTY.CommandSet, "")
 }
 
 // toHex returns hex string
@@ -291,8 +291,8 @@ func toStruct(hex string, out interface{}) error {
 	return binary.Read(r, binary.LittleEndian, out)
 }
 
-func updateFirmwareProgressStatus(node *nodeML.Node, currentBlock, totalBytes int) {
-	otaBlockOrder := node.Labels.Get(model.LabelNodeOTABlockOrder)
+func updateFirmwareProgressStatus(node *nodeTY.Node, currentBlock, totalBytes int) {
+	otaBlockOrder := node.Labels.Get(types.LabelNodeOTABlockOrder)
 	if otaBlockOrder == "" {
 		otaBlockOrder = OTABlockOrderReverse
 	}
@@ -332,16 +332,16 @@ func updateFirmwareProgressStatus(node *nodeML.Node, currentBlock, totalBytes in
 
 		// update the status
 		state := map[string]interface{}{
-			model.FieldOTARunning:     isRunning,
-			model.FieldOTAProgress:    int(percentage * 100),
-			model.FieldOTAStatusOn:    time.Now(),
-			model.FieldOTABlockNumber: currentBlock,
-			model.FieldOTAStartTime:   startTime,
-			model.FieldOTAEndTime:     endTime,
-			model.FieldOTABlockTotal:  totalBlocks,
+			types.FieldOTARunning:     isRunning,
+			types.FieldOTAProgress:    int(percentage * 100),
+			types.FieldOTAStatusOn:    time.Now(),
+			types.FieldOTABlockNumber: currentBlock,
+			types.FieldOTAStartTime:   startTime,
+			types.FieldOTAEndTime:     endTime,
+			types.FieldOTABlockTotal:  totalBlocks,
 		}
 
 		// publish the state
-		busUtils.PostToResourceService(node.ID, state, rsML.TypeNode, rsML.CommandFirmwareState, "")
+		busUtils.PostToResourceService(node.ID, state, rsTY.TypeNode, rsTY.CommandFirmwareState, "")
 	}
 }

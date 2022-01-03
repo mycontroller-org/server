@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	gwAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 )
 
 // RegisterGatewayRoutes registers gateway api
@@ -25,18 +25,18 @@ func RegisterGatewayRoutes(router *mux.Router) {
 }
 
 func listGateways(w http.ResponseWriter, r *http.Request) {
-	entityFn := func(f []stgType.Filter, p *stgType.Pagination) (interface{}, error) {
+	entityFn := func(f []storageTY.Filter, p *storageTY.Pagination) (interface{}, error) {
 		return gwAPI.List(f, p)
 	}
 	handlerUtils.LoadData(w, r, entityFn)
 }
 
 func getGateway(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindOne(w, r, model.EntityGateway, &gwType.Config{})
+	handlerUtils.FindOne(w, r, types.EntityGateway, &gwTY.Config{})
 }
 
 func updateGateway(w http.ResponseWriter, r *http.Request) {
-	entity := &gwType.Config{}
+	entity := &gwTY.Config{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -56,7 +56,7 @@ func updateGateway(w http.ResponseWriter, r *http.Request) {
 
 func enableGateway(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := gwAPI.Enable(ids)
 			if err != nil {
@@ -71,7 +71,7 @@ func enableGateway(w http.ResponseWriter, r *http.Request) {
 
 func disableGateway(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := gwAPI.Disable(ids)
 			if err != nil {
@@ -86,7 +86,7 @@ func disableGateway(w http.ResponseWriter, r *http.Request) {
 
 func reloadGateway(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := gwAPI.Reload(ids)
 			if err != nil {
@@ -101,7 +101,7 @@ func reloadGateway(w http.ResponseWriter, r *http.Request) {
 
 func deleteGateways(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := gwAPI.Delete(IDs)
 			if err != nil {

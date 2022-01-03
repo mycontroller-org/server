@@ -3,13 +3,13 @@ package server
 import (
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
-	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
-	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
 	systemJobs "github.com/mycontroller-org/server/v2/pkg/service/system_jobs"
+	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
+	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 	"github.com/mycontroller-org/server/v2/pkg/version"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -27,7 +27,7 @@ func StartupJobsExtra() {
 
 // UpdateInitialUser func
 func UpdateInitialUser() {
-	pagination := &stgType.Pagination{
+	pagination := &storageTY.Pagination{
 		Limit: 1,
 	}
 	users, err := userAPI.List(nil, pagination)
@@ -40,7 +40,7 @@ func UpdateInitialUser() {
 			zap.L().Fatal("unable to get hashed password", zap.Error(err))
 			return
 		}
-		adminUser := &userML.User{
+		adminUser := &userTY.User{
 			Username: "admin",
 			Password: hashedPassword,
 			FullName: "Admin User",
@@ -56,18 +56,18 @@ func UpdateInitialUser() {
 // CreateSettingsData if non available
 func CreateSettingsData() {
 	// update system settings data
-	_, err := settingsAPI.GetByID(settingsML.KeySystemSettings)
+	_, err := settingsAPI.GetByID(settingsTY.KeySystemSettings)
 	if err == nil {
 		return
 	}
 	zap.L().Info("error on fetching system settings, assuming it is fresh install and populating default details. if not, report this issue", zap.String("error", err.Error()))
 
 	// update system settings
-	systemSettings := settingsML.SystemSettings{
-		GeoLocation: settingsML.GeoLocation{AutoUpdate: true},
-		Login:       settingsML.Login{Message: loginMessage},
+	systemSettings := settingsTY.SystemSettings{
+		GeoLocation: settingsTY.GeoLocation{AutoUpdate: true},
+		Login:       settingsTY.Login{Message: loginMessage},
 	}
-	settings := &settingsML.Settings{ID: settingsML.KeySystemSettings}
+	settings := &settingsTY.Settings{ID: settingsTY.KeySystemSettings}
 	settings.Spec = utils.StructToMap(systemSettings)
 	err = settingsAPI.UpdateSystemSettings(settings)
 	if err != nil {
@@ -75,8 +75,8 @@ func CreateSettingsData() {
 	}
 
 	// update version details
-	versionSettings := &settingsML.Settings{ID: settingsML.KeyVersion}
-	versionData := settingsML.VersionSettings{Version: version.Get().Version}
+	versionSettings := &settingsTY.Settings{ID: settingsTY.KeyVersion}
+	versionData := settingsTY.VersionSettings{Version: version.Get().Version}
 	versionSettings.Spec = utils.StructToMap(versionData)
 	err = settingsAPI.UpdateSettings(versionSettings)
 	if err != nil {
@@ -84,8 +84,8 @@ func CreateSettingsData() {
 	}
 
 	// update system jobs
-	systemJobsSettings := &settingsML.Settings{ID: settingsML.KeySystemJobs}
-	systemJobs := settingsML.SystemJobsSettings{
+	systemJobsSettings := &settingsTY.Settings{ID: settingsTY.KeySystemJobs}
+	systemJobs := settingsTY.SystemJobsSettings{
 		Sunrise: "0 15 1 * * *", // everyday at 1:15 AM
 	}
 	systemJobsSettings.Spec = utils.StructToMap(systemJobs)
@@ -95,16 +95,16 @@ func CreateSettingsData() {
 	}
 
 	// update export locations
-	settingsExportLocations := &settingsML.Settings{ID: settingsML.KeySystemBackupLocations}
-	settingsExportLocations.Spec = utils.StructToMap(&settingsML.BackupLocations{})
+	settingsExportLocations := &settingsTY.Settings{ID: settingsTY.KeySystemBackupLocations}
+	settingsExportLocations.Spec = utils.StructToMap(&settingsTY.BackupLocations{})
 	err = settingsAPI.UpdateSettings(settingsExportLocations)
 	if err != nil {
 		zap.L().Fatal("error on updating system export locations", zap.Error(err))
 	}
 
 	// update analytics config
-	settingsAnalytics := &settingsML.Settings{ID: settingsML.KeyAnalytics}
-	settingsAnalytics.Spec = utils.StructToMap(&settingsML.AnalyticsConfig{AnonymousID: utils.RandUUID()})
+	settingsAnalytics := &settingsTY.Settings{ID: settingsTY.KeyAnalytics}
+	settingsAnalytics.Spec = utils.StructToMap(&settingsTY.AnalyticsConfig{AnonymousID: utils.RandUUID()})
 	err = settingsAPI.UpdateSettings(settingsAnalytics)
 	if err != nil {
 		zap.L().Fatal("error on updating analytics config", zap.Error(err))

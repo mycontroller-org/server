@@ -3,12 +3,12 @@ package mysensors
 import (
 	"fmt"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
-	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	"go.uber.org/zap"
 )
@@ -61,8 +61,8 @@ func closeEventListener() {
 	eventsQueue.Close()
 }
 
-func onEvent(data *busML.BusData) {
-	event := &eventML.Event{}
+func onEvent(data *busTY.BusData) {
+	event := &eventTY.Event{}
 	err := data.LoadData(event)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
@@ -70,7 +70,7 @@ func onEvent(data *busML.BusData) {
 	}
 	zap.L().Debug("Received an event", zap.Any("event", event))
 
-	if !(event.EntityType == model.EntityNode || event.EntityType == model.EntityFirmware) ||
+	if !(event.EntityType == types.EntityNode || event.EntityType == types.EntityFirmware) ||
 		event.Entity == nil {
 		return
 	}
@@ -84,17 +84,17 @@ func onEvent(data *busML.BusData) {
 
 // processServiceEvent from the queue
 func processServiceEvent(item interface{}) {
-	event := item.(*eventML.Event)
+	event := item.(*eventTY.Event)
 	zap.L().Debug("Processing a request", zap.Any("event", event))
 
 	// process events
-	if event.EntityType == model.EntityFirmware {
-		if firmware, ok := event.Entity.(firmwareML.Firmware); ok {
+	if event.EntityType == types.EntityFirmware {
+		if firmware, ok := event.Entity.(firmwareTY.Firmware); ok {
 			fwRawStore.Remove(firmware.ID)
 			fwStore.Remove(firmware.ID)
 		}
-	} else if event.EntityType == model.EntityNode {
-		if node, ok := event.Entity.(nodeML.Node); ok {
+	} else if event.EntityType == types.EntityNode {
+		if node, ok := event.Entity.(nodeTY.Node); ok {
 			localID := getNodeStoreID(node.GatewayID, node.NodeID)
 			if nodeStore.IsAvailable(localID) {
 				nodeStore.Add(localID, &node)

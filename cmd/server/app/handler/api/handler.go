@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	handlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 )
 
 // RegisterHandlerRoutes registers handler api
@@ -25,15 +25,15 @@ func RegisterHandlerRoutes(router *mux.Router) {
 }
 
 func listHandler(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindMany(w, r, model.EntityHandler, &[]handlerType.Config{})
+	handlerUtils.FindMany(w, r, types.EntityHandler, &[]handlerTY.Config{})
 }
 
 func getHandler(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindOne(w, r, model.EntityHandler, &handlerType.Config{})
+	handlerUtils.FindOne(w, r, types.EntityHandler, &handlerTY.Config{})
 }
 
 func updateHandler(w http.ResponseWriter, r *http.Request) {
-	entity := &handlerType.Config{}
+	entity := &handlerTY.Config{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -53,7 +53,7 @@ func updateHandler(w http.ResponseWriter, r *http.Request) {
 
 func enableHandler(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := handlerAPI.Enable(ids)
 			if err != nil {
@@ -68,7 +68,7 @@ func enableHandler(w http.ResponseWriter, r *http.Request) {
 
 func disableHandler(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := handlerAPI.Disable(ids)
 			if err != nil {
@@ -83,7 +83,7 @@ func disableHandler(w http.ResponseWriter, r *http.Request) {
 
 func reloadHandler(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := handlerAPI.Reload(ids)
 			if err != nil {
@@ -98,7 +98,7 @@ func reloadHandler(w http.ResponseWriter, r *http.Request) {
 
 func deleteHandler(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := handlerAPI.Delete(IDs)
 			if err != nil {

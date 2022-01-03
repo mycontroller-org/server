@@ -3,12 +3,12 @@ package handler
 import (
 	"fmt"
 
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
 // CreatorFn func type
-type CreatorFn func(config *handlerType.Config) (handlerType.Plugin, error)
+type CreatorFn func(config *handlerTY.Config) (handlerTY.Plugin, error)
 
 // Creators is used for create plugins.
 var creators = make(map[string]CreatorFn)
@@ -21,7 +21,7 @@ func Register(name string, fn CreatorFn) {
 	creators[name] = fn
 }
 
-func Create(name string, config *handlerType.Config) (p handlerType.Plugin, err error) {
+func Create(name string, config *handlerTY.Config) (p handlerTY.Plugin, err error) {
 	if fn, ok := creators[name]; ok {
 		p, err = fn(config)
 	} else {

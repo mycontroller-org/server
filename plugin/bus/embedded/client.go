@@ -6,9 +6,9 @@ import (
 	"strings"
 	"sync"
 
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	busType "github.com/mycontroller-org/server/v2/plugin/bus/type"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	busPluginTY "github.com/mycontroller-org/server/v2/plugin/bus/type"
 	"go.uber.org/zap"
 )
 
@@ -17,16 +17,16 @@ const PluginEmbedded = "embedded"
 // Client struct
 type Client struct {
 	topics              map[string][]int64
-	subscriptions       map[int64]busType.CallBackFunc
+	subscriptions       map[int64]busPluginTY.CallBackFunc
 	subscriptionCounter int64
 	mutex               *sync.RWMutex
 }
 
 // NewClient func
-func NewClient(config cmap.CustomMap) (busType.Plugin, error) {
+func NewClient(config cmap.CustomMap) (busPluginTY.Plugin, error) {
 	client := &Client{
 		topics:              make(map[string][]int64),
-		subscriptions:       make(map[int64]busType.CallBackFunc),
+		subscriptions:       make(map[int64]busPluginTY.CallBackFunc),
 		subscriptionCounter: 0,
 		mutex:               &sync.RWMutex{},
 	}
@@ -45,7 +45,7 @@ func (c *Client) Close() error {
 	// clear all the call backs and topics
 	c.subscriptionCounter = 0
 	c.topics = make(map[string][]int64)
-	c.subscriptions = make(map[int64]busType.CallBackFunc)
+	c.subscriptions = make(map[int64]busPluginTY.CallBackFunc)
 	return nil
 }
 
@@ -67,7 +67,7 @@ func (c *Client) Publish(topic string, data interface{}) error {
 		if match {
 			for _, subscriptionID := range subscriptionIDs {
 				if callBack, ok := c.subscriptions[subscriptionID]; ok {
-					event := &busML.BusData{Topic: topic}
+					event := &busTY.BusData{Topic: topic}
 					err := event.SetData(data)
 					if err != nil {
 						zap.L().Error("data conversion failed", zap.Error(err))
@@ -83,7 +83,7 @@ func (c *Client) Publish(topic string, data interface{}) error {
 }
 
 // Subscribe a topic
-func (c *Client) Subscribe(topic string, handler busType.CallBackFunc) (int64, error) {
+func (c *Client) Subscribe(topic string, handler busPluginTY.CallBackFunc) (int64, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -104,7 +104,7 @@ func (c *Client) Subscribe(topic string, handler busType.CallBackFunc) (int64, e
 }
 
 // QueueSubscribe not supported in embedded bus, just call subscribe
-func (c *Client) QueueSubscribe(topic, _queueName string, handler busType.CallBackFunc) (int64, error) {
+func (c *Client) QueueSubscribe(topic, _queueName string, handler busPluginTY.CallBackFunc) (int64, error) {
 	return c.Subscribe(topic, handler)
 }
 

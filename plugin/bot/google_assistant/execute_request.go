@@ -2,17 +2,17 @@ package googleassistant
 
 import (
 	actionAPI "github.com/mycontroller-org/server/v2/pkg/api/action"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	gaML "github.com/mycontroller-org/server/v2/plugin/bot/google_assistant/model"
+	gaTY "github.com/mycontroller-org/server/v2/plugin/bot/google_assistant/types"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
-func runExecuteRequest(request gaML.ExecuteRequest) *gaML.ExecuteResponse {
+func runExecuteRequest(request gaTY.ExecuteRequest) *gaTY.ExecuteResponse {
 	zap.L().Info("received a execute request", zap.Any("request", request))
 
-	response := gaML.ExecuteResponse{RequestID: request.RequestID}
-	responseCommands := make([]gaML.ExecuteResponseCommand, 0)
+	response := gaTY.ExecuteResponse{RequestID: request.RequestID}
+	responseCommands := make([]gaTY.ExecuteResponseCommand, 0)
 	for _, input := range request.Inputs {
 		responseCmd := executePayload(input.Payload)
 		responseCommands = append(responseCommands, responseCmd...)
@@ -22,8 +22,8 @@ func runExecuteRequest(request gaML.ExecuteRequest) *gaML.ExecuteResponse {
 	return &response
 }
 
-func executePayload(payload gaML.ExecuteRequestPayload) []gaML.ExecuteResponseCommand {
-	responseCommands := make([]gaML.ExecuteResponseCommand, 0)
+func executePayload(payload gaTY.ExecuteRequestPayload) []gaTY.ExecuteResponseCommand {
+	responseCommands := make([]gaTY.ExecuteResponseCommand, 0)
 	for _, command := range payload.Commands {
 		for _, device := range command.Devices {
 			responseCmd := executeCommand(device, command.Execution)
@@ -33,8 +33,8 @@ func executePayload(payload gaML.ExecuteRequestPayload) []gaML.ExecuteResponseCo
 	return responseCommands
 }
 
-func executeCommand(device gaML.ExecuteRequestDevice, executions []gaML.ExecuteRequestExecution) []gaML.ExecuteResponseCommand {
-	responseCommands := make([]gaML.ExecuteResponseCommand, 0)
+func executeCommand(device gaTY.ExecuteRequestDevice, executions []gaTY.ExecuteRequestExecution) []gaTY.ExecuteResponseCommand {
+	responseCommands := make([]gaTY.ExecuteResponseCommand, 0)
 
 	for _, execution := range executions {
 		var value interface{}
@@ -51,19 +51,19 @@ func executeCommand(device gaML.ExecuteRequestDevice, executions []gaML.ExecuteR
 				Payload: convertor.ToString(value),
 			}
 
-			statusString := gaML.ExecutionStatusSuccess
+			statusString := gaTY.ExecutionStatusSuccess
 			// TODO: include error code
 			err := actionAPI.ExecuteActionOnResourceByQuickID(&data)
 			if err != nil {
 				zap.L().Error("error on executing", zap.Error(err))
-				statusString = gaML.ExecutionStatusError
+				statusString = gaTY.ExecutionStatusError
 			}
 			params := execution.Params
 			params["online"] = true
-			responseCmd := gaML.ExecuteResponseCommand{
+			responseCmd := gaTY.ExecuteResponseCommand{
 				IDs:    []string{device.ID},
 				Status: statusString,
-				States: gaML.ExecuteResponseState{Online: true, Others: params},
+				States: gaTY.ExecuteResponseState{Online: true, Others: params},
 			}
 			responseCommands = append(responseCommands, responseCmd)
 		}

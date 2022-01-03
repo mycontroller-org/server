@@ -6,16 +6,16 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	gwPlugin "github.com/mycontroller-org/server/v2/plugin/gateway"
-	providerType "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
@@ -31,25 +31,25 @@ const (
 
 // Service component of the provider
 type Service struct {
-	GatewayConfig                     *gwType.Config
-	provider                          providerType.Plugin
+	GatewayConfig                     *gwTY.Config
+	provider                          providerTY.Plugin
 	messageQueue                      *queueUtils.Queue
 	rawMessageQueue                   *queueUtils.Queue
 	topicListenFromServer             string
 	topicPostToServer                 string
 	topicListenFromCoreSubscriptionID int64
-	sleepingMessageQueue              map[string][]msgML.Message
+	sleepingMessageQueue              map[string][]msgTY.Message
 	mutex                             *sync.RWMutex
 	ctx                               context.Context
 }
 
 // GetService returns service instance
-func GetService(gatewayCfg *gwType.Config) (*Service, error) {
+func GetService(gatewayCfg *gwTY.Config) (*Service, error) {
 	// verify default reconnect delay
 	gatewayCfg.ReconnectDelay = utils.ValidDuration(gatewayCfg.ReconnectDelay, defaultReconnectDelay)
 
 	// get a plugin
-	provider, err := gwPlugin.Create(gatewayCfg.Provider.GetString(model.KeyType), gatewayCfg)
+	provider, err := gwPlugin.Create(gatewayCfg.Provider.GetString(types.KeyType), gatewayCfg)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func GetService(gatewayCfg *gwType.Config) (*Service, error) {
 
 // Start gateway service
 func (s *Service) Start() error {
-	zap.L().Debug("starting a provider service", zap.String("gateway", s.GatewayConfig.ID), zap.String("provider", s.GatewayConfig.Provider.GetString(model.NameType)))
+	zap.L().Debug("starting a provider service", zap.String("gateway", s.GatewayConfig.ID), zap.String("provider", s.GatewayConfig.Provider.GetString(types.NameType)))
 
 	// update topics
 	s.topicListenFromServer = mcbus.GetTopicPostMessageToProvider(s.GatewayConfig.ID)
@@ -73,7 +73,7 @@ func (s *Service) Start() error {
 	s.messageQueue = queueUtils.New(fmt.Sprintf("gateway_provider_message_%s", s.GatewayConfig.ID), queueSizeMessage, s.messageConsumer, workersMessage)
 	s.rawMessageQueue = queueUtils.New(fmt.Sprintf("gateway_provider_raw_message_%s", s.GatewayConfig.ID), queueSizeRawMessage, s.rawMessageProcessor, workersRawMessage)
 
-	s.sleepingMessageQueue = make(map[string][]msgML.Message)
+	s.sleepingMessageQueue = make(map[string][]msgTY.Message)
 
 	// start message listener
 	s.startMessageListener()
@@ -115,7 +115,7 @@ func (s *Service) Stop() error {
 
 // this function supplied to protocol
 // rawMessages will be added directely here
-func (s *Service) addRawMessageToQueueFunc(rawMsg *msgML.RawMessage) error {
+func (s *Service) addRawMessageToQueueFunc(rawMsg *msgTY.RawMessage) error {
 	status := s.rawMessageQueue.Produce(rawMsg)
 	if !status {
 		return errors.New("failed to add rawmessage in to queue")
@@ -125,8 +125,8 @@ func (s *Service) addRawMessageToQueueFunc(rawMsg *msgML.RawMessage) error {
 
 // listens messages from server
 func (s *Service) startMessageListener() {
-	subscriptionID, err := mcbus.Subscribe(s.topicListenFromServer, func(event *busML.BusData) {
-		msg := &msgML.Message{}
+	subscriptionID, err := mcbus.Subscribe(s.topicListenFromServer, func(event *busTY.BusData) {
+		msg := &msgTY.Message{}
 		err := event.LoadData(msg)
 		if err != nil {
 			zap.L().Warn("received invalid type", zap.Any("event", event))
@@ -147,14 +147,14 @@ func (s *Service) startMessageListener() {
 }
 
 func (s *Service) messageConsumer(item interface{}) {
-	msg, ok := item.(*msgML.Message)
+	msg, ok := item.(*msgTY.Message)
 	if !ok {
 		zap.L().Error("invalid message type", zap.Any("received", item))
 		return
 	}
 
 	// if it is awake message send the sleeping queue messages
-	if msg.Type == msgML.TypeAction && len(msg.Payloads) > 0 && msg.Payloads[0].Key == nodeML.ActionAwake {
+	if msg.Type == msgTY.TypeAction && len(msg.Payloads) > 0 && msg.Payloads[0].Key == nodeTY.ActionAwake {
 		s.publishSleepingMessageQueue(msg.NodeID)
 		return
 	} else if msg.IsPassiveNode {
@@ -168,7 +168,7 @@ func (s *Service) messageConsumer(item interface{}) {
 }
 
 // postMessage to the provider
-func (s *Service) postMessage(msg *msgML.Message, addToSleepingQueue bool) {
+func (s *Service) postMessage(msg *msgTY.Message, addToSleepingQueue bool) {
 	err := s.provider.Post(msg)
 	if err != nil {
 		zap.L().Warn("error on sending", zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
@@ -180,7 +180,7 @@ func (s *Service) postMessage(msg *msgML.Message, addToSleepingQueue bool) {
 
 // process received raw messages from protocol
 func (s *Service) rawMessageProcessor(data interface{}) {
-	rawMsg := data.(*msgML.RawMessage)
+	rawMsg := data.(*msgTY.RawMessage)
 	zap.L().Debug("rawMessage received", zap.String("gateway", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
 	messages, err := s.provider.ProcessReceived(rawMsg)
 	if err != nil {
@@ -208,13 +208,13 @@ func (s *Service) rawMessageProcessor(data interface{}) {
 }
 
 // add message in to sleeping queue
-func (s *Service) addToSleepingMessageQueue(msg *msgML.Message) {
+func (s *Service) addToSleepingMessageQueue(msg *msgTY.Message) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	// add into sleeping queue
 	queue, ok := s.sleepingMessageQueue[msg.NodeID]
 	if !ok {
-		queue = make([]msgML.Message, 0)
+		queue = make([]msgTY.Message, 0)
 		s.sleepingMessageQueue[msg.NodeID] = queue
 	}
 	// verify if the message already in the queue, if then remove it
@@ -254,5 +254,5 @@ func (s *Service) publishSleepingMessageQueue(nodeID string) {
 	}
 
 	// remove mesages from the map
-	s.sleepingMessageQueue[nodeID] = make([]msgML.Message, 0)
+	s.sleepingMessageQueue[nodeID] = make([]msgTY.Message, 0)
 }

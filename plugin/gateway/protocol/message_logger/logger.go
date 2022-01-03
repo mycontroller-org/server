@@ -1,9 +1,9 @@
 package msglogger
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	msgml "github.com/mycontroller-org/server/v2/pkg/model/message"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"go.uber.org/zap"
 )
 
@@ -11,7 +11,7 @@ import (
 type MessageLogger interface {
 	Start()                              // Start the message logger
 	Close()                              // Stop and close the message logger
-	AsyncWrite(rawMsg *msgml.RawMessage) // write a message
+	AsyncWrite(rawMsg *msgTY.RawMessage) // write a message
 }
 
 // logger types
@@ -21,9 +21,9 @@ const (
 )
 
 // Init message logger
-func Init(gatewayID string, config cmap.CustomMap, formatterFunc func(rawMsg *msgml.RawMessage) string) MessageLogger {
+func Init(gatewayID string, config cmap.CustomMap, formatterFunc func(rawMsg *msgTY.RawMessage) string) MessageLogger {
 	var messageLogger MessageLogger
-	if config.GetString(model.NameType) == TypeFileLogger {
+	if config.GetString(types.NameType) == TypeFileLogger {
 		fileMessageLogger, err := InitFileMessageLogger(gatewayID, config, formatterFunc)
 		if err != nil {
 			zap.L().Error("Failed to load file message logger", zap.Any("config", config), zap.Error(err))

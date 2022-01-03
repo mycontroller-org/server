@@ -8,19 +8,19 @@ import (
 
 	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	colorUtils "github.com/mycontroller-org/server/v2/pkg/utils/color"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 // Post sends a command to esphome node
-func (p *Provider) Post(message *msgML.Message) error {
+func (p *Provider) Post(message *msgTY.Message) error {
 	if message == nil || len(message.Payloads) == 0 || message.NodeID == "" {
 		zap.L().Error("invalid message received", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("message", message))
 		return errors.New("invalid message")
@@ -31,7 +31,7 @@ func (p *Provider) Post(message *msgML.Message) error {
 		return nil
 	}
 
-	if message.Type == msgML.TypeAction {
+	if message.Type == msgTY.TypeAction {
 		return p.handleActions(message)
 	}
 
@@ -103,11 +103,11 @@ func (p *Provider) Post(message *msgML.Message) error {
 		// create a echo to MyController to update the actual component
 		// this block will be used only, when the field not updated by the esphome node
 		if entity.Type == EntityTypeLight && fieldID == FieldRGB {
-			msgSource := getMessage(p.GatewayConfig.ID, message.NodeID, message.SourceID, msgML.TypeSet, time.Now())
-			sourceData := msgML.NewPayload()
+			msgSource := getMessage(p.GatewayConfig.ID, message.NodeID, message.SourceID, msgTY.TypeSet, time.Now())
+			sourceData := msgTY.NewPayload()
 			sourceData.Key = fieldID
 			sourceData.Value = payload.Value
-			sourceData.MetricType = metricType.MetricTypeNone
+			sourceData.MetricType = metricTY.MetricTypeNone
 			msgSource.Payloads = append(msgSource.Payloads, sourceData)
 			err = mcbus.Publish(mcbus.GetTopicPostMessageToServer(), msgSource)
 			if err != nil {
@@ -120,7 +120,7 @@ func (p *Provider) Post(message *msgML.Message) error {
 }
 
 // ProcessReceived performs operation on raw message received from esphome node and returns multiple messages
-func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
+func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
 	if rawMsg == nil {
 		return nil, nil
 	}
@@ -353,7 +353,7 @@ func adjustValueToEsphomeNode(entityType, fieldID string, value interface{}, fie
 }
 
 // getMessageEntitiesResponse returns the entities as multiple messages
-func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timestamp time.Time, fields map[string]interface{}) ([]*msgML.Message, error) {
+func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timestamp time.Time, fields map[string]interface{}) ([]*msgTY.Message, error) {
 	zap.L().Debug("fields", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("nodeId", nodeID), zap.Any("fields", fields))
 	objectID, found := fields[FieldObjectID]
 	if !found {
@@ -375,16 +375,16 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 	delete(fields, FieldObjectID)
 	delete(fields, FieldUniqueID)
 
-	messages := make([]*msgML.Message, 0)
+	messages := make([]*msgTY.Message, 0)
 
-	msgSource := getMessage(p.GatewayConfig.ID, nodeID, sourceID, msgML.TypePresentation, timestamp)
-	sourceData := msgML.NewPayload()
-	sourceData.Key = model.FieldName
+	msgSource := getMessage(p.GatewayConfig.ID, nodeID, sourceID, msgTY.TypePresentation, timestamp)
+	sourceData := msgTY.NewPayload()
+	sourceData.Key = types.FieldName
 	sourceData.Value = name
 	sourceData.Labels.Set(LabelKey, keyString)
 	sourceData.Labels.Set(LabelType, entityType)
 
-	msgFields := getMessage(p.GatewayConfig.ID, nodeID, sourceID, msgML.TypeSet, timestamp)
+	msgFields := getMessage(p.GatewayConfig.ID, nodeID, sourceID, msgTY.TypeSet, timestamp)
 
 	unitOfMeasurement := ""
 	deviceClass := ""
@@ -404,12 +404,12 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 		fieldID, validField := isField(field)
 		if validField {
 			metricMap := getMetricData(entityType, fieldID)
-			fieldData := msgML.NewPayload()
+			fieldData := msgTY.NewPayload()
 			fieldData.Key = fieldID
 			fieldData.Value = ""
 			fieldData.MetricType = metricMap.MetricType
 			fieldData.Unit = metricMap.Unit
-			fieldData.Labels.Set(model.LabelReadOnly, metricMap.ReadOnly)
+			fieldData.Labels.Set(types.LabelReadOnly, metricMap.ReadOnly)
 			fieldData.Labels.Set(LabelKey, keyString)
 			fieldData.Labels.Set(LabelType, entityType)
 			msgFields.Payloads = append(msgFields.Payloads, fieldData)
@@ -443,7 +443,7 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 	// 	fieldState.MetricType = metrics.MetricTypeBinary
 	// 	fieldState.Labels.Set(LabelKey, keyString)
 	// 	fieldState.Labels.Set(LabelType, entity.Type)
-	// 	fieldState.Labels.Set(model.LabelReadOnly, "false")
+	// 	fieldState.Labels.Set(types.LabelReadOnly, "false")
 	// 	if deviceClass != "" {
 	// 		fieldState.Labels.Set("device_class", deviceClass)
 	// 	}
@@ -456,7 +456,7 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 	// 	fieldState.Unit = unitOfMeasurement
 	// 	fieldState.Labels.Set(LabelKey, keyString)
 	// 	fieldState.Labels.Set(LabelType, entity.Type)
-	// 	fieldState.Labels.Set(model.LabelReadOnly, "true")
+	// 	fieldState.Labels.Set(types.LabelReadOnly, "true")
 	// 	msgFields.Payloads = append(msgFields.Payloads, fieldState)
 	//
 	// case EntityTypeTextSensor:
@@ -465,17 +465,17 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 	// 	fieldState.MetricType = metrics.MetricTypeString
 	// 	fieldState.Labels.Set(LabelKey, keyString)
 	// 	fieldState.Labels.Set(LabelType, entity.Type)
-	// 	fieldState.Labels.Set(model.LabelReadOnly, "true")
+	// 	fieldState.Labels.Set(types.LabelReadOnly, "true")
 	// 	msgFields.Payloads = append(msgFields.Payloads, fieldState)
 
 	// in camera, to enable or disable the stream, add 'stream' field manually
 	case EntityTypeCamera:
-		fieldStream := msgML.NewPayload()
+		fieldStream := msgTY.NewPayload()
 		fieldStream.Key = FieldStream
-		fieldStream.MetricType = metricType.MetricTypeNone
+		fieldStream.MetricType = metricTY.MetricTypeNone
 		fieldStream.Labels.Set(LabelKey, keyString)
 		fieldStream.Labels.Set(LabelType, entity.Type)
-		fieldStream.Labels.Set(model.LabelReadOnly, "false")
+		fieldStream.Labels.Set(types.LabelReadOnly, "false")
 		msgFields.Payloads = append(msgFields.Payloads, fieldStream)
 
 	}
@@ -491,7 +491,7 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 }
 
 // getStateResponse returns the status to multiple messages
-func (p *Provider) getStateResponse(nodeID string, timestamp time.Time, fields map[string]interface{}) ([]*msgML.Message, error) {
+func (p *Provider) getStateResponse(nodeID string, timestamp time.Time, fields map[string]interface{}) ([]*msgTY.Message, error) {
 	key, found := fields[FieldKey]
 	if !found {
 		zap.L().Info("key not found", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("message", fields))
@@ -504,16 +504,16 @@ func (p *Provider) getStateResponse(nodeID string, timestamp time.Time, fields m
 		return nil, nil
 	}
 
-	messages := make([]*msgML.Message, 0)
+	messages := make([]*msgTY.Message, 0)
 
-	msg := getMessage(p.GatewayConfig.ID, nodeID, entity.SourceID, msgML.TypeSet, timestamp)
+	msg := getMessage(p.GatewayConfig.ID, nodeID, entity.SourceID, msgTY.TypeSet, timestamp)
 
 	// remove key
 	delete(fields, FieldKey)
 
 	for field, value := range fields {
 		metricMap := getMetricData(entity.Type, field)
-		data := msgML.NewPayload()
+		data := msgTY.NewPayload()
 		data.Key = field
 		data.Value = adjustValueToMyController(entity.Type, field, value)
 		data.MetricType = metricMap.MetricType
@@ -524,7 +524,7 @@ func (p *Provider) getStateResponse(nodeID string, timestamp time.Time, fields m
 		}
 		data.Labels.Set(LabelKey, convertor.ToString(key))
 		data.Labels.Set(LabelType, entity.Type)
-		data.Labels.Set(model.LabelReadOnly, metricMap.ReadOnly)
+		data.Labels.Set(types.LabelReadOnly, metricMap.ReadOnly)
 		msg.Payloads = append(msg.Payloads, data)
 	}
 
@@ -537,10 +537,10 @@ func (p *Provider) getStateResponse(nodeID string, timestamp time.Time, fields m
 }
 
 // getActionMessage returns the action message to mycontroller
-func (p *Provider) getActionMessage(actionType, nodeID string, timestamp time.Time, fields map[string]interface{}) ([]*msgML.Message, error) {
-	messages := make([]*msgML.Message, 0)
-	msg := getMessage(p.GatewayConfig.ID, nodeID, "", msgML.TypeAction, timestamp)
-	data := msgML.NewPayload()
+func (p *Provider) getActionMessage(actionType, nodeID string, timestamp time.Time, fields map[string]interface{}) ([]*msgTY.Message, error) {
+	messages := make([]*msgTY.Message, 0)
+	msg := getMessage(p.GatewayConfig.ID, nodeID, "", msgTY.TypeAction, timestamp)
+	data := msgTY.NewPayload()
 	data.Key = actionType
 	msg.Payloads = append(msg.Payloads, data)
 	messages = append(messages, msg)
@@ -548,8 +548,8 @@ func (p *Provider) getActionMessage(actionType, nodeID string, timestamp time.Ti
 }
 
 // getMessage creates a message with common values
-func getMessage(gatewayID, nodeID, sourceID, msgType string, timestamp time.Time) *msgML.Message {
-	return &msgML.Message{
+func getMessage(gatewayID, nodeID, sourceID, msgType string, timestamp time.Time) *msgTY.Message {
+	return &msgTY.Message{
 		GatewayID:  gatewayID,
 		NodeID:     nodeID,
 		SourceID:   sourceID,

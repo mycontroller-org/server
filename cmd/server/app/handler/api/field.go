@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	fieldAPI "github.com/mycontroller-org/server/v2/pkg/api/field"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterFieldRoutes registers field api
@@ -22,15 +22,15 @@ func RegisterFieldRoutes(router *mux.Router) {
 }
 
 func listFields(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindMany(w, r, model.EntityField, &[]fieldML.Field{})
+	handlerUtils.FindMany(w, r, types.EntityField, &[]fieldTY.Field{})
 }
 
 func getField(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindOne(w, r, model.EntityField, &fieldML.Field{})
+	handlerUtils.FindOne(w, r, types.EntityField, &fieldTY.Field{})
 }
 
 func updateField(w http.ResponseWriter, r *http.Request) {
-	entity := &fieldML.Field{}
+	entity := &fieldTY.Field{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -46,7 +46,7 @@ func updateField(w http.ResponseWriter, r *http.Request) {
 
 func deleteFields(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := fieldAPI.Delete(IDs)
 			if err != nil {

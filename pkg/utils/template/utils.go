@@ -8,7 +8,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/api/sunrise"
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	"go.uber.org/zap"
 )
@@ -33,7 +33,7 @@ func ternary(data interface{}, trueValue, falseValue string) string {
 
 func byKeyPath(data interface{}, keyPath string) template.JS {
 	result := ""
-	_, value, err := helper.GetValueByKeyPath(data, keyPath)
+	_, value, err := filterUtils.GetValueByKeyPath(data, keyPath)
 	if err != nil {
 		zap.L().Warn("error on getting a value", zap.Error(err), zap.String("keyPath", keyPath), zap.Any("data", data))
 		result = err.Error()

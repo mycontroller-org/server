@@ -3,18 +3,18 @@ package systemmonitoring
 import (
 	"errors"
 
-	msgml "github.com/mycontroller-org/server/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 )
 
 // ProcessReceived implementation
-func (p *Provider) ProcessReceived(rawMsg *msgml.RawMessage) ([]*msgml.Message, error) {
+func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
 	// gateway do not send a messages to queue, sends directly
 	return nil, nil
 }
 
 // Post func
-func (p *Provider) Post(msg *msgml.Message) error {
+func (p *Provider) Post(msg *msgTY.Message) error {
 	if len(msg.Payloads) == 0 {
 		return errors.New("there is no payload details on the message")
 	}
@@ -25,9 +25,9 @@ func (p *Provider) Post(msg *msgml.Message) error {
 
 	payload := msg.Payloads[0]
 
-	if msg.Type == msgml.TypeAction {
+	if msg.Type == msgTY.TypeAction {
 		switch payload.Key {
-		case nodeML.ActionRefreshNodeInfo:
+		case nodeTY.ActionRefreshNodeInfo:
 			p.updateNodeDetails()
 
 		}

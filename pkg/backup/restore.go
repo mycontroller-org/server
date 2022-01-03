@@ -22,27 +22,27 @@ import (
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
-	"github.com/mycontroller-org/server/v2/pkg/model/config"
-	dashboardML "github.com/mycontroller-org/server/v2/pkg/model/dashboard"
-	dataRepositoryML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
-	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
-	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
-	fwdPayloadML "github.com/mycontroller-org/server/v2/pkg/model/forward_payload"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
-	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
-	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
-	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
-	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
+	"github.com/mycontroller-org/server/v2/pkg/types/config"
+	dashboardTY "github.com/mycontroller-org/server/v2/pkg/types/dashboard"
+	dataRepositoryTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
+	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
+	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
+	fwdPayloadTY "github.com/mycontroller-org/server/v2/pkg/types/forward_payload"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
+	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
+	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
+	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"github.com/mycontroller-org/server/v2/pkg/utils/ziputils"
-	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	nhML "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -65,16 +65,16 @@ func ExecuteRestore(extractedDir string) error {
 		return err
 	}
 
-	storageDir := path.Join(extractedDir, model.DirectoryDataStorage)
-	firmwareDir := path.Join(extractedDir, model.DirectoryDataFirmware)
+	storageDir := path.Join(extractedDir, types.DirectoryDataStorage)
+	firmwareDir := path.Join(extractedDir, types.DirectoryDataFirmware)
 
-	dataBytes, err := utils.ReadFile(extractedDir, backupML.BackupDetailsFilename)
+	dataBytes, err := utils.ReadFile(extractedDir, backupTY.BackupDetailsFilename)
 	if err != nil {
-		zap.L().Fatal("error on reading export details", zap.String("dir", extractedDir), zap.String("filename", backupML.BackupDetailsFilename), zap.Error(err))
+		zap.L().Fatal("error on reading export details", zap.String("dir", extractedDir), zap.String("filename", backupTY.BackupDetailsFilename), zap.Error(err))
 		return err
 	}
 
-	exportDetails := &backupML.BackupDetails{}
+	exportDetails := &backupTY.BackupDetails{}
 	err = yaml.Unmarshal(dataBytes, exportDetails)
 	if err != nil {
 		zap.L().Fatal("error on loading export details", zap.Error(err))
@@ -113,7 +113,7 @@ func ExecuteRestoreFirmware(sourceDir string) error {
 	isImportJobRunning.Set()
 	defer isImportJobRunning.Reset()
 
-	destDir := model.GetDataDirectoryFirmware()
+	destDir := types.GetDataDirectoryFirmware()
 	err := utils.RemoveDir(destDir)
 	if err != nil {
 		return err
@@ -182,8 +182,8 @@ func ExecuteImportStorage(sourceDir, fileType string, ignoreEmptyDir bool) error
 
 func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 	switch entityName {
-	case model.EntityGateway:
-		entities := make([]gatewayML.Config, 0)
+	case types.EntityGateway:
+		entities := make([]gatewayTY.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -195,8 +195,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntityNode:
-		entities := make([]nodeML.Node, 0)
+	case types.EntityNode:
+		entities := make([]nodeTY.Node, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -208,8 +208,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntitySource:
-		entities := make([]sourceML.Source, 0)
+	case types.EntitySource:
+		entities := make([]sourceTY.Source, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -221,8 +221,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntityField:
-		entities := make([]fieldML.Field, 0)
+	case types.EntityField:
+		entities := make([]fieldTY.Field, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -234,8 +234,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntityFirmware:
-		entities := make([]firmwareML.Firmware, 0)
+	case types.EntityFirmware:
+		entities := make([]firmwareTY.Firmware, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -247,8 +247,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntityUser:
-		entities := make([]userML.User, 0)
+	case types.EntityUser:
+		entities := make([]userTY.User, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -260,8 +260,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntityDashboard:
-		entities := make([]dashboardML.Config, 0)
+	case types.EntityDashboard:
+		entities := make([]dashboardTY.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -273,8 +273,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntityHandler:
-		entities := make([]nhML.Config, 0)
+	case types.EntityHandler:
+		entities := make([]handlerTY.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -286,8 +286,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntityForwardPayload:
-		entities := make([]fwdPayloadML.Config, 0)
+	case types.EntityForwardPayload:
+		entities := make([]fwdPayloadTY.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -299,8 +299,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntityTask:
-		entities := make([]taskML.Config, 0)
+	case types.EntityTask:
+		entities := make([]taskTY.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -312,8 +312,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntitySchedule:
-		entities := make([]scheduleML.Config, 0)
+	case types.EntitySchedule:
+		entities := make([]scheduleTY.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -325,8 +325,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntitySettings:
-		entities := make([]settingsML.Settings, 0)
+	case types.EntitySettings:
+		entities := make([]settingsTY.Settings, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -338,8 +338,8 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			}
 		}
 
-	case model.EntityDataRepository:
-		entities := make([]dataRepositoryML.Config, 0)
+	case types.EntityDataRepository:
+		entities := make([]dataRepositoryTY.Config, 0)
 		err := unmarshal(fileFormat, fileBytes, &entities)
 		if err != nil {
 			return err
@@ -360,12 +360,12 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 
 func unmarshal(provider string, fileBytes []byte, entities interface{}) error {
 	switch provider {
-	case backupML.TypeJSON:
+	case backupTY.TypeJSON:
 		err := json.Unmarshal(fileBytes, entities)
 		if err != nil {
 			return err
 		}
-	case backupML.TypeYAML:
+	case backupTY.TypeYAML:
 		err := yaml.Unmarshal(fileBytes, entities)
 		if err != nil {
 			return err
@@ -377,7 +377,7 @@ func unmarshal(provider string, fileBytes []byte, entities interface{}) error {
 }
 
 func getEntityName(filename string) string {
-	entity := strings.Split(filename, backupML.EntityNameIndexSplit)
+	entity := strings.Split(filename, backupTY.EntityNameIndexSplit)
 	if len(entity) > 0 {
 		return entity[0]
 	}
@@ -393,7 +393,7 @@ func ExtractExportedZipfile(exportedZipfile string) error {
 
 	zipFilename := path.Base(exportedZipfile)
 	baseDir := strings.TrimSuffix(zipFilename, path.Ext(zipFilename))
-	extractFullPath := path.Join(model.GetDataDirectoryInternal(), baseDir)
+	extractFullPath := path.Join(types.GetDataDirectoryInternal(), baseDir)
 
 	err := ziputils.Unzip(exportedZipfile, extractFullPath)
 	if err != nil {
@@ -417,7 +417,7 @@ func ExtractExportedZipfile(exportedZipfile string) error {
 		return err
 	}
 
-	internalDir := model.GetDataDirectoryInternal()
+	internalDir := types.GetDataDirectoryInternal()
 	err = utils.WriteFile(internalDir, config.SystemStartJobsFilename, dataBytes)
 	if err != nil {
 		zap.L().Error("failed to write data to disk", zap.String("directory", internalDir), zap.String("filename", config.SystemStartJobsFilename), zap.Error(err))

@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	fwAPI "github.com/mycontroller-org/server/v2/pkg/api/firmware"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	fwML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	fwTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterFirmwareRoutes registers firmware api
@@ -23,15 +23,15 @@ func RegisterFirmwareRoutes(router *mux.Router) {
 }
 
 func listFirmwares(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindMany(w, r, model.EntityFirmware, &[]fwML.Firmware{})
+	handlerUtils.FindMany(w, r, types.EntityFirmware, &[]fwTY.Firmware{})
 }
 
 func getFirmware(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindOne(w, r, model.EntityFirmware, &fwML.Firmware{})
+	handlerUtils.FindOne(w, r, types.EntityFirmware, &fwTY.Firmware{})
 }
 
 func updateFirmware(w http.ResponseWriter, r *http.Request) {
-	entity := &fwML.Firmware{}
+	entity := &fwTY.Firmware{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -51,7 +51,7 @@ func updateFirmware(w http.ResponseWriter, r *http.Request) {
 
 func deleteFirmware(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			count, err := fwAPI.Delete(ids)
 			if err != nil {

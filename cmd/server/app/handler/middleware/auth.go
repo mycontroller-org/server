@@ -9,8 +9,8 @@ import (
 	"time"
 
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
-	"github.com/mycontroller-org/server/v2/pkg/model/user"
-	handlerTY "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
+	"github.com/mycontroller-org/server/v2/pkg/types/user"
+	handlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	"go.uber.org/zap"

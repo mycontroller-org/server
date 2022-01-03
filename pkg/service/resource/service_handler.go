@@ -4,32 +4,32 @@ import (
 	"errors"
 
 	handlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	"go.uber.org/zap"
 )
 
-func handlerService(reqEvent *rsML.ServiceEvent) error {
-	resEvent := &rsML.ServiceEvent{
+func handlerService(reqEvent *rsTY.ServiceEvent) error {
+	resEvent := &rsTY.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
 
 	switch reqEvent.Command {
-	case rsML.CommandGet:
+	case rsTY.CommandGet:
 		data, err := getHandler(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
-	case rsML.CommandUpdateState:
+	case rsTY.CommandUpdateState:
 		err := updateHandlerState(reqEvent)
 		if err != nil {
 			return err
 		}
 
-	case rsML.CommandLoadAll:
+	case rsTY.CommandLoadAll:
 		handlerAPI.LoadAll()
 
 	default:
@@ -38,7 +38,7 @@ func handlerService(reqEvent *rsML.ServiceEvent) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getHandler(request *rsML.ServiceEvent) (interface{}, error) {
+func getHandler(request *rsTY.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
 		cfg, err := handlerAPI.GetByID(request.ID)
 		if err != nil {
@@ -56,12 +56,12 @@ func getHandler(request *rsML.ServiceEvent) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func updateHandlerState(reqEvent *rsML.ServiceEvent) error {
+func updateHandlerState(reqEvent *rsTY.ServiceEvent) error {
 	if reqEvent.Data == nil {
 		zap.L().Error("handler state not supplied", zap.Any("event", reqEvent))
 		return errors.New("handler state not supplied")
 	}
-	state := &model.State{}
+	state := &types.State{}
 	err := reqEvent.LoadData(state)
 	if err != nil {
 		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))

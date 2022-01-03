@@ -1,12 +1,12 @@
 package schedule
 
 import (
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
-	scheduleML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
-	sfML "github.com/mycontroller-org/server/v2/pkg/model/service_filter"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
+	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
+	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	"go.uber.org/zap"
 )
@@ -18,11 +18,11 @@ const (
 
 var (
 	serviceQueue *queueUtils.Queue
-	svcFilter    *sfML.ServiceFilter
+	svcFilter    *sfTY.ServiceFilter
 )
 
 // Start scheduler service listener
-func Start(filter *sfML.ServiceFilter) error {
+func Start(filter *sfTY.ServiceFilter) error {
 	svcFilter = filter
 	if svcFilter.Disabled {
 		zap.L().Info("schedule service disabled")
@@ -45,9 +45,9 @@ func Start(filter *sfML.ServiceFilter) error {
 
 	zap.L().Debug("scheduler started", zap.Any("filter", svcFilter))
 	// load schedulers
-	reqEvent := rsML.ServiceEvent{
-		Type:    rsML.TypeScheduler,
-		Command: rsML.CommandLoadAll,
+	reqEvent := rsTY.ServiceEvent{
+		Type:    rsTY.TypeScheduler,
+		Command: rsTY.CommandLoadAll,
 	}
 	topicResourceServer := mcbus.FormatTopic(mcbus.TopicServiceResourceServer)
 	return mcbus.Publish(topicResourceServer, reqEvent)
@@ -62,8 +62,8 @@ func Close() {
 	serviceQueue.Close()
 }
 
-func onServiceEvent(event *busML.BusData) {
-	reqEvent := &rsML.ServiceEvent{}
+func onServiceEvent(event *busTY.BusData) {
+	reqEvent := &rsTY.ServiceEvent{}
 	err := event.LoadData(reqEvent)
 	if err != nil {
 		zap.L().Warn("failed to convet to target type", zap.Error(err))
@@ -82,34 +82,34 @@ func onServiceEvent(event *busML.BusData) {
 
 // processServiceEvent from the queue
 func processServiceEvent(event interface{}) {
-	reqEvent := event.(*rsML.ServiceEvent)
+	reqEvent := event.(*rsTY.ServiceEvent)
 	zap.L().Debug("processing a request", zap.Any("event", reqEvent))
 
-	if reqEvent.Type != rsML.TypeScheduler {
+	if reqEvent.Type != rsTY.TypeScheduler {
 		zap.L().Warn("unsupported event type", zap.Any("event", reqEvent))
 	}
 
 	switch reqEvent.Command {
-	case rsML.CommandAdd:
+	case rsTY.CommandAdd:
 		cfg := getConfig(reqEvent)
-		if cfg != nil && helper.IsMine(svcFilter, cfg.Type, cfg.ID, cfg.Labels) {
+		if cfg != nil && filterUtils.IsMine(svcFilter, cfg.Type, cfg.ID, cfg.Labels) {
 			schedule(cfg)
 		}
 
-	case rsML.CommandRemove:
+	case rsTY.CommandRemove:
 		cfg := getConfig(reqEvent)
 		if cfg != nil {
 			unschedule(cfg.ID)
 		}
 
-	case rsML.CommandReload:
+	case rsTY.CommandReload:
 		cfg := getConfig(reqEvent)
-		if cfg != nil && helper.IsMine(svcFilter, cfg.Type, cfg.ID, cfg.Labels) {
+		if cfg != nil && filterUtils.IsMine(svcFilter, cfg.Type, cfg.ID, cfg.Labels) {
 			unschedule(cfg.ID)
 			schedule(cfg)
 		}
 
-	case rsML.CommandUnloadAll:
+	case rsTY.CommandUnloadAll:
 		unloadAll()
 
 	default:
@@ -117,8 +117,8 @@ func processServiceEvent(event interface{}) {
 	}
 }
 
-func getConfig(reqEvent *rsML.ServiceEvent) *scheduleML.Config {
-	cfg := &scheduleML.Config{}
+func getConfig(reqEvent *rsTY.ServiceEvent) *scheduleTY.Config {
+	cfg := &scheduleTY.Config{}
 	err := reqEvent.LoadData(cfg)
 	if err != nil {
 		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))

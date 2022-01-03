@@ -20,13 +20,13 @@ import (
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
-	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
+	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"github.com/mycontroller-org/server/v2/pkg/version"
-	pml "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -36,32 +36,32 @@ var (
 )
 
 var (
-	entitiesList = map[string]func(f []pml.Filter, p *pml.Pagination) (*pml.Result, error){
-		model.EntityGateway:        gatewayAPI.List,
-		model.EntityNode:           nodeAPI.List,
-		model.EntitySource:         sourceAPI.List,
-		model.EntityField:          fieldAPI.List,
-		model.EntityFirmware:       firmwareAPI.List,
-		model.EntityUser:           userAPI.List,
-		model.EntityDashboard:      dashboardAPI.List,
-		model.EntityForwardPayload: forwardPayloadAPI.List,
-		model.EntityHandler:        notificationHandlerAPI.List,
-		model.EntityTask:           taskAPI.List,
-		model.EntitySchedule:       scheduleAPI.List,
-		model.EntitySettings:       settingsAPI.List,
-		model.EntityDataRepository: dataRepositoryAPI.List,
+	entitiesList = map[string]func(f []storageTY.Filter, p *storageTY.Pagination) (*storageTY.Result, error){
+		types.EntityGateway:        gatewayAPI.List,
+		types.EntityNode:           nodeAPI.List,
+		types.EntitySource:         sourceAPI.List,
+		types.EntityField:          fieldAPI.List,
+		types.EntityFirmware:       firmwareAPI.List,
+		types.EntityUser:           userAPI.List,
+		types.EntityDashboard:      dashboardAPI.List,
+		types.EntityForwardPayload: forwardPayloadAPI.List,
+		types.EntityHandler:        notificationHandlerAPI.List,
+		types.EntityTask:           taskAPI.List,
+		types.EntitySchedule:       scheduleAPI.List,
+		types.EntitySettings:       settingsAPI.List,
+		types.EntityDataRepository: dataRepositoryAPI.List,
 	}
 )
 
 // ExecuteCopyFirmware copies firmware files
 func ExecuteCopyFirmware(targetDir string) error {
-	targetDirFullPath := fmt.Sprintf("%s%s", targetDir, model.DirectoryDataFirmware)
+	targetDirFullPath := fmt.Sprintf("%s%s", targetDir, types.DirectoryDataFirmware)
 	err := utils.CreateDir(targetDirFullPath)
 	if err != nil {
 		return err
 	}
 
-	files, err := utils.ListFiles(model.GetDataDirectoryFirmware())
+	files, err := utils.ListFiles(types.GetDataDirectoryFirmware())
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func ExecuteCopyFirmware(targetDir string) error {
 }
 
 func addBackupInformation(targetDir, storageExportType string) error {
-	backupDetails := &backupML.BackupDetails{
+	backupDetails := &backupTY.BackupDetails{
 		Filename:          path.Base(targetDir),
 		StorageExportType: storageExportType,
 		CreatedOn:         time.Now(),
@@ -90,9 +90,9 @@ func addBackupInformation(targetDir, storageExportType string) error {
 		return err
 	}
 
-	err = utils.WriteFile(targetDir, backupML.BackupDetailsFilename, dataBytes)
+	err = utils.WriteFile(targetDir, backupTY.BackupDetailsFilename, dataBytes)
 	if err != nil {
-		zap.L().Error("failed to write data to disk", zap.String("directory", targetDir), zap.String("filename", backupML.BackupDetailsFilename), zap.Error(err))
+		zap.L().Error("failed to write data to disk", zap.String("directory", targetDir), zap.String("filename", backupTY.BackupDetailsFilename), zap.Error(err))
 		return err
 	}
 	return nil
@@ -112,12 +112,12 @@ func ExecuteExportStorage(targetDir, storageExportType string) error {
 		return err
 	}
 
-	targetDirFullPath := fmt.Sprintf("%s%s", targetDir, model.DirectoryDataStorage)
+	targetDirFullPath := fmt.Sprintf("%s%s", targetDir, types.DirectoryDataStorage)
 
 	for entityName := range entitiesList {
 		listFn := entitiesList[entityName]
-		p := &pml.Pagination{
-			Limit: backupML.LimitPerFile, SortBy: []pml.Sort{{Field: model.KeyFieldID, OrderBy: "asc"}}, Offset: 0,
+		p := &storageTY.Pagination{
+			Limit: backupTY.LimitPerFile, SortBy: []storageTY.Sort{{Field: types.KeyFieldID, OrderBy: "asc"}}, Offset: 0,
 		}
 		offset := int64(0)
 		for {
@@ -130,7 +130,7 @@ func ExecuteExportStorage(targetDir, storageExportType string) error {
 
 			dump(targetDirFullPath, entityName, int(result.Offset), result.Data, storageExportType)
 
-			offset += backupML.LimitPerFile
+			offset += backupTY.LimitPerFile
 			if result.Count < offset {
 				break
 			}
@@ -141,11 +141,11 @@ func ExecuteExportStorage(targetDir, storageExportType string) error {
 
 func dump(targetDir, entityName string, index int, data interface{}, storageExportType string) {
 	// update user to userPassword to keep the password on the json export
-	if entityName == model.EntityUser {
-		if users, ok := data.(*[]userML.User); ok {
-			usersWithPasswd := make([]userML.UserWithPassword, 0)
+	if entityName == types.EntityUser {
+		if users, ok := data.(*[]userTY.User); ok {
+			usersWithPasswd := make([]userTY.UserWithPassword, 0)
 			for _, user := range *users {
-				usersWithPasswd = append(usersWithPasswd, userML.UserWithPassword(user))
+				usersWithPasswd = append(usersWithPasswd, userTY.UserWithPassword(user))
 			}
 			if len(usersWithPasswd) > 0 {
 				data = usersWithPasswd
@@ -157,13 +157,13 @@ func dump(targetDir, entityName string, index int, data interface{}, storageExpo
 	var dataBytes []byte
 	var err error
 	switch storageExportType {
-	case backupML.TypeJSON:
+	case backupTY.TypeJSON:
 		dataBytes, err = json.Marshal(data)
 		if err != nil {
 			zap.L().Error("failed to convert to target format", zap.String("format", storageExportType), zap.Error(err))
 			return
 		}
-	case backupML.TypeYAML:
+	case backupTY.TypeYAML:
 		dataBytes, err = yaml.Marshal(data)
 		if err != nil {
 			zap.L().Error("failed to convert to target format", zap.String("format", storageExportType), zap.Error(err))

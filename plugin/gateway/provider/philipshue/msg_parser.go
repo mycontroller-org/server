@@ -5,37 +5,37 @@ import (
 	"fmt"
 	"strings"
 
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
 // Post func
-func (p *Provider) Post(msg *msgML.Message) error {
+func (p *Provider) Post(msg *msgTY.Message) error {
 	if len(msg.Payloads) == 0 {
 		return errors.New("there is no payload details on the message")
 	}
 
 	payload := msg.Payloads[0]
 
-	if msg.Type == msgML.TypeAction {
+	if msg.Type == msgTY.TypeAction {
 		switch payload.Key {
-		case nodeML.ActionRefreshNodeInfo:
+		case nodeTY.ActionRefreshNodeInfo:
 			p.actionRefreshNodeInfo(msg.NodeID)
 
-		case gwType.ActionDiscoverNodes:
+		case gwTY.ActionDiscoverNodes:
 			p.actionDiscover()
 		}
-	} else if msg.Type == msgML.TypeSet && strings.HasPrefix(msg.SourceID, "state") {
+	} else if msg.Type == msgTY.TypeSet && strings.HasPrefix(msg.SourceID, "state") {
 		p.updateState(msg.NodeID, &payload)
 	}
 	return nil
 }
 
 // ProcessReceived implementation
-func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
+func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
 	// not using the queue
 	return nil, nil
 }
@@ -50,7 +50,7 @@ func getID(nodeID string) (int, error) {
 	return int(intId), nil
 }
 
-func (p *Provider) updateState(nodeID string, data *msgML.Payload) {
+func (p *Provider) updateState(nodeID string, data *msgTY.Payload) {
 	lightID, err := getID(nodeID)
 	if err != nil {
 		zap.L().Error("error on parsing light id", zap.Error(err))

@@ -6,13 +6,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
 	cfg "github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	sch "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/service/logger"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
@@ -42,13 +42,13 @@ func InitBasicServices(initCustomServices func(), closeCustomServices func()) {
 	sch.Init()           // scheduler
 
 	// load root directories
-	model.UpdateDirecotries(cfg.Directories)
+	types.UpdateDirecotries(cfg.Directories)
 	// create root directories
-	err = utils.CreateDir(model.GetDirectoryDataRoot())
+	err = utils.CreateDir(types.GetDirectoryDataRoot())
 	if err != nil {
 		zap.L().Fatal("failed to create root directory", zap.Error(err))
 	}
-	err = utils.CreateDir(model.GetDirectoryLogsRoot())
+	err = utils.CreateDir(types.GetDirectoryLogsRoot())
 	if err != nil {
 		zap.L().Fatal("failed to create root directory", zap.Error(err))
 	}
@@ -79,7 +79,7 @@ func handleShutdownSignal(closeCustomServices func()) {
 
 // handleShutdownEvent func
 func handleShutdownEvent(closeCustomServices func()) {
-	shutdownFunc := func(data *busML.BusData) {
+	shutdownFunc := func(data *busTY.BusData) {
 		zap.L().Info("shutdown initiated..", zap.Any("signal", "internal event"))
 		triggerShutdown(closeCustomServices)
 	}

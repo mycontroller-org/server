@@ -6,15 +6,15 @@ import (
 	"time"
 
 	paho "github.com/eclipse/paho.mqtt.golang"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	gwml "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	msgml "github.com/mycontroller-org/server/v2/pkg/model/message"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	gwptcl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
+	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	msglogger "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/message_logger"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 
 	"go.uber.org/zap"
 )
@@ -40,16 +40,16 @@ type Config struct {
 
 // Endpoint data
 type Endpoint struct {
-	GatewayCfg     *gwml.Config
+	GatewayCfg     *gwTY.Config
 	Config         Config
-	receiveMsgFunc func(rm *msgml.RawMessage) error
+	receiveMsgFunc func(rm *msgTY.RawMessage) error
 	Client         paho.Client
 	messageLogger  msglogger.MessageLogger
 	txPreDelay     time.Duration
 }
 
 // New mqtt driver
-func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.RawMessage) error) (*Endpoint, error) {
+func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.RawMessage) error) (*Endpoint, error) {
 	zap.L().Debug("Init protocol", zap.String("gateway", gwCfg.ID))
 	start := time.Now()
 	cfg := Config{}
@@ -108,7 +108,7 @@ func New(gwCfg *gwml.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgml.R
 }
 
 // messageFormatter returns the message as string format
-func messageFormatter(rawMsg *msgml.RawMessage) string {
+func messageFormatter(rawMsg *msgTY.RawMessage) string {
 	direction := "Sent"
 	if rawMsg.IsReceived {
 		direction = "Recd"
@@ -117,15 +117,15 @@ func messageFormatter(rawMsg *msgml.RawMessage) string {
 		"%v\t%s\t%v\t\t\t%s\n",
 		rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"),
 		direction,
-		rawMsg.Others.Get(gwptcl.KeyMqttTopic),
+		rawMsg.Others.Get(gwPtl.KeyMqttTopic),
 		convertor.ToString(rawMsg.Data),
 	)
 }
 
 func (ep *Endpoint) onConnectionHandler(c paho.Client) {
 	zap.L().Debug("MQTT connection success", zap.Any("gateway", ep.GatewayCfg.ID))
-	state := model.State{
-		Status:  model.StatusUp,
+	state := types.State{
+		Status:  types.StatusUp,
 		Message: "Connected successfully",
 		Since:   time.Now(),
 	}
@@ -134,8 +134,8 @@ func (ep *Endpoint) onConnectionHandler(c paho.Client) {
 
 func (ep *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
 	zap.L().Error("MQTT connection lost", zap.Any("gateway", ep.GatewayCfg.ID), zap.Error(err))
-	state := model.State{
-		Status:  model.StatusDown,
+	state := types.State{
+		Status:  types.StatusDown,
 		Message: err.Error(),
 		Since:   time.Now(),
 	}
@@ -143,9 +143,9 @@ func (ep *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
 }
 
 // Write publishes a payload
-func (ep *Endpoint) Write(rawMsg *msgml.RawMessage) error {
+func (ep *Endpoint) Write(rawMsg *msgTY.RawMessage) error {
 	zap.L().Debug("About to send a message", zap.Any("rawMessage", rawMsg))
-	topics := rawMsg.Others.Get(gwptcl.KeyMqttTopic).([]string)
+	topics := rawMsg.Others.Get(gwPtl.KeyMqttTopic).([]string)
 	qos := byte(ep.Config.QoS)
 	rawMsg.IsReceived = false
 
@@ -154,7 +154,7 @@ func (ep *Endpoint) Write(rawMsg *msgml.RawMessage) error {
 	for _, t := range topics {
 		_topic := fmt.Sprintf("%s/%s", ep.Config.Publish, t)
 		rawMsgCloned := rawMsg.Clone()
-		rawMsgCloned.Others.Set(gwptcl.KeyMqttTopic, _topic, nil)
+		rawMsgCloned.Others.Set(gwPtl.KeyMqttTopic, _topic, nil)
 		rawMsgCloned.Timestamp = time.Now()
 		ep.messageLogger.AsyncWrite(rawMsgCloned)
 
@@ -179,9 +179,9 @@ func (ep *Endpoint) Close() error {
 
 func (ep *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 	return func(c paho.Client, message paho.Message) {
-		rawMsg := msgml.NewRawMessage(true, message.Payload())
-		rawMsg.Others.Set(gwptcl.KeyMqttTopic, message.Topic(), nil)
-		rawMsg.Others.Set(gwptcl.KeyMqttQoS, int(message.Qos()), nil)
+		rawMsg := msgTY.NewRawMessage(true, message.Payload())
+		rawMsg.Others.Set(gwPtl.KeyMqttTopic, message.Topic(), nil)
+		rawMsg.Others.Set(gwPtl.KeyMqttQoS, int(message.Qos()), nil)
 
 		ep.messageLogger.AsyncWrite(rawMsg)
 		err := ep.receiveMsgFunc(rawMsg)

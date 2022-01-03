@@ -7,13 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
-	storage "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storagePluginTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -29,12 +29,12 @@ type Config struct {
 
 // Client struct
 type Client struct {
-	handlerCfg *handlerType.Config
+	handlerCfg *handlerTY.Config
 	cfg        *Config
 }
 
 // Init disk backup client
-func Init(cfg *handlerType.Config, spec map[string]interface{}) (*Client, error) {
+func Init(cfg *handlerTY.Config, spec map[string]interface{}) (*Client, error) {
 	config := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, spec, config)
 	if err != nil {
@@ -64,14 +64,14 @@ func (c *Client) Close() error {
 }
 
 // State func
-func (c *Client) State() *model.State {
+func (c *Client) State() *types.State {
 	if c.handlerCfg != nil {
 		if c.handlerCfg.State == nil {
-			c.handlerCfg.State = &model.State{}
+			c.handlerCfg.State = &types.State{}
 		}
 		return c.handlerCfg.State
 	}
-	return &model.State{}
+	return &types.State{}
 }
 
 // Post func
@@ -83,16 +83,16 @@ func (c *Client) Post(data map[string]interface{}) error {
 			continue
 		}
 
-		genericData := handlerType.GenericData{}
+		genericData := handlerTY.GenericData{}
 		err := json.Unmarshal([]byte(stringValue), &genericData)
 		if err != nil {
 			continue
 		}
-		if genericData.Type != handlerType.DataTypeBackup {
+		if genericData.Type != handlerTY.DataTypeBackup {
 			continue
 		}
 
-		backupConfigData := handlerType.BackupData{}
+		backupConfigData := handlerTY.BackupData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &backupConfigData)
 		if err != nil {
 			zap.L().Error("error on converting backup config data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
@@ -197,13 +197,13 @@ func (c *Client) executeRetentionCount(targetDir, prefix, targetExportType strin
 	}
 
 	// sort by filename
-	sortBy := []storage.Sort{{Field: "name", OrderBy: storage.SortByDESC}}
-	ordered, _ := helper.Sort(matchingFiles, &storage.Pagination{SortBy: sortBy, Limit: -1, Offset: 0})
+	sortBy := []storagePluginTY.Sort{{Field: "name", OrderBy: storagePluginTY.SortByDESC}}
+	ordered, _ := helper.Sort(matchingFiles, &storagePluginTY.Pagination{SortBy: sortBy, Limit: -1, Offset: 0})
 
 	if len(ordered) > retentionCount {
 		deleteFiles := ordered[retentionCount:]
 		for _, f := range deleteFiles {
-			if file, ok := f.(model.File); ok {
+			if file, ok := f.(types.File); ok {
 				zap.L().Debug("deleting a file", zap.Any("file", file))
 				filename := fmt.Sprintf("%s/%s", targetDir, file.Name)
 				err = utils.RemoveFileOrEmptyDir(filename)

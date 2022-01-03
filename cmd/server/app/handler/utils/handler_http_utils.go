@@ -7,8 +7,8 @@ import (
 
 	"github.com/gorilla/mux"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	webHandlerML "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	webHandlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -31,7 +31,7 @@ func ReceivedQueryMap(request *http.Request) (map[string][]string, error) {
 }
 
 // Params func
-func Params(request *http.Request) ([]stgType.Filter, *stgType.Pagination, error) {
+func Params(request *http.Request) ([]storageTY.Filter, *storageTY.Pagination, error) {
 	f := mux.Vars(request)
 	q := request.URL.Query()
 	for key, value := range q {
@@ -40,10 +40,10 @@ func Params(request *http.Request) ([]stgType.Filter, *stgType.Pagination, error
 
 	// get Pagination arguments
 	// start with pagination default values
-	p := stgType.Pagination{
+	p := storageTY.Pagination{
 		Limit:  50,
 		Offset: 0,
-		SortBy: []stgType.Sort{},
+		SortBy: []storageTY.Sort{},
 	}
 
 	lFunc := func(key string) (int64, error) {
@@ -69,7 +69,7 @@ func Params(request *http.Request) ([]stgType.Filter, *stgType.Pagination, error
 
 	// fetch sort options
 	if sr, ok := f["sortBy"]; ok {
-		s := &[]stgType.Sort{}
+		s := &[]storageTY.Sort{}
 		err := json.Unmarshal([]byte(sr), s)
 		if err != nil {
 			return nil, nil, err
@@ -81,11 +81,11 @@ func Params(request *http.Request) ([]stgType.Filter, *stgType.Pagination, error
 	delete(f, "offset")
 	delete(f, "sortBy")
 
-	filters := make([]stgType.Filter, 0)
+	filters := make([]storageTY.Filter, 0)
 
 	for k, v := range f {
 		if k != "filter" {
-			filters = append(filters, stgType.Filter{
+			filters = append(filters, storageTY.Filter{
 				Key:   k,
 				Value: v,
 			})
@@ -93,7 +93,7 @@ func Params(request *http.Request) ([]stgType.Filter, *stgType.Pagination, error
 	}
 
 	if fj, ok := f["filter"]; ok {
-		fs := &[]stgType.Filter{}
+		fs := &[]storageTY.Filter{}
 		err := json.Unmarshal([]byte(fj), fs)
 		if err != nil {
 			return nil, nil, err
@@ -115,7 +115,7 @@ func WriteResponse(w http.ResponseWriter, data []byte) {
 }
 
 func PostErrorResponse(w http.ResponseWriter, message string, code int) {
-	response := &webHandlerML.Response{
+	response := &webHandlerTY.Response{
 		Success: false,
 		Message: message,
 	}

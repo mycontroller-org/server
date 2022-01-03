@@ -1,12 +1,12 @@
 package protocol
 
 import (
-	msgml "github.com/mycontroller-org/server/v2/pkg/model/message"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 )
 
 // Protocol interface
 type Protocol interface {
-	Write(rawMsg *msgml.RawMessage) error // write a message on a specified protocol
+	Write(rawMsg *msgTY.RawMessage) error // write a message on a specified protocol
 	Close() error                         // close the protocol connection
 }
 

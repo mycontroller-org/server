@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"net/url"
 
-	gwml "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	msgml "github.com/mycontroller-org/server/v2/pkg/model/message"
-	ut "github.com/mycontroller-org/server/v2/pkg/utils"
-	gwptcl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 )
 
 // Config details
@@ -24,7 +24,7 @@ type Config struct {
 
 // Endpoint data
 type Endpoint struct {
-	GwCfg     *gwml.Config
+	GwCfg     *gwTY.Config
 	Config    Config
 	Client    *http.Client
 	BaseURL   *url.URL
@@ -49,9 +49,9 @@ type ResponseConfig struct {
 }
 
 // New ethernet driver
-func New(gwCfg *gwml.Config, apiPrefix string) (*Endpoint, error) {
+func New(gwCfg *gwTY.Config, apiPrefix string) (*Endpoint, error) {
 	cfg := Config{}
-	err := ut.MapToStruct(ut.TagNameNone, gwCfg.Provider, &cfg)
+	err := utils.MapToStruct(utils.TagNameNone, gwCfg.Provider, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -98,11 +98,11 @@ func New(gwCfg *gwml.Config, apiPrefix string) (*Endpoint, error) {
 }
 
 // Write sends a payload
-func (ep *Endpoint) Write(rawMsg *msgml.RawMessage) error {
-	requestRaw := rawMsg.Others.Get(gwptcl.KeyHTTPRequestConf)
+func (ep *Endpoint) Write(rawMsg *msgTY.RawMessage) error {
+	requestRaw := rawMsg.Others.Get(gwPtl.KeyHTTPRequestConf)
 
 	if requestRaw == nil {
-		return fmt.Errorf("There is no requestConfig found. Have you supplied cfg with key: %s?", gwptcl.KeyHTTPRequestConf)
+		return fmt.Errorf("There is no requestConfig found. Have you supplied cfg with key: %s?", gwPtl.KeyHTTPRequestConf)
 	}
 	reqCfg, ok := requestRaw.(RequestConfig)
 	if !ok {

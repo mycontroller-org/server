@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -32,8 +32,8 @@ func initMessageListener() error {
 	return nil
 }
 
-func onMessageReceive(event *busML.BusData) {
-	msg := &handlerType.MessageWrapper{}
+func onMessageReceive(event *busTY.BusData) {
+	msg := &handlerTY.MessageWrapper{}
 	err := event.LoadData(msg)
 	if err != nil {
 		zap.L().Warn("failed to convet to target type", zap.Error(err))
@@ -57,7 +57,7 @@ func closeMessageListener() {
 }
 
 func processHandlerMessage(item interface{}) {
-	msg := item.(*handlerType.MessageWrapper)
+	msg := item.(*handlerTY.MessageWrapper)
 	start := time.Now()
 
 	zap.L().Debug("starting message processing", zap.Any("handlerID", msg.ID))
@@ -73,10 +73,10 @@ func processHandlerMessage(item interface{}) {
 	err := handler.Post(msg.Data)
 	if err != nil {
 		zap.L().Warn("failed to execute handler", zap.Any("handlerID", msg.ID), zap.Error(err))
-		state.Status = model.StatusError
+		state.Status = types.StatusError
 		state.Message = err.Error()
 	} else {
-		state.Status = model.StatusOk
+		state.Status = types.StatusOk
 		state.Message = fmt.Sprintf("execution time: %s", time.Since(start).String())
 	}
 

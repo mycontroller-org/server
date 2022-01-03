@@ -6,9 +6,9 @@ import (
 	"time"
 
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
@@ -30,7 +30,7 @@ func init() {
 type Status struct {
 	Hostname          string           `json:"hostname"`
 	DocumentationURL  string           `json:"documentationUrl"`
-	Login             settingsML.Login `json:"login"`
+	Login             settingsTY.Login `json:"login"`
 	StartTime         time.Time        `json:"startTime"`
 	ServerTime        time.Time        `json:"serverTime"`
 	Uptime            uint64           `json:"uptime"` // in seconds
@@ -42,7 +42,7 @@ func get(minimal bool) Status {
 	status := Status{
 		DocumentationURL: store.CFG.Web.DocumentationURL,
 	}
-	status.MetricsDBDisabled = store.CFG.Database.Metric.GetBool(model.KeyDisabled)
+	status.MetricsDBDisabled = store.CFG.Database.Metric.GetBool(types.KeyDisabled)
 
 	if !minimal {
 		hostname, err := os.Hostname()
@@ -58,7 +58,7 @@ func get(minimal bool) Status {
 	}
 
 	// include login message
-	login := settingsML.Login{}
+	login := settingsTY.Login{}
 	sysSettings, err := settingsAPI.GetSystemSettings()
 	if err != nil {
 		zap.L().Error("error on getting system settings", zap.Error(err))

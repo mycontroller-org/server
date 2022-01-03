@@ -6,38 +6,38 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	settingsML "github.com/mycontroller-org/server/v2/pkg/model/settings"
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
-	result := make([]settingsML.Settings, 0)
-	return store.STORAGE.Find(model.EntitySettings, &result, filters, pagination)
+func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	result := make([]settingsTY.Settings, 0)
+	return store.STORAGE.Find(types.EntitySettings, &result, filters, pagination)
 }
 
 // Save a setting details
-func Save(settings *settingsML.Settings) error {
+func Save(settings *settingsTY.Settings) error {
 	if settings.ID == "" {
 		return errors.New("id should not be nil")
 	}
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Value: settings.ID},
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: settings.ID},
 	}
-	return store.STORAGE.Upsert(model.EntitySettings, settings, filters)
+	return store.STORAGE.Upsert(types.EntitySettings, settings, filters)
 }
 
 // GetByID returns a item
-func GetByID(ID string) (*settingsML.Settings, error) {
-	result := &settingsML.Settings{}
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Operator: stgType.OperatorEqual, Value: ID},
+func GetByID(ID string) (*settingsTY.Settings, error) {
+	result := &settingsTY.Settings{}
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Operator: storageTY.OperatorEqual, Value: ID},
 	}
-	err := store.STORAGE.FindOne(model.EntitySettings, result, filters)
+	err := store.STORAGE.FindOne(types.EntitySettings, result, filters)
 	if err != nil {
 		return nil, err
 	}
@@ -45,24 +45,24 @@ func GetByID(ID string) (*settingsML.Settings, error) {
 	// convert map data to struct
 	var specStruct interface{}
 	switch result.ID {
-	case settingsML.KeySystemSettings:
-		settings := settingsML.SystemSettings{}
+	case settingsTY.KeySystemSettings:
+		settings := settingsTY.SystemSettings{}
 		err = utils.MapToStruct(utils.TagNameNone, result.Spec, &settings)
 		if err != nil {
 			return nil, err
 		}
 		specStruct = settings
 
-	case settingsML.KeySystemJobs:
-		settings := settingsML.SystemJobsSettings{}
+	case settingsTY.KeySystemJobs:
+		settings := settingsTY.SystemJobsSettings{}
 		err = utils.MapToStruct(utils.TagNameNone, result.Spec, &settings)
 		if err != nil {
 			return nil, err
 		}
 		specStruct = settings
 
-	case settingsML.KeySystemBackupLocations:
-		exportLocations := settingsML.BackupLocations{}
+	case settingsTY.KeySystemBackupLocations:
+		exportLocations := settingsTY.BackupLocations{}
 		err = utils.MapToStruct(utils.TagNameNone, result.Spec, &exportLocations)
 		if err != nil {
 			return nil, err
@@ -93,16 +93,16 @@ func GetByID(ID string) (*settingsML.Settings, error) {
 }
 
 // UpdateSettings config into disk
-func UpdateSettings(settings *settingsML.Settings) error {
+func UpdateSettings(settings *settingsTY.Settings) error {
 	if settings.ID == "" {
 		return errors.New("id cannot be empty")
 	}
 
 	switch settings.ID {
-	case settingsML.KeySystemSettings:
+	case settingsTY.KeySystemSettings:
 		return UpdateSystemSettings(settings)
 
-	case settingsML.KeySystemJobs, settingsML.KeyVersion, settingsML.KeySystemBackupLocations, settingsML.KeyAnalytics:
+	case settingsTY.KeySystemJobs, settingsTY.KeyVersion, settingsTY.KeySystemBackupLocations, settingsTY.KeyAnalytics:
 		if !configuration.PauseModifiedOnUpdate.IsSet() {
 			settings.ModifiedOn = time.Now()
 		}
@@ -115,12 +115,12 @@ func UpdateSettings(settings *settingsML.Settings) error {
 }
 
 // GetSystemJobs details
-func GetSystemJobs() (*settingsML.SystemJobsSettings, error) {
-	settings, err := GetByID(settingsML.KeySystemJobs)
+func GetSystemJobs() (*settingsTY.SystemJobsSettings, error) {
+	settings, err := GetByID(settingsTY.KeySystemJobs)
 	if err != nil {
 		return nil, err
 	}
-	systemJobs := &settingsML.SystemJobsSettings{}
+	systemJobs := &settingsTY.SystemJobsSettings{}
 	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, systemJobs)
 	if err != nil {
 		return nil, err
@@ -129,8 +129,8 @@ func GetSystemJobs() (*settingsML.SystemJobsSettings, error) {
 }
 
 // UpdateSystemSettings config into disk
-func UpdateSystemSettings(settings *settingsML.Settings) error {
-	settings.ID = settingsML.KeySystemSettings
+func UpdateSystemSettings(settings *settingsTY.Settings) error {
+	settings.ID = settingsTY.KeySystemSettings
 	if !configuration.PauseModifiedOnUpdate.IsSet() {
 		settings.ModifiedOn = time.Now()
 	}
@@ -140,7 +140,7 @@ func UpdateSystemSettings(settings *settingsML.Settings) error {
 	if err != nil {
 		return err
 	}
-	systemSettings := &settingsML.SystemSettings{}
+	systemSettings := &settingsTY.SystemSettings{}
 	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, systemSettings)
 	if err != nil {
 		return err
@@ -157,14 +157,14 @@ func UpdateSystemSettings(settings *settingsML.Settings) error {
 }
 
 // UpdateGeoLocation updates the location details
-func UpdateGeoLocation(location *settingsML.GeoLocation) error {
-	settings, err := GetByID(settingsML.KeySystemSettings)
+func UpdateGeoLocation(location *settingsTY.GeoLocation) error {
+	settings, err := GetByID(settingsTY.KeySystemSettings)
 	if err != nil {
 		return err
 	}
 
 	// convert spec to system settings
-	systemSettings := &settingsML.SystemSettings{}
+	systemSettings := &settingsTY.SystemSettings{}
 	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, systemSettings)
 	if err != nil {
 		return err
@@ -183,14 +183,14 @@ func UpdateGeoLocation(location *settingsML.GeoLocation) error {
 }
 
 // GetGeoLocation returns configured latitude and longitude settings to calculate sunrise and sunset
-func GetGeoLocation() (*settingsML.GeoLocation, error) {
-	settings, err := GetByID(settingsML.KeySystemSettings)
+func GetGeoLocation() (*settingsTY.GeoLocation, error) {
+	settings, err := GetByID(settingsTY.KeySystemSettings)
 	if err != nil {
 		return nil, err
 	}
 
 	// convert spec to system settings
-	systemSettings := &settingsML.SystemSettings{}
+	systemSettings := &settingsTY.SystemSettings{}
 	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, systemSettings)
 	if err != nil {
 		return nil, err
@@ -201,14 +201,14 @@ func GetGeoLocation() (*settingsML.GeoLocation, error) {
 }
 
 // GetBackupLocations returns locations set by user
-func GetBackupLocations() (*settingsML.BackupLocations, error) {
-	settings, err := GetByID(settingsML.KeySystemBackupLocations)
+func GetBackupLocations() (*settingsTY.BackupLocations, error) {
+	settings, err := GetByID(settingsTY.KeySystemBackupLocations)
 	if err != nil {
 		return nil, err
 	}
 
 	// convert spec to BackupLocations
-	systemSettings := &settingsML.BackupLocations{}
+	systemSettings := &settingsTY.BackupLocations{}
 	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, systemSettings)
 	if err != nil {
 		return nil, err
@@ -218,25 +218,25 @@ func GetBackupLocations() (*settingsML.BackupLocations, error) {
 }
 
 // update is a common function to update a document in settings entity
-func update(settings *settingsML.Settings) error {
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Value: settings.ID},
+func update(settings *settingsTY.Settings) error {
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: settings.ID},
 	}
 	if !configuration.PauseModifiedOnUpdate.IsSet() {
 		settings.ModifiedOn = time.Now()
 	}
-	return store.STORAGE.Upsert(model.EntitySettings, settings, filters)
+	return store.STORAGE.Upsert(types.EntitySettings, settings, filters)
 }
 
 // GetAnalytics returns analytics data
-func GetAnalytics() (*settingsML.AnalyticsConfig, error) {
-	settings, err := GetByID(settingsML.KeyAnalytics)
+func GetAnalytics() (*settingsTY.AnalyticsConfig, error) {
+	settings, err := GetByID(settingsTY.KeyAnalytics)
 	if err != nil {
 		return nil, err
 	}
 
 	// convert spec to analytics data
-	analyticsData := &settingsML.AnalyticsConfig{}
+	analyticsData := &settingsTY.AnalyticsConfig{}
 	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, analyticsData)
 	if err != nil {
 		return nil, err
@@ -246,14 +246,14 @@ func GetAnalytics() (*settingsML.AnalyticsConfig, error) {
 }
 
 // GetSystemSettings returns system settings data
-func GetSystemSettings() (*settingsML.SystemSettings, error) {
-	settings, err := GetByID(settingsML.KeySystemSettings)
+func GetSystemSettings() (*settingsTY.SystemSettings, error) {
+	settings, err := GetByID(settingsTY.KeySystemSettings)
 	if err != nil {
 		return nil, err
 	}
 
 	// convert spec to analytics data
-	systemSettings := &settingsML.SystemSettings{}
+	systemSettings := &settingsTY.SystemSettings{}
 	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, systemSettings)
 	if err != nil {
 		return nil, err

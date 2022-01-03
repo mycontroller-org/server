@@ -9,8 +9,8 @@ import (
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	backupRestoreAPI "github.com/mycontroller-org/server/v2/pkg/api/backup"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	backupML "github.com/mycontroller-org/server/v2/pkg/model/backup"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterBackupRestoreRoutes registers backup/restore api
@@ -45,7 +45,7 @@ func listBackupFiles(w http.ResponseWriter, r *http.Request) {
 
 func deleteBackupFile(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			count, err := backupRestoreAPI.Delete(ids)
 			if err != nil {
@@ -63,9 +63,9 @@ func runRestore(w http.ResponseWriter, r *http.Request) {
 
 	id := r.URL.Query().Get("id")
 
-	filter := stgType.Filter{Key: "id", Operator: stgType.OperatorEqual, Value: id}
+	filter := storageTY.Filter{Key: "id", Operator: storageTY.OperatorEqual, Value: id}
 
-	result, err := backupRestoreAPI.List([]stgType.Filter{filter}, nil)
+	result, err := backupRestoreAPI.List([]storageTY.Filter{filter}, nil)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -82,7 +82,7 @@ func runRestore(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file, ok := data[0].(backupML.BackupFile)
+	file, ok := data[0].(backupTY.BackupFile)
 	if !ok {
 		http.Error(w, "error to convert to ExportedFile", 500)
 		return
@@ -98,7 +98,7 @@ func runRestore(w http.ResponseWriter, r *http.Request) {
 }
 
 func runBackup(w http.ResponseWriter, r *http.Request) {
-	entity := &backupML.OnDemandBackupConfig{}
+	entity := &backupTY.OnDemandBackupConfig{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)

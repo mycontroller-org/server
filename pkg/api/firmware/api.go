@@ -9,50 +9,50 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
-	firmwareML "github.com/mycontroller-org/server/v2/pkg/model/firmware"
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
 // List by filter and pagination
-func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
-	result := make([]firmwareML.Firmware, 0)
-	return store.STORAGE.Find(model.EntityFirmware, &result, filters, pagination)
+func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	result := make([]firmwareTY.Firmware, 0)
+	return store.STORAGE.Find(types.EntityFirmware, &result, filters, pagination)
 }
 
 // Get returns a item
-func Get(filters []stgType.Filter) (firmwareML.Firmware, error) {
-	result := firmwareML.Firmware{}
-	err := store.STORAGE.FindOne(model.EntityFirmware, &result, filters)
+func Get(filters []storageTY.Filter) (firmwareTY.Firmware, error) {
+	result := firmwareTY.Firmware{}
+	err := store.STORAGE.FindOne(types.EntityFirmware, &result, filters)
 	return result, err
 }
 
 // GetByID returns a firmware details by ID
-func GetByID(id string) (firmwareML.Firmware, error) {
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Value: id},
+func GetByID(id string) (firmwareTY.Firmware, error) {
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: id},
 	}
-	result := firmwareML.Firmware{}
-	err := store.STORAGE.FindOne(model.EntityFirmware, &result, filters)
+	result := firmwareTY.Firmware{}
+	err := store.STORAGE.FindOne(types.EntityFirmware, &result, filters)
 	return result, err
 }
 
 // Save config into disk
-func Save(firmware *firmwareML.Firmware, keepFile bool) error {
-	eventType := eventML.TypeUpdated
+func Save(firmware *firmwareTY.Firmware, keepFile bool) error {
+	eventType := eventTY.TypeUpdated
 	if firmware.ID == "" {
 		firmware.ID = utils.RandID()
-		eventType = eventML.TypeCreated
+		eventType = eventTY.TypeCreated
 	}
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Value: firmware.ID},
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: firmware.ID},
 	}
 
 	if !configuration.PauseModifiedOnUpdate.IsSet() {
@@ -66,28 +66,28 @@ func Save(firmware *firmwareML.Firmware, keepFile bool) error {
 		}
 	}
 
-	err := store.STORAGE.Upsert(model.EntityFirmware, firmware, filters)
+	err := store.STORAGE.Upsert(types.EntityFirmware, firmware, filters)
 	if err != nil {
 		return err
 	}
-	busUtils.PostEvent(mcbus.TopicEventFirmware, eventType, model.EntityFirmware, firmware)
+	busUtils.PostEvent(mcbus.TopicEventFirmware, eventType, types.EntityFirmware, firmware)
 	return nil
 }
 
 // Delete firmwares
 func Delete(ids []string) (int64, error) {
-	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: ids}}
-	pagination := &stgType.Pagination{Limit: 100}
+	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids}}
+	pagination := &storageTY.Pagination{Limit: 100}
 
 	// delete firmwares
 	response, err := List(filters, pagination)
 	if err != nil {
 		return 0, err
 	}
-	firmwares := *response.Data.(*[]firmwareML.Firmware)
+	firmwares := *response.Data.(*[]firmwareTY.Firmware)
 	for index := 0; index < len(firmwares); index++ {
 		firmware := firmwares[index]
-		firmwareDirectory := model.GetDataDirectoryFirmware()
+		firmwareDirectory := types.GetDataDirectoryFirmware()
 		filename := fmt.Sprintf("%s/%s", firmwareDirectory, firmware.File.InternalName)
 		err := os.Remove(filename)
 		if err != nil {
@@ -96,7 +96,7 @@ func Delete(ids []string) (int64, error) {
 	}
 
 	// delete entries
-	return store.STORAGE.Delete(model.EntityFirmware, filters)
+	return store.STORAGE.Delete(types.EntityFirmware, filters)
 }
 
 // Upload a firmware file
@@ -112,7 +112,7 @@ func Upload(sourceFile multipart.File, id, filename string) error {
 	extension := filepath.Ext(filename)
 	newFilename := fmt.Sprintf("%s%s", id, extension)
 
-	firmwareDirectory := model.GetDataDirectoryFirmware()
+	firmwareDirectory := types.GetDataDirectoryFirmware()
 	err = utils.CreateDir(firmwareDirectory)
 	if err != nil {
 		return err

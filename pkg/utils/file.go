@@ -8,7 +8,7 @@ import (
 	"path"
 	"path/filepath"
 
-	ml "github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	"go.uber.org/zap"
 )
 
@@ -148,7 +148,7 @@ func ReadFile(dir, filename string) ([]byte, error) {
 }
 
 // ListFiles func
-func ListFiles(dir string) ([]ml.File, error) {
+func ListFiles(dir string) ([]types.File, error) {
 	err := CreateDir(dir)
 	if err != nil {
 		return nil, err
@@ -158,10 +158,10 @@ func ListFiles(dir string) ([]ml.File, error) {
 		return nil, err
 	}
 
-	items := make([]ml.File, 0)
+	items := make([]types.File, 0)
 	for _, file := range files {
 		if !file.IsDir() {
-			f := ml.File{
+			f := types.File{
 				Name:         file.Name(),
 				Size:         file.Size(),
 				ModifiedTime: file.ModTime(),
@@ -175,7 +175,7 @@ func ListFiles(dir string) ([]ml.File, error) {
 }
 
 // ListDirs func
-func ListDirs(dir string) ([]ml.File, error) {
+func ListDirs(dir string) ([]types.File, error) {
 	err := CreateDir(dir)
 	if err != nil {
 		return nil, err
@@ -185,10 +185,10 @@ func ListDirs(dir string) ([]ml.File, error) {
 		return nil, err
 	}
 
-	items := make([]ml.File, 0)
+	items := make([]types.File, 0)
 	for _, file := range files {
 		if file.IsDir() {
-			f := ml.File{
+			f := types.File{
 				Name:         file.Name(),
 				Size:         file.Size(),
 				ModifiedTime: file.ModTime(),

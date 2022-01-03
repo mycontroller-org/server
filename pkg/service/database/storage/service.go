@@ -3,23 +3,23 @@ package storage
 import (
 	"errors"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	cfgML "github.com/mycontroller-org/server/v2/pkg/model/config"
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	cfgTY "github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	storagePlugin "github.com/mycontroller-org/server/v2/plugin/database/storage"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
 // Init storage service
-func Init(storageCfg cmap.CustomMap, loggerCfg cfgML.LoggerConfig) (stgType.Plugin, error) {
+func Init(storageCfg cmap.CustomMap, loggerCfg cfgTY.LoggerConfig) (storageTY.Plugin, error) {
 	// include logger details
 	storageCfg["logger"] = map[string]string{"mode": loggerCfg.Mode, "encoding": loggerCfg.Encoding, "level": loggerCfg.Level.Storage}
 
 	// get plugin type
-	pluginType := storageCfg.GetString(model.KeyType)
+	pluginType := storageCfg.GetString(types.KeyType)
 	if pluginType == "" {
 		return nil, errors.New("error on storage database initialization, type not defined")
 	}
@@ -32,7 +32,7 @@ func Init(storageCfg cmap.CustomMap, loggerCfg cfgML.LoggerConfig) (stgType.Plug
 	return plugin, nil
 }
 
-func RunImport(plugin stgType.Plugin, importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error) error {
+func RunImport(plugin storageTY.Plugin, importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error) error {
 	if doStartImport, filesDir, fileFormat := plugin.DoStartupImport(); doStartImport {
 		// run startup import
 		// Pause Timestamp Update and resume later

@@ -3,7 +3,7 @@ package storage
 import (
 	"fmt"
 
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	storageType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )

@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
 	commonStore "github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	handlerPlugin "github.com/mycontroller-org/server/v2/plugin/handler"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
 // StartHandler notify handlers
-func StartHandler(cfg *handlerType.Config) error {
+func StartHandler(cfg *handlerTY.Config) error {
 	if handlersStore.Get(cfg.ID) != nil {
 		return fmt.Errorf("a service is in running state. id:%s", cfg.ID)
 	}
@@ -23,7 +23,7 @@ func StartHandler(cfg *handlerType.Config) error {
 		return nil
 	}
 	zap.L().Debug("starting a handler", zap.Any("id", cfg.ID))
-	state := model.State{Since: time.Now()}
+	state := types.State{Since: time.Now()}
 
 	handler, err := loadHandler(cfg)
 	if err != nil {
@@ -33,10 +33,10 @@ func StartHandler(cfg *handlerType.Config) error {
 	if err != nil {
 		zap.L().Error("unable to start a handler service", zap.Any("id", cfg.ID), zap.Error(err))
 		state.Message = err.Error()
-		state.Status = model.StatusDown
+		state.Status = types.StatusDown
 	} else {
 		state.Message = "started successfully"
-		state.Status = model.StatusUp
+		state.Status = types.StatusUp
 		handlersStore.Add(cfg.ID, handler)
 	}
 
@@ -50,8 +50,8 @@ func StopHandler(id string) error {
 	handler := handlersStore.Get(id)
 	if handler != nil {
 		err := handler.Close()
-		state := model.State{
-			Status:  model.StatusDown,
+		state := types.State{
+			Status:  types.StatusDown,
 			Since:   time.Now(),
 			Message: "stopped by request",
 		}
@@ -66,7 +66,7 @@ func StopHandler(id string) error {
 }
 
 // ReloadHandler a handler
-func ReloadHandler(gwCfg *handlerType.Config) error {
+func ReloadHandler(gwCfg *handlerTY.Config) error {
 	err := StopHandler(gwCfg.ID)
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func UnloadAll() {
 	}
 }
 
-func loadHandler(cfg *handlerType.Config) (handlerType.Plugin, error) {
+func loadHandler(cfg *handlerTY.Config) (handlerTY.Plugin, error) {
 	// descrypt the secrets, tokens
 	err := cloneUtil.UpdateSecrets(cfg, commonStore.CFG.Secret, "", false, cloneUtil.DefaultSpecialKeys)
 	if err != nil {

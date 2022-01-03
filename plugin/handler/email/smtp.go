@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 	"go.uber.org/zap"
 )
 
@@ -57,14 +57,14 @@ func (sc *SmtpClient) Close() error {
 	return nil
 }
 
-func (sc *SmtpClient) State() *model.State {
+func (sc *SmtpClient) State() *types.State {
 	if sc.handlerCfg != nil {
 		if sc.handlerCfg.State == nil {
-			sc.handlerCfg.State = &model.State{}
+			sc.handlerCfg.State = &types.State{}
 		}
 		return sc.handlerCfg.State
 	}
-	return &model.State{}
+	return &types.State{}
 }
 
 // Send func implementation

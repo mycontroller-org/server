@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
-	ml "github.com/mycontroller-org/server/v2/pkg/model"
-	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
-	stgml "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterTaskRoutes registers task api
@@ -24,15 +24,15 @@ func RegisterTaskRoutes(router *mux.Router) {
 }
 
 func listTasks(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindMany(w, r, ml.EntityTask, &[]taskML.Config{})
+	handlerUtils.FindMany(w, r, types.EntityTask, &[]taskTY.Config{})
 }
 
 func getTask(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindOne(w, r, ml.EntityTask, &taskML.Config{})
+	handlerUtils.FindOne(w, r, types.EntityTask, &taskTY.Config{})
 }
 
 func updateTask(w http.ResponseWriter, r *http.Request) {
-	entity := &taskML.Config{}
+	entity := &taskTY.Config{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -52,7 +52,7 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 
 func deleteTasks(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := taskAPI.Delete(IDs)
 			if err != nil {
@@ -67,7 +67,7 @@ func deleteTasks(w http.ResponseWriter, r *http.Request) {
 
 func enableTask(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := taskAPI.Enable(ids)
 			if err != nil {
@@ -82,7 +82,7 @@ func enableTask(w http.ResponseWriter, r *http.Request) {
 
 func disableTask(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgml.Filter, p *stgml.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := taskAPI.Disable(ids)
 			if err != nil {

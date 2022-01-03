@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	schedulerML "github.com/mycontroller-org/server/v2/pkg/model/schedule"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // RegisterSchedulerRoutes registers schedule api
@@ -24,15 +24,15 @@ func RegisterSchedulerRoutes(router *mux.Router) {
 }
 
 func listSchedule(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindMany(w, r, model.EntitySchedule, &[]schedulerML.Config{})
+	handlerUtils.FindMany(w, r, types.EntitySchedule, &[]schedulerTY.Config{})
 }
 
 func getSchedule(w http.ResponseWriter, r *http.Request) {
-	handlerUtils.FindOne(w, r, model.EntitySchedule, &schedulerML.Config{})
+	handlerUtils.FindOne(w, r, types.EntitySchedule, &schedulerTY.Config{})
 }
 
 func updateSchedule(w http.ResponseWriter, r *http.Request) {
-	entity := &schedulerML.Config{}
+	entity := &schedulerTY.Config{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -52,7 +52,7 @@ func updateSchedule(w http.ResponseWriter, r *http.Request) {
 
 func deleteSchedule(w http.ResponseWriter, r *http.Request) {
 	IDs := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) > 0 {
 			count, err := scheduleAPI.Delete(IDs)
 			if err != nil {
@@ -67,7 +67,7 @@ func deleteSchedule(w http.ResponseWriter, r *http.Request) {
 
 func enableSchedule(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := scheduleAPI.Enable(ids)
 			if err != nil {
@@ -82,7 +82,7 @@ func enableSchedule(w http.ResponseWriter, r *http.Request) {
 
 func disableSchedule(w http.ResponseWriter, r *http.Request) {
 	ids := []string{}
-	updateFn := func(f []stgType.Filter, p *stgType.Pagination, d []byte) (interface{}, error) {
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(ids) > 0 {
 			err := scheduleAPI.Disable(ids)
 			if err != nil {

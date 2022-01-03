@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	gatewayAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
-	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
@@ -22,7 +22,7 @@ func toGateway(id, action string) error {
 func ExecuteGatewayAction(action string, nodeIDs []string) error {
 	// verify is a valid action?
 	switch action {
-	case gatewayML.ActionDiscoverNodes:
+	case gatewayTY.ActionDiscoverNodes:
 		// nothing to do, just continue
 	default:
 		return fmt.Errorf("invalid gateway action:%s", action)
@@ -46,12 +46,12 @@ func ExecuteGatewayAction(action string, nodeIDs []string) error {
 }
 
 func toGatewayAction(gatewayID, action string) error {
-	msg := msgML.NewMessage(false)
+	msg := msgTY.NewMessage(false)
 	msg.GatewayID = gatewayID
-	pl := msgML.NewPayload()
+	pl := msgTY.NewPayload()
 	pl.Key = action
 	pl.Value = action
 	msg.Payloads = append(msg.Payloads, pl)
-	msg.Type = msgML.TypeAction
+	msg.Type = msgTY.TypeAction
 	return Post(&msg)
 }

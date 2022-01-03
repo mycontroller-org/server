@@ -3,10 +3,10 @@ package mcwebsocket
 import (
 	ws "github.com/gorilla/websocket"
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
-	wsML "github.com/mycontroller-org/server/v2/pkg/model/websocket"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	wsTY "github.com/mycontroller-org/server/v2/pkg/types/websocket"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	"go.uber.org/zap"
 )
@@ -46,7 +46,7 @@ func CloseEventListener() error {
 	return nil
 }
 
-func onEventReceive(data *busML.BusData) {
+func onEventReceive(data *busTY.BusData) {
 	status := eventsQueue.Produce(data)
 	if !status {
 		zap.L().Error("failed to post selected tasks on processor queue")
@@ -54,9 +54,9 @@ func onEventReceive(data *busML.BusData) {
 }
 
 func processEvent(item interface{}) {
-	data := item.(*busML.BusData)
+	data := item.(*busTY.BusData)
 
-	event := &eventML.Event{}
+	event := &eventTY.Event{}
 	err := data.LoadData(event)
 	if err != nil {
 		zap.L().Warn("failed to convet to target type", zap.Any("topic", data.Topic), zap.Error(err))
@@ -65,8 +65,8 @@ func processEvent(item interface{}) {
 
 	zap.L().Debug("event received", zap.Any("event", event))
 
-	response := wsML.Response{
-		Type: wsML.ResponseTypeEvent,
+	response := wsTY.Response{
+		Type: wsTY.ResponseTypeEvent,
 		Data: event,
 	}
 

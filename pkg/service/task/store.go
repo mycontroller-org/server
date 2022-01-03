@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"sync"
 
-	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
 	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
@@ -18,18 +18,18 @@ const (
 )
 
 type store struct {
-	tasks        map[string]taskML.Config
+	tasks        map[string]taskTY.Config
 	pollingTasks []string // tasks which is in polling mode (will not trigger on events)
 	mutex        sync.Mutex
 }
 
 var tasksStore = store{
-	tasks:        make(map[string]taskML.Config),
+	tasks:        make(map[string]taskTY.Config),
 	pollingTasks: make([]string, 0),
 }
 
 // Add a task
-func (s *store) Add(task taskML.Config) {
+func (s *store) Add(task taskTY.Config) {
 	if !task.Enabled {
 		return
 	}
@@ -48,7 +48,7 @@ func (s *store) Add(task taskML.Config) {
 }
 
 // UpdateState of a task
-func (s *store) UpdateState(id string, state *taskML.State) {
+func (s *store) UpdateState(id string, state *taskTY.State) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -73,7 +73,7 @@ func (s *store) Remove(id string) {
 }
 
 // GetByID returns handler by id
-func (s *store) Get(id string) taskML.Config {
+func (s *store) Get(id string) taskTY.Config {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -84,7 +84,7 @@ func (s *store) RemoveAll() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	tasksStore.tasks = make(map[string]taskML.Config)
+	tasksStore.tasks = make(map[string]taskTY.Config)
 }
 
 func (s *store) ListIDs() []string {
@@ -98,11 +98,11 @@ func (s *store) ListIDs() []string {
 	return ids
 }
 
-func (s *store) filterTasks(evnWrapper *eventWrapper) []taskML.Config {
+func (s *store) filterTasks(evnWrapper *eventWrapper) []taskTY.Config {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	filteredTasks := make([]taskML.Config, 0)
+	filteredTasks := make([]taskTY.Config, 0)
 	for id := range s.tasks {
 		task := s.tasks[id]
 
@@ -129,7 +129,7 @@ func (s *store) filterTasks(evnWrapper *eventWrapper) []taskML.Config {
 			matching = true
 		} else {
 			zap.L().Debug("filterTasks", zap.Any("filters", filters), zap.Any("event", evnWrapper.Event))
-			matching = helper.IsMatching(evnWrapper.Event.Entity, filters)
+			matching = filterUtils.IsMatching(evnWrapper.Event.Entity, filters)
 		}
 		if matching {
 			filteredTasks = append(filteredTasks, task)
@@ -138,10 +138,10 @@ func (s *store) filterTasks(evnWrapper *eventWrapper) []taskML.Config {
 	return filteredTasks
 }
 
-func (s *store) getFilters(filtersMap map[string]string) []stgType.Filter {
-	filters := make([]stgType.Filter, 0)
+func (s *store) getFilters(filtersMap map[string]string) []storageTY.Filter {
+	filters := make([]storageTY.Filter, 0)
 	for k, v := range filtersMap {
-		filters = append(filters, stgType.Filter{Key: k, Operator: stgType.OperatorEqual, Value: v})
+		filters = append(filters, storageTY.Filter{Key: k, Operator: storageTY.OperatorEqual, Value: v})
 	}
 	return filters
 }
@@ -157,7 +157,7 @@ func unschedule(id string) string {
 	return name
 }
 
-func schedule(task *taskML.Config) string {
+func schedule(task *taskTY.Config) string {
 	name := getScheduleID(task.ID)
 	cronSpec := fmt.Sprintf("@every %s", task.ExecutionInterval)
 	err := coreScheduler.SVC.AddFunc(name, cronSpec, getTaskPollingTriggerFunc(task))

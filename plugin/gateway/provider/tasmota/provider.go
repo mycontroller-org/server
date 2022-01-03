@@ -3,14 +3,14 @@ package tasmota
 import (
 	"fmt"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	utils "github.com/mycontroller-org/server/v2/pkg/utils"
-	gwPRL "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
+	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	mqtt "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_mqtt"
-	providerType "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 )
 
 const PluginTasmota = "tasmota"
@@ -25,13 +25,13 @@ type Config struct {
 // Provider implementation
 type Provider struct {
 	Config        *Config
-	GatewayConfig *gwType.Config
-	Protocol      gwPRL.Protocol
+	GatewayConfig *gwTY.Config
+	Protocol      gwPtl.Protocol
 	ProtocolType  string
 }
 
 // NewPluginTasmota provider
-func NewPluginTasmota(gatewayConfig *gwType.Config) (providerType.Plugin, error) {
+func NewPluginTasmota(gatewayConfig *gwTY.Config) (providerTY.Plugin, error) {
 	cfg := &Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gatewayConfig.Provider, cfg)
 	if err != nil {
@@ -40,7 +40,7 @@ func NewPluginTasmota(gatewayConfig *gwType.Config) (providerType.Plugin, error)
 	provider := &Provider{
 		Config:        cfg,
 		GatewayConfig: gatewayConfig,
-		ProtocolType:  cfg.Protocol.GetString(model.NameType),
+		ProtocolType:  cfg.Protocol.GetString(types.NameType),
 	}
 	return provider, nil
 }
@@ -50,10 +50,10 @@ func (p *Provider) Name() string {
 }
 
 // Start func
-func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgML.RawMessage) error) error {
+func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) error) error {
 	var err error
 	switch p.ProtocolType {
-	case gwPRL.TypeMQTT:
+	case gwPtl.TypeMQTT:
 		// update subscription topics
 		protocol, _err := mqtt.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
 		err = _err
@@ -70,7 +70,7 @@ func (p *Provider) Close() error {
 }
 
 // Post func
-func (p *Provider) Post(msg *msgML.Message) error {
+func (p *Provider) Post(msg *msgTY.Message) error {
 	rawMsg, err := p.ToRawMessage(msg)
 	if err != nil {
 		return err

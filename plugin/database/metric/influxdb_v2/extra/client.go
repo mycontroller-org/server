@@ -1,7 +1,7 @@
 package query
 
 import (
-	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 )
 
 // contants
@@ -17,7 +17,7 @@ const (
 
 // QueryAPI interface
 type QueryAPI interface {
-	ExecuteQuery(queryConfig *metricType.Query, measurement string) ([]metricType.ResponseData, error)
+	ExecuteQuery(queryConfig *metricTY.Query, measurement string) ([]metricTY.ResponseData, error)
 }
 
 // AdminAPI interface

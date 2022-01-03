@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	"go.uber.org/zap"
 )
 
@@ -13,11 +13,11 @@ import (
 func ExecuteNodeAction(action string, nodeIDs []string) error {
 	// verify is a valid action?
 	switch action {
-	case nodeML.ActionFirmwareUpdate,
-		nodeML.ActionHeartbeatRequest,
-		nodeML.ActionReboot,
-		nodeML.ActionRefreshNodeInfo,
-		nodeML.ActionReset:
+	case nodeTY.ActionFirmwareUpdate,
+		nodeTY.ActionHeartbeatRequest,
+		nodeTY.ActionReboot,
+		nodeTY.ActionRefreshNodeInfo,
+		nodeTY.ActionReset:
 		// nothing to do, just continue
 	default:
 		return fmt.Errorf("invalid node action:%s", action)
@@ -38,13 +38,13 @@ func ExecuteNodeAction(action string, nodeIDs []string) error {
 }
 
 func toNode(gatewayID, nodeID, action string) error {
-	msg := msgML.NewMessage(false)
+	msg := msgTY.NewMessage(false)
 	msg.GatewayID = gatewayID
 	msg.NodeID = nodeID
-	pl := msgML.NewPayload()
+	pl := msgTY.NewPayload()
 	pl.Key = action
 	pl.Value = ""
 	msg.Payloads = append(msg.Payloads, pl)
-	msg.Type = msgML.TypeAction
+	msg.Type = msgTY.TypeAction
 	return Post(&msg)
 }

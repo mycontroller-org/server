@@ -1,51 +1,51 @@
 package field
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
-	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 // List by filter and pagination
-func List(filters []stgType.Filter, pagination *stgType.Pagination) (*stgType.Result, error) {
-	result := make([]fieldML.Field, 0)
-	return store.STORAGE.Find(model.EntityField, &result, filters, pagination)
+func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	result := make([]fieldTY.Field, 0)
+	return store.STORAGE.Find(types.EntityField, &result, filters, pagination)
 }
 
 // Get returns a field
-func Get(filters []stgType.Filter) (*fieldML.Field, error) {
-	result := &fieldML.Field{}
-	err := store.STORAGE.FindOne(model.EntityField, result, filters)
+func Get(filters []storageTY.Filter) (*fieldTY.Field, error) {
+	result := &fieldTY.Field{}
+	err := store.STORAGE.FindOne(types.EntityField, result, filters)
 	return result, err
 }
 
 // GetByID returns a field
-func GetByID(id string) (*fieldML.Field, error) {
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Value: id},
+func GetByID(id string) (*fieldTY.Field, error) {
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: id},
 	}
-	result := &fieldML.Field{}
-	err := store.STORAGE.FindOne(model.EntityField, result, filters)
+	result := &fieldTY.Field{}
+	err := store.STORAGE.FindOne(types.EntityField, result, filters)
 	return result, err
 }
 
 // Save a field details
-func Save(field *fieldML.Field, retainValue bool) error {
-	eventType := eventML.TypeUpdated
+func Save(field *fieldTY.Field, retainValue bool) error {
+	eventType := eventTY.TypeUpdated
 	if field.ID == "" {
 		field.ID = utils.RandUUID()
-		eventType = eventML.TypeCreated
+		eventType = eventTY.TypeCreated
 	}
-	filters := []stgType.Filter{
-		{Key: model.KeyID, Value: field.ID},
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: field.ID},
 	}
 
-	if retainValue && eventType != eventML.TypeCreated {
+	if retainValue && eventType != eventTY.TypeCreated {
 		fieldOrg, err := GetByID(field.ID)
 		if err != nil {
 			return err
@@ -53,32 +53,32 @@ func Save(field *fieldML.Field, retainValue bool) error {
 		field.Current = fieldOrg.Current
 		field.Previous = fieldOrg.Previous
 	}
-	err := store.STORAGE.Upsert(model.EntityField, field, filters)
+	err := store.STORAGE.Upsert(types.EntityField, field, filters)
 	if err != nil {
 		return err
 	}
 
 	if retainValue { // assume this change from HTTP API
-		busUtils.PostEvent(mcbus.TopicEventHandler, eventType, model.EntityHandler, field)
+		busUtils.PostEvent(mcbus.TopicEventHandler, eventType, types.EntityHandler, field)
 	}
 	return nil
 }
 
 // GetByIDs returns a field details by gatewayID, nodeId, sourceID and fieldName of a message
-func GetByIDs(gatewayID, nodeID, sourceID, fieldID string) (*fieldML.Field, error) {
-	filters := []stgType.Filter{
-		{Key: model.KeyGatewayID, Value: gatewayID},
-		{Key: model.KeyNodeID, Value: nodeID},
-		{Key: model.KeySourceID, Value: sourceID},
-		{Key: model.KeyFieldID, Value: fieldID},
+func GetByIDs(gatewayID, nodeID, sourceID, fieldID string) (*fieldTY.Field, error) {
+	filters := []storageTY.Filter{
+		{Key: types.KeyGatewayID, Value: gatewayID},
+		{Key: types.KeyNodeID, Value: nodeID},
+		{Key: types.KeySourceID, Value: sourceID},
+		{Key: types.KeyFieldID, Value: fieldID},
 	}
-	result := &fieldML.Field{}
-	err := store.STORAGE.FindOne(model.EntityField, result, filters)
+	result := &fieldTY.Field{}
+	err := store.STORAGE.FindOne(types.EntityField, result, filters)
 	return result, err
 }
 
 // Delete fields
 func Delete(IDs []string) (int64, error) {
-	filters := []stgType.Filter{{Key: model.KeyID, Operator: stgType.OperatorIn, Value: IDs}}
-	return store.STORAGE.Delete(model.EntityField, filters)
+	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
+	return store.STORAGE.Delete(types.EntityField, filters)
 }

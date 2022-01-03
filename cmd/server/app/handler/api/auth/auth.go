@@ -8,8 +8,8 @@ import (
 	middleware "github.com/mycontroller-org/server/v2/cmd/server/app/handler/middleware"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
-	userML "github.com/mycontroller-org/server/v2/pkg/model/user"
-	handlerTY "github.com/mycontroller-org/server/v2/pkg/model/web_handler"
+	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
+	handlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 	"go.uber.org/zap"
 )
@@ -106,7 +106,7 @@ func updateProfile(w http.ResponseWriter, r *http.Request) {
 		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusBadRequest)
 	}
 
-	entity := &userML.UserProfileUpdate{}
+	entity := &userTY.UserProfileUpdate{}
 	err = handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -6,19 +6,19 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
-	gwPL "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	"go.uber.org/zap"
 )
 
 // toRawMessage converts to gateway specific
-func (p *Provider) toRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
+func (p *Provider) toRawMessage(msg *msgTY.Message) (*msgTY.RawMessage, error) {
 	if len(msg.Payloads) == 0 {
 		return nil, errors.New("there is no payload details on the message")
 	}
@@ -50,12 +50,12 @@ func (p *Provider) toRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
 		msMsg.Ack = "1"
 	}
 
-	rawMsg := &msgML.RawMessage{Timestamp: msg.Timestamp}
+	rawMsg := &msgTY.RawMessage{Timestamp: msg.Timestamp}
 	rawMsg.Others = rawMsg.Others.Init()
 
 	// get command
 	switch msg.Type {
-	case msgML.TypeSet:
+	case msgTY.TypeSet:
 		msMsg.Command = cmdSet
 		msMsg.Type = payload.Labels.Get(LabelType)
 		if msMsg.Type == "" {
@@ -67,7 +67,7 @@ func (p *Provider) toRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
 			}
 		}
 		if mt, ok := metricTypeAndUnit[payload.Key]; ok {
-			if mt.Type == metricType.MetricTypeBinary {
+			if mt.Type == metricTY.MetricTypeBinary {
 				switch strings.ToLower(payload.Value) {
 				case "true", "on":
 					msMsg.Payload = payloadON
@@ -77,11 +77,11 @@ func (p *Provider) toRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
 			}
 		}
 
-	case msgML.TypeRequest:
+	case msgTY.TypeRequest:
 		msMsg.Command = cmdRequest
 		msMsg.Type = payload.Labels.Get(LabelType)
 
-	case msgML.TypeAction:
+	case msgTY.TypeAction:
 		msMsg.Command = cmdInternal
 		// call functions
 		err := handleActions(p.GatewayConfig, payload.Key, msg, &msMsg)
@@ -102,12 +102,12 @@ func (p *Provider) toRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
 
 	// create rawMessage
 	switch p.ProtocolType {
-	case gwPL.TypeSerial, gwPL.TypeEthernet:
+	case gwPtl.TypeSerial, gwPtl.TypeEthernet:
 		rawMsg.Data = []byte(msMsg.toMySensorsRaw(false))
 
-	case gwPL.TypeMQTT:
+	case gwPtl.TypeMQTT:
 		rawMsg.Data = []byte(msMsg.Payload)
-		rawMsg.Others.Set(gwPL.KeyMqttTopic, []string{msMsg.toMySensorsRaw(true)}, nil)
+		rawMsg.Others.Set(gwPtl.KeyMqttTopic, []string{msMsg.toMySensorsRaw(true)}, nil)
 
 	default:
 		return nil, fmt.Errorf("protocol type not implemented: %s", p.ProtocolType)
@@ -125,11 +125,11 @@ func (p *Provider) toRawMessage(msg *msgML.Message) (*msgML.RawMessage, error) {
 }
 
 // ProcessReceived converts to mycontroller specific
-func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, error) {
+func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
 	if rawMsg == nil {
 		return nil, nil
 	}
-	messages := make([]*msgML.Message, 0)
+	messages := make([]*msgTY.Message, 0)
 
 	msMsg, err := p.decodeRawMessage(rawMsg)
 	if err != nil {
@@ -151,7 +151,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, 
 	}
 
 	// Message
-	msg := &msgML.Message{
+	msg := &msgTY.Message{
 		NodeID:     msMsg.NodeID,
 		SourceID:   msMsg.SensorID,
 		IsAck:      msMsg.Ack == "1",
@@ -159,13 +159,13 @@ func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, 
 		Timestamp:  rawMsg.Timestamp,
 		Type:       cmdMapForRx[msMsg.Command],
 	}
-	msgPL := msgML.NewPayload()
+	msgPL := msgTY.NewPayload()
 	msgPL.Value = msMsg.Payload
 
 	messages = append(messages, msg)
 
 	// update the payload details on return
-	includePayloads := func() { msg.Payloads = []msgML.Payload{msgPL} }
+	includePayloads := func() { msg.Payloads = []msgTY.Payload{msgPL} }
 	defer includePayloads()
 
 	err = verifyAndUpdateNodeSensorIDs(msMsg, msg)
@@ -189,7 +189,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, 
 		switch msMsg.Command {
 		case cmdPresentation:
 			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
-				msgPL.Key = model.FieldName
+				msgPL.Key = types.FieldName
 				msgPL.Labels.Set(LabelTypeString, _type)
 			}
 			// else: not supported? should I have to return from here?
@@ -208,11 +208,11 @@ func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, 
 		switch msMsg.Command {
 
 		case cmdPresentation:
-			msgPL.Labels.Set(model.LabelNodeLibraryVersion, msMsg.Payload)
+			msgPL.Labels.Set(types.LabelNodeLibraryVersion, msMsg.Payload)
 			if _type, ok := presentationTypeMapForRx[msMsg.Type]; ok {
 				if _type == "S_ARDUINO_REPEATER_NODE" || _type == "S_ARDUINO_NODE" {
 					// this is a node lib version data
-					msgPL.Key = model.FieldNone
+					msgPL.Key = types.FieldNone
 					if _type == "S_ARDUINO_REPEATER_NODE" {
 						msgPL.Labels.Set(LabelNodeType, "repeater")
 					}
@@ -239,7 +239,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, 
 					// do not care about other types
 					return nil, nil
 				}
-				msg.Type = msgML.TypeAction
+				msg.Type = msgTY.TypeAction
 				msgPL.Key = typeName
 			} else {
 				return nil, fmt.Errorf("message stream type not found: %s", msMsg.Type)
@@ -260,23 +260,23 @@ func (p *Provider) ProcessReceived(rawMsg *msgML.RawMessage) ([]*msgML.Message, 
 // helper functions
 
 // decodes raw message into message, which is local struct
-func (p *Provider) decodeRawMessage(rawMsg *msgML.RawMessage) (*message, error) {
+func (p *Provider) decodeRawMessage(rawMsg *msgTY.RawMessage) (*message, error) {
 	var d []string
 	payload := ""
 
 	// decode message from gateway
 	switch p.ProtocolType {
-	case gwPL.TypeMQTT:
+	case gwPtl.TypeMQTT:
 		// topic/node-id/child-sensor-id/command/ack/type
 		// out_rfm69/11/1/1/0/0
-		rData := strings.Split(string(rawMsg.Others.Get(gwPL.KeyMqttTopic).(string)), "/")
+		rData := strings.Split(string(rawMsg.Others.Get(gwPtl.KeyMqttTopic).(string)), "/")
 		if len(rData) < 5 {
 			zap.L().Error("invalid message format", zap.Any("rawMessage", rawMsg))
 			return nil, nil
 		}
 		d = rData[len(rData)-5:]
 		payload = convertor.ToString(rawMsg.Data)
-	case gwPL.TypeSerial, gwPL.TypeEthernet:
+	case gwPtl.TypeSerial, gwPtl.TypeEthernet:
 		// node-id;child-sensor-id;command;ack;type;payload
 		_d := strings.Split(convertor.ToString(rawMsg.Data), ";")
 		if len(_d) < 6 {
@@ -303,7 +303,7 @@ func (p *Provider) decodeRawMessage(rawMsg *msgML.RawMessage) (*message, error) 
 }
 
 // verify node and sensor ids
-func verifyAndUpdateNodeSensorIDs(msMsg *message, msg *msgML.Message) error {
+func verifyAndUpdateNodeSensorIDs(msMsg *message, msg *msgTY.Message) error {
 	nID, err := strconv.ParseUint(msMsg.NodeID, 10, 64)
 	if err != nil {
 		return fmt.Errorf("invalid node id: %s", msMsg.NodeID)
@@ -337,7 +337,7 @@ func verifyAndUpdateNodeSensorIDs(msMsg *message, msg *msgML.Message) error {
 }
 
 // update field name and unit
-func updateFieldAndUnit(msMsg *message, msgPL *msgML.Payload) error {
+func updateFieldAndUnit(msMsg *message, msgPL *msgTY.Payload) error {
 	fieldName, ok := setReqFieldMapForRx[msMsg.Type]
 	if ok {
 		msgPL.Labels.Set(LabelTypeString, fieldName)
@@ -359,16 +359,16 @@ func updateFieldAndUnit(msMsg *message, msgPL *msgML.Payload) error {
 
 // updates node internal message data, return true, if further actions required
 // returns false, if the message can be dropped
-func updateNodeInternalMessages(msg *msgML.Message, msgPL *msgML.Payload, msMsg *message) (bool, []*msgML.Message, error) {
+func updateNodeInternalMessages(msg *msgTY.Message, msgPL *msgTY.Payload, msMsg *message) (bool, []*msgTY.Message, error) {
 	if msMsg.Ack == "1" { // do not care about internal ack messages
 		return false, nil, nil
 	}
 	if typeName, ok := internalTypeMapForRx[msMsg.Type]; ok {
-		extraMessages := make([]*msgML.Message, 0)
+		extraMessages := make([]*msgTY.Message, 0)
 		// update the requested access
 		_, isActionRequest := utils.FindItem(customValidActions, typeName)
 		if isActionRequest {
-			msg.Type = msgML.TypeAction
+			msg.Type = msgTY.TypeAction
 			msgPL.Key = typeName
 			return true, nil, nil
 		}
@@ -376,31 +376,31 @@ func updateNodeInternalMessages(msg *msgML.Message, msgPL *msgML.Payload, msMsg 
 		// verify it is valid field to update
 		if fieldName, ok := internalValidFields[typeName]; ok {
 			msgPL.Key = fieldName
-			msg.Type = msgML.TypeSet
+			msg.Type = msgTY.TypeSet
 
 			switch fieldName {
-			case model.LabelNodeVersion:
-				msgPL.Labels.Set(model.LabelNodeVersion, msMsg.Payload)
+			case types.LabelNodeVersion:
+				msgPL.Labels.Set(types.LabelNodeVersion, msMsg.Payload)
 
-			case model.FieldLocked:
+			case types.FieldLocked:
 				msgPL.Others.Set(LabelLockedReason, msMsg.Payload, nil)
 				msgPL.Value = "true"
 
-			case LabelSmartSleepingNode, model.FieldHeartbeat:
+			case LabelSmartSleepingNode, types.FieldHeartbeat:
 				switch typeName {
 				case "I_PRE_SLEEP_NOTIFICATION", "I_HEARTBEAT_RESPONSE":
 					if typeName == "I_PRE_SLEEP_NOTIFICATION" {
 						msgPL.Others.Set(FieldAwakeDuration, msMsg.Payload, nil)
 					}
 					// post an action to sen the messages in the queue
-					awakeActionMsg := &msgML.Message{
+					awakeActionMsg := &msgTY.Message{
 						GatewayID:  msg.GatewayID,
 						NodeID:     msMsg.NodeID,
 						IsAck:      false,
 						IsReceived: true,
 						Timestamp:  msg.Timestamp,
-						Type:       msgML.TypeAction,
-						Payloads:   []msgML.Payload{{Key: nodeML.ActionAwake, Value: nodeML.ActionAwake}},
+						Type:       msgTY.TypeAction,
+						Payloads:   []msgTY.Payload{{Key: nodeTY.ActionAwake, Value: nodeTY.ActionAwake}},
 					}
 					extraMessages = append(extraMessages, awakeActionMsg)
 

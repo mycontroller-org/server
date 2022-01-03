@@ -1,25 +1,25 @@
 package store
 
 import (
-	cfgML "github.com/mycontroller-org/server/v2/pkg/model/config"
-	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	cfgTY "github.com/mycontroller-org/server/v2/pkg/types/config"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
 var (
-	CFG     *cfgML.Config
-	STORAGE stgType.Plugin
-	METRIC  metricType.Plugin
+	CFG     *cfgTY.Config
+	STORAGE storageTY.Plugin
+	METRIC  metricTY.Plugin
 )
 
-func InitConfig(config *cfgML.Config) {
+func InitConfig(config *cfgTY.Config) {
 	CFG = config
 }
 
-func InitStorage(storage stgType.Plugin) {
+func InitStorage(storage storageTY.Plugin) {
 	STORAGE = storage
 }
 
-func InitMetric(metric metricType.Plugin) {
+func InitMetric(metric metricTY.Plugin) {
 	METRIC = metric
 }

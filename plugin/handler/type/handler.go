@@ -3,8 +3,8 @@ package handler
 import (
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 )
 
 // handler data types
@@ -22,10 +22,10 @@ type Plugin interface {
 	Start() error
 	Close() error
 	Post(variables map[string]interface{}) error
-	State() *model.State
+	State() *types.State
 }
 
-// Config model
+// Config struct
 type Config struct {
 	ID          string               `json:"id"`
 	Description string               `json:"description"`
@@ -34,7 +34,7 @@ type Config struct {
 	Type        string               `json:"type"`
 	Spec        cmap.CustomMap       `json:"spec"`
 	ModifiedOn  time.Time            `json:"modifiedOn"`
-	State       *model.State         `json:"state"`
+	State       *types.State         `json:"state"`
 }
 
 // Clone config

@@ -8,21 +8,21 @@ import (
 	fieldAPI "github.com/mycontroller-org/server/v2/pkg/api/field"
 	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
 	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	sourceML "github.com/mycontroller-org/server/v2/pkg/model/source"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/server/v2/pkg/utils/javascript"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
-	mtsML "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	mtsTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
 	"go.uber.org/zap"
 )
 
@@ -45,8 +45,8 @@ func Start() error {
 	return nil
 }
 
-func onMessageReceive(busData *busML.BusData) {
-	msg := &msgML.Message{}
+func onMessageReceive(busData *busTY.BusData) {
+	msg := &msgTY.Message{}
 	err := busData.LoadData(msg)
 	if err != nil {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err), zap.Any("busData", busData))
@@ -72,25 +72,25 @@ func Close() error {
 
 // processMessage from the queue
 func processMessage(item interface{}) {
-	msg := item.(*msgML.Message)
+	msg := item.(*msgTY.Message)
 	zap.L().Debug("Starting Message Processing", zap.Any("message", msg))
 
 	switch {
 	case msg.SourceID != "":
 		switch msg.Type {
-		case msgML.TypeSet: // set fields
+		case msgTY.TypeSet: // set fields
 			err := setFieldData(msg)
 			if err != nil {
 				zap.L().Error("error on field data set", zap.Error(err))
 			}
 
-		case msgML.TypeRequest: // request fields
+		case msgTY.TypeRequest: // request fields
 			err := requestFieldData(msg)
 			if err != nil {
 				zap.L().Error("error on field data request", zap.Error(err))
 			}
 
-		case msgML.TypePresentation: // update source data, like name or other details
+		case msgTY.TypePresentation: // update source data, like name or other details
 			err := updateSourceDetail(msg)
 			if err != nil {
 				zap.L().Error("error on source data update", zap.Error(err))
@@ -102,15 +102,15 @@ func processMessage(item interface{}) {
 
 	case msg.NodeID != "":
 		switch msg.Type {
-		case msgML.TypeSet, msgML.TypePresentation: // set node specific data, like battery level, rssi, etc
+		case msgTY.TypeSet, msgTY.TypePresentation: // set node specific data, like battery level, rssi, etc
 			err := updateNodeData(msg)
 			if err != nil {
 				zap.L().Error("error on node data update", zap.Error(err))
 			}
 
-		case msgML.TypeRequest: // request node specific data
+		case msgTY.TypeRequest: // request node specific data
 
-		case msgML.TypeAction: // providers will take care of action type messages
+		case msgTY.TypeAction: // providers will take care of action type messages
 			clonedMsg := msg.Clone() // clone the message
 			postMessage(clonedMsg)
 
@@ -118,7 +118,7 @@ func processMessage(item interface{}) {
 			zap.L().Warn("message type not implemented for node", zap.String("type", msg.Type), zap.Any("message", msg))
 		}
 
-	case msg.NodeID == "" && msg.Type == msgML.TypeAction:
+	case msg.NodeID == "" && msg.Type == msgTY.TypeAction:
 		clonedMsg := msg.Clone() // clone the message
 		postMessage(clonedMsg)
 
@@ -130,10 +130,10 @@ func processMessage(item interface{}) {
 }
 
 // update node detail
-func updateNodeData(msg *msgML.Message) error {
+func updateNodeData(msg *msgTY.Message) error {
 	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
 	if err != nil { // TODO: check entry availability on error message
-		node = &nodeML.Node{
+		node = &nodeTY.Node{
 			GatewayID: msg.GatewayID,
 			NodeID:    msg.NodeID,
 		}
@@ -151,22 +151,22 @@ func updateNodeData(msg *msgML.Message) error {
 		node.Labels.CopyFrom(d.Labels)
 
 		switch d.Key { // set node name
-		case model.FieldName:
-			if !node.Labels.GetIgnoreBool(model.LabelName) {
+		case types.FieldName:
+			if !node.Labels.GetIgnoreBool(types.LabelName) {
 				node.Name = d.Value
 			}
 
-		case model.FieldBatteryLevel: // set battery level
+		case types.FieldBatteryLevel: // set battery level
 			// update battery level
 			batteryLevel := converterUtils.ToFloat(d.Value)
 			node.Others.Set(d.Key, batteryLevel, node.Labels)
-			err = writeNodeMetric(node, mtsML.MetricTypeGaugeFloat, model.FieldBatteryLevel, batteryLevel)
+			err = writeNodeMetric(node, mtsTY.MetricTypeGaugeFloat, types.FieldBatteryLevel, batteryLevel)
 			if err != nil {
 				zap.L().Error("error on writing metric data", zap.Error(err))
 			}
 
 		default:
-			if d.Key != model.FieldNone {
+			if d.Key != types.FieldNone {
 				node.Others.Set(d.Key, d.Value, node.Labels)
 				// TODO: Do we need to report to metric strore?
 			}
@@ -186,15 +186,15 @@ func updateNodeData(msg *msgML.Message) error {
 	}
 
 	// post field data to event listeners
-	busUtils.PostEvent(mcbus.TopicEventNode, eventML.TypeUpdated, model.EntityNode, node)
+	busUtils.PostEvent(mcbus.TopicEventNode, eventTY.TypeUpdated, types.EntityNode, node)
 
 	return nil
 }
 
-func updateSourceDetail(msg *msgML.Message) error {
+func updateSourceDetail(msg *msgTY.Message) error {
 	source, err := sourceAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID)
 	if err != nil { // TODO: check entry availability on error message
-		source = &sourceML.Source{
+		source = &sourceTY.Source{
 			GatewayID: msg.GatewayID,
 			NodeID:    msg.NodeID,
 			SourceID:  msg.SourceID,
@@ -210,13 +210,13 @@ func updateSourceDetail(msg *msgML.Message) error {
 
 	for _, payload := range msg.Payloads {
 		switch payload.Key {
-		case model.FieldName: // set name
-			if !source.Labels.GetIgnoreBool(model.LabelName) {
+		case types.FieldName: // set name
+			if !source.Labels.GetIgnoreBool(types.LabelName) {
 				source.Name = payload.Value
 			}
 
 		default: // set other variables
-			if payload.Key != model.FieldNone {
+			if payload.Key != types.FieldNone {
 				source.Others.Set(payload.Key, payload.Value, source.Labels)
 				// TODO: Do we need to report to metric strore?
 			}
@@ -233,15 +233,15 @@ func updateSourceDetail(msg *msgML.Message) error {
 		return err
 	}
 	// post field data to event listeners
-	busUtils.PostEvent(mcbus.TopicEventSource, eventML.TypeUpdated, model.EntitySource, source)
+	busUtils.PostEvent(mcbus.TopicEventSource, eventTY.TypeUpdated, types.EntitySource, source)
 	return nil
 }
 
-func setFieldData(msg *msgML.Message) error {
+func setFieldData(msg *msgTY.Message) error {
 	for _, payload := range msg.Payloads {
 		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, payload.Key)
 		if err != nil { // TODO: check entry availability on error message
-			field = &fieldML.Field{
+			field = &fieldTY.Field{
 				GatewayID: msg.GatewayID,
 				NodeID:    msg.NodeID,
 				SourceID:  msg.SourceID,
@@ -282,9 +282,9 @@ func setFieldData(msg *msgML.Message) error {
 				for key, value := range mapValue {
 					// if we see "value" key, update it on value
 					// if we see others map update it on others map
-					if key == model.KeyValue {
+					if key == types.KeyValue {
 						formattedValue = converterUtils.ToString(value)
-					} else if key == model.KeyOthers {
+					} else if key == types.KeyOthers {
 						othersMap, ok := value.(map[string]interface{})
 						if ok {
 							for oKey, oValue := range othersMap {
@@ -322,12 +322,12 @@ func setFieldData(msg *msgML.Message) error {
 	return nil
 }
 
-func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgML.Message, labels cmap.CustomStringMap) error {
+func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgTY.Message, labels cmap.CustomStringMap) error {
 	units := map[string]string{}
 	metricTypes := map[string]string{}
 
 	// update extraLabels
-	if eLabels, ok := extraFields[model.KeyLabels]; ok {
+	if eLabels, ok := extraFields[types.KeyLabels]; ok {
 		if extraLabels, ok := eLabels.(map[string]interface{}); ok {
 			for key, val := range extraLabels {
 				stringValue := converterUtils.ToString(val)
@@ -337,7 +337,7 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgML.Messag
 	}
 
 	// update units
-	if value, ok := extraFields[model.KeyUnits]; ok {
+	if value, ok := extraFields[types.KeyUnits]; ok {
 		if unitsRaw, ok := value.(map[string]interface{}); ok {
 			for key, val := range unitsRaw {
 				stringValue := converterUtils.ToString(val)
@@ -347,7 +347,7 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgML.Messag
 	}
 
 	// update metricTypes
-	if value, ok := extraFields[model.KeyMetricTypes]; ok {
+	if value, ok := extraFields[types.KeyMetricTypes]; ok {
 		if mTypeRaw, ok := value.(map[string]interface{}); ok {
 			for key, value := range mTypeRaw {
 				stringValue := converterUtils.ToString(value)
@@ -357,13 +357,13 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgML.Messag
 	}
 
 	// remove labels, units and metricTypes
-	delete(extraFields, model.KeyLabels)
-	delete(extraFields, model.KeyUnits)
-	delete(extraFields, model.KeyMetricTypes)
+	delete(extraFields, types.KeyLabels)
+	delete(extraFields, types.KeyUnits)
+	delete(extraFields, types.KeyMetricTypes)
 
 	for id, value := range extraFields {
 		fieldId := converterUtils.ToString(id)
-		metricType := mtsML.MetricTypeNone
+		metricType := mtsTY.MetricTypeNone
 		unit := ""
 		// update metricType and unit
 		if mType, ok := metricTypes[fieldId]; ok {
@@ -382,13 +382,13 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgML.Messag
 }
 
 func updateFieldData(
-	field *fieldML.Field, fieldId, name, metricType, unit string, labels cmap.CustomStringMap,
-	others cmap.CustomMap, value interface{}, msg *msgML.Message) error {
+	field *fieldTY.Field, fieldId, name, metricType, unit string, labels cmap.CustomStringMap,
+	others cmap.CustomMap, value interface{}, msg *msgTY.Message) error {
 
 	if field == nil {
 		updateField, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, fieldId)
 		if err != nil { // TODO: check entry availability on error message
-			field = &fieldML.Field{
+			field = &fieldTY.Field{
 				GatewayID: msg.GatewayID,
 				NodeID:    msg.NodeID,
 				SourceID:  msg.SourceID,
@@ -413,16 +413,16 @@ func updateFieldData(
 	field.LastSeen = msg.Timestamp
 
 	// update name
-	if !field.Labels.GetIgnoreBool(model.LabelName) {
+	if !field.Labels.GetIgnoreBool(types.LabelName) {
 		field.Name = name
 	}
 
 	// update type
-	if !field.Labels.GetIgnoreBool(model.LabelMetricType) {
+	if !field.Labels.GetIgnoreBool(types.LabelMetricType) {
 		field.MetricType = metricType
 	}
 	// update unit
-	if !field.Labels.GetIgnoreBool(model.LabelUnit) {
+	if !field.Labels.GetIgnoreBool(types.LabelUnit) {
 		field.Unit = unit
 	}
 
@@ -436,22 +436,22 @@ func updateFieldData(
 	var convertedValue interface{}
 	switch field.MetricType {
 
-	case mtsML.MetricTypeBinary:
+	case mtsTY.MetricTypeBinary:
 		convertedValue = converterUtils.ToBool(value)
 
-	case mtsML.MetricTypeGaugeFloat:
+	case mtsTY.MetricTypeGaugeFloat:
 		convertedValue = converterUtils.ToFloat(value)
 
-	case mtsML.MetricTypeGauge, mtsML.MetricTypeCounter:
+	case mtsTY.MetricTypeGauge, mtsTY.MetricTypeCounter:
 		convertedValue = converterUtils.ToInteger(value)
 
-	case mtsML.MetricTypeNone:
+	case mtsTY.MetricTypeNone:
 		convertedValue = value
 
-	case mtsML.MetricTypeString:
+	case mtsTY.MetricTypeString:
 		convertedValue = converterUtils.ToString(value)
 
-	case mtsML.MetricTypeGEO: // Implement geo
+	case mtsTY.MetricTypeGEO: // Implement geo
 		convertedValue = value
 
 	default:
@@ -461,7 +461,7 @@ func updateFieldData(
 
 	// update shift old payload and update current payload
 	field.Previous = field.Current
-	field.Current = fieldML.Payload{Value: convertedValue, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
+	field.Current = fieldTY.Payload{Value: convertedValue, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
 
 	// update no change since
 	oldValue := convertor.ToString(field.Previous.Value)
@@ -479,14 +479,14 @@ func updateFieldData(
 	}
 
 	// post field data to event listeners
-	busUtils.PostEvent(mcbus.TopicEventField, eventML.TypeUpdated, model.EntityField, field)
+	busUtils.PostEvent(mcbus.TopicEventField, eventTY.TypeUpdated, types.EntityField, field)
 
 	updateMetric := true
-	if field.MetricType == mtsML.MetricTypeNone {
+	if field.MetricType == mtsTY.MetricTypeNone {
 		updateMetric = false
 	}
 	// for binary do not update duplicate values
-	if field.MetricType == mtsML.MetricTypeBinary {
+	if field.MetricType == mtsTY.MetricTypeBinary {
 		updateMetric = field.Current.Timestamp.Equal(field.NoChangeSince)
 	}
 	if updateMetric {
@@ -500,8 +500,8 @@ func updateFieldData(
 	return nil
 }
 
-func requestFieldData(msg *msgML.Message) error {
-	payloads := make([]msgML.Payload, 0)
+func requestFieldData(msg *msgTY.Message) error {
+	payloads := make([]msgTY.Payload, 0)
 	for _, payload := range msg.Payloads {
 		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, payload.Key)
 		if err != nil {
@@ -519,14 +519,14 @@ func requestFieldData(msg *msgML.Message) error {
 		}
 		// post field data to event listeners
 		// NOTE: if the entry not available in database, request will be dropped
-		busUtils.PostEvent(mcbus.TopicEventField, eventML.TypeRequested, model.EntityField, field)
+		busUtils.PostEvent(mcbus.TopicEventField, eventTY.TypeRequested, types.EntityField, field)
 	}
 
 	if len(payloads) > 0 {
 		clonedMsg := msg.Clone()         // clone the message
 		clonedMsg.Timestamp = time.Now() // set current timestamp
 		clonedMsg.Payloads = payloads    // update payload
-		clonedMsg.Type = msgML.TypeSet   // change type to set
+		clonedMsg.Type = msgTY.TypeSet   // change type to set
 		postMessage(clonedMsg)
 	} else {
 		zap.L().Debug("no data found for this request", zap.Any("message", msg))
@@ -535,7 +535,7 @@ func requestFieldData(msg *msgML.Message) error {
 }
 
 // topic to send message to provider gateway
-func postMessage(msg *msgML.Message) {
+func postMessage(msg *msgTY.Message) {
 	if msg.IsAck {
 		return // do not respond for ack message
 	}

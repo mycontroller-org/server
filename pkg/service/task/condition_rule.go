@@ -6,15 +6,15 @@ import (
 	"strings"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
+	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	tplUtils "github.com/mycontroller-org/server/v2/pkg/utils/template"
-	stgType "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	"go.uber.org/zap"
 )
 
-func isTriggered(rule taskML.Rule, variables map[string]interface{}) bool {
+func isTriggered(rule taskTY.Rule, variables map[string]interface{}) bool {
 	if len(rule.Conditions) == 0 {
 		return true
 	}
@@ -71,7 +71,7 @@ func getValueByVariableName(variables map[string]interface{}, variableName strin
 	}
 
 	if keyPath != "" {
-		_, value, err := helper.GetValueByKeyPath(entity, keyPath)
+		_, value, err := filterUtils.GetValueByKeyPath(entity, keyPath)
 		if err != nil {
 			zap.L().Warn("error to get a value for a variable", zap.Error(err), zap.String("variable", name), zap.String("keyPath", keyPath))
 			return nil, fmt.Errorf("invalid keyPath. variable:%s, keyPath:%s", name, keyPath)
@@ -84,7 +84,7 @@ func getValueByVariableName(variables map[string]interface{}, variableName strin
 
 func isMatching(value interface{}, operator string, expectedValue interface{}) bool {
 	if operator == "" {
-		operator = stgType.OperatorEqual
+		operator = storageTY.OperatorEqual
 	}
 
 	var expectedValueUpdated interface{}
@@ -92,7 +92,7 @@ func isMatching(value interface{}, operator string, expectedValue interface{}) b
 	switch operator {
 
 	// convert json string to object, if required
-	case stgType.OperatorIn, stgType.OperatorNotIn, stgType.OperatorRangeIn, stgType.OperatorRangeNotIn:
+	case storageTY.OperatorIn, storageTY.OperatorNotIn, storageTY.OperatorRangeIn, storageTY.OperatorRangeNotIn:
 		stringValue := converterUtils.ToString(expectedValue)
 		updated := make([]interface{}, 0)
 		err := json.Unmarshal([]byte(stringValue), &updated)
@@ -110,15 +110,15 @@ func isMatching(value interface{}, operator string, expectedValue interface{}) b
 
 	switch reflect.TypeOf(value).Kind() {
 	case reflect.String:
-		return helper.CompareString(value, operator, expectedValueUpdated)
+		return filterUtils.CompareString(value, operator, expectedValueUpdated)
 
 	case reflect.Bool:
-		return helper.CompareBool(value, operator, expectedValueUpdated)
+		return filterUtils.CompareBool(value, operator, expectedValueUpdated)
 
 	case reflect.Float32, reflect.Float64,
 		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return helper.CompareFloat(value, operator, expectedValueUpdated)
+		return filterUtils.CompareFloat(value, operator, expectedValueUpdated)
 
 	default:
 		zap.L().Warn("unsupported type", zap.String("type", reflect.TypeOf(value).String()), zap.Any("value", value))

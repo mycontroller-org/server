@@ -5,15 +5,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	"github.com/mycontroller-org/server/v2/pkg/model/cmap"
-	gwType "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	msgML "github.com/mycontroller-org/server/v2/pkg/model/message"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	msglogger "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/message_logger"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	serialDriver "github.com/tarm/serial"
 	"go.uber.org/zap"
 )
@@ -36,11 +36,11 @@ type Config struct {
 
 // Endpoint data
 type Endpoint struct {
-	GwCfg          *gwType.Config
+	GwCfg          *gwTY.Config
 	Config         Config
 	serCfg         *serialDriver.Config
 	Port           *serialDriver.Port
-	receiveMsgFunc func(rm *msgML.RawMessage) error
+	receiveMsgFunc func(rm *msgTY.RawMessage) error
 	safeClose      *concurrency.Channel
 	messageLogger  msglogger.MessageLogger
 	txPreDelay     time.Duration
@@ -48,7 +48,7 @@ type Endpoint struct {
 }
 
 // New serial client
-func New(gwCfg *gwType.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgML.RawMessage) error) (*Endpoint, error) {
+func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.RawMessage) error) (*Endpoint, error) {
 	var cfg Config
 	err := utils.MapToStruct(utils.TagNameNone, protocol, &cfg)
 	if err != nil {
@@ -85,7 +85,7 @@ func New(gwCfg *gwType.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgML
 	return endpoint, nil
 }
 
-func messageFormatter(rawMsg *msgML.RawMessage) string {
+func messageFormatter(rawMsg *msgTY.RawMessage) string {
 	direction := "sent"
 	if rawMsg.IsReceived {
 		direction = "recd"
@@ -94,7 +94,7 @@ func messageFormatter(rawMsg *msgML.RawMessage) string {
 	return fmt.Sprintf("%v\t%v\t%s\n", rawMsg.Timestamp.Format("2006-01-02T15:04:05.000Z0700"), direction, data)
 }
 
-func (ep *Endpoint) Write(rawMsg *msgML.RawMessage) error {
+func (ep *Endpoint) Write(rawMsg *msgTY.RawMessage) error {
 	time.Sleep(ep.txPreDelay) // transmit pre delay
 	ep.messageLogger.AsyncWrite(rawMsg)
 
@@ -137,8 +137,8 @@ func (ep *Endpoint) dataListener() {
 			rxLength, err := ep.Port.Read(readBuf)
 			if err != nil {
 				zap.L().Error("error on reading data from the serial port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
-				state := model.State{
-					Status:  model.StatusDown,
+				state := types.State{
+					Status:  types.StatusDown,
 					Message: err.Error(),
 					Since:   time.Now(),
 				}
@@ -157,7 +157,7 @@ func (ep *Endpoint) dataListener() {
 					dataCloned := make([]byte, len(data))
 					copy(dataCloned, data)
 					data = nil // reset local buffer
-					rawMsg := msgML.NewRawMessage(true, dataCloned)
+					rawMsg := msgTY.NewRawMessage(true, dataCloned)
 					ep.messageLogger.AsyncWrite(rawMsg)
 					err := ep.receiveMsgFunc(rawMsg)
 					if err != nil {
@@ -198,8 +198,8 @@ func (ep *Endpoint) dataListener() {
 // 				zap.L().Debug("serial port reconnected successfully", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name))
 // 				ep.Port = port
 // 				go ep.dataListener() // if connection success, start read listener
-// 				state := model.State{
-// 					Status:  model.StatusUp,
+// 				state := types.State{
+// 					Status:  types.StatusUp,
 // 					Message: "Reconnected successfully",
 // 					Since:   time.Now(),
 // 				}
@@ -207,8 +207,8 @@ func (ep *Endpoint) dataListener() {
 // 				return
 // 			}
 // 			zap.L().Error("Error on opening a port", zap.String("gateway", ep.GwCfg.ID), zap.String("port", ep.serCfg.Name), zap.Error(err))
-// 			state := model.State{
-// 				Status:  model.StatusDown,
+// 			state := types.State{
+// 				Status:  types.StatusDown,
 // 				Message: err.Error(),
 // 				Since:   time.Now(),
 // 			}

@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
 )
 
@@ -34,12 +34,12 @@ func (c *NoopClient) Close() error { return nil }
 func (c *NoopClient) Post(variables map[string]interface{}) error { return nil }
 
 // State implementation
-func (c *NoopClient) State() *model.State {
+func (c *NoopClient) State() *types.State {
 	if c.HandlerCfg != nil {
 		if c.HandlerCfg.State == nil {
-			c.HandlerCfg.State = &model.State{}
+			c.HandlerCfg.State = &types.State{}
 		}
 		return c.HandlerCfg.State
 	}
-	return &model.State{}
+	return &types.State{}
 }

@@ -5,35 +5,35 @@ import (
 	"fmt"
 
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
-	rsML "github.com/mycontroller-org/server/v2/pkg/model/resource_service"
-	"github.com/mycontroller-org/server/v2/pkg/model/task"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
+	"github.com/mycontroller-org/server/v2/pkg/types/task"
 	"go.uber.org/zap"
 )
 
-func taskService(reqEvent *rsML.ServiceEvent) error {
-	resEvent := &rsML.ServiceEvent{
+func taskService(reqEvent *rsTY.ServiceEvent) error {
+	resEvent := &rsTY.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
 	}
 
 	switch reqEvent.Command {
-	case rsML.CommandGet:
+	case rsTY.CommandGet:
 		data, err := getTask(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
-	case rsML.CommandUpdateState:
+	case rsTY.CommandUpdateState:
 		err := updateTaskState(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 
-	case rsML.CommandLoadAll:
+	case rsTY.CommandLoadAll:
 		taskAPI.LoadAll()
 
-	case rsML.CommandDisable:
+	case rsTY.CommandDisable:
 		return disableTask(reqEvent)
 
 	default:
@@ -42,7 +42,7 @@ func taskService(reqEvent *rsML.ServiceEvent) error {
 	return postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getTask(request *rsML.ServiceEvent) (interface{}, error) {
+func getTask(request *rsTY.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
 		cfg, err := taskAPI.GetByID(request.ID)
 		if err != nil {
@@ -60,7 +60,7 @@ func getTask(request *rsML.ServiceEvent) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func updateTaskState(reqEvent *rsML.ServiceEvent) error {
+func updateTaskState(reqEvent *rsTY.ServiceEvent) error {
 	if reqEvent.Data == nil {
 		zap.L().Error("handler state not supplied", zap.Any("event", reqEvent))
 		return errors.New("handler state not supplied")
@@ -76,7 +76,7 @@ func updateTaskState(reqEvent *rsML.ServiceEvent) error {
 	return taskAPI.SetState(reqEvent.ID, state)
 }
 
-func disableTask(reqEvent *rsML.ServiceEvent) error {
+func disableTask(reqEvent *rsTY.ServiceEvent) error {
 	if reqEvent.Data == nil {
 		zap.L().Error("Task id not supplied", zap.Any("event", reqEvent))
 		return errors.New("id not supplied")

@@ -1,23 +1,23 @@
 package task
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	busML "github.com/mycontroller-org/server/v2/pkg/model/bus"
-	eventML "github.com/mycontroller-org/server/v2/pkg/model/bus/event"
-	dataRepositoryML "github.com/mycontroller-org/server/v2/pkg/model/data_repository"
-	fieldML "github.com/mycontroller-org/server/v2/pkg/model/field"
-	gatewayML "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	nodeML "github.com/mycontroller-org/server/v2/pkg/model/node"
-	"github.com/mycontroller-org/server/v2/pkg/model/source"
-	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	dataRepositoryTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
+	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	"github.com/mycontroller-org/server/v2/pkg/types/source"
+	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
+	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 	"go.uber.org/zap"
 )
 
 type eventWrapper struct {
-	Event *eventML.Event
-	Tasks []taskML.Config
+	Event *eventTY.Event
+	Tasks []taskTY.Config
 }
 
 const (
@@ -61,7 +61,7 @@ func closeEventListener() error {
 	return nil
 }
 
-func onEventReceive(busData *busML.BusData) {
+func onEventReceive(busData *busTY.BusData) {
 	status := preEventsQueue.Produce(busData)
 	if !status {
 		zap.L().Warn("failed to store the event into queue", zap.Any("event", busData))
@@ -69,9 +69,9 @@ func onEventReceive(busData *busML.BusData) {
 }
 
 func processPreEvent(item interface{}) {
-	busData := item.(*busML.BusData)
+	busData := item.(*busTY.BusData)
 
-	event := &eventML.Event{}
+	event := &eventTY.Event{}
 	err := busData.LoadData(event)
 	if err != nil {
 		zap.L().Warn("error on convet to target type", zap.Any("topic", busData.Topic), zap.Error(err))
@@ -82,20 +82,20 @@ func processPreEvent(item interface{}) {
 
 	// supported entity events
 	switch event.EntityType {
-	case model.EntityGateway:
-		out = &gatewayML.Config{}
+	case types.EntityGateway:
+		out = &gatewayTY.Config{}
 
-	case model.EntityNode:
-		out = &nodeML.Node{}
+	case types.EntityNode:
+		out = &nodeTY.Node{}
 
-	case model.EntitySource:
+	case types.EntitySource:
 		out = &source.Source{}
 
-	case model.EntityField:
-		out = &fieldML.Field{}
+	case types.EntityField:
+		out = &fieldTY.Field{}
 
-	case model.EntityDataRepository:
-		out = &dataRepositoryML.Config{}
+	case types.EntityDataRepository:
+		out = &dataRepositoryTY.Config{}
 
 	default:
 		// return do not proceed further

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
-	"github.com/mycontroller-org/server/v2/pkg/model"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/ziputils"
 	"go.uber.org/zap"
@@ -14,7 +14,7 @@ import (
 // Backup creates zip file on a tmp location and returns the location details
 func Backup(prefix, storageExportType string) (string, error) {
 	timestamp := time.Now().Format("20060102_150405")
-	targetDir := fmt.Sprintf("%s/%s_%s_%s_%s", model.GetDirectoryTmp(), prefix, BackupIdentifier, storageExportType, timestamp)
+	targetDir := fmt.Sprintf("%s/%s_%s_%s_%s", types.GetDirectoryTmp(), prefix, BackupIdentifier, storageExportType, timestamp)
 	zipFilename := fmt.Sprintf("%s.zip", targetDir)
 
 	// export to tmp directory

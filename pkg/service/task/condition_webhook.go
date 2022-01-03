@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/model"
-	taskML "github.com/mycontroller-org/server/v2/pkg/model/task"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	"go.uber.org/zap"
@@ -14,11 +14,11 @@ import (
 
 const timeout = time.Second * 10
 
-func isTriggeredWebhook(taskID string, config taskML.EvaluationConfig, variables map[string]interface{}) (map[string]interface{}, bool) {
+func isTriggeredWebhook(taskID string, config taskTY.EvaluationConfig, variables map[string]interface{}) (map[string]interface{}, bool) {
 	whCfg := config.Webhook
 	client := httpclient.GetClient(whCfg.InsecureSkipVerify, timeout)
 	if !whCfg.IncludeConfig {
-		delete(variables, model.KeyTask)
+		delete(variables, types.KeyTask)
 	}
 
 	if whCfg.Method == "" {
@@ -45,7 +45,7 @@ func isTriggeredWebhook(taskID string, config taskML.EvaluationConfig, variables
 
 	zap.L().Debug("webhook response", zap.String("taskID", taskID), zap.Any("response", resultMap))
 	if len(resultMap) > 0 {
-		isTriggered, isTriggeredFound := resultMap[taskML.KeyIsTriggered]
+		isTriggered, isTriggeredFound := resultMap[taskTY.KeyIsTriggered]
 		if isTriggeredFound {
 			return resultMap, converterUtils.ToBool(isTriggered)
 		}
