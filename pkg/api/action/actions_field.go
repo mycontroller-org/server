@@ -7,18 +7,7 @@ import (
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
-
-// toFieldByID sends the payload to the given field
-func toFieldByID(id string, payload string) error {
-	filters := []storageTY.Filter{{Key: types.KeyID, Value: id}}
-	field, err := fieldAPI.Get(filters)
-	if err != nil {
-		return err
-	}
-	return toField(field.GatewayID, field.NodeID, field.SourceID, field.FieldID, payload)
-}
 
 // ToFieldByQuickID sends the payload to the given field
 func ToFieldByQuickID(quickID string, payload string) error {
