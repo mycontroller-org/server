@@ -386,11 +386,18 @@ func updateNodeInternalMessages(msg *msgTY.Message, msgPL *msgTY.Payload, msMsg 
 				msgPL.Others.Set(LabelLockedReason, msMsg.Payload, nil)
 				msgPL.Value = "true"
 
-			case LabelSmartSleepingNode, types.FieldHeartbeat:
+			case LabelSmartSleepNode, types.FieldHeartbeat:
+				// mark it as sleeping node
+				if fieldName == LabelSmartSleepNode {
+					msgPL.Labels.Set(types.LabelNodeSleepNode, "true")
+					msgPL.Labels.Set(LabelSmartSleepNode, "true")
+				}
 				switch typeName {
 				case "I_PRE_SLEEP_NOTIFICATION", "I_HEARTBEAT_RESPONSE":
+					awakeDuration := ""
 					if typeName == "I_PRE_SLEEP_NOTIFICATION" {
 						msgPL.Others.Set(FieldAwakeDuration, msMsg.Payload, nil)
+						awakeDuration = msMsg.Payload
 					}
 					// post an action to sen the messages in the queue
 					awakeActionMsg := &msgTY.Message{
@@ -400,7 +407,7 @@ func updateNodeInternalMessages(msg *msgTY.Message, msgPL *msgTY.Payload, msMsg 
 						IsReceived: true,
 						Timestamp:  msg.Timestamp,
 						Type:       msgTY.TypeAction,
-						Payloads:   []msgTY.Payload{{Key: nodeTY.ActionAwake, Value: nodeTY.ActionAwake}},
+						Payloads:   []msgTY.Payload{{Key: nodeTY.ActionAwake, Value: awakeDuration}},
 					}
 					extraMessages = append(extraMessages, awakeActionMsg)
 

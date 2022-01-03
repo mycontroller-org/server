@@ -63,13 +63,13 @@ func ExecuteActionOnResourceByQuickID(data *handlerTY.ResourceData) error {
 	case utils.ContainsString(quickIdUtils.QuickIDNode, resourceType):
 		gatewayID := kvMap[types.KeyGatewayID]
 		nodeID := kvMap[types.KeyNodeID]
-		return toNode(gatewayID, nodeID, data.Payload)
+		return toNode(nil, gatewayID, nodeID, data.Payload)
 
 	case utils.ContainsString(quickIdUtils.QuickIDSource, resourceType):
 		// no action needed
 
 	case utils.ContainsString(quickIdUtils.QuickIDField, resourceType):
-		return ToField(kvMap[types.KeyGatewayID], kvMap[types.KeyNodeID], kvMap[types.KeySourceID], kvMap[types.KeyFieldID], data.Payload)
+		return toField(kvMap[types.KeyGatewayID], kvMap[types.KeyNodeID], kvMap[types.KeySourceID], kvMap[types.KeyFieldID], data.Payload)
 
 	case utils.ContainsString(quickIdUtils.QuickIDTask, resourceType):
 		return toTask(kvMap[types.KeyID], data.Payload)
@@ -126,7 +126,7 @@ func ExecuteActionOnResourceByLabels(data *handlerTY.ResourceData) error {
 		items := result.Data.(*[]nodeTY.Node)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
-			err = toNode(item.GatewayID, item.NodeID, data.Payload)
+			err = toNode(&item, item.GatewayID, item.NodeID, data.Payload)
 			if err != nil {
 				zap.L().Error("error on sending data", zap.Error(err), zap.String("nodeID", item.ID), zap.String("payload", data.Payload))
 			}
@@ -146,7 +146,7 @@ func ExecuteActionOnResourceByLabels(data *handlerTY.ResourceData) error {
 		items := result.Data.(*[]fieldTY.Field)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
-			err = ToField(item.GatewayID, item.NodeID, item.SourceID, item.FieldID, data.Payload)
+			err = toField(item.GatewayID, item.NodeID, item.SourceID, item.FieldID, data.Payload)
 			if err != nil {
 				zap.L().Error("error on sending data", zap.Error(err), zap.String("fieldID", item.ID), zap.String("payload", data.Payload))
 			}

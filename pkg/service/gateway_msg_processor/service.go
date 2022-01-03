@@ -527,6 +527,7 @@ func requestFieldData(msg *msgTY.Message) error {
 		clonedMsg.Timestamp = time.Now() // set current timestamp
 		clonedMsg.Payloads = payloads    // update payload
 		clonedMsg.Type = msgTY.TypeSet   // change type to set
+		clonedMsg.IsSleepNode = false    // response immediately, do not check "is a sleeping node"
 		postMessage(clonedMsg)
 	} else {
 		zap.L().Debug("no data found for this request", zap.Any("message", msg))

@@ -29,7 +29,7 @@ func ExecuteNodeAction(action string, nodeIDs []string) error {
 	}
 	for index := 0; index < len(nodes); index++ {
 		node := nodes[index]
-		err = toNode(node.GatewayID, node.NodeID, action)
+		err = toNode(&node, node.GatewayID, node.NodeID, action)
 		if err != nil {
 			zap.L().Error("error on sending an action to a node", zap.Error(err), zap.String("gateway", node.GatewayID), zap.String("node", node.NodeID))
 		}
@@ -37,10 +37,21 @@ func ExecuteNodeAction(action string, nodeIDs []string) error {
 	return nil
 }
 
-func toNode(gatewayID, nodeID, action string) error {
+func toNode(node *nodeTY.Node, gatewayID, nodeID, action string) error {
 	msg := msgTY.NewMessage(false)
 	msg.GatewayID = gatewayID
 	msg.NodeID = nodeID
+
+	// get node details and update isPassiveNode
+	if node == nil {
+		node, err := nodeAPI.GetByGatewayAndNodeID(gatewayID, nodeID)
+		if err != nil {
+			msg.IsSleepNode = node.IsSleepNode()
+		}
+	} else {
+		msg.IsSleepNode = node.IsSleepNode()
+	}
+
 	pl := msgTY.NewPayload()
 	pl.Key = action
 	pl.Value = ""

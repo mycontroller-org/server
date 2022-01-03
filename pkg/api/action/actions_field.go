@@ -2,6 +2,7 @@ package action
 
 import (
 	fieldAPI "github.com/mycontroller-org/server/v2/pkg/api/field"
+	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
@@ -9,14 +10,14 @@ import (
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 )
 
-// ToFieldByID sends the payload to the given field
-func ToFieldByID(id string, payload string) error {
+// toFieldByID sends the payload to the given field
+func toFieldByID(id string, payload string) error {
 	filters := []storageTY.Filter{{Key: types.KeyID, Value: id}}
 	field, err := fieldAPI.Get(filters)
 	if err != nil {
 		return err
 	}
-	return ToField(field.GatewayID, field.NodeID, field.SourceID, field.FieldID, payload)
+	return toField(field.GatewayID, field.NodeID, field.SourceID, field.FieldID, payload)
 }
 
 // ToFieldByQuickID sends the payload to the given field
@@ -31,11 +32,11 @@ func ToFieldByQuickID(quickID string, payload string) error {
 	if err != nil {
 		return err
 	}
-	return ToField(field.GatewayID, field.NodeID, field.SourceID, field.FieldID, payload)
+	return toField(field.GatewayID, field.NodeID, field.SourceID, field.FieldID, payload)
 }
 
-// ToField sends the payload to the given ids
-func ToField(gatewayID, nodeID, sourceID, fieldID, payload string) error {
+// toField sends the payload to the given ids
+func toField(gatewayID, nodeID, sourceID, fieldID, payload string) error {
 	if payload == types.ActionToggle {
 		// get field current data
 		field, err := fieldAPI.GetByIDs(gatewayID, nodeID, sourceID, fieldID)
@@ -54,6 +55,13 @@ func ToField(gatewayID, nodeID, sourceID, fieldID, payload string) error {
 	msg.GatewayID = gatewayID
 	msg.NodeID = nodeID
 	msg.SourceID = sourceID
+
+	// get node details and update isPassiveNode
+	node, err := nodeAPI.GetByGatewayAndNodeID(gatewayID, nodeID)
+	if err != nil {
+		msg.IsSleepNode = node.IsSleepNode()
+	}
+
 	pl := msgTY.NewPayload()
 	pl.Key = fieldID
 	pl.Value = payload

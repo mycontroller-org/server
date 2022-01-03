@@ -15,7 +15,7 @@ const (
 	LabelWriteOnly = "writeonly"
 
 	// Node specific labels
-	LabelNodeIsSleepingNode   = "is_sleeping_node"
+	LabelNodeSleepNode        = "sleep_node"
 	LabelNodeVersion          = "version"
 	LabelNodeLibraryVersion   = "library_version"
 	LabelNodeAssignedFirmware = "assigned_firmware"

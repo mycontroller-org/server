@@ -10,17 +10,17 @@ import (
 
 // Labels and fields used in this provider
 const (
-	LabelImperialSystem    = "ms_imperial_system"     // this is bool label, used to configure about the system metric or imperial
-	LabelNodeID            = "ms_node_id"             // MySensors node id
-	LabelSensorID          = "ms_sensor_id"           // MySensors sensor id
-	LabelType              = "ms_type"                // MySensors type reference, can be used for sensor fields
-	LabelTypeString        = "ms_type_string"         // MySensors type in string format
-	LabelNodeType          = "ms_node_type"           // MySensors node type
-	LabelLockedReason      = "ms_locked_reason"       // If the the node is locked, reason will be in this label
-	LabelEraseEEPROM       = "ms_erase_eeprom"        // Supports only for MYSBootloader, on a reboot of node, the node eeprom will be erased
-	LabelFirmwareTypeID    = "ms_type_id"             // MySensors firmware type id
-	LabelFirmwareVersionID = "ms_version_id"          // MySensors firmware version id
-	LabelSmartSleepingNode = "ms_smart_sleeping_node" // set true, if it is a smart sleeping node
+	LabelImperialSystem    = "ms_imperial_system"  // this is bool label, used to configure about the system metric or imperial
+	LabelNodeID            = "ms_node_id"          // MySensors node id
+	LabelSensorID          = "ms_sensor_id"        // MySensors sensor id
+	LabelType              = "ms_type"             // MySensors type reference, can be used for sensor fields
+	LabelTypeString        = "ms_type_string"      // MySensors type in string format
+	LabelNodeType          = "ms_node_type"        // MySensors node type
+	LabelLockedReason      = "ms_locked_reason"    // If the the node is locked, reason will be in this label
+	LabelEraseEEPROM       = "ms_erase_eeprom"     // Supports only for MYSBootloader, on a reboot of node, the node eeprom will be erased
+	LabelFirmwareTypeID    = "ms_type_id"          // MySensors firmware type id
+	LabelFirmwareVersionID = "ms_version_id"       // MySensors firmware version id
+	LabelSmartSleepNode    = "ms_smart_sleep_node" // set true, if it is a smart sleeping node
 
 	FieldAwakeDuration = "awake_duration" // smart sleep node awake duration
 	FieldSleepDuration = "sleep_duration" // smart sleep node sleep duration
@@ -246,8 +246,8 @@ var internalValidFields = map[string]string{
 	"I_SKETCH_NAME":             types.FieldName,
 	"I_SKETCH_VERSION":          types.LabelNodeVersion,
 	"I_VERSION":                 types.LabelNodeLibraryVersion,
-	"I_PRE_SLEEP_NOTIFICATION":  LabelSmartSleepingNode,
-	"I_POST_SLEEP_NOTIFICATION": LabelSmartSleepingNode,
+	"I_PRE_SLEEP_NOTIFICATION":  LabelSmartSleepNode,
+	"I_POST_SLEEP_NOTIFICATION": LabelSmartSleepNode,
 }
 
 // MySensors should implement globally defined features for the request

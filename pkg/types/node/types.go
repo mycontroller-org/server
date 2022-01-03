@@ -29,3 +29,10 @@ type Node struct {
 	LastSeen   time.Time            `json:"lastSeen"`
 	ModifiedOn time.Time            `json:"modifiedOn"`
 }
+
+func (n *Node) IsSleepNode() bool {
+	if n.Labels != nil && n.Labels.GetBool(types.LabelNodeSleepNode) {
+		return true
+	}
+	return false
+}
