@@ -21,9 +21,9 @@ func QueryResource(resourceID, resourceType, command string, data interface{}, c
 
 // QueryService posts as request to a service, on response calls the callback
 func QueryService(serviceTopic, resourceID, resourceType, command string, data interface{}, callBack func(item interface{}) bool, out interface{}, timeout time.Duration) error {
-	// NOTE: when we have 'capacity' as '0', deadlocked somewhere, never returned from 'closeChan.SafeClose()'
-	// for now changed the capacity to '1', and works as expected
-	// TODO: find the blocker call and fix it
+	// NOTE: when we receive response from multiple gateways, deadlock happens when the capacity is '0'
+	// for now changed the capacity to '20', it means supports up to 20 listening gateways
+	// TODO: This is not a right fix. introduce a permanent fix
 	closeChan := concurrency.NewChannel(1)
 	defer closeChan.SafeClose()
 
