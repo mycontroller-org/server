@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/types"
@@ -12,6 +13,7 @@ import (
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	cloneutil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	gwPlugin "github.com/mycontroller-org/server/v2/plugin/gateway"
 	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
@@ -22,7 +24,7 @@ import (
 const (
 	queueSizeMessage          = 200
 	queueSizeRawMessage       = 200
-	sleepingQueuePerNodeLimit = 20
+	sleepingQueuePerNodeLimit = 20 // number of messages can be in sleeping queue per node
 	workersMessage            = 1
 	workersRawMessage         = 1
 
@@ -153,6 +155,11 @@ func (s *Service) messageConsumer(item interface{}) {
 		return
 	}
 
+	// include timestamp, if not set
+	if msg.Timestamp.IsZero() {
+		msg.Timestamp = time.Now()
+	}
+
 	// if it is awake message send the sleeping queue messages
 	if msg.Type == msgTY.TypeAction && len(msg.Payloads) > 0 && msg.Payloads[0].Key == nodeTY.ActionAwake {
 		s.publishSleepingMessageQueue(msg.NodeID)
@@ -163,17 +170,17 @@ func (s *Service) messageConsumer(item interface{}) {
 		s.addToSleepingMessageQueue(msg)
 		return
 	} else {
-		s.postMessage(msg, true)
+		s.postMessage(msg, s.GatewayConfig.QueueFailedMessage)
 	}
 
 }
 
 // postMessage to the provider
-func (s *Service) postMessage(msg *msgTY.Message, addToSleepingQueue bool) {
+func (s *Service) postMessage(msg *msgTY.Message, queueFailedMessage bool) {
 	err := s.provider.Post(msg)
 	if err != nil {
 		zap.L().Warn("error on sending", zap.String("gateway", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
-		if addToSleepingQueue && s.GatewayConfig.QueueFailedMessage {
+		if queueFailedMessage {
 			s.addToSleepingMessageQueue(msg)
 		}
 	}
@@ -255,5 +262,47 @@ func (s *Service) publishSleepingMessageQueue(nodeID string) {
 	}
 
 	// remove mesages from the map
+	s.sleepingMessageQueue[nodeID] = make([]msgTY.Message, 0)
+}
+
+// returns sleeping queue messages
+func (s *Service) GetGatewaySleepingQueue() map[string][]msgTY.Message {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
+	// clone the queue and return
+	clonedQueue := cloneutil.Clone(s.sleepingMessageQueue)
+	return clonedQueue.(map[string][]msgTY.Message)
+}
+
+// returns sleeping queue messages
+func (s *Service) GetNodeSleepingQueue(nodeID string) []msgTY.Message {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
+	msgQueue, ok := s.sleepingMessageQueue[nodeID]
+	if !ok {
+		return make([]msgTY.Message, 0)
+	}
+	// clone the queue and return
+	clonedQueue := cloneutil.Clone(msgQueue)
+	return clonedQueue.([]msgTY.Message)
+}
+
+// clear all sleeping messages
+func (s *Service) ClearGatewaySleepingQueue() {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
+	// clear all the messages
+	s.sleepingMessageQueue = make(map[string][]msgTY.Message)
+}
+
+// clear sleeping queue message of a node
+func (s *Service) ClearNodeSleepingQueue(nodeID string) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
+	// remove mesages for a node
 	s.sleepingMessageQueue[nodeID] = make([]msgTY.Message, 0)
 }

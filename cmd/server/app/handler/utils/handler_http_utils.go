@@ -136,3 +136,21 @@ func PostSuccessResponse(w http.ResponseWriter, data interface{}) {
 
 	WriteResponse(w, out)
 }
+
+// GetParameter returns a first value or empty
+func GetParameter(key string, parameters map[string][]string) string {
+	values, ok := parameters[key]
+	if ok && len(values) > 0 {
+		return values[0]
+	}
+	return ""
+}
+
+// GetParameters returns all values or empty slice
+func GetParameters(key string, parameters map[string][]string) []string {
+	values, ok := parameters[key]
+	if ok && len(values) > 0 {
+		return values
+	}
+	return []string{}
+}

@@ -61,7 +61,7 @@ func getTask(request *rsTY.ServiceEvent) (interface{}, error) {
 }
 
 func updateTaskState(reqEvent *rsTY.ServiceEvent) error {
-	if reqEvent.Data == nil {
+	if reqEvent.Data == "" {
 		zap.L().Error("handler state not supplied", zap.Any("event", reqEvent))
 		return errors.New("handler state not supplied")
 	}
@@ -77,8 +77,8 @@ func updateTaskState(reqEvent *rsTY.ServiceEvent) error {
 }
 
 func disableTask(reqEvent *rsTY.ServiceEvent) error {
-	if reqEvent.Data == nil {
-		zap.L().Error("Task id not supplied", zap.Any("event", reqEvent))
+	if reqEvent.Data == "" {
+		zap.L().Error("task id not supplied", zap.Any("event", reqEvent))
 		return errors.New("id not supplied")
 	}
 

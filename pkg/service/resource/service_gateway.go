@@ -60,7 +60,7 @@ func getGateway(request *rsTY.ServiceEvent) (interface{}, error) {
 }
 
 func updateGatewayState(reqEvent *rsTY.ServiceEvent) error {
-	if reqEvent.Data == nil {
+	if reqEvent.Data == "" {
 		zap.L().Error("gateway state not supplied", zap.Any("event", reqEvent))
 		return errors.New("gateway state not supplied")
 	}

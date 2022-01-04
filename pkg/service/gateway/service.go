@@ -6,6 +6,7 @@ import (
 
 	commonStore "github.com/mycontroller-org/server/v2/pkg/store"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
@@ -97,5 +98,39 @@ func UnloadAll() {
 		if err != nil {
 			zap.L().Error("error on stopping a gateway", zap.String("id", id))
 		}
+	}
+}
+
+// returns sleeping queue messages from the given gateway ID
+func getGatewaySleepingQueue(gatewayID string) map[string][]msgTY.Message {
+	service := gwService.Get(gatewayID)
+	if service != nil {
+		return service.GetGatewaySleepingQueue()
+	}
+	return nil
+}
+
+// returns sleeping queue messages from the given gateway ID and node ID
+func getNodeSleepingQueue(gatewayID, nodeID string) []msgTY.Message {
+	service := gwService.Get(gatewayID)
+	if service != nil {
+		return service.GetNodeSleepingQueue(nodeID)
+	}
+	return nil
+}
+
+// clears sleeping queue of a gateway
+func clearGatewaySleepingQueue(gatewayID string) {
+	service := gwService.Get(gatewayID)
+	if service != nil {
+		service.ClearGatewaySleepingQueue()
+	}
+}
+
+// clears sleeping queue of a node
+func clearNodeSleepingQueue(gatewayID, nodeID string) {
+	service := gwService.Get(gatewayID)
+	if service != nil {
+		service.ClearNodeSleepingQueue(nodeID)
 	}
 }

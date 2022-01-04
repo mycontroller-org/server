@@ -29,7 +29,7 @@ func resourceActionService(reqEvent *rsTY.ServiceEvent) error {
 }
 
 func getResourceData(reqEvent *rsTY.ServiceEvent) (*handlerTY.ResourceData, error) {
-	if reqEvent.Data == nil {
+	if reqEvent.Data == "" {
 		return nil, errors.New("data not supplied")
 	}
 	data := &handlerTY.ResourceData{}

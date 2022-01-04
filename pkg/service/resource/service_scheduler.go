@@ -60,7 +60,7 @@ func getScheduler(request *rsTY.ServiceEvent) (interface{}, error) {
 }
 
 func updateSchedulerState(reqEvent *rsTY.ServiceEvent) error {
-	if reqEvent.Data == nil {
+	if reqEvent.Data == "" {
 		zap.L().Error("state not supplied", zap.Any("event", reqEvent))
 		return errors.New("state not supplied")
 	}
@@ -76,7 +76,7 @@ func updateSchedulerState(reqEvent *rsTY.ServiceEvent) error {
 }
 
 func disableScheduler(reqEvent *rsTY.ServiceEvent) error {
-	if reqEvent.Data == nil {
+	if reqEvent.Data == "" {
 		zap.L().Error("scheduler id not supplied", zap.Any("event", reqEvent))
 		return errors.New("id not supplied")
 	}

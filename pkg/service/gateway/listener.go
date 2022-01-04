@@ -6,6 +6,7 @@ import (
 	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
@@ -131,6 +132,12 @@ func processEvent(event interface{}) {
 	case rsTY.CommandUnloadAll:
 		UnloadAll()
 
+	case rsTY.CommandGetSleepingQueue:
+		processSleepingQueueRequest(reqEvent)
+
+	case rsTY.CommandClearSleepingQueue:
+		clearSleepingQueue(reqEvent)
+
 	default:
 		zap.L().Warn("unsupported command", zap.Any("event", reqEvent))
 	}
@@ -144,4 +151,67 @@ func getGatewayConfig(reqEvent *rsTY.ServiceEvent) *gwTY.Config {
 		return nil
 	}
 	return cfg
+}
+
+// clear sleeping queue messages
+func clearSleepingQueue(reqEvent *rsTY.ServiceEvent) {
+	ids := make(map[string]interface{})
+	err := reqEvent.LoadData(&ids)
+	if err != nil {
+		zap.L().Error("error on parsing input", zap.Error(err), zap.Any("input", reqEvent))
+		return
+	}
+	gatewayID := utils.GetMapValueString(ids, types.KeyGatewayID, "")
+	nodeID := utils.GetMapValueString(ids, types.KeyNodeID, "")
+	if gatewayID == "" {
+		return
+	}
+	if nodeID != "" {
+		clearNodeSleepingQueue(gatewayID, nodeID)
+	} else {
+		clearGatewaySleepingQueue(gatewayID)
+	}
+}
+
+// process request from server and sends the available queue message details
+func processSleepingQueueRequest(reqEvent *rsTY.ServiceEvent) {
+	ids := make(map[string]interface{})
+	err := reqEvent.LoadData(&ids)
+	if err != nil {
+		zap.L().Error("error on parsing input", zap.Error(err), zap.Any("input", reqEvent))
+		return
+	}
+	gatewayID := utils.GetMapValueString(ids, types.KeyGatewayID, "")
+	nodeID := utils.GetMapValueString(ids, types.KeyNodeID, "")
+	if gatewayID == "" {
+		return
+	}
+
+	resEvent := &rsTY.ServiceEvent{
+		Type:    reqEvent.Type,
+		Command: reqEvent.ReplyCommand,
+	}
+
+	var receivedMessages interface{}
+	if nodeID != "" {
+		receivedMessages = getNodeSleepingQueue(gatewayID, nodeID)
+	} else {
+		receivedMessages = getGatewaySleepingQueue(gatewayID)
+	}
+
+	if receivedMessages != nil {
+		resEvent.SetData(receivedMessages)
+		err = postResponse(reqEvent.ReplyTopic, resEvent)
+		if err != nil {
+			zap.L().Error("error on sending response", zap.Error(err), zap.Any("request", reqEvent))
+		}
+	}
+}
+
+// post response to a topic
+func postResponse(topic string, response *rsTY.ServiceEvent) error {
+	if topic == "" {
+		return nil
+	}
+	return mcbus.Publish(topic, response)
 }

@@ -16,10 +16,15 @@ import (
 
 // QueryResource posts as request on response calls the callback
 func QueryResource(resourceID, resourceType, command string, data interface{}, callBack func(item interface{}) bool, out interface{}, timeout time.Duration) error {
+	return QueryService(mcbus.TopicServiceResourceServer, resourceID, resourceType, command, data, callBack, out, timeout)
+}
+
+// QueryService posts as request to a service, on response calls the callback
+func QueryService(serviceTopic, resourceID, resourceType, command string, data interface{}, callBack func(item interface{}) bool, out interface{}, timeout time.Duration) error {
 	closeChan := concurrency.NewChannel(0)
 	defer closeChan.SafeClose()
 
-	replyTopic := mcbus.FormatTopic(fmt.Sprintf("query_response_%s", utils.RandIDWithLength(5)))
+	replyTopic := mcbus.FormatTopic(fmt.Sprintf("internal_query_response_%s", utils.RandIDWithLength(5)))
 	sID, err := mcbus.Subscribe(replyTopic, responseFunc(closeChan, callBack, out))
 	if err != nil {
 		return err
@@ -35,7 +40,7 @@ func QueryResource(resourceID, resourceType, command string, data interface{}, c
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	busUtils.PostToResourceService(resourceID, data, resourceType, command, replyTopic)
+	busUtils.PostToService(serviceTopic, resourceID, data, resourceType, command, replyTopic)
 
 	select {
 	case <-closeChan.CH:

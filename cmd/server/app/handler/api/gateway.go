@@ -9,6 +9,7 @@ import (
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	gwAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
+	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
 )
@@ -22,6 +23,8 @@ func RegisterGatewayRoutes(router *mux.Router) {
 	router.HandleFunc("/api/gateway/disable", disableGateway).Methods(http.MethodPost)
 	router.HandleFunc("/api/gateway/reload", reloadGateway).Methods(http.MethodPost)
 	router.HandleFunc("/api/gateway", deleteGateways).Methods(http.MethodDelete)
+	router.HandleFunc("/api/gateway-sleeping-queue", getSleepingQueue).Methods(http.MethodGet)
+	router.HandleFunc("/api/gateway-sleeping-queue/clear", clearSleepingQueue).Methods(http.MethodGet)
 }
 
 func listGateways(w http.ResponseWriter, r *http.Request) {
@@ -112,4 +115,59 @@ func deleteGateways(w http.ResponseWriter, r *http.Request) {
 		return nil, errors.New("supply id(s)")
 	}
 	handlerUtils.UpdateData(w, r, &IDs, updateFn)
+}
+
+func getSleepingQueue(w http.ResponseWriter, r *http.Request) {
+	params, err := handlerUtils.ReceivedQueryMap(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	gatewayID := handlerUtils.GetParameter("gatewayId", params)
+	nodeID := handlerUtils.GetParameter("nodeId", params)
+
+	if gatewayID == "" {
+		http.Error(w, "gateway id can not be empty", http.StatusBadRequest)
+		return
+	}
+	if nodeID != "" {
+		messages, err := gwAPI.GetNodeSleepingQueue(gatewayID, nodeID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if messages == nil {
+			messages = make([]msgTY.Message, 0)
+		}
+		handlerUtils.PostSuccessResponse(w, messages)
+	} else {
+		messages, err := gwAPI.GetGatewaySleepingQueue(gatewayID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if messages == nil {
+			messages = make(map[string][]msgTY.Message)
+		}
+		handlerUtils.PostSuccessResponse(w, messages)
+	}
+}
+
+func clearSleepingQueue(w http.ResponseWriter, r *http.Request) {
+	params, err := handlerUtils.ReceivedQueryMap(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	gatewayID := handlerUtils.GetParameter("gatewayId", params)
+	nodeID := handlerUtils.GetParameter("nodeId", params)
+
+	if gatewayID == "" {
+		http.Error(w, "gateway id can not be empty", http.StatusBadRequest)
+		return
+	}
+	gwAPI.ClearSleepingQueue(gatewayID, nodeID)
+
 }

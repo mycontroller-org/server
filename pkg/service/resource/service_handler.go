@@ -57,7 +57,7 @@ func getHandler(request *rsTY.ServiceEvent) (interface{}, error) {
 }
 
 func updateHandlerState(reqEvent *rsTY.ServiceEvent) error {
-	if reqEvent.Data == nil {
+	if reqEvent.Data == "" {
 		zap.L().Error("handler state not supplied", zap.Any("event", reqEvent))
 		return errors.New("handler state not supplied")
 	}
