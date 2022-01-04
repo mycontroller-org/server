@@ -21,7 +21,10 @@ func QueryResource(resourceID, resourceType, command string, data interface{}, c
 
 // QueryService posts as request to a service, on response calls the callback
 func QueryService(serviceTopic, resourceID, resourceType, command string, data interface{}, callBack func(item interface{}) bool, out interface{}, timeout time.Duration) error {
-	closeChan := concurrency.NewChannel(0)
+	// NOTE: when we have 'capacity' as '0', deadlocked somewhere, never returned from 'closeChan.SafeClose()'
+	// for now changed the capacity to '1', and works as expected
+	// TODO: find the blocker call and fix it
+	closeChan := concurrency.NewChannel(1)
 	defer closeChan.SafeClose()
 
 	replyTopic := mcbus.FormatTopic(fmt.Sprintf("internal_query_response_%s", utils.RandIDWithLength(5)))
