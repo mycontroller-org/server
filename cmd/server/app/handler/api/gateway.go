@@ -168,6 +168,9 @@ func clearSleepingQueue(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "gateway id can not be empty", http.StatusBadRequest)
 		return
 	}
-	gwAPI.ClearSleepingQueue(gatewayID, nodeID)
-
+	err = gwAPI.ClearSleepingQueue(gatewayID, nodeID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 }
