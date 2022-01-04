@@ -141,6 +141,7 @@ func getSleepingQueue(w http.ResponseWriter, r *http.Request) {
 			messages = make([]msgTY.Message, 0)
 		}
 		handlerUtils.PostSuccessResponse(w, messages)
+		return
 	} else {
 		messages, err := gwAPI.GetGatewaySleepingQueue(gatewayID)
 		if err != nil {
@@ -151,6 +152,7 @@ func getSleepingQueue(w http.ResponseWriter, r *http.Request) {
 			messages = make(map[string][]msgTY.Message)
 		}
 		handlerUtils.PostSuccessResponse(w, messages)
+		return
 	}
 }
 
