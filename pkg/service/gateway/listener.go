@@ -192,15 +192,22 @@ func processSleepingQueueRequest(reqEvent *rsTY.ServiceEvent) {
 		Command: reqEvent.ReplyCommand,
 	}
 
-	var receivedMessages interface{}
+	messagesAvailable := false
 	if nodeID != "" {
-		receivedMessages = getNodeSleepingQueue(gatewayID, nodeID)
+		receivedMessages := getNodeSleepingQueue(gatewayID, nodeID)
+		if receivedMessages != nil {
+			resEvent.SetData(receivedMessages)
+			messagesAvailable = true
+		}
 	} else {
-		receivedMessages = getGatewaySleepingQueue(gatewayID)
+		receivedMessages := getGatewaySleepingQueue(gatewayID)
+		if receivedMessages != nil {
+			resEvent.SetData(receivedMessages)
+			messagesAvailable = true
+		}
 	}
 
-	if receivedMessages != nil {
-		resEvent.SetData(receivedMessages)
+	if messagesAvailable {
 		err = postResponse(reqEvent.ReplyTopic, resEvent)
 		if err != nil {
 			zap.L().Error("error on sending response", zap.Error(err), zap.Any("request", reqEvent))

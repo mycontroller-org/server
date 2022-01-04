@@ -36,7 +36,10 @@ func (s *store) Get(id string) *gwProvider.Service {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	return s.services[id]
+	if service, found := s.services[id]; found {
+		return service
+	}
+	return nil
 }
 
 func (s *store) ListIDs() []string {

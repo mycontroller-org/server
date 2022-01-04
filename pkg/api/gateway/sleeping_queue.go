@@ -16,6 +16,9 @@ const (
 	queryTimeout = time.Second * 2
 )
 
+// Limitations: if multiple gateway sends data for a request
+// for now shows only the first received data from a gateway
+
 // returns a sleeping queue from a gateway
 func GetGatewaySleepingQueue(gatewayID string) (map[string][]msgTY.Message, error) {
 	ids := map[string]interface{}{

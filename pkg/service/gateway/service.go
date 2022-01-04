@@ -102,19 +102,21 @@ func UnloadAll() {
 }
 
 // returns sleeping queue messages from the given gateway ID
-func getGatewaySleepingQueue(gatewayID string) map[string][]msgTY.Message {
+func getGatewaySleepingQueue(gatewayID string) *map[string][]msgTY.Message {
 	service := gwService.Get(gatewayID)
 	if service != nil {
-		return service.GetGatewaySleepingQueue()
+		messages := service.GetGatewaySleepingQueue()
+		return &messages
 	}
 	return nil
 }
 
 // returns sleeping queue messages from the given gateway ID and node ID
-func getNodeSleepingQueue(gatewayID, nodeID string) []msgTY.Message {
+func getNodeSleepingQueue(gatewayID, nodeID string) *[]msgTY.Message {
 	service := gwService.Get(gatewayID)
 	if service != nil {
-		return service.GetNodeSleepingQueue(nodeID)
+		messages := service.GetNodeSleepingQueue(nodeID)
+		return &messages
 	}
 	return nil
 }
