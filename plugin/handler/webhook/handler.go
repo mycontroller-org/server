@@ -189,8 +189,8 @@ func (c *WebhookClient) Post(data map[string]interface{}) error {
 		}
 		if err != nil {
 			zap.L().Error("error on webhook handler call", zap.Int("responseStatusCode", responseCode), zap.Error(err))
+			return err
 		}
-		return err
 	}
 
 	return nil
