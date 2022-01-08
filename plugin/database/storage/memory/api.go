@@ -144,8 +144,7 @@ func (s *Store) Delete(entityName string, filters []storageTY.Filter) (int64, er
 func (s *Store) getEntities(entityName string) []interface{} {
 	data, ok := s.data[entityName]
 	if !ok {
-		data = make([]interface{}, 0)
-		s.data[entityName] = data
+		return make([]interface{}, 0)
 	}
 	return data
 }

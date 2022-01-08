@@ -77,12 +77,14 @@ func processEvent(item interface{}) {
 		return
 	}
 
-	for client := range clients {
+	wsClients := getClients()
+	for index := range wsClients {
+		client := wsClients[index]
 		err := client.WriteMessage(ws.TextMessage, dataBytes)
 		if err != nil {
 			zap.L().Error("error on write to a client", zap.Error(err), zap.Any("client", client.LocalAddr().String()))
 			client.Close()
-			delete(clients, client)
+			unregisterClient(client)
 		}
 	}
 }
