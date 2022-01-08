@@ -20,7 +20,7 @@ func RegisterWebsocketRoutes(router *mux.Router) {
 
 var (
 	clients = make(map[*ws.Conn]bool) // connected clients
-	mutex   = sync.Mutex{}
+	mutex   = sync.RWMutex{}
 
 	upgrader = ws.Upgrader{
 		CheckOrigin: func(r *http.Request) bool { return true },
@@ -45,8 +45,8 @@ func unregisterClient(conn *ws.Conn) {
 
 // returns available websocket clients
 func getClients() []*ws.Conn {
-	mutex.Lock()
-	defer mutex.Unlock()
+	mutex.RLock()
+	defer mutex.RUnlock()
 
 	wsClients := make([]*ws.Conn, 0)
 	for client := range clients {
