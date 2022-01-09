@@ -258,7 +258,11 @@ func cbClosed(con *natsIO.Conn) {
 }
 
 func cbDisconnectedError(con *natsIO.Conn, err error) {
-	PrintWarn("disconnected", zap.String("error", err.Error()))
+	if err != nil {
+		PrintWarn("disconnected", zap.String("error", err.Error()))
+	} else {
+		PrintWarn("disconnected")
+	}
 }
 
 func (c *Client) generateSubscriptionID() int64 {
