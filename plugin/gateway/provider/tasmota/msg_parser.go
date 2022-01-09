@@ -89,7 +89,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 	// helper functions
 
 	addIntoMessages := func(msg *msgTY.Message) {
-		if len(msg.Payloads) > 0 {
+		if msg != nil && len(msg.Payloads) > 0 {
 			messages = append(messages, msg)
 		}
 	}
@@ -530,6 +530,8 @@ func (p *Provider) getNodeMessage(nodeID string, data map[string]interface{}) *m
 		msg := p.createMessage(nodeID, sourceIDNone, msgTY.TypePresentation)
 		msg.Payloads = payloads
 		return msg
+	} else {
+		zap.L().Info("message processed without payload", zap.String("nodeId", nodeID), zap.Any("data", data))
 	}
 	return nil
 }
