@@ -10,7 +10,7 @@ import (
 	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	mqtt "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_mqtt"
 	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
-	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 )
 
 const PluginTasmota = "tasmota"

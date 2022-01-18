@@ -9,7 +9,7 @@ import (
 	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 

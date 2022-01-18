@@ -15,7 +15,7 @@ import (
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/bus_utils/query"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
 )
 

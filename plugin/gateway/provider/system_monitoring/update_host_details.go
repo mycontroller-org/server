@@ -8,7 +8,7 @@ import (
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/version"
-	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	"github.com/shirou/gopsutil/v3/host"
 	"go.uber.org/zap"
 )

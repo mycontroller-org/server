@@ -13,7 +13,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	msglogger "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/message_logger"
-	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	serialDriver "github.com/tarm/serial"
 	"go.uber.org/zap"
 )

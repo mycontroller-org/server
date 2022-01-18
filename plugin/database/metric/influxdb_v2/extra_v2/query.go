@@ -8,7 +8,7 @@ import (
 
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	queryTY "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra"
-	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	"go.uber.org/zap"
 )
 

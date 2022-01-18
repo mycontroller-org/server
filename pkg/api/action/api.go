@@ -19,9 +19,9 @@ import (
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
-	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 

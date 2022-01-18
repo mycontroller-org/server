@@ -5,7 +5,7 @@ import (
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
 

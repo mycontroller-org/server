@@ -5,7 +5,7 @@ import (
 
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
-	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 )
 
 // This function is like route for globally defined features for the request like reboot, discover, etc.,

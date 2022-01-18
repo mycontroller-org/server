@@ -13,7 +13,7 @@ import (
 	fedPayloadTY "github.com/mycontroller-org/server/v2/pkg/types/forward_payload"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
 

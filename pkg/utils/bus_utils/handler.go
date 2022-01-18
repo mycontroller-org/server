@@ -5,7 +5,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 

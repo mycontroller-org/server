@@ -10,7 +10,7 @@ import (
 	fieldAPI "github.com/mycontroller-org/server/v2/pkg/api/field"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // RegisterFieldRoutes registers field api

@@ -9,7 +9,7 @@ import (
 	cfgTY "github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	storagePlugin "github.com/mycontroller-org/server/v2/plugin/database/storage"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
 

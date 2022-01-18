@@ -10,7 +10,7 @@ import (
 	fwAPI "github.com/mycontroller-org/server/v2/pkg/api/firmware"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	fwTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // RegisterFirmwareRoutes registers firmware api

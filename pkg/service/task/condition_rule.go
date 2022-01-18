@@ -10,7 +10,7 @@ import (
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	tplUtils "github.com/mycontroller-org/server/v2/pkg/utils/template"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
 

@@ -8,7 +8,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // FilterByStringMap filter

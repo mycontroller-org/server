@@ -7,7 +7,7 @@ import (
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	"github.com/mycontroller-org/server/v2/pkg/api/action"
 	webHandlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 )
 
 const (

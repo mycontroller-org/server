@@ -10,7 +10,7 @@ import (
 	dashboardAPI "github.com/mycontroller-org/server/v2/pkg/api/dashboard"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	dashboardTY "github.com/mycontroller-org/server/v2/pkg/types/dashboard"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // RegisterDashboardRoutes registers dashboard api

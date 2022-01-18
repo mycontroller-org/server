@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 	webHandlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
 

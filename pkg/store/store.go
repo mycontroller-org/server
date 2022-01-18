@@ -2,8 +2,8 @@ package store
 
 import (
 	cfgTY "github.com/mycontroller-org/server/v2/pkg/types/config"
-	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 var (

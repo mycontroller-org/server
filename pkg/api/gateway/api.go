@@ -8,8 +8,8 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
-	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 )
 
 // List by filter and pagination

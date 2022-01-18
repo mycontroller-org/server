@@ -10,7 +10,7 @@ import (
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // RegisterTaskRoutes registers task api

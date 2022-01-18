@@ -5,7 +5,7 @@ import (
 	"sort"
 	"time"
 
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // Sort given slice

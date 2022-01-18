@@ -41,8 +41,8 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"github.com/mycontroller-org/server/v2/pkg/utils/ziputils"
-	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )

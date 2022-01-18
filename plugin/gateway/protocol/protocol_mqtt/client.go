@@ -14,7 +14,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	msglogger "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/message_logger"
-	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 
 	"go.uber.org/zap"
 )

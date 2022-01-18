@@ -9,8 +9,8 @@ import (
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	handlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 )
 
 // RegisterHandlerRoutes registers handler api

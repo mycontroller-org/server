@@ -7,7 +7,7 @@ import (
 	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 

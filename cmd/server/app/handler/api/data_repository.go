@@ -10,7 +10,7 @@ import (
 	dataRepositoryAPI "github.com/mycontroller-org/server/v2/pkg/api/data_repository"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	dataRepositoryTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // RegisterFieldRoutes registers data repository api

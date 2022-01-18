@@ -22,7 +22,7 @@ import (
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/server/v2/pkg/utils/javascript"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
-	mtsTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricPluginTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	"go.uber.org/zap"
 )
 
@@ -160,7 +160,7 @@ func updateNodeData(msg *msgTY.Message) error {
 			// update battery level
 			batteryLevel := converterUtils.ToFloat(d.Value)
 			node.Others.Set(d.Key, batteryLevel, node.Labels)
-			err = writeNodeMetric(node, mtsTY.MetricTypeGaugeFloat, types.FieldBatteryLevel, batteryLevel)
+			err = writeNodeMetric(node, metricPluginTY.MetricTypeGaugeFloat, types.FieldBatteryLevel, batteryLevel)
 			if err != nil {
 				zap.L().Error("error on writing metric data", zap.Error(err))
 			}
@@ -363,7 +363,7 @@ func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgTY.Messag
 
 	for id, value := range extraFields {
 		fieldId := converterUtils.ToString(id)
-		metricType := mtsTY.MetricTypeNone
+		metricType := metricPluginTY.MetricTypeNone
 		unit := ""
 		// update metricType and unit
 		if mType, ok := metricTypes[fieldId]; ok {
@@ -436,22 +436,22 @@ func updateFieldData(
 	var convertedValue interface{}
 	switch field.MetricType {
 
-	case mtsTY.MetricTypeBinary:
+	case metricPluginTY.MetricTypeBinary:
 		convertedValue = converterUtils.ToBool(value)
 
-	case mtsTY.MetricTypeGaugeFloat:
+	case metricPluginTY.MetricTypeGaugeFloat:
 		convertedValue = converterUtils.ToFloat(value)
 
-	case mtsTY.MetricTypeGauge, mtsTY.MetricTypeCounter:
+	case metricPluginTY.MetricTypeGauge, metricPluginTY.MetricTypeCounter:
 		convertedValue = converterUtils.ToInteger(value)
 
-	case mtsTY.MetricTypeNone:
+	case metricPluginTY.MetricTypeNone:
 		convertedValue = value
 
-	case mtsTY.MetricTypeString:
+	case metricPluginTY.MetricTypeString:
 		convertedValue = converterUtils.ToString(value)
 
-	case mtsTY.MetricTypeGEO: // Implement geo
+	case metricPluginTY.MetricTypeGEO: // Implement geo
 		convertedValue = value
 
 	default:
@@ -482,11 +482,11 @@ func updateFieldData(
 	busUtils.PostEvent(mcbus.TopicEventField, eventTY.TypeUpdated, types.EntityField, field)
 
 	updateMetric := true
-	if field.MetricType == mtsTY.MetricTypeNone {
+	if field.MetricType == metricPluginTY.MetricTypeNone {
 		updateMetric = false
 	}
 	// for binary do not update duplicate values
-	if field.MetricType == mtsTY.MetricTypeBinary {
+	if field.MetricType == metricPluginTY.MetricTypeBinary {
 		updateMetric = field.Current.Timestamp.Equal(field.NoChangeSince)
 	}
 	if updateMetric {

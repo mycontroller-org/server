@@ -12,9 +12,9 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	"github.com/mycontroller-org/server/v2/pkg/version"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
-	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 

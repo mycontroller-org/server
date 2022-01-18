@@ -4,8 +4,8 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
-	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
 )
 

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	"github.com/shirou/gopsutil/v3/host"
 	"go.uber.org/zap"
 )

@@ -4,7 +4,7 @@ import (
 	actionAPI "github.com/mycontroller-org/server/v2/pkg/api/action"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	gaTY "github.com/mycontroller-org/server/v2/plugin/bot/google_assistant/types"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 

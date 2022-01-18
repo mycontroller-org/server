@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/types"
 )
 
 const PluginNOOP = "noop"

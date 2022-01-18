@@ -10,7 +10,7 @@ import (
 	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // RegisterSourceRoutes registers source api

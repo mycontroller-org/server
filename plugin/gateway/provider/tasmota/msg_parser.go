@@ -11,7 +11,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/server/v2/pkg/utils/normalize"
-	mtsTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	"go.uber.org/zap"
 )
@@ -107,10 +107,10 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 			pl.MetricType = mu.Type
 			pl.Unit = mu.Unit
 		} else {
-			pl.MetricType = mtsTY.MetricTypeNone
-			pl.Unit = mtsTY.UnitNone
+			pl.MetricType = metricTY.MetricTypeNone
+			pl.Unit = metricTY.UnitNone
 		}
-		if pl.MetricType == mtsTY.MetricTypeBinary {
+		if pl.MetricType == metricTY.MetricTypeBinary {
 			v := strings.ToLower(pl.Value)
 			if v == "on" || v == "1" || v == "true" {
 				pl.Value = "1"
@@ -301,7 +301,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 						pl := msgTY.Payload{
 							Key:        k,
 							Value:      converterUtils.ToString(v),
-							MetricType: mtsTY.MetricTypeNone,
+							MetricType: metricTY.MetricTypeNone,
 						}
 						msg.Payloads = append(msg.Payloads, pl)
 					}
@@ -317,7 +317,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 						pl := msgTY.Payload{
 							Key:        keyHeap,
 							Value:      converterUtils.ToString(heap),
-							MetricType: mtsTY.MetricTypeGauge,
+							MetricType: metricTY.MetricTypeGauge,
 						}
 						msg.Payloads = append(msg.Payloads, pl)
 					}
@@ -347,10 +347,10 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 						return nil
 					}
 					// Update temperature unit
-					temperatureUnit := mtsTY.UnitCelsius
+					temperatureUnit := metricTY.UnitCelsius
 					if tu, ok := data[keyTemperatureUnit]; ok {
 						if tu == "F" {
-							temperatureUnit = mtsTY.UnitFahrenheit
+							temperatureUnit = metricTY.UnitFahrenheit
 						}
 					}
 					for k, v := range data {
@@ -363,8 +363,8 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 								pl := msgTY.Payload{
 									Key:        fName,
 									Value:      converterUtils.ToString(fValue),
-									MetricType: mtsTY.MetricTypeNone,
-									Unit:       mtsTY.UnitNone,
+									MetricType: metricTY.MetricTypeNone,
+									Unit:       metricTY.UnitNone,
 								}
 								pl.Labels = pl.Labels.Init()
 								pls = append(pls, pl)
@@ -385,8 +385,8 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 								pl := msgTY.Payload{
 									Key:        fName,
 									Value:      converterUtils.ToString(fValue),
-									MetricType: mtsTY.MetricTypeCounter,
-									Unit:       mtsTY.UnitNone,
+									MetricType: metricTY.MetricTypeCounter,
+									Unit:       metricTY.UnitNone,
 								}
 								pl.Labels = pl.Labels.Init()
 								pls = append(pls, pl)
@@ -411,7 +411,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 								}
 								mt, ok := metricTypeAndUnit[fName]
 								if !ok {
-									mt = payloadMetricTypeUnit{Type: mtsTY.MetricTypeNone, Unit: mtsTY.UnitNone}
+									mt = payloadMetricTypeUnit{Type: metricTY.MetricTypeNone, Unit: metricTY.UnitNone}
 								}
 
 								// update temperature unit
@@ -464,13 +464,13 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 // input: "HSBColor":"249,0,0"(HsbColor1,2,3)
 func (p *Provider) getHsbColor(value string) []msgTY.Payload {
 	pls := make([]msgTY.Payload, 0)
-	pls = append(pls, msgTY.Payload{Key: keyHSBColor, Value: value, MetricType: mtsTY.MetricTypeNone, Unit: mtsTY.UnitNone})
+	pls = append(pls, msgTY.Payload{Key: keyHSBColor, Value: value, MetricType: metricTY.MetricTypeNone, Unit: metricTY.UnitNone})
 	if value != "" && strings.Contains(value, ",") {
 		values := strings.Split(value, ",")
 		if len(values) == 3 {
-			pls = append(pls, msgTY.Payload{Key: keyHSBColor1, Value: values[0], MetricType: mtsTY.MetricTypeNone, Unit: mtsTY.UnitNone})
-			pls = append(pls, msgTY.Payload{Key: keyHSBColor2, Value: values[1], MetricType: mtsTY.MetricTypeNone, Unit: mtsTY.UnitNone})
-			pls = append(pls, msgTY.Payload{Key: keyHSBColor3, Value: values[2], MetricType: mtsTY.MetricTypeNone, Unit: mtsTY.UnitNone})
+			pls = append(pls, msgTY.Payload{Key: keyHSBColor1, Value: values[0], MetricType: metricTY.MetricTypeNone, Unit: metricTY.UnitNone})
+			pls = append(pls, msgTY.Payload{Key: keyHSBColor2, Value: values[1], MetricType: metricTY.MetricTypeNone, Unit: metricTY.UnitNone})
+			pls = append(pls, msgTY.Payload{Key: keyHSBColor3, Value: values[2], MetricType: metricTY.MetricTypeNone, Unit: metricTY.UnitNone})
 		}
 	}
 	return pls
@@ -554,7 +554,7 @@ func (p *Provider) createSourcePresentationPL(value string) *msgTY.Payload {
 	pl := msgTY.NewPayload()
 	pl.Key = types.FieldName
 	pl.Value = value
-	pl.MetricType = mtsTY.MetricTypeNone
-	pl.Unit = mtsTY.UnitNone
+	pl.MetricType = metricTY.MetricTypeNone
+	pl.Unit = metricTY.UnitNone
 	return &pl
 }

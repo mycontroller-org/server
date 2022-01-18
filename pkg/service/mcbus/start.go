@@ -5,7 +5,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	busPlugin "github.com/mycontroller-org/server/v2/plugin/bus"
-	busTY "github.com/mycontroller-org/server/v2/plugin/bus/type"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
 )
 

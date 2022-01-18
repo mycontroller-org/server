@@ -7,7 +7,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	cfgTY "github.com/mycontroller-org/server/v2/pkg/types/config"
 	metricPlugin "github.com/mycontroller-org/server/v2/plugin/database/metric"
-	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	void_db "github.com/mycontroller-org/server/v2/plugin/database/metric/voiddb"
 )
 

@@ -1,7 +1,7 @@
 package query
 
 import (
-	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 )
 
 // contants

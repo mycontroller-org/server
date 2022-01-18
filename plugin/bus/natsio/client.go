@@ -13,7 +13,7 @@ import (
 	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	busPluginTY "github.com/mycontroller-org/server/v2/plugin/bus/type"
+	busPluginTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	natsIO "github.com/nats-io/nats.go"
 	"go.uber.org/zap"
 )

@@ -10,7 +10,7 @@ import (
 	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // RegisterNodeRoutes registers node api

@@ -12,7 +12,7 @@ import (
 	cloneUtils "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
-	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricType "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	"go.uber.org/zap"
 )
 

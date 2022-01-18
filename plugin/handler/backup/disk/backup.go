@@ -11,9 +11,9 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
-	storagePluginTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storagePluginTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 

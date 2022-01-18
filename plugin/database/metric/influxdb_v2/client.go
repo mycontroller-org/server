@@ -15,7 +15,7 @@ import (
 	extraTY "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra"
 	extraV1 "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra_v1"
 	extraV2 "github.com/mycontroller-org/server/v2/plugin/database/metric/influxdb_v2/extra_v2"
-	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	"go.uber.org/zap"
 )
 

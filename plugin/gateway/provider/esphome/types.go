@@ -6,7 +6,7 @@ import (
 	esphomeClient "github.com/mycontroller-org/esphome_api/pkg/client"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 )
 
 const (

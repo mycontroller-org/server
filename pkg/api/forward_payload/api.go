@@ -8,7 +8,7 @@ import (
 	fwdPayloadTY "github.com/mycontroller-org/server/v2/pkg/types/forward_payload"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // List by filter and pagination

@@ -11,7 +11,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/types/source"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
-	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
 )
 

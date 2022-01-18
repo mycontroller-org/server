@@ -5,7 +5,7 @@ import (
 	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // List by filter and pagination

@@ -7,7 +7,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/plugin/handler/backup/disk"
 	backupUtils "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 )
 
 const PluginBackup = "backup"

@@ -17,7 +17,7 @@ import (
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	gwPlugin "github.com/mycontroller-org/server/v2/plugin/gateway"
 	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
-	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
 )
 

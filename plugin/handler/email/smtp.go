@@ -11,7 +11,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 

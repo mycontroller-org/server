@@ -14,7 +14,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	colorUtils "github.com/mycontroller-org/server/v2/pkg/utils/color"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )

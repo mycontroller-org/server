@@ -16,8 +16,8 @@ import (
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 )
 
 // entity quick id prefix

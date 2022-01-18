@@ -10,21 +10,21 @@ import (
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
-	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	metricPluginTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	"go.uber.org/zap"
 )
 
 func writeFieldMetric(field *fieldTY.Field) error {
 	fields := make(map[string]interface{})
 	// update fields
-	if field.MetricType == metricTY.MetricTypeGEO {
+	if field.MetricType == metricPluginTY.MetricTypeGEO {
 		_f, err := geoData(field.Current.Value)
 		if err != nil {
 			return err
 		}
 		fields = _f
 	} else {
-		fields[metricTY.FieldValue] = field.Current.Value
+		fields[metricPluginTY.FieldValue] = field.Current.Value
 	}
 	// update tags
 	tags := map[string]string{
@@ -36,7 +36,7 @@ func writeFieldMetric(field *fieldTY.Field) error {
 	}
 
 	// return data
-	metricData := &metricTY.InputData{
+	metricData := &metricPluginTY.InputData{
 		MetricType: field.MetricType,
 		Time:       field.Current.Timestamp,
 		Tags:       tags,
@@ -70,9 +70,9 @@ func geoData(pl interface{}) (map[string]interface{}, error) {
 		}
 	}
 
-	d[metricTY.FieldLatitude] = lat
-	d[metricTY.FieldLongitude] = lon
-	d[metricTY.FieldAltitude] = alt
+	d[metricPluginTY.FieldLatitude] = lat
+	d[metricPluginTY.FieldLongitude] = lon
+	d[metricPluginTY.FieldAltitude] = alt
 
 	return d, nil
 }
@@ -80,7 +80,7 @@ func geoData(pl interface{}) (map[string]interface{}, error) {
 func writeNodeMetric(node *nodeTY.Node, suppliedMetricType, fieldName string, value interface{}) error {
 	fields := make(map[string]interface{})
 	// update fields
-	fields[metricTY.FieldValue] = value
+	fields[metricPluginTY.FieldValue] = value
 
 	// update tags
 	tags := map[string]string{
@@ -91,7 +91,7 @@ func writeNodeMetric(node *nodeTY.Node, suppliedMetricType, fieldName string, va
 	}
 
 	// return data
-	metricData := &metricTY.InputData{
+	metricData := &metricPluginTY.InputData{
 		MetricType: suppliedMetricType,
 		Time:       node.LastSeen,
 		Tags:       tags,
@@ -101,7 +101,7 @@ func writeNodeMetric(node *nodeTY.Node, suppliedMetricType, fieldName string, va
 	return writeMetric(metricData)
 }
 
-func writeMetric(metricData *metricTY.InputData) error {
+func writeMetric(metricData *metricPluginTY.InputData) error {
 	startTime := time.Now()
 	err := store.METRIC.Write(metricData)
 	if err != nil {

@@ -10,7 +10,7 @@ import (
 	fwdpayloadAPI "github.com/mycontroller-org/server/v2/pkg/api/forward_payload"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	fwdPayloadTY "github.com/mycontroller-org/server/v2/pkg/types/forward_payload"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // RegisterForwardPayloadRoutes registers forward payload api

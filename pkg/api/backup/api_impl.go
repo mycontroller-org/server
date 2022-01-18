@@ -13,7 +13,7 @@ import (
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	"github.com/mycontroller-org/server/v2/plugin/handler/backup/disk"
 	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 

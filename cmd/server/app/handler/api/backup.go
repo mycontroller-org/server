@@ -10,7 +10,7 @@ import (
 	backupRestoreAPI "github.com/mycontroller-org/server/v2/pkg/api/backup"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // RegisterBackupRestoreRoutes registers backup/restore api

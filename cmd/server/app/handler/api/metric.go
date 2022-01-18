@@ -13,7 +13,7 @@ import (
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	quickIdUL "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	mtsTY "github.com/mycontroller-org/server/v2/plugin/database/metric/type"
+	mtsTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 )
 
 // global constants

@@ -17,7 +17,7 @@ import (
 	mqtt "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_mqtt"
 	serial "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_serial"
 	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
-	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
 )
 

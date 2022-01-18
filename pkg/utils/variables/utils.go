@@ -18,7 +18,7 @@ import (
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/type"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 
@@ -29,7 +29,7 @@ import (
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
 	templateUtils "github.com/mycontroller-org/server/v2/pkg/utils/template"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
 

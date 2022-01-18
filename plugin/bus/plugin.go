@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
-	busPluginTY "github.com/mycontroller-org/server/v2/plugin/bus/type"
+	busPluginTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
 )
 

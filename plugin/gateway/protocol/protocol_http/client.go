@@ -10,7 +10,7 @@ import (
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
-	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/type"
+	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 )
 
 // Config details

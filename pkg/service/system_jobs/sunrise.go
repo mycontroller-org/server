@@ -4,7 +4,7 @@ import (
 	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
-	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/type"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
 
