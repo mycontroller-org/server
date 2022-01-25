@@ -6,6 +6,7 @@ analytics:
 web:
   web_directory: /ui
   enable_profiling: false
+  read_timeout: 60s
   http:
     enabled: true 
     bind_address: "0.0.0.0"
