@@ -26,7 +26,7 @@ func StartListener(handler http.Handler) {
 	webCfg := store.CFG.Web
 
 	if !webCfg.Http.Enabled && !webCfg.HttpsSSL.Enabled && !webCfg.HttpsACME.Enabled {
-		zap.L().Fatal("web services are disabled. Enable at least a service HTTP, HTTPS/SSL or HTTPS/ACME")
+		zap.L().Fatal("web services are disabled. Enable at least a service: HTTP, HTTPS/SSL or HTTPS/ACME")
 	}
 
 	zap.L().Info("web console direcory location", zap.String("web_directory", webCfg.WebDirectory))
@@ -80,7 +80,7 @@ func StartListener(handler http.Handler) {
 
 			err = server.ListenAndServeTLS("", "")
 			if err != nil {
-				zap.L().Error("Error on starting https/ssl handler", zap.Error(err))
+				zap.L().Error("error on starting https/ssl handler", zap.Error(err))
 				errs <- err
 			}
 		}()
@@ -109,7 +109,7 @@ func StartListener(handler http.Handler) {
 
 			err = server.ListenAndServeTLS("", "")
 			if err != nil {
-				zap.L().Error("Error on starting https/acme handler", zap.Error(err))
+				zap.L().Error("error on starting https/acme handler", zap.Error(err))
 				errs <- err
 			}
 		}()
@@ -117,5 +117,5 @@ func StartListener(handler http.Handler) {
 
 	// This will run forever until channel receives error
 	err := <-errs
-	zap.L().Fatal("Error on starting a handler service", zap.Error(err))
+	zap.L().Fatal("error on starting a handler service", zap.Error(err))
 }
