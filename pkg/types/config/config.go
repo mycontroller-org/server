@@ -30,6 +30,7 @@ type WebConfig struct {
 	WebDirectory     string          `yaml:"web_directory"`
 	DocumentationURL string          `yaml:"documentation_url"`
 	EnableProfiling  bool            `yaml:"enable_profiling"`
+	ReadTimeout      string          `yaml:"read_timeout"`
 	Http             HttpConfig      `yaml:"http"`
 	HttpsSSL         HttpsSSLConfig  `yaml:"https_ssl"`
 	HttpsACME        HttpsACMEConfig `yaml:"https_acme"`

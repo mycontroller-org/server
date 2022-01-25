@@ -4,17 +4,21 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/mycontroller-org/server/v2/cmd/server/https"
 	"github.com/mycontroller-org/server/v2/pkg/store"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 )
 
 const (
 	LoggerPrefixHTTP = "HTTP"
 	LoggerPrefixSSL  = "HTTPS/SSL"
 	LoggerPrefixACME = "HTTPS/ACME"
+
+	defaultReadtimeout = time.Second * 60
 )
 
 func StartListener(handler http.Handler) {
@@ -29,15 +33,20 @@ func StartListener(handler http.Handler) {
 
 	errs := make(chan error, 1) // a channel for errors
 
+	// get readTimeout
+	readTimeout := utils.ToDuration(webCfg.ReadTimeout, defaultReadtimeout)
+	zap.L().Debug("web server connection timeout", zap.String("read_timeout", readTimeout.String()))
+
 	// http service
 	if webCfg.Http.Enabled {
 		go func() {
 			addr := fmt.Sprintf("%s:%d", webCfg.Http.BindAddress, webCfg.Http.Port)
 			zap.L().Info("listening HTTP service on", zap.String("address", addr))
 			server := &http.Server{
-				Addr:     addr,
-				Handler:  handler,
-				ErrorLog: log.New(getLogger(LoggerPrefixHTTP, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
+				ReadTimeout: readTimeout,
+				Addr:        addr,
+				Handler:     handler,
+				ErrorLog:    log.New(getLogger(LoggerPrefixHTTP, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
 			}
 
 			err := server.ListenAndServe()
@@ -62,10 +71,11 @@ func StartListener(handler http.Handler) {
 			}
 
 			server := &http.Server{
-				Addr:      addr,
-				TLSConfig: tlsConfig,
-				Handler:   handler,
-				ErrorLog:  log.New(getLogger(LoggerPrefixSSL, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
+				ReadTimeout: readTimeout,
+				Addr:        addr,
+				TLSConfig:   tlsConfig,
+				Handler:     handler,
+				ErrorLog:    log.New(getLogger(LoggerPrefixSSL, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
 			}
 
 			err = server.ListenAndServeTLS("", "")
@@ -90,10 +100,11 @@ func StartListener(handler http.Handler) {
 			}
 
 			server := &http.Server{
-				Addr:      addr,
-				TLSConfig: tlsConfig,
-				Handler:   handler,
-				ErrorLog:  log.New(getLogger(LoggerPrefixACME, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
+				ReadTimeout: readTimeout,
+				Addr:        addr,
+				TLSConfig:   tlsConfig,
+				Handler:     handler,
+				ErrorLog:    log.New(getLogger(LoggerPrefixACME, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
 			}
 
 			err = server.ListenAndServeTLS("", "")
