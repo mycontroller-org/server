@@ -68,7 +68,10 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) e
 		}
 		for index := range p.HttpProtocol.Addresses {
 			cfg := p.HttpProtocol.Addresses[index]
-			p.schedule(index, &cfg)
+			err = p.schedule(index, &cfg)
+			if err != nil {
+				zap.L().Error("error on schedule", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("address", cfg.Address), zap.Error(err))
+			}
 		}
 
 	default:
