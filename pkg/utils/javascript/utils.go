@@ -1,6 +1,9 @@
 package javascript
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/console"
 	"github.com/dop251/goja_nodejs/require"
@@ -37,4 +40,16 @@ func Execute(scriptString string, variables map[string]interface{}) (interface{}
 	zap.L().Debug("executed script", zap.Any("variables", variables), zap.String("scriptString", scriptString), zap.Any("output", output))
 
 	return output, nil
+}
+
+// ToMap converts the interface data to map[string]interface{}
+func ToMap(data interface{}) (map[string]interface{}, error) {
+	if data == nil {
+		return nil, errors.New("empty input")
+	}
+	mapData, ok := data.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("invalid type:%T", data)
+	}
+	return mapData, nil
 }

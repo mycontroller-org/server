@@ -70,6 +70,19 @@ func JoinMap(dst, src map[string]interface{}) {
 	}
 }
 
+// JoinStringMap joins two string maps. put all the values into 'dst' map from 'src' map
+func JoinStringMap(dst, src map[string]string) {
+	if src == nil {
+		return
+	}
+	if dst == nil {
+		dst = map[string]string{}
+	}
+	for k, v := range src {
+		dst[k] = v
+	}
+}
+
 // GetMapValue returns fetch and returns with a key. if not available returns default value
 func GetMapValue(m map[string]interface{}, key string, defaultValue interface{}) interface{} {
 	if m == nil {
