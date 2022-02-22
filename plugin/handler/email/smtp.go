@@ -94,7 +94,7 @@ func (sc *SmtpClient) sendEmailSSL(from string, to []string, subject, body strin
 
 	// TLS config
 	tlsconfig := &tls.Config{
-		InsecureSkipVerify: sc.cfg.InsecureSkipVerify,
+		InsecureSkipVerify: sc.cfg.Insecure,
 		ServerName:         host,
 	}
 

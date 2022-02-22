@@ -35,7 +35,7 @@ func (cd *CustomDialer) Dial(network, address string) (net.Conn, error) {
 
 	timeout := utils.ToDuration(cd.config.ConnectionTimeout, defaultConnectionTimeout)
 	tlsConfig := &tls.Config{
-		InsecureSkipVerify: cd.config.TLSInsecureSkipVerify,
+		InsecureSkipVerify: cd.config.Insecure,
 	}
 	switch cd.uri.Scheme {
 	case "ws":

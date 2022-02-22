@@ -118,7 +118,7 @@ func getEntity(name, stringValue string) interface{} {
 }
 
 func getWebhookData(name string, whCfg *handlerTY.WebhookData) interface{} {
-	client := httpclient.GetClient(whCfg.InsecureSkipVerify, webhookTimeout)
+	client := httpclient.GetClient(whCfg.Insecure, webhookTimeout)
 
 	if whCfg.Method == "" {
 		whCfg.Method = http.MethodGet

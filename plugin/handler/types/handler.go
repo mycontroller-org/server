@@ -89,15 +89,15 @@ type ResourceData struct {
 
 // WebhookData struct
 type WebhookData struct {
-	Server             string                 `yaml:"server"`
-	API                string                 `yaml:"api"`
-	InsecureSkipVerify bool                   `json:"insecureSkipVerify"`
-	Method             string                 `yaml:"method"`
-	Headers            map[string]string      `yaml:"headers"`
-	QueryParameters    map[string]interface{} `yaml:"queryParameters"`
-	Data               interface{}            `yaml:"data"`
-	CustomData         bool                   `yaml:"customData"`
-	ResponseCode       int                    `yaml:"responseCode"`
+	Server          string                 `yaml:"server"`
+	API             string                 `yaml:"api"`
+	Insecure        bool                   `json:"insecure"`
+	Method          string                 `yaml:"method"`
+	Headers         map[string]string      `yaml:"headers"`
+	QueryParameters map[string]interface{} `yaml:"queryParameters"`
+	Data            interface{}            `yaml:"data"`
+	CustomData      bool                   `yaml:"customData"`
+	ResponseCode    int                    `yaml:"responseCode"`
 }
 
 // EmailData struct

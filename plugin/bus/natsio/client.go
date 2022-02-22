@@ -29,17 +29,17 @@ const (
 
 // Config details of the client
 type Config struct {
-	Type                  string            `yaml:"type"`
-	ServerURL             string            `yaml:"server_url"`
-	Token                 string            `yaml:"token"`
-	Username              string            `yaml:"username"`
-	Password              string            `yaml:"password"`
-	TLSInsecureSkipVerify bool              `yaml:"tls_insecure_skip_verify"`
-	ConnectionTimeout     string            `yaml:"connection_timeout"`
-	BufferSize            int               `yaml:"buffer_size"`
-	MaximumReconnect      int               `yaml:"maximum_reconnect"`
-	ReconnectWait         string            `yaml:"reconnect_wait"`
-	WebsocketOptions      *WebsocketOptions `yaml:"websocket_options"`
+	Type              string            `yaml:"type"`
+	ServerURL         string            `yaml:"server_url"`
+	Token             string            `yaml:"token"`
+	Username          string            `yaml:"username"`
+	Password          string            `yaml:"password"`
+	Insecure          bool              `yaml:"insecure"`
+	ConnectionTimeout string            `yaml:"connection_timeout"`
+	BufferSize        int               `yaml:"buffer_size"`
+	MaximumReconnect  int               `yaml:"maximum_reconnect"`
+	ReconnectWait     string            `yaml:"reconnect_wait"`
+	WebsocketOptions  *WebsocketOptions `yaml:"websocket_options"`
 }
 
 // WebsocketOptions are config options for a websocket dialer

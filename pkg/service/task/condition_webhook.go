@@ -16,7 +16,7 @@ const timeout = time.Second * 10
 
 func isTriggeredWebhook(taskID string, config taskTY.EvaluationConfig, variables map[string]interface{}) (map[string]interface{}, bool) {
 	whCfg := config.Webhook
-	client := httpclient.GetClient(whCfg.InsecureSkipVerify, timeout)
+	client := httpclient.GetClient(whCfg.Insecure, timeout)
 	if !whCfg.IncludeConfig {
 		delete(variables, types.KeyTask)
 	}

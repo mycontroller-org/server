@@ -24,8 +24,8 @@ type QueryV1 struct {
 	queryParams map[string]interface{}
 }
 
-func NewQueryClient(uri string, insecureSkipVerify bool, bucket, username, password string) *QueryV1 {
-	headers, newClient := newClient(uri, insecureSkipVerify, username, password)
+func NewQueryClient(uri string, insecure bool, bucket, username, password string) *QueryV1 {
+	headers, newClient := newClient(uri, insecure, username, password)
 
 	queryParams := map[string]interface{}{
 		"db":     bucket,

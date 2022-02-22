@@ -3,6 +3,7 @@ package mqtt
 import (
 	"crypto/tls"
 	"fmt"
+	"strings"
 	"time"
 
 	paho "github.com/eclipse/paho.mqtt.golang"
@@ -27,15 +28,15 @@ const (
 
 // Config data
 type Config struct {
-	Type               string
-	Broker             string
-	Username           string
-	Password           string
-	Subscribe          string
-	Publish            string
-	QoS                int
-	TransmitPreDelay   string
-	InsecureSkipVerify bool
+	Type             string
+	Broker           string
+	Username         string
+	Password         string
+	Subscribe        string
+	Publish          string
+	QoS              int
+	TransmitPreDelay string
+	Insecure         bool
 }
 
 // Endpoint data
@@ -81,7 +82,7 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 	opts.SetConnectionLostHandler(endpoint.onConnectionLostHandler)
 
 	// update tls config
-	tlsConfig := &tls.Config{InsecureSkipVerify: cfg.InsecureSkipVerify}
+	tlsConfig := &tls.Config{InsecureSkipVerify: cfg.Insecure}
 	opts.SetTLSConfig(tlsConfig)
 
 	c := paho.NewClient(opts)
@@ -191,9 +192,17 @@ func (ep *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 	}
 }
 
-// Subscribe a topic
-func (ep *Endpoint) Subscribe(topic string) error {
-	token := ep.Client.Subscribe(topic, 0, ep.getCallBack())
-	token.WaitTimeout(3 * time.Second)
-	return token.Error()
+// Subscribe topics
+// supply comma separated topic names
+// example: root/topic1/hello,root/topic2/#
+func (ep *Endpoint) Subscribe(topicStr string) error {
+	topics := strings.Split(topicStr, ",")
+	for _, topic := range topics {
+		token := ep.Client.Subscribe(topic, 0, ep.getCallBack())
+		token.WaitTimeout(3 * time.Second)
+		if token.Error() != nil {
+			return token.Error()
+		}
+	}
+	return nil
 }

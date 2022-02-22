@@ -19,8 +19,8 @@ type AdminV1 struct {
 }
 
 // NewAdminClient returns admin client
-func NewAdminClient(uri string, insecureSkipVerify bool, bucket, username, password string) *AdminV1 {
-	headers, newClient := newClient(uri, insecureSkipVerify, username, password)
+func NewAdminClient(uri string, insecure bool, bucket, username, password string) *AdminV1 {
+	headers, newClient := newClient(uri, insecure, username, password)
 
 	return &AdminV1{
 		client:  newClient,

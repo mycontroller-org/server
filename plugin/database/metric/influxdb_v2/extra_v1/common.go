@@ -12,11 +12,11 @@ const (
 	timeout = time.Second * 15
 )
 
-func newClient(uri string, insecureSkipVerify bool, username, password string) (map[string]string, *httpclient.Client) {
+func newClient(uri string, insecure bool, username, password string) (map[string]string, *httpclient.Client) {
 	headers := make(map[string]string)
 	if username != "" {
 		base64String := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))
 		headers["Authorization"] = fmt.Sprintf("Basic %s", base64String)
 	}
-	return headers, httpclient.GetClient(insecureSkipVerify, timeout)
+	return headers, httpclient.GetClient(insecure, timeout)
 }

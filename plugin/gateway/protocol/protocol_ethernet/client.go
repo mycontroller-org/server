@@ -29,10 +29,10 @@ const (
 
 // Config details
 type Config struct {
-	Server             string
-	MessageSplitter    byte
-	TransmitPreDelay   string
-	InsecureSkipVerify bool
+	Server           string
+	MessageSplitter  byte
+	TransmitPreDelay string
+	Insecure         bool
 }
 
 // Endpoint data

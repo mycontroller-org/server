@@ -9,6 +9,7 @@ import (
 	handlerAPI "github.com/mycontroller-org/server/v2/cmd/server/app/handler/api"
 	handlerAuthAPI "github.com/mycontroller-org/server/v2/cmd/server/app/handler/api/auth"
 	middleware "github.com/mycontroller-org/server/v2/cmd/server/app/handler/middleware"
+	pluginRoute "github.com/mycontroller-org/server/v2/cmd/server/app/handler/plugin"
 	webConsole "github.com/mycontroller-org/server/v2/cmd/server/app/web-console"
 	mcWS "github.com/mycontroller-org/server/v2/pkg/service/websocket"
 	"github.com/mycontroller-org/server/v2/pkg/store"
@@ -58,6 +59,9 @@ func GetHandler() (http.Handler, error) {
 	handlerAPI.RegisterSystemRoutes(router)
 	handlerAPI.RegisterQuickIDRoutes(router)
 	handlerAPI.RegisterBackupRestoreRoutes(router)
+
+	// plugin route
+	pluginRoute.RegisterPlugin(router)
 
 	// googleAssistantAPI.RegisterGoogleAssistantRoutes(router)
 

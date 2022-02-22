@@ -20,10 +20,19 @@ import (
 
 var (
 	// middler check vars
-	verifyPrefixes    = []string{"/api/", handlerTY.SecureShareDirWebHandlerPath}
+	verifyPrefixes = []string{
+		"/api/",                                // all api
+		handlerTY.SecureShareDirWebHandlerPath, // web file secure share api
+	}
 	nonRestrictedAPIs = []string{
-		"/api/status", "/api/user/registration", "/api/user/login",
-		"/api/oauth/login", "/api/oauth/token"}
+		"/api/status",                            // reports mycontroller server status
+		"/api/user/registration",                 // register new user. TODO: this api not used. verify and remove this
+		"/api/user/login",                        // login api
+		handlerTY.InsecureShareDirWebHandlerPath, // web file insecure share api
+		"/api/oauth/login",                       // oauth login api
+		"/api/oauth/token",                       // oauth token api
+		"/api/plugin/gateway",                    // gateway plugin api
+	}
 )
 
 // MiddlewareAuthenticationVerification verifies user auth details

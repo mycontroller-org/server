@@ -15,7 +15,7 @@ const timeout = time.Second * 10
 
 func loadWebhookVariables(scheduleID string, config scheduleTY.CustomVariableConfig, variables map[string]interface{}) map[string]interface{} {
 	whCfg := config.Webhook
-	client := httpclient.GetClient(whCfg.InsecureSkipVerify, timeout)
+	client := httpclient.GetClient(whCfg.Insecure, timeout)
 	if !whCfg.IncludeConfig {
 		delete(variables, types.KeySchedule)
 	}

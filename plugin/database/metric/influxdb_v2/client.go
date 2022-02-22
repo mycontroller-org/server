@@ -51,7 +51,7 @@ type Config struct {
 	Token              string       `yaml:"token"`
 	Username           string       `yaml:"username"`
 	Password           string       `yaml:"password"`
-	InsecureSkipVerify bool         `yaml:"insecure_skip_verify"`
+	Insecure           bool         `yaml:"insecure"`
 	QueryClientVersion string       `yaml:"query_client_version"`
 	FlushInterval      string       `yaml:"flush_interval"`
 	Logger             LoggerConfig `yaml:"logger"`
@@ -156,7 +156,7 @@ func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
 
 	// update admin client
 	if influxAutoDetectVersion == QueryClientV1 {
-		c.adminClient = extraV1.NewAdminClient(cfg.URI, cfg.InsecureSkipVerify, cfg.BucketName, cfg.Username, cfg.Password)
+		c.adminClient = extraV1.NewAdminClient(cfg.URI, cfg.Insecure, cfg.BucketName, cfg.Username, cfg.Password)
 	} else {
 		c.adminClient = extraV2.NewAdminClient(c.ctx, iClient, cfg.OrganizationName, cfg.BucketName)
 	}
@@ -173,7 +173,7 @@ func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
 
 	// update query client
 	if influxAutoDetectVersion == QueryClientV1 {
-		c.queryClient = extraV1.NewQueryClient(cfg.URI, cfg.InsecureSkipVerify, cfg.BucketName, cfg.Username, cfg.Password)
+		c.queryClient = extraV1.NewQueryClient(cfg.URI, cfg.Insecure, cfg.BucketName, cfg.Username, cfg.Password)
 	} else {
 		c.queryClient = extraV2.NewQueryClient(iClient.QueryAPI(cfg.OrganizationName), cfg.BucketName)
 	}

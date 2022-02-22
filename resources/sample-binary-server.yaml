@@ -45,7 +45,7 @@ bus:
   type: embedded
   topic_prefix: mc_server
   server_url: nats://127.0.0.1:4222
-  tls_insecure_skip_verify: false
+  insecure: false
   connection_timeout: 10s
 
 gateway:

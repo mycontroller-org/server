@@ -72,11 +72,11 @@ func getDefaultServerConfig() *config.Config {
 		},
 
 		Bus: cmap.CustomMap{
-			"type":                     "embedded", // other option: natsio
-			"topic_prefix":             "mc_bus",
-			"server_url":               "nats://192.168.1.21:4222",
-			"tls_insecure_skip_verify": false,
-			"connection_timeout":       "10s",
+			"type":               "embedded", // other option: natsio
+			"topic_prefix":       "mc_bus",
+			"server_url":         "nats://192.168.1.21:4222",
+			"insecure":           false,
+			"connection_timeout": "10s",
 		},
 		Gateway: sfTY.ServiceFilter{
 			Disabled: false,

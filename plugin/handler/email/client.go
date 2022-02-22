@@ -11,15 +11,15 @@ import (
 
 // Config of email service
 type Config struct {
-	Type               string
-	Host               string
-	Port               int
-	AuthType           string
-	Username           string
-	Password           string `json:"-"`
-	FromEmail          string
-	ToEmails           string // comma seperated
-	InsecureSkipVerify bool
+	Type      string
+	Host      string
+	Port      int
+	AuthType  string
+	Username  string
+	Password  string `json:"-"`
+	FromEmail string
+	ToEmails  string // comma seperated
+	Insecure  bool
 }
 
 const (

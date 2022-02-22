@@ -69,12 +69,12 @@ type Rule struct {
 
 // WebhookData struct
 type WebhookData struct {
-	URL                string                 `json:"url"`
-	Method             string                 `json:"method"`
-	InsecureSkipVerify bool                   `json:"insecureSkipVerify"`
-	Headers            map[string]string      `yaml:"headers"`
-	QueryParameters    map[string]interface{} `yaml:"queryParameters"`
-	IncludeConfig      bool                   `json:"includeConfig"`
+	URL             string                 `json:"url"`
+	Method          string                 `json:"method"`
+	Insecure        bool                   `json:"insecure"`
+	Headers         map[string]string      `yaml:"headers"`
+	QueryParameters map[string]interface{} `yaml:"queryParameters"`
+	IncludeConfig   bool                   `json:"includeConfig"`
 }
 
 // Conditions struct

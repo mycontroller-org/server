@@ -27,26 +27,26 @@ const (
 
 // WebhookConfig for webhook
 type WebhookConfig struct {
-	Server             string
-	API                string
-	Method             string
-	InsecureSkipVerify bool
-	Headers            map[string]string
-	QueryParameters    map[string]interface{}
-	ResponseCode       int
-	AllowOverwrite     bool
+	Server          string
+	API             string
+	Method          string
+	Insecure        bool
+	Headers         map[string]string
+	QueryParameters map[string]interface{}
+	ResponseCode    int
+	AllowOverwrite  bool
 }
 
 // Clone config data
 func (cfg *WebhookConfig) Clone() *WebhookConfig {
 	config := &WebhookConfig{
-		Server:             cfg.Server,
-		API:                cfg.API,
-		InsecureSkipVerify: cfg.InsecureSkipVerify,
-		Method:             cfg.Method,
-		QueryParameters:    make(map[string]interface{}),
-		Headers:            make(map[string]string),
-		AllowOverwrite:     cfg.AllowOverwrite,
+		Server:          cfg.Server,
+		API:             cfg.API,
+		Insecure:        cfg.Insecure,
+		Method:          cfg.Method,
+		QueryParameters: make(map[string]interface{}),
+		Headers:         make(map[string]string),
+		AllowOverwrite:  cfg.AllowOverwrite,
 	}
 
 	// update query parameters
@@ -94,7 +94,7 @@ func (p *WebhookClient) Name() string {
 // Start handler implementation
 func (c *WebhookClient) Start() error {
 	if c.httpClient == nil {
-		c.httpClient = httpclient.GetClient(c.Config.InsecureSkipVerify, timeout)
+		c.httpClient = httpclient.GetClient(c.Config.Insecure, timeout)
 	}
 
 	return nil
