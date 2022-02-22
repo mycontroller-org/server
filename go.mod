@@ -20,7 +20,7 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/mitchellh/mapstructure v1.4.2
 	github.com/mycontroller-org/esphome_api v0.0.0-20210521131434-a7948558294c
-	github.com/nats-io/nats.go v1.13.1-0.20220210170715-3ead80931bdf
+	github.com/nats-io/nats.go v1.13.1-0.20220216000616-0096b1bfae8d
 	github.com/robfig/cron/v3 v3.0.2-0.20210106135023-bc59245fe10e
 	github.com/rs/cors v1.8.0
 	github.com/shirou/gopsutil/v3 v3.21.9
