@@ -63,6 +63,15 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) e
 		p.Protocol = protocol
 
 	case ProtocolTypeHttpGeneric:
+		// load http endpoints
+		httpProtocol := &HttpProtocol{}
+		err := utils.MapToStruct(utils.TagNameNone, p.Config.Protocol, httpProtocol)
+		if err != nil {
+			zap.L().Error("error on converting to http protocol")
+			return err
+		}
+		p.HttpProtocol = httpProtocol
+
 		if len(p.HttpProtocol.Endpoints) == 0 {
 			return nil
 		}
@@ -70,7 +79,7 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) e
 			cfg := p.HttpProtocol.Endpoints[key]
 			err = p.schedule(key, &cfg)
 			if err != nil {
-				zap.L().Error("error on schedule", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("address", cfg.URL), zap.Error(err))
+				zap.L().Error("error on schedule", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
 			}
 		}
 
@@ -93,7 +102,7 @@ func (p *Provider) unscheduleAll() {
 	coreScheduler.SVC.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, p.GatewayConfig.ID))
 }
 
-func (p *Provider) schedule(index string, cfg *HttpConfig) error {
+func (p *Provider) schedule(endpoint string, cfg *HttpConfig) error {
 	if cfg.ExecutionInterval == "" {
 		cfg.ExecutionInterval = defaultPoolInterval
 	}
@@ -101,18 +110,18 @@ func (p *Provider) schedule(index string, cfg *HttpConfig) error {
 	triggerFunc := func() {
 		rawMsg, err := p.executeHttpRequest(cfg)
 		if err != nil {
-			zap.L().Error("error on executing a request", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("address", cfg.URL), zap.Error(err))
+			zap.L().Error("error on executing a request", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("endpoint", endpoint), zap.String("url", cfg.URL), zap.Error(err))
 			return
 		}
 		if rawMsg != nil {
 			err = p.rawMessageHandler(rawMsg)
 			if err != nil {
-				zap.L().Error("error on posting a rawmessage", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("address", cfg.URL), zap.Error(err))
+				zap.L().Error("error on posting a rawmessage", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("endpoint", endpoint), zap.String("url", cfg.URL), zap.Error(err))
 			}
 		}
 	}
 
-	scheduleID := fmt.Sprintf("%s_%s_%s", schedulePrefix, p.GatewayConfig.ID, index)
+	scheduleID := fmt.Sprintf("%s_%s_%s", schedulePrefix, p.GatewayConfig.ID, endpoint)
 	cronSpec := fmt.Sprintf("@every %s", cfg.ExecutionInterval)
 	err := coreScheduler.SVC.AddFunc(scheduleID, cronSpec, triggerFunc)
 	if err != nil {
