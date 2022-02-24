@@ -26,24 +26,24 @@ type ScriptFormatter struct {
 
 // http protocol config
 type HttpProtocol struct {
-	Type                  string                 `json:"type"`
-	GlobalHeaders         map[string]string      `json:"globalHeaders"`
-	GlobalQueryParameters map[string]interface{} `json:"globalQueryParameters"`
-	Addresses             []HttpConfig           `json:"address"`
+	Type            string                 `json:"type"`
+	Headers         map[string]string      `json:"headers"`
+	QueryParameters map[string]interface{} `json:"queryParameters"`
+	Endpoints       map[string]HttpConfig  `json:"endpoints"`
 }
 
 // http config
 type HttpConfig struct {
 	HttpNode
-	Enabled      bool   `json:"enabled"`
-	PoolInterval string `json:"poolInterval"`
+	Disabled          bool   `json:"disabled"`
+	ExecutionInterval string `json:"executionInterval"`
 }
 
 // nodes details
 
 // http node config
 type HttpNode struct {
-	Address         string                 `json:"url"`
+	URL             string                 `json:"url"`
 	Method          string                 `json:"method"`
 	Insecure        bool                   `json:"insecure"`
 	Headers         map[string]string      `json:"headers"`
@@ -51,7 +51,7 @@ type HttpNode struct {
 	Body            cmap.CustomMap         `json:"body"`
 	ResponseCode    int                    `json:"responseCode"`
 	Script          string                 `json:"script"`
-	UseGlobal       bool                   `json:"useGlobal"`
+	IncludeGlobal   bool                   `json:"includeGlobal"`
 }
 
 // mqtt node config

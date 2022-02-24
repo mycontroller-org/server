@@ -33,11 +33,11 @@ func (p *Provider) postHTTP(msg *msgTY.Message) error {
 	queryParameters := endpoint.QueryParameters
 
 	// merge with global config, if enabled
-	if endpoint.UseGlobal {
-		headers = p.HttpProtocol.GlobalHeaders
+	if endpoint.IncludeGlobal {
+		headers = p.HttpProtocol.Headers
 		utils.JoinStringMap(headers, endpoint.Headers)
 
-		queryParameters = p.HttpProtocol.GlobalQueryParameters
+		queryParameters = p.HttpProtocol.QueryParameters
 		utils.JoinMap(queryParameters, endpoint.QueryParameters)
 	}
 
@@ -64,7 +64,7 @@ func (p *Provider) postHTTP(msg *msgTY.Message) error {
 	}
 
 	client := httpclient.GetClient(endpoint.Insecure, defaultHttpRequestTimeout)
-	_, _, err = client.Request(endpoint.Address, endpoint.Method, endpoint.Headers, endpoint.QueryParameters, body, endpoint.ResponseCode)
+	_, _, err = client.Request(endpoint.URL, endpoint.Method, endpoint.Headers, endpoint.QueryParameters, body, endpoint.ResponseCode)
 	if err != nil {
 		zap.L().Error("error on calling endpoint", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
 	}
@@ -72,12 +72,12 @@ func (p *Provider) postHTTP(msg *msgTY.Message) error {
 }
 
 func (p *Provider) executeHttpRequest(cfg *HttpConfig) (*msgTY.RawMessage, error) {
-	if !cfg.Enabled {
+	if cfg.Disabled {
 		return nil, nil
 	}
 
 	client := httpclient.GetClient(cfg.Insecure, defaultHttpRequestTimeout)
-	res, resBytes, err := client.Request(cfg.Address, cfg.Method, cfg.Headers, cfg.QueryParameters, cfg.Body, cfg.ResponseCode)
+	res, resBytes, err := client.Request(cfg.URL, cfg.Method, cfg.Headers, cfg.QueryParameters, cfg.Body, cfg.ResponseCode)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (p *Provider) executeHttpRequest(cfg *HttpConfig) (*msgTY.RawMessage, error
 		IsAckEnabled: false,
 		Timestamp:    time.Now(),
 		Data:         string(resBytes),
-		Others:       cmap.CustomMap{"address": cfg.Address},
+		Others:       cmap.CustomMap{"address": cfg.URL},
 	}
 
 	variables := make(map[string]interface{})
@@ -97,12 +97,12 @@ func (p *Provider) executeHttpRequest(cfg *HttpConfig) (*msgTY.RawMessage, error
 	if cfg.Script != "" {
 		scriptResponse, err := jsUtils.Execute(cfg.Script, variables)
 		if err != nil {
-			zap.L().Error("error on executing script", zap.String("address", cfg.Address), zap.Error(err))
+			zap.L().Error("error on executing script", zap.String("address", cfg.URL), zap.Error(err))
 			return nil, err
 		}
 		mapResponse, err := jsUtils.ToMap(scriptResponse)
 		if err != nil {
-			zap.L().Error("error on converting to map", zap.String("address", cfg.Address), zap.Error(err))
+			zap.L().Error("error on converting to map", zap.String("address", cfg.URL), zap.Error(err))
 			return nil, err
 		}
 		messages := utils.GetMapValue(mapResponse, KeyReceivedMessages, nil)

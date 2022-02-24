@@ -63,14 +63,14 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) e
 		p.Protocol = protocol
 
 	case ProtocolTypeHttpGeneric:
-		if len(p.HttpProtocol.Addresses) == 0 {
+		if len(p.HttpProtocol.Endpoints) == 0 {
 			return nil
 		}
-		for index := range p.HttpProtocol.Addresses {
-			cfg := p.HttpProtocol.Addresses[index]
-			err = p.schedule(index, &cfg)
+		for key := range p.HttpProtocol.Endpoints {
+			cfg := p.HttpProtocol.Endpoints[key]
+			err = p.schedule(key, &cfg)
 			if err != nil {
-				zap.L().Error("error on schedule", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("address", cfg.Address), zap.Error(err))
+				zap.L().Error("error on schedule", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("address", cfg.URL), zap.Error(err))
 			}
 		}
 
@@ -93,32 +93,32 @@ func (p *Provider) unscheduleAll() {
 	coreScheduler.SVC.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, p.GatewayConfig.ID))
 }
 
-func (p *Provider) schedule(index int, cfg *HttpConfig) error {
-	if cfg.PoolInterval == "" {
-		cfg.PoolInterval = defaultPoolInterval
+func (p *Provider) schedule(index string, cfg *HttpConfig) error {
+	if cfg.ExecutionInterval == "" {
+		cfg.ExecutionInterval = defaultPoolInterval
 	}
 
 	triggerFunc := func() {
 		rawMsg, err := p.executeHttpRequest(cfg)
 		if err != nil {
-			zap.L().Error("error on executing a request", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("address", cfg.Address), zap.Error(err))
+			zap.L().Error("error on executing a request", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("address", cfg.URL), zap.Error(err))
 			return
 		}
 		if rawMsg != nil {
 			err = p.rawMessageHandler(rawMsg)
 			if err != nil {
-				zap.L().Error("error on posting a rawmessage", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("address", cfg.Address), zap.Error(err))
+				zap.L().Error("error on posting a rawmessage", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("address", cfg.URL), zap.Error(err))
 			}
 		}
 	}
 
-	scheduleID := fmt.Sprintf("%s_%s_%d", schedulePrefix, p.GatewayConfig.ID, index)
-	cronSpec := fmt.Sprintf("@every %s", cfg.PoolInterval)
+	scheduleID := fmt.Sprintf("%s_%s_%s", schedulePrefix, p.GatewayConfig.ID, index)
+	cronSpec := fmt.Sprintf("@every %s", cfg.ExecutionInterval)
 	err := coreScheduler.SVC.AddFunc(scheduleID, cronSpec, triggerFunc)
 	if err != nil {
 		zap.L().Error("error on adding schedule", zap.Error(err))
 		return err
 	}
-	zap.L().Debug("added a schedule", zap.String("schedulerID", scheduleID), zap.String("interval", cfg.PoolInterval))
+	zap.L().Debug("added a schedule", zap.String("schedulerID", scheduleID), zap.String("interval", cfg.ExecutionInterval))
 	return nil
 }
