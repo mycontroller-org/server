@@ -37,3 +37,12 @@ func NewEncoder(writer io.Writer) *jsoniter.Encoder {
 func NewDecoder(reader io.Reader) *jsoniter.Decoder {
 	return jsonIterator.NewDecoder(reader)
 }
+
+// ToStruct converts the in to json string and convert back to json struct
+func ToStruct(in interface{}, out interface{}) error {
+	bytes, err := Marshal(in)
+	if err != nil {
+		return err
+	}
+	return Unmarshal(bytes, out)
+}

@@ -3,6 +3,7 @@ package generic
 import (
 	"fmt"
 
+	"github.com/mycontroller-org/server/v2/pkg/json"
 	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
@@ -65,7 +66,7 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) e
 	case ProtocolTypeHttpGeneric:
 		// load http endpoints
 		httpProtocol := &HttpProtocol{}
-		err := utils.MapToStruct(utils.TagNameNone, p.Config.Protocol, httpProtocol)
+		err := json.ToStruct(p.Config.Protocol, httpProtocol)
 		if err != nil {
 			zap.L().Error("error on converting to http protocol")
 			return err
