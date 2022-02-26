@@ -153,6 +153,14 @@ func updateNodeData(msg *msgTY.Message) error {
 	// update last seen
 	node.LastSeen = msg.Timestamp
 
+	// update node status
+	if node.State.Status != types.StatusUp {
+		node.State = types.State{
+			Status: types.StatusUp,
+			Since:  msg.Timestamp,
+		}
+	}
+
 	for _, d := range msg.Payloads {
 		// update labels
 		node.Labels.CopyFrom(d.Labels)

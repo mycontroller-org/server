@@ -5,6 +5,7 @@ import (
 
 	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
 	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	"go.uber.org/zap"
 )
 
@@ -19,6 +20,14 @@ func updateNodeLastSeen(gatewayID, nodeID string, timestamp time.Time) {
 		timestamp = time.Now()
 	}
 	node.LastSeen = timestamp
+	// update node status
+	if node.State.Status != types.StatusUp {
+		node.State = types.State{
+			Status: types.StatusUp,
+			Since:  timestamp,
+		}
+	}
+
 	err = nodeAPI.Save(node)
 	if err != nil {
 		zap.L().Error("error on updating a node", zap.String("gatewayId", gatewayID), zap.String("nodeId", nodeID), zap.Error(err))
