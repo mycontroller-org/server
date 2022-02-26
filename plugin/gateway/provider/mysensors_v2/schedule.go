@@ -6,6 +6,7 @@ import (
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
 	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
+	"go.uber.org/zap"
 )
 
 const (
@@ -33,5 +34,8 @@ func (p *Provider) runNodeDiscover() {
 	msg.Type = msgTY.TypeAction
 
 	// post the message to gateway hardware
-	p.Post(&msg)
+	err := p.Post(&msg)
+	if err != nil {
+		zap.L().Error("error on posting node discover message", zap.String("gatewayId", p.GatewayConfig.ID), zap.Error(err))
+	}
 }
