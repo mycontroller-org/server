@@ -24,9 +24,10 @@ type Settings struct {
 
 // SystemSettings struct
 type SystemSettings struct {
-	GeoLocation GeoLocation `json:"geoLocation"`
-	Login       Login       `json:"login"`
-	Language    string      `json:"language"`
+	GeoLocation  GeoLocation  `json:"geoLocation"`
+	Login        Login        `json:"login"`
+	Language     string       `json:"language"`
+	NodeStateJob NodeStateJob `json:"nodeStateJob"`
 }
 
 // GeoLocation struct
@@ -41,6 +42,12 @@ type GeoLocation struct {
 type Login struct {
 	Message       string `json:"message"`
 	ServerMessage string `json:"serverMessage"`
+}
+
+// NodeStateJob verifies active node
+type NodeStateJob struct {
+	ExecutionInterval string `json:"executionInterval"`
+	InactiveDuration  string `json:"inactiveDuration"`
 }
 
 // VersionSettings struct

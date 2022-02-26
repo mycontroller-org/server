@@ -5,6 +5,7 @@ import "fmt"
 // topics used across the application
 const (
 	TopicInternalShutdown              = "internal.shutdown"                   // request to shutdown the server
+	TopicInternalSystemJobs            = "internal.system_jobs"                // system jobs update notification
 	TopicPostMessageToServer           = "message.to_server"                   // processor listens. posts message in to server
 	TopicPostMessageToProvider         = "message.to_provider"                 // provider listens. append gateway id
 	TopicPostRawMessageAcknowledgement = "message.raw_message_acknowledgement" // raw message acknowledge

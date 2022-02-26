@@ -7,6 +7,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	systemJobsHelper "github.com/mycontroller-org/server/v2/pkg/service/system_jobs/helper_utils"
 	"github.com/mycontroller-org/server/v2/pkg/store"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
@@ -152,6 +153,9 @@ func UpdateSystemSettings(settings *settingsTY.Settings) error {
 		}
 	}
 	// send geo location updated event
+
+	// post node state updater job change event
+	systemJobsHelper.PostEvent(systemJobsHelper.JobTypeNodeStateUpdater)
 
 	return nil
 }

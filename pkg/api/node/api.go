@@ -2,13 +2,18 @@ package node
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/store"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	"go.uber.org/zap"
 )
 
 // List by filter and pagination
@@ -110,4 +115,71 @@ func UpdateFirmwareState(id string, data map[string]interface{}) error {
 	}
 
 	return Save(node)
+}
+
+// Verifies node up status by checking the last seen timestamp
+// if the last seen greater than x minutes/seconds or specified duration in that node
+// will be marked as down
+func VerifyNodeUpStatus(inactiveDuration time.Duration) {
+	filters := []storageTY.Filter{{Key: "State.Status", Value: types.StatusUp, Operator: storageTY.OperatorEqual}}
+	limit := int64(50)
+	offset := int64(0)
+	pagination := &storageTY.Pagination{
+		Limit:  limit,
+		Offset: offset,
+		SortBy: []storageTY.Sort{{Field: types.KeyID, OrderBy: storageTY.SortByASC}},
+	}
+
+	for {
+		result, err := List(filters, pagination)
+		if err != nil {
+			zap.L().Error("error on getting active nodes list", zap.Error(err))
+			return
+		}
+		if result.Count == 0 {
+			return
+		}
+
+		// process received nodes
+		updateNodesUpStatus(result, inactiveDuration)
+
+		if result.Count < limit {
+			return
+		}
+		// move to next page
+		offset++
+	}
+}
+
+func updateNodesUpStatus(result *storageTY.Result, inactiveDuration time.Duration) {
+	nodesPointer, ok := result.Data.(*[]nodeTY.Node)
+	if !ok {
+		zap.L().Error("invalid data", zap.String("receivedType", fmt.Sprintf("%T", result.Data)))
+		return
+	}
+	nodes := *nodesPointer
+
+	// lastSeen marker
+	currentTime := time.Now()
+	for index := range nodes {
+		node := nodes[index]
+		// get custom inactive reference
+		strDuration := node.Labels.Get(types.LabelNodeInactiveDuration)
+		duration := utils.ToDuration(strDuration, inactiveDuration)
+		inactiveReference := currentTime.Add(-duration)
+		if node.State.Status == types.StatusUp && node.LastSeen.Before(inactiveReference) {
+			node.State = types.State{
+				Status:  types.StatusDown,
+				Since:   currentTime,
+				Message: "marked by server",
+			}
+			err := Save(&node)
+			if err != nil {
+				zap.L().Error("error on saving a node status", zap.String("gatewayId", node.GatewayID), zap.String("nodeId", node.NodeID), zap.Error(err))
+			}
+
+			// post node data to event listeners
+			busUtils.PostEvent(mcbus.TopicEventNode, eventTY.TypeUpdated, types.EntityNode, node)
+		}
+	}
 }

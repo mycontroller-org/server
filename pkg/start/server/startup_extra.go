@@ -4,6 +4,7 @@ import (
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
 	systemJobs "github.com/mycontroller-org/server/v2/pkg/service/system_jobs"
+	nodeJobs "github.com/mycontroller-org/server/v2/pkg/service/system_jobs/node_job"
 	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
@@ -66,6 +67,10 @@ func CreateSettingsData() {
 	systemSettings := settingsTY.SystemSettings{
 		GeoLocation: settingsTY.GeoLocation{AutoUpdate: true},
 		Login:       settingsTY.Login{Message: loginMessage},
+		NodeStateJob: settingsTY.NodeStateJob{
+			ExecutionInterval: nodeJobs.DefaultExecutionInterval,
+			InactiveDuration:  nodeJobs.DefaultInactiveDuration,
+		},
 	}
 	settings := &settingsTY.Settings{ID: settingsTY.KeySystemSettings}
 	settings.Spec = utils.StructToMap(systemSettings)

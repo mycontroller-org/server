@@ -14,6 +14,7 @@ const (
 	TypeScheduler      = "scheduler"
 	TypeFirmware       = "firmware"
 	TypeResourceAction = "resource_action"
+	TypeSystemJobs     = "system_jobs"
 )
 
 // Command details

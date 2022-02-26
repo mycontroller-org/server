@@ -10,6 +10,7 @@ import (
 	handlerSVC "github.com/mycontroller-org/server/v2/pkg/service/handler"
 	resourceSVC "github.com/mycontroller-org/server/v2/pkg/service/resource"
 	scheduleSVC "github.com/mycontroller-org/server/v2/pkg/service/schedule"
+	systemJobs "github.com/mycontroller-org/server/v2/pkg/service/system_jobs"
 	taskSVC "github.com/mycontroller-org/server/v2/pkg/service/task"
 	"github.com/mycontroller-org/server/v2/pkg/start/common"
 	"github.com/mycontroller-org/server/v2/pkg/store"
@@ -82,6 +83,12 @@ func startServices() {
 	if err != nil {
 		zap.L().Fatal("error on starting gateway service listener", zap.Error(err))
 	}
+
+	// start system jobs listener
+	err = systemJobs.Start()
+	if err != nil {
+		zap.L().Fatal("error on starting system jobs service listener", zap.Error(err))
+	}
 }
 
 func wrapHandlerFunc(handlerFunc func()) func() {
@@ -107,6 +114,9 @@ func closeServices() {
 
 	// close task service
 	taskSVC.Close()
+
+	// close system jobs service
+	systemJobs.Close()
 
 	// close scheduler service
 	scheduleSVC.Close()

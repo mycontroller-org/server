@@ -20,6 +20,7 @@ const (
 	LabelNodeLibraryVersion   = "library_version"
 	LabelNodeAssignedFirmware = "assigned_firmware"
 	LabelNodeOTABlockOrder    = "ota_block_order"
+	LabelNodeInactiveDuration = "inactive_duration"
 
 	// Field specific labels
 	LabelMetricType = "metric_type"
