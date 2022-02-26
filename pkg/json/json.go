@@ -40,9 +40,16 @@ func NewDecoder(reader io.Reader) *jsoniter.Decoder {
 
 // ToStruct converts the in to json string and convert back to json struct
 func ToStruct(in interface{}, out interface{}) error {
-	bytes, err := Marshal(in)
-	if err != nil {
-		return err
+	var bytes []byte
+	byteString, ok := in.(string)
+	if ok {
+		bytes = []byte(byteString)
+	} else {
+		newBytes, err := Marshal(in)
+		if err != nil {
+			return err
+		}
+		bytes = newBytes
 	}
 	return Unmarshal(bytes, out)
 }

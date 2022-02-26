@@ -12,25 +12,12 @@ func toMessages(data interface{}) ([]*msgTY.Message, error) {
 	if data == nil {
 		return nil, errors.New("empty messages")
 	}
-	bytes, err := json.Marshal(data)
+	messages := make([]*msgTY.Message, 0)
+
+	err := json.ToStruct(data, &messages)
 	if err != nil {
 		return nil, err
 	}
-	messages := make([]msgTY.Message, 0)
-	err = json.Unmarshal(bytes, &messages)
-	if err != nil {
-		return nil, err
-	}
 
-	finalMsgs := make([]*msgTY.Message, 0)
-	for index := range messages {
-		msg := messages[index]
-		finalMsgs = append(finalMsgs, &msg)
-	}
-
-	return finalMsgs, nil
-}
-
-func toHttpNode(config interface{}) (*HttpNode, error) {
-	return nil, nil
+	return messages, nil
 }

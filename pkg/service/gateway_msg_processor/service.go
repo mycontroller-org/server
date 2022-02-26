@@ -385,6 +385,11 @@ func updateFieldData(
 	field *fieldTY.Field, fieldId, name, metricType, unit string, labels cmap.CustomStringMap,
 	others cmap.CustomMap, value interface{}, msg *msgTY.Message) error {
 
+	// if metricType is empty update as none
+	if metricType == "" {
+		metricType = metricPluginTY.MetricTypeNone
+	}
+
 	if field == nil {
 		updateField, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, fieldId)
 		if err != nil { // TODO: check entry availability on error message

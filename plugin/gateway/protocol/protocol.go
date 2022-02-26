@@ -15,6 +15,7 @@ const (
 	TypeMQTT     = "mqtt"
 	TypeSerial   = "serial"
 	TypeEthernet = "ethernet"
+	TypeHttp     = "http"
 )
 
 // Others map known keys
