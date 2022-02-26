@@ -83,6 +83,9 @@ func processMessage(item interface{}) {
 			if err != nil {
 				zap.L().Error("error on field data set", zap.Error(err))
 			}
+			// update last seen
+			updateSourceLastSeen(msg.GatewayID, msg.NodeID, msg.SourceID, msg.Timestamp)
+			updateNodeLastSeen(msg.GatewayID, msg.NodeID, msg.Timestamp)
 
 		case msgTY.TypeRequest: // request fields
 			err := requestFieldData(msg)
@@ -95,6 +98,9 @@ func processMessage(item interface{}) {
 			if err != nil {
 				zap.L().Error("error on source data update", zap.Error(err))
 			}
+			// update last seen
+			updateSourceLastSeen(msg.GatewayID, msg.NodeID, msg.SourceID, msg.Timestamp)
+			updateNodeLastSeen(msg.GatewayID, msg.NodeID, msg.Timestamp)
 
 		default:
 			zap.L().Warn("message type not implemented for source", zap.String("type", msg.Type), zap.Any("message", msg))
@@ -107,6 +113,7 @@ func processMessage(item interface{}) {
 			if err != nil {
 				zap.L().Error("error on node data update", zap.Error(err))
 			}
+			// node last seen managed in updateNodeData
 
 		case msgTY.TypeRequest: // request node specific data
 
