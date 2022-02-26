@@ -13,6 +13,11 @@ func UnscheduleAll(prefixSlice ...string) {
 	coreScheduler.SVC.RemoveWithPrefix(prefix)
 }
 
+// unschedule a job
+func Unschedule(scheduleID string) {
+	coreScheduler.SVC.RemoveFunc(scheduleID)
+}
+
 // Schedule a job with job spec
 func Schedule(scheduleID, jobSpec string, triggerFunc func()) error {
 	err := coreScheduler.SVC.AddFunc(scheduleID, jobSpec, triggerFunc)

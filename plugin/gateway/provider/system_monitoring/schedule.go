@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
 	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
 	"go.uber.org/zap"
 )
@@ -82,22 +82,15 @@ func (p *Provider) getScheduleID(resourceID string) string {
 }
 
 func (p *Provider) unloadAll() {
-	coreScheduler.SVC.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, p.GatewayConfig.ID))
+	scheduleUtils.UnscheduleAll(schedulePrefix, p.GatewayConfig.ID)
 }
 
 func (p *Provider) schedule(resourceID, interval string, triggerFunc func()) {
-	p.unschedule(resourceID) // removes the existing schedule, if any
-	schedulerID := p.getScheduleID(resourceID)
-	cronSpec := fmt.Sprintf("@every %s", interval)
-	err := coreScheduler.SVC.AddFunc(schedulerID, cronSpec, triggerFunc)
+	scheduleID := p.getScheduleID(resourceID)
+	scheduleUtils.Unschedule(scheduleID) // removes the existing schedule, if any
+	jobSpec := fmt.Sprintf("@every %s", interval)
+	err := scheduleUtils.Schedule(scheduleID, jobSpec, triggerFunc)
 	if err != nil {
 		zap.L().Error("error on adding schedule", zap.Error(err))
 	}
-	zap.L().Debug("added a schedule", zap.String("resourceID", resourceID), zap.String("schedulerID", schedulerID), zap.String("interval", interval))
-}
-
-func (p *Provider) unschedule(resourceID string) {
-	schedulerID := p.getScheduleID(resourceID)
-	coreScheduler.SVC.RemoveFunc(schedulerID)
-	zap.L().Debug("removed a schedule", zap.String("resourceID", resourceID), zap.String("schedulerID", schedulerID))
 }

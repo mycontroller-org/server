@@ -3,7 +3,7 @@ package http_generic
 import (
 	"fmt"
 
-	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
 	"go.uber.org/zap"
 )
 
@@ -14,7 +14,7 @@ const (
 
 // unschedule all the requests
 func (hp *HttpProtocol) unscheduleAll() {
-	coreScheduler.SVC.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, hp.GatewayConfig.ID))
+	scheduleUtils.UnscheduleAll(schedulePrefix, hp.GatewayConfig.ID)
 }
 
 // schedule a request
@@ -37,13 +37,12 @@ func (hp *HttpProtocol) schedule(endpoint string, cfg *HttpConfig) error {
 		}
 	}
 
-	scheduleID := fmt.Sprintf("%s_%s_%s", schedulePrefix, hp.GatewayConfig.ID, endpoint)
-	cronSpec := fmt.Sprintf("@every %s", cfg.ExecutionInterval)
-	err := coreScheduler.SVC.AddFunc(scheduleID, cronSpec, triggerFunc)
+	scheduleID := scheduleUtils.GetScheduleID(schedulePrefix, hp.GatewayConfig.ID, endpoint)
+	jobSpec := fmt.Sprintf("@every %s", cfg.ExecutionInterval)
+	err := scheduleUtils.Schedule(scheduleID, jobSpec, triggerFunc)
 	if err != nil {
 		zap.L().Error("error on adding schedule", zap.Error(err))
 		return err
 	}
-	zap.L().Debug("added a schedule", zap.String("schedulerID", scheduleID), zap.String("interval", cfg.ExecutionInterval))
 	return nil
 }

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sync"
 
-	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
 	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
@@ -102,30 +102,19 @@ func (p *Provider) Start(rxMessageFunc func(rawMsg *msgTY.RawMessage) error) err
 
 // Close func
 func (p *Provider) Close() error {
-	p.unscheduleAll()
+	scheduleUtils.UnscheduleAll(schedulePrefix, p.GatewayConfig.ID)
 	p.clientStore.Close()
 	p.entityStore.Close()
 	return nil
 }
 
-// unscheduleAll removes all the schedules added by this gateway
-func (p *Provider) unscheduleAll() {
-	coreScheduler.SVC.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, p.GatewayConfig.ID))
-}
-
 // Unschedule removes a schedule
 func Unschedule(scheduleID string) {
-	coreScheduler.SVC.RemoveFunc(scheduleID)
+	scheduleUtils.Unschedule(scheduleID)
 }
 
 // Schedule adds a schedule
-func Schedule(schedulerID, interval string, triggerFunc func()) error {
-	cronSpec := fmt.Sprintf("@every %s", interval)
-	err := coreScheduler.SVC.AddFunc(schedulerID, cronSpec, triggerFunc)
-	if err != nil {
-		zap.L().Error("error on adding schedule", zap.Error(err))
-		return err
-	}
-	zap.L().Debug("added a schedule", zap.String("schedulerID", schedulerID), zap.String("interval", interval))
-	return nil
+func Schedule(scheduleID, interval string, triggerFunc func()) error {
+	jobSpec := fmt.Sprintf("@every %s", interval)
+	return scheduleUtils.Schedule(scheduleID, jobSpec, triggerFunc)
 }
