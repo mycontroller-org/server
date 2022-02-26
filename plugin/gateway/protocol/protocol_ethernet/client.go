@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
@@ -46,6 +47,7 @@ type Endpoint struct {
 	messageLogger  msgLogger.MessageLogger
 	txPreDelay     time.Duration
 	reconnectDelay time.Duration
+	mutex          sync.RWMutex
 }
 
 // New ethernet driver
@@ -76,6 +78,7 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 		safeClose:      concurrency.NewChannel(0),
 		txPreDelay:     utils.ToDuration(cfg.TransmitPreDelay, transmitPreDelayDefault),
 		reconnectDelay: utils.ToDuration(gwCfg.ReconnectDelay, reconnectDelayDefault),
+		mutex:          sync.RWMutex{},
 	}
 
 	// init and start message logger
@@ -97,6 +100,9 @@ func messageFormatter(rawMsg *msgTY.RawMessage) string {
 }
 
 func (ep *Endpoint) Write(rawMsg *msgTY.RawMessage) error {
+	ep.mutex.Lock()
+	defer ep.mutex.Unlock()
+
 	time.Sleep(ep.txPreDelay) // transmit pre delay
 	ep.messageLogger.AsyncWrite(rawMsg)
 

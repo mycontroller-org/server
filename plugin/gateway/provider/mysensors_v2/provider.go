@@ -12,6 +12,7 @@ import (
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	utils "github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
+	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
 	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	ethernet "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_ethernet"
 	mqtt "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_mqtt"
@@ -101,11 +102,19 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) e
 	if err != nil {
 		return err
 	}
-	return initEventListener(p.GatewayConfig.ID)
+	err = initEventListener(p.GatewayConfig.ID)
+	if err != nil {
+		return err
+	}
+
+	return p.scheduleNodeDiscover()
 }
 
 // Close func
 func (p *Provider) Close() error {
+	// remove all schedules on this gateway
+	scheduleUtils.UnscheduleAll(schedulePrefix, p.GatewayConfig.ID)
+
 	// stop event listener
 	closeEventListener()
 
