@@ -35,14 +35,14 @@ func (av1 *AdminV1) CreateBucket() error {
 	queryParams := map[string]interface{}{
 		"q": fmt.Sprintf("CREATE DATABASE \"%s\"", av1.bucket),
 	}
-	_, responseBody, err := av1.client.Request(av1.url, http.MethodGet, av1.headers, queryParams, nil, http.StatusOK)
+	response, err := av1.client.ExecuteJson(av1.url, http.MethodGet, av1.headers, queryParams, nil, http.StatusOK)
 	if err != nil {
 		zap.L().Error("error on calling api", zap.Error(err))
 		return err
 	}
 
 	queryResult := QueryResult{}
-	err = json.Unmarshal(responseBody, &queryResult)
+	err = json.Unmarshal(response.Body, &queryResult)
 	if err != nil {
 		return err
 	}

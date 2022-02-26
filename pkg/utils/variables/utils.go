@@ -124,7 +124,7 @@ func getWebhookData(name string, whCfg *handlerTY.WebhookData) interface{} {
 		whCfg.Method = http.MethodGet
 	}
 
-	res, resBody, err := client.Request(whCfg.Server, whCfg.Method, whCfg.Headers, whCfg.QueryParameters, whCfg.Data, whCfg.ResponseCode)
+	res, err := client.ExecuteJson(whCfg.Server, whCfg.Method, whCfg.Headers, whCfg.QueryParameters, whCfg.Data, whCfg.ResponseCode)
 	responseStatusCode := 0
 	if res != nil {
 		responseStatusCode = res.StatusCode
@@ -136,9 +136,9 @@ func getWebhookData(name string, whCfg *handlerTY.WebhookData) interface{} {
 
 	resultMap := make(map[string]interface{})
 
-	err = json.Unmarshal(resBody, &resultMap)
+	err = json.Unmarshal(res.Body, &resultMap)
 	if err != nil {
-		zap.L().Error("error on converting to json", zap.Error(err), zap.String("response", string(resBody)))
+		zap.L().Error("error on converting to json", zap.Error(err), zap.String("response", res.StringBody()))
 		return nil
 	}
 	return resultMap

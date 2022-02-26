@@ -182,7 +182,7 @@ func (c *WebhookClient) Post(data map[string]interface{}) error {
 
 		url := fmt.Sprintf("%s%s", config.Server, config.API)
 
-		respose, _, err := c.httpClient.Request(url, config.Method, config.Headers, config.QueryParameters, webhookData.Data, config.ResponseCode)
+		respose, err := c.httpClient.ExecuteJson(url, config.Method, config.Headers, config.QueryParameters, webhookData.Data, config.ResponseCode)
 		responseCode := 0
 		if respose != nil {
 			responseCode = respose.StatusCode

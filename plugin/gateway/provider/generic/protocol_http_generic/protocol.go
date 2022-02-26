@@ -8,6 +8,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	jsUtils "github.com/mycontroller-org/server/v2/pkg/utils/javascript"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
@@ -84,7 +85,7 @@ func (hp *HttpProtocol) Post(msg *msgTY.Message) error {
 		endpoint.QueryParameters = queryParameters
 	}
 
-	var body interface{}
+	body := ""
 	// execute script, if available
 	if endpoint.Script != "" {
 		variables := map[string]interface{}{
@@ -102,13 +103,18 @@ func (hp *HttpProtocol) Post(msg *msgTY.Message) error {
 			zap.L().Error("error on converting to map", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
 			return err
 		}
-		body = utils.GetMapValue(mapResponse, ScriptKeyDataOut, nil)
+		body = convertor.ToString(utils.GetMapValue(mapResponse, ScriptKeyDataOut, nil))
 	} else {
-		body = msg
+		jsonString, err := json.MarshalToString(msg)
+		if err != nil {
+			zap.L().Error("error on converting to json string", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
+			return err
+		}
+		body = jsonString
 	}
 
 	client := httpclient.GetClient(endpoint.Insecure, defaultHttpRequestTimeout)
-	_, _, err = client.Request(endpoint.URL, endpoint.Method, endpoint.Headers, endpoint.QueryParameters, body, endpoint.ResponseCode)
+	_, err = client.Execute(endpoint.URL, endpoint.Method, endpoint.Headers, endpoint.QueryParameters, body, endpoint.ResponseCode)
 	if err != nil {
 		zap.L().Error("error on calling endpoint", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
 	}
@@ -122,7 +128,13 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig) (*msgTY.RawMessage, 
 	}
 
 	client := httpclient.GetClient(cfg.Insecure, defaultHttpRequestTimeout)
-	res, resBytes, err := client.Request(cfg.URL, cfg.Method, cfg.Headers, cfg.QueryParameters, cfg.Body, cfg.ResponseCode)
+	// convert the body to json
+	bodyString, err := json.MarshalToString(cfg.Body)
+	if err != nil {
+		zap.L().Error("error converting the body to json string", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
+		return nil, err
+	}
+	response, err := client.Execute(cfg.URL, cfg.Method, cfg.Headers, cfg.QueryParameters, bodyString, cfg.ResponseCode)
 	if err != nil {
 		return nil, err
 	}
@@ -131,17 +143,15 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig) (*msgTY.RawMessage, 
 		IsReceived:   true,
 		IsAckEnabled: false,
 		Timestamp:    time.Now(),
-		Data:         string(resBytes),
+		Data:         response.StringBody(),
 		Others:       cmap.CustomMap{"url": cfg.URL},
 	}
 
-	variables := map[string]interface{}{
-		ScriptKeyConfigIn:   cfg,
-		ScriptKeyResponseIn: res,
-		ScriptKeyDataIn:     string(resBytes),
-	}
-
 	if cfg.Script != "" {
+		variables := map[string]interface{}{
+			ScriptKeyConfigIn: cfg,
+			ScriptKeyDataIn:   response,
+		}
 		scriptResponse, err := jsUtils.Execute(cfg.Script, variables)
 		if err != nil {
 			zap.L().Error("error on executing script", zap.String("address", cfg.URL), zap.Error(err))

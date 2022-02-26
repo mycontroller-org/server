@@ -8,10 +8,9 @@ import (
 )
 
 const (
-	ScriptKeyDataIn     = "dataIn"
-	ScriptKeyDataOut    = "dataOut"
-	ScriptKeyConfigIn   = "configIn"
-	ScriptKeyResponseIn = "responseIn"
+	ScriptKeyDataIn   = "dataIn"
+	ScriptKeyDataOut  = "dataOut"
+	ScriptKeyConfigIn = "configIn"
 
 	DefaultNode = "default"
 )

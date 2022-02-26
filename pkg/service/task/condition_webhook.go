@@ -25,7 +25,7 @@ func isTriggeredWebhook(taskID string, config taskTY.EvaluationConfig, variables
 		whCfg.Method = http.MethodPost
 	}
 
-	res, resBody, err := client.Request(whCfg.URL, whCfg.Method, whCfg.Headers, whCfg.QueryParameters, variables, 0)
+	res, err := client.ExecuteJson(whCfg.URL, whCfg.Method, whCfg.Headers, whCfg.QueryParameters, variables, 0)
 	responseStatusCode := 0
 	if res != nil {
 		responseStatusCode = res.StatusCode
@@ -37,10 +37,10 @@ func isTriggeredWebhook(taskID string, config taskTY.EvaluationConfig, variables
 
 	resultMap := make(map[string]interface{})
 
-	err = json.Unmarshal(resBody, &resultMap)
+	err = json.Unmarshal(res.Body, &resultMap)
 	if err != nil {
-		zap.L().Error("error on converting to json", zap.Error(err), zap.String("response", string(resBody)))
-		return nil, converterUtils.ToBool(string(resBody))
+		zap.L().Error("error on converting to json", zap.Error(err), zap.String("response", res.StringBody()))
+		return nil, converterUtils.ToBool(res.StringBody())
 	}
 
 	zap.L().Debug("webhook response", zap.String("taskID", taskID), zap.Any("response", resultMap))

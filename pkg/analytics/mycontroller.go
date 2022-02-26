@@ -109,8 +109,8 @@ func ReportAnalyticsData() {
 
 	// publish the data
 	client := httpclient.GetClient(false, timeout)
-	resConfig, responseBody, err := client.Request(ANALYTICS_URL, http.MethodPost, nil, nil, payload, http.StatusOK)
+	response, err := client.ExecuteJson(ANALYTICS_URL, http.MethodPost, nil, nil, payload, http.StatusOK)
 	if err != nil {
-		zap.L().Debug("error on sending analytics data", zap.Error(err), zap.String("response", string(responseBody)), zap.Any("responseConfig", resConfig))
+		zap.L().Debug("error on sending analytics data", zap.Error(err), zap.String("response", response.StringBody()), zap.Any("responseConfig", response))
 	}
 }

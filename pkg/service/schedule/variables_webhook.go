@@ -24,7 +24,7 @@ func loadWebhookVariables(scheduleID string, config scheduleTY.CustomVariableCon
 		whCfg.Method = http.MethodPost
 	}
 
-	res, resBody, err := client.Request(whCfg.URL, whCfg.Method, whCfg.Headers, whCfg.QueryParameters, variables, 0)
+	res, err := client.ExecuteJson(whCfg.URL, whCfg.Method, whCfg.Headers, whCfg.QueryParameters, variables, 0)
 	responseStatusCode := 0
 	if res != nil {
 		responseStatusCode = res.StatusCode
@@ -36,9 +36,9 @@ func loadWebhookVariables(scheduleID string, config scheduleTY.CustomVariableCon
 
 	resultMap := make(map[string]interface{})
 
-	err = json.Unmarshal(resBody, &resultMap)
+	err = json.Unmarshal(res.Body, &resultMap)
 	if err != nil {
-		zap.L().Error("error on converting to json", zap.Error(err), zap.String("response", string(resBody)))
+		zap.L().Error("error on converting to json", zap.Error(err), zap.String("response", res.StringBody()))
 		return nil
 	}
 

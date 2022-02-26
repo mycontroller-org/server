@@ -49,21 +49,21 @@ func (qv1 *QueryV1) ExecuteQuery(query *metricType.Query, measurement string) ([
 
 	zap.L().Debug("input", zap.String("query", queryString))
 
-	resCfg, responseBody, err := qv1.client.Request(qv1.url, http.MethodGet, qv1.headers, queryParams, nil, 0)
+	response, err := qv1.client.ExecuteJson(qv1.url, http.MethodGet, qv1.headers, queryParams, nil, 0)
 	if err != nil {
 		zap.L().Error("error on calling api", zap.Error(err))
 		return nil, err
 	}
 
-	zap.L().Debug("response", zap.String("body", string(responseBody)), zap.Any("qp", queryParams))
+	zap.L().Debug("response", zap.String("body", response.StringBody()), zap.Any("qp", queryParams))
 
-	if resCfg.StatusCode != http.StatusOK {
+	if response.StatusCode != http.StatusOK {
 		// call error response
-		return nil, fmt.Errorf("invalid status code:%v", resCfg.StatusCode)
+		return nil, fmt.Errorf("invalid status code:%v", response.StatusCode)
 	}
 
 	queryResult := QueryResult{}
-	err = json.Unmarshal(responseBody, &queryResult)
+	err = json.Unmarshal(response.Body, &queryResult)
 	if err != nil {
 		return nil, err
 	}

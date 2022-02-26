@@ -139,12 +139,12 @@ func (c *TelegramClient) Post(data map[string]interface{}) error {
 // SendMessage func
 func (c *TelegramClient) SendMessage(message *Message) error {
 	url := c.getURL(APISendMessage)
-	_, data, err := c.httpClient.Request(url, http.MethodPost, nil, nil, message, 200)
+	response, err := c.httpClient.ExecuteJson(url, http.MethodPost, nil, nil, message, 200)
 	if err != nil {
 		return err
 	}
 	resp := &Response{}
-	err = json.Unmarshal(data, resp)
+	err = json.Unmarshal(response.Body, resp)
 	if err != nil {
 		return nil
 	}
@@ -158,12 +158,12 @@ func (c *TelegramClient) SendMessage(message *Message) error {
 // GetMe returns about the user profile
 func (c *TelegramClient) GetMe() (*User, error) {
 	url := c.getURL(APIGetMe)
-	_, data, err := c.httpClient.Request(url, http.MethodGet, nil, nil, nil, 200)
+	response, err := c.httpClient.ExecuteJson(url, http.MethodGet, nil, nil, nil, 200)
 	if err != nil {
 		return nil, err
 	}
 	resp := &Response{}
-	err = json.Unmarshal(data, resp)
+	err = json.Unmarshal(response.Body, resp)
 	if err != nil {
 		return nil, err
 	}
