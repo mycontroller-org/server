@@ -169,19 +169,14 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig, globalHeaders map[st
 			ScriptKeyDataIn:       response,
 			ScriptKeyPreRunResult: preRuns,
 		}
-		scriptResponse, err := jsUtils.Execute(cfg.Script, variables)
+
+		messages, err := executeScript(cfg.Script, variables, ScriptKeyDataOut)
 		if err != nil {
 			zap.L().Error("error on executing script", zap.String("address", cfg.URL), zap.Error(err))
 			return nil, err
 		}
-		mapResponse, err := jsUtils.ToMap(scriptResponse)
-		if err != nil {
-			zap.L().Error("error on converting to map", zap.String("address", cfg.URL), zap.Error(err))
-			return nil, err
-		}
-		messages := utils.GetMapValue(mapResponse, ScriptKeyDataOut, nil)
 		if messages == nil {
-			return nil, err
+			return nil, fmt.Errorf("'%s' can not be empty", ScriptKeyDataOut)
 		}
 		rawMessage.Data = messages
 	}
