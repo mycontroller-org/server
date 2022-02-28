@@ -8,7 +8,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // PrintVersion prints the version and exits

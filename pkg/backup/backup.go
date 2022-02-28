@@ -28,7 +28,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 var (

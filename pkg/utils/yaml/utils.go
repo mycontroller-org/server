@@ -3,7 +3,7 @@ package yamlutils
 import (
 	"encoding/base64"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // UnmarshalBase64Yaml converts base64 data into given interface
