@@ -13,6 +13,7 @@ import (
 	jsUtils "github.com/mycontroller-org/server/v2/pkg/utils/javascript"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -140,7 +141,7 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig, globalHeaders map[st
 
 	// execute actual endpoint
 	// convert the body to json
-	bodyString := getBodyString(cfg.Body, hp.GatewayConfig.ID, cfg.URL)
+	bodyString := hp.getBodyString(cfg.Body, cfg.BodyLanguage, cfg.URL)
 	response, err := client.Execute(cfg.URL, cfg.Method, cfg.Headers, cfg.QueryParameters, bodyString, cfg.ResponseCode)
 	if err != nil {
 		return nil, err
@@ -197,7 +198,7 @@ func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runs map[s
 		if includeGlobalConfig {
 			headers, queryParameters = mergeHeadersQueryParameters(globalHeaders, cfg.Headers, globalQueryParameters, cfg.QueryParameters)
 		}
-		bodyString := getBodyString(cfg.Body, hp.GatewayConfig.ID, cfg.URL)
+		bodyString := hp.getBodyString(cfg.Body, cfg.BodyLanguage, cfg.URL)
 		if cfg.Script != "" {
 			variables := map[string]interface{}{
 				ScriptKeyPreRunResult: result,
@@ -208,7 +209,7 @@ func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runs map[s
 				return nil, err
 			}
 
-			bodyString = getBodyString(response, hp.GatewayConfig.ID, cfg.URL)
+			bodyString = hp.getBodyString(response, BodyLanguagePlainText, cfg.URL)
 		}
 
 		response, err := client.Execute(cfg.URL, cfg.Method, headers, queryParameters, bodyString, cfg.ResponseCode)
@@ -241,17 +242,29 @@ func mergeHeadersQueryParameters(headers1, headers2 map[string]string,
 }
 
 // returns body string
-func getBodyString(body interface{}, gatewayID, url string) string {
-	bodyString, ok := body.(string)
-	if ok {
+func (hp *HttpProtocol) getBodyString(body interface{}, bodyLanguage, url string) string {
+	switch bodyLanguage {
+	case BodyLanguageJSON:
+		bodyString, err := json.MarshalToString(body)
+		if err != nil {
+			zap.L().Debug("error converting the body to json string, fall back to string conversion", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", url), zap.Error(err))
+			bodyString = convertor.ToString(body)
+		}
 		return bodyString
+
+	case BodyLanguageYAML:
+		bodyBytes, err := yaml.Marshal(body)
+		if err != nil {
+			zap.L().Debug("error converting the body to yaml string, fall back to string conversion", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", url), zap.Error(err))
+			return convertor.ToString(body)
+		}
+		return string(bodyBytes)
+
+	default:
+		return convertor.ToString(body)
+
 	}
-	bodyString, err := json.MarshalToString(body)
-	if err != nil {
-		zap.L().Debug("error converting the body to json string, fall back to string conversion", zap.String("gatewayId", gatewayID), zap.String("url", url), zap.Error(err))
-		bodyString = convertor.ToString(body)
-	}
-	return bodyString
+
 }
 
 // execute script

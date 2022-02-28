@@ -12,6 +12,10 @@ const (
 	ScriptKeyConfigIn     = "configIn"
 	ScriptKeyPreRunResult = "preRunResult"
 	DefaultNode           = "default"
+
+	BodyLanguageJSON      = "json"
+	BodyLanguageYAML      = "yaml"
+	BodyLanguagePlainText = "plaintext"
 )
 
 // http protocol
