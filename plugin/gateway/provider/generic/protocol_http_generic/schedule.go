@@ -18,13 +18,14 @@ func (hp *HttpProtocol) unscheduleAll() {
 }
 
 // schedule a request
-func (hp *HttpProtocol) schedule(endpoint string, cfg *HttpConfig) error {
+func (hp *HttpProtocol) schedule(endpoint string, cfg *HttpConfig, globalHeaders map[string]string,
+	globalQueryParameters map[string]interface{}) error {
 	if cfg.ExecutionInterval == "" {
 		cfg.ExecutionInterval = defaultPoolInterval
 	}
 
 	triggerFunc := func() {
-		rawMsg, err := hp.executeHttpRequest(cfg)
+		rawMsg, err := hp.executeHttpRequest(cfg, globalHeaders, globalQueryParameters)
 		if err != nil {
 			zap.L().Error("error on executing a request", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("endpoint", endpoint), zap.String("url", cfg.URL), zap.Error(err))
 			return

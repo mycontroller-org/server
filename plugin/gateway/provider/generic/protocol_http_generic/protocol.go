@@ -39,7 +39,7 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 	}
 	for key := range hpCfg.Endpoints {
 		cfg := hpCfg.Endpoints[key]
-		err = hp.schedule(key, &cfg)
+		err = hp.schedule(key, &cfg, hpCfg.Headers, hpCfg.QueryParameters)
 		if err != nil {
 			zap.L().Error("error on schedule", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
 		}
@@ -74,15 +74,12 @@ func (hp *HttpProtocol) Post(msg *msgTY.Message) error {
 
 	endpoint = endpoint.Clone()
 
+	headers := endpoint.Headers
+	queryParameters := endpoint.QueryParameters
+
 	// merge with global config, if enabled
 	if endpoint.IncludeGlobalConfig {
-		headers := hp.Config.Headers
-		utils.JoinStringMap(headers, endpoint.Headers)
-		endpoint.Headers = headers
-
-		queryParameters := hp.Config.QueryParameters
-		utils.JoinMap(queryParameters, endpoint.QueryParameters)
-		endpoint.QueryParameters = queryParameters
+		headers, queryParameters = mergeHeadersQueryParameters(hp.Config.Headers, endpoint.Headers, hp.Config.QueryParameters, endpoint.QueryParameters)
 	}
 
 	body := ""
@@ -114,7 +111,7 @@ func (hp *HttpProtocol) Post(msg *msgTY.Message) error {
 	}
 
 	client := httpclient.GetClient(endpoint.Insecure, defaultHttpRequestTimeout)
-	_, err = client.Execute(endpoint.URL, endpoint.Method, endpoint.Headers, endpoint.QueryParameters, body, endpoint.ResponseCode)
+	_, err = client.Execute(endpoint.URL, endpoint.Method, headers, queryParameters, body, endpoint.ResponseCode)
 	if err != nil {
 		zap.L().Error("error on calling endpoint", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
 	}
@@ -122,21 +119,39 @@ func (hp *HttpProtocol) Post(msg *msgTY.Message) error {
 }
 
 // executes the given request and post back the rawmessage to the queue
-func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig) (*msgTY.RawMessage, error) {
+func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig, globalHeaders map[string]string,
+	globalQueryParameters map[string]interface{}) (*msgTY.RawMessage, error) {
 	if cfg.Disabled {
 		return nil, nil
 	}
 
 	client := httpclient.GetClient(cfg.Insecure, defaultHttpRequestTimeout)
-	// convert the body to json
-	bodyString, err := json.MarshalToString(cfg.Body)
-	if err != nil {
-		zap.L().Error("error converting the body to json string", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
-		return nil, err
+
+	// execute pre run endpoints
+	preRuns := make(map[string]httpclient.ResponseConfig)
+	if len(cfg.PreRun) > 0 {
+		preRunsResult, err := hp.executeSupportRuns(client, cfg.PreRun, cfg.IncludeGlobalConfig, globalHeaders, globalQueryParameters)
+		if err != nil {
+			zap.L().Error("error on pre run execution", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
+			return nil, err
+		}
+		preRuns = preRunsResult
 	}
+
+	// execute actual endpoint
+	// convert the body to json
+	bodyString := getBodyString(cfg.Body, hp.GatewayConfig.ID, cfg.URL)
 	response, err := client.Execute(cfg.URL, cfg.Method, cfg.Headers, cfg.QueryParameters, bodyString, cfg.ResponseCode)
 	if err != nil {
 		return nil, err
+	}
+
+	// execute post run, if any
+	if len(cfg.PostRun) > 0 {
+		_, err := hp.executeSupportRuns(client, cfg.PostRun, cfg.IncludeGlobalConfig, globalHeaders, globalQueryParameters)
+		if err != nil {
+			zap.L().Error("error on post run execution", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
+		}
 	}
 
 	rawMessage := &msgTY.RawMessage{
@@ -149,8 +164,9 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig) (*msgTY.RawMessage, 
 
 	if cfg.Script != "" {
 		variables := map[string]interface{}{
-			ScriptKeyConfigIn: cfg,
-			ScriptKeyDataIn:   response,
+			ScriptKeyConfigIn:     cfg,
+			ScriptKeyDataIn:       response,
+			ScriptKeyPreRunResult: preRuns,
 		}
 		scriptResponse, err := jsUtils.Execute(cfg.Script, variables)
 		if err != nil {
@@ -170,4 +186,86 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig) (*msgTY.RawMessage, 
 	}
 
 	return rawMessage, nil
+}
+
+// execute pre runs and post runs
+func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runs map[string]HttpNodeConfig, includeGlobalConfig bool, globalHeaders map[string]string, globalQueryParameters map[string]interface{}) (map[string]httpclient.ResponseConfig, error) {
+	result := make(map[string]httpclient.ResponseConfig)
+	for name, cfg := range runs {
+		headers := cfg.Headers
+		queryParameters := cfg.QueryParameters
+		if includeGlobalConfig {
+			headers, queryParameters = mergeHeadersQueryParameters(globalHeaders, cfg.Headers, globalQueryParameters, cfg.QueryParameters)
+		}
+		bodyString := getBodyString(cfg.Body, hp.GatewayConfig.ID, cfg.URL)
+		if cfg.Script != "" {
+			variables := map[string]interface{}{
+				ScriptKeyPreRunResult: result,
+			}
+			response, err := executeScript(cfg.Script, variables, ScriptKeyDataOut)
+			if err != nil {
+				zap.L().Error("error on executing a support run script", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("name", name), zap.String("url", cfg.URL), zap.Error(err))
+				return nil, err
+			}
+
+			bodyString = getBodyString(response, hp.GatewayConfig.ID, cfg.URL)
+		}
+
+		response, err := client.Execute(cfg.URL, cfg.Method, headers, queryParameters, bodyString, cfg.ResponseCode)
+		if err != nil {
+			zap.L().Error("error on executing a support run", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("name", name), zap.String("url", cfg.URL), zap.Error(err))
+			return nil, err
+		}
+		result[name] = *response
+	}
+	return result, nil
+}
+
+// merges headers and queryParameters
+func mergeHeadersQueryParameters(headers1, headers2 map[string]string,
+	queryParameters1, queryParameters2 map[string]interface{}) (map[string]string, map[string]interface{}) {
+
+	// final headers and query parameters
+	finalHeaders := make(map[string]string)
+	finalQueryParameters := make(map[string]interface{})
+
+	// merge headers
+	utils.JoinStringMap(finalHeaders, headers1)
+	utils.JoinStringMap(finalHeaders, headers2)
+
+	// merge query parameters
+	utils.JoinMap(finalQueryParameters, queryParameters1)
+	utils.JoinMap(finalQueryParameters, queryParameters2)
+
+	return finalHeaders, finalQueryParameters
+}
+
+// returns body string
+func getBodyString(body interface{}, gatewayID, url string) string {
+	bodyString, ok := body.(string)
+	if ok {
+		return bodyString
+	}
+	bodyString, err := json.MarshalToString(body)
+	if err != nil {
+		zap.L().Debug("error converting the body to json string, fall back to string conversion", zap.String("gatewayId", gatewayID), zap.String("url", url), zap.Error(err))
+		bodyString = convertor.ToString(body)
+	}
+	return bodyString
+}
+
+// execute script
+func executeScript(script string, variables map[string]interface{}, responseKey string) (interface{}, error) {
+	scriptResponse, err := jsUtils.Execute(script, variables)
+	if err != nil {
+		zap.L().Error("error on executing script", zap.Error(err))
+		return nil, err
+	}
+	mapResponse, err := jsUtils.ToMap(scriptResponse)
+	if err != nil {
+		zap.L().Error("error on converting to map", zap.Error(err))
+		return nil, err
+	}
+	response := utils.GetMapValue(mapResponse, responseKey, nil)
+	return response, nil
 }

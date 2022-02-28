@@ -2,17 +2,16 @@ package http_generic
 
 import (
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 )
 
 const (
-	ScriptKeyDataIn   = "dataIn"
-	ScriptKeyDataOut  = "dataOut"
-	ScriptKeyConfigIn = "configIn"
-
-	DefaultNode = "default"
+	ScriptKeyDataIn       = "dataIn"
+	ScriptKeyDataOut      = "dataOut"
+	ScriptKeyConfigIn     = "configIn"
+	ScriptKeyPreRunResult = "preRunResult"
+	DefaultNode           = "default"
 )
 
 // http protocol
@@ -40,31 +39,48 @@ type HttpConfig struct {
 
 // nodes details
 
-// http node config
+// http node
 type HttpNode struct {
-	URL                 string                 `json:"url"`
-	Method              string                 `json:"method"`
-	Insecure            bool                   `json:"insecure"`
-	Headers             map[string]string      `json:"headers"`
-	QueryParameters     map[string]interface{} `json:"queryParameters"`
-	Body                cmap.CustomMap         `json:"body"`
-	ResponseCode        int                    `json:"responseCode"`
-	Script              string                 `json:"script"`
-	IncludeGlobalConfig bool                   `json:"includeGlobalConfig"`
+	HttpNodeConfig
+	Insecure bool                      `json:"insecure"`
+	PreRun   map[string]HttpNodeConfig `json:"preRun"`
+	PostRun  map[string]HttpNodeConfig `json:"postRun"`
 }
 
 // Clone cones HttpNode
 func (hn *HttpNode) Clone() *HttpNode {
 	cloned := &HttpNode{
+		HttpNodeConfig: *hn.HttpNodeConfig.Clone(),
+		Insecure:       hn.Insecure,
+	}
+	return cloned
+}
+
+// Http node config
+type HttpNodeConfig struct {
+	URL                 string                 `json:"url"`
+	Method              string                 `json:"method"`
+	Headers             map[string]string      `json:"headers"`
+	QueryParameters     map[string]interface{} `json:"queryParameters"`
+	BodyLanguage        string                 `json:"bodyLanguage"`
+	Body                interface{}            `json:"body"`
+	ResponseCode        int                    `json:"responseCode"`
+	IncludeGlobalConfig bool                   `json:"includeGlobalConfig"`
+	Script              string                 `json:"script"`
+}
+
+// Clone cones HttpNodeConfig
+func (hn *HttpNodeConfig) Clone() *HttpNodeConfig {
+	cloned := &HttpNodeConfig{
 		URL:                 hn.URL,
 		Method:              hn.Method,
-		Insecure:            hn.Insecure,
 		Headers:             make(map[string]string),
 		QueryParameters:     make(map[string]interface{}),
+		BodyLanguage:        hn.BodyLanguage,
 		Body:                hn.Body,
 		ResponseCode:        hn.ResponseCode,
-		Script:              hn.Script,
 		IncludeGlobalConfig: hn.IncludeGlobalConfig,
+		Script:              hn.Script,
 	}
 
 	// update headers

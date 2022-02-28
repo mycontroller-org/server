@@ -7,9 +7,11 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/http/cookiejar"
 	"time"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
+	"go.uber.org/zap"
 )
 
 const DefaultTimeout = time.Second * 30
@@ -48,6 +50,15 @@ func GetClient(insecure bool, timeout time.Duration) *Client {
 	} else {
 		httpClient.Timeout = DefaultTimeout
 	}
+
+	// create cookiejar
+	jar, err := cookiejar.New(nil)
+	if err != nil {
+		zap.L().Warn("error on cookiejar creation, continues without cookie jar", zap.Error(err))
+	} else {
+		httpClient.Jar = jar
+	}
+
 	return &Client{httpClient: httpClient}
 }
 
@@ -56,7 +67,7 @@ func (c *Client) ExecuteJson(url, method string, headers map[string]string, quer
 	body interface{}, responseCode int) (*ResponseConfig, error) {
 	// add body, if available
 	var buf io.ReadWriter
-	if body != nil {
+	if method != http.MethodGet && body != nil {
 		buf = new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(body)
 		if err != nil {
