@@ -48,7 +48,7 @@ const (
 	KeyTask        = "task"
 	KeySchedule    = "schedule"
 	KeyEventType   = "eventType"
-	KeyEvent       = "event"
+	KeyTaskEvent   = "taskEvent"
 	KeyPayload     = "payload"
 	KeyValue       = "value"
 	KeyMetricTypes = "metricTypes"

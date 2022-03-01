@@ -33,7 +33,7 @@ func executeTask(task *taskTY.Config, evntWrapper *eventWrapper) {
 
 	// user can access event
 	if evntWrapper != nil {
-		variables[types.KeyEvent] = evntWrapper.Event
+		variables[types.KeyTaskEvent] = evntWrapper.Event
 	}
 	variables[types.KeyTask] = task // include task in to the variables list
 
