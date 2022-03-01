@@ -129,14 +129,14 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig, globalHeaders map[st
 	client := httpclient.GetClient(cfg.Insecure, defaultHttpRequestTimeout)
 
 	// execute pre run endpoints
-	preRuns := make(map[string]httpclient.ResponseConfig)
+	preRunResponse := make(map[string]httpclient.ResponseConfig)
 	if len(cfg.PreRun) > 0 {
-		preRunsResult, err := hp.executeSupportRuns(client, cfg.PreRun, cfg.IncludeGlobalConfig, globalHeaders, globalQueryParameters)
+		preRunRes, err := hp.executeSupportRuns(client, PreRun, nil, cfg.PreRun, cfg.IncludeGlobalConfig, globalHeaders, globalQueryParameters)
 		if err != nil {
 			zap.L().Error("error on pre run execution", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
 			return nil, err
 		}
-		preRuns = preRunsResult
+		preRunResponse = preRunRes
 	}
 
 	// execute actual endpoint
@@ -149,7 +149,7 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig, globalHeaders map[st
 
 	// execute post run, if any
 	if len(cfg.PostRun) > 0 {
-		_, err := hp.executeSupportRuns(client, cfg.PostRun, cfg.IncludeGlobalConfig, globalHeaders, globalQueryParameters)
+		_, err := hp.executeSupportRuns(client, PostRun, preRunResponse, cfg.PostRun, cfg.IncludeGlobalConfig, globalHeaders, globalQueryParameters)
 		if err != nil {
 			zap.L().Error("error on post run execution", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
 		}
@@ -165,9 +165,9 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig, globalHeaders map[st
 
 	if cfg.Script != "" {
 		variables := map[string]interface{}{
-			ScriptKeyConfigIn:     cfg,
-			ScriptKeyDataIn:       response,
-			ScriptKeyPreRunResult: preRuns,
+			ScriptKeyConfigIn:       cfg,
+			ScriptKeyDataIn:         response,
+			ScriptKeyPreRunResponse: preRunResponse,
 		}
 
 		messages, err := executeScript(cfg.Script, variables, ScriptKeyDataOut)
@@ -185,8 +185,8 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig, globalHeaders map[st
 }
 
 // execute pre runs and post runs
-func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runs map[string]HttpNodeConfig, includeGlobalConfig bool, globalHeaders map[string]string, globalQueryParameters map[string]interface{}) (map[string]httpclient.ResponseConfig, error) {
-	result := make(map[string]httpclient.ResponseConfig)
+func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runType string, preRunResponse map[string]httpclient.ResponseConfig, runs map[string]HttpNodeConfig, includeGlobalConfig bool, globalHeaders map[string]string, globalQueryParameters map[string]interface{}) (map[string]httpclient.ResponseConfig, error) {
+	runResponses := make(map[string]httpclient.ResponseConfig)
 	for name, cfg := range runs {
 		headers := cfg.Headers
 		queryParameters := cfg.QueryParameters
@@ -195,9 +195,15 @@ func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runs map[s
 		}
 		bodyString := hp.getBodyString(cfg.Body, cfg.BodyLanguage, cfg.URL)
 		if cfg.Script != "" {
-			variables := map[string]interface{}{
-				ScriptKeyPreRunResult: result,
+			// update variables
+			variables := map[string]interface{}{}
+			if runType == PreRun {
+				variables[ScriptKeyPreRunResponse] = runResponses
+			} else if runType == PostRun {
+				variables[ScriptKeyPreRunResponse] = preRunResponse
+				variables[ScriptKeyPostRunResponse] = runResponses
 			}
+
 			response, err := executeScript(cfg.Script, variables, ScriptKeyDataOut)
 			if err != nil {
 				zap.L().Error("error on executing a support run script", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("name", name), zap.String("url", cfg.URL), zap.Error(err))
@@ -212,9 +218,9 @@ func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runs map[s
 			zap.L().Error("error on executing a support run", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("name", name), zap.String("url", cfg.URL), zap.Error(err))
 			return nil, err
 		}
-		result[name] = *response
+		runResponses[name] = *response
 	}
-	return result, nil
+	return runResponses, nil
 }
 
 // merges headers and queryParameters

@@ -7,15 +7,19 @@ import (
 )
 
 const (
-	ScriptKeyDataIn       = "dataIn"
-	ScriptKeyDataOut      = "dataOut"
-	ScriptKeyConfigIn     = "configIn"
-	ScriptKeyPreRunResult = "preRunResult"
-	DefaultNode           = "default"
+	ScriptKeyDataIn          = "dataIn"
+	ScriptKeyDataOut         = "dataOut"
+	ScriptKeyConfigIn        = "configIn"
+	ScriptKeyPreRunResponse  = "preRunResponse"
+	ScriptKeyPostRunResponse = "postRunResponse"
+	DefaultNode              = "default"
 
 	BodyLanguageJSON      = "json"
 	BodyLanguageYAML      = "yaml"
 	BodyLanguagePlainText = "plaintext"
+
+	PreRun  = "pre_run"
+	PostRun = "post_run"
 )
 
 // http protocol
