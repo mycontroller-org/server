@@ -11,6 +11,7 @@ import (
 	"time"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 
@@ -33,6 +34,11 @@ func (rc *ResponseConfig) StringBody() string {
 // Client struct
 type Client struct {
 	httpClient *http.Client
+}
+
+// return new client
+func New(insecure bool, timeout string) *Client {
+	return GetClient(insecure, utils.ToDuration(timeout, DefaultTimeout))
 }
 
 // GetClient returns http client
@@ -60,6 +66,11 @@ func GetClient(insecure bool, timeout time.Duration) *Client {
 	}
 
 	return &Client{httpClient: httpClient}
+}
+
+// updates timeout
+func (c *Client) UpdateTimeout(duration string) {
+	c.httpClient.Timeout = utils.ToDuration(duration, DefaultTimeout)
 }
 
 // ExecuteJson execute http request and returns response

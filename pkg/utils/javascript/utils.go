@@ -9,6 +9,8 @@ import (
 	"github.com/dop251/goja_nodejs/require"
 
 	"go.uber.org/zap"
+
+	jsHelper "github.com/mycontroller-org/server/v2/pkg/utils/javascript/js_helper"
 )
 
 var registry = new(require.Registry) // this can be shared by multiple runtimes
@@ -27,10 +29,17 @@ func Execute(scriptString string, variables map[string]interface{}) (interface{}
 	for name, value := range variables {
 		err := rt.Set(name, value)
 		if err != nil {
-			zap.L().Warn("error on setting a value", zap.String("name", name), zap.Any("value", value))
+			zap.L().Warn("error on setting a value", zap.String("name", name), zap.Any("value", value), zap.Error(err))
 		}
 	}
 	zap.L().Debug("executing script", zap.Any("variables", variables), zap.String("scriptString", scriptString))
+
+	// include helper functions
+	err := rt.Set(jsHelper.KeyMcUtils, jsHelper.GetHelperUtils())
+	if err != nil {
+		zap.L().Warn("error on setting helper functions", zap.Error(err))
+	}
+
 	response, err := rt.RunString(string(scriptString))
 	if err != nil {
 		return nil, err
