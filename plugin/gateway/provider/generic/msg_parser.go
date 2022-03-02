@@ -30,7 +30,7 @@ func (p *Provider) ProcessReceived(rawMesage *msgTY.RawMessage) ([]*msgTY.Messag
 		// convert the rawMessage data to []*msgTY.Message
 		err := json.ToStruct(rawMesage.Data, &messages)
 		if err != nil {
-			zap.L().Error("error on converting raw message data to []*Messages", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("rawMessage", rawMesage))
+			zap.L().Error("error on converting raw message data to []*Messages", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("rawMessage", rawMesage), zap.Error(err))
 			return nil, err
 		}
 	}

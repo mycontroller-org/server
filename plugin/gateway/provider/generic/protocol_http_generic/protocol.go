@@ -130,7 +130,7 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig, globalHeaders map[st
 	client := httpclient.GetClient(cfg.Insecure, defaultHttpRequestTimeout)
 
 	// execute pre run endpoints
-	preRunResponse := make(map[string]httpclient.ResponseConfig)
+	preRunResponse := make(map[string]*httpclient.ResponseConfig)
 	if len(cfg.PreRun) > 0 {
 		preRunRes, err := hp.executeSupportRuns(client, PreRun, nil, cfg.PreRun, cfg.IncludeGlobalConfig, globalHeaders, globalQueryParameters)
 		if err != nil {
@@ -186,8 +186,8 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig, globalHeaders map[st
 }
 
 // execute pre runs and post runs
-func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runType string, preRunResponse map[string]httpclient.ResponseConfig, runs map[string]HttpNodeConfig, includeGlobalConfig bool, globalHeaders map[string]string, globalQueryParameters map[string]interface{}) (map[string]httpclient.ResponseConfig, error) {
-	runResponses := make(map[string]httpclient.ResponseConfig)
+func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runType string, preRunResponse map[string]*httpclient.ResponseConfig, runs map[string]HttpNodeConfig, includeGlobalConfig bool, globalHeaders map[string]string, globalQueryParameters map[string]interface{}) (map[string]*httpclient.ResponseConfig, error) {
+	runResponses := make(map[string]*httpclient.ResponseConfig)
 
 	// get runKeys and order
 	runKeys := []string{}
@@ -228,7 +228,7 @@ func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runType st
 			zap.L().Error("error on executing a support run", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("name", name), zap.String("url", cfg.URL), zap.Error(err))
 			return nil, err
 		}
-		runResponses[name] = *response
+		runResponses[name] = response
 	}
 	return runResponses, nil
 }
