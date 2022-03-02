@@ -2,6 +2,7 @@ package http_generic
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
@@ -187,7 +188,16 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig, globalHeaders map[st
 // execute pre runs and post runs
 func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runType string, preRunResponse map[string]httpclient.ResponseConfig, runs map[string]HttpNodeConfig, includeGlobalConfig bool, globalHeaders map[string]string, globalQueryParameters map[string]interface{}) (map[string]httpclient.ResponseConfig, error) {
 	runResponses := make(map[string]httpclient.ResponseConfig)
-	for name, cfg := range runs {
+
+	// get runKeys and order
+	runKeys := []string{}
+	for key := range runs {
+		runKeys = append(runKeys, key)
+	}
+	sort.Strings(runKeys)
+
+	for _, name := range runKeys {
+		cfg := runs[name]
 		headers := cfg.Headers
 		queryParameters := cfg.QueryParameters
 		if includeGlobalConfig {

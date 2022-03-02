@@ -158,7 +158,7 @@ func (c *Client) Execute(url, method string, headers map[string]string,
 	}
 
 	// update query parameters
-	if queryParams != nil {
+	if len(queryParams) > 0 {
 		q := req.URL.Query()
 		for k, v := range queryParams {
 			if vSlice, ok := v.([]string); ok {
