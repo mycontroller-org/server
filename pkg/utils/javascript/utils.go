@@ -40,11 +40,12 @@ func Execute(scriptString string, variables map[string]interface{}) (interface{}
 		zap.L().Warn("error on setting helper functions", zap.Error(err))
 	}
 
+	// TODO: include timeout
+
 	response, err := rt.RunString(string(scriptString))
 	if err != nil {
 		return nil, err
 	}
-
 	output := response.Export()
 	zap.L().Debug("executed script", zap.Any("variables", variables), zap.String("scriptString", scriptString), zap.Any("output", output))
 

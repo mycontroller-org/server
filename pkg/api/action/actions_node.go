@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	"go.uber.org/zap"
@@ -53,8 +54,8 @@ func toNode(node *nodeTY.Node, gatewayID, nodeID, action string) error {
 	}
 
 	pl := msgTY.NewPayload()
-	pl.Key = action
-	pl.Value = ""
+	pl.Key = types.KeyAction
+	pl.Value = action
 	msg.Payloads = append(msg.Payloads, pl)
 	msg.Type = msgTY.TypeAction
 	return Post(&msg)

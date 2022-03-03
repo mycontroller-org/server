@@ -21,7 +21,7 @@ func (p *Provider) Post(msg *msgTY.Message) error {
 	payload := msg.Payloads[0]
 
 	if msg.Type == msgTY.TypeAction {
-		switch payload.Key {
+		switch payload.Value {
 		case nodeTY.ActionRefreshNodeInfo:
 			p.actionRefreshNodeInfo(msg.NodeID)
 

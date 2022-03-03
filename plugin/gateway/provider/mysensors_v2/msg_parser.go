@@ -84,7 +84,7 @@ func (p *Provider) toRawMessage(msg *msgTY.Message) (*msgTY.RawMessage, error) {
 	case msgTY.TypeAction:
 		msMsg.Command = cmdInternal
 		// call functions
-		err := handleActions(p.GatewayConfig, payload.Key, msg, &msMsg)
+		err := handleActions(p.GatewayConfig, payload.Value, msg, &msMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -369,7 +369,8 @@ func updateNodeInternalMessages(msg *msgTY.Message, msgPL *msgTY.Payload, msMsg 
 		_, isActionRequest := utils.FindItem(customValidActions, typeName)
 		if isActionRequest {
 			msg.Type = msgTY.TypeAction
-			msgPL.Key = typeName
+			msgPL.Key = types.KeyAction
+			msgPL.Value = typeName
 			return true, nil, nil
 		}
 

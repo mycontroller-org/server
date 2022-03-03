@@ -7,12 +7,13 @@ import (
 )
 
 const (
-	ScriptKeyDataIn          = "dataIn"
-	ScriptKeyDataOut         = "dataOut"
-	ScriptKeyConfigIn        = "configIn"
-	ScriptKeyPreRunResponse  = "preRunResponse"
-	ScriptKeyPostRunResponse = "postRunResponse"
-	DefaultNode              = "default"
+	ScriptKeyDataIn          = "dataIn"          // post data to script
+	ScriptKeyDataOut         = "dataOut"         // get data from script
+	ScriptKeyConfigIn        = "configIn"        // post config data to script
+	ScriptKeyPreRunResponse  = "preRunResponse"  // post pre run response to script
+	ScriptKeyPostRunResponse = "postRunResponse" // post post-run response to script
+	ScriptKeyExecute         = "execute"         // get execute binary signal from script
+	DefaultNode              = "default"         // default node endpoint name, if none matches
 
 	BodyLanguageJSON      = "json"
 	BodyLanguageYAML      = "yaml"
@@ -60,7 +61,20 @@ func (hn *HttpNode) Clone() *HttpNode {
 	cloned := &HttpNode{
 		HttpNodeConfig: *hn.HttpNodeConfig.Clone(),
 		Insecure:       hn.Insecure,
+		PreRun:         make(map[string]HttpNodeConfig),
+		PostRun:        make(map[string]HttpNodeConfig),
 	}
+
+	// update pre runs
+	for k, v := range hn.PreRun {
+		cloned.PreRun[k] = *v.Clone()
+	}
+
+	// update post runs
+	for k, v := range hn.PostRun {
+		cloned.PostRun[k] = *v.Clone()
+	}
+
 	return cloned
 }
 

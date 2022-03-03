@@ -18,7 +18,7 @@ func (p *Provider) handleActions(message *msgTY.Message) error {
 		return nil
 	}
 
-	switch payload.Key {
+	switch payload.Value {
 	case nodeTY.ActionReboot:
 		// I do not see a direct option to reboot or restart
 		// a entity should be created on the espnose as mentioned in https://esphome.io/components/switch/restart.html

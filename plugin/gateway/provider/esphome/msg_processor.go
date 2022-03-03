@@ -541,7 +541,8 @@ func (p *Provider) getActionMessage(actionType, nodeID string, timestamp time.Ti
 	messages := make([]*msgTY.Message, 0)
 	msg := getMessage(p.GatewayConfig.ID, nodeID, "", msgTY.TypeAction, timestamp)
 	data := msgTY.NewPayload()
-	data.Key = actionType
+	data.Key = types.KeyAction
+	data.Value = actionType
 	msg.Payloads = append(msg.Payloads, data)
 	messages = append(messages, msg)
 	return messages, nil

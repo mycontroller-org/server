@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	gatewayAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
@@ -49,7 +50,7 @@ func toGatewayAction(gatewayID, action string) error {
 	msg := msgTY.NewMessage(false)
 	msg.GatewayID = gatewayID
 	pl := msgTY.NewPayload()
-	pl.Key = action
+	pl.Key = types.KeyAction
 	pl.Value = action
 	msg.Payloads = append(msg.Payloads, pl)
 	msg.Type = msgTY.TypeAction

@@ -161,7 +161,7 @@ func (s *Service) messageConsumer(item interface{}) {
 	}
 
 	// if it is awake message send the sleeping queue messages
-	if msg.Type == msgTY.TypeAction && len(msg.Payloads) > 0 && msg.Payloads[0].Key == nodeTY.ActionAwake {
+	if msg.Type == msgTY.TypeAction && len(msg.Payloads) > 0 && msg.Payloads[0].Value == nodeTY.ActionAwake {
 		s.publishSleepingMessageQueue(msg.NodeID)
 		return
 	} else if msg.IsSleepNode {
