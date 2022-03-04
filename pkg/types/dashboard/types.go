@@ -26,13 +26,14 @@ type Config struct {
 
 // Widget details
 type Widget struct {
-	ID        string         `json:"id"`
-	Title     string         `json:"title"`
-	ShowTitle bool           `json:"showTitle"`
-	Type      string         `json:"type"`
-	Static    bool           `json:"static"`
-	Layout    Layout         `json:"layout"`
-	Config    cmap.CustomMap `json:"config"`
+	ID                string         `json:"id"`
+	Title             string         `json:"title"`
+	ShowTitle         bool           `json:"showTitle"`
+	ScrollbarDisabled bool           `json:"scrollbarDisabled"`
+	Static            bool           `json:"static"`
+	Type              string         `json:"type"`
+	Layout            Layout         `json:"layout"`
+	Config            cmap.CustomMap `json:"config"`
 }
 
 // Layout details
