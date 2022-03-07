@@ -2,69 +2,69 @@ package config
 
 // Config data
 type Config struct {
-	HostIDMap     map[string]string
-	HostConfigMap map[string]HostConfig
+	HostConfigMap map[string]HostConfig `json:"hostConfigMap"`
 }
 
 type HostConfig struct {
-	Disabled    bool
-	Memory      MemoryConfig
-	CPU         CPUConfig
-	Disk        DiskConfig
-	Temperature TemperatureConfig
-	Process     ProcessConfig
+	Disabled    bool              `json:"disabled"`
+	HostIDs     []string          `json:"hostIds"`
+	Memory      MemoryConfig      `json:"memory"`
+	CPU         CPUConfig         `json:"cpu"`
+	Disk        DiskConfig        `json:"disk"`
+	Temperature TemperatureConfig `json:"temperature"`
+	Process     ProcessConfig     `json:"process"`
 }
 
 // Memory details
 type MemoryConfig struct {
-	Interval       string
-	MemoryDisabled bool
-	SwapDisabled   bool
-	Unit           string
+	Interval       string `json:"interval"`
+	MemoryDisabled bool   `json:"memoryDisabled"`
+	SwapDisabled   bool   `json:"swapDisabled"`
+	Unit           string `json:"unit"`
 }
 
 // CPU details
 type CPUConfig struct {
-	Interval       string
-	CPUDisabled    bool
-	PerCPUDisabled bool
+	Interval       string `json:"interval"`
+	CPUDisabled    bool   `json:"cpuDisabled"`
+	PerCPUDisabled bool   `json:"perCpuDisabled"`
 }
 
 // Disk details
 type DiskConfig struct {
-	Interval string
-	Disabled bool
-	Data     map[string]DiskData
+	Interval string              `json:"interval"`
+	Disabled bool                `json:"disabled"`
+	Data     map[string]DiskData `json:"data"`
 }
 
 // DiskData struct
 type DiskData struct {
-	Disabled bool
-	Name     string
-	Path     string
-	Unit     string
+	Disabled bool   `json:"disabled"`
+	Name     string `json:"name"`
+	Path     string `json:"path"`
+	Unit     string `json:"unit"`
 }
 
 // Temperature details
 type TemperatureConfig struct {
-	Interval    string
-	DisabledAll bool
-	Enabled     []string
+	Interval    string   `json:"interval"`
+	DisabledAll bool     `json:"disabledAll"`
+	Enabled     []string `json:"enabled"`
 }
 
 // Process details
 type ProcessConfig struct {
-	Interval string
-	Disabled bool
-	Data     map[string]ProcessData
+	Interval string                 `json:"interval"`
+	Disabled bool                   `json:"disabled"`
+	Data     map[string]ProcessData `json:"data"`
 }
 
 // ProcessData struct
 type ProcessData struct {
-	Disabled bool
-	Name     string
-	Unit     string
-	Filter   map[string]string
+	Disabled bool              `json:"disabled"`
+	Name     string            `json:"name"`
+	Unit     string            `json:"unit"`
+	Filter   map[string]string `json:"filter"`
 }
 
 // Keys

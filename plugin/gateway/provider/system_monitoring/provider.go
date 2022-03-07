@@ -46,16 +46,21 @@ func (p *Provider) Name() string {
 // Start func
 func (p *Provider) Start(rxMessageFunc func(rawMsg *msgTY.RawMessage) error) error {
 	// update node id
-	nodeID, err := p.HostID()
+	hostID, err := p.HostID()
 	if err != nil {
 		return err
 	}
-	p.NodeID = nodeID
 
-	// update nodeID from config data
-	if definedID, ok := p.Config.HostIDMap[nodeID]; ok {
-		p.NodeID = definedID
+	nodeID := hostID
+
+	// get node configuration based on host id
+	for nodeIDkey, nodeCFG := range p.Config.HostConfigMap {
+		if utils.ContainsString(nodeCFG.HostIDs, hostID) {
+			nodeID = nodeIDkey
+		}
 	}
+
+	p.NodeID = nodeID
 
 	// get this host config
 	if hCfg, ok := p.Config.HostConfigMap[nodeID]; ok {
