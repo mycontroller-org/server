@@ -403,10 +403,8 @@ func updateNodeInternalMessages(msg *msgTY.Message, msgPL *msgTY.Payload, msMsg 
 
 				switch typeName {
 				case "I_PRE_SLEEP_NOTIFICATION", "I_HEARTBEAT_RESPONSE", "I_DISCOVER_RESPONSE":
-					awakeDuration := ""
 					if typeName == "I_PRE_SLEEP_NOTIFICATION" {
 						msgPL.Others.Set(FieldAwakeDuration, msMsg.Payload, nil)
-						awakeDuration = msMsg.Payload
 					}
 					// post an action to sen the messages in the queue
 					awakeActionMsg := &msgTY.Message{
@@ -416,7 +414,7 @@ func updateNodeInternalMessages(msg *msgTY.Message, msgPL *msgTY.Payload, msMsg 
 						IsReceived: true,
 						Timestamp:  msg.Timestamp,
 						Type:       msgTY.TypeAction,
-						Payloads:   []msgTY.Payload{{Key: nodeTY.ActionAwake, Value: awakeDuration}},
+						Payloads:   []msgTY.Payload{{Key: msgTY.TypeAction, Value: nodeTY.ActionAwake}},
 					}
 					extraMessages = append(extraMessages, awakeActionMsg)
 
