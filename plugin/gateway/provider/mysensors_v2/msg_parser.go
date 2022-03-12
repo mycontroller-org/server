@@ -387,14 +387,22 @@ func updateNodeInternalMessages(msg *msgTY.Message, msgPL *msgTY.Payload, msMsg 
 				msgPL.Others.Set(LabelLockedReason, msMsg.Payload, nil)
 				msgPL.Value = "true"
 
-			case LabelSmartSleepNode, types.FieldHeartbeat:
+			case LabelSmartSleepNode, types.FieldHeartbeat, types.FieldParentID:
+
 				// mark it as sleeping node
 				if fieldName == LabelSmartSleepNode {
 					msgPL.Labels.Set(types.LabelNodeSleepNode, "true")
 					msgPL.Labels.Set(LabelSmartSleepNode, "true")
 				}
+
+				// update for discover response
+				if fieldName == types.FieldParentID {
+					msgPL.Labels.Set(types.FieldParentID, msMsg.Payload)
+					msgPL.Others.Set(types.FieldParentID, msMsg.Payload, nil)
+				}
+
 				switch typeName {
-				case "I_PRE_SLEEP_NOTIFICATION", "I_HEARTBEAT_RESPONSE":
+				case "I_PRE_SLEEP_NOTIFICATION", "I_HEARTBEAT_RESPONSE", "I_DISCOVER_RESPONSE":
 					awakeDuration := ""
 					if typeName == "I_PRE_SLEEP_NOTIFICATION" {
 						msgPL.Others.Set(FieldAwakeDuration, msMsg.Payload, nil)
