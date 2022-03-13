@@ -21,7 +21,7 @@ var (
 // Load configuration
 func Load() (*cfgTY.Config, error) {
 	// load a temporary logger
-	logger := loggerUtils.GetLogger("development", "error", "console", false, 0)
+	logger := loggerUtils.GetLogger("development", "error", "console", false, 0, true)
 
 	cf := flag.String("config", "./config.yaml", "Configuration file")
 	flag.Parse()

@@ -78,9 +78,10 @@ type Directories struct {
 
 // LoggerConfig input
 type LoggerConfig struct {
-	Mode     string         `yaml:"mode"`
-	Encoding string         `yaml:"encoding"`
-	Level    LogLevelConfig `yaml:"level"`
+	Mode             string         `yaml:"mode"`
+	Encoding         string         `yaml:"encoding"`
+	Level            LogLevelConfig `yaml:"level"`
+	EnableStacktrace bool           `yaml:"enable_stacktrace"`
 }
 
 // LogLevelConfig input

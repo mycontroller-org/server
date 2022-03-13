@@ -14,8 +14,8 @@ type myLogger struct {
 	logger *zap.Logger
 }
 
-func getLogger(mode, level, encoding string) *myLogger {
-	return &myLogger{logger: loggerUtils.GetLogger(mode, level, encoding, false, callerSkipLevel)}
+func getLogger(mode, level, encoding string, enableStacktrace bool) *myLogger {
+	return &myLogger{logger: loggerUtils.GetLogger(mode, level, encoding, false, callerSkipLevel, enableStacktrace)}
 }
 
 func (ml *myLogger) Sync() {

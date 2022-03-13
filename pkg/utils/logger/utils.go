@@ -14,7 +14,7 @@ const (
 )
 
 // GetLogger returns a logger
-func GetLogger(mode, level, encoding string, showFullCaller bool, callerSkip int) *zap.Logger {
+func GetLogger(mode, level, encoding string, showFullCaller bool, callerSkip int, enableStacktrace bool) *zap.Logger {
 	var zapCfg zap.Config
 	if strings.ToLower(mode) == ModeSampled {
 		zapCfg = zap.NewProductionConfig()
@@ -30,6 +30,7 @@ func GetLogger(mode, level, encoding string, showFullCaller bool, callerSkip int
 	zapCfg.EncoderConfig.StacktraceKey = "stacktrace"
 	zapCfg.EncoderConfig.EncodeLevel = zapcore.LowercaseLevelEncoder
 	zapCfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	zapCfg.DisableStacktrace = !enableStacktrace
 
 	if showFullCaller {
 		zapCfg.EncoderConfig.EncodeCaller = zapcore.FullCallerEncoder

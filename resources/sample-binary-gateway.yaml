@@ -9,6 +9,7 @@ directories:
 logger:
   mode: record_all
   encoding: console
+  enable_stacktrace: false
   level:
     core: info
 

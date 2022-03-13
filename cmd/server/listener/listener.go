@@ -46,7 +46,7 @@ func StartListener(handler http.Handler) {
 				ReadTimeout: readTimeout,
 				Addr:        addr,
 				Handler:     handler,
-				ErrorLog:    log.New(getLogger(LoggerPrefixHTTP, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
+				ErrorLog:    log.New(getLogger(LoggerPrefixHTTP, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding, loggerCfg.EnableStacktrace), "", 0),
 			}
 
 			err := server.ListenAndServe()
@@ -75,7 +75,7 @@ func StartListener(handler http.Handler) {
 				Addr:        addr,
 				TLSConfig:   tlsConfig,
 				Handler:     handler,
-				ErrorLog:    log.New(getLogger(LoggerPrefixSSL, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
+				ErrorLog:    log.New(getLogger(LoggerPrefixSSL, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding, loggerCfg.EnableStacktrace), "", 0),
 			}
 
 			err = server.ListenAndServeTLS("", "")
@@ -104,7 +104,7 @@ func StartListener(handler http.Handler) {
 				Addr:        addr,
 				TLSConfig:   tlsConfig,
 				Handler:     handler,
-				ErrorLog:    log.New(getLogger(LoggerPrefixACME, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding), "", 0),
+				ErrorLog:    log.New(getLogger(LoggerPrefixACME, loggerCfg.Mode, loggerCfg.Level.WebHandler, loggerCfg.Encoding, loggerCfg.EnableStacktrace), "", 0),
 			}
 
 			err = server.ListenAndServeTLS("", "")

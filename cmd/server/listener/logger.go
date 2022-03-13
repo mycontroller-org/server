@@ -20,8 +20,8 @@ type myLogger struct {
 	logger *zap.Logger
 }
 
-func getLogger(prefix, mode, level, encoding string) *myLogger {
-	return &myLogger{prefix: prefix, logger: loggerUtils.GetLogger(mode, level, encoding, false, callerSkipLevel)}
+func getLogger(prefix, mode, level, encoding string, enableStacktrace bool) *myLogger {
+	return &myLogger{prefix: prefix, logger: loggerUtils.GetLogger(mode, level, encoding, false, callerSkipLevel, enableStacktrace)}
 }
 
 func (ml *myLogger) Write(p []byte) (int, error) {

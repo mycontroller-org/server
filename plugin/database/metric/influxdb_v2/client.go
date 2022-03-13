@@ -59,9 +59,10 @@ type Config struct {
 
 // LoggerConfig struct
 type LoggerConfig struct {
-	Mode     string `yaml:"mode"`
-	Encoding string `yaml:"encoding"`
-	Level    string `yaml:"level"`
+	Mode             string `yaml:"mode"`
+	Encoding         string `yaml:"encoding"`
+	Level            string `yaml:"level"`
+	EnableStacktrace bool   `yaml:"enable_stacktrace"`
 }
 
 // Client of the influxdb
@@ -107,7 +108,7 @@ func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
 	}
 
 	// replace influxdb2 logger with our custom logger
-	_logger := getLogger(cfg.Logger.Mode, cfg.Logger.Level, cfg.Logger.Encoding)
+	_logger := getLogger(cfg.Logger.Mode, cfg.Logger.Level, cfg.Logger.Encoding, cfg.Logger.EnableStacktrace)
 	influxdb2log.Log = _logger
 
 	opts := influxdb2.DefaultOptions()
