@@ -21,14 +21,14 @@ import (
 // executeFirmwareConfigRequest executes firmware config request and response with hex payload
 func executeFirmwareConfigRequest(msg *msgTY.Message) (string, error) {
 	startTime := time.Now()
-	rxPL := msg.Payloads[0].Value
+	rxPL := msg.Payloads[0].Value.String()
 
 	// convert the received hex to matching struct format
 	fwCfgReq := &firmwareConfigRequest{}
 	if rxPL != "" {
-		err := toStruct(rxPL.String(), fwCfgReq)
+		err := toStruct(rxPL, fwCfgReq)
 		if err != nil {
-			zap.L().Error("error on converting firmwareConfigRequest", zap.String("payload", rxPL.String()), zap.Error(err))
+			zap.L().Error("error on converting firmwareConfigRequest", zap.String("payload", rxPL), zap.Error(err))
 			return "", err
 		}
 	}
@@ -73,14 +73,14 @@ func executeFirmwareConfigRequest(msg *msgTY.Message) (string, error) {
 
 // executeFirmwareRequest executes firmware request and response with hex payload
 func executeFirmwareRequest(msg *msgTY.Message) (string, error) {
-	rxPL := msg.Payloads[0].Value
+	rxPL := msg.Payloads[0].Value.String()
 	startTime := time.Now()
 
 	// convert the received hex to matching struct format
 	fwReq := &firmwareRequest{}
-	err := toStruct(rxPL.String(), fwReq)
+	err := toStruct(rxPL, fwReq)
 	if err != nil {
-		zap.L().Error("error on converting firmwareRequest", zap.String("payload", rxPL.String()), zap.Error(err))
+		zap.L().Error("error on converting firmwareRequest", zap.String("payload", rxPL), zap.Error(err))
 		return "", err
 	}
 

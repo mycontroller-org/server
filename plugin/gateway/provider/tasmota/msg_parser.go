@@ -44,7 +44,7 @@ func (p *Provider) ToRawMessage(msg *msgTY.Message) (*msgTY.RawMessage, error) {
 		tmMsg.Payload = emptyPayload
 
 	case msgTY.TypeAction:
-		err := handleActions(p.GatewayConfig, payload.Value.String(), msg, tmMsg)
+		err := handleActions(p.GatewayConfig, payload.Key, msg, tmMsg)
 		if err != nil {
 			return nil, err
 		}

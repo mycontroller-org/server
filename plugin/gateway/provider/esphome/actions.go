@@ -11,14 +11,14 @@ import (
 
 // handleActions performs actions on a node
 func (p *Provider) handleActions(message *msgTY.Message) error {
-	payload := message.Payloads[0]
+	pl := message.Payloads[0]
 	var actionRequest protoreflect.ProtoMessage
 	espNode := p.clientStore.Get(message.NodeID)
 	if espNode == nil {
 		return nil
 	}
 
-	switch payload.Value {
+	switch pl.Key {
 	case nodeTY.ActionReboot:
 		// I do not see a direct option to reboot or restart
 		// a entity should be created on the espnose as mentioned in https://esphome.io/components/switch/restart.html

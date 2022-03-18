@@ -540,10 +540,9 @@ func (p *Provider) getStateResponse(nodeID string, timestamp time.Time, fields m
 func (p *Provider) getActionMessage(actionType, nodeID string, timestamp time.Time, fields map[string]interface{}) ([]*msgTY.Message, error) {
 	messages := make([]*msgTY.Message, 0)
 	msg := getMessage(p.GatewayConfig.ID, nodeID, "", msgTY.TypeAction, timestamp)
-	data := msgTY.NewPayload()
-	data.Key = types.KeyAction
-	data.SetValue(actionType)
-	msg.Payloads = append(msg.Payloads, data)
+	pl := msgTY.NewPayload()
+	pl.Key = actionType
+	msg.Payloads = append(msg.Payloads, pl)
 	messages = append(messages, msg)
 	return messages, nil
 }

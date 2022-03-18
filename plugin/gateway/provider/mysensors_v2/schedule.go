@@ -3,7 +3,6 @@ package mysensors
 import (
 	"fmt"
 
-	"github.com/mycontroller-org/server/v2/pkg/types"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
 	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
@@ -29,8 +28,7 @@ func (p *Provider) runNodeDiscover() {
 	msg := msgTY.NewMessage(false)
 	msg.GatewayID = p.GatewayConfig.ID
 	pl := msgTY.NewPayload()
-	pl.Key = types.KeyAction
-	pl.Value = gatewayTY.ActionDiscoverNodes
+	pl.Key = gatewayTY.ActionDiscoverNodes
 	msg.Payloads = append(msg.Payloads, pl)
 	msg.Type = msgTY.TypeAction
 

@@ -9,8 +9,6 @@ const (
 	ActionReload  = "reload"
 	ActionDelete  = "delete"
 	ActionToggle  = "toggle"
-
-	KeyAction = "action"
 )
 
 // GetAction parse and rename if required
