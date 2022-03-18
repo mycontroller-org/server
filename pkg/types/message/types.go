@@ -6,6 +6,7 @@ import (
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	customTY "github.com/mycontroller-org/server/v2/pkg/types/custom_types"
 	cloneutil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 )
@@ -13,7 +14,7 @@ import (
 // Payload definition
 type Payload struct {
 	Key        string               `json:"key"`        // it is id for the the fields. for node, source key says what it is
-	Value      string               `json:"value"`      // 1, true, 99.45, started, 72.345,45.333, any...
+	Value      customTY.StringData  `json:"value"`      // 1, true, 99.45, started, 72.345,45.333, any...
 	MetricType string               `json:"metricType"` // none, binary, gauge, counter, geo ...
 	Unit       string               `json:"unit"`       // Volt, MilliVolt, °C, °F, ⚡, etc...
 	Labels     cmap.CustomStringMap `json:"labels"`     // labels for this data
@@ -28,15 +29,20 @@ func NewPayload() Payload {
 	return data
 }
 
+// sets payload value
+func (p *Payload) SetValue(value string) {
+	p.Value = customTY.StringData(value)
+}
+
 // Clone a data
-func (d *Payload) Clone() Payload {
+func (p *Payload) Clone() Payload {
 	cd := Payload{
-		Key:        d.Key,
-		Value:      d.Value,
-		MetricType: d.MetricType,
-		Unit:       d.Unit,
-		Labels:     d.Labels.Clone(),
-		Others:     d.Others.Clone(),
+		Key:        p.Key,
+		Value:      p.Value,
+		MetricType: p.MetricType,
+		Unit:       p.Unit,
+		Labels:     p.Labels.Clone(),
+		Others:     p.Others.Clone(),
 	}
 	return cd
 }

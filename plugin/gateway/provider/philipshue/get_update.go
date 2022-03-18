@@ -37,7 +37,7 @@ func (p *Provider) updateLight(light *huego.Light) {
 
 	nodeData := msgTY.NewPayload()
 	nodeData.Key = types.FieldName
-	nodeData.Value = light.Name
+	nodeData.SetValue(light.Name)
 	nodeData.Labels.Set(types.LabelNodeVersion, light.SwVersion)
 	nodeData.Labels.Set("unique_id", light.UniqueID)
 	nodeData.Labels.Set("model_id", light.ModelID)
@@ -108,7 +108,7 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 
 	nodeData := msgTY.NewPayload()
 	nodeData.Key = types.FieldName
-	nodeData.Value = sensor.Name
+	nodeData.SetValue(sensor.Name)
 	nodeData.Labels.Set(types.LabelNodeVersion, sensor.SwVersion)
 	nodeData.Labels.Set("unique_id", sensor.UniqueID)
 	nodeData.Labels.Set("model_id", sensor.ModelID)
@@ -197,7 +197,7 @@ func (p *Provider) updateBridgeDetails() {
 
 	nodeData := msgTY.NewPayload()
 	nodeData.Key = types.FieldName
-	nodeData.Value = brCfg.Name
+	nodeData.SetValue(brCfg.Name)
 	nodeData.Labels.Set(types.LabelNodeVersion, brCfg.SwVersion)
 	nodeData.Labels.Set("bridge_id", brCfg.BridgeID)
 	nodeData.Labels.Set("model_id", brCfg.ModelID)

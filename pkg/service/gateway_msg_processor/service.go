@@ -168,7 +168,7 @@ func updateNodeData(msg *msgTY.Message) error {
 		switch d.Key { // set node name
 		case types.FieldName:
 			if !node.Labels.GetIgnoreBool(types.LabelName) {
-				node.Name = d.Value
+				node.Name = d.Value.String()
 			}
 
 		case types.FieldBatteryLevel: // set battery level
@@ -227,7 +227,7 @@ func updateSourceDetail(msg *msgTY.Message) error {
 		switch payload.Key {
 		case types.FieldName: // set name
 			if !source.Labels.GetIgnoreBool(types.LabelName) {
-				source.Name = payload.Value
+				source.Name = payload.Value.String()
 			}
 
 		default: // set other variables
@@ -264,7 +264,7 @@ func setFieldData(msg *msgTY.Message) error {
 			}
 		}
 
-		value := payload.Value
+		value := payload.Value.String()
 
 		// if custom payload formatter supplied
 		if formatter := field.Formatter.OnReceive; msg.IsReceived && formatter != "" {
@@ -530,8 +530,8 @@ func requestFieldData(msg *msgTY.Message) error {
 		}
 
 		if field.Current.Value != nil {
-			payload.Value = fmt.Sprintf("%v", field.Current.Value) // update payload
-			if payload.Value != "" {                               // if the value is not empty update it
+			payload.SetValue(fmt.Sprintf("%v", field.Current.Value)) // update payload
+			if payload.Value != "" {                                 // if the value is not empty update it
 				payload.Labels = field.Labels.Clone()
 				clonedData := payload.Clone() // clone the message
 				payloads = append(payloads, clonedData)

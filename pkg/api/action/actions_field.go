@@ -53,7 +53,7 @@ func toField(gatewayID, nodeID, sourceID, fieldID, payload string) error {
 
 	pl := msgTY.NewPayload()
 	pl.Key = fieldID
-	pl.Value = payload
+	pl.SetValue(payload)
 	msg.Payloads = append(msg.Payloads, pl)
 	msg.Type = msgTY.TypeSet
 	return Post(&msg)

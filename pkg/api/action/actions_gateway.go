@@ -51,7 +51,7 @@ func toGatewayAction(gatewayID, action string) error {
 	msg.GatewayID = gatewayID
 	pl := msgTY.NewPayload()
 	pl.Key = types.KeyAction
-	pl.Value = action
+	pl.SetValue(action)
 	msg.Payloads = append(msg.Payloads, pl)
 	msg.Type = msgTY.TypeAction
 	return Post(&msg)

@@ -55,7 +55,7 @@ func toNode(node *nodeTY.Node, gatewayID, nodeID, action string) error {
 
 	pl := msgTY.NewPayload()
 	pl.Key = types.KeyAction
-	pl.Value = action
+	pl.SetValue(action)
 	msg.Payloads = append(msg.Payloads, pl)
 	msg.Type = msgTY.TypeAction
 	return Post(&msg)

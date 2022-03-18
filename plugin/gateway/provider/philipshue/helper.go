@@ -32,7 +32,7 @@ func (p *Provider) getMsg(nodeID, sourceID string) *msgTY.Message {
 func (p *Provider) getPayload(name string, value interface{}, metricType string, isReadOnly bool) msgTY.Payload {
 	data := msgTY.NewPayload()
 	data.Key = name
-	data.Value = fmt.Sprintf("%v", value)
+	data.SetValue(fmt.Sprintf("%v", value))
 	data.MetricType = metricType
 	if isReadOnly {
 		data.Labels.Set(types.LabelReadOnly, "true")

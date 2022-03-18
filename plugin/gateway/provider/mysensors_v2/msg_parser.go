@@ -31,7 +31,7 @@ func (p *Provider) toRawMessage(msg *msgTY.Message) (*msgTY.RawMessage, error) {
 		Command:  "",
 		Ack:      "0",
 		Type:     "",
-		Payload:  payload.Value,
+		Payload:  payload.Value.String(),
 	}
 
 	// update broadcast id
@@ -68,7 +68,7 @@ func (p *Provider) toRawMessage(msg *msgTY.Message) (*msgTY.RawMessage, error) {
 		}
 		if mt, ok := metricTypeAndUnit[payload.Key]; ok {
 			if mt.Type == metricTY.MetricTypeBinary {
-				switch strings.ToLower(payload.Value) {
+				switch strings.ToLower(payload.Value.String()) {
 				case "true", "on":
 					msMsg.Payload = payloadON
 				case "false", "off":
@@ -84,7 +84,7 @@ func (p *Provider) toRawMessage(msg *msgTY.Message) (*msgTY.RawMessage, error) {
 	case msgTY.TypeAction:
 		msMsg.Command = cmdInternal
 		// call functions
-		err := handleActions(p.GatewayConfig, payload.Value, msg, &msMsg)
+		err := handleActions(p.GatewayConfig, payload.Value.String(), msg, &msMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -160,7 +160,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 		Type:       cmdMapForRx[msMsg.Command],
 	}
 	msgPL := msgTY.NewPayload()
-	msgPL.Value = msMsg.Payload
+	msgPL.SetValue(msMsg.Payload)
 
 	messages = append(messages, msg)
 
@@ -370,7 +370,7 @@ func updateNodeInternalMessages(msg *msgTY.Message, msgPL *msgTY.Payload, msMsg 
 		if isActionRequest {
 			msg.Type = msgTY.TypeAction
 			msgPL.Key = types.KeyAction
-			msgPL.Value = typeName
+			msgPL.SetValue(typeName)
 			return true, nil, nil
 		}
 

@@ -26,9 +26,9 @@ func executeFirmwareConfigRequest(msg *msgTY.Message) (string, error) {
 	// convert the received hex to matching struct format
 	fwCfgReq := &firmwareConfigRequest{}
 	if rxPL != "" {
-		err := toStruct(rxPL, fwCfgReq)
+		err := toStruct(rxPL.String(), fwCfgReq)
 		if err != nil {
-			zap.L().Error("error on converting firmwareConfigRequest", zap.String("payload", rxPL), zap.Error(err))
+			zap.L().Error("error on converting firmwareConfigRequest", zap.String("payload", rxPL.String()), zap.Error(err))
 			return "", err
 		}
 	}
@@ -78,9 +78,9 @@ func executeFirmwareRequest(msg *msgTY.Message) (string, error) {
 
 	// convert the received hex to matching struct format
 	fwReq := &firmwareRequest{}
-	err := toStruct(rxPL, fwReq)
+	err := toStruct(rxPL.String(), fwReq)
 	if err != nil {
-		zap.L().Error("error on converting firmwareRequest", zap.String("payload", rxPL), zap.Error(err))
+		zap.L().Error("error on converting firmwareRequest", zap.String("payload", rxPL.String()), zap.Error(err))
 		return "", err
 	}
 

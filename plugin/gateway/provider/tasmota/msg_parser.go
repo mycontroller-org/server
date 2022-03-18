@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
+	customTY "github.com/mycontroller-org/server/v2/pkg/types/custom_types"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
@@ -37,13 +38,13 @@ func (p *Provider) ToRawMessage(msg *msgTY.Message) (*msgTY.RawMessage, error) {
 	switch msg.Type {
 
 	case msgTY.TypeSet: // set payload
-		tmMsg.Payload = payload.Value
+		tmMsg.Payload = payload.Value.String()
 
 	case msgTY.TypeRequest: // set empty payload for request type
 		tmMsg.Payload = emptyPayload
 
 	case msgTY.TypeAction:
-		err := handleActions(p.GatewayConfig, payload.Value, msg, tmMsg)
+		err := handleActions(p.GatewayConfig, payload.Value.String(), msg, tmMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -111,7 +112,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 			pl.Unit = metricTY.UnitNone
 		}
 		if pl.MetricType == metricTY.MetricTypeBinary {
-			v := strings.ToLower(pl.Value)
+			v := strings.ToLower(pl.Value.String())
 			if v == "on" || v == "1" || v == "true" {
 				pl.Value = "1"
 			} else {
@@ -148,7 +149,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 				// create new payload data
 				pl := msgTY.NewPayload()
 				pl.Key = key
-				pl.Value = converterUtils.ToString(v)
+				pl.SetValue(converterUtils.ToString(v))
 				updateMetricTypeAndUnit(key, &pl)
 				msg.Payloads = append(msg.Payloads, pl)
 			}
@@ -178,7 +179,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 							}
 							pl := msgTY.NewPayload()
 							pl.Key = wKey
-							pl.Value = converterUtils.ToString(wValue)
+							pl.SetValue(converterUtils.ToString(wValue))
 							updateMetricTypeAndUnit(wKey, &pl)
 							senWiFi.Payloads = append(senWiFi.Payloads, pl)
 						}
@@ -191,7 +192,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 				} else {
 					pl := msgTY.NewPayload()
 					pl.Key = key
-					pl.Value = converterUtils.ToString(v)
+					pl.SetValue(converterUtils.ToString(v))
 					updateMetricTypeAndUnit(key, &pl)
 					if key == keyHeap {
 						senMemory.Payloads = append(senMemory.Payloads, pl)
@@ -215,7 +216,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 						// create new payload data
 						pl := msgTY.NewPayload()
 						pl.Key = sK
-						pl.Value = converterUtils.ToString(sV)
+						pl.SetValue(converterUtils.ToString(sV))
 						updateMetricTypeAndUnit(sK, &pl)
 						msg.Payloads = append(msg.Payloads, pl)
 					}
@@ -256,7 +257,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 					// create new payload data
 					pl := msgTY.NewPayload()
 					pl.Key = key
-					pl.Value = plValue
+					pl.SetValue(plValue)
 					updateMetricTypeAndUnit(key, &pl)
 					msg.Payloads = append(msg.Payloads, pl)
 				}
@@ -300,9 +301,10 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 						}
 						pl := msgTY.Payload{
 							Key:        k,
-							Value:      converterUtils.ToString(v),
 							MetricType: metricTY.MetricTypeNone,
 						}
+						pl.SetValue(converterUtils.ToString(v))
+
 						msg.Payloads = append(msg.Payloads, pl)
 					}
 					addIntoMessages(msg)
@@ -316,9 +318,10 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 					if found {
 						pl := msgTY.Payload{
 							Key:        keyHeap,
-							Value:      converterUtils.ToString(heap),
 							MetricType: metricTY.MetricTypeGauge,
 						}
+						pl.SetValue(converterUtils.ToString(heap))
+
 						msg.Payloads = append(msg.Payloads, pl)
 					}
 					addIntoMessages(msg)
@@ -332,7 +335,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 					for k, v := range data {
 						pl := msgTY.NewPayload()
 						pl.Key = k
-						pl.Value = converterUtils.ToString(v)
+						pl.SetValue(converterUtils.ToString(v))
 						updateMetricTypeAndUnit(k, &pl)
 						msg.Payloads = append(msg.Payloads, pl)
 					}
@@ -362,10 +365,10 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 							for fName, fValue := range d {
 								pl := msgTY.Payload{
 									Key:        fName,
-									Value:      converterUtils.ToString(fValue),
 									MetricType: metricTY.MetricTypeNone,
 									Unit:       metricTY.UnitNone,
 								}
+								pl.SetValue(converterUtils.ToString(fValue))
 								pl.Labels = pl.Labels.Init()
 								pls = append(pls, pl)
 							}
@@ -384,10 +387,10 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 							for fName, fValue := range d {
 								pl := msgTY.Payload{
 									Key:        fName,
-									Value:      converterUtils.ToString(fValue),
 									MetricType: metricTY.MetricTypeCounter,
 									Unit:       metricTY.UnitNone,
 								}
+								pl.SetValue(converterUtils.ToString(fValue))
 								pl.Labels = pl.Labels.Init()
 								pls = append(pls, pl)
 							}
@@ -421,7 +424,7 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 
 								pl := msgTY.NewPayload()
 								pl.Key = fName
-								pl.Value = converterUtils.ToString(fValue)
+								pl.SetValue(converterUtils.ToString(fValue))
 								pl.MetricType = mt.Type
 								pl.Unit = mt.Unit
 								pls = append(pls, pl)
@@ -464,13 +467,13 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 // input: "HSBColor":"249,0,0"(HsbColor1,2,3)
 func (p *Provider) getHsbColor(value string) []msgTY.Payload {
 	pls := make([]msgTY.Payload, 0)
-	pls = append(pls, msgTY.Payload{Key: keyHSBColor, Value: value, MetricType: metricTY.MetricTypeNone, Unit: metricTY.UnitNone})
+	pls = append(pls, msgTY.Payload{Key: keyHSBColor, Value: customTY.StringData(value), MetricType: metricTY.MetricTypeNone, Unit: metricTY.UnitNone})
 	if value != "" && strings.Contains(value, ",") {
 		values := strings.Split(value, ",")
 		if len(values) == 3 {
-			pls = append(pls, msgTY.Payload{Key: keyHSBColor1, Value: values[0], MetricType: metricTY.MetricTypeNone, Unit: metricTY.UnitNone})
-			pls = append(pls, msgTY.Payload{Key: keyHSBColor2, Value: values[1], MetricType: metricTY.MetricTypeNone, Unit: metricTY.UnitNone})
-			pls = append(pls, msgTY.Payload{Key: keyHSBColor3, Value: values[2], MetricType: metricTY.MetricTypeNone, Unit: metricTY.UnitNone})
+			pls = append(pls, msgTY.Payload{Key: keyHSBColor1, Value: customTY.StringData(values[0]), MetricType: metricTY.MetricTypeNone, Unit: metricTY.UnitNone})
+			pls = append(pls, msgTY.Payload{Key: keyHSBColor2, Value: customTY.StringData(values[1]), MetricType: metricTY.MetricTypeNone, Unit: metricTY.UnitNone})
+			pls = append(pls, msgTY.Payload{Key: keyHSBColor3, Value: customTY.StringData(values[2]), MetricType: metricTY.MetricTypeNone, Unit: metricTY.UnitNone})
 		}
 	}
 	return pls
@@ -485,7 +488,7 @@ func (p *Provider) getNodeMessage(nodeID string, data map[string]interface{}) *m
 		// create new payload data
 		pl := msgTY.NewPayload()
 		pl.Key = normalize.ToSnakeCase(key)
-		pl.Value = value
+		pl.SetValue(value)
 		include := true
 
 		switch key {
@@ -494,7 +497,7 @@ func (p *Provider) getNodeMessage(nodeID string, data map[string]interface{}) *m
 			names, ok := v.([]interface{})
 			if ok {
 				if len(names) > 0 {
-					pl.Value = converterUtils.ToString(names[0])
+					pl.SetValue(converterUtils.ToString(names[0]))
 				}
 			}
 
@@ -509,7 +512,7 @@ func (p *Provider) getNodeMessage(nodeID string, data map[string]interface{}) *m
 			// add host url
 			urlPL := msgTY.NewPayload()
 			urlPL.Key = types.FieldNodeWebURL
-			urlPL.Value = fmt.Sprintf("http://%s", value)
+			urlPL.SetValue(fmt.Sprintf("http://%s", value))
 			payloads = append(payloads, urlPL)
 
 		case keyOtaURL, keySDK, keyBuildDateTime, keyCPUFrequency,
@@ -553,7 +556,7 @@ func (p *Provider) createMessage(nodeID, sourceID, msgType string, pls ...msgTY.
 func (p *Provider) createSourcePresentationPL(value string) *msgTY.Payload {
 	pl := msgTY.NewPayload()
 	pl.Key = types.FieldName
-	pl.Value = value
+	pl.SetValue(value)
 	pl.MetricType = metricTY.MetricTypeNone
 	pl.Unit = metricTY.UnitNone
 	return &pl

@@ -12,7 +12,7 @@ import (
 func (p *Provider) getData(name string, value interface{}, metricType, unit string, isReadOnly bool) msgTY.Payload {
 	data := msgTY.NewPayload()
 	data.Key = name
-	data.Value = fmt.Sprintf("%v", value)
+	data.SetValue(fmt.Sprintf("%v", value))
 	data.MetricType = metricType
 	if isReadOnly {
 		data.Labels.Set(types.LabelReadOnly, "true")
@@ -42,7 +42,7 @@ func (p *Provider) getSourcePresentationMsg(sourceID, sourceName string) msgTY.M
 	if sourceName != "" {
 		data := msgTY.NewPayload()
 		data.Key = "name"
-		data.Value = sourceName
+		data.SetValue(sourceName)
 		msg.Payloads = append(msg.Payloads, data)
 	}
 

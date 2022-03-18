@@ -98,7 +98,7 @@ func (en *ESPHomeNode) Post(msg proto.Message) error {
 		streamResponse := getMessage(en.GatewayID, en.NodeID, entity.SourceID, msgTY.TypeSet, time.Now())
 		data := msgTY.NewPayload()
 		data.Key = FieldStream
-		data.Value = convertor.ToString(imageReq.Stream)
+		data.SetValue(convertor.ToString(imageReq.Stream))
 		data.MetricType = metricTY.MetricTypeNone
 		streamResponse.Payloads = append(streamResponse.Payloads, data)
 		topic := mcbus.GetTopicPostMessageToServer()
@@ -193,7 +193,7 @@ func (en *ESPHomeNode) sendNodeInfo() {
 	nodeMsg := getMessage(en.GatewayID, en.NodeID, "", msgTY.TypePresentation, time.Now())
 	data := msgTY.NewPayload()
 	data.Key = types.FieldName
-	data.Value = deviceInfo.Name
+	data.SetValue(deviceInfo.Name)
 	data.Labels.Set(types.LabelNodeVersion, deviceInfo.EsphomeVersion)
 	data.Others.Set("mac", deviceInfo.MacAddress, nil)
 	data.Others.Set("compilation_time", deviceInfo.CompilationTime, nil)

@@ -380,7 +380,7 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 	msgSource := getMessage(p.GatewayConfig.ID, nodeID, sourceID, msgTY.TypePresentation, timestamp)
 	sourceData := msgTY.NewPayload()
 	sourceData.Key = types.FieldName
-	sourceData.Value = name
+	sourceData.SetValue(name)
 	sourceData.Labels.Set(LabelKey, keyString)
 	sourceData.Labels.Set(LabelType, entityType)
 
@@ -515,7 +515,7 @@ func (p *Provider) getStateResponse(nodeID string, timestamp time.Time, fields m
 		metricMap := getMetricData(entity.Type, field)
 		data := msgTY.NewPayload()
 		data.Key = field
-		data.Value = adjustValueToMyController(entity.Type, field, value)
+		data.SetValue(adjustValueToMyController(entity.Type, field, value))
 		data.MetricType = metricMap.MetricType
 		if entity.Unit != "" {
 			data.Unit = entity.Unit
@@ -542,7 +542,7 @@ func (p *Provider) getActionMessage(actionType, nodeID string, timestamp time.Ti
 	msg := getMessage(p.GatewayConfig.ID, nodeID, "", msgTY.TypeAction, timestamp)
 	data := msgTY.NewPayload()
 	data.Key = types.KeyAction
-	data.Value = actionType
+	data.SetValue(actionType)
 	msg.Payloads = append(msg.Payloads, data)
 	messages = append(messages, msg)
 	return messages, nil
