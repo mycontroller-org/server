@@ -173,7 +173,7 @@ func updateNodeData(msg *msgTY.Message) error {
 
 		case types.FieldBatteryLevel: // set battery level
 			// update battery level
-			batteryLevel := converterUtils.ToFloat(d.Value)
+			batteryLevel := converterUtils.ToFloat(d.Value.String())
 			node.Others.Set(d.Key, batteryLevel, node.Labels)
 			err = writeNodeMetric(node, metricPluginTY.MetricTypeGaugeFloat, types.FieldBatteryLevel, batteryLevel)
 			if err != nil {
@@ -182,7 +182,7 @@ func updateNodeData(msg *msgTY.Message) error {
 
 		default:
 			if d.Key != types.FieldNone {
-				node.Others.Set(d.Key, d.Value, node.Labels)
+				node.Others.Set(d.Key, d.Value.String(), node.Labels)
 				// TODO: Do we need to report to metric strore?
 			}
 
@@ -232,7 +232,7 @@ func updateSourceDetail(msg *msgTY.Message) error {
 
 		default: // set other variables
 			if payload.Key != types.FieldNone {
-				source.Others.Set(payload.Key, payload.Value, source.Labels)
+				source.Others.Set(payload.Key, payload.Value.String(), source.Labels)
 				// TODO: Do we need to report to metric strore?
 			}
 		}
@@ -271,14 +271,14 @@ func setFieldData(msg *msgTY.Message) error {
 			startTime := time.Now()
 
 			scriptInput := map[string]interface{}{
-				"value":         payload.Value,
+				"value":         payload.Value.String(),
 				"lastValue":     field.Current.Value,
 				"previousValue": field.Previous.Value,
 			}
 
 			responseValue, err := javascript.Execute(formatter, scriptInput)
 			if err != nil {
-				zap.L().Error("error on executing script", zap.Error(err), zap.Any("inputValue", payload.Value), zap.String("gateway", field.GatewayID), zap.String("node", field.NodeID), zap.String("source", field.SourceID), zap.String("fieldID", field.FieldID), zap.String("script", formatter))
+				zap.L().Error("error on executing script", zap.Error(err), zap.Any("inputValue", payload.Value.String()), zap.String("gateway", field.GatewayID), zap.String("node", field.NodeID), zap.String("source", field.SourceID), zap.String("fieldID", field.FieldID), zap.String("script", formatter))
 				return err
 			}
 
@@ -315,7 +315,7 @@ func setFieldData(msg *msgTY.Message) error {
 			}
 
 			// update the formatted value
-			zap.L().Debug("formatting done", zap.Any("oldValue", payload.Value), zap.String("newValue", formattedValue), zap.String("timeTaken", time.Since(startTime).String()))
+			zap.L().Debug("formatting done", zap.Any("oldValue", payload.Value.String()), zap.String("newValue", formattedValue), zap.String("timeTaken", time.Since(startTime).String()))
 
 			// update formatted value into value
 			value = formattedValue
@@ -531,7 +531,7 @@ func requestFieldData(msg *msgTY.Message) error {
 
 		if field.Current.Value != nil {
 			payload.SetValue(fmt.Sprintf("%v", field.Current.Value)) // update payload
-			if payload.Value != "" {                                 // if the value is not empty update it
+			if payload.Value.String() != "" {                        // if the value is not empty update it
 				payload.Labels = field.Labels.Clone()
 				clonedData := payload.Clone() // clone the message
 				payloads = append(payloads, clonedData)
