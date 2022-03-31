@@ -130,7 +130,7 @@ func (p *Provider) Close() error {
 func (p *Provider) Post(msg *msgTY.Message) error {
 	rawMsg, err := p.toRawMessage(msg)
 	if err != nil {
-		zap.L().Error("error on converting to raw message", zap.Error(err), zap.String("gatewayId", p.GatewayConfig.ID))
+		zap.L().Error("error on converting to raw message", zap.String("gatewayId", p.GatewayConfig.ID), zap.Error(err))
 		return err
 	}
 
