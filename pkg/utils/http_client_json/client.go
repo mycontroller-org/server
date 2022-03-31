@@ -28,6 +28,9 @@ type ResponseConfig struct {
 
 // returns body as string
 func (rc *ResponseConfig) StringBody() string {
+	if rc.Body == nil {
+		return ""
+	}
 	return string(rc.Body)
 }
 
