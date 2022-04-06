@@ -111,6 +111,10 @@ func ReportAnalyticsData() {
 	client := httpclient.GetClient(false, timeout)
 	response, err := client.ExecuteJson(ANALYTICS_URL, http.MethodPost, nil, nil, payload, http.StatusOK)
 	if err != nil {
-		zap.L().Debug("error on sending analytics data", zap.Error(err), zap.String("response", response.StringBody()), zap.Any("responseConfig", response))
+		if response != nil {
+			zap.L().Debug("error on sending analytics data", zap.String("response", response.StringBody()), zap.Any("responseConfig", response), zap.Error(err))
+		} else {
+			zap.L().Debug("error on sending analytics data", zap.Error(err))
+		}
 	}
 }
