@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 
@@ -32,4 +33,9 @@ func Schedule(scheduleID, jobSpec string, triggerFunc func()) error {
 // Joins all the ids and returns a string
 func GetScheduleID(IDs ...string) string {
 	return strings.Join(IDs, "_")
+}
+
+// returns the tre/false based on the scheduleID availability
+func IsScheduleAvailable(scheduleID string) bool {
+	return utils.ContainsString(coreScheduler.SVC.GetNames(), scheduleID)
 }

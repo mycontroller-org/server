@@ -67,6 +67,7 @@ func Close() {
 		zap.L().Error("error on closing event listener", zap.Error(err))
 	}
 	tasksStore.RemoveAll()
+	unscheduleAll("") // remove all the scheduled tasks
 	tasksQueue.Close()
 }
 

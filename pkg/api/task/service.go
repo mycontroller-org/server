@@ -10,29 +10,29 @@ import (
 )
 
 // Add task
-func Add(cfg *taskTY.Config) error {
-	return postCommand(cfg, rsTY.CommandAdd)
+func Add(task *taskTY.Config) error {
+	return postCommand(task, rsTY.CommandAdd)
 }
 
 // Remove task
-func Remove(cfg *taskTY.Config) error {
-	return postCommand(cfg, rsTY.CommandRemove)
+func Remove(task *taskTY.Config) error {
+	return postCommand(task, rsTY.CommandRemove)
 }
 
 // LoadAll makes tasks alive
 func LoadAll() {
 	result, err := List(nil, nil)
 	if err != nil {
-		zap.L().Error("Failed to get list of tasks", zap.Error(err))
+		zap.L().Error("failed to get list of tasks", zap.Error(err))
 		return
 	}
 	tasks := *result.Data.(*[]taskTY.Config)
 	for index := 0; index < len(tasks); index++ {
 		task := tasks[index]
-		if task.Enabled {
+		if task.Enabled || task.ReEnable {
 			err = Add(&task)
 			if err != nil {
-				zap.L().Error("Failed to load a task", zap.Error(err), zap.String("task", task.ID))
+				zap.L().Error("failed to load a task", zap.Error(err), zap.String("task", task.ID))
 			}
 		}
 	}
@@ -54,13 +54,11 @@ func Enable(ids []string) error {
 	}
 
 	for index := 0; index < len(tasks); index++ {
-		cfg := tasks[index]
-		if !cfg.Enabled {
-			cfg.Enabled = true
-			err = SaveAndReload(&cfg)
-			if err != nil {
-				zap.L().Error("error on enabling a task", zap.String("id", cfg.ID), zap.Error(err))
-			}
+		task := tasks[index]
+		task.Enabled = true
+		err = SaveAndReload(&task)
+		if err != nil {
+			zap.L().Error("error on enabling a task", zap.String("id", task.ID), zap.Error(err))
 		}
 	}
 	return nil
@@ -74,16 +72,23 @@ func Disable(ids []string) error {
 	}
 
 	for index := 0; index < len(tasks); index++ {
-		cfg := tasks[index]
-		if cfg.Enabled {
-			cfg.Enabled = false
-			err = Save(&cfg)
+		task := tasks[index]
+		if task.Enabled {
+			task.Enabled = false
+			err = Save(&task)
 			if err != nil {
-				zap.L().Error("error on saving a task", zap.String("id", cfg.ID), zap.Error(err))
+				zap.L().Error("error on saving a task", zap.String("id", task.ID), zap.Error(err))
 			}
-			err = Remove(&cfg)
+			err = Remove(&task)
 			if err != nil {
-				zap.L().Error("error on disabling a task", zap.String("id", cfg.ID), zap.Error(err))
+				zap.L().Error("error on disabling a task", zap.String("id", task.ID), zap.Error(err))
+			}
+			// if it is re-enable task load it
+			if task.ReEnable {
+				err = Add(&task)
+				if err != nil {
+					zap.L().Error("error on adding a re-enable task", zap.String("id", task.ID), zap.Error(err))
+				}
 			}
 		}
 	}
@@ -102,7 +107,7 @@ func Reload(ids []string) error {
 		if err != nil {
 			zap.L().Error("error on disabling a task", zap.Error(err), zap.String("id", task.ID))
 		}
-		if task.Enabled {
+		if task.Enabled || task.ReEnable {
 			err = Add(&task)
 			if err != nil {
 				zap.L().Error("error on enabling a task", zap.Error(err), zap.String("ic", task.ID))
@@ -112,14 +117,14 @@ func Reload(ids []string) error {
 	return nil
 }
 
-func postCommand(cfg *taskTY.Config, command string) error {
+func postCommand(task *taskTY.Config, command string) error {
 	reqEvent := rsTY.ServiceEvent{
 		Type:    rsTY.TypeTask,
 		Command: command,
 	}
-	if cfg != nil {
-		reqEvent.ID = cfg.ID
-		reqEvent.SetData(cfg)
+	if task != nil {
+		reqEvent.ID = task.ID
+		reqEvent.SetData(task)
 	}
 	topic := mcbus.FormatTopic(mcbus.TopicServiceTask)
 	return mcbus.Publish(topic, reqEvent)

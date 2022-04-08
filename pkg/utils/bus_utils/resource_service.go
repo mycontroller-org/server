@@ -39,6 +39,11 @@ func DisableTask(id string) {
 	PostToResourceService(id, id, rsTY.TypeTask, rsTY.CommandDisable, "")
 }
 
+// EnableTask sends id to resource service
+func EnableTask(id string) {
+	PostToResourceService(id, id, rsTY.TypeTask, rsTY.CommandEnable, "")
+}
+
 // PostToResourceService to resource service
 func PostToResourceService(id string, data interface{}, serviceType, command, replyTopic string) {
 	PostToService(mcbus.TopicServiceResourceServer, id, data, serviceType, command, replyTopic)

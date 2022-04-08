@@ -15,10 +15,10 @@ const (
 
 // dampening types
 const (
-	DampeningTypeNone        = "none"
-	DampeningTypeConsecutive = "consecutive"
-	DampeningTypeEvaluations = "evaluations"
-	DampeningTypeActiveTime  = "active_time"
+	DampeningTypeNone           = "none"
+	DampeningTypeConsecutive    = "consecutive"
+	DampeningTypeEvaluation     = "evaluation"
+	DampeningTypeActiveDuration = "active_duration"
 )
 
 // keys used in script engine
@@ -34,8 +34,10 @@ type Config struct {
 	Enabled           bool                 `json:"enabled"`
 	IgnoreDuplicate   bool                 `json:"ignoreDuplicate"`
 	AutoDisable       bool                 `json:"autoDisable"`
+	ReEnable          bool                 `json:"reEnable"`
+	ReEnableDuration  string               `json:"reEnableDuration"`
 	Variables         map[string]string    `json:"variables"`
-	Dampening         Dampening            `json:"dampening"`
+	Dampening         DampeningConfig      `json:"dampening"`
 	TriggerOnEvent    bool                 `json:"triggerOnEvent"`
 	EventFilter       EventFilter          `json:"eventFilter"`
 	ExecutionInterval string               `json:"executionInterval"`
@@ -84,21 +86,26 @@ type Conditions struct {
 	Value    interface{} `json:"value"`
 }
 
-// Dampening struct
-type Dampening struct {
-	Type        string `json:"type"`
-	Occurrences int64  `json:"occurrences"`
-	Evaluations int64  `json:"evaluations"`
-	ActiveTime  string `json:"activeTime"`
+// DampeningConfig struct
+type DampeningConfig struct {
+	Type           string `json:"type"`
+	Occurrences    int64  `json:"occurrences"`
+	Evaluation     int64  `json:"evaluation"`
+	ActiveDuration string `json:"activeDuration"`
 }
 
 // State struct
 type State struct {
-	LastEvaluation time.Time `json:"lastEvaluation"`
-	LastSuccess    time.Time `json:"lastSuccess"`
-	Message        string    `json:"message"`
-	LastStatus     bool      `json:"lastStatus"`
-	ExecutedCount  int64     `json:"executedCount"`
-	Executions     []bool    `json:"executions"`
-	ActiveFrom     string    `json:"activeFrom"`
+	LastEvaluation    time.Time        `json:"lastEvaluation"`
+	LastSuccess       time.Time        `json:"lastSuccess"`
+	Message           string           `json:"message"`
+	LastStatus        bool             `json:"lastStatus"`
+	ExecutedCount     int64            `json:"executedCount"`
+	ExecutionsHistory []ExecutionState `json:"executionsHistory"`
+	ActiveSince       time.Time        `json:"activeSince"`
+}
+
+type ExecutionState struct {
+	Triggered bool      `json:"triggered"`
+	Timestamp time.Time `json:"timestamp"`
 }

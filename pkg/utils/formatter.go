@@ -39,7 +39,7 @@ func registerTypes() {
 	gob.Register(fieldTY.Payload{})
 	gob.Register(fieldTY.PayloadFormatter{})
 	gob.Register(taskTY.Config{})
-	gob.Register(taskTY.Dampening{})
+	gob.Register(taskTY.DampeningConfig{})
 	gob.Register(taskTY.EventFilter{})
 	gob.Register(taskTY.EvaluationConfig{})
 	gob.Register(taskTY.Rule{})

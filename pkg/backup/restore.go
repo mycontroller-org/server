@@ -153,6 +153,7 @@ func ExecuteImportStorage(sourceDir, fileType string, ignoreEmptyDir bool) error
 	}
 	files, err := utils.ListFiles(sourceDir)
 	if err != nil {
+		zap.L().Error("error on listing files", zap.Error(err))
 		return err
 	}
 	if len(files) == 0 {
@@ -170,10 +171,12 @@ func ExecuteImportStorage(sourceDir, fileType string, ignoreEmptyDir bool) error
 		// read data from file
 		fileBytes, err := utils.ReadFile(sourceDir, file.Name)
 		if err != nil {
+			zap.L().Error("error on reading a file", zap.String("fileName", file.FullPath), zap.Error(err))
 			return err
 		}
 		err = updateEntities(fileBytes, entityName, fileType)
 		if err != nil {
+			zap.L().Error("error on updating entity", zap.String("file", file.FullPath), zap.String("entityName", entityName), zap.String("fileType", fileType), zap.Error(err))
 			return err
 		}
 	}

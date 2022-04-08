@@ -3,6 +3,7 @@ package task
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
@@ -87,6 +88,9 @@ func isMatching(value interface{}, operator string, expectedValue interface{}) b
 		operator = storageTY.OperatorEqual
 	}
 
+	// format value to actual type
+	value = formatValue(value)
+
 	var expectedValueUpdated interface{}
 
 	switch operator {
@@ -124,4 +128,26 @@ func isMatching(value interface{}, operator string, expectedValue interface{}) b
 		zap.L().Warn("unsupported type", zap.String("type", reflect.TypeOf(value).String()), zap.Any("value", value))
 		return false
 	}
+}
+
+// tries to convert the string value to float, bool, string
+func formatValue(value interface{}) interface{} {
+	if reflect.TypeOf(value).Kind() == reflect.String {
+		stringValue := converterUtils.ToString(value)
+		// can be a float value
+		floatValue, err := strconv.ParseFloat(stringValue, 64)
+		if err == nil {
+			return floatValue
+		}
+
+		// can be a bool value
+		boolValue, err := strconv.ParseBool(stringValue)
+		if err == nil {
+			return boolValue
+		}
+
+		// return as string
+		return value
+	}
+	return value
 }

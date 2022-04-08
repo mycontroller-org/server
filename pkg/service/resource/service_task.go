@@ -33,8 +33,11 @@ func taskService(reqEvent *rsTY.ServiceEvent) error {
 	case rsTY.CommandLoadAll:
 		taskAPI.LoadAll()
 
+	case rsTY.CommandEnable:
+		return enableOrDisableTask(reqEvent, true)
+
 	case rsTY.CommandDisable:
-		return disableTask(reqEvent)
+		return enableOrDisableTask(reqEvent, false)
 
 	default:
 		return fmt.Errorf("unknown command: %s", reqEvent.Command)
@@ -76,7 +79,7 @@ func updateTaskState(reqEvent *rsTY.ServiceEvent) error {
 	return taskAPI.SetState(reqEvent.ID, state)
 }
 
-func disableTask(reqEvent *rsTY.ServiceEvent) error {
+func enableOrDisableTask(reqEvent *rsTY.ServiceEvent, enable bool) error {
 	if reqEvent.Data == "" {
 		zap.L().Error("task id not supplied", zap.Any("event", reqEvent))
 		return errors.New("id not supplied")
@@ -89,5 +92,8 @@ func disableTask(reqEvent *rsTY.ServiceEvent) error {
 		return err
 	}
 
+	if enable {
+		return taskAPI.Enable([]string{id})
+	}
 	return taskAPI.Disable([]string{id})
 }

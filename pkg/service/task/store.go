@@ -1,20 +1,15 @@
 package task
 
 import (
-	"fmt"
 	"sync"
 
-	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
-)
-
-const (
-	schedulePrefix = "task_polling_schedule"
 )
 
 type store struct {
@@ -31,6 +26,9 @@ var tasksStore = store{
 // Add a task
 func (s *store) Add(task taskTY.Config) {
 	if !task.Enabled {
+		if task.ReEnable { // schedule re-enable job
+			schedule(scheduleTypeReEnable, task.ReEnableDuration, &task)
+		}
 		return
 	}
 
@@ -40,9 +38,9 @@ func (s *store) Add(task taskTY.Config) {
 	if task.TriggerOnEvent {
 		s.tasks[task.ID] = task
 	} else {
-		name := schedule(&task)
-		if !utils.ContainsString(s.pollingTasks, name) {
-			s.pollingTasks = append(s.pollingTasks, name)
+		scheduleID := schedule(scheduleTypePolling, task.ExecutionInterval, &task)
+		if !utils.ContainsString(s.pollingTasks, scheduleID) {
+			s.pollingTasks = append(s.pollingTasks, scheduleID)
 		}
 	}
 }
@@ -59,17 +57,17 @@ func (s *store) UpdateState(id string, state *taskTY.State) {
 }
 
 // Remove a task
-func (s *store) Remove(id string) {
+func (s *store) Remove(taskID string) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-
-	name := unschedule(id)
-	if utils.ContainsString(s.pollingTasks, name) {
+	scheduleID := scheduleUtils.GetScheduleID(schedulePrefix, taskID, scheduleTypePolling)
+	unscheduleAll(taskID)
+	if utils.ContainsString(s.pollingTasks, scheduleID) {
 		updatedSlice := make([]string, 0)
 		updatedSlice = append(updatedSlice, s.pollingTasks...)
 		s.pollingTasks = updatedSlice
 	}
-	delete(s.tasks, id)
+	delete(s.tasks, taskID)
 }
 
 // GetByID returns handler by id
@@ -144,31 +142,4 @@ func (s *store) getFilters(filtersMap map[string]string) []storageTY.Filter {
 		filters = append(filters, storageTY.Filter{Key: k, Operator: storageTY.OperatorEqual, Value: v})
 	}
 	return filters
-}
-
-func getScheduleID(id string) string {
-	return fmt.Sprintf("%s_%s", schedulePrefix, id)
-}
-
-func unschedule(id string) string {
-	name := getScheduleID(id)
-	coreScheduler.SVC.RemoveFunc(name)
-	zap.L().Debug("removed a task from scheduler", zap.String("name", name), zap.String("id", id))
-	return name
-}
-
-func schedule(task *taskTY.Config) string {
-	name := getScheduleID(task.ID)
-	cronSpec := fmt.Sprintf("@every %s", task.ExecutionInterval)
-	err := coreScheduler.SVC.AddFunc(name, cronSpec, getTaskPollingTriggerFunc(task))
-	if err != nil {
-		zap.L().Error("error on adding a task into scheduler", zap.Error(err), zap.String("id", task.ID), zap.String("executionInterval", task.ExecutionInterval))
-		task.State.LastStatus = false
-		task.State.Message = fmt.Sprintf("Error on adding into scheduler: %s", err.Error())
-		busUtils.SetTaskState(task.ID, *task.State)
-	}
-	zap.L().Debug("added a task into schedule", zap.String("name", name), zap.String("ID", task.ID), zap.Any("cronSpec", cronSpec))
-	task.State.Message = fmt.Sprintf("Added into scheduler. cron spec:[%s]", cronSpec)
-	busUtils.SetTaskState(task.ID, *task.State)
-	return name
 }
