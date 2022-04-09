@@ -1,16 +1,15 @@
 #!/bin/bash
 
-BUILDS_DIR=builds
-
 # sync the web console repository
 ./scripts/setup_web_console.sh
 
 # build web console
 cd console-web
-yarn install
-CI=false yarn build
+export TX_TOKEN=${TRANSIFEX_TOKEN_MC_V2} # include transifex token
+./scripts/build.sh
 cd ../
 
+# BUILDS_DIR=builds
 # GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 # mkdir -p ${BUILDS_DIR}
 # cp console-web/build ${BUILDS_DIR}/web_console -r
