@@ -34,6 +34,8 @@ jobs:
 
       - name: build web console
         run: ./scripts/build_web_console.sh
+        env:
+          TX_TOKEN: ${{ secrets.TRANSIFEX_TOKEN_MC_V2 }}
 
       - name: Cache go modules
         uses: actions/cache@v2

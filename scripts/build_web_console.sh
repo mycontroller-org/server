@@ -5,7 +5,6 @@
 
 # build web console
 cd console-web
-export TX_TOKEN=${TRANSIFEX_TOKEN_MC_V2} # include transifex token
 ./scripts/build.sh
 cd ../
 
