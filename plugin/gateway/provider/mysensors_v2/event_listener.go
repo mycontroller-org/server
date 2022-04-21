@@ -88,17 +88,31 @@ func processServiceEvent(item interface{}) {
 	zap.L().Debug("Processing a request", zap.Any("event", event))
 
 	// process events
-	if event.EntityType == types.EntityFirmware {
-		if firmware, ok := event.Entity.(firmwareTY.Firmware); ok {
-			fwRawStore.Remove(firmware.ID)
-			fwStore.Remove(firmware.ID)
+	switch event.EntityType {
+	case types.EntityFirmware:
+		firmware := firmwareTY.Firmware{}
+		err := event.LoadEntity(&firmware)
+		if err != nil {
+			zap.L().Error("error on loading firmware entity", zap.String("eventQuickId", event.EntityQuickID), zap.Error(err))
+			return
 		}
-	} else if event.EntityType == types.EntityNode {
-		if node, ok := event.Entity.(nodeTY.Node); ok {
-			localID := getNodeStoreID(node.GatewayID, node.NodeID)
-			if nodeStore.IsAvailable(localID) {
-				nodeStore.Add(localID, &node)
-			}
+		zap.L().Info("firmware remove request received", zap.Any("firmware", event.Entity))
+		fwRawStore.Remove(firmware.ID)
+		fwStore.Remove(firmware.ID)
+
+	case types.EntityNode:
+		node := nodeTY.Node{}
+		err := event.LoadEntity(&node)
+		if err != nil {
+			zap.L().Error("error on loading node entity", zap.String("eventQuickId", event.EntityQuickID), zap.Error(err))
+			return
 		}
+		localID := getNodeStoreID(node.GatewayID, node.NodeID)
+		if nodeStore.IsAvailable(localID) {
+			nodeStore.Add(localID, &node)
+		}
+
+	default:
+		zap.L().Info("received unsupported event", zap.Any("event", event))
 	}
 }
