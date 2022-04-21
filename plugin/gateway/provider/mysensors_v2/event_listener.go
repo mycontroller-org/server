@@ -96,7 +96,6 @@ func processServiceEvent(item interface{}) {
 			zap.L().Error("error on loading firmware entity", zap.String("eventQuickId", event.EntityQuickID), zap.Error(err))
 			return
 		}
-		zap.L().Info("firmware remove request received", zap.Any("firmware", event.Entity))
 		fwRawStore.Remove(firmware.ID)
 		fwStore.Remove(firmware.ID)
 
