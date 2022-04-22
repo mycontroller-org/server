@@ -35,14 +35,13 @@ func nodeService(reqEvent *rsTY.ServiceEvent) error {
 			zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
 			return err
 		}
-
-		nodeOrg, err := nodeAPI.GetByID(node.ID)
+		_, err = nodeAPI.GetByID(node.ID)
 		if err != nil {
 			return err
 		}
-		// update labels
-		nodeOrg.Labels.CopyFrom(node.Labels)
-		return nodeAPI.Save(nodeOrg)
+		node.Labels.Init()
+		node.Others.Init()
+		return nodeAPI.Save(node, true)
 
 	case rsTY.CommandGetIds:
 		data, err := getNodeIDs(reqEvent)
@@ -76,7 +75,7 @@ func nodeService(reqEvent *rsTY.ServiceEvent) error {
 			return err
 		}
 		node.Labels.CopyFrom(labels)
-		return nodeAPI.Save(node)
+		return nodeAPI.Save(node, true)
 
 	default:
 		return errors.New("unknown command")

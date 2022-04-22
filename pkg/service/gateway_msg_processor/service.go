@@ -194,7 +194,7 @@ func updateNodeData(msg *msgTY.Message) error {
 	}
 
 	// save node data
-	err = nodeAPI.Save(node)
+	err = nodeAPI.Save(node, true)
 	if err != nil {
 		zap.L().Error("unable to update save the node data", zap.Error(err), zap.Any("node", node))
 		return err

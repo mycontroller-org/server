@@ -205,7 +205,7 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 			return err
 		}
 		for index := 0; index < len(entities); index++ {
-			err = nodeAPI.Save(&entities[index])
+			err = nodeAPI.Save(&entities[index], false)
 			if err != nil {
 				return err
 			}

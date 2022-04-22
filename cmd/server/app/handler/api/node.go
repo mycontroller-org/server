@@ -41,7 +41,7 @@ func updatenode(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "id should not be empty", 400)
 		return
 	}
-	err = nodeAPI.Save(entity)
+	err = nodeAPI.Save(entity, true)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

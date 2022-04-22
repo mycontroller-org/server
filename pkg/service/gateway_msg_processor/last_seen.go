@@ -32,7 +32,7 @@ func updateNodeLastSeen(gatewayID, nodeID string, timestamp time.Time) {
 		}
 	}
 
-	err = nodeAPI.Save(node)
+	err = nodeAPI.Save(node, true)
 	if err != nil {
 		zap.L().Error("error on updating a node", zap.String("gatewayId", gatewayID), zap.String("nodeId", nodeID), zap.Error(err))
 	}

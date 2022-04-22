@@ -268,7 +268,7 @@ func hexByteToLocalFormat(typeID, versionID uint16, hexByte []byte, blockSize in
 }
 
 func setNodeLabels(node *nodeTY.Node) {
-	busUtils.PostToResourceService(node.ID, node, rsTY.TypeNode, rsTY.CommandSet, "")
+	busUtils.PostToResourceService(node.ID, node, rsTY.TypeNode, rsTY.CommandSetLabel, "")
 }
 
 // toHex returns hex string

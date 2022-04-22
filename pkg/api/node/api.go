@@ -30,14 +30,24 @@ func Get(filters []storageTY.Filter) (nodeTY.Node, error) {
 }
 
 // Save Node config into disk
-func Save(node *nodeTY.Node) error {
+func Save(node *nodeTY.Node, publishEvent bool) error {
+	eventType := eventTY.TypeUpdated
 	if node.ID == "" {
 		node.ID = utils.RandUUID()
+		eventType = eventTY.TypeCreated
 	}
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: node.ID},
 	}
-	return store.STORAGE.Upsert(types.EntityNode, node, filters)
+	err := store.STORAGE.Upsert(types.EntityNode, node, filters)
+	if err != nil {
+		return err
+	}
+	if publishEvent {
+		// post node data to event listeners
+		busUtils.PostEvent(mcbus.TopicEventNode, eventType, types.EntityNode, node)
+	}
+	return nil
 }
 
 // GetByGatewayAndNodeID returns a node details by gatewayID and nodeId of a message
@@ -114,7 +124,7 @@ func UpdateFirmwareState(id string, data map[string]interface{}) error {
 		}
 	}
 
-	return Save(node)
+	return Save(node, true)
 }
 
 // Verifies node up status by checking the last seen timestamp
@@ -173,13 +183,10 @@ func updateNodesUpStatus(result *storageTY.Result, inactiveDuration time.Duratio
 				Since:   currentTime,
 				Message: "marked by server",
 			}
-			err := Save(&node)
+			err := Save(&node, true)
 			if err != nil {
 				zap.L().Error("error on saving a node status", zap.String("gatewayId", node.GatewayID), zap.String("nodeId", node.NodeID), zap.Error(err))
 			}
-
-			// post node data to event listeners
-			busUtils.PostEvent(mcbus.TopicEventNode, eventTY.TypeUpdated, types.EntityNode, node)
 		}
 	}
 }
