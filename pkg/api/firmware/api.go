@@ -118,8 +118,17 @@ func Upload(sourceFile multipart.File, id, filename string) error {
 		return err
 	}
 
-	fullPath := fmt.Sprintf("%s/%s", firmwareDirectory, newFilename)
-	targetFile, err := os.OpenFile(fullPath, os.O_WRONLY|os.O_CREATE, os.ModePerm)
+	fileFullPath := fmt.Sprintf("%s/%s", firmwareDirectory, newFilename)
+	// delete the existing file if any
+	if utils.IsFileExists(fileFullPath) {
+		err = utils.RemoveFileOrEmptyDir(fileFullPath)
+		if err != nil {
+			zap.L().Error("error on deleting existing file", zap.String("filename", fileFullPath), zap.Error(err))
+			return err
+		}
+	}
+
+	targetFile, err := os.OpenFile(fileFullPath, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -131,14 +140,14 @@ func Upload(sourceFile multipart.File, id, filename string) error {
 	}
 
 	// get file details
-	fileInfo, err := os.Stat(fullPath)
+	fileInfo, err := os.Stat(fileFullPath)
 	if err != nil {
 		return err
 	}
 
 	// taking md5sum from sourceFile, returns wring md5 hash
 	// load agin from disk
-	savedFile, err := os.Open(fullPath)
+	savedFile, err := os.Open(fileFullPath)
 	if err != nil {
 		return err
 	}

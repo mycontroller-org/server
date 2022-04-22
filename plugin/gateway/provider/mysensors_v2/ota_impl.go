@@ -197,14 +197,14 @@ func hexByteToLocalFormat(typeID, versionID uint16, hexByte []byte, blockSize in
 	hexLines := strings.Split(hexString, "\n")          // split as separate lines
 
 	actualData := make([]byte, 0)
-	for _, line := range hexLines {
+	for index, line := range hexLines {
 		line = strings.TrimSpace(line) // remove spaces if any
 		if len(line) == 0 {
 			continue
 		}
 		// first char of the line should be ':'
 		if line[0] != ':' {
-			return nil, errors.New("hex line not started with the char ':'")
+			return nil, fmt.Errorf("hex line not started with the char ':', line number:%d, data:%s", index+1, line)
 		}
 
 		// we are not going to use byte count, address and checksum
