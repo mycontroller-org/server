@@ -193,15 +193,12 @@ func updateNodeData(msg *msgTY.Message) error {
 		node.Others.CopyFrom(d.Others, node.Labels)
 	}
 
-	// save node data
+	// save node data and publish events
 	err = nodeAPI.Save(node, true)
 	if err != nil {
 		zap.L().Error("unable to update save the node data", zap.Error(err), zap.Any("node", node))
 		return err
 	}
-
-	// post field data to event listeners
-	busUtils.PostEvent(mcbus.TopicEventNode, eventTY.TypeUpdated, types.EntityNode, node)
 
 	return nil
 }
@@ -559,6 +556,24 @@ func requestFieldData(msg *msgTY.Message) error {
 func postMessage(msg *msgTY.Message) {
 	if msg.IsAck {
 		return // do not respond for ack message
+	}
+	// register the node, if not available
+	// example: MySensors auto node id generation, register it on firmware request
+	if msg.NodeID != "" {
+		node, _ := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
+		if node == nil {
+			node = &nodeTY.Node{
+				GatewayID: msg.GatewayID,
+				NodeID:    msg.NodeID,
+				Name:      "unknown",
+			}
+			// save node data
+			err := nodeAPI.Save(node, true)
+			if err != nil {
+				zap.L().Error("unable to update save the node data", zap.Error(err), zap.Any("node", node))
+				return
+			}
+		}
 	}
 	topic := mcbus.GetTopicPostMessageToProvider(msg.GatewayID)
 	msg.IsReceived = false

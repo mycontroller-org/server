@@ -56,9 +56,12 @@ func GetByGatewayAndNodeID(gatewayID, nodeID string) (*nodeTY.Node, error) {
 		{Key: types.KeyGatewayID, Value: gatewayID},
 		{Key: types.KeyNodeID, Value: nodeID},
 	}
-	result := &nodeTY.Node{}
-	err := store.STORAGE.FindOne(types.EntityNode, result, f)
-	return result, err
+	node := nodeTY.Node{}
+	err := store.STORAGE.FindOne(types.EntityNode, &node, f)
+	if err != nil {
+		return nil, err
+	}
+	return &node, nil
 }
 
 // GetByID returns a node details by id

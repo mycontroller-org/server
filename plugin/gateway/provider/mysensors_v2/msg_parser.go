@@ -184,6 +184,19 @@ func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, 
 
 	// entering into normal message processing
 	switch {
+	case msMsg.NodeID == "" && msMsg.Command == cmdInternal: // broadcast messages
+		if typeName, ok := internalTypeMapForRx[msMsg.Type]; ok {
+			// update the requested action
+			_, isActionRequest := utils.FindItem(customValidActions, typeName)
+			if !isActionRequest {
+				// do not care about other types
+				return nil, nil
+			}
+			msg.Type = msgTY.TypeAction
+			msgPL.Key = typeName
+		} else {
+			return nil, fmt.Errorf("message internal(broadcast) type not found: %s", msMsg.Type)
+		}
 
 	case msMsg.SensorID != "": // perform sensor related stuff
 		switch msMsg.Command {
