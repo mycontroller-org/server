@@ -59,7 +59,7 @@ func Save(field *fieldTY.Field, retainValue bool) error {
 	}
 
 	if retainValue { // assume this change from HTTP API
-		busUtils.PostEvent(mcbus.TopicEventHandler, eventType, types.EntityHandler, field)
+		busUtils.PostEvent(mcbus.TopicEventField, eventType, types.EntityField, field)
 	}
 	return nil
 }
@@ -80,5 +80,23 @@ func GetByIDs(gatewayID, nodeID, sourceID, fieldID string) (*fieldTY.Field, erro
 // Delete fields
 func Delete(IDs []string) (int64, error) {
 	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
-	return store.STORAGE.Delete(types.EntityField, filters)
+
+	fields := make([]fieldTY.Field, 0)
+	pagination := &storageTY.Pagination{Limit: int64(len(IDs))}
+	_, err := store.STORAGE.Find(types.EntityField, &fields, filters, pagination)
+	if err != nil {
+		return 0, err
+	}
+	deleted := int64(0)
+	for _, field := range fields {
+		deleteFilter := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorEqual, Value: field.ID}}
+		_, err = store.STORAGE.Delete(types.EntityField, deleteFilter)
+		if err != nil {
+			return deleted, err
+		}
+		deleted++
+		// post deletion event
+		busUtils.PostEvent(mcbus.TopicEventField, eventTY.TypeDeleted, types.EntityField, field)
+	}
+	return deleted, nil
 }

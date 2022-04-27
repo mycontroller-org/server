@@ -87,8 +87,24 @@ func GetByIDs(ids []string) ([]nodeTY.Node, error) {
 
 // Delete node
 func Delete(IDs []string) (int64, error) {
-	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
-	return store.STORAGE.Delete(types.EntityNode, filters)
+	nodes, err := GetByIDs(IDs)
+	if err != nil {
+		return 0, err
+	}
+
+	// delete one by one and report deletion event
+	deleted := int64(0)
+	for _, node := range nodes {
+		filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorEqual, Value: node.ID}}
+		_, err = store.STORAGE.Delete(types.EntityNode, filters)
+		if err != nil {
+			return deleted, err
+		}
+		deleted++
+		busUtils.PostEvent(mcbus.TopicEventNode, eventTY.TypeDeleted, types.EntityNode, node)
+	}
+
+	return deleted, nil
 }
 
 // UpdateFirmwareState func

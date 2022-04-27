@@ -4,6 +4,7 @@ import (
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
 	metricSVC "github.com/mycontroller-org/server/v2/pkg/service/database/metric"
 	storageSVC "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
+	deletionSVC "github.com/mycontroller-org/server/v2/pkg/service/deletion"
 	fwdplSVC "github.com/mycontroller-org/server/v2/pkg/service/forward_payload"
 	gwService "github.com/mycontroller-org/server/v2/pkg/service/gateway"
 	gwMsgProcessor "github.com/mycontroller-org/server/v2/pkg/service/gateway_msg_processor"
@@ -89,6 +90,12 @@ func startServices() {
 	if err != nil {
 		zap.L().Fatal("error on starting system jobs service listener", zap.Error(err))
 	}
+
+	// start deletion service
+	err = deletionSVC.Start()
+	if err != nil {
+		zap.L().Fatal("error on starting deletion service", zap.Error(err))
+	}
 }
 
 func wrapHandlerFunc(handlerFunc func()) func() {
@@ -106,6 +113,12 @@ func StartupJobs() {
 }
 
 func closeServices() {
+	// close deletion service
+	err := deletionSVC.Close()
+	if err != nil {
+		zap.L().Fatal("error on closgin deletion service", zap.Error(err))
+	}
+
 	// close forward payload service
 	fwdplSVC.Close()
 

@@ -1,11 +1,15 @@
 package source
 
 import (
+	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/store"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	"go.uber.org/zap"
 )
 
 // List by filter and pagination
@@ -47,5 +51,23 @@ func GetByIDs(gatewayID, nodeID, sourceID string) (*sourceTY.Source, error) {
 // Delete source
 func Delete(IDs []string) (int64, error) {
 	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
-	return store.STORAGE.Delete(types.EntitySource, filters)
+	sources := make([]sourceTY.Source, 0)
+	pagination := &storageTY.Pagination{Limit: int64(len(IDs))}
+	_, err := store.STORAGE.Find(types.EntitySource, &sources, filters, pagination)
+	if err != nil {
+		return 0, err
+	}
+	deleted := int64(0)
+	for _, source := range sources {
+		deleteFilter := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorEqual, Value: source.ID}}
+		_, err = store.STORAGE.Delete(types.EntitySource, deleteFilter)
+		if err != nil {
+			return deleted, err
+		}
+		deleted++
+		// post deletion event
+		busUtils.PostEvent(mcbus.TopicEventSource, eventTY.TypeDeleted, types.EntitySource, &source)
+		zap.L().Info("event sent", zap.String("gatewayId", source.GatewayID), zap.String("nodeId", source.NodeID), zap.String("sourceId", source.SourceID))
+	}
+	return deleted, nil
 }

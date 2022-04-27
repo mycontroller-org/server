@@ -32,7 +32,7 @@ func GetByIDs(ids []string) ([]gwTY.Config, error) {
 	}
 	pagination := &storageTY.Pagination{Limit: int64(len(ids))}
 	gateways := make([]gwTY.Config, 0)
-	_, err := store.STORAGE.Find(types.EntityNode, &gateways, filters, pagination)
+	_, err := store.STORAGE.Find(types.EntityGateway, &gateways, filters, pagination)
 	return gateways, err
 }
 
@@ -94,6 +94,23 @@ func Delete(ids []string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids}}
-	return store.STORAGE.Delete(types.EntityGateway, filters)
+
+	// delete one by one and send deletion event
+	gateways, err := GetByIDs(ids)
+	if err != nil {
+		return 0, err
+	}
+	deleted := int64(0)
+	for _, gateway := range gateways {
+		filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorEqual, Value: gateway.ID}}
+		_, err = store.STORAGE.Delete(types.EntityGateway, filters)
+		if err != nil {
+			return deleted, err
+		}
+		deleted++
+		// deletion event
+		busUtils.PostEvent(mcbus.TopicEventGateway, eventTY.TypeDeleted, types.EntityGateway, gateway)
+	}
+
+	return deleted, nil
 }
