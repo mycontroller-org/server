@@ -106,7 +106,7 @@ func executeFirmwareRequest(msg *msgTY.Message) (string, error) {
 
 	startAddr := fwReq.Block * firmwareBlockSize
 	endAddr := startAddr + firmwareBlockSize
-	copy(fwRes.Data[:], fwRaw.Data[startAddr:(endAddr+1)])
+	copy(fwRes.Data[:], fwRaw.Data[startAddr:endAddr])
 	zap.L().Debug("sending a firmware respose", zap.Any("request", fwReq), zap.Any("response", fwRes), zap.String("timeTaken", time.Since(startTime).String()))
 
 	updateFirmwareProgressStatus(node, int(fwReq.Block), len(fwRaw.Data))
