@@ -140,14 +140,16 @@ func processMessage(item interface{}) {
 // update node detail
 func updateNodeData(msg *msgTY.Message) error {
 	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
-	if err == storageTY.ErrNoDocuments {
-		node = &nodeTY.Node{
-			GatewayID: msg.GatewayID,
-			NodeID:    msg.NodeID,
+	if err != nil {
+		if err == storageTY.ErrNoDocuments {
+			node = &nodeTY.Node{
+				GatewayID: msg.GatewayID,
+				NodeID:    msg.NodeID,
+			}
+		} else {
+			zap.L().Error("error on getting node data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
+			return err
 		}
-	} else {
-		zap.L().Error("error on getting node data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.Error(err))
-		return err
 	}
 
 	// init labels and others
@@ -209,15 +211,17 @@ func updateNodeData(msg *msgTY.Message) error {
 
 func updateSourceDetail(msg *msgTY.Message) error {
 	source, err := sourceAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID)
-	if err == storageTY.ErrNoDocuments {
-		source = &sourceTY.Source{
-			GatewayID: msg.GatewayID,
-			NodeID:    msg.NodeID,
-			SourceID:  msg.SourceID,
+	if err != nil {
+		if err == storageTY.ErrNoDocuments {
+			source = &sourceTY.Source{
+				GatewayID: msg.GatewayID,
+				NodeID:    msg.NodeID,
+				SourceID:  msg.SourceID,
+			}
+		} else {
+			zap.L().Error("error on getting source data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.Error(err))
+			return err
 		}
-	} else {
-		zap.L().Error("error on getting source data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.Error(err))
-		return err
 	}
 
 	// update last seen
@@ -259,16 +263,18 @@ func updateSourceDetail(msg *msgTY.Message) error {
 func setFieldData(msg *msgTY.Message) error {
 	for _, payload := range msg.Payloads {
 		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, payload.Key)
-		if err == storageTY.ErrNoDocuments {
-			field = &fieldTY.Field{
-				GatewayID: msg.GatewayID,
-				NodeID:    msg.NodeID,
-				SourceID:  msg.SourceID,
-				FieldID:   payload.Key,
+		if err != nil {
+			if err == storageTY.ErrNoDocuments {
+				field = &fieldTY.Field{
+					GatewayID: msg.GatewayID,
+					NodeID:    msg.NodeID,
+					SourceID:  msg.SourceID,
+					FieldID:   payload.Key,
+				}
+			} else {
+				zap.L().Error("error on getting field data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.String("fieldId", payload.Key), zap.Error(err))
+				return err
 			}
-		} else {
-			zap.L().Error("error on getting filed data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.Error(err))
-			return err
 		}
 
 		value := payload.Value.String()
@@ -416,7 +422,7 @@ func updateFieldData(
 		updateField, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, fieldId)
 		if err != nil {
 			if err != storageTY.ErrNoDocuments {
-				zap.L().Error("error on getting filed data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.String("fieldId", fieldId), zap.Error(err))
+				zap.L().Error("error on getting field data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.String("fieldId", fieldId), zap.Error(err))
 				return err
 			}
 			field = &fieldTY.Field{
