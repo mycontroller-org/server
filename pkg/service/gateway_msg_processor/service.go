@@ -140,12 +140,13 @@ func processMessage(item interface{}) {
 // update node detail
 func updateNodeData(msg *msgTY.Message) error {
 	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
-	if err != storageTY.ErrNoDocuments {
+	if err == storageTY.ErrNoDocuments {
 		node = &nodeTY.Node{
 			GatewayID: msg.GatewayID,
 			NodeID:    msg.NodeID,
 		}
 	} else {
+		zap.L().Error("error on getting node data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.Error(err))
 		return err
 	}
 
@@ -208,13 +209,14 @@ func updateNodeData(msg *msgTY.Message) error {
 
 func updateSourceDetail(msg *msgTY.Message) error {
 	source, err := sourceAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID)
-	if err != storageTY.ErrNoDocuments {
+	if err == storageTY.ErrNoDocuments {
 		source = &sourceTY.Source{
 			GatewayID: msg.GatewayID,
 			NodeID:    msg.NodeID,
 			SourceID:  msg.SourceID,
 		}
 	} else {
+		zap.L().Error("error on getting source data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.Error(err))
 		return err
 	}
 
@@ -257,7 +259,7 @@ func updateSourceDetail(msg *msgTY.Message) error {
 func setFieldData(msg *msgTY.Message) error {
 	for _, payload := range msg.Payloads {
 		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, payload.Key)
-		if err != storageTY.ErrNoDocuments {
+		if err == storageTY.ErrNoDocuments {
 			field = &fieldTY.Field{
 				GatewayID: msg.GatewayID,
 				NodeID:    msg.NodeID,
@@ -265,6 +267,7 @@ func setFieldData(msg *msgTY.Message) error {
 				FieldID:   payload.Key,
 			}
 		} else {
+			zap.L().Error("error on getting filed data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.Error(err))
 			return err
 		}
 
@@ -411,7 +414,11 @@ func updateFieldData(
 
 	if field == nil {
 		updateField, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, fieldId)
-		if err != nil { // TODO: check entry availability on error message
+		if err != nil {
+			if err != storageTY.ErrNoDocuments {
+				zap.L().Error("error on getting filed data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.String("fieldId", fieldId), zap.Error(err))
+				return err
+			}
 			field = &fieldTY.Field{
 				GatewayID: msg.GatewayID,
 				NodeID:    msg.NodeID,
