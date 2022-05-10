@@ -2,7 +2,6 @@ package mongodb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -124,7 +123,7 @@ func (c *Client) getCollection(entityName string) *mongoDriver.Collection {
 // Insert the entity
 func (c *Client) Insert(entityName string, data interface{}) error {
 	if data == nil {
-		return errors.New("No data provided")
+		return storageTY.ErrNilData
 	}
 	collection := c.getCollection(entityName)
 	_, err := collection.InsertOne(ctx, data)
@@ -134,17 +133,20 @@ func (c *Client) Insert(entityName string, data interface{}) error {
 // Update the entity
 func (c *Client) Update(entityName string, data interface{}, filters []storageTY.Filter) error {
 	if data == nil {
-		return errors.New("No data provided")
+		return storageTY.ErrNilData
 	}
 	collection := c.getCollection(entityName)
 	_, err := collection.ReplaceOne(ctx, defaultFilter(filters, data), data)
+	if err == mongoDriver.ErrNoDocuments {
+		return storageTY.ErrNoDocuments
+	}
 	return err
 }
 
 // Upsert date into database
 func (c *Client) Upsert(entityName string, data interface{}, filters []storageTY.Filter) error {
 	if data == nil {
-		return errors.New("No data provided")
+		return storageTY.ErrNilData
 	}
 	collection := c.getCollection(entityName)
 
@@ -175,7 +177,7 @@ func (c *Client) FindOne(entityName string, out interface{}, filters []storageTY
 // Delete by filter
 func (c *Client) Delete(entityName string, filters []storageTY.Filter) (int64, error) {
 	if filters == nil {
-		return -1, errors.New("Filter should not be nil")
+		return -1, storageTY.ErrNilFilter
 	}
 	collection := c.getCollection(entityName)
 	filterOption := options.Delete()

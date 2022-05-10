@@ -120,7 +120,7 @@ func (s *Store) FindOne(entityName string, out interface{}, filters []storageTY.
 		outVal.Elem().Set(reflect.ValueOf(clonedEntity).Elem())
 		return nil
 	}
-	return errors.New("requested data not available")
+	return storageTY.ErrNoDocuments
 }
 
 // Delete Implementation
@@ -202,7 +202,7 @@ func (s *Store) updateEntity(entityName string, entity interface{}, filters []st
 		//	zap.L().Info("Entity not available, added", zap.Any("new", entity))
 		return nil
 	}
-	return errors.New("entity not available")
+	return storageTY.ErrNoDocuments
 }
 
 func (s *Store) removeEntity(entityName, id string) {

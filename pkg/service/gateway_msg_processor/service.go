@@ -23,6 +23,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils/javascript"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	metricPluginTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
 
@@ -139,11 +140,13 @@ func processMessage(item interface{}) {
 // update node detail
 func updateNodeData(msg *msgTY.Message) error {
 	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
-	if err != nil { // TODO: check entry availability on error message
+	if err != storageTY.ErrNoDocuments {
 		node = &nodeTY.Node{
 			GatewayID: msg.GatewayID,
 			NodeID:    msg.NodeID,
 		}
+	} else {
+		return err
 	}
 
 	// init labels and others
@@ -205,12 +208,14 @@ func updateNodeData(msg *msgTY.Message) error {
 
 func updateSourceDetail(msg *msgTY.Message) error {
 	source, err := sourceAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID)
-	if err != nil { // TODO: check entry availability on error message
+	if err != storageTY.ErrNoDocuments {
 		source = &sourceTY.Source{
 			GatewayID: msg.GatewayID,
 			NodeID:    msg.NodeID,
 			SourceID:  msg.SourceID,
 		}
+	} else {
+		return err
 	}
 
 	// update last seen
@@ -252,13 +257,15 @@ func updateSourceDetail(msg *msgTY.Message) error {
 func setFieldData(msg *msgTY.Message) error {
 	for _, payload := range msg.Payloads {
 		field, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, msg.SourceID, payload.Key)
-		if err != nil { // TODO: check entry availability on error message
+		if err != storageTY.ErrNoDocuments {
 			field = &fieldTY.Field{
 				GatewayID: msg.GatewayID,
 				NodeID:    msg.NodeID,
 				SourceID:  msg.SourceID,
 				FieldID:   payload.Key,
 			}
+		} else {
+			return err
 		}
 
 		value := payload.Value.String()
