@@ -140,11 +140,7 @@ func (p *Provider) Post(msg *msgTY.Message) error {
 
 	// if acknowledge not enabled
 	if !rawMsg.IsAckEnabled {
-		err := p.Protocol.Write(rawMsg)
-		if err != nil {
-			return err
-		}
-		return nil
+		return p.Protocol.Write(rawMsg)
 	}
 
 	// if acknowledge enabled
@@ -192,6 +188,7 @@ func (p *Provider) Post(msg *msgTY.Message) error {
 	}
 
 	messageSent := false
+	startTime := time.Now()
 	for retry := 1; retry <= retryCount; retry++ {
 		// write into gateway
 		err = p.Protocol.Write(rawMsg)
@@ -213,5 +210,5 @@ func (p *Provider) Post(msg *msgTY.Message) error {
 	if messageSent {
 		return nil
 	}
-	return fmt.Errorf("no acknowledgement received, tried maximum retries. retryCount:%d", retryCount)
+	return fmt.Errorf("no acknowledgement received, tried maximum retries. retryCount:%d, timeTaken:%s", retryCount, time.Since(startTime).String())
 }
