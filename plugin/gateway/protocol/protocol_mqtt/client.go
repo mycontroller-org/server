@@ -74,7 +74,7 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 	opts.AddBroker(cfg.Broker)
 	opts.SetUsername(cfg.Username)
 	opts.SetPassword(cfg.Password)
-	opts.SetClientID(utils.RandID())
+	opts.SetClientID(fmt.Sprintf("%s-%s", gwCfg.ID, utils.RandIDWithLength(5)))
 	opts.SetCleanSession(false)
 	opts.SetAutoReconnect(true)
 	opts.SetConnectRetryInterval(utils.ToDuration(gwCfg.ReconnectDelay, reconnectDelayDefault))
