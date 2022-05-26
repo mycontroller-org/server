@@ -40,8 +40,8 @@ func onMessageReceive(event *busTY.BusData) {
 		return
 	}
 
-	if msg == nil {
-		zap.L().Warn("received a nil message", zap.Any("event", event))
+	if len(msg.Data) == 0 {
+		zap.L().Warn("received a empty message", zap.Any("event", event))
 		return
 	}
 	zap.L().Debug("message added into processing queue", zap.Any("message", msg))

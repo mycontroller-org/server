@@ -50,12 +50,12 @@ func onMessageReceive(busData *busTY.BusData) {
 	msg := &msgTY.Message{}
 	err := busData.LoadData(msg)
 	if err != nil {
-		zap.L().Warn("Failed to convet to target type", zap.Error(err), zap.Any("busData", busData))
+		zap.L().Warn("Failed to convert to target type", zap.Error(err), zap.Any("busData", busData))
 		return
 	}
 
-	if msg == nil {
-		zap.L().Warn("Received a nil message", zap.Any("busData", busData))
+	if msg.GatewayID == "" {
+		zap.L().Warn("Received a empty message", zap.Any("busData", busData))
 		return
 	}
 	zap.L().Debug("Message added into processing queue", zap.Any("message", msg))

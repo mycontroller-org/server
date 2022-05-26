@@ -134,8 +134,8 @@ func (s *Service) startMessageListener() {
 			zap.L().Warn("received invalid type", zap.Any("event", event))
 			return
 		}
-		if msg == nil {
-			zap.L().Warn("received a nil message")
+		if msg.GatewayID == "" {
+			zap.L().Warn("received empty message")
 			return
 		}
 		s.messageQueue.Produce(msg)

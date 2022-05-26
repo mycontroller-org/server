@@ -68,8 +68,8 @@ func onEvent(event *busTY.BusData) {
 		zap.L().Warn("Failed to convet to target type", zap.Error(err))
 		return
 	}
-	if reqEvent == nil {
-		zap.L().Warn("Received a nil message", zap.Any("event", event))
+	if reqEvent.Type == "" {
+		zap.L().Warn("Received empty message", zap.Any("event", event))
 		return
 	}
 	zap.L().Debug("Event added into processing queue", zap.Any("event", reqEvent))
