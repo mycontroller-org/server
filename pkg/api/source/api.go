@@ -67,7 +67,7 @@ func Delete(IDs []string) (int64, error) {
 		deleted++
 		// post deletion event
 		busUtils.PostEvent(mcbus.TopicEventSource, eventTY.TypeDeleted, types.EntitySource, &source)
-		zap.L().Info("event sent", zap.String("gatewayId", source.GatewayID), zap.String("nodeId", source.NodeID), zap.String("sourceId", source.SourceID))
+		zap.L().Debug("event sent", zap.String("gatewayId", source.GatewayID), zap.String("nodeId", source.NodeID), zap.String("sourceId", source.SourceID))
 	}
 	return deleted, nil
 }
