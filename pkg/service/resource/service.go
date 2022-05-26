@@ -46,12 +46,12 @@ func onEvent(data *busTY.BusData) {
 	reqEvent := &rsTY.ServiceEvent{}
 	err := data.LoadData(reqEvent)
 	if err != nil {
-		zap.L().Warn("failed to convet to target type", zap.Error(err))
+		zap.L().Warn("failed to covert to target type", zap.Error(err))
 		return
 	}
 
-	if reqEvent == nil {
-		zap.L().Warn("received a nil event", zap.Any("event", data))
+	if reqEvent.Type == "" {
+		zap.L().Warn("received an empty event", zap.Any("event", data))
 		return
 	}
 	zap.L().Debug("event added into processing queue", zap.Any("event", reqEvent))

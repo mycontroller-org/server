@@ -45,7 +45,7 @@ func onEventReceive(busData *busTY.BusData) {
 	event := &eventTY.Event{}
 	err := busData.LoadData(event)
 	if err != nil {
-		zap.L().Warn("Error on convet to target type", zap.Any("topic", busData.Topic), zap.Error(err))
+		zap.L().Warn("Error on convert to target type", zap.Any("topic", busData.Topic), zap.Error(err))
 		return
 	}
 
@@ -62,7 +62,7 @@ func onEventReceive(busData *busTY.BusData) {
 	field := field.Field{}
 	err = event.LoadEntity(&field)
 	if err != nil {
-		zap.L().Warn("error on convertion", zap.Any("entity", event), zap.Error(err))
+		zap.L().Warn("error on conversion", zap.Any("entity", event), zap.Error(err))
 		return
 	}
 

@@ -65,7 +65,7 @@ func onEvent(data *busTY.BusData) {
 	event := &eventTY.Event{}
 	err := data.LoadData(event)
 	if err != nil {
-		zap.L().Warn("Failed to convet to target type", zap.Error(err))
+		zap.L().Warn("Failed to convert to target type", zap.Error(err))
 		return
 	}
 	zap.L().Debug("Received an event", zap.Any("event", event))

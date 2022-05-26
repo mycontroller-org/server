@@ -36,12 +36,12 @@ func onMessageReceive(event *busTY.BusData) {
 	msg := &handlerTY.MessageWrapper{}
 	err := event.LoadData(msg)
 	if err != nil {
-		zap.L().Warn("failed to convet to target type", zap.Error(err))
+		zap.L().Warn("failed to convert to target type", zap.Error(err))
 		return
 	}
 
 	if len(msg.Data) == 0 {
-		zap.L().Warn("received a empty message", zap.Any("event", event))
+		zap.L().Warn("received an empty event", zap.Any("event", event))
 		return
 	}
 	zap.L().Debug("message added into processing queue", zap.Any("message", msg))

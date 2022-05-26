@@ -74,7 +74,7 @@ func processPreEvent(item interface{}) {
 	event := &eventTY.Event{}
 	err := busData.LoadData(event)
 	if err != nil {
-		zap.L().Warn("error on convet to target type", zap.Any("topic", busData.Topic), zap.Error(err))
+		zap.L().Warn("error on convert to target type", zap.Any("topic", busData.Topic), zap.Error(err))
 		return
 	}
 

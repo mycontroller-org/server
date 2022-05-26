@@ -66,7 +66,7 @@ func processEvent(item interface{}) {
 	event := &eventTY.Event{}
 	err := busData.LoadData(event)
 	if err != nil {
-		zap.L().Warn("error on convet to target type", zap.Any("topic", busData.Topic), zap.Error(err))
+		zap.L().Warn("error on convert to target type", zap.Any("topic", busData.Topic), zap.Error(err))
 		return
 	}
 
@@ -75,7 +75,7 @@ func processEvent(item interface{}) {
 		return
 	}
 
-	zap.L().Debug("received an deleton event", zap.Any("event", event))
+	zap.L().Debug("received an deletion event", zap.Any("event", event))
 
 	// supported entity events
 	switch event.EntityType {
@@ -120,7 +120,7 @@ func deleteNodes(gateway *gatewayTY.Config) {
 	for {
 		result, err := nodeAPI.List(filters, pagination)
 		if err != nil {
-			zap.L().Error("error on geting nodes list", zap.String("gatewayId", gateway.ID), zap.Int64("offset", pagination.Offset), zap.Error(err))
+			zap.L().Error("error on getting nodes list", zap.String("gatewayId", gateway.ID), zap.Int64("offset", pagination.Offset), zap.Error(err))
 			return
 		}
 
@@ -161,7 +161,7 @@ func deleteSources(node *nodeTY.Node) {
 	for {
 		result, err := sourceAPI.List(filters, pagination)
 		if err != nil {
-			zap.L().Error("error on geting sources list", zap.String("gatewayId", node.GatewayID), zap.String("nodeId", node.NodeID), zap.Int64("offset", pagination.Offset), zap.Error(err))
+			zap.L().Error("error on getting sources list", zap.String("gatewayId", node.GatewayID), zap.String("nodeId", node.NodeID), zap.Int64("offset", pagination.Offset), zap.Error(err))
 			return
 		}
 
@@ -203,7 +203,7 @@ func deleteFields(source *sourceTY.Source) {
 	for {
 		result, err := fieldAPI.List(filters, pagination)
 		if err != nil {
-			zap.L().Error("error on geting sources list", zap.String("gatewayId", source.GatewayID), zap.String("nodeId", source.NodeID), zap.String("sourceId", source.SourceID), zap.Int64("offset", pagination.Offset), zap.Error(err))
+			zap.L().Error("error on getting sources list", zap.String("gatewayId", source.GatewayID), zap.String("nodeId", source.NodeID), zap.String("sourceId", source.SourceID), zap.Int64("offset", pagination.Offset), zap.Error(err))
 			return
 		}
 
