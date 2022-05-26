@@ -1,6 +1,7 @@
 package javascript_helper
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
@@ -22,4 +23,14 @@ func (ll *Convert) ToBytes(data string) []byte {
 // returns anything to hex string
 func (ll *Convert) ToHexString(data interface{}) string {
 	return fmt.Sprintf("%X", data)
+}
+
+// returns string from base64
+func (ll *Convert) ToStringFromBase64(data interface{}) string {
+	base64Str := convertor.ToString(data)
+	bytes, err := base64.RawStdEncoding.DecodeString(base64Str)
+	if err != nil {
+		return err.Error()
+	}
+	return string(bytes)
 }

@@ -44,6 +44,10 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 
 // posts received messages in to queue
 func (mp *MqttProtocol) onMessageReceive(rawMessage *msgTY.RawMessage) error {
+	// convert bytes to string
+	stringData := convertor.ToString(rawMessage.Data)
+	rawMessage.Data = stringData
+
 	return mp.rxMsgFunc(rawMessage)
 }
 
