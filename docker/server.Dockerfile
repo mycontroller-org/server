@@ -1,4 +1,4 @@
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.17-alpine3.15 AS builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.18-alpine3.15 AS builder
 RUN mkdir /app
 ADD . /app
 WORKDIR /app
