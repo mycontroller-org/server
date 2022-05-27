@@ -51,7 +51,7 @@ type Endpoint struct {
 
 // New mqtt driver
 func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.RawMessage) error) (*Endpoint, error) {
-	zap.L().Debug("Init protocol", zap.String("gateway", gwCfg.ID))
+	zap.L().Debug("making mqtt connection", zap.String("gatewayId", gwCfg.ID))
 	start := time.Now()
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameNone, protocol, &cfg)
@@ -100,11 +100,7 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 	// adding client
 	endpoint.Client = c
 
-	err = endpoint.Subscribe(cfg.Subscribe)
-	if err != nil {
-		zap.L().Error("Failed to subscribe a topic", zap.String("topic", cfg.Subscribe), zap.Error(err))
-	}
-	zap.L().Debug("MQTT client connected successfully", zap.String("timeTaken", time.Since(start).String()), zap.Any("clientConfig", cfg))
+	zap.L().Debug("MQTT client connected successfully", zap.String("timeTaken", time.Since(start).String()), zap.String("gatewayId", gwCfg.ID), zap.Any("clientConfig", cfg))
 	return endpoint, nil
 }
 
@@ -124,17 +120,24 @@ func messageFormatter(rawMsg *msgTY.RawMessage) string {
 }
 
 func (ep *Endpoint) onConnectionHandler(c paho.Client) {
-	zap.L().Debug("MQTT connection success", zap.Any("gateway", ep.GatewayCfg.ID))
+	zap.L().Debug("MQTT connection success", zap.Any("gatewayId", ep.GatewayCfg.ID))
 	state := types.State{
 		Status:  types.StatusUp,
 		Message: "Connected successfully",
 		Since:   time.Now(),
 	}
+
+	err := ep.Subscribe(ep.Config.Subscribe)
+	if err != nil {
+		zap.L().Error("failed to subscribe topics", zap.String("gatewayId", ep.GatewayCfg.ID), zap.String("topics", ep.Config.Subscribe), zap.Error(err))
+		state.Message = fmt.Sprintf("Connected successfully, error on subscription:%s", err.Error())
+	}
+
 	busUtils.SetGatewayState(ep.GatewayCfg.ID, state)
 }
 
 func (ep *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
-	zap.L().Error("MQTT connection lost", zap.Any("gateway", ep.GatewayCfg.ID), zap.Error(err))
+	zap.L().Error("mqtt connection lost", zap.Any("gatewayId", ep.GatewayCfg.ID), zap.Error(err))
 	state := types.State{
 		Status:  types.StatusDown,
 		Message: err.Error(),
@@ -145,7 +148,7 @@ func (ep *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
 
 // Write publishes a payload
 func (ep *Endpoint) Write(rawMsg *msgTY.RawMessage) error {
-	zap.L().Debug("About to send a message", zap.Any("rawMessage", rawMsg))
+	zap.L().Debug("About to send a message", zap.String("gatewayId", ep.GatewayCfg.ID), zap.Any("rawMessage", rawMsg))
 	topics := rawMsg.Others.Get(gwPtl.KeyMqttTopic).([]string)
 	qos := byte(ep.Config.QoS)
 	rawMsg.IsReceived = false
@@ -172,7 +175,7 @@ func (ep *Endpoint) Close() error {
 	if ep.Client.IsConnected() {
 		ep.Client.Unsubscribe(ep.Config.Subscribe)
 		ep.Client.Disconnect(0)
-		zap.L().Debug("MQTT Client connection closed", zap.String("gateway", ep.GatewayCfg.ID))
+		zap.L().Debug("MQTT Client connection closed", zap.String("gatewayId", ep.GatewayCfg.ID))
 	}
 	ep.messageLogger.Close()
 	return nil
@@ -187,7 +190,7 @@ func (ep *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 		ep.messageLogger.AsyncWrite(rawMsg)
 		err := ep.receiveMsgFunc(rawMsg)
 		if err != nil {
-			zap.L().Error("Failed to process", zap.String("gateway", ep.GatewayCfg.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
+			zap.L().Error("failed to process received message", zap.String("gatewayId", ep.GatewayCfg.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 		}
 	}
 }
@@ -198,6 +201,7 @@ func (ep *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 func (ep *Endpoint) Subscribe(topicStr string) error {
 	topics := strings.Split(topicStr, ",")
 	for _, topic := range topics {
+		topic = strings.TrimSpace(topic)
 		token := ep.Client.Subscribe(topic, 0, ep.getCallBack())
 		token.WaitTimeout(3 * time.Second)
 		if token.Error() != nil {
