@@ -85,8 +85,10 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 	tlsConfig := &tls.Config{InsecureSkipVerify: cfg.Insecure}
 	opts.SetTLSConfig(tlsConfig)
 
-	c := paho.NewClient(opts)
-	token := c.Connect()
+	// adding client
+	endpoint.Client = paho.NewClient(opts)
+
+	token := endpoint.Client.Connect()
 	for !token.WaitTimeout(3 * time.Second) {
 	}
 	if err := token.Error(); err != nil {
@@ -96,9 +98,6 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 	// init and start actual message message logger
 	endpoint.messageLogger = msglogger.Init(gwCfg.ID, gwCfg.MessageLogger, messageFormatter)
 	endpoint.messageLogger.Start()
-
-	// adding client
-	endpoint.Client = c
 
 	zap.L().Debug("MQTT client connected successfully", zap.String("timeTaken", time.Since(start).String()), zap.String("gatewayId", gwCfg.ID), zap.Any("clientConfig", cfg))
 	return endpoint, nil
@@ -198,15 +197,17 @@ func (ep *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 // Subscribe topics
 // supply comma separated topic names
 // example: root/topic1/hello,root/topic2/#
-func (ep *Endpoint) Subscribe(topicStr string) error {
-	topics := strings.Split(topicStr, ",")
+func (ep *Endpoint) Subscribe(topicsStr string) error {
+	topics := strings.Split(topicsStr, ",")
 	for _, topic := range topics {
 		topic = strings.TrimSpace(topic)
 		token := ep.Client.Subscribe(topic, 0, ep.getCallBack())
 		token.WaitTimeout(3 * time.Second)
 		if token.Error() != nil {
+			zap.L().Error("error on subscription", zap.String("gatewayId", ep.GatewayCfg.ID), zap.String("topic", topic), zap.Error(token.Error()))
 			return token.Error()
 		}
+		zap.L().Debug("subscribed a topic", zap.String("gatewayId", ep.GatewayCfg.ID), zap.String("topic", topic))
 	}
 	return nil
 }
