@@ -1,6 +1,8 @@
 package mcwebsocket
 
 import (
+	"time"
+
 	ws "github.com/gorilla/websocket"
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
@@ -15,6 +17,8 @@ const (
 	eventListenerQueueLimit  = 1000
 	eventListenerWorkerLimit = 1
 	eventListenerQueueName   = "websocket_event_listener"
+
+	defaultWriteTimeout = time.Second * 3
 )
 
 var (
@@ -54,6 +58,11 @@ func onEventReceive(data *busTY.BusData) {
 }
 
 func processEvent(item interface{}) {
+	// if there is no clients, just ignore the event
+	if clientStore.getSize() == 0 {
+		return
+	}
+
 	data := item.(*busTY.BusData)
 
 	event := &eventTY.Event{}
@@ -77,14 +86,16 @@ func processEvent(item interface{}) {
 		return
 	}
 
-	wsClients := getClients()
+	wsClients := clientStore.getClients()
 	for index := range wsClients {
 		client := wsClients[index]
+
+		// write with write timeout
+		client.SetWriteDeadline(time.Now().Add(defaultWriteTimeout))
 		err := client.WriteMessage(ws.TextMessage, dataBytes)
 		if err != nil {
-			zap.L().Error("error on write to a client", zap.Error(err), zap.Any("client", client.LocalAddr().String()))
-			client.Close()
-			unregisterClient(client)
+			zap.L().Debug("error on write to a client", zap.Error(err), zap.Any("remoteAddress", client.RemoteAddr().String()))
+			clientStore.unregister(client)
 		}
 	}
 }
