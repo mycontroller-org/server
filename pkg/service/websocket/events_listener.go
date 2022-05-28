@@ -53,7 +53,7 @@ func CloseEventListener() error {
 func onEventReceive(data *busTY.BusData) {
 	status := eventsQueue.Produce(data)
 	if !status {
-		zap.L().Error("failed to post selected tasks on processor queue")
+		zap.L().Error("failed to post a event on the processor queue")
 	}
 }
 
@@ -91,10 +91,15 @@ func processEvent(item interface{}) {
 		client := wsClients[index]
 
 		// write with write timeout
-		client.SetWriteDeadline(time.Now().Add(defaultWriteTimeout))
-		err := client.WriteMessage(ws.TextMessage, dataBytes)
+		err := client.SetWriteDeadline(time.Now().Add(defaultWriteTimeout))
 		if err != nil {
-			zap.L().Debug("error on write to a client", zap.Error(err), zap.Any("remoteAddress", client.RemoteAddr().String()))
+			zap.L().Debug("error on setting write deadline", zap.Any("remoteAddress", client.RemoteAddr().String()), zap.Error(err))
+			clientStore.unregister(client)
+			return
+		}
+		err = client.WriteMessage(ws.TextMessage, dataBytes)
+		if err != nil {
+			zap.L().Debug("error on write data to a client", zap.Any("remoteAddress", client.RemoteAddr().String()), zap.Error(err))
 			clientStore.unregister(client)
 		}
 	}

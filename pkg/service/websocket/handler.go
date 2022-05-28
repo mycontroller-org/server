@@ -28,7 +28,7 @@ func RegisterWebsocketRoutes(router *mux.Router) {
 func wsFunc(w http.ResponseWriter, r *http.Request) {
 	wsCon, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		zap.L().Info("websocket upgrade error", zap.String("error", err.Error()))
+		zap.L().Info("websocket upgrade error", zap.Error(err))
 		return
 	}
 
@@ -40,7 +40,7 @@ func wsFunc(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, _, err := wsCon.ReadMessage()
 		if err != nil {
-			zap.L().Debug("websocket read error", zap.String("error", err.Error()), zap.Any("remoteAddress", wsCon.RemoteAddr()))
+			zap.L().Debug("websocket read error", zap.Any("remoteAddress", wsCon.RemoteAddr()), zap.Error(err))
 			clientStore.unregister(wsCon)
 			break
 		}
