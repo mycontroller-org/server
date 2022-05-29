@@ -16,21 +16,21 @@ func (p *Provider) Post(msg *msgTY.Message) error {
 }
 
 // Process received messages
-func (p *Provider) ProcessReceived(rawMesage *msgTY.RawMessage) ([]*msgTY.Message, error) {
+func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
 	// check the provider type
 	messages := make([]*msgTY.Message, 0)
 	// execute onReceive script
 	if p.Config.Script.OnReceive != "" {
-		msgs, err := p.executeScript(p.Config.Script.OnReceive, rawMesage, nil)
+		msgs, err := p.executeScript(p.Config.Script.OnReceive, rawMsg, nil)
 		if err != nil {
 			return nil, err
 		}
 		messages = msgs
 	} else {
 		// convert the rawMessage data to []*msgTY.Message
-		err := json.ToStruct(rawMesage.Data, &messages)
+		err := json.ToStruct(rawMsg.Data, &messages)
 		if err != nil {
-			zap.L().Error("error on converting raw message data to []*Messages", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("rawMessage", rawMesage), zap.Error(err))
+			zap.L().Error("error on converting raw message data to []*Messages", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 			return nil, err
 		}
 	}

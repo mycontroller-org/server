@@ -7,8 +7,8 @@ import (
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 )
 
-// ProcessReceived implementation
-func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
+// ConvertToMessages implementation
+func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
 	// gateway do not send a messages to queue, sends directly
 	return nil, nil
 }

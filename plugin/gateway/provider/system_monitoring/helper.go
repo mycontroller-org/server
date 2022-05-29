@@ -50,6 +50,6 @@ func (p *Provider) getSourcePresentationMsg(sourceID, sourceName string) msgTY.M
 }
 
 func (p *Provider) postMsg(msg *msgTY.Message) error {
-	topic := mcbus.GetTopicPostMessageToServer()
+	topic := mcbus.GetTopicPostMessageToProcessor()
 	return mcbus.Publish(topic, msg)
 }

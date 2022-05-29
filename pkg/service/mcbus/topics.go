@@ -6,7 +6,7 @@ import "fmt"
 const (
 	TopicInternalShutdown              = "internal.shutdown"                   // request to shutdown the server
 	TopicInternalSystemJobs            = "internal.system_jobs"                // system jobs update notification
-	TopicPostMessageToServer           = "message.to_server"                   // processor listens. posts message in to server
+	TopicPostMessageToProcessor        = "message.to_message_processor"        // message processor, process the received messages from provider
 	TopicPostMessageToProvider         = "message.to_provider"                 // provider listens. append gateway id
 	TopicPostRawMessageAcknowledgement = "message.raw_message_acknowledgement" // raw message acknowledge
 	TopicPostMessageNotifyHandler      = "message.notify_handler"              // post to notify handler
@@ -45,9 +45,9 @@ func FormatTopic(topic string, arguments ...interface{}) string {
 	return formated
 }
 
-// GetTopicPostMessageToServer posts messages to server
-func GetTopicPostMessageToServer() string {
-	return FormatTopic(TopicPostMessageToServer)
+// GetTopicPostMessageToProcessor posts messages to server
+func GetTopicPostMessageToProcessor() string {
+	return FormatTopic(TopicPostMessageToProcessor)
 }
 
 // GetTopicPostMessageToProvider posts messages to provider

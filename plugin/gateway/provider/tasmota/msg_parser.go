@@ -60,8 +60,8 @@ func (p *Provider) ToRawMessage(msg *msgTY.Message) (*msgTY.RawMessage, error) {
 	return rawMsg, nil
 }
 
-// ProcessReceived converts raw message into message
-func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
+// ConvertToMessages converts raw message into message(s)
+func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
 	if rawMsg == nil {
 		return nil, nil
 	}

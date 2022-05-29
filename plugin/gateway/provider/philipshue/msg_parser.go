@@ -34,8 +34,8 @@ func (p *Provider) Post(msg *msgTY.Message) error {
 	return nil
 }
 
-// ProcessReceived implementation
-func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
+// ConvertToMessages implementation
+func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
 	// not using the queue
 	return nil, nil
 }

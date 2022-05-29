@@ -101,7 +101,7 @@ func (en *ESPHomeNode) Post(msg proto.Message) error {
 		data.SetValue(convertor.ToString(imageReq.Stream))
 		data.MetricType = metricTY.MetricTypeNone
 		streamResponse.Payloads = append(streamResponse.Payloads, data)
-		topic := mcbus.GetTopicPostMessageToServer()
+		topic := mcbus.GetTopicPostMessageToProcessor()
 		err = mcbus.Publish(topic, streamResponse)
 		if err != nil {
 			zap.L().Error("error on posting a message", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
@@ -203,7 +203,7 @@ func (en *ESPHomeNode) sendNodeInfo() {
 
 	nodeMsg.Payloads = append(nodeMsg.Payloads, data)
 
-	topic := mcbus.GetTopicPostMessageToServer()
+	topic := mcbus.GetTopicPostMessageToProcessor()
 	err = mcbus.Publish(topic, nodeMsg)
 	if err != nil {
 		zap.L().Error("error on posting a message", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))

@@ -109,7 +109,7 @@ func (p *Provider) Post(message *msgTY.Message) error {
 			sourceData.Value = payload.Value
 			sourceData.MetricType = metricTY.MetricTypeNone
 			msgSource.Payloads = append(msgSource.Payloads, sourceData)
-			err = mcbus.Publish(mcbus.GetTopicPostMessageToServer(), msgSource)
+			err = mcbus.Publish(mcbus.GetTopicPostMessageToProcessor(), msgSource)
 			if err != nil {
 				return err
 			}
@@ -119,8 +119,8 @@ func (p *Provider) Post(message *msgTY.Message) error {
 	return nil
 }
 
-// ProcessReceived performs operation on raw message received from esphome node and returns multiple messages
-func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
+// ConvertToMessages performs operation on raw message received from esphome node and returns multiple messages
+func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
 	if rawMsg == nil {
 		return nil, nil
 	}

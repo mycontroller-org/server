@@ -124,8 +124,8 @@ func (p *Provider) toRawMessage(msg *msgTY.Message) (*msgTY.RawMessage, error) {
 	return rawMsg, nil
 }
 
-// ProcessReceived converts to mycontroller specific
-func (p *Provider) ProcessReceived(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
+// ConvertToMessages converts to mycontroller specific format
+func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message, error) {
 	if rawMsg == nil {
 		return nil, nil
 	}

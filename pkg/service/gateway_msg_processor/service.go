@@ -38,7 +38,7 @@ func Start() error {
 	msgQueue = queueUtils.New("message_processor", queueSize, processMessage, workers)
 
 	// on message receive add it in to our local queue
-	_, err := mcbus.Subscribe(mcbus.GetTopicPostMessageToServer(), onMessageReceive)
+	_, err := mcbus.Subscribe(mcbus.GetTopicPostMessageToProcessor(), onMessageReceive)
 	if err != nil {
 		return err
 	}
