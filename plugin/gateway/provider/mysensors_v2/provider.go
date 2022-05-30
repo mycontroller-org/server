@@ -145,7 +145,10 @@ func (p *Provider) Post(msg *msgTY.Message) error {
 
 	// if acknowledge enabled
 	// wait for acknowledgement message
-	ackChannel := concurrency.NewChannel(0)
+	// keeping channel capacity leads infinite wait on a situation like, receiving more than one ack
+	// to address this, as a workaround changing the channel capacity from 0 to some defined numbers
+	// TODO: still it is possible to get in to infinite wait lock, when it receives defined number of ack
+	ackChannel := concurrency.NewChannel(20)
 	ackTopic := mcbus.GetTopicPostRawMessageAcknowledgement(p.GatewayConfig.ID, rawMsg.ID)
 	ackSubscriptionID, err := mcbus.Subscribe(
 		ackTopic,
