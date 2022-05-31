@@ -197,6 +197,16 @@ func Post(msg *msgTY.Message) error {
 	if msg.GatewayID == "" {
 		return errors.New("gateway id can not be empty")
 	}
+	// include node labels
+	if msg.NodeID != "" {
+		node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
+		if err != nil {
+			zap.L().Debug("error on getting node details", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
+		} else {
+			msg.Labels = msg.Labels.Init()
+			msg.Labels.CopyFrom(node.Labels)
+		}
+	}
 	topic := mcbus.GetTopicPostMessageToProvider(msg.GatewayID)
 	return mcbus.Publish(topic, msg)
 }

@@ -1,6 +1,7 @@
 package types
 
 // reserved labels
+// there is common prefix in all resources
 const (
 	// resource ids
 	LabelGatewayID = "gateway_id"
@@ -11,16 +12,17 @@ const (
 	// Common labels
 	LabelName      = "name"
 	LabelTimezone  = "timezone"
-	LabelReadOnly  = "readonly"
-	LabelWriteOnly = "writeonly"
+	LabelReadOnly  = "read_only"
+	LabelWriteOnly = "write_only"
 
 	// Node specific labels
-	LabelNodeSleepNode        = "sleep_node"
-	LabelNodeVersion          = "version"
-	LabelNodeLibraryVersion   = "library_version"
-	LabelNodeAssignedFirmware = "assigned_firmware"
-	LabelNodeOTABlockOrder    = "ota_block_order"
-	LabelNodeInactiveDuration = "inactive_duration"
+	LabelNodeSleepNode          = "sleep_node"           // messages always will be kept in sleep queue
+	LabelNodeSleepQueueDisabled = "sleep_queue_disabled" // failed messages and messages will not be kept in sleep queue
+	LabelNodeVersion            = "version"              // version of the application
+	LabelNodeLibraryVersion     = "library_version"      // version of the underlying library
+	LabelNodeAssignedFirmware   = "assigned_firmware"    // assigned firmware of the node
+	LabelNodeOTABlockOrder      = "ota_block_order"      // used on OTA
+	LabelNodeInactiveDuration   = "inactive_duration"    // mark the node as DOWN, if there is no message on the specified period
 
 	// Field specific labels
 	LabelMetricType = "metric_type"

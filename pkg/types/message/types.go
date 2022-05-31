@@ -49,22 +49,25 @@ func (p *Payload) Clone() Payload {
 
 // Message definition
 type Message struct {
-	ID           string    `json:"id"`
-	GatewayID    string    `json:"gatewayId"`
-	NodeID       string    `json:"nodeId"`
-	SourceID     string    `json:"sourceId"`
-	Type         string    `json:"type"`         // Message type: set, request, ...
-	Payloads     []Payload `json:"payloads"`     // payloads
-	IsAck        bool      `json:"isAck"`        // Is this acknowledgement message
-	IsReceived   bool      `json:"isReceived"`   // Is this received message
-	IsAckEnabled bool      `json:"isAckEnabled"` // Is Acknowledge enabled?
-	IsSleepNode  bool      `json:"isSleepNode"`  // Is this message for active node or sleep node?
-	Timestamp    time.Time `json:"timestamp"`
+	ID           string               `json:"id"`
+	GatewayID    string               `json:"gatewayId"`
+	NodeID       string               `json:"nodeId"`
+	SourceID     string               `json:"sourceId"`
+	Type         string               `json:"type"`         // Message type: set, request, ...
+	Payloads     []Payload            `json:"payloads"`     // payloads
+	Labels       cmap.CustomStringMap `json:"labels"`       // these labels can be used in transport or other purpose
+	IsAck        bool                 `json:"isAck"`        // Is this acknowledgement message
+	IsReceived   bool                 `json:"isReceived"`   // Is this received message
+	IsAckEnabled bool                 `json:"isAckEnabled"` // Is Acknowledge enabled?
+	IsSleepNode  bool                 `json:"isSleepNode"`  // Is this message for active node or sleep node?
+	Timestamp    time.Time            `json:"timestamp"`
 }
 
 // NewMessage returns empty message
 func NewMessage(isReceived bool) Message {
-	return Message{IsReceived: isReceived, Payloads: make([]Payload, 0)}
+	msg := Message{IsReceived: isReceived, Payloads: make([]Payload, 0)}
+	msg.Labels = msg.Labels.Init()
+	return msg
 }
 
 // Clone a message
@@ -74,6 +77,7 @@ func (m *Message) Clone() *Message {
 	for _, d := range m.Payloads {
 		clonedData = append(clonedData, d.Clone())
 	}
+	m.Labels = m.Labels.Init() // init labels if not done
 	cm := &Message{
 		ID:           m.ID,
 		GatewayID:    m.GatewayID,
@@ -81,6 +85,7 @@ func (m *Message) Clone() *Message {
 		SourceID:     m.SourceID,
 		Type:         m.Type,
 		Payloads:     clonedData,
+		Labels:       m.Labels.Clone(),
 		IsAck:        m.IsAck,
 		IsReceived:   m.IsReceived,
 		IsAckEnabled: m.IsAckEnabled,

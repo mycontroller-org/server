@@ -597,7 +597,15 @@ func postMessage(msg *msgTY.Message) {
 	}
 	topic := mcbus.GetTopicPostMessageToProvider(msg.GatewayID)
 	msg.IsReceived = false
-	err := mcbus.Publish(topic, msg)
+	// include node labels
+	node, err := nodeAPI.GetByGatewayAndNodeID(msg.GatewayID, msg.NodeID)
+	if err != nil {
+		zap.L().Debug("error on getting node details", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
+	} else {
+		msg.Labels = msg.Labels.Init()
+		msg.Labels.CopyFrom(node.Labels)
+	}
+	err = mcbus.Publish(topic, msg)
 	if err != nil {
 		zap.L().Error("error on posting message", zap.String("topic", topic), zap.Any("message", msg), zap.Error(err))
 	}

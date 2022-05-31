@@ -180,7 +180,11 @@ func (s *Service) postMessage(msg *msgTY.Message, queueFailedMessage bool) {
 	if err != nil {
 		zap.L().Warn("error on sending", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
 		if queueFailedMessage {
-			s.addToSleepingMessageQueue(msg)
+			msg.Labels = msg.Labels.Init()
+			isSleepingQueueDisabled := msg.Labels.IsExists(types.LabelNodeSleepQueueDisabled) && msg.Labels.GetBool(types.LabelNodeSleepQueueDisabled)
+			if !isSleepingQueueDisabled {
+				s.addToSleepingMessageQueue(msg)
+			}
 		}
 	}
 }

@@ -8,6 +8,8 @@ import (
 	"go.uber.org/zap"
 )
 
+// TODO: explain ignore prefix
+
 // CustomStringMap data
 type CustomStringMap map[string]string
 
@@ -36,6 +38,13 @@ func (csm CustomStringMap) NormalizeKeys() CustomStringMap {
 		newMap[k] = v
 	}
 	return newMap
+}
+
+// IsExists returns the presence of the key status
+func (csm CustomStringMap) IsExists(key string) bool {
+	key = normalize.Key(key)
+	_, found := csm[key]
+	return found
 }
 
 // Set a key, value pair
