@@ -10,7 +10,7 @@ import (
 	statusAPI "github.com/mycontroller-org/server/v2/pkg/api/status"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
+	httpClient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
@@ -45,6 +45,7 @@ func ReportAnalyticsData() {
 		Application: Application{
 			Version:   ver.Version,
 			GitCommit: ver.GitCommit,
+			BuildDate: ver.BuildDate,
 			Platform:  ver.Platform,
 			Arch:      ver.Arch,
 			GoLang:    ver.GoLang,
@@ -108,7 +109,7 @@ func ReportAnalyticsData() {
 	zap.L().Debug("analytics data to be reported", zap.Any("data", payload))
 
 	// publish the data
-	client := httpclient.GetClient(false, timeout)
+	client := httpClient.GetClient(false, timeout)
 	response, err := client.ExecuteJson(ANALYTICS_URL, http.MethodPost, nil, nil, payload, http.StatusOK)
 	if err != nil {
 		if response != nil {

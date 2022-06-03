@@ -13,6 +13,7 @@ type Payload struct {
 type Application struct {
 	Version   string   `json:"version"`
 	GitCommit string   `json:"gitCommit"`
+	BuildDate string   `json:"buildDate"`
 	Platform  string   `json:"platform"`
 	Arch      string   `json:"arch"`
 	GoLang    string   `json:"goLang"`
