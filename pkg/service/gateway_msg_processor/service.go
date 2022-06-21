@@ -27,6 +27,10 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	unknownName = "unknown"
+)
+
 var (
 	msgQueue  *queueUtils.Queue
 	queueSize = int(1000)
@@ -145,6 +149,7 @@ func updateNodeData(msg *msgTY.Message) error {
 			node = &nodeTY.Node{
 				GatewayID: msg.GatewayID,
 				NodeID:    msg.NodeID,
+				Name:      unknownName,
 			}
 		} else {
 			zap.L().Error("error on getting node data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
@@ -217,6 +222,7 @@ func updateSourceDetail(msg *msgTY.Message) error {
 				GatewayID: msg.GatewayID,
 				NodeID:    msg.NodeID,
 				SourceID:  msg.SourceID,
+				Name:      unknownName,
 			}
 		} else {
 			zap.L().Error("error on getting source data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.Error(err))
@@ -270,6 +276,7 @@ func setFieldData(msg *msgTY.Message) error {
 					NodeID:    msg.NodeID,
 					SourceID:  msg.SourceID,
 					FieldID:   payload.Key,
+					Name:      unknownName,
 				}
 			} else {
 				zap.L().Error("error on getting field data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.String("fieldId", payload.Key), zap.Error(err))
@@ -430,6 +437,7 @@ func updateFieldData(
 				NodeID:    msg.NodeID,
 				SourceID:  msg.SourceID,
 				FieldID:   fieldId,
+				Name:      unknownName,
 			}
 			field.Labels = cmap.CustomStringMap{}
 			field.Others = cmap.CustomMap{}
