@@ -348,7 +348,9 @@ func updateFieldWithFormattedData(msg *msgTY.Message, field *fieldTY.Field, mapD
 		return errors.New("formatter returned nil value")
 	}
 	_field := field.Clone()
-	_field.ID = "" // remove the ID field
+	// reset labels and others
+	_field.Labels = cmap.CustomStringMap{}
+	_field.Others = cmap.CustomMap{}
 
 	for key, _value := range mapData {
 		switch key {
