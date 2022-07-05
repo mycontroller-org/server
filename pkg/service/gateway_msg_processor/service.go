@@ -308,8 +308,13 @@ func setFieldData(msg *msgTY.Message) error {
 				return errors.New("formatter returned nil value")
 			}
 
-			if _sliceOfMap, ok := responseValue.([]map[string]interface{}); ok { // if the formatted response is slice of map
-				for _, _fieldMap := range _sliceOfMap {
+			if _sliceOfMap, ok := responseValue.([]interface{}); ok { // if the formatted response is slice of map
+				for _, _mapData := range _sliceOfMap {
+					_fieldMap, ok := _mapData.(map[string]interface{})
+					if !ok { // return from here
+						zap.L().Error("error on converting supplied data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.String("fieldId", field.FieldID), zap.Any("input", _mapData))
+						return errors.New("supplied input not in map[string]interface{} type")
+					}
 					err = updateFieldWithFormattedData(msg, field, _fieldMap)
 					if err != nil {
 						return err
