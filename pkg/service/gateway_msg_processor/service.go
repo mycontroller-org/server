@@ -353,7 +353,6 @@ func updateFieldWithFormattedData(msg *msgTY.Message, field *fieldTY.Field, mapD
 	_field.Others = cmap.CustomMap{}
 
 	for key, _value := range mapData {
-		fmt.Printf("key:%v, value:%v, type:%T\n\n", key, _value, _value)
 		switch key {
 		case "fieldId":
 			_field.FieldID = converterUtils.ToString(_value)
