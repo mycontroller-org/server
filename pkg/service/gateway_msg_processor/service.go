@@ -308,47 +308,26 @@ func setFieldData(msg *msgTY.Message) error {
 				return errors.New("formatter returned nil value")
 			}
 
-			extraFields := map[string]interface{}{}
-			if mapValue, ok := responseValue.(map[string]interface{}); ok {
-				if _, found := mapValue["value"]; !found {
-					zap.L().Error("value field not updated", zap.Any("received", mapValue), zap.String("formatter", formatter))
-					return errors.New("formatter returned nil value")
-				}
-				for key, value := range mapValue {
-					// if we see "value" key, update it on value
-					// if we see others map update it on others map
-					if key == types.KeyValue {
-						formattedValue = converterUtils.ToString(value)
-					} else if key == types.KeyOthers {
-						othersMap, ok := value.(map[string]interface{})
-						if ok {
-							for oKey, oValue := range othersMap {
-								field.Others.Set(oKey, oValue, nil)
-							}
-						}
-					} else {
-						extraFields[key] = value
+			if _sliceOfMap, ok := responseValue.([]map[string]interface{}); ok { // if the formatted response is slice of map
+				for _, _fieldMap := range _sliceOfMap {
+					err = updateFieldWithFormattedData(msg, field, _fieldMap)
+					if err != nil {
+						return err
 					}
 				}
-			} else {
+				return nil
+			} else if _fieldMap, ok := responseValue.(map[string]interface{}); ok { // if the formatted response is map
+				return updateFieldWithFormattedData(msg, field, _fieldMap)
+			} else { // if non of the above
 				formattedValue = converterUtils.ToString(responseValue)
 			}
 
 			// update the formatted value
 			zap.L().Debug("formatting done", zap.Any("oldValue", payload.Value.String()), zap.String("newValue", formattedValue), zap.String("timeTaken", time.Since(startTime).String()))
-
 			// update formatted value into value
 			value = formattedValue
-
-			// update extra fields if any
-			if len(extraFields) > 0 {
-				labels := payload.Labels.Clone()
-				err := updateExtraFieldsData(extraFields, msg, labels)
-				if err != nil {
-					zap.L().Error("error on updating extra fields", zap.Error(err))
-				}
-			}
 		}
+
 		err = updateFieldData(field, payload.Key, payload.Key, payload.MetricType, payload.Unit, payload.Labels, payload.Others, value, msg)
 		if err != nil {
 			zap.L().Error("error on updating field data", zap.Error(err), zap.String("gateway", msg.GatewayID), zap.String("node", msg.NodeID), zap.String("source", msg.SourceID), zap.String("field", payload.Key))
@@ -357,62 +336,49 @@ func setFieldData(msg *msgTY.Message) error {
 	return nil
 }
 
-func updateExtraFieldsData(extraFields map[string]interface{}, msg *msgTY.Message, labels cmap.CustomStringMap) error {
-	units := map[string]string{}
-	metricTypes := map[string]string{}
+// updates field data with received map data
+func updateFieldWithFormattedData(msg *msgTY.Message, field *fieldTY.Field, mapData map[string]interface{}) error {
+	if _, found := mapData["value"]; !found {
+		zap.L().Error("value field not updated", zap.Any("received", mapData), zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", msg.SourceID), zap.String("fieldId", field.FieldID))
+		return errors.New("formatter returned nil value")
+	}
+	_field := field.Clone()
+	_field.ID = "" // remove the ID field
 
-	// update extraLabels
-	if eLabels, ok := extraFields[types.KeyLabels]; ok {
-		if extraLabels, ok := eLabels.(map[string]interface{}); ok {
-			for key, val := range extraLabels {
-				stringValue := converterUtils.ToString(val)
-				labels.Set(key, stringValue)
+	for key, _value := range mapData {
+		switch key {
+		case "fieldId":
+			_field.FieldID = converterUtils.ToString(_value)
+		case "sourceId":
+			_field.SourceID = converterUtils.ToString(_value)
+		case "value":
+			_field.Current.Value = _value
+		case "name":
+			_field.Name = converterUtils.ToString(_value)
+		case "unit":
+			_field.Unit = converterUtils.ToString(_value)
+		case "metricType":
+			_field.MetricType = converterUtils.ToString(_value)
+		case "labels":
+			if _labels, ok := _value.(map[string]string); ok {
+				_field.Labels.CopyFrom(_labels)
+			}
+		case "others":
+			if _others, ok := _value.(map[string]interface{}); ok {
+				_field.Others.CopyFrom(_others, nil)
 			}
 		}
 	}
 
-	// update units
-	if value, ok := extraFields[types.KeyUnits]; ok {
-		if unitsRaw, ok := value.(map[string]interface{}); ok {
-			for key, val := range unitsRaw {
-				stringValue := converterUtils.ToString(val)
-				units[key] = stringValue
-			}
-		}
+	// update field sourceId from the parsed data
+	// default original sourceId from 'field' variable
+	field.SourceID = _field.SourceID
+
+	err := updateFieldData(field, _field.FieldID, _field.Name, _field.MetricType, _field.Unit, _field.Labels, _field.Others, _field.Current.Value, msg)
+	if err != nil {
+		zap.L().Error("error on updating field data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", _field.SourceID), zap.String("fieldId", _field.FieldID), zap.Error(err))
+		return err
 	}
-
-	// update metricTypes
-	if value, ok := extraFields[types.KeyMetricTypes]; ok {
-		if mTypeRaw, ok := value.(map[string]interface{}); ok {
-			for key, value := range mTypeRaw {
-				stringValue := converterUtils.ToString(value)
-				metricTypes[key] = stringValue
-			}
-		}
-	}
-
-	// remove labels, units and metricTypes
-	delete(extraFields, types.KeyLabels)
-	delete(extraFields, types.KeyUnits)
-	delete(extraFields, types.KeyMetricTypes)
-
-	for id, value := range extraFields {
-		fieldId := converterUtils.ToString(id)
-		metricType := metricPluginTY.MetricTypeNone
-		unit := ""
-		// update metricType and unit
-		if mType, ok := metricTypes[fieldId]; ok {
-			metricType = mType
-		}
-		if unitString, ok := units[fieldId]; ok {
-			unit = unitString
-		}
-		err := updateFieldData(nil, fieldId, fieldId, metricType, unit, labels, nil, value, msg)
-		if err != nil {
-			zap.L().Error("error on updating field data", zap.Error(err), zap.String("gateway", msg.GatewayID), zap.String("node", msg.NodeID), zap.String("source", msg.SourceID), zap.String("field", fieldId))
-		}
-	}
-
 	return nil
 }
 
