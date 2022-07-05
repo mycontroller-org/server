@@ -353,6 +353,7 @@ func updateFieldWithFormattedData(msg *msgTY.Message, field *fieldTY.Field, mapD
 	_field.Others = cmap.CustomMap{}
 
 	for key, _value := range mapData {
+		fmt.Printf("key:%v, value:%v, type:%T\n\n", key, _value, _value)
 		switch key {
 		case "fieldId":
 			_field.FieldID = converterUtils.ToString(_value)
@@ -369,6 +370,10 @@ func updateFieldWithFormattedData(msg *msgTY.Message, field *fieldTY.Field, mapD
 		case "labels":
 			if _labels, ok := _value.(map[string]string); ok {
 				_field.Labels.CopyFrom(_labels)
+			} else if _labels, ok := _value.(map[string]interface{}); ok {
+				for l_key, l_value := range _labels {
+					_field.Labels.Set(l_key, converterUtils.ToString(l_value))
+				}
 			}
 		case "others":
 			if _others, ok := _value.(map[string]interface{}); ok {
@@ -391,8 +396,6 @@ func updateFieldWithFormattedData(msg *msgTY.Message, field *fieldTY.Field, mapD
 			FieldID:   _field.FieldID,
 			Name:      unknownName,
 		}
-		field.Labels = cmap.CustomStringMap{}
-		field.Others = cmap.CustomMap{}
 	}
 
 	err = updateFieldData(actualField, _field.FieldID, _field.Name, _field.MetricType, _field.Unit, _field.Labels, _field.Others, _field.Current.Value, msg)
