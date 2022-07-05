@@ -375,11 +375,25 @@ func updateFieldWithFormattedData(msg *msgTY.Message, field *fieldTY.Field, mapD
 		}
 	}
 
-	// update field sourceId from the parsed data
-	// default original sourceId from 'field' variable
-	field.SourceID = _field.SourceID
+	// get the actual field
+	actualField, err := fieldAPI.GetByIDs(msg.GatewayID, msg.NodeID, _field.SourceID, _field.FieldID)
+	if err != nil {
+		if err != storageTY.ErrNoDocuments {
+			zap.L().Error("error on getting field data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", _field.SourceID), zap.String("fieldId", _field.FieldID), zap.Error(err))
+			return err
+		}
+		actualField = &fieldTY.Field{
+			GatewayID: msg.GatewayID,
+			NodeID:    msg.NodeID,
+			SourceID:  _field.SourceID,
+			FieldID:   _field.FieldID,
+			Name:      unknownName,
+		}
+		field.Labels = cmap.CustomStringMap{}
+		field.Others = cmap.CustomMap{}
+	}
 
-	err := updateFieldData(field, _field.FieldID, _field.Name, _field.MetricType, _field.Unit, _field.Labels, _field.Others, _field.Current.Value, msg)
+	err = updateFieldData(actualField, _field.FieldID, _field.Name, _field.MetricType, _field.Unit, _field.Labels, _field.Others, _field.Current.Value, msg)
 	if err != nil {
 		zap.L().Error("error on updating field data", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.String("sourceId", _field.SourceID), zap.String("fieldId", _field.FieldID), zap.Error(err))
 		return err
