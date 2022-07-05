@@ -37,3 +37,21 @@ type Payload struct {
 type PayloadFormatter struct {
 	OnReceive string `json:"onReceive"`
 }
+
+// clones field
+func (f *Field) Clone() *Field {
+	return &Field{
+		ID:         f.ID,
+		GatewayID:  f.GatewayID,
+		NodeID:     f.NodeID,
+		SourceID:   f.SourceID,
+		FieldID:    f.FieldID,
+		Name:       f.Name,
+		MetricType: f.MetricType,
+		Unit:       f.Unit,
+		Current:    f.Current,
+		Previous:   f.Previous,
+		Labels:     f.Labels.Clone(),
+		Others:     f.Others.Clone(),
+	}
+}
