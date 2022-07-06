@@ -44,6 +44,7 @@ const (
 
 // Config of the influxdb_v2
 type Config struct {
+	IsCloudInstance    bool         `yaml:"is_cloud_instance"`
 	OrganizationName   string       `yaml:"organization_name"`
 	BucketName         string       `yaml:"bucket_name"`
 	MeasurementPrefix  string       `yaml:"measurement_prefix"`
@@ -139,16 +140,22 @@ func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
 			influxAutoDetectVersion = QueryClientV1
 		}
 
-		// get version
-		health, err := c.Client.Health(ctx)
-		if err != nil {
-			return nil, err
-		}
-		zap.L().Info("influxdb detected version data", zap.Any("health data", health))
-		if health != nil && health.Version != nil {
-			detectedVersion := *health.Version
-			if strings.HasPrefix(detectedVersion, "1.8") { // 1.8.4
-				influxAutoDetectVersion = QueryClientV1
+		// cloud instance always 2.x version and will not support for health check
+		// https://github.com/influxdata/influxdb-client-go/pull/285
+		if cfg.IsCloudInstance {
+			influxAutoDetectVersion = QueryClientV2
+		} else {
+			// get version details with health call
+			health, err := c.Client.Health(ctx)
+			if err != nil {
+				return nil, err
+			}
+			zap.L().Info("influxdb detected version data", zap.Any("health data", health))
+			if health != nil && health.Version != nil {
+				detectedVersion := *health.Version
+				if strings.HasPrefix(detectedVersion, "1.8") { // 1.8.4
+					influxAutoDetectVersion = QueryClientV1
+				}
 			}
 		}
 	}
@@ -194,12 +201,12 @@ func (c *Client) Name() string {
 
 // Ping to target database
 func (c *Client) Ping() error {
-	health, err := c.Client.Health(ctx)
+	isReachable, err := c.Client.Ping(ctx)
 	if err != nil {
-		zap.L().Error("error on getting ready status", zap.Error(err))
+		zap.L().Error("error on getting ping status", zap.Error(err))
 		return err
 	}
-	zap.L().Debug("health status", zap.Any("health", health))
+	zap.L().Debug("ping status", zap.Bool("isReachable", isReachable))
 	return nil
 }
 
