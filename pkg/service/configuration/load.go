@@ -45,6 +45,7 @@ func Load() (*cfgTY.Config, error) {
 	if CFG.Secret == "" {
 		logger.Fatal("empty secret is not allowed")
 	}
+
 	// update encryption key length
 	// converts it to fixed size as 32 bytes
 	CFG.Secret = updatedKey(CFG.Secret)
@@ -57,5 +58,8 @@ func Load() (*cfgTY.Config, error) {
 // UpdatedKey returns fixed key size
 // that is 32 bytes
 func updatedKey(actualKey string) string {
+	if len(actualKey) > 32 {
+		zap.L().Warn("secret length is greater than 32 characters. takes only the first 32 characters", zap.Int("length", len(actualKey)))
+	}
 	return fmt.Sprintf("%032.32s", actualKey)
 }
