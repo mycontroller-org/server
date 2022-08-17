@@ -3,7 +3,6 @@ package ziputils
 import (
 	"archive/zip"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"go.uber.org/zap"
@@ -34,7 +33,7 @@ func Zip(sourceDirectory, zipFilename string) error {
 
 func addFiles(writer *zip.Writer, basePath, baseInZip string) error {
 	// Open the Directory
-	files, err := ioutil.ReadDir(basePath)
+	files, err := os.ReadDir(basePath)
 	if err != nil {
 		zap.L().Error("error", zap.Error(err))
 		return err
@@ -57,7 +56,7 @@ func addFiles(writer *zip.Writer, basePath, baseInZip string) error {
 			}
 		} else {
 			filename := fmt.Sprintf("%s/%s", basePath, file.Name())
-			dat, err := ioutil.ReadFile(filename)
+			dat, err := os.ReadFile(filename)
 			if err != nil {
 				zap.L().Error("error", zap.Error(err))
 				return err

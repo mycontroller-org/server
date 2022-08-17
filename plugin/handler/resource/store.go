@@ -3,7 +3,7 @@ package resource
 import (
 	"fmt"
 	"io/fs"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"sync"
 	"time"
@@ -72,7 +72,7 @@ func (s *store) loadFromDisk(client *ResourceClient) error {
 
 	zap.L().Debug("Loading from", zap.String("filename", s.getName()), zap.String("handler", s.handlerID))
 
-	data, err := ioutil.ReadFile(s.getName())
+	data, err := os.ReadFile(s.getName())
 	if err != nil {
 		return err
 	}
@@ -111,5 +111,5 @@ func (s *store) saveToDisk() error {
 		return err
 	}
 	zap.L().Debug("Saving the jobs data", zap.String("filename", s.getName()), zap.String("handler", s.handlerID))
-	return ioutil.WriteFile(s.getName(), data, fs.ModePerm)
+	return os.WriteFile(s.getName(), data, fs.ModePerm)
 }

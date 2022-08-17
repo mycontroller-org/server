@@ -4,7 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	cfgTY "github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
@@ -29,7 +29,7 @@ func Load() (*cfgTY.Config, error) {
 		logger.Fatal("configuration file not supplied")
 		return nil, errors.New("configuration file not supplied")
 	}
-	d, err := ioutil.ReadFile(*cf)
+	d, err := os.ReadFile(*cf)
 	if err != nil {
 		logger.Fatal("error on reading configuration file", zap.Error(err))
 	}

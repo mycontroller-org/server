@@ -2,7 +2,7 @@ package settings
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -38,7 +38,7 @@ func GetLocation() (*GeoLocationAPIResponse, error) {
 		return nil, err
 	}
 
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}

@@ -2,7 +2,7 @@ package handler
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -119,7 +119,7 @@ func getMetric(w http.ResponseWriter, r *http.Request) {
 func getMetricList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	d, err := ioutil.ReadAll(r.Body)
+	d, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
 		http.Error(w, err.Error(), 500)

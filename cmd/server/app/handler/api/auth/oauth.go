@@ -3,7 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -29,7 +29,7 @@ func oAuthLanding(w http.ResponseWriter, r *http.Request) {
 }
 
 func oAuthLogin(w http.ResponseWriter, r *http.Request) {
-	userInput, err := ioutil.ReadAll(r.Body)
+	userInput, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
 		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusInternalServerError)
@@ -117,7 +117,7 @@ func oAuthLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func oAuthToken(w http.ResponseWriter, r *http.Request) {
-	inputBytes, err := ioutil.ReadAll(r.Body)
+	inputBytes, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
 		zap.L().Error("error on getting data", zap.Error(err))

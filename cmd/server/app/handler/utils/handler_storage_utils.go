@@ -1,7 +1,7 @@
 package handlerutils
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
@@ -66,7 +66,7 @@ func UpdateData(w http.ResponseWriter, r *http.Request, entity interface{}, upda
 		return
 	}
 
-	d, err := ioutil.ReadAll(r.Body)
+	d, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -145,7 +145,7 @@ func SaveEntity(w http.ResponseWriter, r *http.Request, entityName string, entit
 func LoadEntity(w http.ResponseWriter, r *http.Request, entity interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
 
-	d, err := ioutil.ReadAll(r.Body)
+	d, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
 		return err
