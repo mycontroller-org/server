@@ -41,6 +41,10 @@ func Load() (*cfgTY.Config, error) {
 		return nil, err
 	}
 
+	// verify secret availability
+	if CFG.Secret == "" {
+		logger.Fatal("empty secret is not allowed")
+	}
 	// update encryption key length
 	// converts it to fixed size as 32 bytes
 	CFG.Secret = updatedKey(CFG.Secret)
