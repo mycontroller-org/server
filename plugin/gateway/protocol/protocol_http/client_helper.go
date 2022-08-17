@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 
@@ -56,7 +55,7 @@ func (ep *Endpoint) newRequest(cfg RequestConfig, body interface{}) (*ResponseCo
 		return nil, nil, fmt.Errorf("Failed with status code. [url:%v, status: %v, statusCode: %v]", fullPath.String(), resp.Status, resp.StatusCode)
 	}
 
-	respBodyBytes, err := ioutil.ReadAll(resp.Body)
+	respBodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, nil, err
 	}
