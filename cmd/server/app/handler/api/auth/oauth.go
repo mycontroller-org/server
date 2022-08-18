@@ -22,6 +22,7 @@ func RegisterOAuthRoutes(router *mux.Router) {
 	router.HandleFunc("/api/oauth/login", oAuthLanding).Methods(http.MethodGet)
 	router.HandleFunc("/api/oauth/login", oAuthLogin).Methods(http.MethodPost)
 	router.HandleFunc("/api/oauth/token", oAuthToken).Methods(http.MethodPost)
+	router.HandleFunc("/api/oauth/token-alexa", oAuthTokenAlexa).Methods(http.MethodPost)
 }
 
 func oAuthLanding(w http.ResponseWriter, r *http.Request) {
@@ -181,6 +182,61 @@ func oAuthToken(w http.ResponseWriter, r *http.Request) {
 
 	response := map[string]interface{}{
 		"access_token":  accessToken,
+		"token_type":    "jwt",
+		"expires_in":    validity.Seconds(),
+		"refresh_token": refreshToken,
+	}
+
+	tokensBytes, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	handlerUtils.WriteResponse(w, tokensBytes)
+}
+
+func oAuthTokenAlexa(w http.ResponseWriter, r *http.Request) {
+	inputBytes, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil {
+		zap.L().Error("error on getting data", zap.Error(err))
+	}
+
+	fmt.Printf("data:[%s]\n", string(inputBytes))
+
+	err = middleware.IsValidToken(r)
+	if err != nil {
+		zap.L().Info("invalid token", zap.Error(err))
+		http.Error(w, "invalid token", http.StatusUnauthorized)
+		return
+	}
+
+	userId := r.Header.Get(handlerTY.HeaderUserID)
+	if userId == "" {
+		zap.L().Info("userId not found")
+		http.Error(w, "invalid user", http.StatusUnauthorized)
+		return
+	}
+
+	userInDB, err := userAPI.GetByID(userId)
+	if err != nil {
+		zap.L().Info("user not in database", zap.Error(err))
+		http.Error(w, "invalid token", http.StatusUnauthorized)
+		return
+	}
+
+	validity := time.Hour * 24 * 7 // 7 days
+
+	refreshToken, err := middleware.CreateToken(userInDB, validity.String())
+	if err != nil {
+		zap.L().Info("error on creating token", zap.Error(err))
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"access_token":  "abc",
 		"token_type":    "jwt",
 		"expires_in":    validity.Seconds(),
 		"refresh_token": refreshToken,
