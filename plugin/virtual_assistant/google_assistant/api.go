@@ -20,7 +20,7 @@ func RegisterGoogleAssistantRoutes(router *mux.Router) {
 }
 
 func processRequest(w http.ResponseWriter, r *http.Request) {
-	zap.L().Info("a request from", zap.Any("RequestURI", r.RequestURI), zap.Any("method", r.Method), zap.Any("headers", r.Header), zap.Any("query", r.URL.RawQuery))
+	// zap.L().Info("a request from", zap.Any("RequestURI", r.RequestURI), zap.Any("method", r.Method), zap.Any("headers", r.Header), zap.Any("query", r.URL.RawQuery))
 	d, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
@@ -28,7 +28,7 @@ func processRequest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error on getting body", 500)
 		return
 	}
-	zap.L().Info("received a request from google assistant", zap.Any("body", string(d)))
+	// zap.L().Info("received a request from google assistant", zap.Any("body", string(d)))
 
 	request := gaTY.Request{}
 	err = json.Unmarshal(d, &request)
@@ -76,7 +76,7 @@ func processRequest(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		zap.L().Info("response", zap.Any("responseBytes", string(responseBytes)))
+		// zap.L().Info("response", zap.Any("responseBytes", string(responseBytes)))
 
 		handlerUtils.WriteResponse(w, responseBytes)
 	} else {

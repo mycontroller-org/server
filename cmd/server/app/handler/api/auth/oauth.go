@@ -197,7 +197,7 @@ func oAuthToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func oAuthTokenAlexa(w http.ResponseWriter, r *http.Request) {
-	inputBytes, err := ioutil.ReadAll(r.Body)
+	inputBytes, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
 		zap.L().Error("error on getting data", zap.Error(err))

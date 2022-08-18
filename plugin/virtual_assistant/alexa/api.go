@@ -3,8 +3,7 @@ package alexa
 // https://stackoverflow.com/questions/38230157/cannot-finding-my-unpublished-alexa-skills-kit
 
 import (
-	"io/fs"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -12,7 +11,6 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/alexa/types"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v3"
 )
 
 // Google Assistant support is in progress
@@ -24,15 +22,14 @@ func RegisterAlexaRoutes(router *mux.Router) {
 }
 
 func processRequest(w http.ResponseWriter, r *http.Request) {
-	zap.L().Info("a request from", zap.Any("RequestURI", r.RequestURI), zap.Any("method", r.Method), zap.Any("headers", r.Header), zap.Any("query", r.URL.RawQuery))
-	d, err := ioutil.ReadAll(r.Body)
+	// zap.L().Info("a request from", zap.Any("RequestURI", r.RequestURI), zap.Any("method", r.Method), zap.Any("headers", r.Header), zap.Any("query", r.URL.RawQuery))
+	d, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
 		zap.L().Error("error on getting body", zap.Error(err))
 		http.Error(w, "error on getting body", 500)
 		return
 	}
-	zap.L().Info("received a request from alexa", zap.Any("body", string(d)))
 
 	request := alexaTY.Request{}
 	err = json.Unmarshal(d, &request)
@@ -41,8 +38,6 @@ func processRequest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error on forming directive object", 500)
 		return
 	}
-
-	zap.L().Info("directive**********", zap.Any("directive", request.Directive))
 
 	var response interface{}
 
@@ -64,20 +59,12 @@ func processRequest(w http.ResponseWriter, r *http.Request) {
 		response = executiveDirective(request.Directive)
 	}
 
-	// store yaml value
-	_yaml, _ := yaml.Marshal(response)
-	ioutil.WriteFile("/tmp/discover-response-jk.yaml", _yaml, fs.ModePerm)
-
 	if response != nil {
 		responseBytes, err := json.Marshal(response)
 		if err != nil {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		zap.L().Info("response", zap.Any("responseBytes", string(responseBytes)))
-
-		ioutil.WriteFile("/tmp/discover-response-jk.json", responseBytes, fs.ModePerm)
-
 		handlerUtils.WriteResponse(w, responseBytes)
 	} else {
 		handlerUtils.PostSuccessResponse(w, nil)

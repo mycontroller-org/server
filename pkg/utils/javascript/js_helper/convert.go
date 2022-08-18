@@ -29,7 +29,7 @@ func (ll *Convert) ToHexString(data interface{}) string {
 
 // returns string from hex string
 func (ll *Convert) HexStringToString(data string) string {
-	return string(ll.HexStringToString(data))
+	return string(ll.HexStringToBytes(data))
 }
 
 // returns bytes from hex string

@@ -50,9 +50,10 @@ func executeDirectiveBrightnessController(endpointID, directive string, payload 
 		if payload.Get(alexaTY.PropertyNameBrightness) != nil {
 			payload := payload.GetInt64(alexaTY.PropertyNameBrightness)
 			return executeResourceAction(endpointID, alexaTY.NamespaceBrightnessController, directive, vdTY.DeviceTraitBrightness, payload)
-		} else if payload.Get(alexaTY.PropertyNameBrightness) != nil {
-			// TODO: implement for brightnessDelta
 		}
+		// else if payload.Get(alexaTY.PropertyNameBrightness) != nil {
+		// 	// TODO: implement for brightnessDelta
+		// }
 	}
 	return getErrorResponse(endpointID, alexaTY.ErrorTypeInvalidDirective, fmt.Sprintf("%s directive not supported for %s", directive, alexaTY.NamespaceBrightnessController))
 }

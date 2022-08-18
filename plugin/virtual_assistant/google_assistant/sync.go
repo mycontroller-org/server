@@ -13,7 +13,7 @@ const (
 )
 
 func runSyncRequest(request gaTY.Request) *gaTY.SyncResponse {
-	zap.L().Info("received a sync request", zap.Any("request", request))
+	// zap.L().Info("received a sync request", zap.Any("request", request))
 
 	devices := make([]gaTY.SyncResponseDevice, 0)
 	response := gaTY.SyncResponse{
@@ -63,7 +63,7 @@ func runSyncRequest(request gaTY.Request) *gaTY.SyncResponse {
 		}
 	}
 
-	zap.L().Info("received a sync request", zap.Any("response", response))
+	// zap.L().Info("received a sync request", zap.Any("response", response))
 
 	response.Payload.Devices = devices
 	return &response

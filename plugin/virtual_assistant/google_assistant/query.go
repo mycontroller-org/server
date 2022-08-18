@@ -12,7 +12,7 @@ import (
 )
 
 func runQueryRequest(request gaTY.QueryRequest) *gaTY.QueryResponse {
-	zap.L().Info("received a query request", zap.Any("request", request))
+	// zap.L().Info("received a query request", zap.Any("request", request))
 	response := gaTY.QueryResponse{
 		RequestID: request.RequestID,
 		Payload: gaTY.QueryResponsePayload{
@@ -91,7 +91,7 @@ func queryDeviceState(vDevice vdTY.VirtualDevice) (*gaTY.QueryResponseDevice, er
 }
 
 func getResourceParams(trait string, resource vdTY.Resource) (map[string]interface{}, error) {
-	zap.L().Info("requested trait", zap.String("trait", trait))
+	// zap.L().Info("requested trait", zap.String("trait", trait))
 	params := make(map[string]interface{})
 	switch trait {
 	case vdTY.DeviceTraitOnOff:

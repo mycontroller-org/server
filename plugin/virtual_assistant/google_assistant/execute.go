@@ -13,7 +13,7 @@ import (
 )
 
 func runExecuteRequest(request gaTY.ExecuteRequest) *gaTY.ExecuteResponse {
-	zap.L().Info("received a execute request", zap.Any("request", request))
+	// zap.L().Info("received a execute request", zap.Any("request", request))
 
 	response := gaTY.ExecuteResponse{RequestID: request.RequestID}
 	responseCommands := make([]gaTY.ExecuteResponseCommand, 0)
