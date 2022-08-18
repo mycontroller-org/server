@@ -31,11 +31,12 @@ func UpdateInitialUser() {
 	pagination := &storageTY.Pagination{
 		Limit: 1,
 	}
-	users, err := userAPI.List(nil, pagination)
+	usersResult, err := userAPI.List(nil, pagination)
 	if err != nil {
 		zap.L().Error("failed to list users", zap.Error(err))
 	}
-	if users.Count == 0 {
+	if usersResult.Count == 0 {
+		zap.L().Info("there is no user available in the storage database. creating default user 'admin'")
 		hashedPassword, err := hashed.GenerateHash("admin")
 		if err != nil {
 			zap.L().Fatal("unable to get hashed password", zap.Error(err))

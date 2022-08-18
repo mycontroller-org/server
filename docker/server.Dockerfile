@@ -1,4 +1,4 @@
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.18-alpine3.15 AS builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.19-alpine3.16 AS builder
 RUN mkdir /app
 ADD . /app
 WORKDIR /app
@@ -13,7 +13,7 @@ ARG TARGETARCH
 ENV TARGET_BUILD="server"
 RUN scripts/container_binary.sh
 
-FROM alpine:3.15
+FROM alpine:3.16
 
 LABEL maintainer="Jeeva Kandasamy <jkandasa@gmail.com>"
 

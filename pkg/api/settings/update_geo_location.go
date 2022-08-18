@@ -2,7 +2,7 @@ package settings
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -11,7 +11,12 @@ import (
 	"go.uber.org/zap"
 )
 
-const geoLocationURL = "https://ipinfo.io/json"
+const (
+	geoLocationURL   = "https://ipinfo.io/json"
+	defaultLocation  = "Namakkal"
+	defaultLatitude  = 11.2222469
+	defaultLongitude = 78.1650174
+)
 
 type GeoLocationAPIResponse struct {
 	IP       string `json:"ip"`
@@ -33,7 +38,7 @@ func GetLocation() (*GeoLocationAPIResponse, error) {
 		return nil, err
 	}
 
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -61,19 +66,21 @@ func AutoUpdateSystemGEOLocation() error {
 
 	geoData, err := GetLocation()
 	if err != nil {
-		return err
+		zap.L().Error("error on getting geo location, updating location details with default values and disabling auto update", zap.Error(err))
+		location.LocationName = defaultLocation
+		location.Latitude = defaultLatitude
+		location.Longitude = defaultLongitude
+		location.AutoUpdate = false
+	} else {
+		zap.L().Debug("detected geo details", zap.Any("geoData", geoData))
+		tokens := strings.Split(geoData.Location, ",")
+		if len(geoData.Location) == 0 || len(tokens) != 2 {
+			return errors.New("error on detecting geo location")
+		}
+		location.LocationName = geoData.City
+		location.Latitude, _ = strconv.ParseFloat(tokens[0], 64)
+		location.Longitude, _ = strconv.ParseFloat(tokens[1], 64)
 	}
-
-	zap.L().Debug("detected geo details", zap.Any("geoData", geoData))
-
-	tokens := strings.Split(geoData.Location, ",")
-	if len(geoData.Location) == 0 || len(tokens) != 2 {
-		return errors.New("error on detecting geo location")
-	}
-
-	location.LocationName = geoData.City
-	location.Latitude, _ = strconv.ParseFloat(tokens[0], 64)
-	location.Longitude, _ = strconv.ParseFloat(tokens[1], 64)
 
 	zap.L().Info("location data to be updated", zap.Any("location", location))
 

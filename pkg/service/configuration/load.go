@@ -4,7 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	cfgTY "github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
@@ -29,7 +29,7 @@ func Load() (*cfgTY.Config, error) {
 		logger.Fatal("configuration file not supplied")
 		return nil, errors.New("configuration file not supplied")
 	}
-	d, err := ioutil.ReadFile(*cf)
+	d, err := os.ReadFile(*cf)
 	if err != nil {
 		logger.Fatal("error on reading configuration file", zap.Error(err))
 	}
@@ -39,6 +39,11 @@ func Load() (*cfgTY.Config, error) {
 	if err != nil {
 		logger.Fatal("failed to parse yaml data", zap.Error(err))
 		return nil, err
+	}
+
+	// verify secret availability
+	if CFG.Secret == "" {
+		logger.Fatal("empty secret is not allowed")
 	}
 
 	// update encryption key length
@@ -53,5 +58,8 @@ func Load() (*cfgTY.Config, error) {
 // UpdatedKey returns fixed key size
 // that is 32 bytes
 func updatedKey(actualKey string) string {
+	if len(actualKey) > 32 {
+		zap.L().Warn("secret length is greater than 32 characters. takes only the first 32 characters", zap.Int("length", len(actualKey)))
+	}
 	return fmt.Sprintf("%032.32s", actualKey)
 }

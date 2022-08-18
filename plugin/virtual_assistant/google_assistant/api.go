@@ -1,7 +1,7 @@
 package google_assistant
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -21,7 +21,7 @@ func RegisterGoogleAssistantRoutes(router *mux.Router) {
 
 func processRequest(w http.ResponseWriter, r *http.Request) {
 	zap.L().Info("a request from", zap.Any("RequestURI", r.RequestURI), zap.Any("method", r.Method), zap.Any("headers", r.Header), zap.Any("query", r.URL.RawQuery))
-	d, err := ioutil.ReadAll(r.Body)
+	d, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
 		zap.L().Error("error on getting body", zap.Error(err))
