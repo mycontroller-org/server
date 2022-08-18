@@ -15,6 +15,7 @@ const (
 	EntitySchedule       = "schedule"        // keeps configurations for schedules
 	EntitySettings       = "settings"        // settings of the system
 	EntityDataRepository = "data_repository" // holds user data, can be used across
+	EntityVirtualDevice  = "virtual_device"  // holds virtual devices
 )
 
 // Entity field keys
@@ -34,6 +35,8 @@ const (
 	KeyScheduleType = "Type"
 	KeyType         = "Type"
 	KeySrcFieldID   = "SrcFieldID"
+	KeyName         = "Name"
+	KeyLocation     = "Location"
 )
 
 // Field names used in entities

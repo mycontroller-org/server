@@ -1,5 +1,11 @@
 package types
 
+import (
+	"encoding/json"
+
+	"go.uber.org/zap"
+)
+
 const (
 	StatusSuccess    = "SUCCESS"
 	StatusOffline    = "OFFLINE"
@@ -47,7 +53,7 @@ type QueryResponseDevice struct {
 	Online    bool                   `json:"online"`              // required
 	Status    string                 `json:"status"`              // required
 	ErrorCode string                 `json:"errorCode,omitempty"` // optional
-	Others    map[string]interface{} `json:",inline"`             // optional
+	Others    map[string]interface{} `json:"-"`                   // optional, `json:",inline"` does not work, https://github.com/golang/go/issues/6213
 }
 
 // Note: QueryResponseDevice supports extra fields. Add those fields in others
@@ -62,3 +68,37 @@ type QueryResponseDevice struct {
 // 			"spectrumRGB": 31655
 // 		}
 // }
+
+// reference taken from: https://stackoverflow.com/questions/49901287/embed-mapstringstring-in-go-json-marshaling-without-extra-json-property-inlin
+func (qrd QueryResponseDevice) MarshalJSON() ([]byte, error) {
+	// Turn qrd into a map
+	type QueryResponseDevice_ QueryResponseDevice // prevent recursion
+	b, err := json.Marshal(QueryResponseDevice_(qrd))
+	if err != nil {
+		zap.L().Error("error on marshal QueryResponseDevice", zap.Error(err))
+		return nil, err
+	}
+
+	var m map[string]json.RawMessage
+	err = json.Unmarshal(b, &m)
+	if err != nil {
+		zap.L().Error("error on Unmarshal QueryResponseDevice", zap.Error(err))
+		return nil, err
+	}
+
+	// Add tags to the map, possibly overriding struct fields
+	for k, v := range qrd.Others {
+		// if overriding struct fields is not acceptable:
+		if _, ok := m[k]; ok {
+			continue
+		}
+		b, err = json.Marshal(v)
+		if err != nil {
+			zap.L().Error("error on marshal QueryResponseDevice Others field", zap.String("key", k), zap.Error(err))
+			return nil, err
+		}
+		m[k] = b
+	}
+
+	return json.Marshal(m)
+}

@@ -1,0 +1,28 @@
+package types
+
+const (
+	ErrorTypeAlreadyInOperation                        = "ALREADY_IN_OPERATION"
+	ErrorTypeBridgeUnreachable                         = "BRIDGE_UNREACHABLE"
+	ErrorTypeCloudControlDisabled                      = "CLOUD_CONTROL_DISABLED"
+	ErrorTypeEndPointBusy                              = "ENDPOINT_BUSY"
+	ErrorTypeEndpointLowPower                          = "ENDPOINT_LOW_POWER"
+	ErrorTypeEndpointUnreachable                       = "ENDPOINT_UNREACHABLE"
+	ErrorTypeExpiredAuthorizationCredential            = "EXPIRED_AUTHORIZATION_CREDENTIAL"
+	ErrorTypeFirmwareOutOfDate                         = "FIRMWARE_OUT_OF_DATE"
+	ErrorTypeHardwareMalfunction                       = "HARDWARE_MALFUNCTION"
+	ErrorTypeInsufficientPermissions                   = "INSUFFICIENT_PERMISSIONS"
+	ErrorTypeInternalError                             = "INTERNAL_ERROR"
+	ErrorTypeInvalidAuthorizationCredentials           = "INVALID_AUTHORIZATION_CREDENTIAL"
+	ErrorTypeInvalidDirective                          = "INVALID_DIRECTIVE"
+	ErrorTypeInvalidValue                              = "INVALID_VALUE"
+	ErrorTypeNoSuchEndpoint                            = "NO_SUCH_ENDPOINT"
+	ErrorTypeNotCalibrated                             = "NOT_CALIBRATED"
+	ErrorTypeNotSupportedInCurrentMode                 = "NOT_SUPPORTED_IN_CURRENT_MODE"
+	ErrorTypeNotSupportedWithCurrentBatteryChargeState = "NOT_SUPPORTED_WITH_CURRENT_BATTERY_CHARGE_STATE"
+	ErrorTypeNotInOperation                            = "NOT_IN_OPERATION"
+	ErrorTypePowerLevelNotSupported                    = "POWER_LEVEL_NOT_SUPPORTED"
+	ErrorTypeRateLimitExceed                           = "RATE_LIMIT_EXCEEDED"
+	ErrorTypeTemperatureValueOutOfRange                = "TEMPERATURE_VALUE_OUT_OF_RANGE"
+	ErrorTypeTooManyFailedAttempts                     = "TOO_MANY_FAILED_ATTEMPTS"
+	ErrorTypeValueOutOfRange                           = "VALUE_OUT_OF_RANGE  "
+)

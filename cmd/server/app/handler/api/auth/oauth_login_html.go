@@ -1,5 +1,6 @@
 package auth
 
+// https://unpkg.com/@patternfly/patternfly/patternfly.css => https://unpkg.com/@patternfly/patternfly@4.196.7/patternfly.css
 const OAuthLoginPageHTML = `
 <!DOCTYPE html>
 <html lang="en" class="pf-m-redhat-font">
@@ -10,7 +11,7 @@ const OAuthLoginPageHTML = `
     <!-- Include latest PatternFly CSS via CDN -->
     <link
       rel="stylesheet"
-      href="https://unpkg.com/@patternfly/patternfly/patternfly.css"
+      href="https://unpkg.com/@patternfly/patternfly@4.196.7/patternfly.css"
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="style.css" />

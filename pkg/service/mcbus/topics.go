@@ -27,6 +27,7 @@ const (
 	TopicEventDataRepository           = "event.data_repository"               // data repository events
 	TopicEventForwardPayload           = "event.forward_payload"               // forward payload events
 	TopicFirmwareBlocks                = "firmware.blocks"                     // request to shutdown the server
+	TopicEventVirtualDevice            = "event.virtual_device"                // virtual device events
 )
 
 const keyTopicPrefix = "topic_prefix"

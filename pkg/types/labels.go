@@ -32,4 +32,7 @@ const (
 	LabelDeviceType = "device_type"
 	LabelTraitType  = "trait_type"
 	LabelParamType  = "param_type"
+
+	// used in virtual device
+	LabelRoom = "room"
 )

@@ -1,4 +1,4 @@
-package googleassistant
+package google_assistant
 
 import (
 	"io"
@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	gaTY "github.com/mycontroller-org/server/v2/plugin/bot/google_assistant/types"
+	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/google_assistant/types"
 	"go.uber.org/zap"
 )
 
@@ -76,6 +76,8 @@ func processRequest(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 500)
 			return
 		}
+		zap.L().Info("response", zap.Any("responseBytes", string(responseBytes)))
+
 		handlerUtils.WriteResponse(w, responseBytes)
 	} else {
 		handlerUtils.PostSuccessResponse(w, nil)

@@ -21,6 +21,7 @@ import (
 	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
+	vdAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_device"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/store"
@@ -38,6 +39,7 @@ import (
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
+	vdTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_device"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"github.com/mycontroller-org/server/v2/pkg/utils/ziputils"
@@ -349,6 +351,19 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 		}
 		for index := 0; index < len(entities); index++ {
 			err = dataRepositoryAPI.Save(&entities[index])
+			if err != nil {
+				return err
+			}
+		}
+
+	case types.EntityVirtualDevice:
+		entities := make([]vdTY.VirtualDevice, 0)
+		err := unmarshal(fileFormat, fileBytes, &entities)
+		if err != nil {
+			return err
+		}
+		for index := 0; index < len(entities); index++ {
+			err = vdAPI.Save(&entities[index])
 			if err != nil {
 				return err
 			}

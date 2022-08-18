@@ -48,7 +48,8 @@ func (p *Payload) Clone() Payload {
 }
 
 // Message definition
-type Message struct {
+type 
+Message struct {
 	ID           string               `json:"id"`
 	GatewayID    string               `json:"gatewayId"`
 	NodeID       string               `json:"nodeId"`

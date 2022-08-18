@@ -1,5 +1,6 @@
-package virtualdevice
+package virtual_device
 
+// as a reference taken from google smart home
 // https://developers.google.com/assistant/smarthome/guides
 const (
 	DeviceTypeAirConditioner         = "air_conditioner"
@@ -41,7 +42,6 @@ const (
 	DeviceTypeKettle                 = "kettle"
 	DeviceTypeLight                  = "light"
 	DeviceTypeLock                   = "lock"
-	DeviceTypeMediaRemote            = "media_remote"
 	DeviceTypeMicrowave              = "microwave"
 	DeviceTypeMop                    = "mop"
 	DeviceTypeMower                  = "mower"
@@ -54,36 +54,39 @@ const (
 	DeviceTypePressureCooker         = "pressure_cooker"
 	DeviceTypeRadiator               = "radiator"
 	DeviceTypeRefrigerator           = "refrigerator"
+	DeviceTypeRemoteControl          = "remote_control"
 	DeviceTypeRouter                 = "router"
 	DeviceTypeScene                  = "scene"
-	DeviceTypeSensor                 = "sensor"
 	DeviceTypeSecuritySystem         = "security_system"
+	DeviceTypeSensor                 = "sensor"
 	DeviceTypeSetTopBox              = "set_top_box"
 	DeviceTypeShower                 = "shower"
 	DeviceTypeShutter                = "shutter"
 	DeviceTypeSmokeDetector          = "smoke_detector"
-	DeviceTypeSpeaker                = "speaker"
 	DeviceTypeSoundbar               = "soundbar"
 	DeviceTypeSousVide               = "sous_vide"
+	DeviceTypeSpeaker                = "speaker"
 	DeviceTypeSprinkler              = "sprinkler"
 	DeviceTypeStandMixer             = "stand_mixer"
 	DeviceTypeStreamingBox           = "streaming_box"
 	DeviceTypeStreamingSoundbar      = "streaming_soundbar"
 	DeviceTypeStreamingStick         = "streaming_stick"
 	DeviceTypeSwitch                 = "switch"
-	DeviceTypeTelevision             = "television"
+	DeviceTypeTank                   = "tank" // added additionally
 	DeviceTypeThermostat             = "thermostat"
+	DeviceTypeTelevision             = "television"
 	DeviceTypeVacuum                 = "vacuum"
 	DeviceTypeValve                  = "valve"
 	DeviceTypeWasher                 = "washer"
 	DeviceTypeWaterHeater            = "water_heater"
 	DeviceTypeWaterPurifier          = "water_purifier"
 	DeviceTypeWaterSoftener          = "water_softener"
-	DeviceTypeWeatherStation         = "weather_station" // added
+	DeviceTypeWeatherStation         = "weather_station" // added additionally
 	DeviceTypeWindow                 = "window"
 	DeviceTypeYogurtMaker            = "yogurt_maker"
 )
 
+// as a reference taken from google smart home
 // https://developers.google.com/assistant/smarthome/traits
 const (
 	DeviceTraitAppSelector        = "app_selector"
@@ -112,8 +115,8 @@ const (
 	DeviceTraitReboot             = "reboot"
 	DeviceTraitRotation           = "rotation"
 	DeviceTraitRunCycle           = "run_cycle"
-	DeviceTraitScene              = "scene"
 	DeviceTraitSensorState        = "sensor_state"
+	DeviceTraitScene              = "scene"
 	DeviceTraitSoftwareUpdate     = "software_update"
 	DeviceTraitStartStop          = "start_stop"
 	DeviceTraitStatusReport       = "status_report"

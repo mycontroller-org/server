@@ -50,18 +50,19 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 }
 
 // execute script and report back the response
-func (p *Provider) executeScript(script string, rawMesage *msgTY.RawMessage, variables cmap.CustomMap) ([]*msgTY.Message, error) {
+func (p *Provider) executeScript(script string, rawMessage *msgTY.RawMessage, variables cmap.CustomMap) ([]*msgTY.Message, error) {
 	if variables == nil {
 		variables = cmap.CustomMap{}
 	}
+
 	// convert payload to json
 	jsonPayload := ""
-	if strPayload, ok := rawMesage.Data.(string); ok {
+	if strPayload, ok := rawMessage.Data.(string); ok {
 		jsonPayload = strPayload
 	} else {
-		strPayload, err := json.MarshalToString(rawMesage.Data)
+		strPayload, err := json.MarshalToString(rawMessage.Data)
 		if err != nil {
-			zap.L().Error("unable to convert payload to json string", zap.Any("rawMessage", rawMesage), zap.Error(err))
+			zap.L().Error("unable to convert payload to json string", zap.Any("rawMessage", rawMessage), zap.Error(err))
 			return nil, err
 		}
 		jsonPayload = strPayload

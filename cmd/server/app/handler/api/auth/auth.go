@@ -35,13 +35,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 	// get user details
 	userInDB, err := userAPI.GetByUsername(login.Username)
 	if err != nil {
-		handlerUtils.PostErrorResponse(w, "Invalid credentails", http.StatusUnauthorized)
+		handlerUtils.PostErrorResponse(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
 
 	// compare the user from the request, with the one we have in database
 	if login.Username != userInDB.Username || !hashed.IsValidPassword(userInDB.Password, login.Password) {
-		handlerUtils.PostErrorResponse(w, "Invalid credentails", http.StatusUnauthorized)
+		handlerUtils.PostErrorResponse(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
 	token, err := middleware.CreateToken(userInDB, login.ExpiresIn)

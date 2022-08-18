@@ -14,9 +14,10 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	webHandlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
+	alexaAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/alexa"
+	googleAssistantAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/google_assistant"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
-	//	googleAssistantAPI "github.com/mycontroller-org/server/v2/plugin/bot/google_assistant"
 )
 
 // GetHandler for http access
@@ -58,8 +59,10 @@ func GetHandler() (http.Handler, error) {
 	handlerAPI.RegisterSystemRoutes(router)
 	handlerAPI.RegisterQuickIDRoutes(router)
 	handlerAPI.RegisterBackupRestoreRoutes(router)
+	handlerAPI.RegisterVirtualDeviceRoutes(router)
 
-	// googleAssistantAPI.RegisterGoogleAssistantRoutes(router)
+	googleAssistantAPI.RegisterGoogleAssistantRoutes(router)
+	alexaAPI.RegisterAlexaRoutes(router)
 
 	// websocket router
 	mcWS.RegisterWebsocketRoutes(router)
