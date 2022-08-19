@@ -144,11 +144,3 @@ func getConfig(reqEvent *rsTY.ServiceEvent) *vaTY.Config {
 	}
 	return cfg
 }
-
-// post response to a topic
-func postResponse(topic string, response *rsTY.ServiceEvent) error {
-	if topic == "" {
-		return nil
-	}
-	return mcbus.Publish(topic, response)
-}
