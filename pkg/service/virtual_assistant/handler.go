@@ -8,12 +8,12 @@ import (
 )
 
 const (
-	API_PATH = "/api/bot/virtual/assistant"
+	API_PATH = "/api/bot/virtual/assistant/"
 )
 
 // virtual assistant will be registered and unregistered dynamically
 func RegisterVirtualAssistantServiceRoutes(router *mux.Router) {
-	router.HandleFunc(API_PATH, handleRoute)
+	router.PathPrefix(API_PATH).HandlerFunc(handleRoute)
 }
 
 func handleRoute(w http.ResponseWriter, r *http.Request) {
@@ -28,17 +28,17 @@ func handleRoute(w http.ResponseWriter, r *http.Request) {
 	} else if len(paths) == 2 {
 		assistantID = paths[0]
 		r.URL.Path = paths[1]
-	} else {
-		return // report error
 	}
 
 	if assistantID == "" {
-		return // report error
+		http.Error(w, "assistant id can not be empty", http.StatusBadRequest)
+		return
 	}
 
 	assistant := vaService.Get(assistantID)
 	if assistant == nil {
-		return // report error
+		http.Error(w, "requested assistant not available", http.StatusNotFound)
+		return
 	}
 
 	assistant.ServeHTTP(w, r)
