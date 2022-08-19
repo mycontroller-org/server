@@ -7,8 +7,8 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
-	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/alexa/types"
-	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/api"
+	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/alexa/types"
+	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"
 	"go.uber.org/zap"
 )
 

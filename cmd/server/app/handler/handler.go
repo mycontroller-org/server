@@ -10,12 +10,11 @@ import (
 	handlerAuthAPI "github.com/mycontroller-org/server/v2/cmd/server/app/handler/api/auth"
 	middleware "github.com/mycontroller-org/server/v2/cmd/server/app/handler/middleware"
 	webConsole "github.com/mycontroller-org/server/v2/cmd/server/app/web-console"
+	virtualAssistantAPI "github.com/mycontroller-org/server/v2/pkg/service/virtual_assistant"
 	mcWS "github.com/mycontroller-org/server/v2/pkg/service/websocket"
 	"github.com/mycontroller-org/server/v2/pkg/store"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	webHandlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
-	alexaAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/alexa"
-	googleAssistantAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/google_assistant"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
 )
@@ -60,9 +59,10 @@ func GetHandler() (http.Handler, error) {
 	handlerAPI.RegisterQuickIDRoutes(router)
 	handlerAPI.RegisterBackupRestoreRoutes(router)
 	handlerAPI.RegisterVirtualDeviceRoutes(router)
+	handlerAPI.RegisterVirtualAssistantRoutes(router)
 
-	googleAssistantAPI.RegisterGoogleAssistantRoutes(router)
-	alexaAPI.RegisterAlexaRoutes(router)
+	// virtual assistants service route
+	virtualAssistantAPI.RegisterVirtualAssistantServiceRoutes(router)
 
 	// websocket router
 	mcWS.RegisterWebsocketRoutes(router)

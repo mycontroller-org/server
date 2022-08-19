@@ -19,6 +19,8 @@ import (
 	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
+	vaAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_assistant"
+	vdAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_device"
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
@@ -37,19 +39,21 @@ var (
 
 var (
 	entitiesList = map[string]func(f []storageTY.Filter, p *storageTY.Pagination) (*storageTY.Result, error){
-		types.EntityGateway:        gatewayAPI.List,
-		types.EntityNode:           nodeAPI.List,
-		types.EntitySource:         sourceAPI.List,
-		types.EntityField:          fieldAPI.List,
-		types.EntityFirmware:       firmwareAPI.List,
-		types.EntityUser:           userAPI.List,
-		types.EntityDashboard:      dashboardAPI.List,
-		types.EntityForwardPayload: forwardPayloadAPI.List,
-		types.EntityHandler:        notificationHandlerAPI.List,
-		types.EntityTask:           taskAPI.List,
-		types.EntitySchedule:       scheduleAPI.List,
-		types.EntitySettings:       settingsAPI.List,
-		types.EntityDataRepository: dataRepositoryAPI.List,
+		types.EntityGateway:          gatewayAPI.List,
+		types.EntityNode:             nodeAPI.List,
+		types.EntitySource:           sourceAPI.List,
+		types.EntityField:            fieldAPI.List,
+		types.EntityFirmware:         firmwareAPI.List,
+		types.EntityUser:             userAPI.List,
+		types.EntityDashboard:        dashboardAPI.List,
+		types.EntityForwardPayload:   forwardPayloadAPI.List,
+		types.EntityHandler:          notificationHandlerAPI.List,
+		types.EntityTask:             taskAPI.List,
+		types.EntitySchedule:         scheduleAPI.List,
+		types.EntitySettings:         settingsAPI.List,
+		types.EntityDataRepository:   dataRepositoryAPI.List,
+		types.EntityVirtualAssistant: vaAPI.List,
+		types.EntityVirtualDevice:    vdAPI.List,
 	}
 )
 

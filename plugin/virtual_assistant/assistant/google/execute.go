@@ -8,7 +8,7 @@ import (
 	vdTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_device"
 	converterUtil "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/types"
-	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/google_assistant/types"
+	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/google/types"
 	"go.uber.org/zap"
 )
 

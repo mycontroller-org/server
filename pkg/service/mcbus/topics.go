@@ -15,6 +15,7 @@ const (
 	TopicServiceHandler                = "service.handler"                     // handler listen this topic and perform actions like load, reload, stop, start, etc.,
 	TopicServiceTask                   = "service.task"                        // tasks listen this topic and perform actions like load, reload, stop, start, etc.,
 	TopicServiceScheduler              = "service.scheduler"                   // scheduler listen this topic and perform actions like add, remove, disable, etc.,
+	TopicServiceVirtualAssistant       = "service.virtual_assistant"           // virtual assistant listen this topic and perform actions like add, remove, disable, etc.,
 	TopicEventsAll                     = "event.>"                             // all events
 	TopicEventGateway                  = "event.gateway"                       // gateway events
 	TopicEventNode                     = "event.node"                          // node events
@@ -26,8 +27,9 @@ const (
 	TopicEventFirmware                 = "event.firmware"                      // firmware create/update/delete events
 	TopicEventDataRepository           = "event.data_repository"               // data repository events
 	TopicEventForwardPayload           = "event.forward_payload"               // forward payload events
-	TopicFirmwareBlocks                = "firmware.blocks"                     // request to shutdown the server
 	TopicEventVirtualDevice            = "event.virtual_device"                // virtual device events
+	TopicEventVirtualAssistant         = "event.virtual_assistant"             // virtual assistant events
+	TopicFirmwareBlocks                = "firmware.blocks"                     // request to shutdown the server
 )
 
 const keyTopicPrefix = "topic_prefix"

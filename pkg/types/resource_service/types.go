@@ -7,14 +7,15 @@ import (
 
 // Resource type details
 const (
-	TypeGateway        = "gateway"
-	TypeNode           = "node"
-	TypeTask           = "task"
-	TypeHandler        = "handler"
-	TypeScheduler      = "scheduler"
-	TypeFirmware       = "firmware"
-	TypeResourceAction = "resource_action"
-	TypeSystemJobs     = "system_jobs"
+	TypeGateway          = "gateway"
+	TypeNode             = "node"
+	TypeTask             = "task"
+	TypeHandler          = "handler"
+	TypeScheduler        = "scheduler"
+	TypeFirmware         = "firmware"
+	TypeResourceAction   = "resource_action"
+	TypeSystemJobs       = "system_jobs"
+	TypeVirtualAssistant = "virtual_assistant"
 )
 
 // Command details

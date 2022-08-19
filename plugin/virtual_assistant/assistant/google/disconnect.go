@@ -1,7 +1,7 @@
 package google_assistant
 
 import (
-	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/google_assistant/types"
+	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/google/types"
 )
 
 func runDisconnectRequest(request gaTY.Request) {

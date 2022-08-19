@@ -2,7 +2,7 @@ package alexa
 
 import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/alexa/types"
+	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/alexa/types"
 )
 
 func getErrorResponse(endpointID, errorType, message string) *alexaTY.Response {

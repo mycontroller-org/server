@@ -12,17 +12,18 @@ const (
 
 // Config of the system
 type Config struct {
-	Secret      string             `yaml:"secret"` // secret used to encrypt sensitive data
-	Analytics   AnalyticsConfig    `yaml:"analytics"`
-	Web         WebConfig          `yaml:"web"`
-	Logger      LoggerConfig       `yaml:"logger"`
-	Directories Directories        `yaml:"directories"`
-	Bus         cmap.CustomMap     `yaml:"bus"`
-	Gateway     sfTY.ServiceFilter `yaml:"gateway"`
-	Handler     sfTY.ServiceFilter `yaml:"handler"`
-	Task        sfTY.ServiceFilter `yaml:"task"`
-	Schedule    sfTY.ServiceFilter `yaml:"schedule"`
-	Database    Database           `yaml:"database"`
+	Secret           string             `yaml:"secret"` // secret used to encrypt sensitive data
+	Analytics        AnalyticsConfig    `yaml:"analytics"`
+	Web              WebConfig          `yaml:"web"`
+	Logger           LoggerConfig       `yaml:"logger"`
+	Directories      Directories        `yaml:"directories"`
+	Bus              cmap.CustomMap     `yaml:"bus"`
+	Gateway          sfTY.ServiceFilter `yaml:"gateway"`
+	Handler          sfTY.ServiceFilter `yaml:"handler"`
+	Task             sfTY.ServiceFilter `yaml:"task"`
+	Schedule         sfTY.ServiceFilter `yaml:"schedule"`
+	VirtualAssistant sfTY.ServiceFilter `yaml:"virtual_assistant"`
+	Database         Database           `yaml:"database"`
 }
 
 // WebConfig input

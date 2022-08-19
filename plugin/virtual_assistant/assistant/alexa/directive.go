@@ -11,8 +11,8 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	converterUtil "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/types"
-	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/alexa/types"
-	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/api"
+	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/alexa/types"
+	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"
 	"go.uber.org/zap"
 )
 

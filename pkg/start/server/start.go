@@ -13,6 +13,7 @@ import (
 	scheduleSVC "github.com/mycontroller-org/server/v2/pkg/service/schedule"
 	systemJobs "github.com/mycontroller-org/server/v2/pkg/service/system_jobs"
 	taskSVC "github.com/mycontroller-org/server/v2/pkg/service/task"
+	vaService "github.com/mycontroller-org/server/v2/pkg/service/virtual_assistant"
 	"github.com/mycontroller-org/server/v2/pkg/start/common"
 	"github.com/mycontroller-org/server/v2/pkg/store"
 	"go.uber.org/zap"
@@ -83,6 +84,12 @@ func startServices() {
 	err = gwService.Start(&store.CFG.Gateway)
 	if err != nil {
 		zap.L().Fatal("error on starting gateway service listener", zap.Error(err))
+	}
+
+	// start virtual assistant listener
+	err = vaService.Start(&store.CFG.VirtualAssistant)
+	if err != nil {
+		zap.L().Fatal("error on starting virtual assistant service listener", zap.Error(err))
 	}
 
 	// start system jobs listener

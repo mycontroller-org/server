@@ -3,8 +3,8 @@ package google_assistant
 import (
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/version"
-	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/api"
-	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/google_assistant/types"
+	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/google/types"
+	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"
 	"go.uber.org/zap"
 )
 

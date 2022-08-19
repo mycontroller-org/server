@@ -14,6 +14,11 @@ func SetGatewayState(id string, state types.State) {
 	PostToResourceService(id, state, rsTY.TypeGateway, rsTY.CommandUpdateState, "")
 }
 
+// SetVirtualAssistantState send assistant status into bus
+func SetVirtualAssistantState(id string, state types.State) {
+	PostToResourceService(id, state, rsTY.TypeVirtualAssistant, rsTY.CommandUpdateState, "")
+}
+
 // SetHandlerState send handler status into bus
 func SetHandlerState(id string, state types.State) {
 	PostToResourceService(id, state, rsTY.TypeHandler, rsTY.CommandUpdateState, "")

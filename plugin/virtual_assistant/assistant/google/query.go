@@ -6,8 +6,8 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	convertorUtil "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
-	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/api"
-	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/google_assistant/types"
+	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/google/types"
+	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"
 	"go.uber.org/zap"
 )
 

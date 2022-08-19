@@ -21,6 +21,7 @@ import (
 	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
+	vaAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_assistant"
 	vdAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_device"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
@@ -39,6 +40,7 @@ import (
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
+	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
 	vdTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_device"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
@@ -364,6 +366,19 @@ func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
 		}
 		for index := 0; index < len(entities); index++ {
 			err = vdAPI.Save(&entities[index])
+			if err != nil {
+				return err
+			}
+		}
+
+	case types.EntityVirtualAssistant:
+		entities := make([]vaTY.Config, 0)
+		err := unmarshal(fileFormat, fileBytes, &entities)
+		if err != nil {
+			return err
+		}
+		for index := 0; index < len(entities); index++ {
+			err = vaAPI.Save(&entities[index])
 			if err != nil {
 				return err
 			}

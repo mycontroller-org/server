@@ -109,6 +109,12 @@ func processEvent(item interface{}) {
 			zap.L().Error("error on serving firmware service request", zap.Error(err))
 		}
 
+	case rsTY.TypeVirtualAssistant:
+		err := virtualAssistantService(request)
+		if err != nil {
+			zap.L().Error("error on serving virtual assistant service request", zap.Error(err))
+		}
+
 	default:
 		zap.L().Warn("unknown event type", zap.Any("event", request))
 	}

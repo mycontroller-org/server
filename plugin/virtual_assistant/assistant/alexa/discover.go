@@ -3,8 +3,8 @@ package alexa
 import (
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	"github.com/mycontroller-org/server/v2/pkg/version"
-	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/alexa/types"
-	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/api"
+	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/alexa/types"
+	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"
 	"go.uber.org/zap"
 )
 

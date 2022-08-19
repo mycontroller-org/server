@@ -2,20 +2,21 @@ package types
 
 // Entities
 const (
-	EntityGateway        = "gateway"         // keeps gateway config details
-	EntityNode           = "node"            // keeps node details
-	EntitySource         = "source"          // keeps source details
-	EntityField          = "field"           // keeps field details from source and fields from node, like battery, rssi, etc.,
-	EntityFirmware       = "firmware"        // keeps firmware details
-	EntityUser           = "user"            // keeps user details
-	EntityDashboard      = "dashboard"       // keeps dashboard details
-	EntityForwardPayload = "forward_payload" // keeps forward payload mapping details
-	EntityHandler        = "handler"         // keeps configurations for handlers
-	EntityTask           = "task"            // keeps configurations for tasks
-	EntitySchedule       = "schedule"        // keeps configurations for schedules
-	EntitySettings       = "settings"        // settings of the system
-	EntityDataRepository = "data_repository" // holds user data, can be used across
-	EntityVirtualDevice  = "virtual_device"  // holds virtual devices
+	EntityGateway          = "gateway"           // keeps gateway config details
+	EntityNode             = "node"              // keeps node details
+	EntitySource           = "source"            // keeps source details
+	EntityField            = "field"             // keeps field details from source and fields from node, like battery, rssi, etc.,
+	EntityFirmware         = "firmware"          // keeps firmware details
+	EntityUser             = "user"              // keeps user details
+	EntityDashboard        = "dashboard"         // keeps dashboard details
+	EntityForwardPayload   = "forward_payload"   // keeps forward payload mapping details
+	EntityHandler          = "handler"           // keeps configurations for handlers
+	EntityTask             = "task"              // keeps configurations for tasks
+	EntitySchedule         = "schedule"          // keeps configurations for schedules
+	EntitySettings         = "settings"          // settings of the system
+	EntityDataRepository   = "data_repository"   // holds user data, can be used across
+	EntityVirtualDevice    = "virtual_device"    // holds virtual devices
+	EntityVirtualAssistant = "virtual_assistant" // holds virtual assistants
 )
 
 // Entity field keys

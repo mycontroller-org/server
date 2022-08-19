@@ -4,10 +4,10 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/google_assistant/types"
+	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
+	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/google/types"
 	"go.uber.org/zap"
 )
 
@@ -15,11 +15,35 @@ import (
 // Needs to complete VirtualDevice struct and implementation to support this feature
 // for now this is incomplete and not usable
 
-func RegisterGoogleAssistantRoutes(router *mux.Router) {
-	router.HandleFunc("/api/plugin/bot/google_assistant", processRequest)
+const (
+	PluginGoogleAssistant = "google_assistant"
+)
+
+type Assistant struct {
+	cfg *vaTY.Config
 }
 
-func processRequest(w http.ResponseWriter, r *http.Request) {
+func New(cfg *vaTY.Config) (vaTY.Plugin, error) {
+	return &Assistant{cfg: cfg}, nil
+}
+
+func (a *Assistant) Name() string {
+	return PluginGoogleAssistant
+}
+
+func (a *Assistant) Start() error {
+	return nil
+}
+
+func (a *Assistant) Stop() error {
+	return nil
+}
+
+func (a *Assistant) Config() *vaTY.Config {
+	return a.cfg
+}
+
+func (a *Assistant) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// zap.L().Info("a request from", zap.Any("RequestURI", r.RequestURI), zap.Any("method", r.Method), zap.Any("headers", r.Header), zap.Any("query", r.URL.RawQuery))
 	d, err := io.ReadAll(r.Body)
 	defer r.Body.Close()

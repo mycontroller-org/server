@@ -39,7 +39,7 @@ func Save(schedule *scheduleTY.Config) error {
 	if err != nil {
 		return err
 	}
-	busUtils.PostEvent(mcbus.TopicEventSchedule, eventType, types.EntityHandler, *schedule)
+	busUtils.PostEvent(mcbus.TopicEventSchedule, eventType, types.EntitySchedule, *schedule)
 	return nil
 }
 
