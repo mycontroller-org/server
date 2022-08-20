@@ -13,6 +13,7 @@ const (
 	KeySystemBackupLocations = "system_backup_locations"
 	KeyVersion               = "version"
 	KeyAnalytics             = "analytics"
+	KeySystemDynamicSecrets  = "system_dynamic_secrets"
 )
 
 // Settings struct
@@ -75,4 +76,9 @@ type BackupLocation struct {
 // AnalyticsConfig keeps data
 type AnalyticsConfig struct {
 	AnonymousID string `json:"anonymousId"`
+}
+
+// dynamic secrets used across system
+type SystemDynamicSecrets struct {
+	JwtAccessSecret string `json:"jwtAccessSecret"`
 }

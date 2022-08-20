@@ -122,7 +122,7 @@ func translateRecursive(copy, original reflect.Value) {
 }
 
 var (
-	DefaultSpecialKeys = []string{"password", "token", "access_token", "accesstoken", "authorization", "authentication"}
+	DefaultSpecialKeys = []string{"password", "token", "access_token", "accesstoken", "authorization", "authentication", "jwtaccesssecret"}
 )
 
 // UpdateSecrets encrypts or decrypts the spacial keys

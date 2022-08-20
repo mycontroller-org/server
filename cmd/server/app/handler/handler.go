@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/gorilla/mux"
@@ -10,6 +9,7 @@ import (
 	handlerAuthAPI "github.com/mycontroller-org/server/v2/cmd/server/app/handler/api/auth"
 	middleware "github.com/mycontroller-org/server/v2/cmd/server/app/handler/middleware"
 	webConsole "github.com/mycontroller-org/server/v2/cmd/server/app/web-console"
+	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	virtualAssistantAPI "github.com/mycontroller-org/server/v2/pkg/service/virtual_assistant"
 	mcWS "github.com/mycontroller-org/server/v2/pkg/service/websocket"
 	"github.com/mycontroller-org/server/v2/pkg/store"
@@ -26,9 +26,10 @@ func GetHandler() (http.Handler, error) {
 	webCfg := store.CFG.Web
 
 	// set JWT access secret in environment
-	// TODO: this should be updated dynamically
-	if os.Getenv(webHandlerTY.EnvJwtAccessSecret) == "" {
-		os.Setenv(webHandlerTY.EnvJwtAccessSecret, "add2a90d-c7c5-4d93-96e2-e70eca62400d")
+	err := settingsAPI.UpdateJwtAccessSecret()
+	if err != nil {
+		zap.L().Error("error on getting jwt access secret", zap.Error(err))
+		return nil, err
 	}
 
 	// Enable Profiling, if enabled

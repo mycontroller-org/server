@@ -3,6 +3,7 @@ package settings
 import (
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
@@ -11,8 +12,11 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/store"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
+	webHandlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	"go.uber.org/zap"
 )
 
 // List by filter and pagination
@@ -70,6 +74,14 @@ func GetByID(ID string) (*settingsTY.Settings, error) {
 		}
 		specStruct = exportLocations
 
+	case settingsTY.KeySystemDynamicSecrets:
+		settings := settingsTY.SystemDynamicSecrets{}
+		err = utils.MapToStruct(utils.TagNameNone, result.Spec, &settings)
+		if err != nil {
+			return nil, err
+		}
+		specStruct = settings
+
 	default:
 
 	}
@@ -103,7 +115,11 @@ func UpdateSettings(settings *settingsTY.Settings) error {
 	case settingsTY.KeySystemSettings:
 		return UpdateSystemSettings(settings)
 
-	case settingsTY.KeySystemJobs, settingsTY.KeyVersion, settingsTY.KeySystemBackupLocations, settingsTY.KeyAnalytics:
+	case settingsTY.KeySystemJobs,
+		settingsTY.KeyVersion,
+		settingsTY.KeySystemBackupLocations,
+		settingsTY.KeyAnalytics,
+		settingsTY.KeySystemDynamicSecrets:
 		if !configuration.PauseModifiedOnUpdate.IsSet() {
 			settings.ModifiedOn = time.Now()
 		}
@@ -229,6 +245,14 @@ func update(settings *settingsTY.Settings) error {
 	if !configuration.PauseModifiedOnUpdate.IsSet() {
 		settings.ModifiedOn = time.Now()
 	}
+
+	// encrypt passwords, tokens, etc
+	err := cloneUtil.UpdateSecrets(settings, store.CFG.Secret, "", true, cloneUtil.DefaultSpecialKeys)
+	if err != nil {
+		zap.L().Error("error on encryption", zap.Error(err))
+		return err
+	}
+
 	return store.STORAGE.Upsert(types.EntitySettings, settings, filters)
 }
 
@@ -264,4 +288,59 @@ func GetSystemSettings() (*settingsTY.SystemSettings, error) {
 	}
 
 	return systemSettings, nil
+}
+
+func ResetJwtAccessSecret(newSecret string) error {
+	if newSecret == "" {
+		newSecret = utils.RandUUID()
+	}
+
+	systemSecrets := &settingsTY.SystemDynamicSecrets{
+		JwtAccessSecret: newSecret,
+	}
+	spec := utils.StructToMap(systemSecrets)
+
+	settings := &settingsTY.Settings{
+		ID:   settingsTY.KeySystemDynamicSecrets,
+		Spec: spec,
+	}
+	err := UpdateSettings(settings)
+	if err != nil {
+		return err
+	}
+
+	return UpdateJwtAccessSecret()
+}
+
+func UpdateJwtAccessSecret() error {
+	settings, err := GetByID(settingsTY.KeySystemDynamicSecrets)
+	if err != nil {
+		if err != storageTY.ErrNoDocuments {
+			return err
+		}
+		settings = &settingsTY.Settings{}
+	}
+
+	// decrypt passwords, tokens, etc
+	err = cloneUtil.UpdateSecrets(settings, store.CFG.Secret, "", false, cloneUtil.DefaultSpecialKeys)
+	if err != nil {
+		zap.L().Error("error on decryption", zap.Error(err))
+		return err
+	}
+
+	systemSecret := &settingsTY.SystemDynamicSecrets{}
+	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, systemSecret)
+	if err != nil {
+		return err
+	}
+
+	if systemSecret.JwtAccessSecret == "" {
+		systemSecret.JwtAccessSecret = utils.RandUUID()
+		err = ResetJwtAccessSecret(systemSecret.JwtAccessSecret)
+		if err != nil {
+			return err
+		}
+	}
+
+	return os.Setenv(webHandlerTY.EnvJwtAccessSecret, systemSecret.JwtAccessSecret)
 }
