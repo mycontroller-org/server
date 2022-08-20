@@ -134,4 +134,8 @@ var (
 		"on":         vdTY.DeviceTraitOnOff,
 		"brightness": vdTY.DeviceTraitBrightness,
 	}
+
+	IgnoreParamsList = []string{
+		"online",
+	}
 )

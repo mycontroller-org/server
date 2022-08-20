@@ -6,6 +6,7 @@ import (
 	actionAPI "github.com/mycontroller-org/server/v2/pkg/api/action"
 	vdAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_device"
 	vdTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_device"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	converterUtil "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/google/types"
@@ -47,6 +48,11 @@ func executeCommand(device gaTY.ExecuteRequestDevice, executions []gaTY.ExecuteR
 
 	for _, execution := range executions {
 		for key, val := range execution.Params {
+			// if it is in ignore list, keep continue
+			if utils.ContainsString(gaTY.IgnoreParamsList, key) {
+				continue
+			}
+
 			trait, found := gaTY.CommandParamsMap[key]
 			if !found {
 				zap.L().Warn("trait not found on the command params map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("paramsKey", key))

@@ -94,11 +94,14 @@ func getResourceParams(trait string, resource vdTY.Resource) (map[string]interfa
 	// zap.L().Info("requested trait", zap.String("trait", trait))
 	params := make(map[string]interface{})
 	switch trait {
-	case vdTY.DeviceTraitOnOff:
+	case vdTY.DeviceTraitOnOff: // https://developers.google.com/assistant/smarthome/traits/onoff#device-states
 		params["on"] = convertorUtil.ToBool(resource.Value)
 
-	case vdTY.DeviceTraitBrightness:
+	case vdTY.DeviceTraitBrightness: // https://developers.google.com/assistant/smarthome/traits/brightness#device-states
 		params["brightness"] = convertorUtil.ToInteger(resource.Value)
+
+		// case vdTY.DeviceTraitColorSetting: // https://developers.google.com/assistant/smarthome/traits/colorsetting#device-states
+		// 	params["color"] = ""
 
 	default:
 		zap.L().Info("support not implemented for this trait", zap.String("trait", trait))
