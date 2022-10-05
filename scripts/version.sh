@@ -15,7 +15,7 @@ if [ ${GIT_BRANCH} = "HEAD" ]; then
 fi
 
 # update version number
-export VERSION=`echo ${GIT_BRANCH} |  awk 'match($0, /([0-9]*\.[0-9]*)$/) { print substr($0, RSTART, RLENGTH) }'`
+export VERSION=`echo ${GIT_BRANCH} |  awk 'match($0, /([0-9]*\.[0-9]*\.[0-9]*)$/) { print substr($0, RSTART, RLENGTH) }'`
 if [ ${GIT_BRANCH} = "master" ]; then
 export VERSION="master"
 fi
