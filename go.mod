@@ -6,8 +6,8 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/amimof/huego v1.2.0
 	github.com/btittelbach/astrotime v0.0.0-20160515101311-7ddba43aa26e
-	github.com/dop251/goja v0.0.0-20220516123900-4418d4575a41
-	github.com/dop251/goja_nodejs v0.0.0-20211022123610-8dd9abb0616d
+	github.com/dop251/goja v0.0.0-20221118162653-d4bf6fde1b86
+	github.com/dop251/goja_nodejs v0.0.0-20221009164102-3aa5028e57f6
 	github.com/eclipse/paho.mqtt.golang v1.4.1
 	github.com/fatih/structs v1.1.0
 	github.com/go-cmd/cmd v1.4.1
@@ -35,7 +35,7 @@ require (
 
 require (
 	github.com/deepmap/oapi-codegen v1.8.2 // indirect
-	github.com/dlclark/regexp2 v1.4.1-0.20201116162257-a2a8dda75c91 // indirect
+	github.com/dlclark/regexp2 v1.7.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
