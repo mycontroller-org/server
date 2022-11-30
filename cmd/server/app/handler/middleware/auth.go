@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/types/user"
 	handlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
@@ -62,8 +64,13 @@ func MiddlewareAuthenticationVerification(next http.Handler) http.Handler {
 					return
 				}
 			}
-			// authenticaton required
-			if err := IsValidToken(r); err == nil {
+			// authentication required
+			if err, mcApiContext := IsValidToken(r); err == nil {
+
+				// include user details as context
+				ctx := context.WithValue(r.Context(), types.MC_API_CONTEXT, mcApiContext)
+				r.WithContext(ctx)
+
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -79,19 +86,19 @@ func MiddlewareAuthenticationVerification(next http.Handler) http.Handler {
 // steps to verify the authentication
 // 1. Verify the token in header
 // 2. Verify the token in cookie
-func IsValidToken(r *http.Request) error {
+func IsValidToken(r *http.Request) (error, *types.McApiContext) {
 	token, claims, err := getJwtToken(r)
 	if err != nil {
-		return err
+		return err, nil
 	}
 	if !token.Valid {
-		return errors.New("invalid token")
+		return errors.New("invalid token"), nil
 	}
 
 	// verify the validity
 	expiresAt := convertor.ToInteger(claims[handlerTY.KeyExpiresAt])
 	if time.Now().Unix() >= expiresAt {
-		return errors.New("expired token")
+		return errors.New("expired token"), nil
 	}
 
 	// clear userID header, might be injected from external
@@ -103,7 +110,13 @@ func IsValidToken(r *http.Request) error {
 			r.Header.Set(handlerTY.HeaderUserID, id)
 		}
 	}
-	return nil
+
+	mcApiContext := types.McApiContext{
+		Tenant: "",
+		UserID: r.Header.Get(handlerTY.HeaderUserID),
+	}
+
+	return nil, &mcApiContext
 }
 
 func getJwtToken(r *http.Request) (*jwt.Token, jwt.MapClaims, error) {

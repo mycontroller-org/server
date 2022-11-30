@@ -150,7 +150,7 @@ func oAuthToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	r.Header.Set(handlerTY.HeaderAuthorization, accessToken)
-	err = middleware.IsValidToken(r)
+	err, _ = middleware.IsValidToken(r)
 	if err != nil {
 		zap.L().Info("invalid token", zap.Error(err))
 		http.Error(w, "invalid token", http.StatusUnauthorized)
@@ -205,7 +205,7 @@ func oAuthTokenAlexa(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("data:[%s]\n", string(inputBytes))
 
-	err = middleware.IsValidToken(r)
+	err, _ = middleware.IsValidToken(r)
 	if err != nil {
 		zap.L().Info("invalid token", zap.Error(err))
 		http.Error(w, "invalid token", http.StatusUnauthorized)
