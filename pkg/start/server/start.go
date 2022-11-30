@@ -2,6 +2,7 @@ package server
 
 import (
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
+	bkpMap "github.com/mycontroller-org/server/v2/pkg/backup/bkp_map"
 	metricSVC "github.com/mycontroller-org/server/v2/pkg/service/database/metric"
 	storageSVC "github.com/mycontroller-org/server/v2/pkg/service/database/storage"
 	deletionSVC "github.com/mycontroller-org/server/v2/pkg/service/deletion"
@@ -30,7 +31,7 @@ func startServices() {
 		zap.L().Fatal("error on init storage database", zap.Error(err))
 	}
 	store.InitStorage(stgSVC) // load storage database client
-	err = storageSVC.RunImport(store.STORAGE, backupAPI.ExecuteImportStorage)
+	err = storageSVC.RunImport(store.STORAGE, bkpMap.ImportMap, backupAPI.ExecuteImportStorage)
 	if err != nil {
 		zap.L().Fatal("error on import", zap.Error(err))
 	}

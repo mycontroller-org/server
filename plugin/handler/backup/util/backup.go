@@ -5,6 +5,7 @@ import (
 	"time"
 
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
+	bkpMap "github.com/mycontroller-org/server/v2/pkg/backup/bkp_map"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/ziputils"
@@ -18,7 +19,7 @@ func Backup(prefix, storageExportType string) (string, error) {
 	zipFilename := fmt.Sprintf("%s.zip", targetDir)
 
 	// export to tmp directory
-	err := backupAPI.ExecuteExportStorage(targetDir, storageExportType)
+	err := backupAPI.ExecuteExportStorage(bkpMap.ExportMap, targetDir, storageExportType)
 	if err != nil {
 		return "", err
 	}

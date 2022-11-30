@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/version"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
 // global backup/restore constants
@@ -51,3 +52,11 @@ type OnDemandBackupConfig struct {
 type BackupLocationDisk struct {
 	TargetDirectory string
 }
+
+// holds save api details
+type SaveAPIHolder struct {
+	EntityType interface{}
+	API        func(data interface{}) error
+}
+
+type ListFunc func(f []storageTY.Filter, p *storageTY.Pagination) (*storageTY.Result, error)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
+	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	cfgTY "github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
@@ -32,7 +33,7 @@ func Init(storageCfg cmap.CustomMap, loggerCfg cfgTY.LoggerConfig) (storageTY.Pl
 	return plugin, nil
 }
 
-func RunImport(plugin storageTY.Plugin, importFunc func(targetDir, fileType string, ignoreEmptyDir bool) error) error {
+func RunImport(plugin storageTY.Plugin, apiMap map[string]backupTY.SaveAPIHolder, importFunc func(apiMap map[string]backupTY.SaveAPIHolder, targetDir, fileType string, ignoreEmptyDir bool) error) error {
 	if doStartImport, filesDir, fileFormat := plugin.DoStartupImport(); doStartImport {
 		// run startup import
 		// Pause Timestamp Update and resume later
@@ -45,7 +46,7 @@ func RunImport(plugin storageTY.Plugin, importFunc func(targetDir, fileType stri
 			zap.L().Fatal("error on creating files directory", zap.Error(err), zap.String("filesDir", filesDir))
 			return err
 		}
-		err = importFunc(filesDir, fileFormat, true)
+		err = importFunc(apiMap, filesDir, fileFormat, true)
 		if err != nil {
 			zap.L().Fatal("error on run startup import on database", zap.Error(err))
 			// zap.L().WithOptions(zap.AddCallerSkip(10)).Error("error on local import", zap.String("error", err.Error()))

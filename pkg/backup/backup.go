@@ -6,21 +6,6 @@ import (
 	"path"
 	"time"
 
-	dashboardAPI "github.com/mycontroller-org/server/v2/pkg/api/dashboard"
-	dataRepositoryAPI "github.com/mycontroller-org/server/v2/pkg/api/data_repository"
-	fieldAPI "github.com/mycontroller-org/server/v2/pkg/api/field"
-	firmwareAPI "github.com/mycontroller-org/server/v2/pkg/api/firmware"
-	forwardPayloadAPI "github.com/mycontroller-org/server/v2/pkg/api/forward_payload"
-	gatewayAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
-	notificationHandlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
-	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
-	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
-	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
-	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
-	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
-	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
-	vaAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_assistant"
-	vdAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_device"
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
@@ -35,26 +20,6 @@ import (
 
 var (
 	isRunning = concurrency.SafeBool{}
-)
-
-var (
-	entitiesList = map[string]func(f []storageTY.Filter, p *storageTY.Pagination) (*storageTY.Result, error){
-		types.EntityGateway:          gatewayAPI.List,
-		types.EntityNode:             nodeAPI.List,
-		types.EntitySource:           sourceAPI.List,
-		types.EntityField:            fieldAPI.List,
-		types.EntityFirmware:         firmwareAPI.List,
-		types.EntityUser:             userAPI.List,
-		types.EntityDashboard:        dashboardAPI.List,
-		types.EntityForwardPayload:   forwardPayloadAPI.List,
-		types.EntityHandler:          notificationHandlerAPI.List,
-		types.EntityTask:             taskAPI.List,
-		types.EntitySchedule:         scheduleAPI.List,
-		types.EntitySettings:         settingsAPI.List,
-		types.EntityDataRepository:   dataRepositoryAPI.List,
-		types.EntityVirtualAssistant: vaAPI.List,
-		types.EntityVirtualDevice:    vdAPI.List,
-	}
 )
 
 // ExecuteCopyFirmware copies firmware files
@@ -103,7 +68,7 @@ func addBackupInformation(targetDir, storageExportType string) error {
 }
 
 // ExecuteExportStorage exports data from database to disk
-func ExecuteExportStorage(targetDir, storageExportType string) error {
+func ExecuteExportStorage(exportMap map[string]backupTY.ListFunc, targetDir, storageExportType string) error {
 	if isRunning.IsSet() {
 		return errors.New("there is a exporter job in progress")
 	}
@@ -118,8 +83,8 @@ func ExecuteExportStorage(targetDir, storageExportType string) error {
 
 	targetDirFullPath := fmt.Sprintf("%s%s", targetDir, types.DirectoryDataStorage)
 
-	for entityName := range entitiesList {
-		listFn := entitiesList[entityName]
+	for entityName := range exportMap {
+		listFn := exportMap[entityName]
 		p := &storageTY.Pagination{
 			Limit: backupTY.LimitPerFile, SortBy: []storageTY.Sort{{Field: types.KeyFieldID, OrderBy: "asc"}}, Offset: 0,
 		}

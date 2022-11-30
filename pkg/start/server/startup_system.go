@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
+	bkpMap "github.com/mycontroller-org/server/v2/pkg/backup/bkp_map"
 	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
+	"github.com/mycontroller-org/server/v2/pkg/store"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
@@ -44,7 +46,7 @@ func RunSystemStartJobs() {
 	// remove internal directory
 	err = utils.RemoveDir(types.GetDataDirectoryInternal())
 	if err != nil {
-		zap.L().Fatal("error on removing internal direcotry", zap.String("path", types.GetDataDirectoryInternal()), zap.Error(err))
+		zap.L().Fatal("error on removing internal directory", zap.String("path", types.GetDataDirectoryInternal()), zap.Error(err))
 	}
 }
 
@@ -57,8 +59,8 @@ func systemRestoreOperation(cfg *config.StartupRestore) {
 	configuration.PauseModifiedOnUpdate.Set()
 	defer configuration.PauseModifiedOnUpdate.Reset()
 
-	zap.L().Info("found a restore setup on startup. Performaing restore operation", zap.Any("config", cfg))
-	err := backupAPI.ExecuteRestore(cfg.ExtractedDirectory)
+	zap.L().Info("found a restore setup on startup. Performing restore operation", zap.Any("config", cfg))
+	err := backupAPI.ExecuteRestore(store.STORAGE, bkpMap.ImportMap, cfg.ExtractedDirectory)
 	if err != nil {
 		zap.L().Fatal("error on restore", zap.Error(err))
 		return

@@ -21,7 +21,7 @@ import (
 func RunRestore(file backupTY.BackupFile) error {
 	zap.L().Info("restore data request received", zap.Any("backupFile", file))
 
-	err := backupAPI.ExtractExportedZipfile(file.FullPath)
+	err := backupAPI.ExtractExportedZipFile(file.FullPath)
 	if err != nil {
 		zap.L().Error("error on extract", zap.Error(err), zap.Any("file", file))
 		return err

@@ -5,65 +5,36 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"reflect"
 	"strings"
 	"time"
 
-	dashboardAPI "github.com/mycontroller-org/server/v2/pkg/api/dashboard"
-	dataRepositoryAPI "github.com/mycontroller-org/server/v2/pkg/api/data_repository"
-	fieldAPI "github.com/mycontroller-org/server/v2/pkg/api/field"
-	fwAPI "github.com/mycontroller-org/server/v2/pkg/api/firmware"
-	fwdPayloadAPI "github.com/mycontroller-org/server/v2/pkg/api/forward_payload"
-	gwAPI "github.com/mycontroller-org/server/v2/pkg/api/gateway"
-	notificationHandlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
-	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
-	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
-	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
-	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
-	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
-	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
-	vaAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_assistant"
-	vdAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_device"
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/server/v2/pkg/store"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
-	dashboardTY "github.com/mycontroller-org/server/v2/pkg/types/dashboard"
-	dataRepositoryTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
-	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
-	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
-	fwdPayloadTY "github.com/mycontroller-org/server/v2/pkg/types/forward_payload"
-	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
-	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
-	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
-	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
-	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
-	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
-	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
-	vdTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_device"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"github.com/mycontroller-org/server/v2/pkg/utils/ziputils"
-	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
-	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )
 
 var isImportJobRunning = concurrency.SafeBool{}
 
-func ExecuteRestore(extractedDir string) error {
+func ExecuteRestore(storage storageTY.Plugin, apiMap map[string]backupTY.SaveAPIHolder, extractedDir string) error {
 	start := time.Now()
 	zap.L().Info("Restore job triggered", zap.String("extractedDirectory", extractedDir))
 
-	err := store.STORAGE.Pause()
+	err := storage.Pause()
 	if err != nil {
 		zap.L().Fatal("error on pause a database", zap.Error(err))
 		return err
 	}
 
-	err = store.STORAGE.ClearDatabase()
+	err = storage.ClearDatabase()
 	if err != nil {
 		zap.L().Fatal("error on emptying database", zap.Error(err))
 		return err
@@ -85,13 +56,13 @@ func ExecuteRestore(extractedDir string) error {
 		return err
 	}
 
-	err = ExecuteImportStorage(storageDir, exportDetails.StorageExportType, false)
+	err = ExecuteImportStorage(apiMap, storageDir, exportDetails.StorageExportType, false)
 	if err != nil {
 		zap.L().Fatal("error on importing storage files", zap.Error(err))
 		return err
 	}
 
-	err = store.STORAGE.Resume()
+	err = storage.Resume()
 	if err != nil {
 		zap.L().Fatal("error on resume a database service", zap.Error(err))
 		return err
@@ -136,7 +107,7 @@ func ExecuteRestoreFirmware(sourceDir string) error {
 }
 
 // ExecuteImportStorage update data into database
-func ExecuteImportStorage(sourceDir, fileType string, ignoreEmptyDir bool) error {
+func ExecuteImportStorage(apiMap map[string]backupTY.SaveAPIHolder, sourceDir, fileType string, ignoreEmptyDir bool) error {
 	if isImportJobRunning.IsSet() {
 		return errors.New("there is an import job is in progress")
 	}
@@ -150,7 +121,7 @@ func ExecuteImportStorage(sourceDir, fileType string, ignoreEmptyDir bool) error
 	// pause bus service
 	mcbus.Pause()
 
-	zap.L().Info("Executing import job", zap.String("sourceDir", sourceDir), zap.String("fileType", fileType))
+	zap.L().Info("executing import job", zap.String("sourceDir", sourceDir), zap.String("fileType", fileType))
 	// check directory availability
 	if !utils.IsDirExists(sourceDir) {
 		return fmt.Errorf("specified directory not available. sourceDir:%s", sourceDir)
@@ -171,14 +142,20 @@ func ExecuteImportStorage(sourceDir, fileType string, ignoreEmptyDir bool) error
 			continue
 		}
 		entityName := getEntityName(file.Name)
-		zap.L().Debug("Importing a file", zap.String("file", file.Name), zap.String("entityName", entityName))
+		zap.L().Debug("importing a file", zap.String("file", file.Name), zap.String("entityName", entityName))
 		// read data from file
 		fileBytes, err := utils.ReadFile(sourceDir, file.Name)
 		if err != nil {
 			zap.L().Error("error on reading a file", zap.String("fileName", file.FullPath), zap.Error(err))
 			return err
 		}
-		err = updateEntities(fileBytes, entityName, fileType)
+		apiHolder, found := apiMap[entityName]
+		if !found {
+			zap.L().Error("error on getting api map details", zap.String("entityName", entityName))
+			return fmt.Errorf("error on getting api map details. entityName:%s", entityName)
+		}
+
+		err = updateEntities(apiHolder, fileBytes, entityName, fileType)
 		if err != nil {
 			zap.L().Error("error on updating entity", zap.String("file", file.FullPath), zap.String("entityName", entityName), zap.String("fileType", fileType), zap.Error(err))
 			return err
@@ -187,205 +164,24 @@ func ExecuteImportStorage(sourceDir, fileType string, ignoreEmptyDir bool) error
 	return nil
 }
 
-func updateEntities(fileBytes []byte, entityName, fileFormat string) error {
-	switch entityName {
-	case types.EntityGateway:
-		entities := make([]gatewayTY.Config, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
+func updateEntities(apiHolder backupTY.SaveAPIHolder, fileBytes []byte, entityName, fileFormat string) error {
+	// get actual type
+	entityType := reflect.TypeOf(apiHolder.EntityType)
+	entities := reflect.New(reflect.SliceOf(entityType)).Interface()
+
+	// load file data into entities
+	err := unmarshal(fileFormat, fileBytes, entities)
+	if err != nil {
+		return err
+	}
+
+	entitiesElem := reflect.ValueOf(entities).Elem()
+	// store the entities
+	for index := 0; index < entitiesElem.Len(); index++ {
+		err = apiHolder.API(entitiesElem.Index(index).Interface())
 		if err != nil {
 			return err
 		}
-		for index := 0; index < len(entities); index++ {
-			err = gwAPI.Save(&entities[index])
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntityNode:
-		entities := make([]nodeTY.Node, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = nodeAPI.Save(&entities[index], false)
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntitySource:
-		entities := make([]sourceTY.Source, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = sourceAPI.Save(&entities[index])
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntityField:
-		entities := make([]fieldTY.Field, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = fieldAPI.Save(&entities[index], false)
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntityFirmware:
-		entities := make([]firmwareTY.Firmware, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = fwAPI.Save(&entities[index], false)
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntityUser:
-		entities := make([]userTY.User, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = userAPI.Save(&entities[index])
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntityDashboard:
-		entities := make([]dashboardTY.Config, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = dashboardAPI.Save(&entities[index])
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntityHandler:
-		entities := make([]handlerTY.Config, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = notificationHandlerAPI.Save(&entities[index])
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntityForwardPayload:
-		entities := make([]fwdPayloadTY.Config, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = fwdPayloadAPI.Save(&entities[index])
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntityTask:
-		entities := make([]taskTY.Config, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = taskAPI.Save(&entities[index])
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntitySchedule:
-		entities := make([]scheduleTY.Config, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = scheduleAPI.Save(&entities[index])
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntitySettings:
-		entities := make([]settingsTY.Settings, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = settingsAPI.Save(&entities[index])
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntityDataRepository:
-		entities := make([]dataRepositoryTY.Config, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = dataRepositoryAPI.Save(&entities[index])
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntityVirtualDevice:
-		entities := make([]vdTY.VirtualDevice, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = vdAPI.Save(&entities[index])
-			if err != nil {
-				return err
-			}
-		}
-
-	case types.EntityVirtualAssistant:
-		entities := make([]vaTY.Config, 0)
-		err := unmarshal(fileFormat, fileBytes, &entities)
-		if err != nil {
-			return err
-		}
-		for index := 0; index < len(entities); index++ {
-			err = vaAPI.Save(&entities[index])
-			if err != nil {
-				return err
-			}
-		}
-
-	default:
-		return fmt.Errorf("unknown entity type:%s", entityName)
 	}
 
 	return nil
@@ -417,20 +213,20 @@ func getEntityName(filename string) string {
 	return ""
 }
 
-func ExtractExportedZipfile(exportedZipfile string) error {
+func ExtractExportedZipFile(exportedZipFile string) error {
 	if isImportJobRunning.IsSet() {
 		return errors.New("there is an import job is in progress")
 	}
 	isImportJobRunning.Set()
 	defer isImportJobRunning.Reset()
 
-	zipFilename := path.Base(exportedZipfile)
+	zipFilename := path.Base(exportedZipFile)
 	baseDir := strings.TrimSuffix(zipFilename, path.Ext(zipFilename))
 	extractFullPath := path.Join(types.GetDataDirectoryInternal(), baseDir)
 
-	err := ziputils.Unzip(exportedZipfile, extractFullPath)
+	err := ziputils.Unzip(exportedZipFile, extractFullPath)
 	if err != nil {
-		zap.L().Error("error on unzip", zap.String("exportedZipfile", exportedZipfile), zap.String("extractLocation", extractFullPath), zap.Error(err))
+		zap.L().Error("error on unzip", zap.String("exportedZipfile", exportedZipFile), zap.String("extractLocation", extractFullPath), zap.Error(err))
 		return err
 	}
 
