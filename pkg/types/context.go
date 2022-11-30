@@ -1,8 +1,10 @@
 package types
 
 const (
-	MC_API_CONTEXT = "MC_API_CONTEXT"
+	MC_API_CONTEXT ContextKey = "MC_API_CONTEXT"
 )
+
+type ContextKey string
 
 // struct used in api request
 type McApiContext struct {

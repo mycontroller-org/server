@@ -69,9 +69,9 @@ func MiddlewareAuthenticationVerification(next http.Handler) http.Handler {
 
 				// include user details as context
 				ctx := context.WithValue(r.Context(), types.MC_API_CONTEXT, mcApiContext)
-				r.WithContext(ctx)
+				reqWithCtx := r.WithContext(ctx)
 
-				next.ServeHTTP(w, r)
+				next.ServeHTTP(w, reqWithCtx)
 				return
 			}
 			w.Header().Set("Content-Type", "application/json")
