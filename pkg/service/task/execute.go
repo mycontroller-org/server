@@ -1,7 +1,6 @@
 package task
 
 import (
-	"fmt"
 	"time"
 
 	commonStore "github.com/mycontroller-org/server/v2/pkg/store"
@@ -117,8 +116,8 @@ func executeTask(task *taskTY.Config, evntWrapper *eventWrapper) {
 		state.ExecutionsHistory = state.ExecutionsHistory[:executionsSliceLimit]
 	}
 
-	state.LastStatus = dampeningTriggered // update triggered status
-	state.Message = fmt.Sprintf("last evaluation timeTaken: %s", time.Since(start).String())
+	state.LastStatus = dampeningTriggered           // update triggered status
+	state.LastDuration = time.Since(start).String() // update last duration
 	tasksStore.UpdateState(task.ID, state)
 
 	// check autoDisable and re-enable (if applicable)

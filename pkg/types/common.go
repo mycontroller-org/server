@@ -15,9 +15,9 @@ const (
 
 // State data
 type State struct {
-	Status  string    `json:"status"`
-	Message string    `json:"message"`
-	Since   time.Time `json:"since"`
+	Status  string    `json:"status" structs:"status"`
+	Message string    `json:"message" structs:"message"`
+	Since   time.Time `json:"since"  structs:"since"`
 }
 
 // File struct

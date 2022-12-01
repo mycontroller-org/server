@@ -1,6 +1,7 @@
 package version
 
 import (
+	"fmt"
 	"runtime"
 
 	"github.com/shirou/gopsutil/v3/host"
@@ -38,4 +39,10 @@ func Get() Version {
 		Arch:      runtime.GOARCH,
 		HostID:    hostId,
 	}
+}
+
+// String returns the values as string
+func (v Version) String() string {
+	return fmt.Sprintf("{version:%s, buildDate:%s, gitCommit:%s, goLang:%s, platform:%s, arch:%s, hostId:%s}",
+		v.Version, v.BuildDate, v.GitCommit, v.GoLang, v.Platform, v.Arch, v.HostID)
 }

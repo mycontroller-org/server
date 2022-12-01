@@ -33,7 +33,11 @@ function package {
   mkdir -p ${PACKAGE_STAGING_DIR}
 
   # echo "Package dir: ${PACKAGE_STAGING_DIR}"
-  cp ${BUILD_DIR}/${BINARY_DIR}/${BINARY_FILE} ${PACKAGE_STAGING_DIR}/mycontroller-${COMPONENT_NAME}${FILE_EXTENSION}
+  if [[ "${COMPONENT_NAME}" == "client" ]]; then
+      cp ${BUILD_DIR}/${BINARY_DIR}/${BINARY_FILE} ${PACKAGE_STAGING_DIR}/myc${FILE_EXTENSION}
+  else
+    cp ${BUILD_DIR}/${BINARY_DIR}/${BINARY_FILE} ${PACKAGE_STAGING_DIR}/mycontroller-${COMPONENT_NAME}${FILE_EXTENSION}
+  fi
 
   # config file name
   local CONFIG_FILE=${COMPONENT_NAME}.yaml
@@ -44,12 +48,15 @@ function package {
     CONFIG_FILE="mycontroller.yaml"    
   fi
 
-  # copy sample config file
-  cp resources/sample-binary-${COMPONENT_NAME}.yaml ${PACKAGE_STAGING_DIR}/${CONFIG_FILE}
-  # copy start/stop script
-  cp resources/control-scripts/mcctl-${COMPONENT_NAME}.sh ${PACKAGE_STAGING_DIR}/mcctl.sh
-  # copy readme text
-  cp resources/control-scripts/README.txt ${PACKAGE_STAGING_DIR}/README.txt
+  if [[ "${COMPONENT_NAME}" != "client" ]]; then
+    # copy sample config file
+    cp resources/sample-binary-${COMPONENT_NAME}.yaml ${PACKAGE_STAGING_DIR}/${CONFIG_FILE}
+    # copy start/stop script
+    cp resources/control-scripts/mcctl-${COMPONENT_NAME}.sh ${PACKAGE_STAGING_DIR}/mcctl.sh
+    # copy readme text
+    cp resources/control-scripts/README.txt ${PACKAGE_STAGING_DIR}/README.txt
+  fi
+  
   # copy license
   cp LICENSE ${PACKAGE_STAGING_DIR}/LICENSE.txt
 
@@ -76,6 +83,7 @@ do
   package_server="mycontroller-server-${GOOS}-${GOARCH}"
   package_gateway="mycontroller-gateway-${GOOS}-${GOARCH}"
   package_handler="mycontroller-handler-${GOOS}-${GOARCH}"
+  package_client="myc"
 
   # to use embed web assets use tag "web"
   # embed assets takes extra ~40 MiB when running
@@ -97,6 +105,12 @@ do
       echo "an error has occurred. aborting the build process, status:${build_status}"
       exit $status
   fi
+  env GOOS=${GOOS} GOARCH=${GOARCH} go build -o ${BUILD_DIR}/${BINARY_DIR}/${package_client} -ldflags "$LD_FLAGS" cmd/client/main.go
+  build_status=$?
+  if [ $build_status -ne 0 ]; then
+      echo "an error has occurred. aborting the build process, status:${build_status}"
+      exit $status
+  fi
 
   FILE_EXTENSION=""
   if [ $GOOS = "windows" ]; then
@@ -106,5 +120,6 @@ do
   package mycontroller-server-${VERSION}-${GOOS}-${GOARCH} "server" ${package_server} ${FILE_EXTENSION}
   package mycontroller-gateway-${VERSION}-${GOOS}-${GOARCH} "gateway" ${package_gateway} ${FILE_EXTENSION}
   package mycontroller-handler-${VERSION}-${GOOS}-${GOARCH} "handler" ${package_handler} ${FILE_EXTENSION}
+  package mycontroller-client-${VERSION}-${GOOS}-${GOARCH} "client" ${package_client} ${FILE_EXTENSION}
 done
 

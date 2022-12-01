@@ -99,6 +99,7 @@ type State struct {
 	LastEvaluation    time.Time        `json:"lastEvaluation"`
 	LastSuccess       time.Time        `json:"lastSuccess"`
 	Message           string           `json:"message"`
+	LastDuration      string           `json:"lastDuration"`
 	LastStatus        bool             `json:"lastStatus"`
 	ExecutedCount     int64            `json:"executedCount"`
 	ExecutionsHistory []ExecutionState `json:"executionsHistory"`
