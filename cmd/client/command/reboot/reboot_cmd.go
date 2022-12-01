@@ -14,7 +14,7 @@ func init() {
 
 var nodeRebootCmd = &cobra.Command{
 	Use:     "node",
-	Aliases: []string{"node"},
+	Aliases: []string{"nodes"},
 	Short:   "Reboots the given nodes",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)

@@ -229,7 +229,7 @@ var virtualAssistantGetCmd = &cobra.Command{
 
 var taskGetCmd = &cobra.Command{
 	Use:     "task",
-	Aliases: []string{"task"},
+	Aliases: []string{"tasks"},
 	Short:   "Print the task details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
