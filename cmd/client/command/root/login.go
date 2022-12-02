@@ -1,10 +1,14 @@
 package root
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
 )
 
 var (
@@ -29,19 +33,42 @@ var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "Log in to a MyController server",
 	Example: `  # login into the MyController server with username and password
-  export TOKEN=$(cat my_token.txt)
-  mc login http://localhost:8080 --username admin --password ${TOKEN}
-
-  # login into the MyController server with username and password
-  mc login http://localhost:8080 --username admin --password password
+  myc login http://localhost:8080 --username admin --password password
 
   # login into the MyController insecure server (with SSL certificate)
-  mc login https://localhost:8443 --username admin --password password  --insecure`,
+  myc login https://localhost:8443 --username admin --password password  --insecure
+
+  # prompt username and password
+  myc login http://localhost:8080
+
+  # prompt password
+  myc login http://localhost:8080 --username admin
+	`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		UpdateStreams(cmd)
 	},
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		// get username from terminal
+		if loginUsername == "" {
+			_username, err := promptUsername()
+			if err != nil {
+				fmt.Fprintln(IOStreams.ErrOut, err.Error())
+				return
+			}
+			loginUsername = _username
+		}
+
+		// get password from terminal
+		if loginPassword == "" {
+			_password, err := promptPassword()
+			if err != nil {
+				fmt.Fprintln(IOStreams.ErrOut, err.Error())
+				return
+			}
+			loginPassword = _password
+		}
+
 		CONFIG.URL = args[0]
 		CONFIG.Insecure = loginInsecure
 		client := GetClient()
@@ -80,4 +107,24 @@ var logoutCmd = &cobra.Command{
 		fmt.Fprintln(IOStreams.Out, "Logout successful.")
 		WriteConfigFile()
 	},
+}
+
+func promptUsername() (string, error) {
+	reader := bufio.NewReader(IOStreams.In)
+	fmt.Fprint(IOStreams.Out, "Username: ")
+	username, err := reader.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSuffix(username, "\n"), nil
+}
+
+func promptPassword() (string, error) {
+	fmt.Fprint(IOStreams.Out, "Password: ")
+	pw, err := term.ReadPassword(int(os.Stdin.Fd()))
+	fmt.Fprintln(IOStreams.Out)
+	if err != nil {
+		return "", err
+	}
+	return string(pw), nil
 }
