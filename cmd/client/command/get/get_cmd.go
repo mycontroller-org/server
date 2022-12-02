@@ -54,7 +54,7 @@ var gwGetCmd = &cobra.Command{
 			{Title: "protocol", ValuePath: "provider.protocol.type"},
 			{Title: "status", ValuePath: "state.status"},
 			{Title: "message", ValuePath: "state.message"},
-			{Title: "since", ValuePath: "state.since", ValueType: printer.ValueTypeRelativeTime},
+			{Title: "since", ValuePath: "state.since", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListGateway, gwTY.Config{})
 	},
@@ -79,8 +79,8 @@ var nodeGetCmd = &cobra.Command{
 			{Title: "library version", ValuePath: "labels.library_version"},
 			{Title: "battery", ValuePath: "others.battery_level"},
 			{Title: "status", ValuePath: "state.status"},
-			{Title: "since", ValuePath: "state.since", ValueType: printer.ValueTypeRelativeTime},
-			{Title: "last seen", ValuePath: "lastSeen", ValueType: printer.ValueTypeRelativeTime},
+			{Title: "since", ValuePath: "state.since", DisplayStyle: printer.DisplayStyleRelativeTime},
+			{Title: "last seen", ValuePath: "lastSeen", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListNode, nodeTY.Node{})
 	},
@@ -102,7 +102,7 @@ var sourceGetCmd = &cobra.Command{
 			{Title: "node id", ValuePath: "nodeId"},
 			{Title: "source id", ValuePath: "sourceId"},
 			{Title: "name"},
-			{Title: "last seen", ValuePath: "lastSeen", ValueType: printer.ValueTypeRelativeTime},
+			{Title: "last seen", ValuePath: "lastSeen", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListSource, sourceTY.Source{})
 	},
@@ -129,8 +129,8 @@ var fieldGetCmd = &cobra.Command{
 			{Title: "value", ValuePath: "current.value"},
 			{Title: "previous value", ValuePath: "previous.value"},
 			{Title: "unit"},
-			{Title: "last seen", ValuePath: "lastSeen", ValueType: printer.ValueTypeRelativeTime},
-			{Title: "no change since", ValuePath: "noChangeSince", ValueType: printer.ValueTypeRelativeTime},
+			{Title: "last seen", ValuePath: "lastSeen", DisplayStyle: printer.DisplayStyleRelativeTime},
+			{Title: "no change since", ValuePath: "noChangeSince", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListField, fieldTY.Field{})
 	},
@@ -152,7 +152,7 @@ var firmwareGetCmd = &cobra.Command{
 			{Title: "filename", ValuePath: "file.name"},
 			{Title: "size", ValuePath: "file.size"},
 			{Title: "labels"},
-			{Title: "modified on", ValuePath: "file.modifiedOn", ValueType: printer.ValueTypeRelativeTime},
+			{Title: "modified on", ValuePath: "file.modifiedOn", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListFirmware, firmwareTY.Firmware{})
 	},
@@ -173,7 +173,7 @@ var dataRepositoryGetCmd = &cobra.Command{
 			{Title: "description"},
 			{Title: "readonly", ValuePath: "readOnly"},
 			{Title: "labels"},
-			{Title: "modified on", ValuePath: "modifiedOn", ValueType: printer.ValueTypeRelativeTime},
+			{Title: "modified on", ValuePath: "modifiedOn", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListDataRepository, dataRepoTY.Config{})
 	},
@@ -197,7 +197,7 @@ var virtualDeviceGetCmd = &cobra.Command{
 			{Title: "location"},
 			{Title: "device type", ValuePath: "deviceType"},
 			{Title: "labels"},
-			{Title: "modified on", ValuePath: "modifiedOn", ValueType: printer.ValueTypeRelativeTime},
+			{Title: "modified on", ValuePath: "modifiedOn", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListVirtualDevice, vdTY.VirtualDevice{})
 	},
@@ -221,7 +221,7 @@ var virtualAssistantGetCmd = &cobra.Command{
 			{Title: "device filter", ValuePath: "deviceFilter"},
 			{Title: "status", ValuePath: "state.status"},
 			{Title: "message", ValuePath: "state.message"},
-			{Title: "since", ValuePath: "state.since", ValueType: printer.ValueTypeRelativeTime},
+			{Title: "since", ValuePath: "state.since", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListVirtualAssistant, vaTY.Config{})
 	},
@@ -246,8 +246,8 @@ var taskGetCmd = &cobra.Command{
 			{Title: "trigger on event", ValuePath: "triggerOnEvent"},
 			// {Title: "message", ValuePath: "state.message"},
 			{Title: "last duration", ValuePath: "state.lastDuration"},
-			{Title: "last evaluation", ValuePath: "state.lastEvaluation", ValueType: printer.ValueTypeRelativeTime},
-			{Title: "last success", ValuePath: "state.lastSuccess", ValueType: printer.ValueTypeRelativeTime},
+			{Title: "last evaluation", ValuePath: "state.lastEvaluation", DisplayStyle: printer.DisplayStyleRelativeTime},
+			{Title: "last success", ValuePath: "state.lastSuccess", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListTask, taskTY.Config{})
 	},
@@ -270,7 +270,7 @@ var scheduleGetCmd = &cobra.Command{
 			{Title: "type"},
 			{Title: "executed count", ValuePath: "state.executedCount"},
 			{Title: "message", ValuePath: "state.message"},
-			{Title: "last run", ValuePath: "state.lastRun", ValueType: printer.ValueTypeRelativeTime},
+			{Title: "last run", ValuePath: "state.lastRun", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListSchedule, scheduleTY.Config{})
 	},
@@ -293,7 +293,7 @@ var handlerGetCmd = &cobra.Command{
 			{Title: "type"},
 			{Title: "status", ValuePath: "state.status"},
 			{Title: "message", ValuePath: "state.message"},
-			{Title: "since", ValuePath: "state.since", ValueType: printer.ValueTypeRelativeTime},
+			{Title: "since", ValuePath: "state.since", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListHandler, handlerTY.Config{})
 	},
@@ -335,7 +335,7 @@ var backupGetCmd = &cobra.Command{
 			{Title: "filename", ValuePath: "id"},
 			{Title: "location name", ValuePath: "locationName"},
 			{Title: "size", ValuePath: "fileSize"},
-			{Title: "modified on", ValuePath: "modifiedOn", ValueType: printer.ValueTypeRelativeTime},
+			{Title: "modified on", ValuePath: "modifiedOn", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListBackup, backupTY.BackupFile{})
 	},

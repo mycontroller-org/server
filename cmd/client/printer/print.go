@@ -24,13 +24,13 @@ const (
 )
 
 type Header struct {
-	Title     string
-	ValuePath string
-	ValueType string
+	Title        string
+	ValuePath    string
+	DisplayStyle string
 }
 
 const (
-	ValueTypeRelativeTime = "relative_time"
+	DisplayStyleRelativeTime = "relative_time"
 )
 
 func Print(out io.Writer, headers []Header, data interface{}, hideHeader bool, output string, pretty bool) {
@@ -100,7 +100,7 @@ func PrintConsole(out io.Writer, headers []Header, data []interface{}, hideHeade
 				switch _value := value.(type) {
 				case time.Time:
 					if !_value.IsZero() {
-						if header.ValueType == ValueTypeRelativeTime {
+						if header.DisplayStyle == DisplayStyleRelativeTime {
 							g, err := goment.New(_value.UnixNano())
 							if err != nil {
 								rowValue = err.Error()

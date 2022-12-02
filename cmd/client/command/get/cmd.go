@@ -39,7 +39,7 @@ var getCmd = &cobra.Command{
 	},
 }
 
-func getFilters() []storageTY.Filter {
+func getFilters(headers []printer.Header) []storageTY.Filter {
 	if filterString == "" {
 		return []storageTY.Filter{}
 	}
@@ -47,32 +47,56 @@ func getFilters() []storageTY.Filter {
 	filters := []storageTY.Filter{}
 	filtersRaw := strings.Split(filterString, ",")
 	for _, filterMap := range filtersRaw {
-		filterArray := strings.SplitN(filterMap, "=", 2)
+		// get operator
+		separator := "="
+		operator := storageTY.OperatorRegex
+		if strings.Contains(filterMap, "==") {
+			separator = "=="
+			operator = storageTY.OperatorEqual
+		} else if strings.Contains(filterMap, "!=") {
+			separator = "!="
+			operator = storageTY.OperatorNotEqual
+		} else if strings.Contains(filterMap, ">=") {
+			separator = ">="
+			operator = storageTY.OperatorGreaterThanEqual
+		} else if strings.Contains(filterMap, "<=") {
+			separator = "<="
+			operator = storageTY.OperatorLessThanEqual
+		} else if strings.Contains(filterMap, ">") {
+			separator = ">"
+			operator = storageTY.OperatorGreaterThan
+		} else if strings.Contains(filterMap, "<") {
+			separator = "<"
+			operator = storageTY.OperatorLessThan
+		}
+		filterArray := strings.SplitN(filterMap, separator, 2)
 		if len(filterArray) != 2 {
 			continue
 		}
+
+		// get actual key
+		actualKey := strings.TrimSpace(getActualKey(headers, filterArray[0]))
 		filters = append(filters, storageTY.Filter{
-			Key:      strings.TrimSpace(filterArray[0]),
+			Key:      actualKey,
 			Value:    strings.TrimSpace(filterArray[1]),
-			Operator: storageTY.OperatorRegex,
+			Operator: operator,
 		})
 	}
-
 	return filters
 }
 
 func getQueryParams(headers []printer.Header) (map[string]interface{}, error) {
-	// get actual sort key
-	actualSortKey := getActualSortKey(headers, sortBy)
+	// get actual key
+	actualKey := getActualKey(headers, sortBy)
 	limit := limit
 	pageOffset := uint64(0)
-	sortBy := []storageTY.Sort{{OrderBy: sortOrder, Field: actualSortKey}}
+	sortBy := []storageTY.Sort{{OrderBy: sortOrder, Field: actualKey}}
 
 	sortByBytes, err := json.Marshal(sortBy)
 	if err != nil {
 		return nil, err
 	}
-	filtersBytes, err := json.Marshal(getFilters())
+	filtersBytes, err := json.Marshal(getFilters(headers))
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +152,7 @@ func executeGetCmd(headers []printer.Header, listFunc ListFunc, dataType interfa
 	printer.Print(rootCmd.IOStreams.Out, headers, rows, rootCmd.HideHeader, rootCmd.OutputFormat, rootCmd.Pretty)
 }
 
-func getActualSortKey(headers []printer.Header, key string) string {
+func getActualKey(headers []printer.Header, key string) string {
 	formattedKey := strings.ToLower(strings.ReplaceAll(key, " ", ""))
 	for _, header := range headers {
 		headerKey := strings.ToLower(strings.ReplaceAll(header.Title, " ", ""))
