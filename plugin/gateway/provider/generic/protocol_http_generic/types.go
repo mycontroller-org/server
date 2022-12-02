@@ -32,18 +32,18 @@ type HttpProtocol struct {
 
 // http protocol config
 type HttpProtocolConf struct {
-	Type            string                 `json:"type"`
-	Headers         map[string]string      `json:"headers"`
-	QueryParameters map[string]interface{} `json:"queryParameters"`
-	Endpoints       map[string]HttpConfig  `json:"endpoints"`
-	Nodes           map[string]HttpNode    `json:"nodes"`
+	Type            string                 `json:"type" yaml:"type"`
+	Headers         map[string]string      `json:"headers" yaml:"headers"`
+	QueryParameters map[string]interface{} `json:"queryParameters" yaml:"queryParameters"`
+	Endpoints       map[string]HttpConfig  `json:"endpoints" yaml:"endpoints"`
+	Nodes           map[string]HttpNode    `json:"nodes" yaml:"nodes"`
 }
 
 // http config
 type HttpConfig struct {
 	HttpNode
-	Disabled          bool   `json:"disabled"`
-	ExecutionInterval string `json:"executionInterval"`
+	Disabled          bool   `json:"disabled" yaml:"disabled"`
+	ExecutionInterval string `json:"executionInterval" yaml:"executionInterval"`
 }
 
 // nodes details
@@ -51,9 +51,9 @@ type HttpConfig struct {
 // http node
 type HttpNode struct {
 	HttpNodeConfig
-	Insecure bool                      `json:"insecure"`
-	PreRun   map[string]HttpNodeConfig `json:"preRun"`
-	PostRun  map[string]HttpNodeConfig `json:"postRun"`
+	Insecure bool                      `json:"insecure" yaml:"insecure"`
+	PreRun   map[string]HttpNodeConfig `json:"preRun" yaml:"preRun"`
+	PostRun  map[string]HttpNodeConfig `json:"postRun" yaml:"postRun"`
 }
 
 // Clone cones HttpNode
@@ -80,15 +80,15 @@ func (hn *HttpNode) Clone() *HttpNode {
 
 // Http node config
 type HttpNodeConfig struct {
-	URL                 string                 `json:"url"`
-	Method              string                 `json:"method"`
-	Headers             map[string]string      `json:"headers"`
-	QueryParameters     map[string]interface{} `json:"queryParameters"`
-	BodyLanguage        string                 `json:"bodyLanguage"`
-	Body                interface{}            `json:"body"`
-	ResponseCode        int                    `json:"responseCode"`
-	IncludeGlobalConfig bool                   `json:"includeGlobalConfig"`
-	Script              string                 `json:"script"`
+	URL                 string                 `json:"url" yaml:"url"`
+	Method              string                 `json:"method" yaml:"method"`
+	Headers             map[string]string      `json:"headers" yaml:"headers"`
+	QueryParameters     map[string]interface{} `json:"queryParameters" yaml:"queryParameters"`
+	BodyLanguage        string                 `json:"bodyLanguage" yaml:"bodyLanguage"`
+	Body                interface{}            `json:"body" yaml:"body"`
+	ResponseCode        int                    `json:"responseCode" yaml:"responseCode"`
+	IncludeGlobalConfig bool                   `json:"includeGlobalConfig" yaml:"includeGlobalConfig"`
+	Script              string                 `json:"script" yaml:"script"`
 }
 
 // Clone cones HttpNodeConfig

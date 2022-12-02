@@ -28,17 +28,17 @@ type store struct {
 
 // JobsConfig used to keep the pre-delayed jobs
 type JobsConfig struct {
-	Name      string                 `yaml:"name"`
-	Data      handlerTY.ResourceData `yaml:"data"`
-	Delay     time.Duration          `yaml:"delay"`
-	CreatedAt time.Time              `yaml:"created_at"`
+	Name      string                 `json:"name" yaml:"name"`
+	Data      handlerTY.ResourceData `json:"date" yaml:"data"`
+	Delay     time.Duration          `json:"delay" yaml:"delay"`
+	CreatedAt time.Time              `json:"createdAt" yaml:"createdAt"`
 }
 
 func (s *store) getName() string {
 	dir := filepath.Join(types.GetDirectoryDataRoot(), store_directory)
 	err := utils.CreateDir(dir)
 	if err != nil {
-		zap.L().Error("failed to create handler data persistence directory", zap.String("direcotry", dir))
+		zap.L().Error("failed to create handler data persistence directory", zap.String("directory", dir))
 	}
 	return filepath.Join(dir, fmt.Sprintf("%s_%s.yaml", store_filename, s.handlerID))
 }

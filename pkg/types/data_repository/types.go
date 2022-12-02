@@ -8,10 +8,10 @@ import (
 
 // Config of data element
 type Config struct {
-	ID          string               `json:"id"`
-	ReadOnly    bool                 `json:"readOnly"`
-	Description string               `json:"description"`
-	Labels      cmap.CustomStringMap `json:"labels"`
-	Data        cmap.CustomMap       `json:"data"`
-	ModifiedOn  time.Time            `json:"modifiedOn"`
+	ID          string               `json:"id" yaml:"id"`
+	ReadOnly    bool                 `json:"readOnly" yaml:"readOnly"`
+	Description string               `json:"description" yaml:"description"`
+	Labels      cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	Data        cmap.CustomMap       `json:"data" yaml:"data"`
+	ModifiedOn  time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }

@@ -17,8 +17,8 @@ const PluginTasmota = "tasmota"
 
 // Config of tasmota provider
 type Config struct {
-	Type     string
-	Protocol cmap.CustomMap `json:"protocol"`
+	Type     string         `json:"type" yaml:"type"`
+	Protocol cmap.CustomMap `json:"protocol" yaml:"protocol"`
 	// add provider configurations, if any
 }
 

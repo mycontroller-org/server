@@ -17,22 +17,22 @@ const (
 
 // Response of a websocket
 type Response struct {
-	Type string      `json:"type"`
-	Data interface{} `json:"data"`
+	Type string      `json:"type" yaml:"type"`
+	Data interface{} `json:"data" yaml:"data"`
 }
 
 // Request for websocket
 type Request struct {
-	Type string      `json:"type"`
-	Data interface{} `json:"data"`
+	Type string      `json:"type" yaml:"type"`
+	Data interface{} `json:"data" yaml:"data"`
 }
 
 // SubscribeRequest details
 type SubscribeRequest struct {
-	Resources []eventTY.Event `json:"events"`
+	Resources []eventTY.Event `json:"events" yaml:"events"`
 }
 
 // unsubscribeRequest details
 type UnsubscribeRequest struct {
-	Resources []eventTY.Event `json:"events"`
+	Resources []eventTY.Event `json:"events" yaml:"events"`
 }

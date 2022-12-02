@@ -15,13 +15,13 @@ var (
 
 // Version holds version data
 type Version struct {
-	Version   string `json:"version"`
-	GitCommit string `json:"gitCommit"`
-	BuildDate string `json:"buildDate"`
-	GoLang    string `json:"goLang"`
-	Platform  string `json:"platform"`
-	Arch      string `json:"arch"`
-	HostID    string `json:"hostId"`
+	Version   string `json:"version" yaml:"version"`
+	GitCommit string `json:"gitCommit" yaml:"gitCommit"`
+	BuildDate string `json:"buildDate" yaml:"buildDate"`
+	GoLang    string `json:"goLang" yaml:"goLang"`
+	Platform  string `json:"platform" yaml:"platform"`
+	Arch      string `json:"arch" yaml:"arch"`
+	HostID    string `json:"hostId" yaml:"hostId"`
 }
 
 // Get returns the Version object

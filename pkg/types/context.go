@@ -8,6 +8,6 @@ type ContextKey string
 
 // struct used in api request
 type McApiContext struct {
-	Tenant string `json:"tenant"`
-	UserID string `json:"userId"`
+	Tenant string `json:"tenant" yaml:"tenant"`
+	UserID string `json:"userId" yaml:"userId"`
 }

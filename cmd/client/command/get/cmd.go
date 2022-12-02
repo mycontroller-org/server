@@ -16,8 +16,8 @@ import (
 
 var (
 	limit        uint64
-	orderKey     string
-	orderBy      string
+	sortOrder    string
+	sortBy       string
 	filterString string
 )
 
@@ -25,9 +25,9 @@ type ListFunc func(queryParams map[string]interface{}) (*storageTY.Result, error
 
 func init() {
 	rootCmd.Cmd.AddCommand(getCmd)
-	getCmd.PersistentFlags().Uint64Var(&limit, "limit", 10, "Limits number of rows")
-	getCmd.PersistentFlags().StringVar(&orderKey, "order-key", "id", "order the result by this key")
-	getCmd.PersistentFlags().StringVar(&orderBy, "order-by", storageTY.SortByASC, "order the result. options: desc, asc")
+	getCmd.PersistentFlags().Uint64Var(&limit, "limit", 10, "limits number of rows")
+	getCmd.PersistentFlags().StringVar(&sortBy, "sort-by", "id", "sort the result by this key")
+	getCmd.PersistentFlags().StringVar(&sortOrder, "sort-order", storageTY.SortByASC, "sort the result. options: desc, asc")
 	getCmd.PersistentFlags().StringVar(&filterString, "filter", "", "filter the result. comma separated key=value")
 }
 
@@ -64,7 +64,7 @@ func getFilters() []storageTY.Filter {
 func GetQueryParams() (map[string]interface{}, error) {
 	limit := limit
 	pageOffset := uint64(0)
-	sortBy := []storageTY.Sort{{OrderBy: orderBy, Field: orderKey}}
+	sortBy := []storageTY.Sort{{OrderBy: sortOrder, Field: sortBy}}
 
 	sortByBytes, err := json.Marshal(sortBy)
 	if err != nil {

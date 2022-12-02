@@ -13,12 +13,12 @@ import (
 
 // Payload definition
 type Payload struct {
-	Key        string               `json:"key"`        // it is id for the the fields. for node, source key says what it is
-	Value      customTY.StringData  `json:"value"`      // 1, true, 99.45, started, 72.345,45.333, any...
-	MetricType string               `json:"metricType"` // none, binary, gauge, counter, geo ...
-	Unit       string               `json:"unit"`       // Volt, MilliVolt, °C, °F, ⚡, etc...
-	Labels     cmap.CustomStringMap `json:"labels"`     // labels for this data
-	Others     cmap.CustomMap       `json:"others"`     // can hold other than key, value data.
+	Key        string               `json:"key" yaml:"key"`               // it is id for the the fields. for node, source key says what it is
+	Value      customTY.StringData  `json:"value" yaml:"value"`           // 1, true, 99.45, started, 72.345,45.333, any...
+	MetricType string               `json:"metricType" yaml:"metricType"` // none, binary, gauge, counter, geo ...
+	Unit       string               `json:"unit" yaml:"unit"`             // Volt, MilliVolt, °C, °F, ⚡, etc...
+	Labels     cmap.CustomStringMap `json:"labels" yaml:"labels"`         // labels for this data
+	Others     cmap.CustomMap       `json:"others" yaml:"others"`         // can hold other than key, value data.
 }
 
 // NewPayload returns empty payload
@@ -48,20 +48,19 @@ func (p *Payload) Clone() Payload {
 }
 
 // Message definition
-type 
-Message struct {
-	ID           string               `json:"id"`
-	GatewayID    string               `json:"gatewayId"`
-	NodeID       string               `json:"nodeId"`
-	SourceID     string               `json:"sourceId"`
-	Type         string               `json:"type"`         // Message type: set, request, ...
-	Payloads     []Payload            `json:"payloads"`     // payloads
-	Labels       cmap.CustomStringMap `json:"labels"`       // these labels can be used in transport or other purpose
-	IsAck        bool                 `json:"isAck"`        // Is this acknowledgement message
-	IsReceived   bool                 `json:"isReceived"`   // Is this received message
-	IsAckEnabled bool                 `json:"isAckEnabled"` // Is Acknowledge enabled?
-	IsSleepNode  bool                 `json:"isSleepNode"`  // Is this message for active node or sleep node?
-	Timestamp    time.Time            `json:"timestamp"`
+type Message struct {
+	ID           string               `json:"id" yaml:"id"`
+	GatewayID    string               `json:"gatewayId" yaml:"gatewayId"`
+	NodeID       string               `json:"nodeId" yaml:"nodeId"`
+	SourceID     string               `json:"sourceId" yaml:"sourceId"`
+	Type         string               `json:"type" yaml:"type"`                 // Message type: set, request, ...
+	Payloads     []Payload            `json:"payloads" yaml:"payloads"`         // payloads
+	Labels       cmap.CustomStringMap `json:"labels" yaml:"labels"`             // these labels can be used in transport or other purpose
+	IsAck        bool                 `json:"isAck" yaml:"isAck"`               // Is this acknowledgement message
+	IsReceived   bool                 `json:"isReceived" yaml:"isReceived"`     // Is this received message
+	IsAckEnabled bool                 `json:"isAckEnabled" yaml:"isAckEnabled"` // Is Acknowledge enabled?
+	IsSleepNode  bool                 `json:"isSleepNode" yaml:"isSleepNode"`   // Is this message for active node or sleep node?
+	Timestamp    time.Time            `json:"timestamp" yaml:"timestamp"`
 }
 
 // NewMessage returns empty message
@@ -96,7 +95,7 @@ func (m *Message) Clone() *Message {
 	return cm
 }
 
-//GetID returns unique ID for this message
+// GetID returns unique ID for this message
 func (m *Message) GetID() string {
 	var buffer bytes.Buffer
 	buffer.WriteString(m.GatewayID)
@@ -127,12 +126,12 @@ func (m *Message) GetID() string {
 
 // RawMessage from/to gateway media
 type RawMessage struct {
-	ID           string         `json:"id"`
-	IsReceived   bool           `json:"isReceived"`
-	IsAckEnabled bool           `json:"isAckEnabled"`
-	Data         interface{}    `json:"data"`
-	Timestamp    time.Time      `json:"timestamp"`
-	Others       cmap.CustomMap `json:"others"`
+	ID           string         `json:"id" yaml:"id"`
+	IsReceived   bool           `json:"isReceived" yaml:"isReceived"`
+	IsAckEnabled bool           `json:"isAckEnabled" yaml:"isAckEnabled"`
+	Data         interface{}    `json:"data" yaml:"data"`
+	Timestamp    time.Time      `json:"timestamp" yaml:"timestamp"`
+	Others       cmap.CustomMap `json:"others" yaml:"others"`
 }
 
 // NewRawMessage returns empty message
@@ -171,7 +170,7 @@ func (rm *RawMessage) Clone() *RawMessage {
 
 // DeliveryStatus definition
 type DeliveryStatus struct {
-	ID      string `json:"id"`
-	Success bool   `json:"success"`
-	Message string `json:"message"`
+	ID      string `json:"id" yaml:"id"`
+	Success bool   `json:"success" yaml:"success"`
+	Message string `json:"message" yaml:"message"`
 }

@@ -69,7 +69,7 @@ database:
     dump_enabled: true
     dump_interval: 10m
     dump_dir: "memory_db"
-    dump_format: ["yaml"]
+    dump_format: ["yaml","json"]
     load_format: "yaml"
 
   metric:

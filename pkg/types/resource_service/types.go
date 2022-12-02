@@ -44,14 +44,14 @@ const (
 
 // ServiceEvent details
 type ServiceEvent struct {
-	Type         string               `json:"type"`
-	Command      string               `json:"command"`
-	ReplyCommand string               `json:"replyCommand"`
-	ReplyTopic   string               `json:"replyTopic"`
-	ID           string               `json:"id"`
-	Labels       cmap.CustomStringMap `json:"lables"`
-	Data         string               `json:"data"`
-	Error        string               `json:"error"`
+	Type         string               `json:"type" yaml:"type"`
+	Command      string               `json:"command" yaml:"command"`
+	ReplyCommand string               `json:"replyCommand" yaml:"replyCommand"`
+	ReplyTopic   string               `json:"replyTopic" yaml:"replyTopic"`
+	ID           string               `json:"id" yaml:"id"`
+	Labels       cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	Data         string               `json:"data" yaml:"data"`
+	Error        string               `json:"error" yaml:"error"`
 }
 
 // func (e *ServiceEvent) SetDataOld(data interface{}) {

@@ -6,65 +6,65 @@ type Config struct {
 }
 
 type HostConfig struct {
-	Disabled    bool              `json:"disabled"`
-	HostIDs     []string          `json:"hostIds"`
-	Memory      MemoryConfig      `json:"memory"`
-	CPU         CPUConfig         `json:"cpu"`
-	Disk        DiskConfig        `json:"disk"`
-	Temperature TemperatureConfig `json:"temperature"`
-	Process     ProcessConfig     `json:"process"`
+	Disabled    bool              `json:"disabled" yaml:"disabled"`
+	HostIDs     []string          `json:"hostIds" yaml:"hostIds"`
+	Memory      MemoryConfig      `json:"memory" yaml:"memory"`
+	CPU         CPUConfig         `json:"cpu" yaml:"cpu"`
+	Disk        DiskConfig        `json:"disk" yaml:"disk"`
+	Temperature TemperatureConfig `json:"temperature" yaml:"temperature"`
+	Process     ProcessConfig     `json:"process" yaml:"process"`
 }
 
 // Memory details
 type MemoryConfig struct {
-	Interval       string `json:"interval"`
-	MemoryDisabled bool   `json:"memoryDisabled"`
-	SwapDisabled   bool   `json:"swapDisabled"`
-	Unit           string `json:"unit"`
+	Interval       string `json:"interval" yaml:"interval"`
+	MemoryDisabled bool   `json:"memoryDisabled" yaml:"memoryDisabled"`
+	SwapDisabled   bool   `json:"swapDisabled" yaml:"swapDisabled"`
+	Unit           string `json:"unit" yaml:"unit"`
 }
 
 // CPU details
 type CPUConfig struct {
-	Interval       string `json:"interval"`
-	CPUDisabled    bool   `json:"cpuDisabled"`
-	PerCPUDisabled bool   `json:"perCpuDisabled"`
+	Interval       string `json:"interval" yaml:"interval"`
+	CPUDisabled    bool   `json:"cpuDisabled" yaml:"cpuDisabled"`
+	PerCPUDisabled bool   `json:"perCpuDisabled" yaml:"perCpuDisabled"`
 }
 
 // Disk details
 type DiskConfig struct {
-	Interval string              `json:"interval"`
-	Disabled bool                `json:"disabled"`
-	Data     map[string]DiskData `json:"data"`
+	Interval string              `json:"interval" yaml:"interval"`
+	Disabled bool                `json:"disabled" yaml:"disabled"`
+	Data     map[string]DiskData `json:"data" yaml:"data"`
 }
 
 // DiskData struct
 type DiskData struct {
-	Disabled bool   `json:"disabled"`
-	Name     string `json:"name"`
-	Path     string `json:"path"`
-	Unit     string `json:"unit"`
+	Disabled bool   `json:"disabled" yaml:"disabled"`
+	Name     string `json:"name" yaml:"name"`
+	Path     string `json:"path" yaml:"path"`
+	Unit     string `json:"unit" yaml:"unit"`
 }
 
 // Temperature details
 type TemperatureConfig struct {
-	Interval    string   `json:"interval"`
-	DisabledAll bool     `json:"disabledAll"`
-	Enabled     []string `json:"enabled"`
+	Interval    string   `json:"interval" yaml:"interval"`
+	DisabledAll bool     `json:"disabledAll" yaml:"disabledAll"`
+	Enabled     []string `json:"enabled" yaml:"enabled"`
 }
 
 // Process details
 type ProcessConfig struct {
-	Interval string                 `json:"interval"`
-	Disabled bool                   `json:"disabled"`
-	Data     map[string]ProcessData `json:"data"`
+	Interval string                 `json:"interval" yaml:"interval"`
+	Disabled bool                   `json:"disabled" yaml:"disabled"`
+	Data     map[string]ProcessData `json:"data" yaml:"data"`
 }
 
 // ProcessData struct
 type ProcessData struct {
-	Disabled bool              `json:"disabled"`
-	Name     string            `json:"name"`
-	Unit     string            `json:"unit"`
-	Filter   map[string]string `json:"filter"`
+	Disabled bool              `json:"disabled" yaml:"disabled"`
+	Name     string            `json:"name" yaml:"name"`
+	Unit     string            `json:"unit" yaml:"unit"`
+	Filter   map[string]string `json:"filter" yaml:"filter"`
 }
 
 // Keys

@@ -7,7 +7,7 @@ type SystemStartupJobs struct {
 
 // StartupRestore loads data on startup
 type StartupRestore struct {
-	Enabled            bool   `yaml:"enabled"`
-	ExtractedDirectory string `yaml:"extracted_directory"`
-	ClearDatabase      bool   `yaml:"clean_database"`
+	Enabled            bool   `json:"enabled" yaml:"enabled"`
+	ExtractedDirectory string `json:"extracted_directory" yaml:"extracted_directory"`
+	ClearDatabase      bool   `json:"clean_database" yaml:"clean_database"`
 }

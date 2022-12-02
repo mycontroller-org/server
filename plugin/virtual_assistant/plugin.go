@@ -1,11 +1,9 @@
-package storage
+package virtual_assistant
 
 import (
 	"fmt"
 
 	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
-	vaAlexa "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/alexa"
-	vaGoogle "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/google"
 	"go.uber.org/zap"
 )
 
@@ -30,10 +28,4 @@ func Create(name string, config *vaTY.Config) (p vaTY.Plugin, err error) {
 		err = fmt.Errorf("virtual assistant plugin [%s] is not registered", name)
 	}
 	return
-}
-
-// init plugins
-func init() {
-	Register(vaGoogle.PluginGoogleAssistant, vaGoogle.New)
-	Register(vaAlexa.PluginAlexaAssistant, vaAlexa.New)
 }

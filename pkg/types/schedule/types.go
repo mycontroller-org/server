@@ -34,64 +34,64 @@ const (
 
 // Config for scheduler
 type Config struct {
-	ID                   string               `json:"id"`
-	Description          string               `json:"description"`
-	Enabled              bool                 `json:"enabled"`
-	Labels               cmap.CustomStringMap `json:"labels"`
-	Validity             Validity             `json:"validity"`
-	Type                 string               `json:"type"`
-	Spec                 cmap.CustomMap       `json:"spec"`
-	Variables            map[string]string    `json:"variables"`
-	CustomVariableType   string               `json:"customVariableType"`
-	CustomVariableConfig CustomVariableConfig `json:"customVariableConfig"`
-	HandlerParameters    map[string]string    `json:"handlerParameters"`
-	Handlers             []string             `json:"handlers"`
-	ModifiedOn           time.Time            `json:"modifiedOn"`
-	State                *State               `json:"state"`
+	ID                   string               `json:"id" yaml:"id"`
+	Description          string               `json:"description" yaml:"description"`
+	Enabled              bool                 `json:"enabled" yaml:"enabled"`
+	Labels               cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	Validity             Validity             `json:"validity" yaml:"validity"`
+	Type                 string               `json:"type" yaml:"type"`
+	Spec                 cmap.CustomMap       `json:"spec" yaml:"spec"`
+	Variables            map[string]string    `json:"variables" yaml:"variables"`
+	CustomVariableType   string               `json:"customVariableType" yaml:"customVariableType"`
+	CustomVariableConfig CustomVariableConfig `json:"customVariableConfig" yaml:"customVariableConfig"`
+	HandlerParameters    map[string]string    `json:"handlerParameters" yaml:"handlerParameters"`
+	Handlers             []string             `json:"handlers" yaml:"handlers"`
+	ModifiedOn           time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
+	State                *State               `json:"state" yaml:"state"`
 }
 
 // CustomVariableConfig struct
 type CustomVariableConfig struct {
-	Javascript string      `json:"javascript"`
-	Webhook    WebhookData `json:"webhook"`
+	Javascript string      `json:"javascript" yaml:"javascript"`
+	Webhook    WebhookData `json:"webhook" yaml:"webhook"`
 }
 
 // WebhookData struct
 type WebhookData struct {
-	URL             string                 `json:"url"`
-	Method          string                 `json:"method"`
-	Insecure        bool                   `json:"insecure"`
-	Headers         map[string]string      `yaml:"headers"`
-	QueryParameters map[string]interface{} `yaml:"queryParameters"`
-	IncludeConfig   bool                   `json:"includeConfig"`
+	URL             string                 `json:"url" yaml:"url"`
+	Method          string                 `json:"method" yaml:"method"`
+	Insecure        bool                   `json:"insecure" yaml:"insecure"`
+	Headers         map[string]string      `json:"headers" yaml:"headers"`
+	QueryParameters map[string]interface{} `json:"queryParameters" yaml:"queryParameters"`
+	IncludeConfig   bool                   `json:"includeConfig" yaml:"includeConfig"`
 }
 
 // Validity of the scheduler
 type Validity struct {
-	Enabled              bool      `json:"enabled"`
-	Date                 DateRange `json:"date"`
-	Time                 TimeRange `json:"time"`
-	ValidateTimeEveryday bool      `json:"validateTimeEveryday"`
+	Enabled              bool      `json:"enabled" yaml:"enabled"`
+	Date                 DateRange `json:"date" yaml:"date"`
+	Time                 TimeRange `json:"time" yaml:"time"`
+	ValidateTimeEveryday bool      `json:"validateTimeEveryday" yaml:"validateTimeEveryday"`
 }
 
 // DateRange struct
 type DateRange struct {
-	From CustomDate `json:"from"`
-	To   CustomDate `json:"to"`
+	From CustomDate `json:"from" yaml:"from"`
+	To   CustomDate `json:"to" yaml:"to"`
 }
 
 // TimeRange struct
 type TimeRange struct {
-	From CustomTime `json:"from"`
-	To   CustomTime `json:"to"`
+	From CustomTime `json:"from" yaml:"from"`
+	To   CustomTime `json:"to" yaml:"to"`
 }
 
 // State struct
 type State struct {
-	LastRun       time.Time `json:"lastRun"`
-	LastStatus    bool      `json:"lastStatus"`
-	Message       string    `json:"message"`
-	ExecutedCount int64     `json:"executedCount"`
+	LastRun       time.Time `json:"lastRun" yaml:"lastRun"`
+	LastStatus    bool      `json:"lastStatus" yaml:"lastStatus"`
+	Message       string    `json:"message" yaml:"message"`
+	ExecutedCount int64     `json:"executedCount" yaml:"executedCount"`
 }
 
 // spec for each type

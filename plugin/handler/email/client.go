@@ -16,9 +16,9 @@ type Config struct {
 	Port      int
 	AuthType  string
 	Username  string
-	Password  string `json:"-"`
+	Password  string `json:"-" yaml:"-"`
 	FromEmail string
-	ToEmails  string // comma seperated
+	ToEmails  string // comma separated
 	Insecure  bool
 }
 

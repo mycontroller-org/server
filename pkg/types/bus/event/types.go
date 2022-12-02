@@ -16,11 +16,11 @@ const (
 
 // Event struct
 type Event struct {
-	Type          string      `json:"type"`
-	EntityType    string      `json:"entityType"`
-	EntityID      string      `json:"entityId"`
-	EntityQuickID string      `json:"entityQuickId"`
-	Entity        interface{} `json:"entity"`
+	Type          string      `json:"type" yaml:"type"`
+	EntityType    string      `json:"entityType" yaml:"entityType"`
+	EntityID      string      `json:"entityId" yaml:"entityId"`
+	EntityQuickID string      `json:"entityQuickId" yaml:"entityQuickId"`
+	Entity        interface{} `json:"entity" yaml:"entity"`
 }
 
 func (e *Event) LoadEntity(out interface{}) error {

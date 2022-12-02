@@ -6,8 +6,8 @@ import (
 
 // BusData struct
 type BusData struct {
-	Topic string
-	Data  []byte
+	Topic string `json:"topic" yaml:"topic"`
+	Data  []byte `json:"data" yaml:"data"`
 }
 
 // SetData updates data in []byte format

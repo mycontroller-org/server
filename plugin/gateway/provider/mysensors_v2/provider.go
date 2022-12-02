@@ -26,12 +26,12 @@ const PluginMySensorsV2 = "mysensors_v2"
 
 // Config of this provider
 type Config struct {
-	Type                     string         `json:"type"`
-	EnableStreamMessageAck   bool           `json:"enableStreamMessageAck"`
-	EnableInternalMessageAck bool           `json:"enableInternalMessageAck"`
-	RetryCount               int            `json:"retryCount"`
-	Timeout                  string         `json:"timeout"`
-	Protocol                 cmap.CustomMap `json:"protocol"`
+	Type                     string         `json:"type" yaml:"type"`
+	EnableStreamMessageAck   bool           `json:"enableStreamMessageAck" yaml:"enableStreamMessageAck"`
+	EnableInternalMessageAck bool           `json:"enableInternalMessageAck" yaml:"enableInternalMessageAck"`
+	RetryCount               int            `json:"retryCount" yaml:"retryCount"`
+	Timeout                  string         `json:"timeout" yaml:"timeout"`
+	Protocol                 cmap.CustomMap `json:"protocol" yaml:"protocol"`
 }
 
 // Provider implementation

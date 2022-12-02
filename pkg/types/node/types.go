@@ -19,15 +19,15 @@ const (
 
 // Node struct
 type Node struct {
-	ID         string               `json:"id"`
-	GatewayID  string               `json:"gatewayId"`
-	NodeID     string               `json:"nodeId"`
-	Name       string               `json:"name"`
-	Labels     cmap.CustomStringMap `json:"labels"`
-	Others     cmap.CustomMap       `json:"others"`
-	State      types.State          `json:"state"`
-	LastSeen   time.Time            `json:"lastSeen"`
-	ModifiedOn time.Time            `json:"modifiedOn"`
+	ID         string               `json:"id" yaml:"id"`
+	GatewayID  string               `json:"gatewayId" yaml:"gatewayId"`
+	NodeID     string               `json:"nodeId" yaml:"nodeId"`
+	Name       string               `json:"name" yaml:"name"`
+	Labels     cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	Others     cmap.CustomMap       `json:"others" yaml:"others"`
+	State      types.State          `json:"state" yaml:"state"`
+	LastSeen   time.Time            `json:"lastSeen" yaml:"lastSeen"`
+	ModifiedOn time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }
 
 func (n *Node) IsSleepNode() bool {

@@ -18,23 +18,23 @@ const (
 
 // VirtualDevice struct
 type VirtualDevice struct {
-	ID          string               `json:"id"`
-	Name        string               `json:"name"`
-	Description string               `json:"description"`
-	Enabled     bool                 `json:"enabled"`
-	DeviceType  string               `json:"deviceType"`
-	Traits      map[string]Resource  `json:"traits"`
-	Location    string               `json:"location"`
-	Labels      cmap.CustomStringMap `json:"labels"`
-	ModifiedOn  time.Time            `json:"modifiedOn"`
-	Resources   []string             `json:"resources"`
+	ID          string               `json:"id" yaml:"id"`
+	Name        string               `json:"name" yaml:"name"`
+	Description string               `json:"description" yaml:"description"`
+	Enabled     bool                 `json:"enabled" yaml:"enabled"`
+	DeviceType  string               `json:"deviceType" yaml:"deviceType"`
+	Traits      map[string]Resource  `json:"traits" yaml:"traits"`
+	Location    string               `json:"location" yaml:"location"`
+	Labels      cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	ModifiedOn  time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
+	Resources   []string             `json:"resources" yaml:"resources"`
 }
 
 type Resource struct {
-	Type           string               `json:"type"`
-	ResourceType   string               `json:"resourceType"`
-	QuickID        string               `json:"quickId"`
-	Labels         cmap.CustomStringMap `json:"labels"`
-	Value          interface{}          `json:"-"`
-	ValueTimestamp time.Time            `json:"-"`
+	Type           string               `json:"type" yaml:"type"`
+	ResourceType   string               `json:"resourceType" yaml:"resourceType"`
+	QuickID        string               `json:"quickId" yaml:"quickId"`
+	Labels         cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	Value          interface{}          `json:"-" yaml:"-"`
+	ValueTimestamp time.Time            `json:"-" yaml:"-"`
 }

@@ -8,30 +8,30 @@ type Config struct {
 
 // User struct
 type User struct {
-	ID           int    `json:"id"`
-	IsBot        bool   `json:"is_bot"`
-	FirstName    string `json:"first_name"`
-	LastName     string `json:"last_name"`
-	Username     string `json:"username"`
-	LanguageCode string `json:"language_code"`
+	ID           int    `json:"id" yaml:"id"`
+	IsBot        bool   `json:"isBot" yaml:"isBot"`
+	FirstName    string `json:"firstName" yaml:"firstName"`
+	LastName     string `json:"lastName" yaml:"lastName"`
+	Username     string `json:"username" yaml:"username"`
+	LanguageCode string `json:"languageCode" yaml:"languageCode"`
 }
 
 // Response struct
 type Response struct {
-	IsOK        bool                   `json:"ok"`
-	Result      map[string]interface{} `json:"result"`
-	ErrorCode   int                    `json:"error_code"`
-	Description string                 `json:"description"`
+	IsOK        bool                   `json:"ok" yaml:"ok"`
+	Result      map[string]interface{} `json:"result" yaml:"result"`
+	ErrorCode   int                    `json:"errorCode" yaml:"errorCode"`
+	Description string                 `json:"description" yaml:"description"`
 }
 
 // Message struct
 type Message struct {
-	ChatID                string `json:"chat_id"`
-	Text                  string `json:"text"`
-	ParseMode             string `json:"parse_mode"`
-	DisableWebPagePreview bool   `json:"disable_web_page_preview"`
-	DisableNotification   bool   `json:"disable_notification"`
-	ReplyToMessageID      int    `json:"reply_to_message_id"`
+	ChatID                string `json:"chatId" yaml:"chatId"`
+	Text                  string `json:"text" yaml:"text"`
+	ParseMode             string `json:"parseMode" yaml:"parseMode"`
+	DisableWebPagePreview bool   `json:"disableWebPagePreview" yaml:"disableWebPagePreview"`
+	DisableNotification   bool   `json:"disableNotification" yaml:"disableNotification"`
+	ReplyToMessageID      int    `json:"replyToMessageId" yaml:"replyToMessageId"`
 }
 
 // Telegram server api details

@@ -7,16 +7,16 @@ import (
 
 // Config of generic provider
 type Config struct {
-	Type       string          `json:"type"`
-	RetryCount int             `json:"retryCount"`
-	Script     ScriptFormatter `json:"script"`
-	Protocol   cmap.CustomMap  `json:"protocol"` // mqtt type will be handled by default mqtt protocol
+	Type       string          `json:"type" yaml:"type"`
+	RetryCount int             `json:"retryCount" yaml:"retryCount"`
+	Script     ScriptFormatter `json:"script" yaml:"script"`
+	Protocol   cmap.CustomMap  `json:"protocol" yaml:"protocol"` // mqtt type will be handled by default mqtt protocol
 }
 
 // script used to format
 type ScriptFormatter struct {
-	OnReceive string `json:"onReceive"`
-	OnSend    string `json:"onSend"`
+	OnReceive string `json:"onReceive" yaml:"onReceive"`
+	OnSend    string `json:"onSend" yaml:"onSend"`
 }
 
 // Generic protocol

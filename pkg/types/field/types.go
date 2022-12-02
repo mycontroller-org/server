@@ -8,34 +8,34 @@ import (
 
 // Field struct
 type Field struct {
-	ID            string               `json:"id"`
-	GatewayID     string               `json:"gatewayId"`
-	NodeID        string               `json:"nodeId"`
-	SourceID      string               `json:"sourceId"`
-	FieldID       string               `json:"fieldId"`
-	Name          string               `json:"name"`
-	MetricType    string               `json:"metricType"`
-	Current       Payload              `json:"current"`
-	Previous      Payload              `json:"previous"`
-	Formatter     PayloadFormatter     `json:"formatter"`
-	Unit          string               `json:"unit"`
-	Labels        cmap.CustomStringMap `json:"labels"`
-	Others        cmap.CustomMap       `json:"others"`
-	NoChangeSince time.Time            `json:"noChangeSince"`
-	LastSeen      time.Time            `json:"lastSeen"`
-	ModifiedOn    time.Time            `json:"modifiedOn"`
+	ID            string               `json:"id" yaml:"id"`
+	GatewayID     string               `json:"gatewayId" yaml:"gatewayId"`
+	NodeID        string               `json:"nodeId" yaml:"nodeId"`
+	SourceID      string               `json:"sourceId" yaml:"sourceId"`
+	FieldID       string               `json:"fieldId" yaml:"fieldId"`
+	Name          string               `json:"name" yaml:"name"`
+	MetricType    string               `json:"metricType" yaml:"metricType"`
+	Current       Payload              `json:"current" yaml:"current"`
+	Previous      Payload              `json:"previous" yaml:"previous"`
+	Formatter     PayloadFormatter     `json:"formatter" yaml:"formatter"`
+	Unit          string               `json:"unit" yaml:"unit"`
+	Labels        cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	Others        cmap.CustomMap       `json:"others" yaml:"others"`
+	NoChangeSince time.Time            `json:"noChangeSince" yaml:"noChangeSince"`
+	LastSeen      time.Time            `json:"lastSeen" yaml:"lastSeen"`
+	ModifiedOn    time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }
 
 // Payload struct
 type Payload struct {
-	Value      interface{} `json:"value"`
-	IsReceived bool        `json:"isReceived"`
-	Timestamp  time.Time   `json:"timestamp"`
+	Value      interface{} `json:"value" yaml:"value"`
+	IsReceived bool        `json:"isReceived" yaml:"isReceived"`
+	Timestamp  time.Time   `json:"timestamp" yaml:"timestamp"`
 }
 
 // PayloadFormatter struct
 type PayloadFormatter struct {
-	OnReceive string `json:"onReceive"`
+	OnReceive string `json:"onReceive" yaml:"onReceive"`
 }
 
 // clones field

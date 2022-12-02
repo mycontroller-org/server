@@ -14,18 +14,18 @@ const (
 
 // Config struct
 type Config struct {
-	ID                 string               `json:"id"`
-	Description        string               `json:"description"`
-	Enabled            bool                 `json:"enabled"`
-	ReconnectDelay     string               `json:"reconnectDelay"`
-	QueueFailedMessage bool                 `json:"queueFailedMessage"`
-	Provider           cmap.CustomMap       `json:"provider"`
-	MessageLogger      cmap.CustomMap       `json:"messageLogger"`
-	Labels             cmap.CustomStringMap `json:"labels"`
-	Others             cmap.CustomMap       `json:"others"`
-	State              *types.State         `json:"state"`
-	ModifiedOn         time.Time            `json:"modifiedOn"`
-	LastTransaction    time.Time            `json:"lastTransaction"`
+	ID                 string               `json:"id" yaml:"id"`
+	Description        string               `json:"description" yaml:"description"`
+	Enabled            bool                 `json:"enabled" yaml:"enabled"`
+	ReconnectDelay     string               `json:"reconnectDelay" yaml:"reconnectDelay"`
+	QueueFailedMessage bool                 `json:"queueFailedMessage" yaml:"queueFailedMessage"`
+	Provider           cmap.CustomMap       `json:"provider" yaml:"provider"`
+	MessageLogger      cmap.CustomMap       `json:"messageLogger" yaml:"messageLogger"`
+	Labels             cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	Others             cmap.CustomMap       `json:"others" yaml:"others"`
+	State              *types.State         `json:"state" yaml:"state"`
+	ModifiedOn         time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
+	LastTransaction    time.Time            `json:"lastTransaction" yaml:"lastTransaction"`
 }
 
 // GetReconnectDelay for this config

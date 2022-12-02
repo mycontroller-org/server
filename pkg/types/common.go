@@ -15,18 +15,18 @@ const (
 
 // State data
 type State struct {
-	Status  string    `json:"status" structs:"status"`
-	Message string    `json:"message" structs:"message"`
-	Since   time.Time `json:"since"  structs:"since"`
+	Status  string    `json:"status" yaml:"status" structs:"status"`
+	Message string    `json:"message" yaml:"message" structs:"message"`
+	Since   time.Time `json:"since"  yaml:"since" structs:"since"`
 }
 
 // File struct
 type File struct {
-	Name         string    `json:"name"`
-	Size         int64     `json:"size"`
-	CreationTime time.Time `json:"creationTime"`
-	ModifiedTime time.Time `json:"modifiedTime"`
-	Data         string    `json:"data"`
-	IsDir        bool      `json:"isDir"`
-	FullPath     string    `json:"fullPath"`
+	Name         string    `json:"name" yaml:"name"`
+	Size         int64     `json:"size" yaml:"size"`
+	CreationTime time.Time `json:"creationTime" yaml:"creationTime"`
+	ModifiedTime time.Time `json:"modifiedTime" yaml:"modifiedTime"`
+	Data         string    `json:"data" yaml:"data"`
+	IsDir        bool      `json:"isDir" yaml:"isDir"`
+	FullPath     string    `json:"fullPath" yaml:"fullPath"`
 }

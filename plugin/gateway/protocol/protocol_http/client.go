@@ -15,11 +15,11 @@ import (
 
 // Config details
 type Config struct {
-	URL      string            `json:"url"`
-	Insecure bool              `json:"insecure"`
-	Headers  map[string]string `json:"headers"`
-	Username string            `json:"username"`
-	Password string            `json:"password"`
+	URL      string            `json:"url" yaml:"url"`
+	Insecure bool              `json:"insecure" yaml:"insecure"`
+	Headers  map[string]string `json:"headers" yaml:"headers"`
+	Username string            `json:"username" yaml:"username"`
+	Password string            `json:"password" yaml:"password"`
 }
 
 // Endpoint data

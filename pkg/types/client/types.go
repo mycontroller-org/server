@@ -13,12 +13,12 @@ const (
 
 // Config used across to access the mycontroller
 type Config struct {
-	URL       string `yaml:"url" mapstructure:"url"`
-	Insecure  bool   `yaml:"insecure" mapstructure:"insecure"`
-	Username  string `yaml:"username" mapstructure:"username"`
-	Password  string `yaml:"password" mapstructure:"password"` // encode as base64
-	LoginTime string `yaml:"loginTime" mapstructure:"loginTime"`
-	ExpiresIn string `yaml:"expiresIn" mapstructure:"expiresIn"`
+	URL       string `json:"url" yaml:"url" mapstructure:"url"`
+	Insecure  bool   `json:"insecure" yaml:"insecure" mapstructure:"insecure"`
+	Username  string `json:"username" yaml:"username" mapstructure:"username"`
+	Password  string `json:"password" yaml:"password" mapstructure:"password"` // encode as base64
+	LoginTime string `json:"loginTime" yaml:"loginTime" mapstructure:"loginTime"`
+	ExpiresIn string `json:"expiresIn" yaml:"expiresIn" mapstructure:"expiresIn"`
 }
 
 // GetPassword decodes and returns the password

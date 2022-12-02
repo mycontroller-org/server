@@ -9,13 +9,13 @@ import (
 
 // User struct
 type User struct {
-	ID         string               `json:"id"`
-	Username   string               `json:"username"`
-	Email      string               `json:"email"`
-	Password   string               `json:"password"`
-	FullName   string               `json:"fullName"`
-	Labels     cmap.CustomStringMap `json:"labels"`
-	ModifiedOn time.Time            `json:"modifiedOn"`
+	ID         string               `json:"id" yaml:"id"`
+	Username   string               `json:"username" yaml:"username"`
+	Email      string               `json:"email" yaml:"email"`
+	Password   string               `json:"password" yaml:"password"`
+	FullName   string               `json:"fullName" yaml:"fullName"`
+	Labels     cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	ModifiedOn time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }
 
 // MarshalJSON implementation
@@ -31,12 +31,12 @@ type UserWithPassword User
 
 // UserProfileUpdate struct, used to update user profile
 type UserProfileUpdate struct {
-	ID              string               `json:"id"`
-	Username        string               `json:"username"`
-	Email           string               `json:"email"`
-	CurrentPassword string               `json:"currentPassword"`
-	NewPassword     string               `json:"newPassword"`
-	ConfirmPassword string               `json:"confirmPassword"`
-	FullName        string               `json:"fullName"`
-	Labels          cmap.CustomStringMap `json:"labels"`
+	ID              string               `json:"id" yaml:"id"`
+	Username        string               `json:"username" yaml:"username"`
+	Email           string               `json:"email" yaml:"email"`
+	CurrentPassword string               `json:"currentPassword" yaml:"currentPassword"`
+	NewPassword     string               `json:"newPassword" yaml:"newPassword"`
+	ConfirmPassword string               `json:"confirmPassword" yaml:"confirmPassword"`
+	FullName        string               `json:"fullName" yaml:"fullName"`
+	Labels          cmap.CustomStringMap `json:"labels" yaml:"labels"`
 }

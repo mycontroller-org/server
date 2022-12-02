@@ -10,15 +10,15 @@ import (
 
 // Config of virtual assistant
 type Config struct {
-	ID           string               `json:"id"`
-	Description  string               `json:"description"`
-	Enabled      bool                 `json:"enabled"`
-	Labels       cmap.CustomStringMap `json:"labels"`
-	DeviceFilter cmap.CustomStringMap `json:"deviceFilter"`
-	ProviderType string               `json:"providerType"`
-	Config       cmap.CustomMap       `json:"config"`
-	State        *types.State         `json:"state"`
-	ModifiedOn   time.Time            `json:"modifiedOn"`
+	ID           string               `json:"id" yaml:"id"`
+	Description  string               `json:"description" yaml:"description"`
+	Enabled      bool                 `json:"enabled" yaml:"enabled"`
+	Labels       cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	DeviceFilter cmap.CustomStringMap `json:"deviceFilter" yaml:"deviceFilter"`
+	ProviderType string               `json:"providerType" yaml:"providerType"`
+	Config       cmap.CustomMap       `json:"config" yaml:"config"`
+	State        *types.State         `json:"state" yaml:"state"`
+	ModifiedOn   time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }
 
 // Virtual Assistant plugin interface

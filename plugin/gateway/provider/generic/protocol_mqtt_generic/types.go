@@ -26,14 +26,14 @@ type MqttProtocol struct {
 
 type MqttProtocolConf struct {
 	mqtt.Config
-	Nodes map[string]MqttNode `json:"nodes"`
+	Nodes map[string]MqttNode `json:"nodes" yaml:"nodes"`
 }
 
 // mqtt node config
 type MqttNode struct {
-	Topic  string `json:"topic"`
-	QoS    int    `json:"qos"`
-	Script string `json:"script"`
+	Topic  string `json:"topic" yaml:"topic"`
+	QoS    int    `json:"qos" yaml:"qos"`
+	Script string `json:"script" yaml:"script"`
 }
 
 // Clone cones the MqttNode

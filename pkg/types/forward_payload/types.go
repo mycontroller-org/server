@@ -8,11 +8,11 @@ import (
 
 // Config of forward payload
 type Config struct {
-	ID          string               `json:"id"`
-	Description string               `json:"description"`
-	Enabled     bool                 `json:"enabled"`
-	SrcFieldID  string               `json:"srcFieldId"`
-	DstFieldID  string               `json:"dstFieldId"`
-	Labels      cmap.CustomStringMap `json:"labels"`
-	ModifiedOn  time.Time            `json:"modifiedOn"`
+	ID          string               `json:"id" yaml:"id"`
+	Description string               `json:"description" yaml:"description"`
+	Enabled     bool                 `json:"enabled" yaml:"enabled"`
+	SrcFieldID  string               `json:"srcFieldId" yaml:"srcFieldId"`
+	DstFieldID  string               `json:"dstFieldId" yaml:"dstFieldId"`
+	Labels      cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	ModifiedOn  time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }

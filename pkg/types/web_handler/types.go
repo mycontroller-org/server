@@ -26,36 +26,36 @@ const (
 
 // UserLogin struct
 type UserLogin struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	ExpiresIn string `json:"expiresIn"`
+	Username  string `json:"username" yaml:"username"`
+	Password  string `json:"password" yaml:"password"`
+	ExpiresIn string `json:"expiresIn" yaml:"expiresIn"`
 }
 
 // JwtToken struct
 type JwtToken struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
+	ID    string `json:"id" yaml:"id"`
+	Email string `json:"email" yaml:"email"`
 }
 
 // JwtTokenResponse struct
 type JwtTokenResponse struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	FullName string `json:"fullName"`
-	Email    string `json:"email"`
-	Token    string `json:"token"`
+	ID       string `json:"id" yaml:"id"`
+	Username string `json:"username" yaml:"username"`
+	FullName string `json:"fullName" yaml:"fullName"`
+	Email    string `json:"email" yaml:"email"`
+	Token    string `json:"token" yaml:"token"`
 }
 
 // Response struct
 type Response struct {
-	Success bool        `json:"success"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Success bool        `json:"success" yaml:"success"`
+	Message string      `json:"message" yaml:"message"`
+	Data    interface{} `json:"data" yaml:"data"`
 }
 
 // ActionConfig struct
 type ActionConfig struct {
-	Resource string `json:"resource"`
-	KayPath  string `json:"keypath"`
-	Payload  string `json:"payload"`
+	Resource string `json:"resource" yaml:"resource"`
+	KayPath  string `json:"keyPath" yaml:"keyPath"`
+	Payload  string `json:"payload" yaml:"payload"`
 }
