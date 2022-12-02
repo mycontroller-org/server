@@ -49,7 +49,7 @@ func scheduleTriggerFunc(cfg *scheduleTY.Config, spec string) {
 		zap.L().Error("error on loading variables", zap.String("schedulerID", cfg.ID), zap.Error(err))
 		// update triggered count and update state
 		cfg.State.LastStatus = false
-		cfg.State.Message = fmt.Sprintf("Error: %s", err.Error())
+		cfg.State.Message = fmt.Sprintf("error: %s", err.Error())
 		busUtils.SetScheduleState(cfg.ID, *cfg.State)
 		executionError = err.Error()
 		return
@@ -67,7 +67,7 @@ func scheduleTriggerFunc(cfg *scheduleTY.Config, spec string) {
 			if err != nil {
 				zap.L().Error("error on executing javascript", zap.String("schedulerID", cfg.ID), zap.Error(err))
 				cfg.State.LastStatus = false
-				cfg.State.Message = fmt.Sprintf("Error: %s", err.Error())
+				cfg.State.Message = fmt.Sprintf("error: %s", err.Error())
 				busUtils.SetScheduleState(cfg.ID, *cfg.State)
 				executionError = err.Error()
 				return
@@ -110,10 +110,10 @@ func verifyAndDisableSchedule(cfg *scheduleTY.Config, timeTaken time.Duration, e
 			return
 		}
 		if spec.RepeatCount != 0 && cfg.State.ExecutedCount >= spec.RepeatCount {
-			zap.L().Debug("reached the maximum execution count, disbling this job", zap.String("ScheduleID", cfg.ID), zap.Any("spec", cfg.Spec))
+			zap.L().Debug("reached the maximum execution count, disabling this job", zap.String("ScheduleID", cfg.ID), zap.Any("spec", cfg.Spec))
 			busUtils.DisableSchedule(cfg.ID)
 			// Sometimes setState updates as enabled
-			// To avoid this addind small sleep, but this is not good fix.
+			// To avoid this adding small sleep, but this is not good fix.
 			utils.SmartSleep(200 * time.Millisecond)
 			cfg.State.Message = fmt.Sprintf("time taken: %s, reached maximum execution count", timeTaken.String())
 			if executionError != "" {
@@ -310,13 +310,13 @@ func isValidSchedule(cfg *scheduleTY.Config) bool {
 
 	// validate from date and time
 	if !fromDate.IsZero() && now.Before(fromDate) {
-		zap.L().Info("failed", zap.Any("fromDate", fromDate), zap.Any("now", now))
+		zap.L().Debug("failed", zap.Any("fromDate", fromDate), zap.Any("now", now))
 		return false
 	}
 
 	// validate to date and time
 	if !toDate.IsZero() && now.After(toDate) {
-		zap.L().Info("failed", zap.Any("toDate", toDate), zap.Any("now", now))
+		zap.L().Debug("failed", zap.Any("toDate", toDate), zap.Any("now", now))
 		return false
 	}
 
@@ -329,7 +329,7 @@ func isValidSchedule(cfg *scheduleTY.Config) bool {
 		if !fromTime.IsZero() {
 			fromTimeInt, _ := strconv.ParseUint(fromTime.Format(timeFormat), 10, 64)
 			if nowTimeInt < fromTimeInt {
-				zap.L().Info("failed", zap.Any("fromTime", fromTime))
+				zap.L().Debug("failed", zap.Any("fromTime", fromTime))
 				return false
 			}
 		}
@@ -338,7 +338,7 @@ func isValidSchedule(cfg *scheduleTY.Config) bool {
 		if !toTime.IsZero() {
 			toTimeInt, _ := strconv.ParseUint(toTime.Format(timeFormat), 10, 64)
 			if nowTimeInt > toTimeInt {
-				zap.L().Info("failed", zap.Any("toTime", toTime))
+				zap.L().Debug("failed", zap.Any("toTime", toTime))
 				return false
 			}
 		}
