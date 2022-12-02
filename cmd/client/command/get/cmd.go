@@ -61,10 +61,12 @@ func getFilters() []storageTY.Filter {
 	return filters
 }
 
-func GetQueryParams() (map[string]interface{}, error) {
+func getQueryParams(headers []printer.Header) (map[string]interface{}, error) {
+	// get actual sort key
+	actualSortKey := getActualSortKey(headers, sortBy)
 	limit := limit
 	pageOffset := uint64(0)
-	sortBy := []storageTY.Sort{{OrderBy: sortOrder, Field: sortBy}}
+	sortBy := []storageTY.Sort{{OrderBy: sortOrder, Field: actualSortKey}}
 
 	sortByBytes, err := json.Marshal(sortBy)
 	if err != nil {
@@ -85,7 +87,7 @@ func GetQueryParams() (map[string]interface{}, error) {
 }
 
 func executeGetCmd(headers []printer.Header, listFunc ListFunc, dataType interface{}) {
-	queryParams, err := GetQueryParams()
+	queryParams, err := getQueryParams(headers)
 	if err != nil {
 		fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
 		return
@@ -124,4 +126,18 @@ func executeGetCmd(headers []printer.Header, listFunc ListFunc, dataType interfa
 	}
 
 	printer.Print(rootCmd.IOStreams.Out, headers, rows, rootCmd.HideHeader, rootCmd.OutputFormat, rootCmd.Pretty)
+}
+
+func getActualSortKey(headers []printer.Header, key string) string {
+	formattedKey := strings.ToLower(strings.ReplaceAll(key, " ", ""))
+	for _, header := range headers {
+		headerKey := strings.ToLower(strings.ReplaceAll(header.Title, " ", ""))
+		if formattedKey == headerKey {
+			if header.ValuePath != "" {
+				return header.ValuePath
+			}
+			return key
+		}
+	}
+	return key
 }
