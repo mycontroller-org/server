@@ -1,10 +1,8 @@
 package root
 
 import (
-	"bufio"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -110,17 +108,15 @@ var logoutCmd = &cobra.Command{
 }
 
 func promptUsername() (string, error) {
-	reader := bufio.NewReader(IOStreams.In)
-	fmt.Fprint(IOStreams.Out, "Username: ")
-	username, err := reader.ReadString('\n')
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSuffix(username, "\n"), nil
+	_, err := fmt.Fprint(IOStreams.Out, "Username: ")
+	var username string
+	fmt.Fscanln(IOStreams.In, &username)
+	return username, err
 }
 
 func promptPassword() (string, error) {
 	fmt.Fprint(IOStreams.Out, "Password: ")
+	// TODO: should use IOStreams.In in the place of os.Stdin.Fd
 	pw, err := term.ReadPassword(int(os.Stdin.Fd()))
 	fmt.Fprintln(IOStreams.Out)
 	if err != nil {
