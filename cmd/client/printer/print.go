@@ -18,15 +18,17 @@ import (
 
 // output types
 const (
-	OutputConsole = "console"
-	OutputYAML    = "yaml"
-	OutputJSON    = "json"
+	OutputConsole     = "console"
+	OutputConsoleWide = "wide" // same as console, prints additional headers
+	OutputYAML        = "yaml"
+	OutputJSON        = "json"
 )
 
 type Header struct {
 	Title        string
 	ValuePath    string
 	DisplayStyle string
+	IsWide       bool
 }
 
 const (
@@ -35,13 +37,17 @@ const (
 
 func Print(out io.Writer, headers []Header, data interface{}, hideHeader bool, output string, pretty bool) {
 	switch output {
-	case OutputConsole:
+	case OutputConsole, OutputConsoleWide:
 		dataConsole, ok := data.([]interface{})
 		if !ok {
 			fmt.Fprintln(out, "data not in table format")
 			return
 		}
-		PrintConsole(out, headers, dataConsole, hideHeader)
+		wideEnabled := false
+		if output == OutputConsoleWide {
+			wideEnabled = true
+		}
+		PrintConsole(out, headers, dataConsole, hideHeader, wideEnabled)
 		return
 
 	case OutputJSON:
@@ -68,10 +74,13 @@ func Print(out io.Writer, headers []Header, data interface{}, hideHeader bool, o
 	}
 }
 
-func PrintConsole(out io.Writer, headers []Header, data []interface{}, hideHeader bool) {
+func PrintConsole(out io.Writer, headers []Header, data []interface{}, hideHeader, wideEnabled bool) {
 	// update header
 	updatedHeaders := []string{}
 	for _, header := range headers {
+		if !wideEnabled && header.IsWide {
+			continue
+		}
 		updatedHeaders = append(updatedHeaders, header.Title)
 	}
 
@@ -81,6 +90,10 @@ func PrintConsole(out io.Writer, headers []Header, data []interface{}, hideHeade
 		structData := data[index]
 		row := make([]string, 0)
 		for _, header := range headers {
+			if !wideEnabled && header.IsWide {
+				continue
+			}
+
 			valuePath := header.ValuePath
 			if valuePath == "" {
 				valuePath = header.Title

@@ -49,7 +49,7 @@ var gwGetCmd = &cobra.Command{
 			{Title: "id"},
 			{Title: "description"},
 			{Title: "enabled"},
-			{Title: "reconnect delay", ValuePath: "reconnectDelay"},
+			{Title: "reconnect delay", ValuePath: "reconnectDelay", IsWide: true},
 			{Title: "provider", ValuePath: "provider.type"},
 			{Title: "protocol", ValuePath: "provider.protocol.type"},
 			{Title: "status", ValuePath: "state.status"},
@@ -71,7 +71,7 @@ var nodeGetCmd = &cobra.Command{
 		client := rootCmd.GetClient()
 
 		headers := []printer.Header{
-			{Title: "id"},
+			{Title: "id", IsWide: true},
 			{Title: "gateway id", ValuePath: "gatewayId"},
 			{Title: "node id", ValuePath: "nodeId"},
 			{Title: "name"},
@@ -97,7 +97,7 @@ var sourceGetCmd = &cobra.Command{
 		client := rootCmd.GetClient()
 
 		headers := []printer.Header{
-			{Title: "id"},
+			{Title: "id", IsWide: true},
 			{Title: "gateway id", ValuePath: "gatewayId"},
 			{Title: "node id", ValuePath: "nodeId"},
 			{Title: "source id", ValuePath: "sourceId"},
@@ -119,7 +119,7 @@ var fieldGetCmd = &cobra.Command{
 		client := rootCmd.GetClient()
 
 		headers := []printer.Header{
-			{Title: "id"},
+			{Title: "id", IsWide: true},
 			{Title: "gateway id", ValuePath: "gatewayId"},
 			{Title: "node id", ValuePath: "nodeId"},
 			{Title: "source id", ValuePath: "sourceId"},
@@ -190,7 +190,7 @@ var virtualDeviceGetCmd = &cobra.Command{
 		client := rootCmd.GetClient()
 
 		headers := []printer.Header{
-			{Title: "id"},
+			{Title: "id", IsWide: true},
 			{Title: "enabled"},
 			{Title: "name"},
 			{Title: "description"},
@@ -241,8 +241,8 @@ var taskGetCmd = &cobra.Command{
 			{Title: "id"},
 			{Title: "description"},
 			{Title: "enabled"},
-			{Title: "ignore duplicate", ValuePath: "ignoreDuplicate"},
-			{Title: "auto disable", ValuePath: "autoDisable"},
+			{Title: "ignore duplicate", ValuePath: "ignoreDuplicate", IsWide: true},
+			{Title: "auto disable", ValuePath: "autoDisable", IsWide: true},
 			{Title: "trigger on event", ValuePath: "triggerOnEvent"},
 			// {Title: "message", ValuePath: "state.message"},
 			{Title: "last duration", ValuePath: "state.lastDuration"},
