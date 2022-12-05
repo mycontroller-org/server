@@ -51,7 +51,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	Cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.mycontroller.yaml)")
-	Cmd.PersistentFlags().StringVarP(&OutputFormat, "output", "o", printer.OutputConsole, "output format. options: yaml, json, console")
+	Cmd.PersistentFlags().StringVarP(&OutputFormat, "output", "o", printer.OutputConsole, "output format. options: yaml, json, console, wide")
 	Cmd.PersistentFlags().BoolVar(&HideHeader, "hide-header", false, "hides the header on the console output")
 	Cmd.PersistentFlags().BoolVar(&Pretty, "pretty", false, "JSON pretty print")
 }
