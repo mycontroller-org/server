@@ -12,6 +12,7 @@ import (
 var (
 	loginUsername  string
 	loginPassword  string
+	loginToken     string
 	loginExpiresIn string
 	loginInsecure  bool
 )
@@ -20,6 +21,7 @@ func init() {
 	Cmd.AddCommand(loginCmd)
 	loginCmd.Flags().StringVarP(&loginUsername, "username", "u", "", "Username to login")
 	loginCmd.Flags().StringVarP(&loginPassword, "password", "p", "", "Password to login")
+	loginCmd.Flags().StringVarP(&loginToken, "token", "t", "", "token to login")
 	loginCmd.Flags().StringVar(&loginExpiresIn, "expires-in", "30d", "session expires in")
 	loginCmd.Flags().BoolVar(&loginInsecure, "insecure", false,
 		"If true, the server's certificate will not be checked for validity. This will make your HTTPS connections insecure")
@@ -41,36 +43,41 @@ var loginCmd = &cobra.Command{
 
   # prompt password
   myc login http://localhost:8080 --username admin
+
+  # token based login
+  myc login http://localhost:8080 --token <token>
 	`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		UpdateStreams(cmd)
 	},
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// get username from terminal
-		if loginUsername == "" {
-			_username, err := promptUsername()
-			if err != nil {
-				fmt.Fprintln(IOStreams.ErrOut, err.Error())
-				return
+		if loginToken == "" {
+			// get username from terminal
+			if loginUsername == "" {
+				_username, err := promptUsername()
+				if err != nil {
+					fmt.Fprintln(IOStreams.ErrOut, err.Error())
+					return
+				}
+				loginUsername = _username
 			}
-			loginUsername = _username
-		}
 
-		// get password from terminal
-		if loginPassword == "" {
-			_password, err := promptPassword()
-			if err != nil {
-				fmt.Fprintln(IOStreams.ErrOut, err.Error())
-				return
+			// get password from terminal
+			if loginPassword == "" {
+				_password, err := promptPassword()
+				if err != nil {
+					fmt.Fprintln(IOStreams.ErrOut, err.Error())
+					return
+				}
+				loginPassword = _password
 			}
-			loginPassword = _password
 		}
 
 		CONFIG.URL = args[0]
 		CONFIG.Insecure = loginInsecure
 		client := GetClient()
-		res, err := client.Login(loginUsername, loginPassword, "")
+		res, err := client.Login(loginUsername, loginPassword, loginToken, "")
 		if err != nil {
 			fmt.Fprintln(IOStreams.ErrOut, "error on login", err)
 			return

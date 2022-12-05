@@ -121,7 +121,7 @@ func PostErrorResponse(w http.ResponseWriter, message string, code int) {
 	}
 	out, err := json.Marshal(response)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	http.Error(w, string(out), code)
@@ -130,7 +130,7 @@ func PostErrorResponse(w http.ResponseWriter, message string, code int) {
 func PostSuccessResponse(w http.ResponseWriter, data interface{}) {
 	out, err := json.Marshal(data)
 	if err != nil {
-		PostErrorResponse(w, err.Error(), 500)
+		PostErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

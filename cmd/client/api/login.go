@@ -7,10 +7,11 @@ import (
 	handlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
 )
 
-func (c *Client) Login(username, password, expiresIn string) (*handlerTY.JwtTokenResponse, error) {
+func (c *Client) Login(username, password, token, expiresIn string) (*handlerTY.JwtTokenResponse, error) {
 	req := &handlerTY.UserLogin{
 		Username:  username,
 		Password:  password,
+		SvcToken:  token,
 		ExpiresIn: expiresIn,
 	}
 	res, err := c.executeJson(API_LOGIN, http.MethodPost, nil, nil, req, http.StatusOK)

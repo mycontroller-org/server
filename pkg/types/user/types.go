@@ -12,7 +12,7 @@ type User struct {
 	ID         string               `json:"id" yaml:"id"`
 	Username   string               `json:"username" yaml:"username"`
 	Email      string               `json:"email" yaml:"email"`
-	Password   string               `json:"password" yaml:"password"`
+	Password   string               `json:"password" yaml:"password"` // keep the hashed password, not the actual password
 	FullName   string               `json:"fullName" yaml:"fullName"`
 	Labels     cmap.CustomStringMap `json:"labels" yaml:"labels"`
 	ModifiedOn time.Time            `json:"modifiedOn" yaml:"modifiedOn"`

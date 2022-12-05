@@ -4,10 +4,11 @@ import "time"
 
 // global constants
 const (
-	KeyUserID     = "user_id"
-	KeyFullName   = "fullname"
-	KeyAuthorized = "authorized"
-	KeyExpiresAt  = "expires_at"
+	KeyUserID         = "user_id"
+	KeyServiceTokenID = "svc_token_id"
+	KeyFullName       = "fullname"
+	KeyAuthorized     = "authorized"
+	KeyExpiresAt      = "expires_at"
 
 	EnvJwtAccessSecret = "JWT_ACCESS_SECRET" // environment variable to set secret for JWT token
 
@@ -28,6 +29,7 @@ const (
 type UserLogin struct {
 	Username  string `json:"username" yaml:"username"`
 	Password  string `json:"password" yaml:"password"`
+	SvcToken  string `json:"token" yaml:"token"`
 	ExpiresIn string `json:"expiresIn" yaml:"expiresIn"`
 }
 

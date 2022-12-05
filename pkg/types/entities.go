@@ -17,6 +17,7 @@ const (
 	EntityDataRepository   = "data_repository"   // holds user data, can be used across
 	EntityVirtualDevice    = "virtual_device"    // holds virtual devices
 	EntityVirtualAssistant = "virtual_assistant" // holds virtual assistants
+	EntityServiceToken     = "service_token"     // holds service token
 )
 
 // Entity field keys
@@ -28,6 +29,8 @@ const (
 	KeyFieldID      = "FieldID"
 	KeyFieldName    = "FieldName"
 	KeyUsername     = "Username"
+	KeyUserID       = "UserID"
+	KeyToken        = "Token"
 	KeyEmail        = "Email"
 	KeyHandlerType  = "Type"
 	KeyHandlerName  = "Name"

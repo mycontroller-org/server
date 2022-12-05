@@ -11,7 +11,9 @@ import (
 	"github.com/gorilla/mux"
 	middleware "github.com/mycontroller-org/server/v2/cmd/server/app/handler/middleware"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	svcTokenAPI "github.com/mycontroller-org/server/v2/pkg/api/service_token"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
+	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	handlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 	"go.uber.org/zap"
@@ -40,29 +42,67 @@ func oAuthLogin(w http.ResponseWriter, r *http.Request) {
 	// validate user details
 	credentials, err := url.ParseQuery(string(userInput))
 	if err != nil {
-		handlerUtils.PostErrorResponse(w, "bad payload format", 400)
+		handlerUtils.PostErrorResponse(w, "bad payload format", http.StatusBadRequest)
 		return
 	}
 
 	userLogin := handlerTY.UserLogin{
 		Username:  credentials.Get("username"),
 		Password:  credentials.Get("password"),
+		SvcToken:  credentials.Get("token"),
 		ExpiresIn: "168h", // 7 days
 	}
 
-	// get user details
-	userInDB, err := userAPI.GetByUsername(userLogin.Username)
-	if err != nil {
-		handlerUtils.PostErrorResponse(w, "invalid user or password!", 401)
-		return
+	var userInDB userTY.User
+	var svcTokenID string
+
+	// if token available, it is token based authentication
+	if userLogin.SvcToken != "" {
+		// get hashed token
+		hashedToken, err := hashed.GenerateHash(userLogin.SvcToken)
+		if err != nil {
+			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		// verify token
+		svcToken, err := svcTokenAPI.GetByToken(hashedToken)
+		if err != nil {
+			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		// verify validity
+		if svcToken.ExpiresAt.After(time.Now()) {
+			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		// get user details
+		_userInDB, err := userAPI.GetByID(svcToken.UserID)
+		if err != nil {
+			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
+		userInDB = _userInDB
+		svcTokenID = svcToken.ID
+	} else { // user based authentication
+		// get user details
+		_userInDB, err := userAPI.GetByUsername(userLogin.Username)
+		if err != nil {
+			handlerUtils.PostErrorResponse(w, "invalid user or password", http.StatusUnauthorized)
+			return
+		}
+
+		//compare the user from the request, with the one we defined:
+		if userLogin.Username != _userInDB.Username || !hashed.IsValidPassword(_userInDB.Password, userLogin.Password) {
+			handlerUtils.PostErrorResponse(w, "please provide valid login details", http.StatusUnauthorized)
+			return
+		}
+		userInDB = _userInDB
 	}
 
-	//compare the user from the request, with the one we defined:
-	if userLogin.Username != userInDB.Username || !hashed.IsValidPassword(userInDB.Password, userLogin.Password) {
-		handlerUtils.PostErrorResponse(w, "Please provide valid login details", 401)
-		return
-	}
-	accessToken, err := middleware.CreateToken(userInDB, userLogin.ExpiresIn)
+	accessToken, err := middleware.CreateToken(userInDB, userLogin.ExpiresIn, svcTokenID)
 	if err != nil {
 		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -173,7 +213,7 @@ func oAuthToken(w http.ResponseWriter, r *http.Request) {
 
 	validity := time.Hour * 24 * 7 // 7 days
 
-	refreshToken, err := middleware.CreateToken(userInDB, validity.String())
+	refreshToken, err := middleware.CreateToken(userInDB, validity.String(), "")
 	if err != nil {
 		zap.L().Info("error on creating token", zap.Error(err))
 		http.Error(w, "internal error", http.StatusInternalServerError)
@@ -228,7 +268,7 @@ func oAuthTokenAlexa(w http.ResponseWriter, r *http.Request) {
 
 	validity := time.Hour * 24 * 7 // 7 days
 
-	refreshToken, err := middleware.CreateToken(userInDB, validity.String())
+	refreshToken, err := middleware.CreateToken(userInDB, validity.String(), "")
 	if err != nil {
 		zap.L().Info("error on creating token", zap.Error(err))
 		http.Error(w, "internal error", http.StatusInternalServerError)

@@ -171,11 +171,12 @@ func extractJwtToken(r *http.Request) string {
 }
 
 // CreateToken creates a token for a user
-func CreateToken(user user.User, expiresIn string) (string, error) {
+func CreateToken(user user.User, expiresIn, svcTokenID string) (string, error) {
 	atClaims := jwt.MapClaims{}
 	atClaims[handlerTY.KeyAuthorized] = true
 	atClaims[handlerTY.KeyUserID] = user.ID
 	atClaims[handlerTY.KeyFullName] = user.FullName
+	atClaims[handlerTY.KeyServiceTokenID] = svcTokenID
 
 	expiresInDuration := handlerTY.DefaultTokenExpiration
 

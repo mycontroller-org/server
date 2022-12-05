@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	middleware "github.com/mycontroller-org/server/v2/cmd/server/app/handler/middleware"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
+	svcTokenAPI "github.com/mycontroller-org/server/v2/pkg/api/service_token"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	handlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
@@ -32,19 +33,56 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// get user details
-	userInDB, err := userAPI.GetByUsername(login.Username)
-	if err != nil {
-		handlerUtils.PostErrorResponse(w, "Invalid credentials", http.StatusUnauthorized)
-		return
+	var userInDB userTY.User
+	var svcTokenID string
+
+	// if token available, it is token based authentication
+	if login.SvcToken != "" {
+		// get hashed token
+		hashedToken, err := hashed.GenerateHash(login.SvcToken)
+		if err != nil {
+			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		// verify token
+		svcToken, err := svcTokenAPI.GetByToken(hashedToken)
+		if err != nil {
+			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		// verify validity
+		if svcToken.ExpiresAt.After(time.Now()) {
+			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		// get user details
+		_userInDB, err := userAPI.GetByID(svcToken.UserID)
+		if err != nil {
+			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
+		userInDB = _userInDB
+		svcTokenID = svcToken.ID
+	} else { // user based authentication
+		// get user details
+		_userInDB, err := userAPI.GetByUsername(login.Username)
+		if err != nil {
+			handlerUtils.PostErrorResponse(w, "invalid user or password", http.StatusUnauthorized)
+			return
+		}
+
+		//compare the user from the request, with the one we defined:
+		if login.Username != _userInDB.Username || !hashed.IsValidPassword(_userInDB.Password, login.Password) {
+			handlerUtils.PostErrorResponse(w, "please provide valid login details", http.StatusUnauthorized)
+			return
+		}
+		userInDB = _userInDB
 	}
 
-	// compare the user from the request, with the one we have in database
-	if login.Username != userInDB.Username || !hashed.IsValidPassword(userInDB.Password, login.Password) {
-		handlerUtils.PostErrorResponse(w, "Invalid credentials", http.StatusUnauthorized)
-		return
-	}
-	token, err := middleware.CreateToken(userInDB, login.ExpiresIn)
+	token, err := middleware.CreateToken(userInDB, login.ExpiresIn, svcTokenID)
 	if err != nil {
 		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -82,7 +120,7 @@ func profile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	userID := middleware.GetUserID(r)
 	if userID == "" {
-		handlerUtils.PostErrorResponse(w, "UserID missing in the request", http.StatusBadRequest)
+		handlerUtils.PostErrorResponse(w, "userID missing in the request", http.StatusBadRequest)
 		return
 	}
 
@@ -97,7 +135,7 @@ func updateProfile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	userID := middleware.GetUserID(r)
 	if userID == "" {
-		handlerUtils.PostErrorResponse(w, "UserID missing in the request", http.StatusBadRequest)
+		handlerUtils.PostErrorResponse(w, "userID missing in the request", http.StatusBadRequest)
 		return
 	}
 
@@ -114,7 +152,7 @@ func updateProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user.ID != entity.ID {
-		http.Error(w, "You can not change ID", http.StatusBadRequest)
+		http.Error(w, "you can not change ID", http.StatusBadRequest)
 		return
 	}
 

@@ -61,6 +61,7 @@ func GetHandler() (http.Handler, error) {
 	handlerAPI.RegisterBackupRestoreRoutes(router)
 	handlerAPI.RegisterVirtualDeviceRoutes(router)
 	handlerAPI.RegisterVirtualAssistantRoutes(router)
+	handlerAPI.RegisterServiceTokenRoutes(router)
 
 	// virtual assistants service route
 	virtualAssistantAPI.RegisterVirtualAssistantServiceRoutes(router)
