@@ -164,9 +164,3 @@ func getActualKey(headers []printer.Header, key string) string {
 	}
 	return key
 }
-
-func getQuickIDValueFunc(resourceType string) printer.ValueFunc {
-	return func(data interface{}) string {
-		return ""
-	}
-}
