@@ -12,6 +12,7 @@ import (
 	handlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
 	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
 	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
+	svcTokenAPI "github.com/mycontroller-org/server/v2/pkg/api/service_token"
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
@@ -27,6 +28,7 @@ import (
 	fwdPayloadTY "github.com/mycontroller-org/server/v2/pkg/types/forward_payload"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	svcTokenTY "github.com/mycontroller-org/server/v2/pkg/types/service_token"
 	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
@@ -185,6 +187,16 @@ var (
 			API: func(data interface{}) error {
 				if input, ok := data.(vdTY.VirtualDevice); ok {
 					return vdAPI.Save(&input)
+				}
+				return fmt.Errorf("invalid type:%T", data)
+			},
+		},
+
+		types.EntityServiceToken: {
+			EntityType: svcTokenTY.ServiceToken{},
+			API: func(data interface{}) error {
+				if input, ok := data.(svcTokenTY.ServiceToken); ok {
+					return svcTokenAPI.Save(&input)
 				}
 				return fmt.Errorf("invalid type:%T", data)
 			},

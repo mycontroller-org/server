@@ -10,6 +10,7 @@ import (
 	notificationHandlerAPI "github.com/mycontroller-org/server/v2/pkg/api/handler"
 	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
 	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
+	svcTokenAPI "github.com/mycontroller-org/server/v2/pkg/api/service_token"
 	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	sourceAPI "github.com/mycontroller-org/server/v2/pkg/api/source"
 	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
@@ -37,5 +38,6 @@ var (
 		types.EntityDataRepository:   dataRepositoryAPI.List,
 		types.EntityVirtualAssistant: vaAPI.List,
 		types.EntityVirtualDevice:    vdAPI.List,
+		types.EntityServiceToken:     svcTokenAPI.List,
 	}
 )

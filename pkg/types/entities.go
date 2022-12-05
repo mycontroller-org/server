@@ -30,7 +30,7 @@ const (
 	KeyFieldName    = "FieldName"
 	KeyUsername     = "Username"
 	KeyUserID       = "UserID"
-	KeyToken        = "Token"
+	KeyTokenID      = "Token.ID"
 	KeyEmail        = "Email"
 	KeyHandlerType  = "Type"
 	KeyHandlerName  = "Name"

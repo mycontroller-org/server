@@ -12,11 +12,11 @@ import (
 	json "github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	dateTimeTY "github.com/mycontroller-org/server/v2/pkg/types/cusom_datetime"
 	dataRepositoryTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
 	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
-	"github.com/mycontroller-org/server/v2/pkg/types/schedule"
 	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
@@ -111,16 +111,16 @@ func mapToStructDecodeHookFunc(fromType reflect.Type, toType reflect.Type, value
 		}
 		return value, nil
 
-	case reflect.TypeOf(schedule.CustomDate{}):
-		cd := schedule.CustomDate{}
+	case reflect.TypeOf(dateTimeTY.CustomDate{}):
+		cd := dateTimeTY.CustomDate{}
 		err := cd.Unmarshal(convertor.ToString(value))
 		if err != nil {
 			return nil, err
 		}
 		return &cd, nil
 
-	case reflect.TypeOf(schedule.CustomTime{}):
-		ct := schedule.CustomTime{}
+	case reflect.TypeOf(dateTimeTY.CustomTime{}):
+		ct := dateTimeTY.CustomTime{}
 		err := ct.Unmarshal(convertor.ToString(value))
 		if err != nil {
 			return nil, err

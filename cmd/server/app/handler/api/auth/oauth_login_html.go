@@ -69,6 +69,22 @@ const OAuthLoginPageHTML = `
                   name="password"
                 />
               </div>
+              <div class="pf-c-form__group">
+                <label class="pf-c-form__label" for="login-demo-form-password">
+                  <span class="pf-c-form__label-text">Token</span>
+                  <span class="pf-c-form__label-required" aria-hidden="true"
+                    >&#42;</span
+                  >
+                </label>
+                <input
+                  class="pf-c-form-control"
+                  required
+                  input="true"
+                  type="password"
+                  id="token"
+                  name="token"
+                />
+              </div>
               <div class="pf-c-form__group pf-m-action">
                 <button
                   class="pf-c-button pf-m-primary pf-m-block"

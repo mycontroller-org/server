@@ -9,6 +9,7 @@ import (
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	svcTokenAPI "github.com/mycontroller-org/server/v2/pkg/api/service_token"
 	userAPI "github.com/mycontroller-org/server/v2/pkg/api/user"
+	svcTokenTY "github.com/mycontroller-org/server/v2/pkg/types/service_token"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	handlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
@@ -38,34 +39,41 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	// if token available, it is token based authentication
 	if login.SvcToken != "" {
-		// get hashed token
-		hashedToken, err := hashed.GenerateHash(login.SvcToken)
+		parsedToken, err := svcTokenTY.ParseToken(login.SvcToken)
 		if err != nil {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return
 		}
 
-		// verify token
-		svcToken, err := svcTokenAPI.GetByToken(hashedToken)
+		// get actual token
+		actualToken, err := svcTokenAPI.GetByTokenID(parsedToken.ID)
 		if err != nil {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return
 		}
 
 		// verify validity
-		if svcToken.ExpiresAt.After(time.Now()) {
+		if !actualToken.NeverExpire {
+			if actualToken.ExpiresOn.Before(time.Now()) {
+				handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
+				return
+			}
+		}
+
+		// verify token
+		if !hashed.IsValidPassword(actualToken.Token.Token, parsedToken.Token) {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return
 		}
 
 		// get user details
-		_userInDB, err := userAPI.GetByID(svcToken.UserID)
+		_userInDB, err := userAPI.GetByID(actualToken.UserID)
 		if err != nil {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return
 		}
 		userInDB = _userInDB
-		svcTokenID = svcToken.ID
+		svcTokenID = parsedToken.ID
 	} else { // user based authentication
 		// get user details
 		_userInDB, err := userAPI.GetByUsername(login.Username)
@@ -92,7 +100,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	// cookie validity
 	cookieValidity, err := time.ParseDuration(login.ExpiresIn)
 	if err != nil { // take default validity
-		zap.L().Error("invalid validity", zap.String("input", login.ExpiresIn), zap.Error(err))
+		zap.L().Warn("invalid validity", zap.String("input", login.ExpiresIn), zap.Error(err))
 		cookieValidity = handlerTY.DefaultTokenExpiration
 	}
 

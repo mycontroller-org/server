@@ -66,14 +66,14 @@ func oAuthLogin(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// verify token
-		svcToken, err := svcTokenAPI.GetByToken(hashedToken)
+		svcToken, err := svcTokenAPI.GetByTokenID(hashedToken)
 		if err != nil {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return
 		}
 
 		// verify validity
-		if svcToken.ExpiresAt.After(time.Now()) {
+		if svcToken.ExpiresOn.After(time.Now()) {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return
 		}

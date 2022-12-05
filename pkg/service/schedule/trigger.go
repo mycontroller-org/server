@@ -9,6 +9,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/api/sunrise"
 	"github.com/mycontroller-org/server/v2/pkg/store"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
+	dateTimeTY "github.com/mycontroller-org/server/v2/pkg/types/cusom_datetime"
 	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
@@ -229,7 +230,7 @@ func toCronExpression(spec *scheduleTY.SpecSimple) (string, error) {
 		cronRaw.DayOfMonth = converterUtils.ToString(spec.DateOfMonth)
 
 	case scheduleTY.FrequencyOnDate:
-		date, err := time.Parse(scheduleTY.CustomDateFormat, spec.Date)
+		date, err := time.Parse(dateTimeTY.CustomDateFormat, spec.Date)
 		if err != nil {
 			return "", err
 		}
@@ -359,13 +360,13 @@ func updateOnDateJobValidity(cfg *scheduleTY.Config) error {
 		if spec.Frequency != scheduleTY.FrequencyOnDate {
 			return nil
 		}
-		date, err := time.Parse(scheduleTY.CustomDateFormat, spec.Date)
+		date, err := time.Parse(dateTimeTY.CustomDateFormat, spec.Date)
 		if err != nil {
 			return nil
 		}
 		cfg.Validity.Enabled = true
-		cfg.Validity.Date.From = scheduleTY.CustomDate{Time: date}
-		cfg.Validity.Date.To = scheduleTY.CustomDate{Time: date}
+		cfg.Validity.Date.From = dateTimeTY.CustomDate{Time: date}
+		cfg.Validity.Date.To = dateTimeTY.CustomDate{Time: date}
 	}
 	return nil
 }

@@ -22,7 +22,7 @@ func init() {
 	loginCmd.Flags().StringVarP(&loginUsername, "username", "u", "", "Username to login")
 	loginCmd.Flags().StringVarP(&loginPassword, "password", "p", "", "Password to login")
 	loginCmd.Flags().StringVarP(&loginToken, "token", "t", "", "token to login")
-	loginCmd.Flags().StringVar(&loginExpiresIn, "expires-in", "30d", "session expires in")
+	loginCmd.Flags().StringVar(&loginExpiresIn, "expires-in", "720h", "session expires in, value in hours")
 	loginCmd.Flags().BoolVar(&loginInsecure, "insecure", false,
 		"If true, the server's certificate will not be checked for validity. This will make your HTTPS connections insecure")
 
@@ -77,7 +77,7 @@ var loginCmd = &cobra.Command{
 		CONFIG.URL = args[0]
 		CONFIG.Insecure = loginInsecure
 		client := GetClient()
-		res, err := client.Login(loginUsername, loginPassword, loginToken, "")
+		res, err := client.Login(loginUsername, loginPassword, loginToken, loginExpiresIn)
 		if err != nil {
 			fmt.Fprintln(IOStreams.ErrOut, "error on login", err)
 			return

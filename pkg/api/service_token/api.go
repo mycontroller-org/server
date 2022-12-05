@@ -47,11 +47,11 @@ func GetByUserID(userID string) (svcTokenTY.ServiceToken, error) {
 	return result, err
 }
 
-// GetByToken returns a item
-func GetByToken(token string) (svcTokenTY.ServiceToken, error) {
+// GetByTokenID returns a item
+func GetByTokenID(tokenID string) (svcTokenTY.ServiceToken, error) {
 	result := svcTokenTY.ServiceToken{}
 	filters := []storageTY.Filter{
-		{Key: types.KeyToken, Value: token},
+		{Key: types.KeyTokenID, Value: tokenID},
 	}
 	err := store.STORAGE.FindOne(types.EntityServiceToken, &result, filters)
 	return result, err
@@ -93,14 +93,14 @@ func Create(newToken *svcTokenTY.ServiceToken) (*svcTokenTY.CreateTokenResponse,
 	newToken.ID = ""
 
 	// generate new token
-	generatedToken := utils.RandIDWithLength(21)
-	hashedToken, err := hashed.GenerateHash(generatedToken)
+	generatedToken := svcTokenTY.GetNewToken()
+	hashedToken, err := hashed.GenerateHash(generatedToken.Token)
 	if err != nil {
 		return nil, fmt.Errorf("error on generating hash:%s", err.Error())
 	}
 
-	newToken.Token = hashedToken
-	newToken.CreatedAt = time.Now()
+	newToken.Token = svcTokenTY.Token{ID: generatedToken.ID, Token: hashedToken}
+	newToken.CreatedOn = time.Now()
 
 	err = Save(newToken)
 	if err != nil {
@@ -108,5 +108,5 @@ func Create(newToken *svcTokenTY.ServiceToken) (*svcTokenTY.CreateTokenResponse,
 	}
 
 	// returns generated token
-	return &svcTokenTY.CreateTokenResponse{ID: newToken.ID, Token: generatedToken}, nil
+	return &svcTokenTY.CreateTokenResponse{ID: newToken.ID, Token: generatedToken.GetTokenWithID()}, nil
 }

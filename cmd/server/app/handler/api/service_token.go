@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	middleware "github.com/mycontroller-org/server/v2/cmd/server/app/handler/middleware"
 	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	svcTokenAPI "github.com/mycontroller-org/server/v2/pkg/api/service_token"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
@@ -38,6 +39,9 @@ func updateServiceToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// update userId
+	entity.UserID = middleware.GetUserID(r)
+
 	err = svcTokenAPI.Save(entity)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -52,6 +56,9 @@ func createServiceToken(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// update userId
+	entity.UserID = middleware.GetUserID(r)
 
 	generatedToken, err := svcTokenAPI.Create(entity)
 	if err != nil {
