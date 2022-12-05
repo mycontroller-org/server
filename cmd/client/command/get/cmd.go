@@ -15,10 +15,10 @@ import (
 )
 
 var (
-	limit        uint64
-	sortOrder    string
-	sortBy       string
-	filterString string
+	limit       uint64
+	sortOrder   string
+	sortBy      string
+	filterSlice []string
 )
 
 type ListFunc func(queryParams map[string]interface{}) (*storageTY.Result, error)
@@ -28,7 +28,7 @@ func init() {
 	getCmd.PersistentFlags().Uint64Var(&limit, "limit", 10, "limits number of rows")
 	getCmd.PersistentFlags().StringVar(&sortBy, "sort-by", "id", "sort the result by this key")
 	getCmd.PersistentFlags().StringVar(&sortOrder, "sort-order", storageTY.SortByASC, "sort the result. options: desc, asc")
-	getCmd.PersistentFlags().StringVar(&filterString, "filter", "", "filter the result. comma separated key=value")
+	getCmd.PersistentFlags().StringSliceVar(&filterSlice, "filter", []string{}, "filter the result. comma separated or repeated key=value")
 }
 
 var getCmd = &cobra.Command{
@@ -40,13 +40,12 @@ var getCmd = &cobra.Command{
 }
 
 func getFilters(headers []printer.Header) []storageTY.Filter {
-	if filterString == "" {
+	if len(filterSlice) == 0 {
 		return []storageTY.Filter{}
 	}
 
 	filters := []storageTY.Filter{}
-	filtersRaw := strings.Split(filterString, ",")
-	for _, filterMap := range filtersRaw {
+	for _, filterMap := range filterSlice {
 		// get operator
 		separator := "="
 		operator := storageTY.OperatorRegex
@@ -164,4 +163,10 @@ func getActualKey(headers []printer.Header, key string) string {
 		}
 	}
 	return key
+}
+
+func getQuickIDValueFunc(resourceType string) printer.ValueFunc {
+	return func(data interface{}) string {
+		return ""
+	}
 }

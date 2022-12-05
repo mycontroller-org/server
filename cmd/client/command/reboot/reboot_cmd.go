@@ -22,7 +22,7 @@ var nodeRebootCmd = &cobra.Command{
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		client := rootCmd.GetClient()
-		err := client.ActionNode(nodeTY.ActionReboot, args)
+		err := client.ExecuteNodeAction(nodeTY.ActionReboot, args)
 		if err != nil {
 			fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
 			return

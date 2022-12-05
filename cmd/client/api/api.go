@@ -13,7 +13,9 @@ const (
 
 	API_NODE_LIST   = "/api/node"
 	API_NODE_DELETE = "/api/node"
-	API_NODE_ACTION = "/api/action/node"
+
+	API_ACTION      = "/api/action"
+	API_ACTION_NODE = "/api/action/node"
 
 	API_FIELD_LIST   = "/api/field"
 	API_FIELD_DELETE = "/api/field"

@@ -29,20 +29,20 @@ func RegisterActionRoutes(router *mux.Router) {
 func executeNodeAction(w http.ResponseWriter, r *http.Request) {
 	query, err := handlerUtils.ReceivedQueryMap(r)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	actionArr := query[keyAction]
 	idsArr := query[keyID]
 
 	if len(actionArr) == 0 || len(idsArr) == 0 {
-		http.Error(w, "required field(s) missing", 400)
+		http.Error(w, "required field(s) missing", http.StatusBadRequest)
 		return
 	}
 
 	err = action.ExecuteNodeAction(actionArr[0], idsArr)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -50,20 +50,20 @@ func executeNodeAction(w http.ResponseWriter, r *http.Request) {
 func executeGatewayAction(w http.ResponseWriter, r *http.Request) {
 	query, err := handlerUtils.ReceivedQueryMap(r)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	actionArr := query[keyAction]
 	idsArr := query[keyID]
 
 	if len(actionArr) == 0 || len(idsArr) == 0 {
-		http.Error(w, "required field(s) missing", 400)
+		http.Error(w, "required field(s) missing", http.StatusBadRequest)
 		return
 	}
 
 	err = action.ExecuteGatewayAction(actionArr[0], idsArr)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -71,7 +71,7 @@ func executeGatewayAction(w http.ResponseWriter, r *http.Request) {
 func executeGetAction(w http.ResponseWriter, r *http.Request) {
 	query, err := handlerUtils.ReceivedQueryMap(r)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	resourceArr := query[keyResource]
@@ -79,7 +79,7 @@ func executeGetAction(w http.ResponseWriter, r *http.Request) {
 	payloadArr := query[keyPayload]
 
 	if len(resourceArr) == 0 || len(payloadArr) == 0 {
-		http.Error(w, "required field(s) missing", 500)
+		http.Error(w, "required field(s) missing", http.StatusInternalServerError)
 		return
 	}
 
@@ -92,7 +92,7 @@ func executeGetAction(w http.ResponseWriter, r *http.Request) {
 	}
 	err = action.ExecuteActionOnResourceByQuickID(resourceData)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -100,14 +100,14 @@ func executeGetAction(w http.ResponseWriter, r *http.Request) {
 func executePostAction(w http.ResponseWriter, r *http.Request) {
 	actions := make([]webHandlerTY.ActionConfig, 0)
 
-	err := handlerUtils.LoadEntity(w, r, actions)
+	err := handlerUtils.LoadEntity(w, r, &actions)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if len(actions) == 0 {
-		http.Error(w, "there is no action supplied", 500)
+		http.Error(w, "there is no action supplied", http.StatusInternalServerError)
 		return
 	}
 
@@ -119,7 +119,7 @@ func executePostAction(w http.ResponseWriter, r *http.Request) {
 		}
 		err := action.ExecuteActionOnResourceByQuickID(resourceData)
 		if err != nil {
-			http.Error(w, err.Error(), 500)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}

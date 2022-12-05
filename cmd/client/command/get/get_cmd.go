@@ -4,6 +4,7 @@ import (
 	rootCmd "github.com/mycontroller-org/server/v2/cmd/client/command/root"
 	"github.com/mycontroller-org/server/v2/cmd/client/printer"
 	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
+	clientTY "github.com/mycontroller-org/server/v2/pkg/types/client"
 	dataRepoTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
 	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
@@ -47,6 +48,7 @@ var gwGetCmd = &cobra.Command{
 
 		headers := []printer.Header{
 			{Title: "id"},
+			{Title: "quick id", IsWide: true, ValueFunc: clientTY.GetQuickIDValueFunc(clientTY.ResourceGateway)},
 			{Title: "description"},
 			{Title: "enabled"},
 			{Title: "reconnect delay", ValuePath: "reconnectDelay", IsWide: true},
@@ -72,6 +74,7 @@ var nodeGetCmd = &cobra.Command{
 
 		headers := []printer.Header{
 			{Title: "id", IsWide: true},
+			{Title: "quick id", IsWide: true, ValueFunc: clientTY.GetQuickIDValueFunc(clientTY.ResourceNode)},
 			{Title: "gateway id", ValuePath: "gatewayId"},
 			{Title: "node id", ValuePath: "nodeId"},
 			{Title: "name"},
@@ -98,6 +101,7 @@ var sourceGetCmd = &cobra.Command{
 
 		headers := []printer.Header{
 			{Title: "id", IsWide: true},
+			{Title: "quick id", IsWide: true, ValueFunc: clientTY.GetQuickIDValueFunc(clientTY.ResourceSource)},
 			{Title: "gateway id", ValuePath: "gatewayId"},
 			{Title: "node id", ValuePath: "nodeId"},
 			{Title: "source id", ValuePath: "sourceId"},
@@ -120,6 +124,7 @@ var fieldGetCmd = &cobra.Command{
 
 		headers := []printer.Header{
 			{Title: "id", IsWide: true},
+			{Title: "quick id", IsWide: true, ValueFunc: clientTY.GetQuickIDValueFunc(clientTY.ResourceField)},
 			{Title: "gateway id", ValuePath: "gatewayId"},
 			{Title: "node id", ValuePath: "nodeId"},
 			{Title: "source id", ValuePath: "sourceId"},

@@ -9,6 +9,7 @@ import (
 	_ "github.com/mycontroller-org/server/v2/cmd/client/command/enable"
 	_ "github.com/mycontroller-org/server/v2/cmd/client/command/get"
 	_ "github.com/mycontroller-org/server/v2/cmd/client/command/reload"
+	_ "github.com/mycontroller-org/server/v2/cmd/client/command/set"
 )
 
 func main() {

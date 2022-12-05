@@ -24,11 +24,14 @@ const (
 	OutputJSON        = "json"
 )
 
+type ValueFunc func(interface{}) string
+
 type Header struct {
 	Title        string
 	ValuePath    string
 	DisplayStyle string
 	IsWide       bool
+	ValueFunc    ValueFunc
 }
 
 const (
@@ -94,18 +97,24 @@ func PrintConsole(out io.Writer, headers []Header, data []interface{}, hideHeade
 				continue
 			}
 
-			valuePath := header.ValuePath
-			if valuePath == "" {
-				valuePath = header.Title
-			}
-			_, value, err := filterUtils.GetValueByKeyPath(structData, valuePath)
-			if err != nil {
-				errValue := err.Error()
-				if strings.HasPrefix(err.Error(), "key not found") {
-					errValue = ""
+			var value interface{}
+			if header.ValueFunc != nil {
+				value = header.ValueFunc(structData)
+			} else {
+				valuePath := header.ValuePath
+				if valuePath == "" {
+					valuePath = header.Title
 				}
-				row = append(row, errValue)
-				continue
+				_, _value, err := filterUtils.GetValueByKeyPath(structData, valuePath)
+				if err != nil {
+					errValue := err.Error()
+					if strings.HasPrefix(err.Error(), "key not found") {
+						errValue = ""
+					}
+					row = append(row, errValue)
+					continue
+				}
+				value = _value
 			}
 
 			var rowValue interface{}
