@@ -1,11 +1,7 @@
 package main
 
-import (
-	cmd "github.com/mycontroller-org/server/v2/cmd/commands"
-	"github.com/mycontroller-org/server/v2/pkg/start/handler"
-)
+import "github.com/mycontroller-org/server/v2/cmd/handler/cmd"
 
 func main() {
-	cmd.ExecuteCommand(cmd.CallerHandler)
-	handler.Init() // init handler service
+	cmd.Execute()
 }

@@ -1,4 +1,4 @@
-package commands
+package cmd
 
 import (
 	"fmt"
@@ -9,20 +9,26 @@ import (
 	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	yaml "gopkg.in/yaml.v3"
+
+	"github.com/spf13/cobra"
 )
 
-// PrintVersion prints the version and exits
-func PrintDefaultConfig(caller string) {
-	if caller != CallerServer {
-		fmt.Println("generate default config implemented only for the server. For other componenet please refer documentation")
-		return
-	}
-	verBytes, err := yaml.Marshal(getDefaultServerConfig())
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	fmt.Println(string(verBytes))
+func init() {
+	root.AddCommand(defaultConfigCmd)
+}
+
+var defaultConfigCmd = &cobra.Command{
+	Use:   "default-config",
+	Short: "Prints the default configuration details",
+	Run: func(cmd *cobra.Command, args []string) {
+		verBytes, err := yaml.Marshal(getDefaultServerConfig())
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		fmt.Println(string(verBytes))
+
+	},
 }
 
 func getDefaultServerConfig() *config.Config {

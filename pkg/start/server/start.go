@@ -21,8 +21,8 @@ import (
 )
 
 // Start func
-func Start(handlerFunc func()) {
-	common.InitBasicServices(wrapHandlerFunc(handlerFunc), closeServices)
+func Start(configFile string, handlerFunc func()) {
+	common.InitBasicServices(configFile, wrapHandlerFunc(handlerFunc), closeServices)
 }
 
 func startServices() {

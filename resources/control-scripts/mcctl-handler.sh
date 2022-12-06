@@ -20,7 +20,7 @@ cd ${ACTUAL_LOCATION}
 BINARY_FILE=./mycontroller-handler
 CONFIG_FILE=./handler.yaml
 
-START_COMMAND="${BINARY_FILE} -config ${CONFIG_FILE}"
+START_COMMAND="${BINARY_FILE} --config ${CONFIG_FILE}"
 
 MYC_PID=`ps -ef | grep "${START_COMMAND}" | grep -v grep | awk '{ print $2 }'`
 

@@ -37,4 +37,4 @@ COPY ./resources/sample-docker-handler.yaml ${APP_HOME}/handler.yaml
 WORKDIR ${APP_HOME}
 
 ENTRYPOINT [ "/app/mycontroller-handler" ]
-CMD [ "-config", "/app/handler.yaml" ]
+CMD [ "--config", "/app/handler.yaml" ]

@@ -1,11 +1,7 @@
 package main
 
-import (
-	cmd "github.com/mycontroller-org/server/v2/cmd/commands"
-	"github.com/mycontroller-org/server/v2/pkg/start/gateway"
-)
+import "github.com/mycontroller-org/server/v2/cmd/gateway/cmd"
 
 func main() {
-	cmd.ExecuteCommand(cmd.CallerGateway)
-	gateway.Init() // init gateway service
+	cmd.Execute()
 }

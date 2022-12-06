@@ -42,4 +42,4 @@ COPY ./resources/sample-docker-server.yaml ${APP_HOME}/mycontroller.yaml
 WORKDIR ${APP_HOME}
 
 ENTRYPOINT [ "/app/mycontroller-server" ]
-CMD [ "-config", "/app/mycontroller.yaml" ]
+CMD [ "--config", "/app/mycontroller.yaml" ]

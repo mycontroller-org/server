@@ -2,7 +2,6 @@ package configuration
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"os"
 
@@ -13,23 +12,21 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// configuration globally accessable
+// configuration globally accessible
 var (
 	PauseModifiedOnUpdate = concurrency.SafeBool{}
 )
 
 // Load configuration
-func Load() (*cfgTY.Config, error) {
+func Load(configFile string) (*cfgTY.Config, error) {
 	// load a temporary logger
 	logger := loggerUtils.GetLogger("development", "error", "console", false, 0, true)
 
-	cf := flag.String("config", "./config.yaml", "Configuration file")
-	flag.Parse()
-	if cf == nil {
+	if configFile == "" {
 		logger.Fatal("configuration file not supplied")
 		return nil, errors.New("configuration file not supplied")
 	}
-	d, err := os.ReadFile(*cf)
+	d, err := os.ReadFile(configFile)
 	if err != nil {
 		logger.Fatal("error on reading configuration file", zap.Error(err))
 	}

@@ -18,7 +18,7 @@ import (
 )
 
 // InitBasicServices func
-func InitBasicServices(initCustomServices func(), closeCustomServices func()) {
+func InitBasicServices(configFile string, initCustomServices func(), closeCustomServices func()) {
 	// 	defer func() {
 	// 		err := zap.L().Sync()
 	// 		if err != nil {
@@ -29,7 +29,7 @@ func InitBasicServices(initCustomServices func(), closeCustomServices func()) {
 	start := time.Now()
 
 	// load configuration
-	cfg, err := cfg.Load()
+	cfg, err := cfg.Load(configFile)
 	if err != nil {
 		zap.L().Fatal("failed to load configuration", zap.Error(err))
 		return

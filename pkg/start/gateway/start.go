@@ -8,8 +8,8 @@ import (
 )
 
 // Init func
-func Init() {
-	common.InitBasicServices(initServices, closeServices)
+func Init(configFile string) {
+	common.InitBasicServices(configFile, initServices, closeServices)
 }
 
 func initServices() {
