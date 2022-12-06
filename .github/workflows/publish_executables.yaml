@@ -18,7 +18,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: "18"
 
       - name: setup web console repository
         run: ./scripts/setup_web_console.sh
