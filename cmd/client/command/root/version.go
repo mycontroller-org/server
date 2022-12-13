@@ -3,7 +3,7 @@ package root
 import (
 	"fmt"
 
-	"github.com/mycontroller-org/server/v2/cmd/client/printer"
+	"github.com/mycontroller-org/server/v2/pkg/utils/printer"
 	"github.com/mycontroller-org/server/v2/pkg/version"
 
 	"github.com/spf13/cobra"

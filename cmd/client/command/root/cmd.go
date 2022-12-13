@@ -7,8 +7,8 @@ import (
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/mycontroller-org/server/v2/cmd/client/api"
-	printer "github.com/mycontroller-org/server/v2/cmd/client/printer"
 	clientTY "github.com/mycontroller-org/server/v2/pkg/types/client"
+	printer "github.com/mycontroller-org/server/v2/pkg/utils/printer"
 	"gopkg.in/yaml.v3"
 
 	"github.com/spf13/cobra"

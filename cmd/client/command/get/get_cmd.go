@@ -2,7 +2,6 @@ package get
 
 import (
 	rootCmd "github.com/mycontroller-org/server/v2/cmd/client/command/root"
-	"github.com/mycontroller-org/server/v2/cmd/client/printer"
 	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
 	clientTY "github.com/mycontroller-org/server/v2/pkg/types/client"
 	dataRepoTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
@@ -15,6 +14,7 @@ import (
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
 	vdTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_device"
+	"github.com/mycontroller-org/server/v2/pkg/utils/printer"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"github.com/spf13/cobra"

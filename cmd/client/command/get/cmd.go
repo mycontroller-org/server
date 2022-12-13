@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	rootCmd "github.com/mycontroller-org/server/v2/cmd/client/command/root"
-	"github.com/mycontroller-org/server/v2/cmd/client/printer"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	"github.com/mycontroller-org/server/v2/pkg/utils/printer"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 
 	"github.com/spf13/cobra"

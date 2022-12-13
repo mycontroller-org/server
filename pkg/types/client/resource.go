@@ -3,10 +3,10 @@ package client
 import (
 	"strings"
 
-	"github.com/mycontroller-org/server/v2/cmd/client/printer"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	"github.com/mycontroller-org/server/v2/pkg/utils/printer"
 )
 
 const (
