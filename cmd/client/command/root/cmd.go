@@ -102,7 +102,7 @@ func initConfig() {
 		home, err := homedir.Dir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".jenkinsctl" (without extension).
+		// Search config in home directory with name ".myc" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigName(CONFIG_FILE_NAME)
 		viper.SetConfigType(CONFIG_FILE_EXT)

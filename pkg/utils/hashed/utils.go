@@ -57,11 +57,7 @@ func Encrypt(plainText, secret, encryptionPrefix string) (string, error) {
 		return "", err
 	}
 
-	bytes, err := gcm.Seal(nonce, nonce, []byte(plainText), nil), nil
-	if err != nil {
-		return "", err
-	}
-
+	bytes := gcm.Seal(nonce, nonce, []byte(plainText), nil)
 	return fmt.Sprintf("%s%s", encryptionPrefix, base64.StdEncoding.EncodeToString(bytes)), nil
 }
 
