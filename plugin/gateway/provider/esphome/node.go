@@ -35,7 +35,7 @@ func NewESPHomeNode(gatewayID, nodeID string, config ESPHomeNodeConfig, entitySt
 func (en *ESPHomeNode) Connect() error {
 	timeoutDuration := utils.ToDuration(en.Config.Timeout, 10*time.Second)
 	clientID := fmt.Sprintf("%s_%s", en.GatewayID, utils.RandIDWithLength(3))
-	ehClient, err := esphomeClient.Init(clientID, en.Config.Address, timeoutDuration, en.onReceive)
+	ehClient, err := esphomeClient.GetClient(clientID, en.Config.Address, en.Config.EncryptionKey, timeoutDuration, en.onReceive)
 	if err != nil {
 		return err
 	}

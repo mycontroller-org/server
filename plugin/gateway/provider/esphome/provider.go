@@ -25,6 +25,7 @@ const (
 // Config data for this gateway
 type Config struct {
 	Password           string
+	EncryptionKey      string
 	Timeout            string
 	AliveCheckInterval string
 	Nodes              map[string]ESPHomeNodeConfig
@@ -78,8 +79,12 @@ func (p *Provider) Start(rxMessageFunc func(rawMsg *msgTY.RawMessage) error) err
 		}
 		zap.L().Debug("connecting to node", zap.Any("gatewayId", p.GatewayConfig.ID), zap.Any("nodeID", nodeID))
 
-		if nodeCfg.Password == "" {
+		if nodeCfg.UseGlobalPassword {
 			nodeCfg.Password = p.Config.Password
+		}
+
+		if nodeCfg.UseGlobalEncryptionKey {
+			nodeCfg.EncryptionKey = p.Config.EncryptionKey
 		}
 
 		nodeCfg.Timeout = utils.ValidDuration(nodeCfg.Timeout, p.Config.Timeout)

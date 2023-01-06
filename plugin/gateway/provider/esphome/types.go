@@ -74,12 +74,15 @@ const (
 
 // ESPHomeNodeConfig holds esphome node configuration details
 type ESPHomeNodeConfig struct {
-	Disabled           bool
-	Address            string
-	Password           string
-	Timeout            string
-	AliveCheckInterval string
-	ReconnectDelay     string
+	Disabled               bool
+	Address                string
+	Password               string
+	EncryptionKey          string
+	UseGlobalPassword      bool
+	UseGlobalEncryptionKey bool
+	Timeout                string
+	AliveCheckInterval     string
+	ReconnectDelay         string
 }
 
 // ESPHomeNode is a esphome node instance
