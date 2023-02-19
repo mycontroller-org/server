@@ -46,7 +46,7 @@ func (p *Provider) updateLight(light *huego.Light) {
 	nodeData.Others.Set("id", light.ID, nil)
 	nodeData.Others.Set("manufacturer_name", light.ManufacturerName, nil)
 	nodeData.Others.Set("model_id", light.ModelID, nil)
-	nodeData.Others.Set("product_id", light.ProductID, nil)
+	nodeData.Others.Set("product_name", light.ProductName, nil)
 	nodeData.Others.Set("sw_config_id", light.SwConfigID, nil)
 	nodeData.Others.Set("unique_id", light.UniqueID, nil)
 	nodeData.Others.Set("sw_version", light.SwVersion, nil)
