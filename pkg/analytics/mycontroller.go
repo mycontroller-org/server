@@ -48,7 +48,7 @@ func ReportAnalyticsData() {
 			BuildDate: ver.BuildDate,
 			Platform:  ver.Platform,
 			Arch:      ver.Arch,
-			GoLang:    ver.GoLang,
+			GoLang:    ver.GoVersion,
 			RunningIn: statusAPI.RunningIn(),
 			Uptime:    statusAPI.Get().Uptime,
 			Gateways:  []string{},

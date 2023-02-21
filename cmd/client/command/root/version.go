@@ -44,7 +44,7 @@ var versionCmd = &cobra.Command{
 			"version":   clientVersion.Version,
 			"buildDate": clientVersion.BuildDate,
 			"gitCommit": clientVersion.GitCommit,
-			"goLang":    clientVersion.GoLang,
+			"goLang":    clientVersion.GoVersion,
 			"platform":  clientVersion.Platform,
 			"arch":      clientVersion.Arch,
 			"hostId":    clientVersion.HostID,
@@ -63,7 +63,7 @@ var versionCmd = &cobra.Command{
 				serverRow["version"] = serverVersion.Version
 				serverRow["buildDate"] = serverVersion.BuildDate
 				serverRow["gitCommit"] = serverVersion.GitCommit
-				serverRow["goLang"] = serverVersion.GoLang
+				serverRow["goLang"] = serverVersion.GoVersion
 				serverRow["platform"] = serverVersion.Platform
 				serverRow["arch"] = serverVersion.Arch
 				serverRow["hostId"] = serverVersion.HostID

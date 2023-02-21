@@ -44,7 +44,7 @@ func (p *Provider) updateNodeDetails() {
 	msg.Payloads = append(msg.Payloads, p.getData("gateway_build_date", gwVersion.BuildDate, metricTY.MetricTypeNone, metricTY.UnitNone, false))
 	msg.Payloads = append(msg.Payloads, p.getData("gateway_platform", gwVersion.Platform, metricTY.MetricTypeNone, metricTY.UnitNone, false))
 	msg.Payloads = append(msg.Payloads, p.getData("gateway_arch", gwVersion.Arch, metricTY.MetricTypeNone, metricTY.UnitNone, false))
-	msg.Payloads = append(msg.Payloads, p.getData("gateway_golang_version", gwVersion.GoLang, metricTY.MetricTypeNone, metricTY.UnitNone, false))
+	msg.Payloads = append(msg.Payloads, p.getData("gateway_golang_version", gwVersion.GoVersion, metricTY.MetricTypeNone, metricTY.UnitNone, false))
 
 	// include version details
 	// library_version

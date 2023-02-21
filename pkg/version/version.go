@@ -3,6 +3,7 @@ package version
 import (
 	"fmt"
 	"runtime"
+	"sync"
 
 	"github.com/shirou/gopsutil/v3/host"
 )
@@ -11,6 +12,9 @@ var (
 	gitCommit string
 	version   string
 	buildDate string
+
+	runOnce  sync.Once
+	_version Version
 )
 
 // Version holds version data
@@ -18,7 +22,8 @@ type Version struct {
 	Version   string `json:"version" yaml:"version"`
 	GitCommit string `json:"gitCommit" yaml:"gitCommit"`
 	BuildDate string `json:"buildDate" yaml:"buildDate"`
-	GoLang    string `json:"goLang" yaml:"goLang"`
+	GoVersion string `json:"goVersion" yaml:"goVersion"`
+	Compiler  string `json:"compiler" yaml:"compiler"`
 	Platform  string `json:"platform" yaml:"platform"`
 	Arch      string `json:"arch" yaml:"arch"`
 	HostID    string `json:"hostId" yaml:"hostId"`
@@ -26,23 +31,27 @@ type Version struct {
 
 // Get returns the Version object
 func Get() Version {
-	hostId, err := host.HostID()
-	if err != nil {
-		hostId = err.Error()
-	}
-	return Version{
-		GitCommit: gitCommit,
-		Version:   version,
-		BuildDate: buildDate,
-		GoLang:    runtime.Version(),
-		Platform:  runtime.GOOS,
-		Arch:      runtime.GOARCH,
-		HostID:    hostId,
-	}
+	runOnce.Do(func() {
+		hostId, err := host.HostID()
+		if err != nil {
+			hostId = err.Error()
+		}
+		_version = Version{
+			GitCommit: gitCommit,
+			Version:   version,
+			BuildDate: buildDate,
+			GoVersion: runtime.Version(),
+			Compiler:  runtime.Compiler,
+			Platform:  runtime.GOOS,
+			Arch:      runtime.GOARCH,
+			HostID:    hostId,
+		}
+	})
+	return _version
 }
 
 // String returns the values as string
 func (v Version) String() string {
-	return fmt.Sprintf("{version:%s, buildDate:%s, gitCommit:%s, goLang:%s, platform:%s, arch:%s, hostId:%s}",
-		v.Version, v.BuildDate, v.GitCommit, v.GoLang, v.Platform, v.Arch, v.HostID)
+	return fmt.Sprintf("{version:%s, buildDate:%s, gitCommit:%s, goVersion:%s, compiler:%s, platform:%s, arch:%s, hostId:%s}",
+		v.Version, v.BuildDate, v.GitCommit, v.GoVersion, v.Compiler, v.Platform, v.Arch, v.HostID)
 }
