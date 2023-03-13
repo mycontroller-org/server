@@ -14,6 +14,7 @@ import (
 type ServiceToken struct {
 	ID          string                `json:"id" yaml:"id"`
 	UserID      string                `json:"userId" yaml:"userId"`
+	Name        string                `json:"name" yaml:"name"`
 	Description string                `json:"description" yaml:"description"`
 	Token       Token                 `json:"token" yaml:"token"` // keeps hashed token, not the actual token
 	NeverExpire bool                  `json:"neverExpire" yaml:"neverExpire"`
