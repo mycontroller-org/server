@@ -3,6 +3,8 @@ package service
 import (
 	"net/http"
 	"strings"
+
+	"go.uber.org/zap"
 )
 
 const (
@@ -15,6 +17,7 @@ func (svc *VirtualAssistantService) registerServiceRoute() {
 }
 
 func (svc *VirtualAssistantService) handleRoute(w http.ResponseWriter, r *http.Request) {
+	svc.logger.Debug("request received", zap.String("url", r.RequestURI))
 	// get assistant id
 	path := strings.TrimPrefix(r.URL.Path, ROOT_PATH)
 	paths := strings.SplitN(path, "/", 2)

@@ -12,7 +12,7 @@ import (
 )
 
 // RegisterDashboardRoutes registers dashboard api
-func (h *Routes) RegisterDashboardRoutes() {
+func (h *Routes) registerDashboardRoutes() {
 	h.router.HandleFunc("/api/dashboard", h.listDashboards).Methods(http.MethodGet)
 	h.router.HandleFunc("/api/dashboard/{id}", h.getDashboard).Methods(http.MethodGet)
 	h.router.HandleFunc("/api/dashboard", h.updateDashboard).Methods(http.MethodPost)

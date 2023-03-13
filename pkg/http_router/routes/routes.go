@@ -85,7 +85,7 @@ func New(ctx context.Context, router *mux.Router, enableProfiling bool) (*Routes
 	// register routes
 	routes.registerActionRoutes()
 	routes.registerBackupRestoreRoutes()
-	routes.RegisterDashboardRoutes()
+	routes.registerDashboardRoutes()
 	routes.registerDataRepositoryRoutes()
 	routes.registerFieldRoutes()
 	routes.registerFirmwareRoutes()

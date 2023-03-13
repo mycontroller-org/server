@@ -31,6 +31,7 @@ import (
 	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type Server struct {
@@ -143,13 +144,6 @@ func (s *Server) Start(ctx context.Context, configFilePath string) error {
 	s.updateInitialSystemSettings()
 	s.setupInitialUser()
 
-	// load http handlers
-	httpHandler, err := httpRouter.New(ctx, cfg, router)
-	if err != nil {
-		logger.Error("error on getting http router", zap.Error(err))
-		return err
-	}
-
 	// engines needed in task and schedules service
 	// get variables engine
 	variablesEngine, err := s.getVariablesEngine()
@@ -216,26 +210,39 @@ func (s *Server) Start(ctx context.Context, configFilePath string) error {
 		return err
 	}
 
-	// websocket service
-	websocket, err := websocketSVC.New(ctx, router) // TODO: add router
-	if err != nil {
-		logger.Error("error on getting websocket service", zap.Error(err))
-		return err
-	}
-
-	// virtual assistant service
-	virtualAssistant, err := vaSVC.New(ctx, &cfg.VirtualAssistant, router) // TODO: add router
-	if err != nil {
-		logger.Error("error on getting virtual assistant service", zap.Error(err))
-		return err
-	}
-
 	// forward payload service
 	forwardPayload, err := fwdPayloadSVC.New(ctx)
 	if err != nil {
 		logger.Error("error on getting forward payload service", zap.Error(err))
 		return err
 	}
+
+	// websocket service
+	websocket, err := websocketSVC.New(ctx, router)
+	if err != nil {
+		logger.Error("error on getting websocket service", zap.Error(err))
+		return err
+	}
+
+	// virtual assistant service
+	virtualAssistant, err := vaSVC.New(ctx, &cfg.VirtualAssistant, router)
+	if err != nil {
+		logger.Error("error on getting virtual assistant service", zap.Error(err))
+		return err
+	}
+
+	// load http handlers
+	// all other handlers will be registered prior to this call,
+	// because this router registers a path with prefix "/" to handle static web assets
+	// TODO: this to be fixed by adding only required paths for web contents
+	httpHandler, err := httpRouter.New(ctx, cfg, router)
+	if err != nil {
+		logger.Error("error on getting http router", zap.Error(err))
+		return err
+	}
+
+	// used for debug purpose, to see the registered paths
+	s.printsHandlersPath(router)
 
 	// http listener service
 	httpListener, err := httpListenerSVC.New(ctx, cfg.Web, httpHandler)
@@ -353,4 +360,27 @@ func (s *Server) getVariablesEngine() (types.VariablesEngine, error) {
 	}
 
 	return variablesEngine, nil
+}
+
+func (s *Server) printsHandlersPath(router *mux.Router) {
+	// execute only on debug enabled
+	if !s.logger.Level().Enabled(zapcore.DebugLevel) {
+		return
+	}
+
+	walkFunc := func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+		path, err := route.GetPathRegexp()
+		if err != nil {
+			return err
+		}
+
+		s.logger.Debug("http handler registered path", zap.String("path", path))
+		return nil
+	}
+
+	err := router.Walk(walkFunc)
+	if err != nil {
+		s.logger.Error("error on calling walk func", zap.Error(err))
+	}
+
 }

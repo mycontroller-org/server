@@ -20,6 +20,7 @@ const (
 	defaultWriteTimeout = time.Second * 3
 	defaultQueueSize    = int(1000)
 	defaultWorkers      = int(1)
+	websocketPath       = "/api/ws"
 )
 
 type WebsocketService struct {
@@ -61,6 +62,10 @@ func New(ctx context.Context, router *mux.Router) (serviceTY.Service, error) {
 		Topic:          topic.TopicEventsAll,
 		SubscriptionId: -1,
 	}
+
+	// register handler path
+	// needs to be registered before passing into http_router
+	svc.router.HandleFunc(websocketPath, svc.wsFunc)
 
 	return svc, nil
 }

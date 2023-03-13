@@ -66,6 +66,10 @@ func New(ctx context.Context, filter *sfTY.ServiceFilter, router *mux.Router) (s
 		SubscriptionId: -1,
 	}
 
+	// register handler path
+	// needs to be registered before passing into http_router
+	svc.registerServiceRoute()
+
 	return svc, nil
 }
 
@@ -93,9 +97,6 @@ func (svc *VirtualAssistantService) Start() error {
 		return err
 	}
 	svc.eventsQueue.SubscriptionId = sId
-
-	// register root route
-	svc.registerServiceRoute()
 
 	// load virtual assistants
 	reqEvent := rsTY.ServiceEvent{

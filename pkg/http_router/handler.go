@@ -13,8 +13,6 @@ import (
 	routes "github.com/mycontroller-org/server/v2/pkg/http_router/routes"
 	authRoutes "github.com/mycontroller-org/server/v2/pkg/http_router/routes/auth"
 	webConsole "github.com/mycontroller-org/server/v2/pkg/http_router/web-console"
-	virtualAssistantSVC "github.com/mycontroller-org/server/v2/pkg/service/virtual_assistant"
-	mcWS "github.com/mycontroller-org/server/v2/pkg/service/websocket"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	webHandlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
@@ -59,35 +57,16 @@ func New(ctx context.Context, cfg *config.Config, router *mux.Router) (http.Hand
 	}
 
 	// register application api routes
-	apiRoutes, err := routes.New(ctx, router, webCfg.EnableProfiling)
+	_, err = routes.New(ctx, router, webCfg.EnableProfiling)
 	if err != nil {
 		return nil, err
 	}
-	apiRoutes.RegisterDashboardRoutes()
 
 	// register authentication routes, used in google, alexa and others
 	_authRoutes := authRoutes.NewAuthRoutes(logger, coreApi, router)
 	_oAuthRoutes := authRoutes.NewOAuthRoutes(logger, coreApi, router)
 	_authRoutes.RegisterRoutes()
 	_oAuthRoutes.RegisterRoutes()
-
-	// virtual assistants service route
-	va, err := virtualAssistantSVC.New(ctx, nil, router)
-	if err != nil {
-		return nil, err
-	}
-	if err = va.Start(); err != nil {
-		return nil, err
-	}
-
-	// websocket router
-	wsSVC, err := mcWS.New(ctx, router)
-	if err != nil {
-		return nil, err
-	}
-	if err = wsSVC.Start(); err != nil {
-		return nil, err
-	}
 
 	// add secure and insecure directories into handler
 	addFileServers(namedLogger, cfg.Directories, router)
@@ -137,6 +116,5 @@ func addFileServers(logger *zap.Logger, dirs config.Directories, router *mux.Rou
 		logger.Info("insecure share directory included", zap.String("directory", dirs.InsecureShare), zap.String("handlerPath", webHandlerTY.InsecureShareDirWebHandlerPath))
 		fs := http.StripPrefix(webHandlerTY.InsecureShareDirWebHandlerPath, http.FileServer(http.Dir(dirs.InsecureShare)))
 		router.PathPrefix(webHandlerTY.InsecureShareDirWebHandlerPath).Handler(fs)
-
 	}
 }

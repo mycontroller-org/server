@@ -20,7 +20,6 @@ func (svc *WebsocketService) Start() error {
 		svc.logger.Error("error on websocket event listener", zap.Error(err))
 		return err
 	}
-	svc.router.HandleFunc("/api/ws", svc.wsFunc)
 	return nil
 }
 
