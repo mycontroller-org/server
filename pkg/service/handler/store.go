@@ -7,17 +7,14 @@ import (
 	"go.uber.org/zap"
 )
 
-type store struct {
+type Store struct {
 	handlers map[string]handlerTY.Plugin
 	mutex    sync.Mutex
-}
-
-var handlersStore = store{
-	handlers: make(map[string]handlerTY.Plugin),
+	logger   *zap.Logger
 }
 
 // Add a handler
-func (s *store) Add(id string, handler handlerTY.Plugin) {
+func (s *Store) Add(id string, handler handlerTY.Plugin) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -25,7 +22,7 @@ func (s *store) Add(id string, handler handlerTY.Plugin) {
 }
 
 // Remove a handler
-func (s *store) Remove(id string) {
+func (s *Store) Remove(id string) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -33,28 +30,28 @@ func (s *store) Remove(id string) {
 }
 
 // GetByID returns handler by id
-func (s *store) Get(id string) handlerTY.Plugin {
+func (s *Store) Get(id string) handlerTY.Plugin {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
 	return s.handlers[id]
 }
 
-func (s *store) CloseHandlers() {
+func (s *Store) CloseHandlers() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	for id := range handlersStore.handlers {
-		handler := handlersStore.handlers[id]
+	for id := range s.handlers {
+		handler := s.handlers[id]
 		err := handler.Close()
 		if err != nil {
-			zap.L().Error("error on close a handler", zap.String("id", id), zap.Error(err))
+			s.logger.Error("error on close a handler", zap.String("id", id), zap.Error(err))
 		}
 	}
-	handlersStore.handlers = make(map[string]handlerTY.Plugin)
+	s.handlers = make(map[string]handlerTY.Plugin)
 }
 
-func (s *store) ListIDs() []string {
+func (s *Store) ListIDs() []string {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 

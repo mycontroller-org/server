@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
 	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
 	"go.uber.org/zap"
 )
@@ -82,15 +81,15 @@ func (p *Provider) getScheduleID(resourceID string) string {
 }
 
 func (p *Provider) unloadAll() {
-	scheduleUtils.UnscheduleAll(schedulePrefix, p.GatewayConfig.ID)
+	p.scheduler.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, p.GatewayConfig.ID))
 }
 
 func (p *Provider) schedule(resourceID, interval string, triggerFunc func()) {
 	scheduleID := p.getScheduleID(resourceID)
-	scheduleUtils.Unschedule(scheduleID) // removes the existing schedule, if any
+	p.scheduler.RemoveFunc(scheduleID) // removes the existing schedule, if any
 	jobSpec := fmt.Sprintf("@every %s", interval)
-	err := scheduleUtils.Schedule(scheduleID, jobSpec, triggerFunc)
+	err := p.scheduler.AddFunc(scheduleID, jobSpec, triggerFunc)
 	if err != nil {
-		zap.L().Error("error on adding schedule", zap.Error(err))
+		p.logger.Error("error on adding schedule", zap.Error(err))
 	}
 }

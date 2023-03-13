@@ -22,9 +22,10 @@ type QueryV1 struct {
 	headers     map[string]string
 	url         string
 	queryParams map[string]interface{}
+	logger      *zap.Logger
 }
 
-func NewQueryClient(uri string, insecure bool, bucket, username, password string) *QueryV1 {
+func NewQueryClient(logger *zap.Logger, uri string, insecure bool, bucket, username, password string) *QueryV1 {
 	headers, newClient := newClient(uri, insecure, username, password)
 
 	queryParams := map[string]interface{}{
@@ -38,6 +39,7 @@ func NewQueryClient(uri string, insecure bool, bucket, username, password string
 		url:         fmt.Sprintf("%s/query", uri),
 		headers:     headers,
 		queryParams: queryParams,
+		logger:      logger,
 	}
 }
 
@@ -47,15 +49,15 @@ func (qv1 *QueryV1) ExecuteQuery(query *metricType.Query, measurement string) ([
 	queryString := qv1.buildQuery(query, measurement)
 	queryParams["q"] = queryString
 
-	zap.L().Debug("input", zap.String("query", queryString))
+	qv1.logger.Debug("input", zap.String("query", queryString))
 
 	response, err := qv1.client.ExecuteJson(qv1.url, http.MethodGet, qv1.headers, queryParams, nil, 0)
 	if err != nil {
-		zap.L().Error("error on calling api", zap.Error(err))
+		qv1.logger.Error("error on calling api", zap.Error(err))
 		return nil, err
 	}
 
-	zap.L().Debug("response", zap.String("body", response.StringBody()), zap.Any("qp", queryParams))
+	qv1.logger.Debug("response", zap.String("body", response.StringBody()), zap.Any("qp", queryParams))
 
 	if response.StatusCode != http.StatusOK {
 		// call error response

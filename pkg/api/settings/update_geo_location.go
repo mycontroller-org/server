@@ -29,7 +29,7 @@ type GeoLocationAPIResponse struct {
 	Timezone string `json:"timezone"`
 }
 
-func GetLocation() (*GeoLocationAPIResponse, error) {
+func (s *SettingsAPI) GetLocation() (*GeoLocationAPIResponse, error) {
 	response, err := http.Get(geoLocationURL)
 	if response != nil {
 		defer response.Body.Close()
@@ -53,9 +53,9 @@ func GetLocation() (*GeoLocationAPIResponse, error) {
 }
 
 // AutoUpdateSystemGEOLocation updates system location based on the ip
-func AutoUpdateSystemGEOLocation() error {
+func (s *SettingsAPI) AutoUpdateSystemGEOLocation() error {
 	// get location details
-	location, err := GetGeoLocation()
+	location, err := s.GetGeoLocation()
 	if err != nil {
 		return err
 	}
@@ -64,15 +64,15 @@ func AutoUpdateSystemGEOLocation() error {
 		return nil
 	}
 
-	geoData, err := GetLocation()
+	geoData, err := s.GetLocation()
 	if err != nil {
-		zap.L().Error("error on getting geo location, updating location details with default values and disabling auto update", zap.Error(err))
+		s.logger.Error("error on getting geo location, updating location details with default values and disabling auto update", zap.Error(err))
 		location.LocationName = defaultLocation
 		location.Latitude = defaultLatitude
 		location.Longitude = defaultLongitude
 		location.AutoUpdate = false
 	} else {
-		zap.L().Debug("detected geo details", zap.Any("geoData", geoData))
+		s.logger.Debug("detected geo details", zap.Any("geoData", geoData))
 		tokens := strings.Split(geoData.Location, ",")
 		if len(geoData.Location) == 0 || len(tokens) != 2 {
 			return errors.New("error on detecting geo location")
@@ -82,7 +82,6 @@ func AutoUpdateSystemGEOLocation() error {
 		location.Longitude, _ = strconv.ParseFloat(tokens[1], 64)
 	}
 
-	zap.L().Info("location data to be updated", zap.Any("location", location))
-
-	return UpdateGeoLocation(location)
+	s.logger.Info("location data to be updated", zap.Any("location", location))
+	return s.UpdateGeoLocation(location)
 }

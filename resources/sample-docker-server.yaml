@@ -1,6 +1,8 @@
 secret: 5a2f6ff25b0025aeae12ae096363b51a # !!! WARNING: CHANGE THIS SECRET !!!
 
-analytics:
+# disable telemetry service, if you do not wish to share non-PII data
+# non-PII - non Personally Identifiable Information
+telemetry:
   enabled: true 
 
 web:

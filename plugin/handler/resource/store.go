@@ -35,7 +35,8 @@ type JobsConfig struct {
 }
 
 func (s *store) getName() string {
-	dir := filepath.Join(types.GetDirectoryDataRoot(), store_directory)
+	baseDir := types.GetEnvString(types.ENV_DIR_DATA)
+	dir := filepath.Join(baseDir, store_directory)
 	err := utils.CreateDir(dir)
 	if err != nil {
 		zap.L().Error("failed to create handler data persistence directory", zap.String("directory", dir))

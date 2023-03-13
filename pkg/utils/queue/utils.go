@@ -16,9 +16,9 @@ type Queue struct {
 }
 
 // New returns brandnew queue
-func New(name string, limit int, consumer func(item interface{}), workers int) *Queue {
+func New(logger *zap.Logger, name string, limit int, consumer func(item interface{}), workers int) *Queue {
 	droppedItemHandler := func(item interface{}) {
-		zap.L().Error("Queue full. Droping item", zap.String("QueueName", name), zap.Any("item", item))
+		logger.Error("queue full. dropping item", zap.String("queueName", name), zap.Any("item", item))
 	}
 
 	queue := queue.NewBoundedQueue(limit, droppedItemHandler)
@@ -52,4 +52,23 @@ func (q *Queue) Produce(item interface{}) bool {
 // Size returns current size of the queue
 func (q *Queue) Size() int {
 	return q.Queue.Size()
+}
+
+// used to hold queue and subscription details
+type QueueSpec struct {
+	Topic          string
+	SubscriptionId int64
+	Queue          *Queue
+}
+
+func (qs *QueueSpec) Close() {
+	qs.Queue.Close()
+}
+
+func (qs *QueueSpec) Produce(item interface{}) bool {
+	return qs.Queue.Produce(item)
+}
+
+func (qs *QueueSpec) Size() int {
+	return qs.Queue.Size()
 }

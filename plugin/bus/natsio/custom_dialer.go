@@ -14,10 +14,11 @@ import (
 type CustomDialer struct {
 	uri    *url.URL
 	config *Config
+	logger *zap.Logger
 }
 
 // NewCustomDialer returns a custom dialer
-func NewCustomDialer(cfg *Config) (*CustomDialer, error) {
+func NewCustomDialer(cfg *Config, logger *zap.Logger) (*CustomDialer, error) {
 	uri, err := url.ParseRequestURI(cfg.ServerURL)
 	if err != nil {
 		return nil, err
@@ -25,13 +26,14 @@ func NewCustomDialer(cfg *Config) (*CustomDialer, error) {
 	cd := &CustomDialer{
 		uri:    uri,
 		config: cfg,
+		logger: logger,
 	}
 	return cd, nil
 }
 
 // Dial implementation
 func (cd *CustomDialer) Dial(network, address string) (net.Conn, error) {
-	PrintDebug("connecting via custom dialer", zap.String("server", cd.uri.String()))
+	cd.logger.Debug("connecting via custom dialer", zap.String("server", cd.uri.String()))
 
 	timeout := utils.ToDuration(cd.config.ConnectionTimeout, defaultConnectionTimeout)
 	tlsConfig := &tls.Config{
@@ -47,7 +49,7 @@ func (cd *CustomDialer) Dial(network, address string) (net.Conn, error) {
 	case "tcp", "http", "nats":
 		conn, err := net.DialTimeout("tcp", cd.uri.Host, timeout)
 		if err != nil {
-			PrintError("dialer error", zap.Error(err))
+			cd.logger.Debug("dialer error", zap.Error(err))
 			return nil, err
 		}
 		return conn, nil
@@ -55,11 +57,11 @@ func (cd *CustomDialer) Dial(network, address string) (net.Conn, error) {
 	case "tls", "nats+tls":
 		conn, err := tls.DialWithDialer(&net.Dialer{Timeout: timeout}, "tcp", cd.uri.Host, tlsConfig)
 		if err != nil {
-			PrintError("dialer error", zap.Error(err))
+			cd.logger.Debug("dialer error", zap.Error(err))
 			return nil, err
 		}
 		return conn, nil
 	}
-	PrintError("unknown protocol", zap.String("protocol", cd.uri.Scheme))
+	cd.logger.Debug("unknown protocol", zap.String("protocol", cd.uri.Scheme))
 	return nil, fmt.Errorf("[BUS:NATS.IO] unknown protocol:%s", cd.uri.Scheme)
 }

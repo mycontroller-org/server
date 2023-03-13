@@ -3,22 +3,20 @@ package service
 import (
 	"net/http"
 	"strings"
-
-	"github.com/gorilla/mux"
 )
 
 const (
-	API_PATH = "/api/bot/virtual/assistant/"
+	ROOT_PATH = "/api/bot/virtual/assistant/"
 )
 
-// virtual assistant will be registered and unregistered dynamically
-func RegisterVirtualAssistantServiceRoutes(router *mux.Router) {
-	router.PathPrefix(API_PATH).HandlerFunc(handleRoute)
+// virtual assistant root route path
+func (svc *VirtualAssistantService) registerServiceRoute() {
+	svc.router.PathPrefix(ROOT_PATH).HandlerFunc(svc.handleRoute)
 }
 
-func handleRoute(w http.ResponseWriter, r *http.Request) {
+func (svc *VirtualAssistantService) handleRoute(w http.ResponseWriter, r *http.Request) {
 	// get assistant id
-	path := strings.TrimPrefix(r.URL.Path, API_PATH)
+	path := strings.TrimPrefix(r.URL.Path, ROOT_PATH)
 	paths := strings.SplitN(path, "/", 2)
 
 	assistantID := ""
@@ -35,7 +33,7 @@ func handleRoute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	assistant := vaService.Get(assistantID)
+	assistant := svc.store.Get(assistantID)
 	if assistant == nil {
 		http.Error(w, "requested assistant not available", http.StatusNotFound)
 		return

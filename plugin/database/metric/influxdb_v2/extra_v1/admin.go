@@ -16,10 +16,11 @@ type AdminV1 struct {
 	headers map[string]string
 	url     string
 	bucket  string
+	logger  *zap.Logger
 }
 
 // NewAdminClient returns admin client
-func NewAdminClient(uri string, insecure bool, bucket, username, password string) *AdminV1 {
+func NewAdminClient(logger *zap.Logger, uri string, insecure bool, bucket, username, password string) *AdminV1 {
 	headers, newClient := newClient(uri, insecure, username, password)
 
 	return &AdminV1{
@@ -27,6 +28,7 @@ func NewAdminClient(uri string, insecure bool, bucket, username, password string
 		url:     fmt.Sprintf("%s/query", uri),
 		headers: headers,
 		bucket:  bucket,
+		logger:  logger,
 	}
 }
 
@@ -37,7 +39,7 @@ func (av1 *AdminV1) CreateBucket() error {
 	}
 	response, err := av1.client.ExecuteJson(av1.url, http.MethodGet, av1.headers, queryParams, nil, http.StatusOK)
 	if err != nil {
-		zap.L().Error("error on calling api", zap.Error(err))
+		av1.logger.Error("error on calling api", zap.Error(err))
 		return err
 	}
 
@@ -51,6 +53,6 @@ func (av1 *AdminV1) CreateBucket() error {
 		return errors.New(queryResult.Error)
 	}
 
-	zap.L().Info("metrics database available or created", zap.String("database", av1.bucket))
+	av1.logger.Info("metrics database available or created", zap.String("database", av1.bucket))
 	return nil
 }

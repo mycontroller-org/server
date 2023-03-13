@@ -1,6 +1,7 @@
 package bus
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
@@ -9,7 +10,7 @@ import (
 )
 
 // CreatorFn func type
-type CreatorFn func(config cmap.CustomMap) (busPluginTY.Plugin, error)
+type CreatorFn func(ctx context.Context, config cmap.CustomMap) (busPluginTY.Plugin, error)
 
 // Creators is used for create plugins.
 var creators = make(map[string]CreatorFn)
@@ -22,9 +23,9 @@ func Register(name string, fn CreatorFn) {
 	creators[name] = fn
 }
 
-func Create(name string, config cmap.CustomMap) (p busPluginTY.Plugin, err error) {
+func Create(ctx context.Context, name string, config cmap.CustomMap) (p busPluginTY.Plugin, err error) {
 	if fn, ok := creators[name]; ok {
-		p, err = fn(config)
+		p, err = fn(ctx, config)
 	} else {
 		err = fmt.Errorf("bus plugin [%s] is not registered", name)
 	}

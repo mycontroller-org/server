@@ -1,101 +1,121 @@
 package service
 
 import (
-	"fmt"
-	"time"
+	"context"
 
-	commonStore "github.com/mycontroller-org/server/v2/pkg/store"
-	types "github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/gorilla/mux"
+	encryptionAPI "github.com/mycontroller-org/server/v2/pkg/encryption"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
+	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
+	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
+	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
-	"github.com/mycontroller-org/server/v2/pkg/utils"
-	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
-	vaPlugin "github.com/mycontroller-org/server/v2/plugin/virtual_assistant"
+	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
 )
 
-// Start a virtual assistant
-func StartAssistant(cfg *vaTY.Config) error {
-	start := time.Now()
+const (
+	defaultQueueSize = int(50)
+	defaultWorkers   = int(1)
+)
 
-	// decrypt the secrets, tokens
-	err := cloneUtil.UpdateSecrets(cfg, commonStore.CFG.Secret, "", false, cloneUtil.DefaultSpecialKeys)
+type VirtualAssistantService struct {
+	ctx         context.Context
+	logger      *zap.Logger
+	filter      *sfTY.ServiceFilter
+	store       *Store
+	bus         busTY.Plugin
+	enc         *encryptionAPI.Encryption
+	eventsQueue *queueUtils.QueueSpec
+	router      *mux.Router
+}
+
+func New(ctx context.Context, filter *sfTY.ServiceFilter, router *mux.Router) (serviceTY.Service, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
 	if err != nil {
-		return err
+		return nil, err
+	}
+	bus, err := busTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	enc, err := encryptionAPI.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if filter == nil {
+		filter = &sfTY.ServiceFilter{}
 	}
 
-	if vaService.Get(cfg.ID) != nil {
-		zap.L().Info("no action needed. virtual assistant service is in running state.", zap.String("id", cfg.ID))
+	svc := &VirtualAssistantService{
+		ctx:    ctx,
+		logger: logger.Named("virtual_assistant_service"),
+		filter: filter,
+		bus:    bus,
+		enc:    enc,
+		router: router,
+	}
+
+	svc.store = &Store{services: make(map[string]vaTY.Plugin)}
+
+	svc.eventsQueue = &queueUtils.QueueSpec{
+		Queue:          queueUtils.New(svc.logger, "virtual_assistant_service", defaultQueueSize, svc.processEvent, defaultWorkers),
+		Topic:          topic.TopicServiceVirtualAssistant,
+		SubscriptionId: -1,
+	}
+
+	return svc, nil
+}
+
+func (svc *VirtualAssistantService) Name() string {
+	return "virtual_assistant_service"
+}
+
+// Start starts resource server listener
+func (svc *VirtualAssistantService) Start() error {
+	if svc.filter.Disabled {
+		svc.logger.Info("virtual assistant service disabled")
 		return nil
 	}
-	if !cfg.Enabled { // this assistant is not enabled
-		return nil
-	}
-	zap.L().Info("starting a virtual assistant", zap.Any("id", cfg.ID))
-	state := types.State{Since: time.Now()}
 
-	service, err := vaPlugin.Create(cfg.ProviderType, cfg)
-	if err != nil {
-		return err
-	}
-	err = service.Start()
-	if err != nil {
-		zap.L().Error("failed to start a virtual assistant", zap.String("id", cfg.ID), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
-		state.Message = err.Error()
-		state.Status = types.StatusDown
+	if svc.filter.HasFilter() {
+		svc.logger.Info("virtual assistant service filter config", zap.Any("filter", svc.filter))
 	} else {
-		zap.L().Info("started a virtual assistant", zap.String("id", cfg.ID), zap.String("timeTaken", time.Since(start).String()))
-		state.Message = "Started successfully"
-		state.Status = types.StatusUp
-		vaService.Add(service)
+		svc.logger.Debug("there is no filter applied to virtual assistant service")
 	}
 
-	busUtils.SetVirtualAssistantState(cfg.ID, state)
-	return nil
-}
-
-// stop a assistant
-func StopAssistant(id string) error {
-	start := time.Now()
-	zap.L().Info("stopping a virtual assistant", zap.Any("id", id))
-	service := vaService.Get(id)
-	if service != nil {
-		err := service.Stop()
-		state := types.State{
-			Status:  types.StatusDown,
-			Since:   time.Now(),
-			Message: "Stopped by request",
-		}
-		if err != nil {
-			zap.L().Error("failed to stop a virtual assistant", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
-			state.Message = fmt.Sprintf("Failed to stop: %s", err.Error())
-			busUtils.SetVirtualAssistantState(id, state)
-		} else {
-			zap.L().Info("stopped a virtual assistant", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()))
-			busUtils.SetVirtualAssistantState(id, state)
-			vaService.Remove(id)
-		}
+	// on event receive add it in to our local queue
+	sId, err := svc.bus.Subscribe(svc.eventsQueue.Topic, svc.onEvent)
+	if err != nil {
+		svc.logger.Error("error on subscription", zap.Error(err))
+		return err
 	}
-	return nil
-}
+	svc.eventsQueue.SubscriptionId = sId
 
-// reload a assistant
-func ReloadAssistant(gwCfg *vaTY.Config) error {
-	err := StopAssistant(gwCfg.ID)
+	// register root route
+	svc.registerServiceRoute()
+
+	// load virtual assistants
+	reqEvent := rsTY.ServiceEvent{
+		Type:    rsTY.TypeVirtualAssistant,
+		Command: rsTY.CommandLoadAll,
+	}
+	err = svc.bus.Publish(topic.TopicServiceResourceServer, reqEvent)
 	if err != nil {
 		return err
 	}
-	utils.SmartSleep(1 * time.Second)
-	return StartAssistant(gwCfg)
+
+	return nil
 }
 
-// UnloadAll stops all assistants
-func UnloadAll() {
-	ids := vaService.ListIDs()
-	for _, id := range ids {
-		err := StopAssistant(id)
-		if err != nil {
-			zap.L().Error("error on stopping a virtual assistant", zap.String("id", id))
-		}
+// Close the service
+func (svc *VirtualAssistantService) Close() error {
+	if svc.filter.Disabled {
+		return nil
 	}
+	svc.unloadAll()
+	svc.eventsQueue.Close()
+	return nil
 }

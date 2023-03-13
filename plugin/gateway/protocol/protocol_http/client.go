@@ -11,7 +11,10 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
+	"go.uber.org/zap"
 )
+
+const loggerName = "protocol_http"
 
 // Config details
 type Config struct {
@@ -29,6 +32,7 @@ type Endpoint struct {
 	Client    *http.Client
 	BaseURL   *url.URL
 	GatewayID string
+	logger    *zap.Logger
 }
 
 // RequestConfig used for http request's
@@ -49,7 +53,7 @@ type ResponseConfig struct {
 }
 
 // New ethernet driver
-func New(gwCfg *gwTY.Config, apiPrefix string) (*Endpoint, error) {
+func New(logger *zap.Logger, gwCfg *gwTY.Config, apiPrefix string) (*Endpoint, error) {
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameNone, gwCfg.Provider, &cfg)
 	if err != nil {
@@ -93,6 +97,7 @@ func New(gwCfg *gwTY.Config, apiPrefix string) (*Endpoint, error) {
 		BaseURL: uri,
 		Client:  client,
 		GwCfg:   gwCfg,
+		logger:  logger.Named(loggerName),
 	}
 	return d, nil
 }

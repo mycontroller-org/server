@@ -1,7 +1,11 @@
 package metric
 
 import (
+	"context"
+	"errors"
 	"time"
+
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 )
 
 // Plugin interface
@@ -12,6 +16,21 @@ type Plugin interface {
 	Write(data *InputData) error
 	WriteBlocking(data *InputData) error
 	Query(queryConfig *QueryConfig) (map[string][]ResponseData, error)
+}
+
+func FromContext(ctx context.Context) (Plugin, error) {
+	metric, ok := ctx.Value(contextTY.METRIC_DB).(Plugin)
+	if !ok {
+		return nil, errors.New("invalid metric database instance received in context")
+	}
+	if metric == nil {
+		return nil, errors.New("metric database instance not provided in context")
+	}
+	return metric, nil
+}
+
+func WithContext(ctx context.Context, metric Plugin) context.Context {
+	return context.WithValue(ctx, contextTY.METRIC_DB, metric)
 }
 
 // Metric types

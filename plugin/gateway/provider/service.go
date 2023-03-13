@@ -7,14 +7,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	cloneUtils "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	gwPlugin "github.com/mycontroller-org/server/v2/plugin/gateway"
 	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
@@ -29,51 +30,68 @@ const (
 	rawMessageWorkersCount    = 1
 
 	defaultReconnectDelay = "15s"
+	loggerName            = "gateway_service"
 )
 
 // Service component of the provider
 type Service struct {
-	GatewayConfig                     *gwTY.Config
-	provider                          providerTY.Plugin
-	messageQueue                      *queueUtils.Queue
-	rawMessageQueue                   *queueUtils.Queue
-	topicPostToProvider               string
-	topicPostToMsgProcessor           string
-	topicPostToProviderSubscriptionID int64
-	sleepingMessageQueue              map[string][]msgTY.Message
-	mutex                             *sync.RWMutex
-	ctx                               context.Context
+	GatewayConfig        *gwTY.Config
+	provider             providerTY.Plugin
+	messageQueue         *queueUtils.QueueSpec
+	rawMessageQueue      *queueUtils.QueueSpec
+	sleepingMessageQueue map[string][]msgTY.Message
+	mutex                *sync.RWMutex
+	ctx                  context.Context
+	logger               *zap.Logger
+	bus                  busTY.Plugin
 }
 
 // GetService returns service instance
-func GetService(gatewayCfg *gwTY.Config) (*Service, error) {
+func GetService(ctx context.Context, gatewayCfg *gwTY.Config) (*Service, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	bus, err := busTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	// verify default reconnect delay
 	gatewayCfg.ReconnectDelay = utils.ValidDuration(gatewayCfg.ReconnectDelay, defaultReconnectDelay)
 
 	// get a plugin
-	provider, err := gwPlugin.Create(gatewayCfg.Provider.GetString(types.KeyType), gatewayCfg)
+	provider, err := gwPlugin.Create(ctx, gatewayCfg.Provider.GetString(types.KeyType), gatewayCfg)
 	if err != nil {
 		return nil, err
 	}
-	service := &Service{
+	s := &Service{
 		GatewayConfig: gatewayCfg,
 		provider:      provider,
-		ctx:           context.TODO(),
+		ctx:           ctx,
 		mutex:         &sync.RWMutex{},
+		logger:        logger.Named(loggerName),
+		bus:           bus,
 	}
-	return service, nil
+
+	// message queues
+	s.rawMessageQueue = &queueUtils.QueueSpec{
+		Queue:          queueUtils.New(s.logger, fmt.Sprintf("gw_provider_raw_msg_%s", s.GatewayConfig.ID), rawMessageQueueLimit, s.rawMessageProcessor, rawMessageWorkersCount),
+		Topic:          topic.TopicPostMessageToProcessor,
+		SubscriptionId: -1,
+	}
+	s.messageQueue = &queueUtils.QueueSpec{
+		Queue:          queueUtils.New(s.logger, fmt.Sprintf("gw_provider_msg_%s", s.GatewayConfig.ID), messageQueueLimit, s.messageConsumer, messageWorkersCount),
+		Topic:          fmt.Sprintf("%s.%s", topic.TopicPostMessageToProvider, s.GatewayConfig.ID),
+		SubscriptionId: -1,
+	}
+
+	return s, nil
 }
 
 // Start gateway service
 func (s *Service) Start() error {
-	zap.L().Debug("starting a provider service", zap.String("gatewayId", s.GatewayConfig.ID), zap.String("providerType", s.GatewayConfig.Provider.GetString(types.NameType)))
-
-	// update topics
-	s.topicPostToProvider = mcbus.GetTopicPostMessageToProvider(s.GatewayConfig.ID)
-	s.topicPostToMsgProcessor = mcbus.GetTopicPostMessageToProcessor()
-
-	s.messageQueue = queueUtils.New(fmt.Sprintf("gateway_provider_message_%s", s.GatewayConfig.ID), messageQueueLimit, s.messageConsumer, messageWorkersCount)
-	s.rawMessageQueue = queueUtils.New(fmt.Sprintf("gateway_provider_raw_message_%s", s.GatewayConfig.ID), rawMessageQueueLimit, s.rawMessageProcessor, rawMessageWorkersCount)
+	s.logger.Debug("starting a provider service", zap.String("gatewayId", s.GatewayConfig.ID), zap.String("providerType", s.GatewayConfig.Provider.GetString(types.NameType)))
 
 	s.sleepingMessageQueue = make(map[string][]msgTY.Message)
 
@@ -83,10 +101,10 @@ func (s *Service) Start() error {
 	// start provider
 	err := s.provider.Start(s.rawMessageQueueProduceFunc)
 	if err != nil {
-		zap.L().Error("error", zap.Error(err))
-		err := mcbus.Unsubscribe(s.topicPostToProvider, s.topicPostToProviderSubscriptionID)
+		s.logger.Error("error", zap.Error(err))
+		err := s.bus.Unsubscribe(s.messageQueue.Topic, s.messageQueue.SubscriptionId)
 		if err != nil {
-			zap.L().Error("error on unsubscribe", zap.Error(err), zap.String("topic", s.topicPostToProvider))
+			s.logger.Error("error on unsubscribe", zap.Error(err), zap.String("topic", s.messageQueue.Topic))
 		}
 
 		s.messageQueue.Close()
@@ -97,9 +115,9 @@ func (s *Service) Start() error {
 
 // unsubscribe and stop queues
 func (s *Service) stopService() {
-	err := mcbus.Unsubscribe(s.topicPostToProvider, s.topicPostToProviderSubscriptionID)
+	err := s.bus.Unsubscribe(s.messageQueue.Topic, s.messageQueue.SubscriptionId)
 	if err != nil {
-		zap.L().Error("error on unsubscribe", zap.Error(err), zap.String("topic", s.topicPostToProvider))
+		s.logger.Error("error on unsubscribe", zap.Error(err), zap.String("topic", s.messageQueue.Topic))
 	}
 	s.messageQueue.Close()
 	s.rawMessageQueue.Close()
@@ -127,31 +145,31 @@ func (s *Service) rawMessageQueueProduceFunc(rawMsg *msgTY.RawMessage) error {
 
 // listens messages from server
 func (s *Service) startMessageListener() {
-	subscriptionID, err := mcbus.Subscribe(s.topicPostToProvider, func(event *busTY.BusData) {
+	subscriptionID, err := s.bus.Subscribe(s.messageQueue.Topic, func(event *busTY.BusData) {
 		msg := &msgTY.Message{}
 		err := event.LoadData(msg)
 		if err != nil {
-			zap.L().Warn("received invalid type", zap.Any("event", event))
+			s.logger.Warn("received invalid type", zap.Any("event", event))
 			return
 		}
 		if msg.GatewayID == "" {
-			zap.L().Warn("received message with empty gatewayId", zap.Any("message", msg))
+			s.logger.Warn("received message with empty gatewayId", zap.Any("message", msg))
 			return
 		}
 		s.messageQueue.Produce(msg)
 	})
 
 	if err != nil {
-		zap.L().Error("error on subscription", zap.String("topic", s.topicPostToProvider), zap.Error(err))
+		s.logger.Error("error on subscription", zap.String("topic", s.messageQueue.Topic), zap.Error(err))
 	} else {
-		s.topicPostToProviderSubscriptionID = subscriptionID
+		s.messageQueue.SubscriptionId = subscriptionID
 	}
 }
 
 func (s *Service) messageConsumer(item interface{}) {
 	msg, ok := item.(*msgTY.Message)
 	if !ok {
-		zap.L().Error("invalid message type", zap.Any("received", item))
+		s.logger.Error("invalid message type", zap.Any("received", item))
 		return
 	}
 
@@ -178,7 +196,7 @@ func (s *Service) messageConsumer(item interface{}) {
 func (s *Service) postMessage(msg *msgTY.Message, queueFailedMessage bool) {
 	err := s.provider.Post(msg)
 	if err != nil {
-		zap.L().Warn("error on sending", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
+		s.logger.Warn("error on sending", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
 		if queueFailedMessage {
 			msg.Labels = msg.Labels.Init()
 			isSleepingQueueDisabled := msg.Labels.IsExists(types.LabelNodeSleepQueueDisabled) && msg.Labels.GetBool(types.LabelNodeSleepQueueDisabled)
@@ -192,14 +210,14 @@ func (s *Service) postMessage(msg *msgTY.Message, queueFailedMessage bool) {
 // process received raw messages from protocol
 func (s *Service) rawMessageProcessor(data interface{}) {
 	rawMsg := data.(*msgTY.RawMessage)
-	zap.L().Debug("received rawMessage", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
+	s.logger.Debug("received rawMessage", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
 	messages, err := s.provider.ConvertToMessages(rawMsg)
 	if err != nil {
-		zap.L().Warn("failed to parse", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
+		s.logger.Warn("failed to parse", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 		return
 	}
 	if len(messages) == 0 {
-		zap.L().Debug("messages not parsed", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
+		s.logger.Debug("messages not parsed", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
 		return
 	}
 	// update gatewayID if not found
@@ -209,9 +227,9 @@ func (s *Service) rawMessageProcessor(data interface{}) {
 			if msg != nil && msg.GatewayID == "" {
 				msg.GatewayID = s.GatewayConfig.ID
 			}
-			err = mcbus.Publish(s.topicPostToMsgProcessor, msg)
+			err = s.bus.Publish(s.rawMessageQueue.Topic, msg)
 			if err != nil {
-				zap.L().Debug("failed to post on topic", zap.String("topic", s.topicPostToMsgProcessor), zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
+				s.logger.Debug("failed to post on topic", zap.String("topic", s.rawMessageQueue.Topic), zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
 				return
 			}
 		}
@@ -246,7 +264,7 @@ func (s *Service) addToSleepingMessageQueue(msg *msgTY.Message) {
 	oldSize := len(queue)
 	if oldSize > sleepingQueuePerNodeLimit {
 		queue = queue[:sleepingQueuePerNodeLimit]
-		zap.L().Debug("dropped messages from sleeping queue", zap.Int("oldSize", oldSize), zap.Int("newSize", len(queue)), zap.String("gatewayID", msg.GatewayID), zap.String("nodeID", msg.NodeID))
+		s.logger.Debug("dropped messages from sleeping queue", zap.Int("oldSize", oldSize), zap.Int("newSize", len(queue)), zap.String("gatewayID", msg.GatewayID), zap.String("nodeID", msg.NodeID))
 	}
 	s.sleepingMessageQueue[msg.NodeID] = queue
 }

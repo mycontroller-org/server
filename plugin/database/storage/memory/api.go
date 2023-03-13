@@ -8,15 +8,14 @@ import (
 	cloneUtils "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
-	"go.uber.org/zap"
 )
 
 // Close Implementation
 func (s *Store) Close() error {
 	// sync memory entities to disk
-	zap.L().Info("store memory data into disk started")
+	s.logger.Info("store memory data into disk started")
 	s.writeToDisk()
-	zap.L().Info("store memory data into disk completed")
+	s.logger.Info("store memory data into disk completed")
 	return nil
 }
 
@@ -168,7 +167,7 @@ func (s *Store) addEntity(entityName string, entity interface{}) {
 }
 
 func (s *Store) updateEntity(entityName string, entity interface{}, filters []storageTY.Filter, forceUpdate bool) error {
-	//zap.L().Info("received data for update", zap.String("entity", entityName), zap.Any("data", entity))
+	//s.logger.Info("received data for update", zap.String("entity", entityName), zap.Any("data", entity))
 	sourceID := ""
 	suppliedID := filterUtils.GetID(entity)
 	if suppliedID != "" {
@@ -192,14 +191,14 @@ func (s *Store) updateEntity(entityName string, entity interface{}, filters []st
 			eID := filterUtils.GetID(entry)
 			if sourceID == eID {
 				s.data[entityName][index] = entity
-				//	zap.L().Info("Updated on the existing entity", zap.Any("old", entry), zap.Any("new", entity))
+				//	s.logger.Info("Updated on the existing entity", zap.Any("old", entry), zap.Any("new", entity))
 				return nil
 			}
 		}
 	}
 	if forceUpdate {
 		s.data[entityName] = append(s.data[entityName], entity)
-		//	zap.L().Info("Entity not available, added", zap.Any("new", entity))
+		//	s.logger.Info("Entity not available, added", zap.Any("new", entity))
 		return nil
 	}
 	return storageTY.ErrNoDocuments

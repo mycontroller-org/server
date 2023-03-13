@@ -1,61 +1,62 @@
 package busutils
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
-	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
+	"github.com/mycontroller-org/server/v2/pkg/types/topic"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
 )
 
 // SetGatewayState send gateway status into bus
-func SetGatewayState(id string, state types.State) {
-	PostToResourceService(id, state, rsTY.TypeGateway, rsTY.CommandUpdateState, "")
+func SetGatewayState(logger *zap.Logger, bus busTY.Plugin, id string, state types.State) {
+	PostToResourceService(logger, bus, id, state, rsTY.TypeGateway, rsTY.CommandUpdateState, "")
 }
 
 // SetVirtualAssistantState send assistant status into bus
-func SetVirtualAssistantState(id string, state types.State) {
-	PostToResourceService(id, state, rsTY.TypeVirtualAssistant, rsTY.CommandUpdateState, "")
+func SetVirtualAssistantState(logger *zap.Logger, bus busTY.Plugin, id string, state types.State) {
+	PostToResourceService(logger, bus, id, state, rsTY.TypeVirtualAssistant, rsTY.CommandUpdateState, "")
 }
 
 // SetHandlerState send handler status into bus
-func SetHandlerState(id string, state types.State) {
-	PostToResourceService(id, state, rsTY.TypeHandler, rsTY.CommandUpdateState, "")
+func SetHandlerState(logger *zap.Logger, bus busTY.Plugin, id string, state types.State) {
+	PostToResourceService(logger, bus, id, state, rsTY.TypeHandler, rsTY.CommandUpdateState, "")
 }
 
 // SetTaskState send handler status into bus
-func SetTaskState(id string, state taskTY.State) {
-	PostToResourceService(id, state, rsTY.TypeTask, rsTY.CommandUpdateState, "")
+func SetTaskState(logger *zap.Logger, bus busTY.Plugin, id string, state taskTY.State) {
+	PostToResourceService(logger, bus, id, state, rsTY.TypeTask, rsTY.CommandUpdateState, "")
 }
 
 // SetScheduleState send handler status into bus
-func SetScheduleState(id string, state scheduleTY.State) {
-	PostToResourceService(id, state, rsTY.TypeScheduler, rsTY.CommandUpdateState, "")
+func SetScheduleState(logger *zap.Logger, bus busTY.Plugin, id string, state schedulerTY.State) {
+	PostToResourceService(logger, bus, id, state, rsTY.TypeScheduler, rsTY.CommandUpdateState, "")
 }
 
 // DisableSchedule sends id to resource service
-func DisableSchedule(id string) {
-	PostToResourceService(id, id, rsTY.TypeScheduler, rsTY.CommandDisable, "")
+func DisableSchedule(logger *zap.Logger, bus busTY.Plugin, id string) {
+	PostToResourceService(logger, bus, id, id, rsTY.TypeScheduler, rsTY.CommandDisable, "")
 }
 
 // DisableTask sends id to resource service
-func DisableTask(id string) {
-	PostToResourceService(id, id, rsTY.TypeTask, rsTY.CommandDisable, "")
+func DisableTask(logger *zap.Logger, bus busTY.Plugin, id string) {
+	PostToResourceService(logger, bus, id, id, rsTY.TypeTask, rsTY.CommandDisable, "")
 }
 
 // EnableTask sends id to resource service
-func EnableTask(id string) {
-	PostToResourceService(id, id, rsTY.TypeTask, rsTY.CommandEnable, "")
+func EnableTask(logger *zap.Logger, bus busTY.Plugin, id string) {
+	PostToResourceService(logger, bus, id, id, rsTY.TypeTask, rsTY.CommandEnable, "")
 }
 
 // PostToResourceService to resource service
-func PostToResourceService(id string, data interface{}, serviceType, command, replyTopic string) {
-	PostToService(mcbus.TopicServiceResourceServer, id, data, serviceType, command, replyTopic)
+func PostToResourceService(logger *zap.Logger, bus busTY.Plugin, id string, data interface{}, serviceType, command, replyTopic string) {
+	PostToService(logger, bus, topic.TopicServiceResourceServer, id, data, serviceType, command, replyTopic)
 }
 
 // PostToService posts to a service
-func PostToService(sericeTopic, id string, data interface{}, serviceType, command, replyTopic string) {
+func PostToService(logger *zap.Logger, bus busTY.Plugin, serviceTopic, id string, data interface{}, serviceType, command, replyTopic string) {
 	event := &rsTY.ServiceEvent{
 		Type:       serviceType,
 		Command:    command,
@@ -64,9 +65,8 @@ func PostToService(sericeTopic, id string, data interface{}, serviceType, comman
 	}
 	event.SetData(data)
 
-	topic := mcbus.FormatTopic(sericeTopic)
-	err := mcbus.Publish(topic, event)
+	err := bus.Publish(serviceTopic, event)
 	if err != nil {
-		zap.L().Error("failed to post an event", zap.String("topic", topic), zap.Any("event", event))
+		logger.Error("failed to post an event", zap.String("topic", serviceTopic), zap.Any("event", event))
 	}
 }

@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
@@ -84,7 +83,7 @@ func (p *Provider) toRawMessage(msg *msgTY.Message) (*msgTY.RawMessage, error) {
 	case msgTY.TypeAction:
 		msMsg.Command = cmdInternal
 		// call functions
-		err := handleActions(p.GatewayConfig, payload.Key, msg, &msMsg)
+		err := p.handleActions(p.GatewayConfig, payload.Key, msg, &msMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -143,10 +142,10 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 	// if it is a acknowledgement message send it to acknowledgement topic and proceed further
 	if msMsg.Ack == "1" && rawMsg.IsReceived {
 		msgID := generateMessageID(msMsg)
-		topicAck := mcbus.GetTopicPostRawMessageAcknowledgement(p.GatewayConfig.ID, msgID)
-		err := mcbus.Publish(topicAck, "acknowledgement received")
+		topicAck := fmt.Sprintf("%s.%s", p.GatewayConfig.ID, msgID)
+		err := p.bus.Publish(topicAck, "acknowledgement received")
 		if err != nil {
-			zap.L().Error("failed post acknowledgement status", zap.String("gateway", p.GatewayConfig.ID), zap.String("topic", topicAck), zap.Error(err))
+			p.logger.Error("failed post acknowledgement status", zap.String("gateway", p.GatewayConfig.ID), zap.String("topic", topicAck), zap.Error(err))
 		}
 	}
 
@@ -208,7 +207,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 			// else: not supported? should I have to return from here?
 
 		case cmdSet, cmdRequest:
-			err := updateFieldAndUnit(msMsg, &msgPL)
+			err := p.updateFieldAndUnit(msMsg, &msgPL)
 			if err != nil {
 				return nil, err
 			}
@@ -263,7 +262,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 		return nil, nil
 
 	default:
-		zap.L().Warn("This message not handled", zap.String("gateway", p.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
+		p.logger.Warn("This message not handled", zap.String("gateway", p.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
 		return nil, nil
 	}
 
@@ -284,7 +283,7 @@ func (p *Provider) decodeRawMessage(rawMsg *msgTY.RawMessage) (*message, error) 
 		// out_rfm69/11/1/1/0/0
 		rData := strings.Split(string(rawMsg.Others.Get(gwPtl.KeyMqttTopic).(string)), "/")
 		if len(rData) < 5 {
-			zap.L().Error("invalid message format", zap.Any("rawMessage", rawMsg))
+			p.logger.Error("invalid message format", zap.Any("rawMessage", rawMsg))
 			return nil, nil
 		}
 		d = rData[len(rData)-5:]
@@ -293,7 +292,7 @@ func (p *Provider) decodeRawMessage(rawMsg *msgTY.RawMessage) (*message, error) 
 		// node-id;child-sensor-id;command;ack;type;payload
 		_d := strings.Split(convertor.ToString(rawMsg.Data), ";")
 		if len(_d) < 6 {
-			zap.L().Error("invalid message format", zap.String("rawMessage", convertor.ToString(rawMsg.Data)))
+			p.logger.Error("invalid message format", zap.String("rawMessage", convertor.ToString(rawMsg.Data)))
 			return nil, nil
 		}
 		payload = _d[5]
@@ -350,13 +349,13 @@ func verifyAndUpdateNodeSensorIDs(msMsg *message, msg *msgTY.Message) error {
 }
 
 // update field name and unit
-func updateFieldAndUnit(msMsg *message, msgPL *msgTY.Payload) error {
+func (p *Provider) updateFieldAndUnit(msMsg *message, msgPL *msgTY.Payload) error {
 	fieldName, ok := setReqFieldMapForRx[msMsg.Type]
 	if ok {
 		msgPL.Labels.Set(LabelTypeString, fieldName)
 	} else {
 		fieldName = "V_CUSTOM"
-		zap.L().Warn("set or req not found. update this. Setting as V_CUSTOM", zap.Any("msMsg", msMsg))
+		p.logger.Warn("set or req not found. update this. Setting as V_CUSTOM", zap.Any("msMsg", msMsg))
 	}
 
 	// get type and unit

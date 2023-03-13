@@ -1,54 +1,54 @@
 package gateway
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
+	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
 )
 
 // Start gateway
-func Start(gwCfg *gwTY.Config) error {
-	return postGatewayCommand(gwCfg, rsTY.CommandStart)
+func (gw *GatewayAPI) Start(gwCfg *gwTY.Config) error {
+	return gw.postGatewayCommand(gwCfg, rsTY.CommandStart)
 }
 
 // Stop gateway
-func Stop(gwCfg *gwTY.Config) error {
-	return postGatewayCommand(gwCfg, rsTY.CommandStop)
+func (gw *GatewayAPI) Stop(gwCfg *gwTY.Config) error {
+	return gw.postGatewayCommand(gwCfg, rsTY.CommandStop)
 }
 
 // LoadAll makes gateways alive
-func LoadAll() {
-	gwsResult, err := List(nil, nil)
+func (gw *GatewayAPI) LoadAll() {
+	gwsResult, err := gw.List(nil, nil)
 	if err != nil {
-		zap.L().Error("Failed to get list of gateways", zap.Error(err))
+		gw.logger.Error("failed to get list of gateways", zap.Error(err))
 		return
 	}
 	gateways := *gwsResult.Data.(*[]gwTY.Config)
 	for index := 0; index < len(gateways); index++ {
 		gateway := gateways[index]
 		if gateway.Enabled {
-			err = Start(&gateway)
+			err = gw.Start(&gateway)
 			if err != nil {
-				zap.L().Error("Failed to load a gateway", zap.Error(err), zap.String("gateway", gateway.ID))
+				gw.logger.Error("failed to load a gateway", zap.Error(err), zap.String("gateway", gateway.ID))
 			}
 		}
 	}
 }
 
 // UnloadAll makes stop all gateways
-func UnloadAll() {
-	err := postGatewayCommand(nil, rsTY.CommandUnloadAll)
+func (gw *GatewayAPI) UnloadAll() {
+	err := gw.postGatewayCommand(nil, rsTY.CommandUnloadAll)
 	if err != nil {
-		zap.L().Error("error on unload gateways command", zap.Error(err))
+		gw.logger.Error("error on unload gateways command", zap.Error(err))
 	}
 }
 
 // Enable gateway
-func Enable(ids []string) error {
-	gateways, err := getGatewayEntries(ids)
+func (gw *GatewayAPI) Enable(ids []string) error {
+	gateways, err := gw.getGatewayEntries(ids)
 	if err != nil {
 		return err
 	}
@@ -57,19 +57,19 @@ func Enable(ids []string) error {
 		gwCfg := gateways[index]
 		if !gwCfg.Enabled {
 			gwCfg.Enabled = true
-			err = Save(&gwCfg)
+			err = gw.Save(&gwCfg)
 			if err != nil {
 				return err
 			}
-			return Start(&gwCfg)
+			return gw.Start(&gwCfg)
 		}
 	}
 	return nil
 }
 
 // Disable gateway
-func Disable(ids []string) error {
-	gateways, err := getGatewayEntries(ids)
+func (gw *GatewayAPI) Disable(ids []string) error {
+	gateways, err := gw.getGatewayEntries(ids)
 	if err != nil {
 		return err
 	}
@@ -78,39 +78,39 @@ func Disable(ids []string) error {
 		gwCfg := gateways[index]
 		if gwCfg.Enabled {
 			gwCfg.Enabled = false
-			err = Save(&gwCfg)
+			err = gw.Save(&gwCfg)
 			if err != nil {
 				return err
 			}
-			return Stop(&gwCfg)
+			return gw.Stop(&gwCfg)
 		}
 	}
 	return nil
 }
 
 // Reload gateway
-func Reload(ids []string) error {
-	gateways, err := getGatewayEntries(ids)
+func (gw *GatewayAPI) Reload(ids []string) error {
+	gateways, err := gw.getGatewayEntries(ids)
 	if err != nil {
 		return err
 	}
 	for index := 0; index < len(gateways); index++ {
 		gateway := gateways[index]
-		err = Stop(&gateway)
+		err = gw.Stop(&gateway)
 		if err != nil {
-			zap.L().Error("error on stoping a gateway command", zap.Error(err), zap.String("gateway", gateway.ID))
+			gw.logger.Error("error on stopping a gateway command", zap.Error(err), zap.String("gateway", gateway.ID))
 		}
 		if gateway.Enabled {
-			err = Start(&gateway)
+			err = gw.Start(&gateway)
 			if err != nil {
-				zap.L().Error("error on start a gateway command", zap.Error(err), zap.String("gateway", gateway.ID))
+				gw.logger.Error("error on start a gateway command", zap.Error(err), zap.String("gateway", gateway.ID))
 			}
 		}
 	}
 	return nil
 }
 
-func postGatewayCommand(gwCfg *gwTY.Config, command string) error {
+func (gw *GatewayAPI) postGatewayCommand(gwCfg *gwTY.Config, command string) error {
 	reqEvent := rsTY.ServiceEvent{
 		Type:    rsTY.TypeGateway,
 		Command: command,
@@ -119,14 +119,13 @@ func postGatewayCommand(gwCfg *gwTY.Config, command string) error {
 		reqEvent.ID = gwCfg.ID
 		reqEvent.SetData(gwCfg)
 	}
-	topic := mcbus.FormatTopic(mcbus.TopicServiceGateway)
-	return mcbus.Publish(topic, reqEvent)
+	return gw.bus.Publish(topic.TopicServiceGateway, reqEvent)
 }
 
-func getGatewayEntries(ids []string) ([]gwTY.Config, error) {
+func (gw *GatewayAPI) getGatewayEntries(ids []string) ([]gwTY.Config, error) {
 	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids}}
 	pagination := &storageTY.Pagination{Limit: 100}
-	gwsResult, err := List(filters, pagination)
+	gwsResult, err := gw.List(filters, pagination)
 	if err != nil {
 		return nil, err
 	}

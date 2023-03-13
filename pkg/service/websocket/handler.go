@@ -3,7 +3,6 @@ package mcwebsocket
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
 	ws "github.com/gorilla/websocket"
 	"go.uber.org/zap"
 )
@@ -14,35 +13,41 @@ var (
 	}
 )
 
-// RegisterWebsocketRoutes registers it into the handlers
-func RegisterWebsocketRoutes(router *mux.Router) {
-	err := initEventListener()
+// registers it into the handlers and starts the event listener
+func (svc *WebsocketService) Start() error {
+	err := svc.startEventListener()
 	if err != nil {
-		zap.L().Error("error on calling websocket init", zap.Error(err))
+		svc.logger.Error("error on websocket event listener", zap.Error(err))
+		return err
 	}
-	router.HandleFunc("/api/ws", wsFunc)
+	svc.router.HandleFunc("/api/ws", svc.wsFunc)
+	return nil
 }
 
 // this is simple example websocket
 // yet to implement actual version
-func wsFunc(w http.ResponseWriter, r *http.Request) {
+func (svc *WebsocketService) wsFunc(w http.ResponseWriter, r *http.Request) {
 	wsCon, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		zap.L().Info("websocket upgrade error", zap.Error(err))
+		svc.logger.Info("websocket upgrade error", zap.Error(err))
 		return
 	}
 
 	// register the new client
-	clientStore.register(wsCon)
+	svc.store.register(wsCon)
 
 	// NOTE: for now not serving any request, only sending the events to the listeners(ex: remote browsers)
 	// this loop is used to close the connection immediately on remote side close
 	for {
 		_, _, err := wsCon.ReadMessage()
 		if err != nil {
-			zap.L().Debug("websocket read error", zap.Any("remoteAddress", wsCon.RemoteAddr()), zap.Error(err))
-			clientStore.unregister(wsCon)
+			svc.logger.Debug("websocket read error", zap.Any("remoteAddress", wsCon.RemoteAddr()), zap.Error(err))
+			svc.store.unregister(wsCon)
 			break
 		}
 	}
+}
+
+func (svc *WebsocketService) Close() error {
+	return nil
 }

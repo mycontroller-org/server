@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	nodeAPI "github.com/mycontroller-org/server/v2/pkg/api/node"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
@@ -14,7 +13,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func nodeService(reqEvent *rsTY.ServiceEvent) error {
+func (svc *ResourceService) nodeService(reqEvent *rsTY.ServiceEvent) error {
 	resEvent := &rsTY.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
@@ -22,7 +21,7 @@ func nodeService(reqEvent *rsTY.ServiceEvent) error {
 
 	switch reqEvent.Command {
 	case rsTY.CommandGet:
-		data, err := getNode(reqEvent)
+		data, err := svc.getNode(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
@@ -32,19 +31,19 @@ func nodeService(reqEvent *rsTY.ServiceEvent) error {
 		node := &nodeTY.Node{}
 		err := reqEvent.LoadData(node)
 		if err != nil {
-			zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
+			svc.logger.Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
 			return err
 		}
-		_, err = nodeAPI.GetByID(node.ID)
+		_, err = svc.api.Node().GetByID(node.ID)
 		if err != nil {
 			return err
 		}
 		node.Labels.Init()
 		node.Others.Init()
-		return nodeAPI.Save(node, true)
+		return svc.api.Node().Save(node, true)
 
 	case rsTY.CommandGetIds:
-		data, err := getNodeIDs(reqEvent)
+		data, err := svc.getNodeIDs(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
@@ -54,40 +53,40 @@ func nodeService(reqEvent *rsTY.ServiceEvent) error {
 		fwState := make(map[string]interface{})
 		err := reqEvent.LoadData(&fwState)
 		if err != nil {
-			zap.L().Error("error on data conversion", zap.Any("reqEvent", reqEvent), zap.Error(err))
+			svc.logger.Error("error on data conversion", zap.Any("reqEvent", reqEvent), zap.Error(err))
 			return err
 		}
 		if fwState == nil {
-			zap.L().Error("nil data received", zap.Any("data", reqEvent))
+			svc.logger.Error("nil data received", zap.Any("data", reqEvent))
 			return fmt.Errorf("nil data received")
 		}
-		return nodeAPI.UpdateFirmwareState(reqEvent.ID, fwState)
+		return svc.api.Node().UpdateFirmwareState(reqEvent.ID, fwState)
 
 	case rsTY.CommandSetLabel:
 		labels := cmap.CustomStringMap{}
 		err := reqEvent.LoadData(&labels)
 		if err != nil {
-			zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
+			svc.logger.Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
 			return err
 		}
-		node, err := getNode(reqEvent)
+		node, err := svc.getNode(reqEvent)
 		if err != nil {
 			return err
 		}
 		node.Labels.CopyFrom(labels)
-		return nodeAPI.Save(node, true)
+		return svc.api.Node().Save(node, true)
 
 	default:
 		return errors.New("unknown command")
 	}
-	return postResponse(reqEvent.ReplyTopic, resEvent)
+	return svc.postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getNodeIDs(request *rsTY.ServiceEvent) ([]string, error) {
+func (svc *ResourceService) getNodeIDs(request *rsTY.ServiceEvent) ([]string, error) {
 	var response *storageTY.Result
 	if len(request.Labels) > 0 {
-		filters := getLabelsFilter(request.Labels)
-		result, err := nodeAPI.List(filters, nil)
+		filters := svc.getLabelsFilter(request.Labels)
+		result, err := svc.api.Node().List(filters, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -96,7 +95,7 @@ func getNodeIDs(request *rsTY.ServiceEvent) ([]string, error) {
 		ids := make(map[string]interface{})
 		err := request.LoadData(&ids)
 		if err != nil {
-			zap.L().Error("error on data conversion", zap.Any("request", request), zap.Error(err))
+			svc.logger.Error("error on data conversion", zap.Any("request", request), zap.Error(err))
 			return nil, err
 		}
 
@@ -106,7 +105,7 @@ func getNodeIDs(request *rsTY.ServiceEvent) ([]string, error) {
 			return nil, fmt.Errorf("%v not supplied", types.KeyGatewayID)
 		}
 		filters := []storageTY.Filter{{Key: types.KeyGatewayID, Operator: storageTY.OperatorEqual, Value: gatewayId}}
-		result, err := nodeAPI.List(filters, nil)
+		result, err := svc.api.Node().List(filters, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -125,9 +124,9 @@ func getNodeIDs(request *rsTY.ServiceEvent) ([]string, error) {
 	return nodeIDs, nil
 }
 
-func getNode(request *rsTY.ServiceEvent) (*nodeTY.Node, error) {
+func (svc *ResourceService) getNode(request *rsTY.ServiceEvent) (*nodeTY.Node, error) {
 	if request.ID != "" {
-		cfg, err := nodeAPI.GetByID(request.ID)
+		cfg, err := svc.api.Node().GetByID(request.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -137,13 +136,13 @@ func getNode(request *rsTY.ServiceEvent) (*nodeTY.Node, error) {
 		ids := make(map[string]interface{})
 		err := request.LoadData(&ids)
 		if err != nil {
-			zap.L().Error("error on data conversion", zap.Any("request", request), zap.Error(err))
+			svc.logger.Error("error on data conversion", zap.Any("request", request), zap.Error(err))
 			return nil, err
 		}
 
 		// get NodeId and GatewayId
 		nodeId := utils.GetMapValueString(ids, types.KeyNodeID, "")
 		gatewayId := utils.GetMapValueString(ids, types.KeyGatewayID, "")
-		return nodeAPI.GetByGatewayAndNodeID(gatewayId, nodeId)
+		return svc.api.Node().GetByGatewayAndNodeID(gatewayId, nodeId)
 	}
 }

@@ -8,5 +8,5 @@ import (
 )
 
 func init() {
-	Register(backup.PluginBackup, backup.NewBackupPlugin)
+	Register(backup.PluginBackup, backup.New)
 }

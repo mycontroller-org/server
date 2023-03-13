@@ -1,16 +1,17 @@
 package memory
 
 import (
+	"context"
 	"fmt"
 	"path"
 	"sync"
 	"time"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	sch "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
@@ -19,7 +20,9 @@ import (
 )
 
 const (
-	PluginMemory = "memory"
+	PluginMemory = storageTY.TypeMemory
+
+	loggerName = "memory_db"
 
 	defaultSyncInterval = "1m"
 	syncJobName         = "in-memory-db-sync-to-disk"
@@ -40,17 +43,27 @@ type Config struct {
 
 // Store to keep all the entities
 type Store struct {
-	mutex    *sync.RWMutex
-	Config   Config
-	data     map[string][]interface{} // entities map with entity name
-	lastSync time.Time
-	paused   bool
+	mutex     *sync.RWMutex
+	Config    Config
+	data      map[string][]interface{} // entities map with entity name
+	lastSync  time.Time
+	paused    bool
+	logger    *zap.Logger
+	scheduler schedulerTY.CoreScheduler
 }
 
-// NewClient in-memory database
-func NewClient(config cmap.CustomMap) (storageTY.Plugin, error) {
+// New in-memory database
+func New(ctx context.Context, config cmap.CustomMap) (storageTY.Plugin, error) {
+	logger := storageTY.GetStorageLogger()
+
+	// get required plugins
+	scheduler, err := schedulerTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	cfg := Config{}
-	err := utils.MapToStruct(utils.TagNameYaml, config, &cfg)
+	err = utils.MapToStruct(utils.TagNameYaml, config, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +82,12 @@ func NewClient(config cmap.CustomMap) (storageTY.Plugin, error) {
 	}
 
 	store := &Store{
-		Config:   cfg,
-		data:     make(map[string][]interface{}),
-		lastSync: time.Now(),
-		mutex:    &sync.RWMutex{},
+		Config:    cfg,
+		data:      make(map[string][]interface{}),
+		lastSync:  time.Now(),
+		mutex:     &sync.RWMutex{},
+		logger:    logger.Named(loggerName),
+		scheduler: scheduler,
 	}
 
 	return store, nil
@@ -97,11 +112,11 @@ func (s *Store) loadDumpJob() error {
 		if s.Config.DumpInterval == "" {
 			s.Config.DumpInterval = defaultSyncInterval
 		}
-		err := sch.SVC.AddFunc(syncJobName, fmt.Sprintf("@every %s", s.Config.DumpInterval), s.writeToDisk)
+		err := s.scheduler.AddFunc(syncJobName, fmt.Sprintf("@every %s", s.Config.DumpInterval), s.writeToDisk)
 		if err != nil {
 			return err
 		}
-		zap.L().Debug("Memory database dump job scheduled", zap.Any("config", s.Config))
+		s.logger.Debug("Memory database dump job scheduled", zap.Any("config", s.Config))
 	}
 	return nil
 }
@@ -113,7 +128,7 @@ func (s *Store) Pause() error {
 
 	s.paused = true
 	// stop dump job
-	sch.SVC.RemoveFunc(syncJobName)
+	s.scheduler.RemoveFunc(syncJobName)
 
 	return nil
 }
@@ -136,11 +151,17 @@ func (s *Store) ClearDatabase() error {
 	s.data = make(map[string][]interface{})
 
 	// remove all the files from disk
-	storageDir := path.Join(types.GetDataDirectoryStorage(), s.Config.DumpDir)
+	baseDir := types.GetEnvString(types.ENV_DIR_DATA_STORAGE)
+	if baseDir == "" {
+		return fmt.Errorf("environment '%s' not set", types.ENV_DIR_DATA_STORAGE)
+	}
+	storageDir := path.Join(baseDir, s.Config.DumpDir)
 	return utils.RemoveDir(storageDir)
 }
 
 func (s *Store) writeToDisk() {
+	start := time.Now()
+	s.logger.Debug("data dump to disk job is triggered")
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	for entityName, data := range s.data {
@@ -164,6 +185,7 @@ func (s *Store) writeToDisk() {
 			}
 		}
 	}
+	s.logger.Debug("data dump to disk job is completed", zap.String("timeTaken", time.Since(start).String()))
 }
 
 func (s *Store) dump(entityName string, index int, data interface{}, extension string) {
@@ -174,7 +196,7 @@ func (s *Store) dump(entityName string, index int, data interface{}, extension s
 			for _, userInterface := range users {
 				user, ok := userInterface.(*userTY.User)
 				if !ok {
-					zap.L().Error("error on converting the data to user slice, continue with default data type", zap.String("inputType", fmt.Sprintf("%T", userInterface)))
+					s.logger.Error("error on converting the data to user slice, continue with default data type", zap.String("inputType", fmt.Sprintf("%T", userInterface)))
 					break
 				}
 				usersWithPasswd = append(usersWithPasswd, userTY.UserWithPassword(*user))
@@ -183,7 +205,7 @@ func (s *Store) dump(entityName string, index int, data interface{}, extension s
 				data = usersWithPasswd
 			}
 		} else {
-			zap.L().Error("error on converting the data to user slice, continue with default data type", zap.String("inputType", fmt.Sprintf("%T", data)))
+			s.logger.Error("error on converting the data to user slice, continue with default data type", zap.String("inputType", fmt.Sprintf("%T", data)))
 		}
 	}
 
@@ -193,18 +215,18 @@ func (s *Store) dump(entityName string, index int, data interface{}, extension s
 	case backupTY.TypeJSON:
 		dataBytes, err = json.Marshal(data)
 		if err != nil {
-			zap.L().Error("failed to convert to target extension", zap.String("extension", extension), zap.Error(err))
+			s.logger.Error("failed to convert to target extension", zap.String("extension", extension), zap.Error(err))
 			return
 		}
 	case backupTY.TypeYAML:
 		dataBytes, err = yaml.Marshal(data)
 		if err != nil {
-			zap.L().Error("failed to convert to target extension", zap.String("extension", extension), zap.Error(err))
+			s.logger.Error("failed to convert to target extension", zap.String("extension", extension), zap.Error(err))
 			return
 		}
 
 	default:
-		zap.L().Error("This extension not supported", zap.String("extension", extension), zap.Error(err))
+		s.logger.Error("This extension not supported", zap.String("extension", extension), zap.Error(err))
 		return
 	}
 
@@ -212,10 +234,10 @@ func (s *Store) dump(entityName string, index int, data interface{}, extension s
 	dir := s.getStorageLocation(extension)
 	err = utils.WriteFile(dir, filename, dataBytes)
 	if err != nil {
-		zap.L().Error("failed to write data to disk", zap.String("directory", dir), zap.String("filename", filename), zap.Error(err))
+		s.logger.Error("failed to write data to disk", zap.String("directory", dir), zap.String("filename", filename), zap.Error(err))
 	}
 }
 
 func (s *Store) getStorageLocation(provider string) string {
-	return path.Join(types.GetDataDirectoryStorage(), s.Config.DumpDir, provider)
+	return path.Join(types.GetEnvString(types.ENV_DIR_DATA_STORAGE), s.Config.DumpDir, provider)
 }

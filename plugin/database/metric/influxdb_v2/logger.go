@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	"go.uber.org/zap"
 )
 
@@ -14,14 +13,16 @@ type myLogger struct {
 	logger *zap.Logger
 }
 
-func getLogger(mode, level, encoding string, enableStacktrace bool) *myLogger {
-	return &myLogger{logger: loggerUtils.GetLogger(mode, level, encoding, false, callerSkipLevel, enableStacktrace)}
+func getLogger(rootLogger *zap.Logger) *myLogger {
+	return &myLogger{
+		logger: rootLogger.WithOptions(zap.AddCallerSkip(callerSkipLevel)),
+	}
 }
 
 func (ml *myLogger) Sync() {
 	err := ml.logger.Sync()
 	if err != nil {
-		zap.L().Error("error on sync", zap.Error(err))
+		ml.logger.Error("error on sync", zap.Error(err))
 	}
 }
 
@@ -80,6 +81,6 @@ func (ml *myLogger) Error(msg string) {
 }
 
 func fmtMsg(msg string) string {
-	m := fmt.Sprintf("[MTS:INFLUXDB2CLIENT] %s", msg)
+	m := fmt.Sprintf("[INFLUXDB2CLIENT] %s", msg)
 	return strings.TrimSuffix(m, "\n")
 }

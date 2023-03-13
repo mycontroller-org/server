@@ -1,19 +1,26 @@
 package tasmota
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	utils "github.com/mycontroller-org/server/v2/pkg/utils"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	mqtt "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_mqtt"
 	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
+	"go.uber.org/zap"
 )
 
-const PluginTasmota = "tasmota"
+const (
+	PluginTasmota = "tasmota"
+	loggerName    = "gateway_tasmota"
+)
 
 // Config of tasmota provider
 type Config struct {
@@ -24,23 +31,40 @@ type Config struct {
 
 // Provider implementation
 type Provider struct {
-	Config        *Config
-	GatewayConfig *gwTY.Config
-	Protocol      gwPtl.Protocol
-	ProtocolType  string
+	ctx              context.Context
+	Config           *Config
+	GatewayConfig    *gwTY.Config
+	Protocol         gwPtl.Protocol
+	ProtocolType     string
+	logger           *zap.Logger
+	bus              busTY.Plugin
+	logRootDirectory string
 }
 
-// NewPluginTasmota provider
-func NewPluginTasmota(gatewayConfig *gwTY.Config) (providerTY.Plugin, error) {
+// tasmota provider
+func New(ctx context.Context, config *gwTY.Config) (providerTY.Plugin, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	bus, err := busTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	cfg := &Config{}
-	err := utils.MapToStruct(utils.TagNameNone, gatewayConfig.Provider, cfg)
+	err = utils.MapToStruct(utils.TagNameNone, config.Provider, cfg)
 	if err != nil {
 		return nil, err
 	}
 	provider := &Provider{
-		Config:        cfg,
-		GatewayConfig: gatewayConfig,
-		ProtocolType:  cfg.Protocol.GetString(types.NameType),
+		ctx:              ctx,
+		Config:           cfg,
+		GatewayConfig:    config,
+		ProtocolType:     cfg.Protocol.GetString(types.NameType),
+		logger:           logger.Named(loggerName),
+		bus:              bus,
+		logRootDirectory: types.GetEnvString(types.ENV_DIR_GATEWAY_LOGS),
 	}
 	return provider, nil
 }
@@ -55,7 +79,7 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) e
 	switch p.ProtocolType {
 	case gwPtl.TypeMQTT:
 		// update subscription topics
-		protocol, _err := mqtt.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
+		protocol, _err := mqtt.New(p.logger, p.GatewayConfig, p.Config.Protocol, receivedMessageHandler, p.bus, p.logRootDirectory)
 		err = _err
 		p.Protocol = protocol
 	default:

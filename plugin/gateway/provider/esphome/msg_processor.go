@@ -8,9 +8,9 @@ import (
 
 	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	topicTY "github.com/mycontroller-org/server/v2/pkg/types/topic"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	colorUtils "github.com/mycontroller-org/server/v2/pkg/utils/color"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
@@ -22,7 +22,7 @@ import (
 // Post sends a command to esphome node
 func (p *Provider) Post(message *msgTY.Message) error {
 	if message == nil || len(message.Payloads) == 0 || message.NodeID == "" {
-		zap.L().Error("invalid message received", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("message", message))
+		p.logger.Error("invalid message received", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("message", message))
 		return errors.New("invalid message")
 	}
 
@@ -36,7 +36,7 @@ func (p *Provider) Post(message *msgTY.Message) error {
 	}
 
 	if message.SourceID == "" {
-		zap.L().Error("invalid message received", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("message", message))
+		p.logger.Error("invalid message received", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("message", message))
 		return errors.New("sourceID not found")
 	}
 
@@ -85,7 +85,7 @@ func (p *Provider) Post(message *msgTY.Message) error {
 	}
 
 	if request != nil {
-		zap.L().Debug("field populated", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("fields", fields), zap.Any("entity", entity))
+		p.logger.Debug("field populated", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("fields", fields), zap.Any("entity", entity))
 
 		jsonBytes, err := json.Marshal(fields)
 		if err != nil {
@@ -109,7 +109,7 @@ func (p *Provider) Post(message *msgTY.Message) error {
 			sourceData.Value = payload.Value
 			sourceData.MetricType = metricTY.MetricTypeNone
 			msgSource.Payloads = append(msgSource.Payloads, sourceData)
-			err = mcbus.Publish(mcbus.GetTopicPostMessageToProcessor(), msgSource)
+			err = p.bus.Publish(topicTY.TopicPostMessageToProcessor, msgSource)
 			if err != nil {
 				return err
 			}
@@ -124,7 +124,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 	if rawMsg == nil {
 		return nil, nil
 	}
-	zap.L().Debug("processing a message", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("type", fmt.Sprintf("%T", rawMsg.Data)), zap.Any("rawMessage", rawMsg))
+	p.logger.Debug("processing a message", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("type", fmt.Sprintf("%T", rawMsg.Data)), zap.Any("rawMessage", rawMsg))
 	nodeID := rawMsg.Others.GetString(NodeID)
 	protoMsg := rawMsg.Data.(protoreflect.ProtoMessage)
 
@@ -149,7 +149,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 		return nil, err
 	}
 
-	zap.L().Debug("fields", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("fields", fields))
+	p.logger.Debug("fields", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("fields", fields))
 	delete(fields, "missing_state") // this field is not required
 
 	switch protoMsg.(type) {
@@ -215,7 +215,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 		return p.getActionMessage(ActionTimeRequest, nodeID, rawMsg.Timestamp, fields)
 
 	default:
-		zap.L().Debug("unknown message received", zap.Any("type", fmt.Sprintf("%T", protoMsg)),
+		p.logger.Debug("unknown message received", zap.Any("type", fmt.Sprintf("%T", protoMsg)),
 			zap.Any("message", protoMsg), zap.String("gatewayId", p.GatewayConfig.ID), zap.String("nodeId", nodeID))
 	}
 
@@ -354,7 +354,7 @@ func adjustValueToEsphomeNode(entityType, fieldID string, value interface{}, fie
 
 // getMessageEntitiesResponse returns the entities as multiple messages
 func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timestamp time.Time, fields map[string]interface{}) ([]*msgTY.Message, error) {
-	zap.L().Debug("fields", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("nodeId", nodeID), zap.Any("fields", fields))
+	p.logger.Debug("fields", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("nodeId", nodeID), zap.Any("fields", fields))
 	objectID, found := fields[FieldObjectID]
 	if !found {
 		return nil, errors.New("object id not found")
@@ -390,7 +390,7 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 	deviceClass := ""
 	// update presentation messages
 	for field, value := range fields {
-		zap.L().Debug("field", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("field", field), zap.Any("value", value))
+		p.logger.Debug("field", zap.String("gatewayId", p.GatewayConfig.ID), zap.String("field", field), zap.Any("value", value))
 		if strings.HasPrefix(field, "legacy") { // ignore legacy fields
 			continue
 		} else if field == "unit_of_measurement" {
@@ -486,7 +486,7 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 	messages = append(messages, msgSource)
 	messages = append(messages, msgFields)
 
-	zap.L().Debug("presentations", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("messages", messages))
+	p.logger.Debug("presentations", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("messages", messages))
 	return messages, nil
 }
 
@@ -494,13 +494,13 @@ func (p *Provider) getMessageEntitiesResponse(entityType, nodeID string, timesta
 func (p *Provider) getStateResponse(nodeID string, timestamp time.Time, fields map[string]interface{}) ([]*msgTY.Message, error) {
 	key, found := fields[FieldKey]
 	if !found {
-		zap.L().Info("key not found", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("message", fields))
+		p.logger.Info("key not found", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("message", fields))
 		return nil, nil
 	}
 
 	entity := p.entityStore.GetByKey(nodeID, uint32(convertor.ToInteger(key)))
 	if entity == nil {
-		zap.L().Info("entity not found", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("message", fields))
+		p.logger.Info("entity not found", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("message", fields))
 		return nil, nil
 	}
 

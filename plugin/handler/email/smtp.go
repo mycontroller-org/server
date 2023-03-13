@@ -1,6 +1,7 @@
 package email
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"net"
@@ -15,15 +16,18 @@ import (
 	"go.uber.org/zap"
 )
 
+const loggerNameSMTP = "handler_email_smtp"
+
 // smtp client
 type SmtpClient struct {
 	handlerCfg *handlerType.Config
 	cfg        *Config
 	auth       smtp.Auth
+	logger     *zap.Logger
 }
 
 // init smtp client
-func NewSMTPClient(handlerCfg *handlerType.Config, cfg *Config) (Client, error) {
+func NewSMTPClient(ctx context.Context, logger *zap.Logger, handlerCfg *handlerType.Config, cfg *Config) (Client, error) {
 	var auth smtp.Auth
 
 	if cfg.AuthType == AuthTypePlain || cfg.AuthType == "" {
@@ -38,8 +42,9 @@ func NewSMTPClient(handlerCfg *handlerType.Config, cfg *Config) (Client, error) 
 		handlerCfg: handlerCfg,
 		cfg:        cfg,
 		auth:       auth,
+		logger:     logger.Named(loggerNameSMTP),
 	}
-	zap.L().Info("init smtp email client success", zap.Any("handlerID", handlerCfg.ID))
+	client.logger.Info("init smtp email client success", zap.Any("handlerID", handlerCfg.ID))
 	return client, nil
 }
 
@@ -168,7 +173,7 @@ func (sc *SmtpClient) Post(data map[string]interface{}) error {
 		emailData := handlerType.EmailData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &emailData)
 		if err != nil {
-			zap.L().Error("error on converting email data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
+			sc.logger.Error("error on converting email data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
 			continue
 		}
 
@@ -196,9 +201,9 @@ func (sc *SmtpClient) Post(data map[string]interface{}) error {
 		start := time.Now()
 		err = sc.sendEmailSSL(fromEmail, to, subject, body)
 		if err != nil {
-			zap.L().Error("error on email sent", zap.Error(err))
+			sc.logger.Error("error on email sent", zap.Error(err))
 		}
-		zap.L().Debug("email sent", zap.String("id", sc.handlerCfg.ID), zap.String("timeTaken", time.Since(start).String()))
+		sc.logger.Debug("email sent", zap.String("id", sc.handlerCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 	}
 	return nil
 }

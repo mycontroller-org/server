@@ -1,6 +1,7 @@
 package disk
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"path/filepath"
@@ -8,16 +9,21 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
-	storagePluginTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 
-const PluginBackupDisk = "backup_disk"
+const (
+	PluginBackupDisk = "backup_disk"
+	loggerName       = "handler_backup_disk"
+)
 
 // Config of disk backup client
 type Config struct {
@@ -29,21 +35,42 @@ type Config struct {
 
 // Client struct
 type Client struct {
+	ctx        context.Context
 	handlerCfg *handlerTY.Config
 	cfg        *Config
+	logger     *zap.Logger
+	storage    storageTY.Plugin
+	bus        busTY.Plugin
 }
 
-// Init disk backup client
-func Init(cfg *handlerTY.Config, spec map[string]interface{}) (*Client, error) {
+// New disk backup client
+func New(ctx context.Context, cfg *handlerTY.Config, spec map[string]interface{}) (*Client, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	storage, err := storageTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	bus, err := busTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	config := &Config{}
-	err := utils.MapToStruct(utils.TagNameNone, spec, config)
+	err = utils.MapToStruct(utils.TagNameNone, spec, config)
 	if err != nil {
 		return nil, err
 	}
 
 	client := &Client{
+		ctx:        ctx,
 		handlerCfg: cfg,
 		cfg:        config,
+		logger:     logger.Named(loggerName),
+		storage:    storage,
+		bus:        bus,
 	}
 
 	return client, nil
@@ -77,7 +104,7 @@ func (c *Client) State() *types.State {
 // Post func
 func (c *Client) Post(data map[string]interface{}) error {
 	for name, value := range data {
-		zap.L().Debug("processing a request", zap.String("name", name), zap.Any("value", value))
+		c.logger.Debug("processing a request", zap.String("name", name), zap.Any("value", value))
 		stringValue, ok := value.(string)
 		if !ok {
 			continue
@@ -95,7 +122,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 		backupConfigData := handlerTY.BackupData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &backupConfigData)
 		if err != nil {
-			zap.L().Error("error on converting backup config data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
+			c.logger.Error("error on converting backup config data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
 			continue
 		}
 
@@ -118,7 +145,7 @@ func (c *Client) triggerBackup(spec map[string]interface{}) error {
 		return err
 	}
 
-	zap.L().Debug("data", zap.Any("config", newConfig))
+	c.logger.Debug("data", zap.Any("config", newConfig))
 
 	targetExportType := c.cfg.StorageExportType
 	targetDirectory := c.cfg.TargetDirectory
@@ -148,9 +175,9 @@ func (c *Client) triggerBackup(spec map[string]interface{}) error {
 	}
 
 	start := time.Now()
-	zap.L().Debug("Backup job triggered", zap.String("handler", c.handlerCfg.ID))
+	c.logger.Debug("Backup job triggered", zap.String("handler", c.handlerCfg.ID))
 	// start backup
-	filename, err := backupUtil.Backup(prefix, targetExportType)
+	filename, err := backupUtil.Backup(c.ctx, c.logger, prefix, targetExportType, c.storage, c.bus)
 	if err != nil {
 		return err
 	}
@@ -168,11 +195,11 @@ func (c *Client) triggerBackup(spec map[string]interface{}) error {
 		return err
 	}
 
-	zap.L().Debug("Export job completed", zap.String("handler", c.handlerCfg.ID), zap.String("timeTaken", time.Since(start).String()))
+	c.logger.Debug("Export job completed", zap.String("handler", c.handlerCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 
 	err = c.executeRetentionCount(targetDirectory, prefix, targetExportType, retentionCount)
 	if err != nil {
-		zap.L().Error("error on executing retention count", zap.String("handler", c.handlerCfg.ID), zap.Error(err))
+		c.logger.Error("error on executing retention count", zap.String("handler", c.handlerCfg.ID), zap.Error(err))
 	}
 
 	return nil
@@ -197,18 +224,18 @@ func (c *Client) executeRetentionCount(targetDir, prefix, targetExportType strin
 	}
 
 	// sort by filename
-	sortBy := []storagePluginTY.Sort{{Field: "name", OrderBy: storagePluginTY.SortByDESC}}
-	ordered, _ := helper.Sort(matchingFiles, &storagePluginTY.Pagination{SortBy: sortBy, Limit: -1, Offset: 0})
+	sortBy := []storageTY.Sort{{Field: "name", OrderBy: storageTY.SortByDESC}}
+	ordered, _ := helper.Sort(matchingFiles, &storageTY.Pagination{SortBy: sortBy, Limit: -1, Offset: 0})
 
 	if len(ordered) > retentionCount {
 		deleteFiles := ordered[retentionCount:]
 		for _, f := range deleteFiles {
 			if file, ok := f.(types.File); ok {
-				zap.L().Debug("deleting a file", zap.Any("file", file))
+				c.logger.Debug("deleting a file", zap.Any("file", file))
 				filename := fmt.Sprintf("%s/%s", targetDir, file.Name)
 				err = utils.RemoveFileOrEmptyDir(filename)
 				if err != nil {
-					zap.L().Error("error on deleting a file", zap.Any("file", file), zap.Error(err))
+					c.logger.Error("error on deleting a file", zap.Any("file", file), zap.Error(err))
 				}
 			}
 		}

@@ -15,6 +15,7 @@ import (
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	msgLogger "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/message_logger"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
@@ -26,6 +27,7 @@ const (
 	MaxDataLength           = 1000
 	transmitPreDelayDefault = time.Millisecond * 1 // 1ms
 	reconnectDelayDefault   = time.Second * 10     // 10 seconds
+	loggerName              = "protocol_ethernet"
 )
 
 // Config details
@@ -48,16 +50,21 @@ type Endpoint struct {
 	txPreDelay     time.Duration
 	reconnectDelay time.Duration
 	mutex          sync.RWMutex
+	logger         *zap.Logger
+	bus            busTY.Plugin
 }
 
 // New ethernet driver
-func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.RawMessage) error) (*Endpoint, error) {
+func New(logger *zap.Logger, gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.RawMessage) error, bus busTY.Plugin, logRootDir string) (*Endpoint, error) {
 	var cfg Config
 	err := utils.MapToStruct(utils.TagNameNone, protocol, &cfg)
 	if err != nil {
 		return nil, err
 	}
-	zap.L().Debug("updated config data", zap.Any("config", cfg))
+
+	namedLogger := logger.Named(loggerName)
+
+	namedLogger.Debug("updated config data", zap.Any("config", cfg))
 
 	serverURL, err := url.Parse(cfg.Server)
 	if err != nil {
@@ -79,10 +86,12 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 		txPreDelay:     utils.ToDuration(cfg.TransmitPreDelay, transmitPreDelayDefault),
 		reconnectDelay: utils.ToDuration(gwCfg.ReconnectDelay, reconnectDelayDefault),
 		mutex:          sync.RWMutex{},
+		logger:         namedLogger,
+		bus:            bus,
 	}
 
 	// init and start message logger
-	endpoint.messageLogger = msgLogger.Init(gwCfg.ID, gwCfg.MessageLogger, messageFormatter)
+	endpoint.messageLogger = msgLogger.New(logger, gwCfg.ID, gwCfg.MessageLogger, messageFormatter, logRootDir)
 	endpoint.messageLogger.Start()
 
 	// start serail read listener
@@ -108,7 +117,7 @@ func (ep *Endpoint) Write(rawMsg *msgTY.RawMessage) error {
 
 	dataBytes, ok := rawMsg.Data.([]byte)
 	if !ok {
-		zap.L().Error("error on converting to bytes", zap.Any("rawMessage", rawMsg))
+		ep.logger.Error("error on converting to bytes", zap.Any("rawMessage", rawMsg))
 		return fmt.Errorf("error on converting to bytes. received: %T", rawMsg.Data)
 	}
 	_, err := ep.conn.Write(dataBytes)
@@ -122,7 +131,7 @@ func (ep *Endpoint) Close() error {
 	if ep.conn != nil {
 		err := ep.conn.Close()
 		if err != nil {
-			zap.L().Error("error on closing the connection", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server), zap.Error(err))
+			ep.logger.Error("error on closing the connection", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server), zap.Error(err))
 		}
 		ep.conn = nil
 	}
@@ -136,22 +145,22 @@ func (ep *Endpoint) dataListener() {
 	for {
 		select {
 		case <-ep.safeClose.CH:
-			zap.L().Info("received close signal.", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server))
+			ep.logger.Info("received close signal.", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server))
 			return
 		default:
 			rxLength, err := ep.conn.Read(readBuf)
 			if err != nil {
-				zap.L().Error("error on reading the data from the ethernet connection", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server), zap.Error(err))
+				ep.logger.Error("error on reading the data from the ethernet connection", zap.String("gateway", ep.GwCfg.ID), zap.String("server", ep.Config.Server), zap.Error(err))
 				state := types.State{
 					Status:  types.StatusDown,
 					Message: err.Error(),
 					Since:   time.Now(),
 				}
-				busUtils.SetGatewayState(ep.GwCfg.ID, state)
+				busUtils.SetGatewayState(ep.logger, ep.bus, ep.GwCfg.ID, state)
 				return
 			}
 
-			//zap.L().Debug("data", zap.Any("data", string(data)))
+			//ep.logger.Debug("data", zap.Any("data", string(data)))
 			for index := 0; index < rxLength; index++ {
 				b := readBuf[index]
 				if b == ep.Config.MessageSplitter {
@@ -163,7 +172,7 @@ func (ep *Endpoint) dataListener() {
 					ep.messageLogger.AsyncWrite(rawMsg)
 					err := ep.receiveMsgFunc(rawMsg)
 					if err != nil {
-						zap.L().Error("error on sending a raw message to queue", zap.String("gateway", ep.GwCfg.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
+						ep.logger.Error("error on sending a raw message to queue", zap.String("gateway", ep.GwCfg.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 					}
 				} else {
 					data = append(data, b)

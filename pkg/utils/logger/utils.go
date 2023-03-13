@@ -14,7 +14,7 @@ const (
 )
 
 // GetLogger returns a logger
-func GetLogger(mode, level, encoding string, showFullCaller bool, callerSkip int, enableStacktrace bool) *zap.Logger {
+func GetLogger(mode, logLevel, encoding string, showFullCaller bool, callerSkip int, enableStacktrace bool) *zap.Logger {
 	var zapCfg zap.Config
 	if strings.ToLower(mode) == ModeSampled {
 		zapCfg = zap.NewProductionConfig()
@@ -37,7 +37,7 @@ func GetLogger(mode, level, encoding string, showFullCaller bool, callerSkip int
 	}
 	// update user change
 	// update log level
-	switch strings.ToLower(level) {
+	switch strings.ToLower(logLevel) {
 	case "debug":
 		zapCfg.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
 	case "info":

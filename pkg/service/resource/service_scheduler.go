@@ -3,13 +3,12 @@ package resource
 import (
 	"errors"
 
-	scheduleAPI "github.com/mycontroller-org/server/v2/pkg/api/schedule"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
-	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	"go.uber.org/zap"
 )
 
-func schedulerService(reqEvent *rsTY.ServiceEvent) error {
+func (svc *ResourceService) schedulerService(reqEvent *rsTY.ServiceEvent) error {
 	resEvent := &rsTY.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
@@ -17,40 +16,40 @@ func schedulerService(reqEvent *rsTY.ServiceEvent) error {
 
 	switch reqEvent.Command {
 	case rsTY.CommandGet:
-		data, err := getScheduler(reqEvent)
+		data, err := svc.getScheduler(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
 	case rsTY.CommandUpdateState:
-		err := updateSchedulerState(reqEvent)
+		err := svc.updateSchedulerState(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 
 	case rsTY.CommandLoadAll:
-		scheduleAPI.LoadAll()
+		svc.api.Schedule().LoadAll()
 
 	case rsTY.CommandDisable:
-		return disableScheduler(reqEvent)
+		return svc.disableScheduler(reqEvent)
 
 	default:
 		return errors.New("unknown command")
 	}
-	return postResponse(reqEvent.ReplyTopic, resEvent)
+	return svc.postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getScheduler(request *rsTY.ServiceEvent) (interface{}, error) {
+func (svc *ResourceService) getScheduler(request *rsTY.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
-		cfg, err := scheduleAPI.GetByID(request.ID)
+		cfg, err := svc.api.Schedule().GetByID(request.ID)
 		if err != nil {
 			return nil, err
 		}
 		return cfg, nil
 	} else if len(request.Labels) > 0 {
-		filters := getLabelsFilter(request.Labels)
-		result, err := scheduleAPI.List(filters, nil)
+		filters := svc.getLabelsFilter(request.Labels)
+		result, err := svc.api.Schedule().List(filters, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -59,34 +58,34 @@ func getScheduler(request *rsTY.ServiceEvent) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func updateSchedulerState(reqEvent *rsTY.ServiceEvent) error {
+func (svc *ResourceService) updateSchedulerState(reqEvent *rsTY.ServiceEvent) error {
 	if reqEvent.Data == "" {
-		zap.L().Error("state not supplied", zap.Any("event", reqEvent))
+		svc.logger.Error("state not supplied", zap.Any("event", reqEvent))
 		return errors.New("state not supplied")
 	}
 
-	state := &scheduleTY.State{}
+	state := &schedulerTY.State{}
 	err := reqEvent.LoadData(state)
 	if err != nil {
-		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
+		svc.logger.Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
 		return err
 	}
 
-	return scheduleAPI.SetState(reqEvent.ID, state)
+	return svc.api.Schedule().SetState(reqEvent.ID, state)
 }
 
-func disableScheduler(reqEvent *rsTY.ServiceEvent) error {
+func (svc *ResourceService) disableScheduler(reqEvent *rsTY.ServiceEvent) error {
 	if reqEvent.Data == "" {
-		zap.L().Error("scheduler id not supplied", zap.Any("event", reqEvent))
+		svc.logger.Error("scheduler id not supplied", zap.Any("event", reqEvent))
 		return errors.New("id not supplied")
 	}
 
 	id := ""
 	err := reqEvent.LoadData(&id)
 	if err != nil {
-		zap.L().Error("error on data conversion", zap.Any("reqEvent", reqEvent), zap.Error(err))
+		svc.logger.Error("error on data conversion", zap.Any("reqEvent", reqEvent), zap.Error(err))
 		return err
 	}
 
-	return scheduleAPI.Disable([]string{id})
+	return svc.api.Schedule().Disable([]string{id})
 }

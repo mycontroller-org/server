@@ -53,13 +53,13 @@ func getID(nodeID string) (int, error) {
 func (p *Provider) updateState(nodeID string, data *msgTY.Payload) {
 	lightID, err := getID(nodeID)
 	if err != nil {
-		zap.L().Error("error on parsing light id", zap.Error(err))
+		p.logger.Error("error on parsing light id", zap.Error(err))
 		return
 	}
 
 	light, err := p.bridge.GetLight(lightID)
 	if err != nil {
-		zap.L().Error("error on getting light", zap.String("nodeId", nodeID), zap.Error(err))
+		p.logger.Error("error on getting light", zap.String("nodeId", nodeID), zap.Error(err))
 		return
 	}
 
@@ -97,18 +97,18 @@ func (p *Provider) updateState(nodeID string, data *msgTY.Payload) {
 		err = light.Effect(effect)
 
 	default:
-		zap.L().Error("unsupported field", zap.String("nodeId", nodeID), zap.String("fieldId", data.Key))
+		p.logger.Error("unsupported field", zap.String("nodeId", nodeID), zap.String("fieldId", data.Key))
 		return
 	}
 	if err != nil {
-		zap.L().Error("error on updating field", zap.String("nodeId", nodeID), zap.String("fieldId", data.Key), zap.Any("value", data.Value))
+		p.logger.Error("error on updating field", zap.String("nodeId", nodeID), zap.String("fieldId", data.Key), zap.Any("value", data.Value))
 		return
 	}
 
 	// get and update light new status
 	light, err = p.bridge.GetLight(lightID)
 	if err != nil {
-		zap.L().Error("error on getting light", zap.String("nodeId", nodeID), zap.Error(err))
+		p.logger.Error("error on getting light", zap.String("nodeId", nodeID), zap.Error(err))
 	}
 	p.updateLight(light)
 

@@ -5,6 +5,7 @@ import (
 	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	mqtt "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_mqtt"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
+	"go.uber.org/zap"
 )
 
 const (
@@ -22,6 +23,7 @@ type MqttProtocol struct {
 	Protocol   gwPtl.Protocol
 	Config     *MqttProtocolConf
 	rxMsgFunc  func(rm *msgTY.RawMessage) error
+	logger     *zap.Logger
 }
 
 type MqttProtocolConf struct {

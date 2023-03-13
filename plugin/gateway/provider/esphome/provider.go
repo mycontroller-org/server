@@ -1,12 +1,15 @@
 package esphome
 
 import (
+	"context"
 	"fmt"
 	"sync"
 
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
@@ -20,6 +23,8 @@ const (
 	defaultAliveCheckInterval = "15s"
 
 	schedulePrefix = "esphome_gw"
+
+	loggerName = "gateway_esphome"
 )
 
 // Config data for this gateway
@@ -38,12 +43,28 @@ type Provider struct {
 	clientStore   *ClientStore
 	entityStore   *EntityStore
 	rxMessageFunc func(rawMsg *msgTY.RawMessage) error
+	logger        *zap.Logger
+	scheduler     schedulerTY.CoreScheduler
+	bus           busTY.Plugin
 }
 
-// NewPluginEspHome provider
-func NewPluginEspHome(gatewayCfg *gwTY.Config) (providerTY.Plugin, error) {
+// esphome provider
+func New(ctx context.Context, config *gwTY.Config) (providerTY.Plugin, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	scheduler, err := schedulerTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	bus, err := busTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	cfg := Config{}
-	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, &cfg)
+	err = utils.MapToStruct(utils.TagNameNone, config.Provider, &cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -52,14 +73,19 @@ func NewPluginEspHome(gatewayCfg *gwTY.Config) (providerTY.Plugin, error) {
 	cfg.Timeout = utils.ValidDuration(cfg.Timeout, defaultTimeout)
 	cfg.AliveCheckInterval = utils.ValidDuration(cfg.AliveCheckInterval, defaultAliveCheckInterval)
 
+	namedLogger := logger.Named(loggerName)
+
 	provider := &Provider{
 		Config:        cfg,
-		GatewayConfig: gatewayCfg,
-		clientStore:   &ClientStore{nodes: make(map[string]*ESPHomeNode), mutex: &sync.RWMutex{}},
+		GatewayConfig: config,
+		clientStore:   &ClientStore{nodes: make(map[string]*ESPHomeNode), mutex: &sync.RWMutex{}, logger: namedLogger},
 		entityStore:   &EntityStore{nodes: make(map[string]map[uint32]Entity), mutex: &sync.RWMutex{}},
 		rxMessageFunc: nil,
+		logger:        namedLogger,
+		scheduler:     scheduler,
+		bus:           bus,
 	}
-	zap.L().Debug("Config details", zap.Any("received", gatewayCfg.Provider), zap.Any("converted", cfg))
+	provider.logger.Debug("Config details", zap.Any("received", config.Provider), zap.Any("converted", cfg))
 	return provider, nil
 }
 
@@ -77,7 +103,7 @@ func (p *Provider) Start(rxMessageFunc func(rawMsg *msgTY.RawMessage) error) err
 		if nodeCfg.Disabled {
 			continue
 		}
-		zap.L().Debug("connecting to node", zap.Any("gatewayId", p.GatewayConfig.ID), zap.Any("nodeID", nodeID))
+		p.logger.Debug("connecting to node", zap.Any("gatewayId", p.GatewayConfig.ID), zap.Any("nodeID", nodeID))
 
 		if nodeCfg.UseGlobalPassword {
 			nodeCfg.Password = p.Config.Password
@@ -91,11 +117,11 @@ func (p *Provider) Start(rxMessageFunc func(rawMsg *msgTY.RawMessage) error) err
 		nodeCfg.AliveCheckInterval = utils.ValidDuration(nodeCfg.AliveCheckInterval, p.Config.AliveCheckInterval)
 		nodeCfg.ReconnectDelay = utils.ValidDuration(nodeCfg.ReconnectDelay, p.GatewayConfig.ReconnectDelay)
 
-		espNode := NewESPHomeNode(p.GatewayConfig.ID, nodeID, nodeCfg, p.entityStore, p.rxMessageFunc)
+		espNode := NewESPHomeNode(p.logger, p.GatewayConfig.ID, nodeID, nodeCfg, p.entityStore, p.rxMessageFunc, p.scheduler, p.bus)
 
 		err := espNode.Connect()
 		if err != nil {
-			zap.L().Info("error on connecting a node", zap.String("gatewayId", espNode.GatewayID), zap.String("nodeId", nodeID), zap.String("error", err.Error()))
+			p.logger.Info("error on connecting a node", zap.String("gatewayId", espNode.GatewayID), zap.String("nodeId", nodeID), zap.String("error", err.Error()))
 			espNode.ScheduleReconnect()
 		}
 
@@ -107,19 +133,19 @@ func (p *Provider) Start(rxMessageFunc func(rawMsg *msgTY.RawMessage) error) err
 
 // Close func
 func (p *Provider) Close() error {
-	scheduleUtils.UnscheduleAll(schedulePrefix, p.GatewayConfig.ID)
+	p.scheduler.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, p.GatewayConfig.ID))
 	p.clientStore.Close()
 	p.entityStore.Close()
 	return nil
 }
 
 // Unschedule removes a schedule
-func Unschedule(scheduleID string) {
-	scheduleUtils.Unschedule(scheduleID)
+func (p *Provider) Unschedule(scheduleID string) {
+	p.scheduler.RemoveFunc(scheduleID)
 }
 
 // Schedule adds a schedule
-func Schedule(scheduleID, interval string, triggerFunc func()) error {
+func (p *Provider) Schedule(scheduleID, interval string, triggerFunc func()) error {
 	jobSpec := fmt.Sprintf("@every %s", interval)
-	return scheduleUtils.Schedule(scheduleID, jobSpec, triggerFunc)
+	return p.scheduler.AddFunc(scheduleID, jobSpec, triggerFunc)
 }

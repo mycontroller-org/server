@@ -12,7 +12,7 @@ const (
 	KeySystemJobs            = "system_jobs"
 	KeySystemBackupLocations = "system_backup_locations"
 	KeyVersion               = "version"
-	KeyAnalytics             = "analytics"
+	KeyTelemetry             = "telemetry"
 	KeySystemDynamicSecrets  = "system_dynamic_secrets"
 )
 
@@ -73,8 +73,8 @@ type BackupLocation struct {
 	Config cmap.CustomMap `json:"config" yaml:"config"`
 }
 
-// AnalyticsConfig keeps data
-type AnalyticsConfig struct {
+// telemetry config data
+type TelemetryConfig struct {
 	AnonymousID string `json:"anonymousId" yaml:"anonymousId"`
 }
 

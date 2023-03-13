@@ -1,65 +1,121 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	commonStore "github.com/mycontroller-org/server/v2/pkg/store"
+	encryptionAPI "github.com/mycontroller-org/server/v2/pkg/encryption"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
-	"github.com/mycontroller-org/server/v2/pkg/utils"
+	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
+	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
+	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
+	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	gwProvider "github.com/mycontroller-org/server/v2/plugin/gateway/provider"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
 )
 
-// StartGW gateway
-func StartGW(gatewayCfg *gwTY.Config) error {
+const (
+	defaultQueueSize = int(50)
+	defaultWorkers   = int(1)
+)
+
+type GatewayService struct {
+	ctx         context.Context
+	logger      *zap.Logger
+	store       *Store
+	bus         busTY.Plugin
+	eventsQueue *queueUtils.QueueSpec
+	filter      *sfTY.ServiceFilter
+	enc         *encryptionAPI.Encryption
+}
+
+func New(ctx context.Context, filter *sfTY.ServiceFilter) (serviceTY.Service, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	bus, err := busTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	enc, err := encryptionAPI.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	svc := &GatewayService{
+		ctx:    ctx,
+		logger: logger.Named("gateway_service"),
+		store:  &Store{services: make(map[string]*gwProvider.Service)},
+		bus:    bus,
+		filter: filter,
+		enc:    enc,
+	}
+
+	svc.eventsQueue = &queueUtils.QueueSpec{
+		Topic:          topic.TopicServiceGateway,
+		Queue:          queueUtils.New(svc.logger, "gateway", defaultQueueSize, svc.processEvent, defaultWorkers),
+		SubscriptionId: -1,
+	}
+
+	return svc, nil
+}
+
+func (svc *GatewayService) Name() string {
+	return "gateway_service"
+}
+
+// startGW gateway
+func (svc *GatewayService) startGW(gatewayCfg *gwTY.Config) error {
 	start := time.Now()
 
 	// decrypt the secrets, tokens
-	err := cloneUtil.UpdateSecrets(gatewayCfg, commonStore.CFG.Secret, "", false, cloneUtil.DefaultSpecialKeys)
+	err := svc.enc.DecryptSecrets(gatewayCfg)
 	if err != nil {
 		return err
 	}
 
-	if gwService.Get(gatewayCfg.ID) != nil {
-		zap.L().Info("no action needed. gateway service is in running state.", zap.String("gatewayId", gatewayCfg.ID))
+	if svc.store.Get(gatewayCfg.ID) != nil {
+		svc.logger.Info("no action needed. gateway service is in running state.", zap.String("gatewayId", gatewayCfg.ID))
 		return nil
 	}
 	if !gatewayCfg.Enabled { // this gateway is not enabled
 		return nil
 	}
-	zap.L().Info("starting a gateway", zap.Any("id", gatewayCfg.ID))
+	svc.logger.Info("starting a gateway", zap.Any("id", gatewayCfg.ID))
 	state := types.State{Since: time.Now()}
 
-	service, err := gwProvider.GetService(gatewayCfg)
+	service, err := gwProvider.GetService(svc.ctx, gatewayCfg)
 	if err != nil {
 		return err
 	}
 	err = service.Start()
 	if err != nil {
-		zap.L().Error("failed to start a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
+		svc.logger.Error("failed to start a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
 		state.Message = err.Error()
 		state.Status = types.StatusDown
 	} else {
-		zap.L().Info("started a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()))
+		svc.logger.Info("started a gateway", zap.String("id", gatewayCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 		state.Message = "Started successfully"
 		state.Status = types.StatusUp
-		gwService.Add(service)
+		svc.store.Add(service)
 	}
 
-	busUtils.SetGatewayState(gatewayCfg.ID, state)
+	busUtils.SetGatewayState(svc.logger, svc.bus, gatewayCfg.ID, state)
 	return nil
 }
 
-// StopGW gateway
-func StopGW(id string) error {
+// stopGW gateway
+func (svc *GatewayService) stopGW(id string) error {
 	start := time.Now()
-	zap.L().Info("stopping a gateway", zap.Any("id", id))
-	service := gwService.Get(id)
+	svc.logger.Info("stopping a gateway", zap.Any("id", id))
+	service := svc.store.Get(id)
 	if service != nil {
 		err := service.Stop()
 		state := types.State{
@@ -68,42 +124,32 @@ func StopGW(id string) error {
 			Message: "Stopped by request",
 		}
 		if err != nil {
-			zap.L().Error("failed to stop a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
+			svc.logger.Error("failed to stop a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()), zap.Error(err))
 			state.Message = fmt.Sprintf("Failed to stop: %s", err.Error())
-			busUtils.SetGatewayState(id, state)
+			busUtils.SetGatewayState(svc.logger, svc.bus, id, state)
 		} else {
-			zap.L().Info("stopped a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()))
-			busUtils.SetGatewayState(id, state)
-			gwService.Remove(id)
+			svc.logger.Info("stopped a gateway", zap.String("id", id), zap.String("timeTaken", time.Since(start).String()))
+			busUtils.SetGatewayState(svc.logger, svc.bus, id, state)
+			svc.store.Remove(id)
 		}
 	}
 	return nil
 }
 
-// ReloadGW gateway
-func ReloadGW(gwCfg *gwTY.Config) error {
-	err := StopGW(gwCfg.ID)
-	if err != nil {
-		return err
-	}
-	utils.SmartSleep(1 * time.Second)
-	return StartGW(gwCfg)
-}
-
-// UnloadAll stops all the gateways
-func UnloadAll() {
-	ids := gwService.ListIDs()
+// unloadAll stops all the gateways
+func (svc *GatewayService) unloadAll() {
+	ids := svc.store.ListIDs()
 	for _, id := range ids {
-		err := StopGW(id)
+		err := svc.stopGW(id)
 		if err != nil {
-			zap.L().Error("error on stopping a gateway", zap.String("id", id))
+			svc.logger.Error("error on stopping a gateway", zap.String("id", id))
 		}
 	}
 }
 
 // returns sleeping queue messages from the given gateway ID
-func getGatewaySleepingQueue(gatewayID string) *map[string][]msgTY.Message {
-	service := gwService.Get(gatewayID)
+func (svc *GatewayService) getGatewaySleepingQueue(gatewayID string) *map[string][]msgTY.Message {
+	service := svc.store.Get(gatewayID)
 	if service != nil {
 		messages := service.GetGatewaySleepingQueue()
 		return &messages
@@ -112,8 +158,8 @@ func getGatewaySleepingQueue(gatewayID string) *map[string][]msgTY.Message {
 }
 
 // returns sleeping queue messages from the given gateway ID and node ID
-func getNodeSleepingQueue(gatewayID, nodeID string) *[]msgTY.Message {
-	service := gwService.Get(gatewayID)
+func (svc *GatewayService) getNodeSleepingQueue(gatewayID, nodeID string) *[]msgTY.Message {
+	service := svc.store.Get(gatewayID)
 	if service != nil {
 		messages := service.GetNodeSleepingQueue(nodeID)
 		return &messages
@@ -122,16 +168,16 @@ func getNodeSleepingQueue(gatewayID, nodeID string) *[]msgTY.Message {
 }
 
 // clears sleeping queue of a gateway
-func clearGatewaySleepingQueue(gatewayID string) {
-	service := gwService.Get(gatewayID)
+func (svc *GatewayService) clearGatewaySleepingQueue(gatewayID string) {
+	service := svc.store.Get(gatewayID)
 	if service != nil {
 		service.ClearGatewaySleepingQueue()
 	}
 }
 
 // clears sleeping queue of a node
-func clearNodeSleepingQueue(gatewayID, nodeID string) {
-	service := gwService.Get(gatewayID)
+func (svc *GatewayService) clearNodeSleepingQueue(gatewayID, nodeID string) {
+	service := svc.store.Get(gatewayID)
 	if service != nil {
 		service.ClearNodeSleepingQueue(nodeID)
 	}

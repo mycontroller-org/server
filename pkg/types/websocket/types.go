@@ -1,7 +1,7 @@
 package websocket
 
 import (
-	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
 )
 
 // Request types

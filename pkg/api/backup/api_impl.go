@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	settingsAPI "github.com/mycontroller-org/server/v2/pkg/api/settings"
-	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
@@ -18,24 +16,24 @@ import (
 )
 
 // RunRestore func
-func RunRestore(file backupTY.BackupFile) error {
-	zap.L().Info("restore data request received", zap.Any("backupFile", file))
+func (bk *BackupAPI) RunRestore(file backupTY.BackupFile) error {
+	bk.logger.Info("restore data request received", zap.Any("backupFile", file))
 
-	err := backupAPI.ExtractExportedZipFile(file.FullPath)
+	err := bk.backupRestore.ExtractExportedZipFile(file.FullPath)
 	if err != nil {
-		zap.L().Error("error on extract", zap.Error(err), zap.Any("file", file))
+		bk.logger.Error("error on extract", zap.Error(err), zap.Any("file", file))
 		return err
 	}
 	// TODO: do shutdown
-	zap.L().Info("all set to start restore on startup. the server is going to down now. start the server manually")
-	busUtils.PostShutdownEvent()
+	bk.logger.Info("all set to start restore on startup. the server is going to down now. start the server manually")
+	busUtils.PostShutdownEvent(bk.logger, bk.bus)
 
 	return nil
 }
 
-// RunOnDemandBackup triggers on demand export
-func RunOnDemandBackup(input *backupTY.OnDemandBackupConfig) error {
-	zap.L().Debug("on-demand backup request received", zap.Any("config", input))
+// triggers on demand export
+func (bk *BackupAPI) RunOnDemandBackup(input *backupTY.OnDemandBackupConfig) error {
+	bk.logger.Debug("on-demand backup request received", zap.Any("config", input))
 
 	configData := disk.Config{
 		Prefix:            fmt.Sprintf("%s_on_demand", input.Prefix),
@@ -51,7 +49,7 @@ func RunOnDemandBackup(input *backupTY.OnDemandBackupConfig) error {
 
 	base64String, err := yamlUtils.MarshalBase64Yaml(&exporterData)
 	if err != nil {
-		zap.L().Error("error on converting exporter data to base64", zap.Error(err))
+		bk.logger.Error("error on converting exporter data to base64", zap.Error(err))
 		return err
 	}
 
@@ -69,13 +67,13 @@ func RunOnDemandBackup(input *backupTY.OnDemandBackupConfig) error {
 	finalData := map[string]string{
 		"on_demand_backup": string(dataBytes),
 	}
-	busUtils.PostToHandler([]string{input.Handler}, finalData)
+	busUtils.PostToHandler(bk.logger, bk.bus, []string{input.Handler}, finalData)
 	return nil
 }
 
 // GetBackupFilesList details
-func GetBackupFilesList() ([]interface{}, error) {
-	locationsSettings, err := settingsAPI.GetBackupLocations()
+func (bk *BackupAPI) GetBackupFilesList() ([]interface{}, error) {
+	locationsSettings, err := bk.settingsAPI.GetBackupLocations()
 	if err != nil {
 		return nil, err
 	}

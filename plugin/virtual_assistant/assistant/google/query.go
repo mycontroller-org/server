@@ -7,12 +7,11 @@ import (
 	convertorUtil "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/google/types"
-	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"
 	"go.uber.org/zap"
 )
 
-func runQueryRequest(request gaTY.QueryRequest) *gaTY.QueryResponse {
-	// zap.L().Info("received a query request", zap.Any("request", request))
+func (a *Assistant) runQueryRequest(request gaTY.QueryRequest) *gaTY.QueryResponse {
+	// a.logger.Info("received a query request", zap.Any("request", request))
 	response := gaTY.QueryResponse{
 		RequestID: request.RequestID,
 		Payload: gaTY.QueryResponsePayload{
@@ -23,9 +22,9 @@ func runQueryRequest(request gaTY.QueryRequest) *gaTY.QueryResponse {
 	// get device details
 	if len(request.Inputs) > 0 {
 		input := request.Inputs[0] // for now processing only the 0th index. update the code if there is a chance to receive more than one index
-		devicesResp, err := queryDevices(input.Payload.Devices)
+		devicesResp, err := a.queryDevices(input.Payload.Devices)
 		if err != nil {
-			zap.L().Warn("unable to get devices state", zap.Error(err))
+			a.logger.Warn("unable to get devices state", zap.Error(err))
 			response.Payload.ErrorCode = err.Error()
 		}
 		response.Payload.Devices = devicesResp
@@ -34,7 +33,7 @@ func runQueryRequest(request gaTY.QueryRequest) *gaTY.QueryResponse {
 	return &response
 }
 
-func queryDevices(devices []gaTY.QueryRequestDevice) (map[string]gaTY.QueryResponseDevice, error) {
+func (a *Assistant) queryDevices(devices []gaTY.QueryRequestDevice) (map[string]gaTY.QueryResponseDevice, error) {
 	IDs := []string{}
 	for _, device := range devices {
 		IDs = append(IDs, device.ID)
@@ -47,19 +46,19 @@ func queryDevices(devices []gaTY.QueryRequestDevice) (map[string]gaTY.QueryRespo
 
 	// get devices
 	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
-	vDevices, err := botAPI.ListDevices(filters, int64(len(IDs)), 0)
+	vDevices, err := a.deviceAPI.ListDevices(filters, int64(len(IDs)), 0)
 	if err != nil {
 		return nil, err
 	}
 
 	// update resource state
-	err = botAPI.UpdateDeviceState(vDevices)
+	err = a.deviceAPI.UpdateDeviceState(vDevices)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, vDevice := range vDevices {
-		response, err := queryDeviceState(vDevice)
+		response, err := a.queryDeviceState(vDevice)
 		if err != nil {
 			return nil, err
 		}
@@ -69,11 +68,10 @@ func queryDevices(devices []gaTY.QueryRequestDevice) (map[string]gaTY.QueryRespo
 	return devicesResponse, nil
 }
 
-func queryDeviceState(vDevice vdTY.VirtualDevice) (*gaTY.QueryResponseDevice, error) {
-
+func (a *Assistant) queryDeviceState(vDevice vdTY.VirtualDevice) (*gaTY.QueryResponseDevice, error) {
 	params := make(map[string]interface{})
 	for trait, resource := range vDevice.Traits {
-		_params, err := getResourceParams(trait, resource)
+		_params, err := a.getResourceParams(trait, resource)
 		if err != nil {
 			return nil, err
 		}
@@ -90,8 +88,8 @@ func queryDeviceState(vDevice vdTY.VirtualDevice) (*gaTY.QueryResponseDevice, er
 	return &response, nil
 }
 
-func getResourceParams(trait string, resource vdTY.Resource) (map[string]interface{}, error) {
-	// zap.L().Info("requested trait", zap.String("trait", trait))
+func (a *Assistant) getResourceParams(trait string, resource vdTY.Resource) (map[string]interface{}, error) {
+	// a.logger.Info("requested trait", zap.String("trait", trait))
 	params := make(map[string]interface{})
 	switch trait {
 	case vdTY.DeviceTraitOnOff: // https://developers.google.com/assistant/smarthome/traits/onoff#device-states
@@ -104,7 +102,7 @@ func getResourceParams(trait string, resource vdTY.Resource) (map[string]interfa
 		// 	params["color"] = ""
 
 	default:
-		zap.L().Info("support not implemented for this trait", zap.String("trait", trait))
+		a.logger.Info("support not implemented for this trait", zap.String("trait", trait))
 	}
 	return params, nil
 }

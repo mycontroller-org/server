@@ -4,13 +4,12 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/alexa/types"
-	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"
 	"go.uber.org/zap"
 )
 
-func executeDiscover(directive alexaTY.DirectiveOrEvent) (interface{}, error) {
+func (a *Assistant) executeDiscover(directive alexaTY.DirectiveOrEvent) (interface{}, error) {
 	// get virtual devices
-	vDevices, err := botAPI.ListDevices(nil, 300, 0) // limits to 300 devices
+	vDevices, err := a.deviceAPI.ListDevices(nil, 300, 0) // limits to 300 devices
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +30,7 @@ func executeDiscover(directive alexaTY.DirectiveOrEvent) (interface{}, error) {
 				})
 
 			} else {
-				zap.L().Info("trait not found in the defined map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", trait))
+				a.logger.Info("trait not found in the defined map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", trait))
 			}
 		}
 

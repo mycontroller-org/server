@@ -14,7 +14,7 @@ import (
 func (p *Provider) updateProcess() {
 	procs, err := process.Processes()
 	if err != nil {
-		zap.L().Error("error on getting process list", zap.Error(err))
+		p.logger.Error("error on getting process list", zap.Error(err))
 		return
 	}
 
@@ -78,7 +78,7 @@ func (p *Provider) updateProcess() {
 
 				if err != nil {
 					if !strings.Contains(err.Error(), "no such file or directory") {
-						zap.L().Error("error on collecting process data", zap.Error(err))
+						p.logger.Error("error on collecting process data", zap.Error(err))
 					}
 					matching = false
 					break
@@ -110,63 +110,63 @@ func (p *Provider) updateProcess() {
 
 			value, err := proc.Cmdline()
 			if err != nil {
-				zap.L().Error("error on collecting process data", zap.Error(err))
+				p.logger.Error("error on collecting process data", zap.Error(err))
 				continue
 			}
 			othersData.Others.Set(config.ProcessFieldCmdLine, value, nil)
 
 			value, err = proc.Cwd()
 			if err != nil {
-				zap.L().Error("error on collecting process data", zap.Error(err))
+				p.logger.Error("error on collecting process data", zap.Error(err))
 				continue
 			}
 			othersData.Others.Set(config.ProcessFieldCwd, value, nil)
 
 			value, err = proc.Exe()
 			if err != nil {
-				zap.L().Error("error on collecting process data", zap.Error(err))
+				p.logger.Error("error on collecting process data", zap.Error(err))
 				continue
 			}
 			othersData.Others.Set(config.ProcessFieldEXE, value, nil)
 
 			value, err = proc.Name()
 			if err != nil {
-				zap.L().Error("error on collecting process data", zap.Error(err))
+				p.logger.Error("error on collecting process data", zap.Error(err))
 				continue
 			}
 			othersData.Others.Set(config.ProcessFieldName, value, nil)
 
 			value, err = proc.Nice()
 			if err != nil {
-				zap.L().Error("error on collecting process data", zap.Error(err))
+				p.logger.Error("error on collecting process data", zap.Error(err))
 				continue
 			}
 			othersData.Others.Set(config.ProcessFieldNice, value, nil)
 
 			value, err = proc.Ppid()
 			if err != nil {
-				zap.L().Error("error on collecting process data", zap.Error(err))
+				p.logger.Error("error on collecting process data", zap.Error(err))
 				continue
 			}
 			othersData.Others.Set(config.ProcessFieldPPid, value, nil)
 
 			value, err = proc.Username()
 			if err != nil {
-				zap.L().Error("error on collecting process data", zap.Error(err))
+				p.logger.Error("error on collecting process data", zap.Error(err))
 				continue
 			}
 			othersData.Others.Set(config.ProcessFieldUsername, value, nil)
 
 			value, err = proc.Gids()
 			if err != nil {
-				zap.L().Error("error on collecting process data", zap.Error(err))
+				p.logger.Error("error on collecting process data", zap.Error(err))
 				continue
 			}
 			othersData.Others.Set(config.ProcessFieldGids, value, nil)
 
 			value, err = proc.Uids()
 			if err != nil {
-				zap.L().Error("error on collecting process data", zap.Error(err))
+				p.logger.Error("error on collecting process data", zap.Error(err))
 				continue
 			}
 			othersData.Others.Set(config.ProcessFieldUids, value, nil)
@@ -175,7 +175,7 @@ func (p *Provider) updateProcess() {
 
 			err = p.postMsg(&presentMsg)
 			if err != nil {
-				zap.L().Error("error on posting msg", zap.Error(err))
+				p.logger.Error("error on posting msg", zap.Error(err))
 				return
 			}
 
@@ -184,21 +184,21 @@ func (p *Provider) updateProcess() {
 
 			value, err = proc.CPUPercent()
 			if err != nil {
-				zap.L().Error("error on collecting process data", zap.Error(err))
+				p.logger.Error("error on collecting process data", zap.Error(err))
 				continue
 			}
 			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldCpuPercent, value, metricTY.MetricTypeGaugeFloat, metricTY.UnitPercent, true))
 
 			value, err = proc.MemoryPercent()
 			if err != nil {
-				zap.L().Error("error on collecting process data", zap.Error(err))
+				p.logger.Error("error on collecting process data", zap.Error(err))
 				continue
 			}
 			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldMemoryPercent, value, metricTY.MetricTypeGaugeFloat, metricTY.UnitPercent, true))
 
 			memInfo, err := proc.MemoryInfo()
 			if err != nil {
-				zap.L().Error("error on collecting process data", zap.Error(err))
+				p.logger.Error("error on collecting process data", zap.Error(err))
 				continue
 			}
 			msg.Payloads = append(msg.Payloads, p.getData(config.ProcessFieldRSS, getValueByUnit(memInfo.RSS, dataCFG.Unit), metricTY.MetricTypeGaugeFloat, dataCFG.Unit, true))
@@ -210,7 +210,7 @@ func (p *Provider) updateProcess() {
 
 			err = p.postMsg(&msg)
 			if err != nil {
-				zap.L().Error("error on posting msg", zap.Error(err))
+				p.logger.Error("error on posting msg", zap.Error(err))
 				return
 			}
 

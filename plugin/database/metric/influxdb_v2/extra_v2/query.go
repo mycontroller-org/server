@@ -16,10 +16,11 @@ import (
 type QueryV2 struct {
 	api    api.QueryAPI
 	bucket string
+	logger *zap.Logger
 }
 
-func NewQueryClient(api api.QueryAPI, bucket string) *QueryV2 {
-	return &QueryV2{api: api, bucket: bucket}
+func NewQueryClient(logger *zap.Logger, api api.QueryAPI, bucket string) *QueryV2 {
+	return &QueryV2{api: api, bucket: bucket, logger: logger}
 }
 
 func (qv2 *QueryV2) filter(name, value string) string {
@@ -140,7 +141,7 @@ func (qv2 *QueryV2) ExecuteQuery(q *metricTY.Query, measurement string) ([]metri
 
 	query := qv2.buildQuery(q.MetricType, q.Name, qv2.bucket, q.Start, q.Stop, q.Window, filters, q.Functions)
 
-	zap.L().Debug("query", zap.String("query", query))
+	qv2.logger.Debug("query", zap.String("query", query))
 
 	tableResult, err := qv2.api.Query(context.Background(), query)
 	if err != nil {
@@ -174,10 +175,10 @@ func (qv2 *QueryV2) ExecuteQuery(q *metricTY.Query, measurement string) ([]metri
 		metrics = append(metrics, metricTY.ResponseData{Time: record.Time(), MetricType: q.MetricType, Metric: _metric})
 
 		if tableResult.Err() != nil {
-			zap.L().Error("Query error", zap.String("name", q.Name), zap.Error(tableResult.Err()))
+			qv2.logger.Error("Query error", zap.String("name", q.Name), zap.Error(tableResult.Err()))
 		}
 	}
 
-	//zap.L().Debug("query response", zap.String("query", query), zap.Any("result", metrics))
+	//qv2.logger.Debug("query response", zap.String("query", query), zap.Any("result", metrics))
 	return metrics, nil
 }

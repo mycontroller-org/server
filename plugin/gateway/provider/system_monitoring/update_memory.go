@@ -13,7 +13,7 @@ func (p *Provider) updateMemory() {
 
 	err := p.postMsg(&presentMsg)
 	if err != nil {
-		zap.L().Error("error on posting presentation msg", zap.Error(err))
+		p.logger.Error("error on posting presentation msg", zap.Error(err))
 		return
 	}
 
@@ -26,7 +26,7 @@ func (p *Provider) updateMemory() {
 	if !cfg.MemoryDisabled {
 		vm, err := mem.VirtualMemory()
 		if err != nil {
-			zap.L().Error("error on getting memory usage", zap.Error(err))
+			p.logger.Error("error on getting memory usage", zap.Error(err))
 			return
 		}
 		msg.Payloads = append(msg.Payloads, p.getData("total", getValueByUnit(vm.Total, cfg.Unit), metricTY.MetricTypeNone, cfg.Unit, true))
@@ -37,7 +37,7 @@ func (p *Provider) updateMemory() {
 	if !cfg.SwapDisabled {
 		sm, err := mem.SwapMemory()
 		if err != nil {
-			zap.L().Error("error on getting swap memory usage", zap.Error(err))
+			p.logger.Error("error on getting swap memory usage", zap.Error(err))
 			return
 		}
 		msg.Payloads = append(msg.Payloads, p.getData("swap_total", getValueByUnit(sm.Total, cfg.Unit), metricTY.MetricTypeNone, cfg.Unit, true))
@@ -47,7 +47,7 @@ func (p *Provider) updateMemory() {
 
 	err = p.postMsg(&msg)
 	if err != nil {
-		zap.L().Error("error on posting msg", zap.Error(err))
+		p.logger.Error("error on posting msg", zap.Error(err))
 		return
 	}
 }

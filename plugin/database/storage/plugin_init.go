@@ -6,6 +6,6 @@ import (
 )
 
 func init() {
-	Register(memory.PluginMemory, memory.NewClient)
-	Register(mongo.PluginMongoDB, mongo.NewClient)
+	Register(memory.PluginMemory, memory.New)
+	Register(mongo.PluginMongoDB, mongo.New)
 }

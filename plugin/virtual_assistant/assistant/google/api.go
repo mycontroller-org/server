@@ -1,13 +1,16 @@
 package google_assistant
 
 import (
+	"context"
 	"io"
 	"net/http"
 
-	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	"github.com/mycontroller-org/server/v2/pkg/json"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
+	handlerUtils "github.com/mycontroller-org/server/v2/pkg/utils/http_handler"
 	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/google/types"
+	deviceAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"
 	"go.uber.org/zap"
 )
 
@@ -17,14 +20,32 @@ import (
 
 const (
 	PluginGoogleAssistant = "google_assistant"
+	loggerName            = "virtual_assistant_google"
 )
 
 type Assistant struct {
-	cfg *vaTY.Config
+	ctx       context.Context
+	logger    *zap.Logger
+	cfg       *vaTY.Config
+	deviceAPI *deviceAPI.DeviceAPI
 }
 
-func New(cfg *vaTY.Config) (vaTY.Plugin, error) {
-	return &Assistant{cfg: cfg}, nil
+func New(ctx context.Context, cfg *vaTY.Config) (vaTY.Plugin, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	_deviceAPI, err := deviceAPI.New(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &Assistant{
+		ctx:       ctx,
+		logger:    logger.Named(loggerName),
+		cfg:       cfg,
+		deviceAPI: _deviceAPI,
+	}, nil
 }
 
 func (a *Assistant) Name() string {
@@ -44,15 +65,15 @@ func (a *Assistant) Config() *vaTY.Config {
 }
 
 func (a *Assistant) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// zap.L().Info("a request from", zap.Any("RequestURI", r.RequestURI), zap.Any("method", r.Method), zap.Any("headers", r.Header), zap.Any("query", r.URL.RawQuery))
+	// a.logger.Info("a request from", zap.Any("RequestURI", r.RequestURI), zap.Any("method", r.Method), zap.Any("headers", r.Header), zap.Any("query", r.URL.RawQuery))
 	d, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
-		zap.L().Error("error on getting body", zap.Error(err))
+		a.logger.Error("error on getting body", zap.Error(err))
 		http.Error(w, "error on getting body", 500)
 		return
 	}
-	// zap.L().Info("received a request from google assistant", zap.Any("body", string(d)))
+	// a.logger.Info("received a request from google assistant", zap.Any("body", string(d)))
 
 	request := gaTY.Request{}
 	err = json.Unmarshal(d, &request)
@@ -72,7 +93,7 @@ func (a *Assistant) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "error on parsing", 500)
 				return
 			}
-			response = runQueryRequest(queryRequest)
+			response = a.runQueryRequest(queryRequest)
 
 		case gaTY.IntentExecute:
 			executeRequest := gaTY.ExecuteRequest{}
@@ -81,13 +102,13 @@ func (a *Assistant) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "error on parsing", 500)
 				return
 			}
-			response = runExecuteRequest(executeRequest)
+			response = a.runExecuteRequest(executeRequest)
 
 		case gaTY.IntentSync:
-			response = runSyncRequest(request)
+			response = a.runSyncRequest(request)
 
 		case gaTY.IntentDisconnect:
-			runDisconnectRequest(request)
+			a.runDisconnectRequest(request)
 
 		default:
 			// noop
@@ -100,7 +121,7 @@ func (a *Assistant) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		// zap.L().Info("response", zap.Any("responseBytes", string(responseBytes)))
+		// a.logger.Info("response", zap.Any("responseBytes", string(responseBytes)))
 
 		handlerUtils.WriteResponse(w, responseBytes)
 	} else {

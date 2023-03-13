@@ -19,9 +19,11 @@ import (
 var ctx = context.TODO()
 
 const (
-	PluginMongoDB = "mongodb"
+	PluginMongoDB = storageTY.TypeMongoDB
 
 	DefaultCollectionPrefix = "mc_"
+
+	loggerName = "mongodb"
 )
 
 // Config of the database
@@ -37,10 +39,13 @@ type Client struct {
 	Client *mongoDriver.Client
 	Config Config
 	ctx    context.Context
+	logger *zap.Logger
 }
 
-// NewClient mongodb
-func NewClient(config cmap.CustomMap) (storageTY.Plugin, error) {
+// New mongodb
+func New(ctx context.Context, config cmap.CustomMap) (storageTY.Plugin, error) {
+	logger := storageTY.GetStorageLogger()
+
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameYaml, config, &cfg)
 	if err != nil {
@@ -61,7 +66,8 @@ func NewClient(config cmap.CustomMap) (storageTY.Plugin, error) {
 	client := &Client{
 		Config: cfg,
 		Client: mongoClient,
-		ctx:    context.TODO(),
+		ctx:    ctx,
+		logger: logger.Named(loggerName),
 	}
 	err = client.initIndex()
 	return client, err
@@ -93,7 +99,7 @@ func (c *Client) ClearDatabase() error {
 	if err != nil {
 		return err
 	}
-	zap.L().Info("about to drop the collections", zap.Any("collections", collections))
+	c.logger.Info("about to drop the collections", zap.Any("collections", collections))
 
 	for _, collectionName := range collections {
 		err = c.Client.Database(c.Config.Database).Collection(collectionName).Drop(c.ctx)

@@ -1,31 +1,52 @@
 package schedule
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/server/v2/pkg/store"
+	"context"
+	"errors"
+	"fmt"
+
 	types "github.com/mycontroller-org/server/v2/pkg/types"
-	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
-	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
+	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	"go.uber.org/zap"
 )
 
+type ScheduleAPI struct {
+	ctx     context.Context
+	logger  *zap.Logger
+	storage storageTY.Plugin
+	bus     busTY.Plugin
+}
+
+func New(ctx context.Context, logger *zap.Logger, storage storageTY.Plugin, bus busTY.Plugin) *ScheduleAPI {
+	return &ScheduleAPI{
+		ctx:     ctx,
+		logger:  logger.Named("schedule_api"),
+		storage: storage,
+		bus:     bus,
+	}
+}
+
 // List by filter and pagination
-func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
-	result := make([]scheduleTY.Config, 0)
-	return store.STORAGE.Find(types.EntitySchedule, &result, filters, pagination)
+func (sh *ScheduleAPI) List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	result := make([]schedulerTY.Config, 0)
+	return sh.storage.Find(types.EntitySchedule, &result, filters, pagination)
 }
 
 // Get returns a scheduler
-func Get(filters []storageTY.Filter) (*scheduleTY.Config, error) {
-	result := &scheduleTY.Config{}
-	err := store.STORAGE.FindOne(types.EntitySchedule, result, filters)
+func (sh *ScheduleAPI) Get(filters []storageTY.Filter) (*schedulerTY.Config, error) {
+	result := &schedulerTY.Config{}
+	err := sh.storage.FindOne(types.EntitySchedule, result, filters)
 	return result, err
 }
 
 // Save a scheduler details
-func Save(schedule *scheduleTY.Config) error {
+func (sh *ScheduleAPI) Save(schedule *schedulerTY.Config) error {
 	eventType := eventTY.TypeUpdated
 	if schedule.ID == "" {
 		schedule.ID = utils.RandUUID()
@@ -35,51 +56,70 @@ func Save(schedule *scheduleTY.Config) error {
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: schedule.ID},
 	}
-	err := store.STORAGE.Upsert(types.EntitySchedule, schedule, filters)
+	err := sh.storage.Upsert(types.EntitySchedule, schedule, filters)
 	if err != nil {
 		return err
 	}
-	busUtils.PostEvent(mcbus.TopicEventSchedule, eventType, types.EntitySchedule, *schedule)
+	busUtils.PostEvent(sh.logger, sh.bus, topic.TopicEventSchedule, eventType, types.EntitySchedule, *schedule)
 	return nil
 }
 
 // SaveAndReload scheduler
-func SaveAndReload(cfg *scheduleTY.Config) error {
-	cfg.State = &scheduleTY.State{} // reset state
-	err := Save(cfg)
+func (sh *ScheduleAPI) SaveAndReload(cfg *schedulerTY.Config) error {
+	cfg.State = &schedulerTY.State{} // reset state
+	err := sh.Save(cfg)
 	if err != nil {
 		return err
 	}
-	return Reload([]string{cfg.ID})
+	return sh.Reload([]string{cfg.ID})
 }
 
 // GetByID returns a scheduler by id
-func GetByID(id string) (*scheduleTY.Config, error) {
+func (sh *ScheduleAPI) GetByID(id string) (*schedulerTY.Config, error) {
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: id},
 	}
-	out := &scheduleTY.Config{}
-	err := store.STORAGE.FindOne(types.EntitySchedule, out, filters)
+	out := &schedulerTY.Config{}
+	err := sh.storage.FindOne(types.EntitySchedule, out, filters)
 	return out, err
 }
 
 // SetState Updates state data
-func SetState(id string, state *scheduleTY.State) error {
-	scheduler, err := GetByID(id)
+func (sh *ScheduleAPI) SetState(id string, state *schedulerTY.State) error {
+	scheduler, err := sh.GetByID(id)
 	if err != nil {
 		return err
 	}
 	scheduler.State = state
-	return Save(scheduler)
+	return sh.Save(scheduler)
 }
 
 // Delete schedulers
-func Delete(IDs []string) (int64, error) {
+func (sh *ScheduleAPI) Delete(IDs []string) (int64, error) {
 	// disable the schedules
-	err := Disable(IDs)
+	err := sh.Disable(IDs)
 	if err != nil {
 		return 0, err
 	}
 	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
-	return store.STORAGE.Delete(types.EntitySchedule, filters)
+	return sh.storage.Delete(types.EntitySchedule, filters)
+}
+
+func (sh *ScheduleAPI) Import(data interface{}) error {
+	input, ok := data.(schedulerTY.Config)
+	if !ok {
+		return fmt.Errorf("invalid type:%T", data)
+	}
+	if input.ID == "" {
+		return errors.New("'id' can not be empty")
+	}
+
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: input.ID},
+	}
+	return sh.storage.Upsert(types.EntitySchedule, &input, filters)
+}
+
+func (sh *ScheduleAPI) GetEntityInterface() interface{} {
+	return schedulerTY.Config{}
 }

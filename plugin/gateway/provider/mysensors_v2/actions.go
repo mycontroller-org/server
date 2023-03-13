@@ -21,7 +21,7 @@ import (
 
 // This function is like route for globally defined features for the request like reboot, discover, etc.,
 // And this should have addition request implementation defined in "internalValidRequests" map on constants.go file
-func handleActions(gwCfg *gwTY.Config, fn string, msg *msgTY.Message, msMsg *message) error {
+func (p *Provider) handleActions(gwCfg *gwTY.Config, fn string, msg *msgTY.Message, msMsg *message) error {
 	switch fn {
 
 	case gwTY.ActionDiscoverNodes:
@@ -48,7 +48,7 @@ func handleActions(gwCfg *gwTY.Config, fn string, msg *msgTY.Message, msMsg *mes
 		// on a node reboot, bootloader asks the firmware details
 		// we pass erase EEPROM command.
 		// erase EEPROM possible only via bootloader
-		err := updateResetFlag(msg)
+		err := p.updateResetFlag(msg)
 		if err != nil {
 			return err
 		}
@@ -66,17 +66,17 @@ func handleActions(gwCfg *gwTY.Config, fn string, msg *msgTY.Message, msMsg *mes
 
 	case "I_ID_REQUEST":
 		msMsg.Type = actionIDResponse
-		msMsg.Payload = getNodeID(gwCfg.ID)
+		msMsg.Payload = p.getNodeID(gwCfg.ID)
 		if msMsg.Payload == "" {
 			return errors.New("error on getting node ID")
 		}
 
 	case "I_TIME":
-		msMsg.Payload = getTimestamp(gwCfg)
+		msMsg.Payload = p.getTimestamp(gwCfg)
 		msMsg.Type = actionTime
 
 	case nodeTY.ActionFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST":
-		pl, err := executeFirmwareConfigRequest(msg)
+		pl, err := p.executeFirmwareConfigRequest(msg)
 		if err != nil {
 			return err
 		}
@@ -85,7 +85,7 @@ func handleActions(gwCfg *gwTY.Config, fn string, msg *msgTY.Message, msMsg *mes
 		msMsg.Payload = strings.ToUpper(pl)
 
 	case "ST_FIRMWARE_REQUEST":
-		pl, err := executeFirmwareRequest(msg)
+		pl, err := p.executeFirmwareRequest(msg)
 		if err != nil {
 			return err
 		}
@@ -103,14 +103,14 @@ func handleActions(gwCfg *gwTY.Config, fn string, msg *msgTY.Message, msMsg *mes
 // adds zone offset to the actual timestamp
 // user can specify different timezone as a gateway label
 // if non set, take system timezone
-func getTimestamp(gwCfg *gwTY.Config) string {
+func (p *Provider) getTimestamp(gwCfg *gwTY.Config) string {
 	var loc *time.Location
 	// get user defined timezone from gateway label
 	tz := gwCfg.Labels.Get(types.LabelTimezone)
 	if tz != "" {
 		_loc, err := time.LoadLocation(tz)
 		if err != nil {
-			zap.L().Error("Failed to parse used defined timezone, fallback to system time zone", zap.String("userDefinedTimezone", tz))
+			p.logger.Error("Failed to parse used defined timezone, fallback to system time zone", zap.String("userDefinedTimezone", tz))
 			_loc = time.Now().Location()
 		}
 		loc = _loc
@@ -128,12 +128,12 @@ func getTimestamp(gwCfg *gwTY.Config) string {
 }
 
 // get node id
-func getNodeID(gatewayID string) string {
+func (p *Provider) getNodeID(gatewayID string) string {
 	var reservedIDsString []string
 	updateNodeIDs := func(item interface{}) bool {
 		ids, ok := item.(*[]string)
 		if !ok {
-			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
+			p.logger.Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
 			return false
 		}
 		reservedIDsString = *ids
@@ -141,14 +141,14 @@ func getNodeID(gatewayID string) string {
 	}
 	filter := map[string]interface{}{types.KeyGatewayID: gatewayID}
 	out := make([]string, 0)
-	err := query.QueryResource("", rsTY.TypeNode, rsTY.CommandGetIds, filter, updateNodeIDs, &out, queryTimeout)
+	err := query.QueryResource(p.logger, p.bus, "", rsTY.TypeNode, rsTY.CommandGetIds, filter, updateNodeIDs, &out, queryTimeout)
 	if err != nil {
-		zap.L().Error("error on finding list of nodes", zap.String("gatewayId", gatewayID), zap.Error(err))
+		p.logger.Error("error on finding list of nodes", zap.String("gatewayId", gatewayID), zap.Error(err))
 		return ""
 	}
 
 	if reservedIDsString == nil {
-		zap.L().Warn("there is no reserved ids found")
+		p.logger.Warn("there is no reserved ids found")
 		return ""
 	}
 
@@ -174,15 +174,15 @@ func getNodeID(gatewayID string) string {
 	}
 
 	if electedID == 255 {
-		zap.L().Error("No space left on this network. Reached maximum node counts.", zap.String("gatewayId", gatewayID))
+		p.logger.Error("No space left on this network. Reached maximum node counts.", zap.String("gatewayId", gatewayID))
 		return ""
 	}
 	return strconv.Itoa(electedID)
 }
 
-func updateResetFlag(msg *msgTY.Message) error {
+func (p *Provider) updateResetFlag(msg *msgTY.Message) error {
 	// get the node details
-	node, err := getNode(msg.GatewayID, msg.NodeID)
+	node, err := p.getNode(msg.GatewayID, msg.NodeID)
 	if err != nil {
 		return err
 	}
@@ -191,7 +191,7 @@ func updateResetFlag(msg *msgTY.Message) error {
 	labels = labels.Init()
 	labels.Set(LabelEraseEEPROM, "true")
 
-	busUtils.PostToResourceService(node.ID, labels, rsTY.TypeNode, rsTY.CommandSetLabel, "")
+	busUtils.PostToResourceService(p.logger, p.bus, node.ID, labels, rsTY.TypeNode, rsTY.CommandSetLabel, "")
 
 	return nil
 }

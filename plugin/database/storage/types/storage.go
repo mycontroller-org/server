@@ -1,5 +1,12 @@
 package storage
 
+import (
+	"context"
+	"errors"
+
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+)
+
 // Plugin interface storage
 type Plugin interface {
 	Name() string
@@ -14,7 +21,25 @@ type Plugin interface {
 	Pause() error
 	Resume() error
 	ClearDatabase() error
-	DoStartupImport() (bool, string, string) // returns files location and files format
+	// if your database needs start import, returns "true", "files-directory" and "file-format"
+	// example: true, "/tmp/data", "yaml"
+	// it is required for in-memory database at startup
+	DoStartupImport() (bool, string, string)
+}
+
+func FromContext(ctx context.Context) (Plugin, error) {
+	bus, ok := ctx.Value(contextTY.STORAGE_DB).(Plugin)
+	if !ok {
+		return nil, errors.New("invalid storage instance received in context")
+	}
+	if bus == nil {
+		return nil, errors.New("storage instance not provided in context")
+	}
+	return bus, nil
+}
+
+func WithContext(ctx context.Context, bus Plugin) context.Context {
+	return context.WithValue(ctx, contextTY.STORAGE_DB, bus)
 }
 
 // Storage database types

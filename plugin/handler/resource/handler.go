@@ -1,17 +1,20 @@
 package resource
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/types"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
@@ -20,18 +23,38 @@ const (
 	PluginResourceHandler = "resource"
 
 	schedulePrefix = "resource_handler"
+	loggerName     = "handler_resource"
 )
 
 // ResourceClient struct
 type ResourceClient struct {
 	HandlerCfg *handlerTY.Config
 	store      *store
+	logger     *zap.Logger
+	scheduler  schedulerTY.CoreScheduler
+	bus        busTY.Plugin
 }
 
-func NewResourcePlugin(config *handlerTY.Config) (handlerTY.Plugin, error) {
+func NewResourcePlugin(ctx context.Context, config *handlerTY.Config) (handlerTY.Plugin, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	scheduler, err := schedulerTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	bus, err := busTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	return &ResourceClient{
 		HandlerCfg: config,
 		store:      &store{mutex: sync.RWMutex{}, handlerID: config.ID, jobs: map[string]JobsConfig{}},
+		logger:     logger.Named(loggerName),
+		scheduler:  scheduler,
+		bus:        bus,
 	}, nil
 }
 
@@ -44,7 +67,7 @@ func (c *ResourceClient) Start() error {
 	// load handler data from disk
 	err := c.store.loadFromDisk(c)
 	if err != nil {
-		zap.L().Error("failed to load handler data", zap.String("diskLocation", c.store.getName()), zap.Error(err))
+		c.logger.Error("failed to load handler data", zap.String("diskLocation", c.store.getName()), zap.Error(err))
 		return nil
 	}
 
@@ -58,7 +81,7 @@ func (c *ResourceClient) Close() error {
 	// save jobs to disk location
 	err := c.store.saveToDisk()
 	if err != nil {
-		zap.L().Error("failed to save handler data", zap.String("diskLocation", c.store.getName()), zap.Error(err))
+		c.logger.Error("failed to save handler data", zap.String("diskLocation", c.store.getName()), zap.Error(err))
 	}
 	return nil
 }
@@ -95,7 +118,7 @@ func (c *ResourceClient) Post(data map[string]interface{}) error {
 		rsData := handlerTY.ResourceData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &rsData)
 		if err != nil {
-			zap.L().Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
+			c.logger.Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
 			continue
 		}
 
@@ -111,8 +134,8 @@ func (c *ResourceClient) Post(data map[string]interface{}) error {
 			}
 		}
 
-		zap.L().Debug("about to perform an action", zap.String("rawData", stringValue), zap.Any("finalData", rsData))
-		busUtils.PostToResourceService("resource_fake_id", rsData, rsTY.TypeResourceAction, rsTY.CommandSet, "")
+		c.logger.Debug("about to perform an action", zap.String("rawData", stringValue), zap.Any("finalData", rsData))
+		busUtils.PostToResourceService(c.logger, c.bus, "resource_fake_id", rsData, rsTY.TypeResourceAction, rsTY.CommandSet, "")
 	}
 	return nil
 }
@@ -125,8 +148,8 @@ func (c *ResourceClient) getScheduleTriggerFunc(name string, rsData handlerTY.Re
 		c.unschedule(name)
 
 		// call the resource action
-		zap.L().Debug("scheduler triggered. about to perform an action", zap.String("name", name), zap.Any("rsData", rsData))
-		busUtils.PostToResourceService("resource_fake_id", rsData, rsTY.TypeResourceAction, rsTY.CommandSet, "")
+		c.logger.Debug("scheduler triggered. about to perform an action", zap.String("name", name), zap.Any("rsData", rsData))
+		busUtils.PostToResourceService(c.logger, c.bus, "resource_fake_id", rsData, rsTY.TypeResourceAction, rsTY.CommandSet, "")
 	}
 }
 
@@ -135,21 +158,21 @@ func (c *ResourceClient) schedule(name string, rsData handlerTY.ResourceData) {
 
 	schedulerID := c.getScheduleID(name)
 	cronSpec := fmt.Sprintf("@every %s", rsData.PreDelay)
-	err := coreScheduler.SVC.AddFunc(schedulerID, cronSpec, c.getScheduleTriggerFunc(name, rsData))
+	err := c.scheduler.AddFunc(schedulerID, cronSpec, c.getScheduleTriggerFunc(name, rsData))
 	if err != nil {
-		zap.L().Error("error on adding schedule", zap.Error(err))
+		c.logger.Error("error on adding schedule", zap.Error(err))
 	}
-	zap.L().Debug("added a schedule", zap.String("name", name), zap.String("schedulerID", schedulerID), zap.Any("resourceData", rsData))
+	c.logger.Debug("added a schedule", zap.String("name", name), zap.String("schedulerID", schedulerID), zap.Any("resourceData", rsData))
 }
 
 func (c *ResourceClient) unschedule(name string) {
 	schedulerID := c.getScheduleID(name)
-	coreScheduler.SVC.RemoveFunc(schedulerID)
-	zap.L().Debug("removed a schedule", zap.String("name", name), zap.String("schedulerID", schedulerID))
+	c.scheduler.RemoveFunc(schedulerID)
+	c.logger.Debug("removed a schedule", zap.String("name", name), zap.String("schedulerID", schedulerID))
 }
 
 func (c *ResourceClient) unloadAll() {
-	coreScheduler.SVC.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, c.HandlerCfg.ID))
+	c.scheduler.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, c.HandlerCfg.ID))
 }
 
 func (c *ResourceClient) getScheduleID(name string) string {

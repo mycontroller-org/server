@@ -13,7 +13,7 @@ import (
 func (p *Provider) updateTemperature() {
 	temperatures, err := host.SensorsTemperatures()
 	if err != nil && !strings.Contains(err.Error(), "Number of warnings") {
-		zap.L().Error("error on getting usage", zap.Error(err))
+		p.logger.Error("error on getting usage", zap.Error(err))
 		return
 	}
 
@@ -22,7 +22,7 @@ func (p *Provider) updateTemperature() {
 
 	err = p.postMsg(&presentMsg)
 	if err != nil {
-		zap.L().Error("error on posting msg", zap.Error(err))
+		p.logger.Error("error on posting msg", zap.Error(err))
 		return
 	}
 
@@ -61,7 +61,7 @@ func (p *Provider) updateTemperature() {
 
 	err = p.postMsg(&msg)
 	if err != nil {
-		zap.L().Error("error on posting msg", zap.Error(err))
+		p.logger.Error("error on posting msg", zap.Error(err))
 		return
 	}
 }

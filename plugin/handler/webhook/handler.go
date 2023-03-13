@@ -1,12 +1,14 @@
 package webhook
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
@@ -17,7 +19,8 @@ import (
 const (
 	PluginWebhook = "webhook"
 
-	timeout = time.Second * 10
+	timeout    = time.Second * 10
+	loggerName = "handler_webhook"
 
 	// data format
 	// DataTypeJSON = "json"
@@ -70,19 +73,28 @@ type WebhookClient struct {
 	HandlerCfg *handlerTY.Config
 	Config     *WebhookConfig
 	httpClient *httpclient.Client
+	logger     *zap.Logger
 }
 
-func NewWebhookPlugin(handlerCfg *handlerTY.Config) (handlerTY.Plugin, error) {
-	config := &WebhookConfig{}
-	err := utils.MapToStruct(utils.TagNameNone, handlerCfg.Spec, config)
+func New(ctx context.Context, handlerCfg *handlerTY.Config) (handlerTY.Plugin, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	zap.L().Debug("webhook client", zap.String("ID", handlerCfg.ID), zap.Any("config", config))
+
+	config := &WebhookConfig{}
+	err = utils.MapToStruct(utils.TagNameNone, handlerCfg.Spec, config)
+	if err != nil {
+		return nil, err
+	}
+	namedLogger := logger.Named(loggerName)
+
+	namedLogger.Debug("webhook client", zap.String("ID", handlerCfg.ID), zap.Any("config", config))
 
 	client := &WebhookClient{
 		HandlerCfg: handlerCfg,
 		Config:     config,
+		logger:     namedLogger,
 	}
 	return client, nil
 }
@@ -123,7 +135,7 @@ func (c *WebhookClient) Post(data map[string]interface{}) error {
 	config := c.Config.Clone()
 
 	for name, value := range data {
-		zap.L().Debug("data", zap.Any("name", name), zap.Any("value", value))
+		c.logger.Debug("data", zap.Any("name", name), zap.Any("value", value))
 		stringValue, ok := value.(string)
 		if !ok {
 			continue
@@ -141,7 +153,7 @@ func (c *WebhookClient) Post(data map[string]interface{}) error {
 		webhookData := handlerTY.WebhookData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &webhookData)
 		if err != nil {
-			zap.L().Error("error on converting webhook data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
+			c.logger.Error("error on converting webhook data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
 			continue
 		}
 
@@ -188,7 +200,7 @@ func (c *WebhookClient) Post(data map[string]interface{}) error {
 			responseCode = respose.StatusCode
 		}
 		if err != nil {
-			zap.L().Error("error on webhook handler call", zap.Int("responseStatusCode", responseCode), zap.Error(err))
+			c.logger.Error("error on webhook handler call", zap.Int("responseStatusCode", responseCode), zap.Error(err))
 			return err
 		}
 	}

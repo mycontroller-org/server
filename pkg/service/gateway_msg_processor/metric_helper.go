@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/store"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
@@ -14,11 +13,11 @@ import (
 	"go.uber.org/zap"
 )
 
-func writeFieldMetric(field *fieldTY.Field) error {
+func (svc *MessageProcessor) writeFieldMetric(field *fieldTY.Field) error {
 	fields := make(map[string]interface{})
 	// update fields
 	if field.MetricType == metricPluginTY.MetricTypeGEO {
-		_f, err := geoData(field.Current.Value)
+		_f, err := svc.geoData(field.Current.Value)
 		if err != nil {
 			return err
 		}
@@ -43,10 +42,10 @@ func writeFieldMetric(field *fieldTY.Field) error {
 		Fields:     fields,
 	}
 
-	return writeMetric(metricData)
+	return svc.writeMetric(metricData)
 }
 
-func geoData(pl interface{}) (map[string]interface{}, error) {
+func (svc *MessageProcessor) geoData(pl interface{}) (map[string]interface{}, error) {
 	// payload should be in this format
 	// latitude;longitude;altitude. E.g. "55.722526;13.017972;18"
 	d := make(map[string]interface{})
@@ -77,7 +76,7 @@ func geoData(pl interface{}) (map[string]interface{}, error) {
 	return d, nil
 }
 
-func writeNodeMetric(node *nodeTY.Node, suppliedMetricType, fieldName string, value interface{}) error {
+func (svc *MessageProcessor) writeNodeMetric(node *nodeTY.Node, suppliedMetricType, fieldName string, value interface{}) error {
 	fields := make(map[string]interface{})
 	// update fields
 	fields[metricPluginTY.FieldValue] = value
@@ -98,16 +97,16 @@ func writeNodeMetric(node *nodeTY.Node, suppliedMetricType, fieldName string, va
 		Fields:     fields,
 	}
 
-	return writeMetric(metricData)
+	return svc.writeMetric(metricData)
 }
 
-func writeMetric(metricData *metricPluginTY.InputData) error {
+func (svc *MessageProcessor) writeMetric(metricData *metricPluginTY.InputData) error {
 	startTime := time.Now()
-	err := store.METRIC.Write(metricData)
+	err := svc.metric.Write(metricData)
 	if err != nil {
-		zap.L().Error("failed to write into metrics database", zap.Error(err), zap.Any("metricData", metricData))
+		svc.logger.Error("failed to write into metrics database", zap.Error(err), zap.Any("metricData", metricData))
 		return err
 	}
-	zap.L().Debug("inserted in to metric db", zap.String("timeTaken", time.Since(startTime).String()))
+	svc.logger.Debug("inserted in to metric db", zap.String("timeTaken", time.Since(startTime).String()))
 	return nil
 }

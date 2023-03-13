@@ -8,6 +8,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
@@ -22,11 +23,11 @@ const (
 )
 
 // New returns new instance of generic http protocol
-func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.RawMessage) error) (*HttpProtocol, error) {
+func New(logger *zap.Logger, gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.RawMessage) error, scheduler schedulerTY.CoreScheduler) (*HttpProtocol, error) {
 	hpCfg := &HttpProtocolConf{}
 	err := json.ToStruct(protocol, hpCfg)
 	if err != nil {
-		zap.L().Error("error on converting to http protocol")
+		logger.Error("error on converting to http protocol")
 		return nil, err
 	}
 
@@ -34,6 +35,8 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 		GatewayConfig:     gwCfg,
 		Config:            hpCfg,
 		rawMessageHandler: rxMsgFunc,
+		logger:            logger,
+		scheduler:         scheduler,
 	}
 
 	if len(hpCfg.Endpoints) == 0 {
@@ -43,7 +46,7 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 		cfg := hpCfg.Endpoints[key]
 		err = hp.schedule(key, &cfg)
 		if err != nil {
-			zap.L().Error("error on schedule", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
+			hp.logger.Error("error on schedule", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
 		}
 	}
 
@@ -70,7 +73,7 @@ func (hp *HttpProtocol) Post(msg *msgTY.Message) error {
 
 	endpoint, err := toHttpNode(cfgRaw)
 	if err != nil {
-		zap.L().Error("error on converting to http endpoint config", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
+		hp.logger.Error("error on converting to http endpoint config", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
 		return err
 	}
 
@@ -83,7 +86,7 @@ func (hp *HttpProtocol) Post(msg *msgTY.Message) error {
 	if len(endpoint.PreRun) > 0 {
 		preRunRes, err := hp.executeSupportRuns(client, PreRun, nil, endpoint.PreRun, endpoint.IncludeGlobalConfig)
 		if err != nil {
-			zap.L().Error("error on node endpoint pre run execution", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", endpoint.URL), zap.Error(err))
+			hp.logger.Error("error on node endpoint pre run execution", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", endpoint.URL), zap.Error(err))
 			return err
 		}
 		preRunResponse = preRunRes
@@ -94,7 +97,7 @@ func (hp *HttpProtocol) Post(msg *msgTY.Message) error {
 		if len(endpoint.PostRun) > 0 {
 			_, err := hp.executeSupportRuns(client, PostRun, preRunResponse, endpoint.PostRun, endpoint.IncludeGlobalConfig)
 			if err != nil {
-				zap.L().Error("error on node endpoint post run execution", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", endpoint.URL), zap.Error(err))
+				hp.logger.Error("error on node endpoint post run execution", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", endpoint.URL), zap.Error(err))
 			}
 		}
 	}()
@@ -107,9 +110,9 @@ func (hp *HttpProtocol) Post(msg *msgTY.Message) error {
 			ScriptKeyPreRunResponse: preRunResponse,
 		}
 
-		responseMap, err := executeScript(endpoint.Script, variables)
+		responseMap, err := hp.executeScript(endpoint.Script, variables)
 		if err != nil {
-			zap.L().Error("error on executing node endpoint script", zap.String("address", endpoint.URL), zap.Error(err))
+			hp.logger.Error("error on executing node endpoint script", zap.String("address", endpoint.URL), zap.Error(err))
 			return err
 		}
 
@@ -124,7 +127,7 @@ func (hp *HttpProtocol) Post(msg *msgTY.Message) error {
 			}
 			err = hp.rawMessageHandler(rawMessage)
 			if err != nil {
-				zap.L().Error("error on posting raw messages into queue", zap.String("gatewayId", hp.GatewayConfig.ID), zap.Any("request", msg))
+				hp.logger.Error("error on posting raw messages into queue", zap.String("gatewayId", hp.GatewayConfig.ID), zap.Any("request", msg))
 				return err
 			}
 		}
@@ -141,7 +144,7 @@ func (hp *HttpProtocol) Post(msg *msgTY.Message) error {
 	bodyString := hp.getBodyString(endpoint.Body, endpoint.BodyLanguage, endpoint.URL)
 	_, err = client.Execute(endpoint.URL, endpoint.Method, endpoint.Headers, endpoint.QueryParameters, bodyString, endpoint.ResponseCode)
 	if err != nil {
-		zap.L().Error("error on calling node endpoint", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
+		hp.logger.Error("error on calling node endpoint", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
 		return err
 	}
 
@@ -161,7 +164,7 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig) (*msgTY.RawMessage, 
 	if len(cfg.PreRun) > 0 {
 		preRunRes, err := hp.executeSupportRuns(client, PreRun, nil, cfg.PreRun, cfg.IncludeGlobalConfig)
 		if err != nil {
-			zap.L().Error("error on pre run execution", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
+			hp.logger.Error("error on pre run execution", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
 			return nil, err
 		}
 		preRunResponse = preRunRes
@@ -179,7 +182,7 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig) (*msgTY.RawMessage, 
 	if len(cfg.PostRun) > 0 {
 		_, err := hp.executeSupportRuns(client, PostRun, preRunResponse, cfg.PostRun, cfg.IncludeGlobalConfig)
 		if err != nil {
-			zap.L().Error("error on post run execution", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
+			hp.logger.Error("error on post run execution", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", cfg.URL), zap.Error(err))
 		}
 	}
 
@@ -198,9 +201,9 @@ func (hp *HttpProtocol) executeHttpRequest(cfg *HttpConfig) (*msgTY.RawMessage, 
 			ScriptKeyPreRunResponse: preRunResponse,
 		}
 
-		responseMap, err := executeScript(cfg.Script, variables)
+		responseMap, err := hp.executeScript(cfg.Script, variables)
 		if err != nil {
-			zap.L().Error("error on executing script", zap.String("address", cfg.URL), zap.Error(err))
+			hp.logger.Error("error on executing script", zap.String("address", cfg.URL), zap.Error(err))
 			return nil, err
 		}
 		messages := utils.GetMapValue(responseMap, ScriptKeyDataOut, nil)
@@ -242,9 +245,9 @@ func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runType st
 				variables[ScriptKeyPostRunResponse] = runResponses
 			}
 
-			responseMap, err := executeScript(cfg.Script, variables)
+			responseMap, err := hp.executeScript(cfg.Script, variables)
 			if err != nil {
-				zap.L().Error("error on executing a support run script", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("name", name), zap.String("url", cfg.URL), zap.Error(err))
+				hp.logger.Error("error on executing a support run script", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("name", name), zap.String("url", cfg.URL), zap.Error(err))
 				return nil, err
 			}
 			bodyString = convertor.ToString(utils.GetMapValue(responseMap, ScriptKeyDataOut, ""))
@@ -252,7 +255,7 @@ func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runType st
 
 		response, err := client.Execute(cfg.URL, cfg.Method, headers, queryParameters, bodyString, cfg.ResponseCode)
 		if err != nil {
-			zap.L().Error("error on executing a support run", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("name", name), zap.String("url", cfg.URL), zap.Error(err))
+			hp.logger.Error("error on executing a support run", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("name", name), zap.String("url", cfg.URL), zap.Error(err))
 			return nil, err
 		}
 		runResponses[name] = response
@@ -285,7 +288,7 @@ func (hp *HttpProtocol) getBodyString(body interface{}, bodyLanguage, url string
 	case BodyLanguageJSON:
 		bodyString, err := json.MarshalToString(body)
 		if err != nil {
-			zap.L().Debug("error converting the body to json string, fall back to string conversion", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", url), zap.Error(err))
+			hp.logger.Debug("error converting the body to json string, fall back to string conversion", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", url), zap.Error(err))
 			bodyString = convertor.ToString(body)
 		}
 		return bodyString
@@ -293,7 +296,7 @@ func (hp *HttpProtocol) getBodyString(body interface{}, bodyLanguage, url string
 	case BodyLanguageYAML:
 		bodyBytes, err := yaml.Marshal(body)
 		if err != nil {
-			zap.L().Debug("error converting the body to yaml string, fall back to string conversion", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", url), zap.Error(err))
+			hp.logger.Debug("error converting the body to yaml string, fall back to string conversion", zap.String("gatewayId", hp.GatewayConfig.ID), zap.String("url", url), zap.Error(err))
 			return convertor.ToString(body)
 		}
 		return string(bodyBytes)
@@ -306,15 +309,17 @@ func (hp *HttpProtocol) getBodyString(body interface{}, bodyLanguage, url string
 }
 
 // execute script
-func executeScript(script string, variables map[string]interface{}) (map[string]interface{}, error) {
-	scriptResponse, err := jsUtils.Execute(script, variables)
+func (hp *HttpProtocol) executeScript(script string, variables map[string]interface{}) (map[string]interface{}, error) {
+	// runs without timeout
+	// TODO: include timeout
+	scriptResponse, err := jsUtils.Execute(hp.logger, script, variables, nil)
 	if err != nil {
-		zap.L().Error("error on executing script", zap.Error(err))
+		hp.logger.Error("error on executing script", zap.Error(err))
 		return nil, err
 	}
 	mapResponse, err := jsUtils.ToMap(scriptResponse)
 	if err != nil {
-		zap.L().Error("error on converting to map", zap.Error(err))
+		hp.logger.Error("error on converting to map", zap.Error(err))
 		return nil, err
 	}
 	return mapResponse, nil

@@ -53,10 +53,9 @@ type BackupLocationDisk struct {
 	TargetDirectory string
 }
 
-// holds save api details
-type SaveAPIHolder struct {
-	EntityType interface{}
-	API        func(data interface{}) error
+// used to import and export data to database via existing api
+type Backup interface {
+	Import(data interface{}) error
+	List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error)
+	GetEntityInterface() interface{}
 }
-
-type ListFunc func(f []storageTY.Filter, p *storageTY.Pagination) (*storageTY.Result, error)

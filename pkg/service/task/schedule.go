@@ -5,7 +5,6 @@ import (
 
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
 	"go.uber.org/zap"
 )
 
@@ -16,16 +15,16 @@ const (
 	scheduleTypeReEnable       = "re_enable"
 )
 
-func schedule(scheduleType, interval string, task *taskTY.Config) string {
+func (svc *TaskService) schedule(scheduleType, interval string, task *taskTY.Config) string {
 	switch scheduleType {
 	case scheduleTypePolling:
-		return scheduleTask(task, scheduleType, interval, pollingTaskTriggerFunc(task))
+		return svc.scheduleTask(task, scheduleType, interval, svc.pollingTaskTriggerFunc(task))
 
 	case scheduleTypeActiveDuration:
-		return scheduleTask(task, scheduleType, interval, taskActiveDurationFunc(task))
+		return svc.scheduleTask(task, scheduleType, interval, svc.taskActiveDurationFunc(task))
 
 	case scheduleTypeReEnable:
-		return scheduleTask(task, scheduleType, interval, taskReEnableFunc(task))
+		return svc.scheduleTask(task, scheduleType, interval, svc.taskReEnableFunc(task))
 
 	default:
 		// noop
@@ -33,67 +32,67 @@ func schedule(scheduleType, interval string, task *taskTY.Config) string {
 	}
 }
 
-func unschedule(scheduleID string) {
-	scheduleUtils.Unschedule(scheduleID)
-	zap.L().Debug("removed a task from scheduler", zap.String("scheduleId", scheduleID))
+func (svc *TaskService) unschedule(scheduleID string) {
+	svc.scheduler.RemoveFunc(scheduleID)
+	svc.logger.Debug("removed a task from scheduler", zap.String("scheduleId", scheduleID))
 }
 
-func unscheduleAll(taskID string) {
+func (svc *TaskService) unscheduleAll(taskID string) {
 	if taskID == "" {
-		scheduleUtils.UnscheduleAll(schedulePrefix)
+		svc.scheduler.RemoveWithPrefix(schedulePrefix)
 	} else {
-		scheduleUtils.UnscheduleAll(schedulePrefix, taskID)
+		svc.scheduler.RemoveWithPrefix(svc.getScheduleId(schedulePrefix, taskID))
 	}
 }
 
-func scheduleTask(task *taskTY.Config, scheduleType string, interval string, callBackFn func()) string {
+func (svc *TaskService) scheduleTask(task *taskTY.Config, scheduleType string, interval string, callBackFn func()) string {
 	if task.State == nil {
 		task.State = &taskTY.State{}
 	}
 
-	scheduleID := scheduleUtils.GetScheduleID(schedulePrefix, task.ID, scheduleType)
+	scheduleID := svc.getScheduleId(schedulePrefix, task.ID, scheduleType)
 	cronSpec := fmt.Sprintf("@every %s", interval)
-	err := scheduleUtils.Schedule(scheduleID, cronSpec, callBackFn)
+	err := svc.scheduler.AddFunc(scheduleID, cronSpec, callBackFn)
 	if err != nil {
-		zap.L().Error("error on adding a task into scheduler", zap.String("scheduleType", scheduleType), zap.String("id", task.ID), zap.String("executionInterval", task.ExecutionInterval), zap.Error(err))
+		svc.logger.Error("error on adding a task into scheduler", zap.String("scheduleType", scheduleType), zap.String("id", task.ID), zap.String("executionInterval", task.ExecutionInterval), zap.Error(err))
 		task.State.LastStatus = false
 		task.State.Message = fmt.Sprintf("Error on adding into scheduler: %s", err.Error())
-		busUtils.SetTaskState(task.ID, *task.State)
+		busUtils.SetTaskState(svc.logger, svc.bus, task.ID, *task.State)
 		return ""
 	}
-	zap.L().Debug("added a task into schedule", zap.String("taskId", task.ID), zap.String("scheduleType", scheduleType), zap.String("scheduleId", scheduleID), zap.String("id", task.ID), zap.Any("cronSpec", cronSpec))
+	svc.logger.Debug("added a task into schedule", zap.String("taskId", task.ID), zap.String("scheduleType", scheduleType), zap.String("scheduleId", scheduleID), zap.String("id", task.ID), zap.Any("cronSpec", cronSpec))
 	task.State.Message = fmt.Sprintf("Added into scheduler. cron spec:[%s], scheduleType:%s", cronSpec, scheduleType)
-	busUtils.SetTaskState(task.ID, *task.State)
+	busUtils.SetTaskState(svc.logger, svc.bus, task.ID, *task.State)
 	return scheduleID
 }
 
 // verify task active duration func
-func taskActiveDurationFunc(task *taskTY.Config) func() {
-	scheduleID := scheduleUtils.GetScheduleID(schedulePrefix, task.ID, scheduleTypeActiveDuration)
+func (svc *TaskService) taskActiveDurationFunc(task *taskTY.Config) func() {
+	scheduleID := svc.getScheduleId(schedulePrefix, task.ID, scheduleTypeActiveDuration)
 	taskID := task.ID
 	return func() {
 		// remove the schedule
-		unschedule(scheduleID)
+		svc.unschedule(scheduleID)
 		// execute active task
-		zap.L().Debug("verifying a active duration dampening task", zap.String("id", taskID))
-		executeTask(task, nil)
+		svc.logger.Debug("verifying a active duration dampening task", zap.String("id", taskID))
+		svc.executeTask(task, nil)
 	}
 }
 
-func pollingTaskTriggerFunc(task *taskTY.Config) func() {
+func (svc *TaskService) pollingTaskTriggerFunc(task *taskTY.Config) func() {
 	return func() {
-		zap.L().Debug("executing a task by polling", zap.String("id", task.ID))
-		executeTask(task, nil)
+		svc.logger.Debug("executing a task by polling", zap.String("id", task.ID))
+		svc.executeTask(task, nil)
 	}
 }
 
-func taskReEnableFunc(task *taskTY.Config) func() {
-	scheduleID := scheduleUtils.GetScheduleID(schedulePrefix, task.ID, scheduleTypeReEnable)
+func (svc *TaskService) taskReEnableFunc(task *taskTY.Config) func() {
+	scheduleID := svc.getScheduleId(schedulePrefix, task.ID, scheduleTypeReEnable)
 	taskID := task.ID
 	return func() {
 		// remove the schedule
-		unschedule(scheduleID)
-		zap.L().Debug("re-enabling a task", zap.String("id", taskID))
-		busUtils.EnableTask(taskID)
+		svc.unschedule(scheduleID)
+		svc.logger.Debug("re-enabling a task", zap.String("id", taskID))
+		busUtils.EnableTask(svc.logger, svc.bus, taskID)
 	}
 }

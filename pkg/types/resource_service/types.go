@@ -42,6 +42,12 @@ const (
 	CommandClearSleepingQueue = "clearSleepingQueue"
 )
 
+// sub commands, will be used in the data field
+const (
+	SubCommandJobNodeStatusUpdater  = "job_node_status_updater"
+	SubCommandJobSunriseTimeUpdater = "job_sunrise_time_updater"
+)
+
 // ServiceEvent details
 type ServiceEvent struct {
 	Type         string               `json:"type" yaml:"type"`

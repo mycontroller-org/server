@@ -8,21 +8,20 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/alexa/types"
-	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"
 	"go.uber.org/zap"
 )
 
-func reportState(directive alexaTY.DirectiveOrEvent) (interface{}, error) {
+func (a *Assistant) reportState(directive alexaTY.DirectiveOrEvent) (interface{}, error) {
 	endpointID := directive.Endpoint.EndpointID
 	// get devices
 	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorEqual, Value: endpointID}}
-	vDevices, err := botAPI.ListDevices(filters, 1, 0) // TODO: add an api to get device
+	vDevices, err := a.deviceAPI.ListDevices(filters, 1, 0) // TODO: add an api to get device
 	if err != nil {
 		return nil, err
 	}
 
 	// update resource state
-	err = botAPI.UpdateDeviceState(vDevices)
+	err = a.deviceAPI.UpdateDeviceState(vDevices)
 	if err != nil {
 		return nil, err
 	}
@@ -39,13 +38,13 @@ func reportState(directive alexaTY.DirectiveOrEvent) (interface{}, error) {
 		// get interface
 		aInterface, found := alexaTY.TraitControllerMap[trait]
 		if !found {
-			zap.L().Warn("trait not implemented", zap.String("deviceId", vDevice.ID), zap.String("deviceName", vDevice.Name), zap.String("trait", trait))
+			a.logger.Warn("trait not implemented", zap.String("deviceId", vDevice.ID), zap.String("deviceName", vDevice.Name), zap.String("trait", trait))
 			continue
 		}
 		// get property name
 		propertyName, found := alexaTY.InterfacePropertyNameMap[aInterface]
 		if !found {
-			zap.L().Warn("interface name not implemented", zap.String("deviceId", vDevice.ID), zap.String("deviceName", vDevice.Name), zap.String("trait", trait), zap.String("interface", aInterface))
+			a.logger.Warn("interface name not implemented", zap.String("deviceId", vDevice.ID), zap.String("deviceName", vDevice.Name), zap.String("trait", trait), zap.String("interface", aInterface))
 			continue
 		}
 

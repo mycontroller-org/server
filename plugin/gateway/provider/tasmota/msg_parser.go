@@ -76,7 +76,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 	}
 	tSlice := strings.Split(topic, "/")
 	if len(tSlice) < 3 {
-		zap.L().Error("Invalid message format", zap.Any("rawMessage", rawMsg))
+		p.logger.Error("Invalid message format", zap.Any("rawMessage", rawMsg))
 		return nil, nil
 	}
 	topicSlice := tSlice[len(tSlice)-3:]
@@ -133,7 +133,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 		data := make(map[string]interface{})
 		rawMsgBytes, ok := rawMsg.Data.([]byte)
 		if !ok {
-			zap.L().Error("error on converting to bytes", zap.Any("rawMessage", rawMsg))
+			p.logger.Error("error on converting to bytes", zap.Any("rawMessage", rawMsg))
 			return nil, fmt.Errorf("error on converting to bytes. received: %T", rawMsg.Data)
 		}
 		err := utils.ToStruct(rawMsgBytes, &data)
@@ -239,7 +239,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 			data := make(map[string]interface{})
 			rawMsgBytes, ok := rawMsg.Data.([]byte)
 			if !ok {
-				zap.L().Error("error on converting to bytes", zap.Any("rawMessage", rawMsg))
+				p.logger.Error("error on converting to bytes", zap.Any("rawMessage", rawMsg))
 				return nil, fmt.Errorf("error on converting to bytes. received: %T", rawMsg.Data)
 			}
 			err := utils.ToStruct(rawMsgBytes, &data)
@@ -271,7 +271,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 				rawData := make(map[string]map[string]interface{})
 				rawMsgBytes, ok := rawMsg.Data.([]byte)
 				if !ok {
-					zap.L().Error("error on converting to bytes", zap.Any("rawMessage", rawMsg))
+					p.logger.Error("error on converting to bytes", zap.Any("rawMessage", rawMsg))
 					return nil, fmt.Errorf("error on converting to bytes. received: %T", rawMsg.Data)
 				}
 				err := utils.ToStruct(rawMsgBytes, &rawData)
@@ -441,7 +441,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 
 				default:
 					// print and exit
-					zap.L().Debug("no action don for this message", zap.String("header", header), zap.Any("data", data))
+					p.logger.Debug("no action don for this message", zap.String("header", header), zap.Any("data", data))
 				}
 			}
 
@@ -455,7 +455,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 	}
 
 	defer func() {
-		zap.L().Debug("update status", zap.Any("messages", messages))
+		p.logger.Debug("update status", zap.Any("messages", messages))
 	}()
 
 	return messages, nil
@@ -534,7 +534,7 @@ func (p *Provider) getNodeMessage(nodeID string, data map[string]interface{}) *m
 		msg.Payloads = payloads
 		return msg
 	} else {
-		zap.L().Info("message processed without payload", zap.String("nodeId", nodeID), zap.Any("data", data))
+		p.logger.Info("message processed without payload", zap.String("nodeId", nodeID), zap.Any("data", data))
 	}
 	return nil
 }

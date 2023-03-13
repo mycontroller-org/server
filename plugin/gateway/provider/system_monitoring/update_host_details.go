@@ -20,7 +20,7 @@ func (p *Provider) HostID() (string, error) {
 func (p *Provider) updateNodeDetails() {
 	info, err := host.Info()
 	if err != nil {
-		zap.L().Error("error on getting node details", zap.Error(err))
+		p.logger.Error("error on getting node details", zap.Error(err))
 		return
 	}
 
@@ -59,7 +59,7 @@ func (p *Provider) updateNodeDetails() {
 	err = p.postMsg(&msg)
 	if err != nil {
 		// return err
-		zap.L().Error("error on posting msg", zap.Error(err))
+		p.logger.Error("error on posting msg", zap.Error(err))
 		return
 	}
 }

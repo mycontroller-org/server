@@ -5,61 +5,42 @@ import (
 
 	ws "github.com/gorilla/websocket"
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
-	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
 	wsTY "github.com/mycontroller-org/server/v2/pkg/types/websocket"
-	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
 )
 
-const (
-	eventListenerQueueLimit  = 1000
-	eventListenerWorkerLimit = 1
-	eventListenerQueueName   = "websocket_event_listener"
-
-	defaultWriteTimeout = time.Second * 3
-)
-
-var (
-	eventsQueue          *queueUtils.Queue
-	eventsSubscriptionID = int64(0)
-	eventsTopic          = "" // updated dynamically
-)
-
-// initEventListener events listener
-func initEventListener() error {
-	eventsQueue = queueUtils.New(eventListenerQueueName, eventListenerQueueLimit, processEvent, eventListenerWorkerLimit)
-
+// starts events listener
+func (svc *WebsocketService) startEventListener() error {
 	// on message receive add it in to our local queue
-	eventsTopic = mcbus.FormatTopic(mcbus.TopicEventsAll)
-	sID, err := mcbus.Subscribe(eventsTopic, onEventReceive)
+	sID, err := svc.bus.Subscribe(svc.eventsQueue.Topic, svc.onEventReceive)
 	if err != nil {
 		return err
 	}
-	eventsSubscriptionID = sID
+	svc.eventsQueue.SubscriptionId = sID
 	return nil
 }
 
-func CloseEventListener() error {
-	err := mcbus.Unsubscribe(eventsTopic, eventsSubscriptionID)
+func (svc *WebsocketService) CloseEventListener() error {
+	err := svc.bus.Unsubscribe(svc.eventsQueue.Topic, svc.eventsQueue.SubscriptionId)
 	if err != nil {
 		return err
 	}
-	eventsQueue.Close()
+	svc.eventsQueue.Close()
 	return nil
 }
 
-func onEventReceive(data *busTY.BusData) {
-	status := eventsQueue.Produce(data)
+func (svc *WebsocketService) onEventReceive(data *busTY.BusData) {
+	status := svc.eventsQueue.Produce(data)
 	if !status {
-		zap.L().Error("failed to post a event on the processor queue")
+		svc.logger.Error("failed to post a event on the processor queue")
 	}
 }
 
-func processEvent(item interface{}) {
+func (svc *WebsocketService) processEvent(item interface{}) {
 	// if there is no clients, just ignore the event
-	if clientStore.getSize() == 0 {
+	if svc.store.getSize() == 0 {
 		return
 	}
 
@@ -68,11 +49,11 @@ func processEvent(item interface{}) {
 	event := &eventTY.Event{}
 	err := data.LoadData(event)
 	if err != nil {
-		zap.L().Warn("failed to convert to target type", zap.Any("topic", data.Topic), zap.Error(err))
+		svc.logger.Warn("failed to convert to target type", zap.Any("topic", data.Topic), zap.Error(err))
 		return
 	}
 
-	zap.L().Debug("event received", zap.Any("event", event))
+	svc.logger.Debug("event received", zap.Any("event", event))
 
 	response := wsTY.Response{
 		Type: wsTY.ResponseTypeEvent,
@@ -82,25 +63,25 @@ func processEvent(item interface{}) {
 	// convert to json bytes
 	dataBytes, err := json.Marshal(response)
 	if err != nil {
-		zap.L().Error("error on converting to json", zap.Error(err))
+		svc.logger.Error("error on converting to json", zap.Error(err))
 		return
 	}
 
-	wsClients := clientStore.getClients()
+	wsClients := svc.store.getClients()
 	for index := range wsClients {
 		client := wsClients[index]
 
 		// write with write timeout
 		err := client.SetWriteDeadline(time.Now().Add(defaultWriteTimeout))
 		if err != nil {
-			zap.L().Debug("error on setting write deadline", zap.Any("remoteAddress", client.RemoteAddr().String()), zap.Error(err))
-			clientStore.unregister(client)
+			svc.logger.Debug("error on setting write deadline", zap.Any("remoteAddress", client.RemoteAddr().String()), zap.Error(err))
+			svc.store.unregister(client)
 			return
 		}
 		err = client.WriteMessage(ws.TextMessage, dataBytes)
 		if err != nil {
-			zap.L().Debug("error on write data to a client", zap.Any("remoteAddress", client.RemoteAddr().String()), zap.Error(err))
-			clientStore.unregister(client)
+			svc.logger.Debug("error on write data to a client", zap.Any("remoteAddress", client.RemoteAddr().String()), zap.Error(err))
+			svc.store.unregister(client)
 		}
 	}
 }

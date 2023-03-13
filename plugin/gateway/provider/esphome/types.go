@@ -5,8 +5,11 @@ import (
 
 	esphomeClient "github.com/mycontroller-org/esphome_api/pkg/client"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
+	"go.uber.org/zap"
 )
 
 const (
@@ -94,6 +97,9 @@ type ESPHomeNode struct {
 	rxMessageFunc func(rawMsg *msgTY.RawMessage) error
 	imageBuffer   *bytes.Buffer
 	entityStore   *EntityStore
+	logger        *zap.Logger
+	scheduler     schedulerTY.CoreScheduler
+	bus           busTY.Plugin
 }
 
 // Entity holds key sourceId details of a entity

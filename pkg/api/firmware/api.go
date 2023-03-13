@@ -1,7 +1,9 @@
 package firmware
 
 import (
+	"context"
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -9,43 +11,60 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/service/configuration"
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/server/v2/pkg/store"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
-	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
 	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
+	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
 
+type FirmwareAPI struct {
+	ctx               context.Context
+	logger            *zap.Logger
+	storage           storageTY.Plugin
+	bus               busTY.Plugin
+	firmwareDirectory string
+}
+
+func New(ctx context.Context, logger *zap.Logger, storage storageTY.Plugin, bus busTY.Plugin) *FirmwareAPI {
+	return &FirmwareAPI{
+		ctx:               ctx,
+		logger:            logger.Named("firmware_api"),
+		storage:           storage,
+		bus:               bus,
+		firmwareDirectory: types.GetEnvString(types.ENV_DIR_DATA_FIRMWARE),
+	}
+}
+
 // List by filter and pagination
-func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+func (fw *FirmwareAPI) List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
 	result := make([]firmwareTY.Firmware, 0)
-	return store.STORAGE.Find(types.EntityFirmware, &result, filters, pagination)
+	return fw.storage.Find(types.EntityFirmware, &result, filters, pagination)
 }
 
 // Get returns a item
-func Get(filters []storageTY.Filter) (firmwareTY.Firmware, error) {
+func (fw *FirmwareAPI) Get(filters []storageTY.Filter) (firmwareTY.Firmware, error) {
 	result := firmwareTY.Firmware{}
-	err := store.STORAGE.FindOne(types.EntityFirmware, &result, filters)
+	err := fw.storage.FindOne(types.EntityFirmware, &result, filters)
 	return result, err
 }
 
 // GetByID returns a firmware details by ID
-func GetByID(id string) (firmwareTY.Firmware, error) {
+func (fw *FirmwareAPI) GetByID(id string) (firmwareTY.Firmware, error) {
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: id},
 	}
 	result := firmwareTY.Firmware{}
-	err := store.STORAGE.FindOne(types.EntityFirmware, &result, filters)
+	err := fw.storage.FindOne(types.EntityFirmware, &result, filters)
 	return result, err
 }
 
 // Save config into disk
-func Save(firmware *firmwareTY.Firmware, keepFile bool) error {
+func (fw *FirmwareAPI) Save(firmware *firmwareTY.Firmware, keepFile bool) error {
 	eventType := eventTY.TypeUpdated
 	if firmware.ID == "" {
 		firmware.ID = utils.RandID()
@@ -55,54 +74,51 @@ func Save(firmware *firmwareTY.Firmware, keepFile bool) error {
 		{Key: types.KeyID, Value: firmware.ID},
 	}
 
-	if !configuration.PauseModifiedOnUpdate.IsSet() {
-		firmware.ModifiedOn = time.Now()
-	}
+	firmware.ModifiedOn = time.Now()
 
 	if keepFile {
-		firmwareOld, err := GetByID(firmware.ID)
+		firmwareOld, err := fw.GetByID(firmware.ID)
 		if err == nil {
 			firmware.File = firmwareOld.File
 		}
 	}
 
-	err := store.STORAGE.Upsert(types.EntityFirmware, firmware, filters)
+	err := fw.storage.Upsert(types.EntityFirmware, firmware, filters)
 	if err != nil {
 		return err
 	}
-	busUtils.PostEvent(mcbus.TopicEventFirmware, eventType, types.EntityFirmware, firmware)
+	busUtils.PostEvent(fw.logger, fw.bus, topic.TopicEventFirmware, eventType, types.EntityFirmware, firmware)
 	return nil
 }
 
 // Delete firmwares
-func Delete(ids []string) (int64, error) {
+func (fw *FirmwareAPI) Delete(ids []string) (int64, error) {
 	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids}}
 	pagination := &storageTY.Pagination{Limit: 100}
 
 	// delete firmwares
-	response, err := List(filters, pagination)
+	response, err := fw.List(filters, pagination)
 	if err != nil {
 		return 0, err
 	}
 	firmwares := *response.Data.(*[]firmwareTY.Firmware)
 	for index := 0; index < len(firmwares); index++ {
 		firmware := firmwares[index]
-		firmwareDirectory := types.GetDataDirectoryFirmware()
-		filename := fmt.Sprintf("%s/%s", firmwareDirectory, firmware.File.InternalName)
+		filename := fmt.Sprintf("%s/%s", fw.firmwareDirectory, firmware.File.InternalName)
 		err := os.Remove(filename)
 		if err != nil {
-			zap.L().Error("error on deleting firmware file", zap.Any("firmware", firmware), zap.String("filename", filename), zap.Error(err))
+			fw.logger.Error("error on deleting firmware file", zap.Any("firmware", firmware), zap.String("filename", filename), zap.Error(err))
 		}
 	}
 
 	// delete entries
-	return store.STORAGE.Delete(types.EntityFirmware, filters)
+	return fw.storage.Delete(types.EntityFirmware, filters)
 }
 
 // Upload a firmware file
-func Upload(sourceFile multipart.File, id, filename string) error {
+func (fw *FirmwareAPI) Upload(sourceFile multipart.File, id, filename string) error {
 	// get firmware
-	firmware, err := GetByID(id)
+	firmware, err := fw.GetByID(id)
 	if err != nil {
 		return err
 	}
@@ -112,18 +128,17 @@ func Upload(sourceFile multipart.File, id, filename string) error {
 	extension := filepath.Ext(filename)
 	newFilename := fmt.Sprintf("%s%s", id, extension)
 
-	firmwareDirectory := types.GetDataDirectoryFirmware()
-	err = utils.CreateDir(firmwareDirectory)
+	err = utils.CreateDir(fw.firmwareDirectory)
 	if err != nil {
 		return err
 	}
 
-	fileFullPath := fmt.Sprintf("%s/%s", firmwareDirectory, newFilename)
+	fileFullPath := fmt.Sprintf("%s/%s", fw.firmwareDirectory, newFilename)
 	// delete the existing file if any
 	if utils.IsFileExists(fileFullPath) {
 		err = utils.RemoveFileOrEmptyDir(fileFullPath)
 		if err != nil {
-			zap.L().Error("error on deleting existing file", zap.String("filename", fileFullPath), zap.Error(err))
+			fw.logger.Error("error on deleting existing file", zap.String("filename", fileFullPath), zap.Error(err))
 			return err
 		}
 	}
@@ -166,19 +181,38 @@ func Upload(sourceFile multipart.File, id, filename string) error {
 	firmware.File.Checksum = fmt.Sprintf("sha256:%x", checkSum)
 	firmware.File.ModifiedOn = fileInfo.ModTime()
 
-	err = Save(&firmware, false)
+	err = fw.Save(&firmware, false)
 	if err != nil {
 		return err
 	}
 
 	// remove old file, if the extension different
 	if oldFile != "" && oldFile != newFilename {
-		oldFileFullPath := fmt.Sprintf("%s/%s", firmwareDirectory, oldFile)
+		oldFileFullPath := fmt.Sprintf("%s/%s", fw.firmwareDirectory, oldFile)
 		err = os.Remove(oldFileFullPath)
 		if err != nil {
-			zap.L().Error("error on removing old file", zap.String("file", oldFileFullPath), zap.Error(err))
+			fw.logger.Error("error on removing old file", zap.String("file", oldFileFullPath), zap.Error(err))
 			return err
 		}
 	}
 	return nil
+}
+
+func (fw *FirmwareAPI) Import(data interface{}) error {
+	input, ok := data.(firmwareTY.Firmware)
+	if !ok {
+		return fmt.Errorf("invalid type:%T", data)
+	}
+	if input.ID == "" {
+		return errors.New("'id' can not be empty")
+	}
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: input.ID},
+	}
+
+	return fw.storage.Upsert(types.EntityFirmware, &input, filters)
+}
+
+func (fw *FirmwareAPI) GetEntityInterface() interface{} {
+	return firmwareTY.Firmware{}
 }

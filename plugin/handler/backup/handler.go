@@ -1,6 +1,7 @@
 package backup
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
@@ -27,7 +28,7 @@ type Client interface {
 	State() *types.State
 }
 
-func NewBackupPlugin(cfg *handlerTY.Config) (handlerTY.Plugin, error) {
+func New(ctx context.Context, cfg *handlerTY.Config) (handlerTY.Plugin, error) {
 	config := &BackupConfig{}
 	err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
 	if err != nil {
@@ -36,7 +37,7 @@ func NewBackupPlugin(cfg *handlerTY.Config) (handlerTY.Plugin, error) {
 
 	switch config.ProviderType {
 	case backupUtils.ProviderDisk:
-		return disk.Init(cfg, config.Spec)
+		return disk.New(ctx, cfg, config.Spec)
 
 	default:
 		return nil, fmt.Errorf("unknown backup provider:%s", config.ProviderType)

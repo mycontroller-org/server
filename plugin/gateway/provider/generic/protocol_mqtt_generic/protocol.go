@@ -11,6 +11,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	jsUtils "github.com/mycontroller-org/server/v2/pkg/utils/javascript"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	mqtt "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_mqtt"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
@@ -18,11 +19,11 @@ import (
 )
 
 // returns a new generic mqtt protocol
-func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.RawMessage) error) (*MqttProtocol, error) {
+func New(logger *zap.Logger, gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.RawMessage) error, bus busTY.Plugin, logRootDir string) (*MqttProtocol, error) {
 	config := &MqttProtocolConf{}
 	err := json.ToStruct(protocol, config)
 	if err != nil {
-		zap.L().Error("error on converting to protocol config", zap.String("gatewayId", gwCfg.ID), zap.Error(err))
+		logger.Error("error on converting to protocol config", zap.String("gatewayId", gwCfg.ID), zap.Error(err))
 		return nil, err
 	}
 
@@ -30,11 +31,12 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 		GatewayCfg: gwCfg,
 		Config:     config,
 		rxMsgFunc:  rxMsgFunc,
+		logger:     logger,
 	}
 
-	mqttBaseProtocol, err := mqtt.New(gwCfg, protocol, mp.onMessageReceive)
+	mqttBaseProtocol, err := mqtt.New(logger, gwCfg, protocol, mp.onMessageReceive, bus, logRootDir)
 	if err != nil {
-		zap.L().Error("error on getting base mqtt protocol", zap.String("gatewayId", gwCfg.ID), zap.Error(err))
+		mp.logger.Error("error on getting base mqtt protocol", zap.String("gatewayId", gwCfg.ID), zap.Error(err))
 		return nil, err
 	}
 	mp.Protocol = mqttBaseProtocol
@@ -65,7 +67,7 @@ func (mp *MqttProtocol) Post(msg *msgTY.Message) error {
 	endpoint := &MqttNode{}
 	err := json.ToStruct(cfgRaw, endpoint)
 	if err != nil {
-		zap.L().Error("error on converting to http endpoint config", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
+		mp.logger.Error("error on converting to http endpoint config", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
 		return err
 	}
 
@@ -79,14 +81,16 @@ func (mp *MqttProtocol) Post(msg *msgTY.Message) error {
 			ScriptKeyDataIn:   *msg,
 		}
 
-		scriptResponse, err := jsUtils.Execute(endpoint.Script, variables)
+		// runs without timeout
+		// TODO: include timeout
+		scriptResponse, err := jsUtils.Execute(mp.logger, endpoint.Script, variables, nil)
 		if err != nil {
-			zap.L().Error("error on executing script", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
+			mp.logger.Error("error on executing script", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
 			return err
 		}
 		mapResponse, err := jsUtils.ToMap(scriptResponse)
 		if err != nil {
-			zap.L().Error("error on converting to map", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
+			mp.logger.Error("error on converting to map", zap.String("gatewayId", msg.GatewayID), zap.String("nodeId", msg.NodeID), zap.Error(err))
 			return err
 		}
 		// update topic

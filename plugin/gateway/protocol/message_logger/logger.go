@@ -20,26 +20,26 @@ const (
 	TypeFileLogger = "file_logger"
 )
 
-// Init message logger
-func Init(gatewayID string, config cmap.CustomMap, formatterFunc func(rawMsg *msgTY.RawMessage) string) MessageLogger {
+// New message logger
+func New(logger *zap.Logger, gatewayID string, config cmap.CustomMap, formatterFunc func(rawMsg *msgTY.RawMessage) string, logRootDir string) MessageLogger {
 	var messageLogger MessageLogger
 	if config.GetString(types.NameType) == TypeFileLogger {
-		fileMessageLogger, err := InitFileMessageLogger(gatewayID, config, formatterFunc)
+		fileMessageLogger, err := NewFileMessageLogger(logger, gatewayID, config, formatterFunc, logRootDir)
 		if err != nil {
-			zap.L().Error("Failed to load file message logger", zap.Any("config", config), zap.Error(err))
+			logger.Error("Failed to load file message logger", zap.Any("config", config), zap.Error(err))
 		} else {
 			messageLogger = fileMessageLogger
 		}
 	}
 	// if non loaded load void logger
 	if messageLogger == nil {
-		messageLogger = &VoidMessageLogger{}
-		zap.L().Debug("Loaded void logger", zap.String("gateway", gatewayID), zap.Any("config", config))
+		messageLogger = &NoopMessageLogger{}
+		logger.Debug("Loaded void logger", zap.String("gateway", gatewayID), zap.Any("config", config))
 	}
 	return messageLogger
 }
 
-// GetVoidLogger can be used for pre stage
-func GetVoidLogger() MessageLogger {
-	return &VoidMessageLogger{}
+// GetNoopLogger can be used for pre stage
+func GetNoopLogger() MessageLogger {
+	return &NoopMessageLogger{}
 }

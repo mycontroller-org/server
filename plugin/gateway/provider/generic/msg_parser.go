@@ -30,7 +30,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 		// convert the rawMessage data to []*msgTY.Message
 		err := json.ToStruct(rawMsg.Data, &messages)
 		if err != nil {
-			zap.L().Error("error on converting raw message data to []*Messages", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
+			p.logger.Error("error on converting raw message data to []*Messages", zap.String("gatewayId", p.GatewayConfig.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 			return nil, err
 		}
 	}
@@ -62,20 +62,22 @@ func (p *Provider) executeScript(script string, rawMessage *msgTY.RawMessage, va
 	} else {
 		strPayload, err := json.MarshalToString(rawMessage.Data)
 		if err != nil {
-			zap.L().Error("unable to convert payload to json string", zap.Any("rawMessage", rawMessage), zap.Error(err))
+			p.logger.Error("unable to convert payload to json string", zap.Any("rawMessage", rawMessage), zap.Error(err))
 			return nil, err
 		}
 		jsonPayload = strPayload
 	}
 
 	variables[ScriptKeyDataIn] = jsonPayload
-	response, err := jsUtils.Execute(script, variables)
+	// runs without timeout
+	// TODO: include timeout
+	response, err := jsUtils.Execute(p.logger, script, variables, nil)
 	if err != nil {
 		return nil, err
 	}
 	mapResponse, ok := response.(map[string]interface{})
 	if !ok {
-		zap.L().Warn("script response is not a map[string]interface", zap.String("gatewayId", p.GatewayConfig.ID))
+		p.logger.Warn("script response is not a map[string]interface", zap.String("gatewayId", p.GatewayConfig.ID))
 		return nil, nil
 	}
 

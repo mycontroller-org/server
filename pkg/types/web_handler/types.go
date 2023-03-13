@@ -10,8 +10,6 @@ const (
 	KeyAuthorized     = "authorized"
 	KeyExpiresAt      = "expires_at"
 
-	EnvJwtAccessSecret = "JWT_ACCESS_SECRET" // environment variable to set secret for JWT token
-
 	HeaderAuthorization = "Authorization"
 	HeaderUserID        = "mc_userid"
 

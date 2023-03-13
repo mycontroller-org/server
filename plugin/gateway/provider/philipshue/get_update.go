@@ -21,7 +21,7 @@ func (p *Provider) getUpdate() {
 func (p *Provider) updateLights() {
 	lights, err := p.bridge.GetLights()
 	if err != nil {
-		zap.L().Error("error on fetching lights", zap.Error(err))
+		p.logger.Error("error on fetching lights", zap.Error(err))
 		return
 	}
 
@@ -54,7 +54,7 @@ func (p *Provider) updateLight(light *huego.Light) {
 	presnMsg.Payloads = append(presnMsg.Payloads, nodeData)
 	err := p.postMsg(presnMsg)
 	if err != nil {
-		zap.L().Error("error on posting message", zap.Error(err))
+		p.logger.Error("error on posting message", zap.Error(err))
 		return
 	}
 
@@ -67,7 +67,7 @@ func (p *Provider) updateLight(light *huego.Light) {
 	sourceMsg.Payloads = append(sourceMsg.Payloads, stateMsgData)
 	err = p.postMsg(sourceMsg)
 	if err != nil {
-		zap.L().Error("error on posting message", zap.Error(err))
+		p.logger.Error("error on posting message", zap.Error(err))
 		return
 	}
 
@@ -84,7 +84,7 @@ func (p *Provider) updateLight(light *huego.Light) {
 	stateMsg.Payloads = append(stateMsg.Payloads, p.getPayload(FieldReachable, light.State.Reachable, metricTY.MetricTypeNone, true))
 	err = p.postMsg(stateMsg)
 	if err != nil {
-		zap.L().Error("error on posting message", zap.Error(err))
+		p.logger.Error("error on posting message", zap.Error(err))
 		return
 	}
 }
@@ -92,7 +92,7 @@ func (p *Provider) updateLight(light *huego.Light) {
 func (p *Provider) updateSensors() {
 	sensors, err := p.bridge.GetSensors()
 	if err != nil {
-		zap.L().Error("error on fetching sensors", zap.Error(err))
+		p.logger.Error("error on fetching sensors", zap.Error(err))
 		return
 	}
 
@@ -123,7 +123,7 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 	presnMsg.Payloads = append(presnMsg.Payloads, nodeData)
 	err := p.postMsg(presnMsg)
 	if err != nil {
-		zap.L().Error("error on posting message", zap.Error(err))
+		p.logger.Error("error on posting message", zap.Error(err))
 		return
 	}
 
@@ -136,7 +136,7 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 	sourceStateMsg.Payloads = append(sourceStateMsg.Payloads, stateMsgData)
 	err = p.postMsg(sourceStateMsg)
 	if err != nil {
-		zap.L().Error("error on posting message", zap.Error(err))
+		p.logger.Error("error on posting message", zap.Error(err))
 		return
 	}
 
@@ -148,7 +148,7 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 
 	err = p.postMsg(stateMsg)
 	if err != nil {
-		zap.L().Error("error on posting message", zap.Error(err))
+		p.logger.Error("error on posting message", zap.Error(err))
 		return
 	}
 
@@ -161,7 +161,7 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 	sourceConfigMsg.Payloads = append(sourceConfigMsg.Payloads, configMsgData)
 	err = p.postMsg(sourceConfigMsg)
 	if err != nil {
-		zap.L().Error("error on posting message", zap.Error(err))
+		p.logger.Error("error on posting message", zap.Error(err))
 		return
 	}
 
@@ -173,7 +173,7 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 
 	err = p.postMsg(configMsg)
 	if err != nil {
-		zap.L().Error("error on posting message", zap.Error(err))
+		p.logger.Error("error on posting message", zap.Error(err))
 		return
 	}
 }
@@ -181,14 +181,14 @@ func (p *Provider) updateSensor(sensor *huego.Sensor) {
 func (p *Provider) updateBridgeDetails() {
 	brCfg, err := p.bridge.GetConfig()
 	if err != nil {
-		zap.L().Error("error on getting bridge configuration", zap.Error(err))
+		p.logger.Error("error on getting bridge configuration", zap.Error(err))
 		// mark the gateway is in error state
 		state := types.State{
 			Status:  types.StatusError,
 			Message: err.Error(),
 			Since:   time.Now(),
 		}
-		busUtils.SetGatewayState(p.GatewayConfig.ID, state)
+		busUtils.SetGatewayState(p.logger, p.bus, p.GatewayConfig.ID, state)
 		return
 	}
 
@@ -210,7 +210,7 @@ func (p *Provider) updateBridgeDetails() {
 	presnMsg.Payloads = append(presnMsg.Payloads, nodeData)
 	err = p.postMsg(presnMsg)
 	if err != nil {
-		zap.L().Error("error on posting message", zap.Error(err))
+		p.logger.Error("error on posting message", zap.Error(err))
 		return
 	}
 }

@@ -3,20 +3,19 @@ package action
 import (
 	"strings"
 
-	dataRepoAPI "github.com/mycontroller-org/server/v2/pkg/api/data_repository"
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	"github.com/tidwall/sjson"
 	"go.uber.org/zap"
 )
 
-func toDataRepository(id, keyPath, value string) error {
-	dataRepo, err := dataRepoAPI.GetByID(id)
+func (a *ActionAPI) toDataRepository(id, keyPath, value string) error {
+	dataRepo, err := a.api.DataRepository().GetByID(id)
 	if err != nil {
 		return err
 	}
 	if dataRepo.ReadOnly {
-		zap.L().Info("update failed: trying update a readonly repository", zap.String("id", id), zap.String("keyPath", keyPath), zap.String("value", value))
+		a.logger.Info("update failed: trying update a readonly repository", zap.String("id", id), zap.String("keyPath", keyPath), zap.String("value", value))
 		return nil
 	}
 
@@ -62,5 +61,5 @@ func toDataRepository(id, keyPath, value string) error {
 	}
 
 	dataRepo.Data = finalData
-	return dataRepoAPI.Save(dataRepo)
+	return a.api.DataRepository().Save(dataRepo)
 }

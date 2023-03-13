@@ -10,23 +10,22 @@ import (
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	tplUtils "github.com/mycontroller-org/server/v2/pkg/utils/template"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
 
-func isTriggered(rule taskTY.Rule, variables map[string]interface{}) bool {
+func (svc *TaskService) isTriggered(rule taskTY.Rule, variables map[string]interface{}) bool {
 	if len(rule.Conditions) == 0 {
 		return true
 	}
 
-	zap.L().Debug("isTriggered", zap.Any("conditions", rule.Conditions), zap.Any("variables", variables))
+	svc.logger.Debug("isTriggered", zap.Any("conditions", rule.Conditions), zap.Any("variables", variables))
 
 	for index := 0; index < len(rule.Conditions); index++ {
 		condition := rule.Conditions[index]
-		value, err := getValueByVariableName(variables, condition.Variable)
+		value, err := svc.getValueByVariableName(variables, condition.Variable)
 		if err != nil {
-			zap.L().Warn("error on getting a variable", zap.Error(err))
+			svc.logger.Warn("error on getting a variable", zap.Error(err))
 			return false
 		}
 
@@ -34,22 +33,22 @@ func isTriggered(rule taskTY.Rule, variables map[string]interface{}) bool {
 		stringValue := converterUtils.ToString(expectedValue)
 
 		// process value as template
-		updatedValue, err := tplUtils.Execute(stringValue, variables)
+		updatedValue, err := svc.variablesEngine.TemplateEngine().Execute(stringValue, variables)
 		if err != nil {
-			zap.L().Warn("error on parsing template", zap.Error(err), zap.String("template", stringValue), zap.Any("variables", variables))
+			svc.logger.Warn("error on parsing template", zap.Error(err), zap.String("template", stringValue), zap.Any("variables", variables))
 		} else {
 			expectedValue = updatedValue
 		}
 
-		valid := isMatching(value, condition.Operator, expectedValue)
+		valid := svc.isMatching(value, condition.Operator, expectedValue)
 
 		if rule.MatchAll && !valid {
-			zap.L().Debug("condition failed", zap.Any("condition", condition), zap.Any("variables", variables), zap.Any("expectedValue", expectedValue))
+			svc.logger.Debug("condition failed", zap.Any("condition", condition), zap.Any("variables", variables), zap.Any("expectedValue", expectedValue))
 			return false
 		}
 
 		if !rule.MatchAll && valid {
-			zap.L().Debug("condition passed", zap.Any("condition", condition), zap.Any("variables", variables), zap.Any("expectedValue", expectedValue))
+			svc.logger.Debug("condition passed", zap.Any("condition", condition), zap.Any("variables", variables), zap.Any("expectedValue", expectedValue))
 			return true
 		}
 	}
@@ -57,7 +56,7 @@ func isTriggered(rule taskTY.Rule, variables map[string]interface{}) bool {
 	return rule.MatchAll
 }
 
-func getValueByVariableName(variables map[string]interface{}, variableName string) (interface{}, error) {
+func (svc *TaskService) getValueByVariableName(variables map[string]interface{}, variableName string) (interface{}, error) {
 	name := variableName
 	keyPath := ""
 	if strings.Contains(variableName, ".") {
@@ -74,7 +73,7 @@ func getValueByVariableName(variables map[string]interface{}, variableName strin
 	if keyPath != "" {
 		_, value, err := filterUtils.GetValueByKeyPath(entity, keyPath)
 		if err != nil {
-			zap.L().Warn("error to get a value for a variable", zap.Error(err), zap.String("variable", name), zap.String("keyPath", keyPath))
+			svc.logger.Warn("error to get a value for a variable", zap.Error(err), zap.String("variable", name), zap.String("keyPath", keyPath))
 			return nil, fmt.Errorf("invalid keyPath. variable:%s, keyPath:%s", name, keyPath)
 		}
 		return value, nil
@@ -83,13 +82,13 @@ func getValueByVariableName(variables map[string]interface{}, variableName strin
 	return entity, nil
 }
 
-func isMatching(value interface{}, operator string, expectedValue interface{}) bool {
+func (svc *TaskService) isMatching(value interface{}, operator string, expectedValue interface{}) bool {
 	if operator == "" {
 		operator = storageTY.OperatorEqual
 	}
 
 	// format value to actual type
-	value = formatValue(value)
+	value = svc.formatValue(value)
 
 	var expectedValueUpdated interface{}
 
@@ -101,7 +100,7 @@ func isMatching(value interface{}, operator string, expectedValue interface{}) b
 		updated := make([]interface{}, 0)
 		err := json.Unmarshal([]byte(stringValue), &updated)
 		if err != nil {
-			zap.L().Error("error on converting expectedValue to array format", zap.Error(err), zap.Any("expectedValue", expectedValue))
+			svc.logger.Error("error on converting expectedValue to array format", zap.Error(err), zap.Any("expectedValue", expectedValue))
 			return false
 		}
 		expectedValueUpdated = updated
@@ -110,7 +109,7 @@ func isMatching(value interface{}, operator string, expectedValue interface{}) b
 		expectedValueUpdated = expectedValue
 	}
 
-	zap.L().Debug("ismatching", zap.String("valueType", reflect.TypeOf(value).Kind().String()), zap.Any("value", value), zap.String("operator", operator), zap.Any("expectedValue", expectedValueUpdated))
+	svc.logger.Debug("ismatching", zap.String("valueType", reflect.TypeOf(value).Kind().String()), zap.Any("value", value), zap.String("operator", operator), zap.Any("expectedValue", expectedValueUpdated))
 
 	switch reflect.TypeOf(value).Kind() {
 	case reflect.String:
@@ -125,13 +124,13 @@ func isMatching(value interface{}, operator string, expectedValue interface{}) b
 		return filterUtils.CompareFloat(value, operator, expectedValueUpdated)
 
 	default:
-		zap.L().Warn("unsupported type", zap.String("type", reflect.TypeOf(value).String()), zap.Any("value", value))
+		svc.logger.Warn("unsupported type", zap.String("type", reflect.TypeOf(value).String()), zap.Any("value", value))
 		return false
 	}
 }
 
 // tries to convert the string value to float, bool, string
-func formatValue(value interface{}) interface{} {
+func (svc *TaskService) formatValue(value interface{}) interface{} {
 	if reflect.TypeOf(value).Kind() == reflect.String {
 		stringValue := converterUtils.ToString(value)
 		// can be a float value

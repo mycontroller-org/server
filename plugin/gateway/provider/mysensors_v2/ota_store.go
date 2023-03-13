@@ -34,8 +34,8 @@ func firmwareRawPurge() {
 }
 
 // getNode returns the node
-func getNode(gatewayID, nodeID string) (*nodeTY.Node, error) {
-	id := getNodeStoreID(gatewayID, nodeID)
+func (p *Provider) getNode(gatewayID, nodeID string) (*nodeTY.Node, error) {
+	id := p.getNodeStoreID(gatewayID, nodeID)
 
 	toNode := func(item interface{}) (*nodeTY.Node, error) {
 		if node, ok := item.(*nodeTY.Node); ok {
@@ -49,7 +49,7 @@ func getNode(gatewayID, nodeID string) (*nodeTY.Node, error) {
 		return toNode(data)
 	}
 
-	err := updateNode(gatewayID, nodeID)
+	err := p.updateNode(gatewayID, nodeID)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func getNode(gatewayID, nodeID string) (*nodeTY.Node, error) {
 }
 
 // getNode returns the node
-func getFirmware(id string) (*firmwareTY.Firmware, error) {
+func (p *Provider) getFirmware(id string) (*firmwareTY.Firmware, error) {
 	toFirmware := func(item interface{}) (*firmwareTY.Firmware, error) {
 		if fw, ok := item.(*firmwareTY.Firmware); ok {
 			return fw, nil
@@ -74,7 +74,7 @@ func getFirmware(id string) (*firmwareTY.Firmware, error) {
 		return toFirmware(data)
 	}
 
-	err := updateFirmware(id)
+	err := p.updateFirmware(id)
 	if err != nil {
 		return nil, err
 	}
@@ -85,11 +85,11 @@ func getFirmware(id string) (*firmwareTY.Firmware, error) {
 	return nil, fmt.Errorf("firmware not available. id:%v", id)
 }
 
-func getNodeStoreID(gatewayID, nodeID string) string {
+func (p *Provider) getNodeStoreID(gatewayID, nodeID string) string {
 	return fmt.Sprintf("%s_%s", gatewayID, nodeID)
 }
 
-func updateNode(gatewayID, nodeID string) error {
+func (p *Provider) updateNode(gatewayID, nodeID string) error {
 	ids := map[string]interface{}{
 		types.KeyGatewayID: gatewayID,
 		types.KeyNodeID:    nodeID,
@@ -98,30 +98,30 @@ func updateNode(gatewayID, nodeID string) error {
 	addToStore := func(item interface{}) bool {
 		node, ok := item.(*nodeTY.Node)
 		if !ok {
-			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
+			p.logger.Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
 			return false
 		}
-		nodeStore.Add(getNodeStoreID(node.GatewayID, node.NodeID), node)
+		nodeStore.Add(p.getNodeStoreID(node.GatewayID, node.NodeID), node)
 		return false
 	}
-	return query.QueryResource("", rsTY.TypeNode, rsTY.CommandGet, ids, addToStore, &nodeTY.Node{}, queryTimeout)
+	return query.QueryResource(p.logger, p.bus, "", rsTY.TypeNode, rsTY.CommandGet, ids, addToStore, &nodeTY.Node{}, queryTimeout)
 }
 
-func updateFirmware(id string) error {
+func (p *Provider) updateFirmware(id string) error {
 	addToStore := func(item interface{}) bool {
 		firmware, ok := item.(*firmwareTY.Firmware)
 		if !ok {
-			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
+			p.logger.Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
 			return false
 		}
 		fwStore.Add(firmware.ID, firmware)
 		return false
 	}
-	return query.QueryResource(id, rsTY.TypeFirmware, rsTY.CommandGet, nil, addToStore, &firmwareTY.Firmware{}, queryTimeout)
+	return query.QueryResource(p.logger, p.bus, id, rsTY.TypeFirmware, rsTY.CommandGet, nil, addToStore, &firmwareTY.Firmware{}, queryTimeout)
 }
 
 // getFirmwareRaw func
-func getFirmwareRaw(id string, fwTypeID, fwVersionID uint16) (*firmwareRaw, error) {
+func (p *Provider) getFirmwareRaw(id string, fwTypeID, fwVersionID uint16) (*firmwareRaw, error) {
 	toFirmwareRaw := func(item interface{}) (*firmwareRaw, error) {
 		if fw, ok := item.(*firmwareRaw); ok {
 			return fw, nil
@@ -134,7 +134,7 @@ func getFirmwareRaw(id string, fwTypeID, fwVersionID uint16) (*firmwareRaw, erro
 		return toFirmwareRaw(data)
 	}
 
-	err := updateFirmwareFile(id, fwTypeID, fwVersionID)
+	err := p.updateFirmwareFile(id, fwTypeID, fwVersionID)
 	if err != nil {
 		return nil, err
 	}
@@ -145,12 +145,12 @@ func getFirmwareRaw(id string, fwTypeID, fwVersionID uint16) (*firmwareRaw, erro
 	return nil, fmt.Errorf("firmware not available. id:%v", id)
 }
 
-func updateFirmwareFile(id string, fwTypeID, fwVersionID uint16) error {
+func (p *Provider) updateFirmwareFile(id string, fwTypeID, fwVersionID uint16) error {
 	var hexBytes []byte
 	addToStore := func(item interface{}) bool {
 		fwBlock, ok := item.(*firmwareTY.FirmwareBlock)
 		if !ok {
-			zap.L().Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
+			p.logger.Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
 			return false
 		}
 		if hexBytes == nil {
@@ -162,26 +162,26 @@ func updateFirmwareFile(id string, fwTypeID, fwVersionID uint16) error {
 		}
 		if fwBlock.IsFinal {
 			receivedCheckSum := fmt.Sprintf("sha256:%x", sha256.Sum256(hexBytes))
-			fw, err := getFirmware(id)
+			fw, err := p.getFirmware(id)
 			if err != nil {
-				zap.L().Error("error on getting firmare config", zap.Error(err), zap.String("firmwareId", id))
+				p.logger.Error("error on getting firmare config", zap.Error(err), zap.String("firmwareId", id))
 				return false
 			}
 			if fw.File.Checksum == receivedCheckSum {
 				// convert the hex file to raw format
-				fwRaw, err := hexByteToLocalFormat(fwTypeID, fwVersionID, hexBytes, firmwareBlockSize)
+				fwRaw, err := p.hexByteToLocalFormat(fwTypeID, fwVersionID, hexBytes, firmwareBlockSize)
 				if err != nil {
-					zap.L().Error("error on converting hex to local format", zap.String("firmwareId", id), zap.Error(err))
+					p.logger.Error("error on converting hex to local format", zap.String("firmwareId", id), zap.Error(err))
 					return false
 				}
 				fwRawStore.Add(id, fwRaw)
 			} else {
-				zap.L().Info("received firmware checksum mismatch", zap.String("fwID", fw.ID), zap.String("remote", fw.File.Checksum), zap.String("received", receivedCheckSum))
+				p.logger.Info("received firmware checksum mismatch", zap.String("fwID", fw.ID), zap.String("remote", fw.File.Checksum), zap.String("received", receivedCheckSum))
 			}
 			return false
 		}
 		return true // continue
 	}
 
-	return query.QueryResource(id, rsTY.TypeFirmware, rsTY.CommandBlocks, nil, addToStore, &firmwareTY.FirmwareBlock{}, queryFirmwareFileTimeout)
+	return query.QueryResource(p.logger, p.bus, id, rsTY.TypeFirmware, rsTY.CommandBlocks, nil, addToStore, &firmwareTY.FirmwareBlock{}, queryFirmwareFileTimeout)
 }

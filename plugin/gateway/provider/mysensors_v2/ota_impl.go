@@ -19,7 +19,7 @@ import (
 )
 
 // executeFirmwareConfigRequest executes firmware config request and response with hex payload
-func executeFirmwareConfigRequest(msg *msgTY.Message) (string, error) {
+func (p *Provider) executeFirmwareConfigRequest(msg *msgTY.Message) (string, error) {
 	startTime := time.Now()
 	rxPL := msg.Payloads[0].Value.String()
 
@@ -28,21 +28,21 @@ func executeFirmwareConfigRequest(msg *msgTY.Message) (string, error) {
 	if rxPL != "" {
 		err := toStruct(rxPL, fwCfgReq)
 		if err != nil {
-			zap.L().Error("error on converting firmwareConfigRequest", zap.String("payload", rxPL), zap.Error(err))
+			p.logger.Error("error on converting firmwareConfigRequest", zap.String("payload", rxPL), zap.Error(err))
 			return "", err
 		}
 	}
 
-	node, err := getNode(msg.GatewayID, msg.NodeID)
+	node, err := p.getNode(msg.GatewayID, msg.NodeID)
 	if err != nil {
-		zap.L().Error("error to get node details", zap.Any("msg", msg), zap.Error(err))
+		p.logger.Error("error to get node details", zap.Any("msg", msg), zap.Error(err))
 		return "", err
 	}
 
 	// get firmware raw format
-	fwRaw, err := fetchFirmware(node, fwCfgReq.Type, fwCfgReq.Version, false)
+	fwRaw, err := p.fetchFirmware(node, fwCfgReq.Type, fwCfgReq.Version, false)
 	if err != nil {
-		zap.L().Error("error to get firmware", zap.Any("fwCfgReq", fwCfgReq), zap.Error(err))
+		p.logger.Error("error to get firmware", zap.Any("fwCfgReq", fwCfgReq), zap.Error(err))
 		return "", err
 	}
 	fwRaw.LastAccess = time.Now()
@@ -52,27 +52,27 @@ func executeFirmwareConfigRequest(msg *msgTY.Message) (string, error) {
 
 	// if erase eeprom set for this node, update erase eeprom command and clear the label on the node detail
 	if node.Labels.GetBool(LabelEraseEEPROM) {
-		zap.L().Debug("erase EEPROM enabled, sending erase EEPROM command to the node", zap.String("nodeId", node.ID))
+		p.logger.Debug("erase EEPROM enabled, sending erase EEPROM command to the node", zap.String("nodeId", node.ID))
 		// set erase command
 		fwCfgRes.SetEraseEEPROM()
 		// remove erase config data from node
 		node.Labels.Set(LabelEraseEEPROM, "false")
 
-		setNodeLabels(node)
+		p.setNodeLabels(node)
 	} else { // update assigned firmware config details
 		fwCfgRes.Type = fwRaw.Type
 		fwCfgRes.Version = fwRaw.Version
 		fwCfgRes.Blocks = fwRaw.Blocks
 		fwCfgRes.CRC = fwRaw.CRC
 	}
-	zap.L().Debug("sending a firmware config respose", zap.Any("request", fwCfgReq), zap.Any("response", fwCfgRes), zap.String("timeTaken", time.Since(startTime).String()))
+	p.logger.Debug("sending a firmware config respose", zap.Any("request", fwCfgReq), zap.Any("response", fwCfgRes), zap.String("timeTaken", time.Since(startTime).String()))
 
 	// convert the struct to hex string and return
-	return toHex(fwCfgRes)
+	return p.toHex(fwCfgRes)
 }
 
 // executeFirmwareRequest executes firmware request and response with hex payload
-func executeFirmwareRequest(msg *msgTY.Message) (string, error) {
+func (p *Provider) executeFirmwareRequest(msg *msgTY.Message) (string, error) {
 	rxPL := msg.Payloads[0].Value.String()
 	startTime := time.Now()
 
@@ -80,18 +80,18 @@ func executeFirmwareRequest(msg *msgTY.Message) (string, error) {
 	fwReq := &firmwareRequest{}
 	err := toStruct(rxPL, fwReq)
 	if err != nil {
-		zap.L().Error("error on converting firmwareRequest", zap.String("payload", rxPL), zap.Error(err))
+		p.logger.Error("error on converting firmwareRequest", zap.String("payload", rxPL), zap.Error(err))
 		return "", err
 	}
 
-	node, err := getNode(msg.GatewayID, msg.NodeID)
+	node, err := p.getNode(msg.GatewayID, msg.NodeID)
 	if err != nil {
-		zap.L().Error("error to get node details", zap.Any("msg", msg), zap.Error(err))
+		p.logger.Error("error to get node details", zap.Any("msg", msg), zap.Error(err))
 		return "", err
 	}
 
 	// get firmware raw format
-	fwRaw, err := fetchFirmware(node, fwReq.Type, fwReq.Version, true)
+	fwRaw, err := p.fetchFirmware(node, fwReq.Type, fwReq.Version, true)
 	if err != nil {
 		return "", fmt.Errorf("error on getting firmware. %s", err.Error())
 	}
@@ -107,17 +107,17 @@ func executeFirmwareRequest(msg *msgTY.Message) (string, error) {
 	startAddr := fwReq.Block * firmwareBlockSize
 	endAddr := startAddr + firmwareBlockSize
 	copy(fwRes.Data[:], fwRaw.Data[startAddr:endAddr])
-	zap.L().Debug("sending a firmware respose", zap.Any("request", fwReq), zap.Any("response", fwRes), zap.String("timeTaken", time.Since(startTime).String()))
+	p.logger.Debug("sending a firmware respose", zap.Any("request", fwReq), zap.Any("response", fwRes), zap.String("timeTaken", time.Since(startTime).String()))
 
-	updateFirmwareProgressStatus(node, int(fwReq.Block), len(fwRaw.Data))
+	p.updateFirmwareProgressStatus(node, int(fwReq.Block), len(fwRaw.Data))
 
 	// convert the struct to hex string and return
-	return toHex(fwRes)
+	return p.toHex(fwRes)
 }
 
 // fetchFirmware looks requested firmware on memory store,
 // if not available, loads it from disk
-func fetchFirmware(node *nodeTY.Node, typeID, versionID uint16, verifyID bool) (*firmwareRaw, error) {
+func (p *Provider) fetchFirmware(node *nodeTY.Node, typeID, versionID uint16, verifyID bool) (*firmwareRaw, error) {
 	// get mapped firmware by id
 	fwID := node.Labels.Get(types.LabelNodeAssignedFirmware)
 	if fwID == "" {
@@ -127,9 +127,9 @@ func fetchFirmware(node *nodeTY.Node, typeID, versionID uint16, verifyID bool) (
 	// lambda function to load firmware
 	loadFirmwareRawFn := func() (*firmwareRaw, error) {
 
-		fw, err := getFirmware(fwID)
+		fw, err := p.getFirmware(fwID)
 		if err != nil {
-			zap.L().Error("error to get firmware raw", zap.Any("fwID", fwID), zap.Error(err))
+			p.logger.Error("error to get firmware raw", zap.Any("fwID", fwID), zap.Error(err))
 			return nil, err
 		}
 
@@ -140,9 +140,9 @@ func fetchFirmware(node *nodeTY.Node, typeID, versionID uint16, verifyID bool) (
 		fwTypeID := uint16(fw.Labels.GetInt(LabelFirmwareTypeID))
 		fwVersionID := uint16(fw.Labels.GetInt(LabelFirmwareVersionID))
 
-		fwRaw, err := getFirmwareRaw(fw.ID, fwTypeID, fwVersionID)
+		fwRaw, err := p.getFirmwareRaw(fw.ID, fwTypeID, fwVersionID)
 		if err != nil {
-			zap.L().Error("error on getting firmware data", zap.String("firmwareId", fw.ID), zap.Error(err))
+			p.logger.Error("error on getting firmware data", zap.String("firmwareId", fw.ID), zap.Error(err))
 			return nil, err
 		}
 
@@ -185,13 +185,14 @@ func fetchFirmware(node *nodeTY.Node, typeID, versionID uint16, verifyID bool) (
 // I8HEX files use only record types 00 and 01 (16-bit addresses)
 // 00 - data, 01 - End
 // Example,
-//  :10010000214601360121470136007EFE09D2190140
-//  :100110002146017E17C20001FF5F16002148011928
-//  :10012000194E79234623965778239EDA3F01B2CAA7
-//  :100130003F0156702B5E712B722B732146013421C7
-//  :00000001FF
-//  :(start) xx(byte count) xxxx(address) xx(record type) xxx...xx(data, checksum)
-func hexByteToLocalFormat(typeID, versionID uint16, hexByte []byte, blockSize int) (*firmwareRaw, error) {
+//
+//	:10010000214601360121470136007EFE09D2190140
+//	:100110002146017E17C20001FF5F16002148011928
+//	:10012000194E79234623965778239EDA3F01B2CAA7
+//	:100130003F0156702B5E712B722B732146013421C7
+//	:00000001FF
+//	:(start) xx(byte count) xxxx(address) xx(record type) xxx...xx(data, checksum)
+func (p *Provider) hexByteToLocalFormat(typeID, versionID uint16, hexByte []byte, blockSize int) (*firmwareRaw, error) {
 	hexString := string(hexByte)
 	hexString = strings.ReplaceAll(hexString, "\r", "") // remove all "\r" char
 	hexLines := strings.Split(hexString, "\n")          // split as separate lines
@@ -225,7 +226,7 @@ func hexByteToLocalFormat(typeID, versionID uint16, hexByte []byte, blockSize in
 		data := line[9 : len(line)-2]
 		dataBytes, err := hexENC.DecodeString(data)
 		if err != nil {
-			zap.L().Error("failed", zap.Any("data", data), zap.Error(err))
+			p.logger.Error("failed", zap.Any("data", data), zap.Error(err))
 			return nil, err
 		}
 		// include it to our main slice
@@ -267,12 +268,12 @@ func hexByteToLocalFormat(typeID, versionID uint16, hexByte []byte, blockSize in
 	return fw, nil
 }
 
-func setNodeLabels(node *nodeTY.Node) {
-	busUtils.PostToResourceService(node.ID, node, rsTY.TypeNode, rsTY.CommandSetLabel, "")
+func (p *Provider) setNodeLabels(node *nodeTY.Node) {
+	busUtils.PostToResourceService(p.logger, p.bus, node.ID, node, rsTY.TypeNode, rsTY.CommandSetLabel, "")
 }
 
 // toHex returns hex string
-func toHex(in interface{}) (string, error) {
+func (p *Provider) toHex(in interface{}) (string, error) {
 	var bBuf bytes.Buffer
 	err := binary.Write(&bBuf, binary.LittleEndian, in)
 	if err != nil {
@@ -291,7 +292,7 @@ func toStruct(hex string, out interface{}) error {
 	return binary.Read(r, binary.LittleEndian, out)
 }
 
-func updateFirmwareProgressStatus(node *nodeTY.Node, currentBlock, totalBytes int) {
+func (p *Provider) updateFirmwareProgressStatus(node *nodeTY.Node, currentBlock, totalBytes int) {
 	otaBlockOrder := node.Labels.Get(types.LabelNodeOTABlockOrder)
 	if otaBlockOrder == "" {
 		otaBlockOrder = OTABlockOrderReverse
@@ -342,6 +343,6 @@ func updateFirmwareProgressStatus(node *nodeTY.Node, currentBlock, totalBytes in
 		}
 
 		// publish the state
-		busUtils.PostToResourceService(node.ID, state, rsTY.TypeNode, rsTY.CommandFirmwareState, "")
+		busUtils.PostToResourceService(p.logger, p.bus, node.ID, state, rsTY.TypeNode, rsTY.CommandFirmwareState, "")
 	}
 }

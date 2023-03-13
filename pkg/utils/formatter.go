@@ -17,7 +17,7 @@ import (
 	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
-	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
@@ -51,12 +51,12 @@ func registerTypes() {
 	gob.Register(primitive.A{})
 	gob.Register(handlerTY.Config{})
 	gob.Register(handlerTY.ResourceData{})
-	gob.Register(scheduleTY.Config{})
-	gob.Register(scheduleTY.Validity{})
-	gob.Register(scheduleTY.DateRange{})
-	gob.Register(scheduleTY.TimeRange{})
-	gob.Register(scheduleTY.CustomVariableConfig{})
-	gob.Register(scheduleTY.State{})
+	gob.Register(schedulerTY.Config{})
+	gob.Register(schedulerTY.Validity{})
+	gob.Register(schedulerTY.DateRange{})
+	gob.Register(schedulerTY.TimeRange{})
+	gob.Register(schedulerTY.CustomVariableConfig{})
+	gob.Register(schedulerTY.State{})
 	gob.Register(dataRepositoryTY.Config{})
 	gob.Register(firmwareTY.Firmware{})
 	gob.Register(firmwareTY.FileConfig{})

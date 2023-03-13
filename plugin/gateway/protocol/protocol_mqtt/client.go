@@ -13,6 +13,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	msglogger "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/message_logger"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
@@ -24,6 +25,7 @@ import (
 const (
 	transmitPreDelayDefault = time.Microsecond * 1 // 1 micro second
 	reconnectDelayDefault   = time.Second * 10     // 10 seconds
+	loggerName              = "protocol_mqtt"
 )
 
 // Config data
@@ -47,11 +49,14 @@ type Endpoint struct {
 	Client         paho.Client
 	messageLogger  msglogger.MessageLogger
 	txPreDelay     time.Duration
+	logger         *zap.Logger
+	bus            busTY.Plugin
 }
 
 // New mqtt driver
-func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.RawMessage) error) (*Endpoint, error) {
-	zap.L().Debug("making mqtt connection", zap.String("gatewayId", gwCfg.ID))
+func New(logger *zap.Logger, gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.RawMessage) error, bus busTY.Plugin, logRootDir string) (*Endpoint, error) {
+	namedLogger := logger.Named(loggerName)
+	namedLogger.Debug("making mqtt connection", zap.String("gatewayId", gwCfg.ID))
 	start := time.Now()
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameNone, protocol, &cfg)
@@ -65,10 +70,12 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 		Config:         cfg,
 		receiveMsgFunc: rxMsgFunc,
 		txPreDelay:     utils.ToDuration(cfg.TransmitPreDelay, transmitPreDelayDefault),
+		logger:         namedLogger,
+		bus:            bus,
 	}
 
 	// add void logger to avoid nill exception, till er get successful connection
-	endpoint.messageLogger = msglogger.GetVoidLogger()
+	endpoint.messageLogger = msglogger.GetNoopLogger()
 
 	opts := paho.NewClientOptions()
 	opts.AddBroker(cfg.Broker)
@@ -96,10 +103,10 @@ func New(gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgFunc func(rm *msgTY.R
 	}
 
 	// init and start actual message message logger
-	endpoint.messageLogger = msglogger.Init(gwCfg.ID, gwCfg.MessageLogger, messageFormatter)
+	endpoint.messageLogger = msglogger.New(logger, gwCfg.ID, gwCfg.MessageLogger, messageFormatter, logRootDir)
 	endpoint.messageLogger.Start()
 
-	zap.L().Debug("MQTT client connected successfully", zap.String("timeTaken", time.Since(start).String()), zap.String("gatewayId", gwCfg.ID), zap.Any("clientConfig", cfg))
+	endpoint.logger.Debug("MQTT client connected successfully", zap.String("timeTaken", time.Since(start).String()), zap.String("gatewayId", gwCfg.ID), zap.Any("clientConfig", cfg))
 	return endpoint, nil
 }
 
@@ -119,7 +126,7 @@ func messageFormatter(rawMsg *msgTY.RawMessage) string {
 }
 
 func (ep *Endpoint) onConnectionHandler(c paho.Client) {
-	zap.L().Debug("MQTT connection success", zap.Any("gatewayId", ep.GatewayCfg.ID))
+	ep.logger.Debug("MQTT connection success", zap.Any("gatewayId", ep.GatewayCfg.ID))
 	state := types.State{
 		Status:  types.StatusUp,
 		Message: "Connected successfully",
@@ -128,26 +135,26 @@ func (ep *Endpoint) onConnectionHandler(c paho.Client) {
 
 	err := ep.Subscribe(ep.Config.Subscribe)
 	if err != nil {
-		zap.L().Error("failed to subscribe topics", zap.String("gatewayId", ep.GatewayCfg.ID), zap.String("topics", ep.Config.Subscribe), zap.Error(err))
+		ep.logger.Error("failed to subscribe topics", zap.String("gatewayId", ep.GatewayCfg.ID), zap.String("topics", ep.Config.Subscribe), zap.Error(err))
 		state.Message = fmt.Sprintf("Connected successfully, error on subscription:%s", err.Error())
 	}
 
-	busUtils.SetGatewayState(ep.GatewayCfg.ID, state)
+	busUtils.SetGatewayState(ep.logger, ep.bus, ep.GatewayCfg.ID, state)
 }
 
 func (ep *Endpoint) onConnectionLostHandler(c paho.Client, err error) {
-	zap.L().Error("mqtt connection lost", zap.Any("gatewayId", ep.GatewayCfg.ID), zap.Error(err))
+	ep.logger.Error("mqtt connection lost", zap.Any("gatewayId", ep.GatewayCfg.ID), zap.Error(err))
 	state := types.State{
 		Status:  types.StatusDown,
 		Message: err.Error(),
 		Since:   time.Now(),
 	}
-	busUtils.SetGatewayState(ep.GatewayCfg.ID, state)
+	busUtils.SetGatewayState(ep.logger, ep.bus, ep.GatewayCfg.ID, state)
 }
 
 // Write publishes a payload
 func (ep *Endpoint) Write(rawMsg *msgTY.RawMessage) error {
-	zap.L().Debug("About to send a message", zap.String("gatewayId", ep.GatewayCfg.ID), zap.Any("rawMessage", rawMsg))
+	ep.logger.Debug("About to send a message", zap.String("gatewayId", ep.GatewayCfg.ID), zap.Any("rawMessage", rawMsg))
 	topics := rawMsg.Others.Get(gwPtl.KeyMqttTopic).([]string)
 	qos := byte(ep.Config.QoS)
 	rawMsg.IsReceived = false
@@ -174,7 +181,7 @@ func (ep *Endpoint) Close() error {
 	if ep.Client.IsConnected() {
 		ep.Client.Unsubscribe(ep.Config.Subscribe)
 		ep.Client.Disconnect(0)
-		zap.L().Debug("MQTT Client connection closed", zap.String("gatewayId", ep.GatewayCfg.ID))
+		ep.logger.Debug("MQTT Client connection closed", zap.String("gatewayId", ep.GatewayCfg.ID))
 	}
 	ep.messageLogger.Close()
 	return nil
@@ -189,7 +196,7 @@ func (ep *Endpoint) getCallBack() func(paho.Client, paho.Message) {
 		ep.messageLogger.AsyncWrite(rawMsg)
 		err := ep.receiveMsgFunc(rawMsg)
 		if err != nil {
-			zap.L().Error("failed to process received message", zap.String("gatewayId", ep.GatewayCfg.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
+			ep.logger.Error("failed to process received message", zap.String("gatewayId", ep.GatewayCfg.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
 		}
 	}
 }
@@ -204,10 +211,10 @@ func (ep *Endpoint) Subscribe(topicsStr string) error {
 		token := ep.Client.Subscribe(topic, 0, ep.getCallBack())
 		token.WaitTimeout(3 * time.Second)
 		if token.Error() != nil {
-			zap.L().Error("error on subscription", zap.String("gatewayId", ep.GatewayCfg.ID), zap.String("topic", topic), zap.Error(token.Error()))
+			ep.logger.Error("error on subscription", zap.String("gatewayId", ep.GatewayCfg.ID), zap.String("topic", topic), zap.Error(token.Error()))
 			return token.Error()
 		}
-		zap.L().Debug("subscribed a topic", zap.String("gatewayId", ep.GatewayCfg.ID), zap.String("topic", topic))
+		ep.logger.Debug("subscribed a topic", zap.String("gatewayId", ep.GatewayCfg.ID), zap.String("topic", topic))
 	}
 	return nil
 }

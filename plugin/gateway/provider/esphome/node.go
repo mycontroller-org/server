@@ -7,18 +7,20 @@ import (
 
 	esphomeAPI "github.com/mycontroller-org/esphome_api/pkg/api"
 	esphomeClient "github.com/mycontroller-org/esphome_api/pkg/client"
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
+	topicTY "github.com/mycontroller-org/server/v2/pkg/types/topic"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 )
 
 // NewESPHomeNode creates a esphome node instance
-func NewESPHomeNode(gatewayID, nodeID string, config ESPHomeNodeConfig, entityStore *EntityStore, rxMessageFunc func(rawMsg *msgTY.RawMessage) error) *ESPHomeNode {
+func NewESPHomeNode(logger *zap.Logger, gatewayID, nodeID string, config ESPHomeNodeConfig, entityStore *EntityStore, rxMessageFunc func(rawMsg *msgTY.RawMessage) error, scheduler schedulerTY.CoreScheduler, bus busTY.Plugin) *ESPHomeNode {
 	client := &ESPHomeNode{
 		GatewayID:     gatewayID,
 		NodeID:        nodeID,
@@ -26,6 +28,9 @@ func NewESPHomeNode(gatewayID, nodeID string, config ESPHomeNodeConfig, entitySt
 		entityStore:   entityStore,
 		rxMessageFunc: rxMessageFunc,
 		imageBuffer:   new(bytes.Buffer),
+		logger:        logger,
+		scheduler:     scheduler,
+		bus:           bus,
 	}
 	return client
 }
@@ -65,16 +70,16 @@ func (en *ESPHomeNode) Connect() error {
 func (en *ESPHomeNode) doAliveCheck() {
 	err := en.Client.Ping()
 	if err != nil {
-		Unschedule(en.aliveScheduleID())
+		en.scheduler.RemoveFunc(en.aliveScheduleID())
 		en.ScheduleReconnect()
-		zap.L().Info("error on ping, reconnect scheduled", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.String("error", err.Error()), zap.String("reconnectDelay", en.Config.ReconnectDelay))
+		en.logger.Info("error on ping, reconnect scheduled", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.String("error", err.Error()), zap.String("reconnectDelay", en.Config.ReconnectDelay))
 	}
 }
 
 // Disconnect performs logout from esphome node
 func (en *ESPHomeNode) Disconnect() error {
-	Unschedule(en.aliveScheduleID())
-	Unschedule(en.reconnectScheduleID())
+	en.scheduler.RemoveFunc(en.aliveScheduleID())
+	en.scheduler.RemoveFunc(en.reconnectScheduleID())
 	if en.Client != nil {
 		return en.Client.Close()
 	}
@@ -83,7 +88,7 @@ func (en *ESPHomeNode) Disconnect() error {
 
 // Post sends message to a esphome node
 func (en *ESPHomeNode) Post(msg proto.Message) error {
-	zap.L().Debug("posting a message", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Any("msg", msg), zap.String("type", fmt.Sprintf("%T", msg)))
+	en.logger.Debug("posting a message", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Any("msg", msg), zap.String("type", fmt.Sprintf("%T", msg)))
 	err := en.Client.Send(msg)
 	if err != nil {
 		return err
@@ -101,10 +106,9 @@ func (en *ESPHomeNode) Post(msg proto.Message) error {
 		data.SetValue(convertor.ToString(imageReq.Stream))
 		data.MetricType = metricTY.MetricTypeNone
 		streamResponse.Payloads = append(streamResponse.Payloads, data)
-		topic := mcbus.GetTopicPostMessageToProcessor()
-		err = mcbus.Publish(topic, streamResponse)
+		err = en.bus.Publish(topicTY.TopicPostMessageToProcessor, streamResponse)
 		if err != nil {
-			zap.L().Error("error on posting a message", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
+			en.logger.Error("error on posting a message", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
 		}
 	}
 	return nil
@@ -134,7 +138,7 @@ func (en *ESPHomeNode) onReceive(msg proto.Message) {
 
 	err := en.rxMessageFunc(rawMsg)
 	if err != nil {
-		zap.L().Error("error on posting a message", zap.Error(err), zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Any("message", msg))
+		en.logger.Error("error on posting a message", zap.Error(err), zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Any("message", msg))
 	}
 }
 
@@ -144,31 +148,31 @@ func (en *ESPHomeNode) reconnect() {
 	if en.Client != nil {
 		err := en.Client.Close()
 		if err != nil {
-			zap.L().Debug("error on disconnect", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.String("error", err.Error()))
+			en.logger.Debug("error on disconnect", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.String("error", err.Error()))
 		}
 	}
 
 	err := en.Connect()
 	if err != nil {
-		zap.L().Debug("error on reconnect", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.String("error", err.Error()))
+		en.logger.Debug("error on reconnect", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.String("error", err.Error()))
 	} else {
-		Unschedule(en.reconnectScheduleID())
+		en.scheduler.RemoveFunc(en.reconnectScheduleID())
 	}
 }
 
 // scheduleAliveCheck adds a schedule for alivecheck
 func (en *ESPHomeNode) scheduleAliveCheck() {
-	err := Schedule(en.aliveScheduleID(), en.Config.AliveCheckInterval, en.doAliveCheck)
+	err := en.scheduler.AddFunc(en.aliveScheduleID(), en.Config.AliveCheckInterval, en.doAliveCheck)
 	if err != nil {
-		zap.L().Error("error on configure alive check interval", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
+		en.logger.Error("error on configure alive check interval", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
 	}
 }
 
 // ScheduleReconnect adds a schedule for a reconnect
 func (en *ESPHomeNode) ScheduleReconnect() {
-	err := Schedule(en.reconnectScheduleID(), en.Config.ReconnectDelay, en.reconnect)
+	err := en.scheduler.AddFunc(en.reconnectScheduleID(), en.Config.ReconnectDelay, en.reconnect)
 	if err != nil {
-		zap.L().Error("error on configure reconnect", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
+		en.logger.Error("error on configure reconnect", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
 	}
 }
 
@@ -186,7 +190,7 @@ func (en *ESPHomeNode) reconnectScheduleID() string {
 func (en *ESPHomeNode) sendNodeInfo() {
 	deviceInfo, err := en.Client.DeviceInfo()
 	if err != nil {
-		zap.L().Error("error on getting device info", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
+		en.logger.Error("error on getting device info", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
 		return
 	}
 
@@ -203,10 +207,9 @@ func (en *ESPHomeNode) sendNodeInfo() {
 
 	nodeMsg.Payloads = append(nodeMsg.Payloads, data)
 
-	topic := mcbus.GetTopicPostMessageToProcessor()
-	err = mcbus.Publish(topic, nodeMsg)
+	err = en.bus.Publish(topicTY.TopicPostMessageToProcessor, nodeMsg)
 	if err != nil {
-		zap.L().Error("error on posting a message", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
+		en.logger.Error("error on posting a message", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
 	}
 }
 
@@ -217,9 +220,9 @@ func (en *ESPHomeNode) sendRestartRequest() {
 		restartRequest := &esphomeAPI.SwitchCommandRequest{State: true, Key: entity.Key}
 		err := en.Post(restartRequest)
 		if err != nil {
-			zap.L().Error("error on sending restart request", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
+			en.logger.Error("error on sending restart request", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID), zap.Error(err))
 		}
 		return
 	}
-	zap.L().Info("seems 'restart' switch is not configured for this node", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID))
+	en.logger.Info("seems 'restart' switch is not configured for this node", zap.String("gatewayId", en.GatewayID), zap.String("nodeId", en.NodeID))
 }

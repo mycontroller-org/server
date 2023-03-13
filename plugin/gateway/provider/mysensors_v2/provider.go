@@ -1,18 +1,18 @@
 package mysensors
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	sch "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	utils "github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
-	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	ethernet "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_ethernet"
 	mqtt "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/protocol_mqtt"
@@ -22,7 +22,10 @@ import (
 	"go.uber.org/zap"
 )
 
-const PluginMySensorsV2 = "mysensors_v2"
+const (
+	PluginMySensorsV2 = "mysensors_v2"
+	loggerName        = "gateway_mysensors_v2"
+)
 
 // Config of this provider
 type Config struct {
@@ -36,10 +39,14 @@ type Config struct {
 
 // Provider implementation
 type Provider struct {
-	Config        *Config
-	GatewayConfig *gwTY.Config
-	Protocol      gwPtl.Protocol
-	ProtocolType  string
+	Config           *Config
+	GatewayConfig    *gwTY.Config
+	Protocol         gwPtl.Protocol
+	ProtocolType     string
+	logger           *zap.Logger
+	scheduler        schedulerTY.CoreScheduler
+	bus              busTY.Plugin
+	logRootDirectory string
 }
 
 const (
@@ -47,19 +54,36 @@ const (
 	timeoutAllowedMinimumLevel = time.Millisecond * 10
 )
 
-// NewPluginMySensorsV2 MySensors provider
-func NewPluginMySensorsV2(gatewayCfg *gwTY.Config) (providerTY.Plugin, error) {
+// MySensors v2 provider
+func New(ctx context.Context, config *gwTY.Config) (providerTY.Plugin, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	scheduler, err := schedulerTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	bus, err := busTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	cfg := &Config{}
-	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, cfg)
+	err = utils.MapToStruct(utils.TagNameNone, config.Provider, cfg)
 	if err != nil {
 		return nil, err
 	}
 	provider := &Provider{
-		Config:        cfg,
-		GatewayConfig: gatewayCfg,
-		ProtocolType:  cfg.Protocol.GetString(types.NameType),
+		Config:           cfg,
+		GatewayConfig:    config,
+		ProtocolType:     cfg.Protocol.GetString(types.NameType),
+		logger:           logger.Named(loggerName),
+		scheduler:        scheduler,
+		bus:              bus,
+		logRootDirectory: types.GetEnvString(types.ENV_DIR_GATEWAY_LOGS),
 	}
-	zap.L().Debug("Config details", zap.Any("received", gatewayCfg.Provider), zap.Any("converted", cfg))
+	provider.logger.Debug("Config details", zap.Any("received", config.Provider), zap.Any("converted", cfg))
 	return provider, nil
 }
 
@@ -72,21 +96,21 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) e
 	var err error
 	switch p.ProtocolType {
 	case gwPtl.TypeMQTT:
-		protocol, _err := mqtt.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
+		protocol, _err := mqtt.New(p.logger, p.GatewayConfig, p.Config.Protocol, receivedMessageHandler, p.bus, p.logRootDirectory)
 		err = _err
 		p.Protocol = protocol
 
 	case gwPtl.TypeSerial:
 		// update serial message splitter
 		p.Config.Protocol.Set(serial.KeyMessageSplitter, serialMessageSplitter, nil)
-		protocol, _err := serial.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
+		protocol, _err := serial.New(p.logger, p.GatewayConfig, p.Config.Protocol, receivedMessageHandler, p.bus, p.logRootDirectory)
 		err = _err
 		p.Protocol = protocol
 
 	case gwPtl.TypeEthernet:
 		// update ethernet message splitter
 		p.Config.Protocol.Set(serial.KeyMessageSplitter, ethernetMessageSplitter, nil)
-		protocol, _err := ethernet.New(p.GatewayConfig, p.Config.Protocol, receivedMessageHandler)
+		protocol, _err := ethernet.New(p.logger, p.GatewayConfig, p.Config.Protocol, receivedMessageHandler, p.bus, p.logRootDirectory)
 		err = _err
 		p.Protocol = protocol
 
@@ -98,11 +122,11 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) e
 
 	// load firmware purge job
 	firmwarePurgeJobName := fmt.Sprintf("%s_%s", firmwarePurgeJobName, p.GatewayConfig.ID)
-	err = sch.SVC.AddFunc(firmwarePurgeJobName, firmwarePurgeJobCron, firmwareRawPurge)
+	err = p.scheduler.AddFunc(firmwarePurgeJobName, firmwarePurgeJobCron, firmwareRawPurge)
 	if err != nil {
 		return err
 	}
-	err = initEventListener(p.GatewayConfig.ID)
+	err = p.initEventListener(p.GatewayConfig.ID)
 	if err != nil {
 		return err
 	}
@@ -113,14 +137,14 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) e
 // Close func
 func (p *Provider) Close() error {
 	// remove all schedules on this gateway
-	scheduleUtils.UnscheduleAll(schedulePrefix, p.GatewayConfig.ID)
+	p.scheduler.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, p.GatewayConfig.ID))
 
 	// stop event listener
-	closeEventListener()
+	p.closeEventListener()
 
 	// remove firmware purge job
 	fwPurgeJobName := fmt.Sprintf("%s_%s", firmwarePurgeJobName, p.GatewayConfig.ID)
-	sch.SVC.RemoveFunc(fwPurgeJobName)
+	p.scheduler.RemoveFunc(fwPurgeJobName)
 	// close gateway
 	return p.Protocol.Close()
 }
@@ -130,7 +154,7 @@ func (p *Provider) Close() error {
 func (p *Provider) Post(msg *msgTY.Message) error {
 	rawMsg, err := p.toRawMessage(msg)
 	if err != nil {
-		zap.L().Error("error on converting to raw message", zap.String("gatewayId", p.GatewayConfig.ID), zap.Error(err))
+		p.logger.Error("error on converting to raw message", zap.String("gatewayId", p.GatewayConfig.ID), zap.Error(err))
 		return err
 	}
 
@@ -149,11 +173,11 @@ func (p *Provider) Post(msg *msgTY.Message) error {
 	// to address this, as a workaround changing the channel capacity from 0 to some defined numbers
 	// TODO: still it is possible to get in to infinite wait lock, when it receives defined number of ack
 	ackChannel := concurrency.NewChannel(20)
-	ackTopic := mcbus.GetTopicPostRawMessageAcknowledgement(p.GatewayConfig.ID, rawMsg.ID)
-	ackSubscriptionID, err := mcbus.Subscribe(
+	ackTopic := fmt.Sprintf("%s.%s", p.GatewayConfig.ID, rawMsg.ID)
+	ackSubscriptionID, err := p.bus.Subscribe(
 		ackTopic,
 		func(event *busTY.BusData) {
-			zap.L().Debug("acknowledgement status", zap.Any("event", event))
+			p.logger.Debug("acknowledgement status", zap.Any("event", event))
 			ackChannel.SafeSend(true)
 		},
 	)
@@ -163,9 +187,9 @@ func (p *Provider) Post(msg *msgTY.Message) error {
 
 	// on exit unsubscribe and close the channel
 	defer func() {
-		err := mcbus.Unsubscribe(ackTopic, ackSubscriptionID)
+		err := p.bus.Unsubscribe(ackTopic, ackSubscriptionID)
 		if err != nil {
-			zap.L().Error("error on unsubscribe", zap.Error(err), zap.String("topic", ackTopic), zap.Any("sunscriptionID", ackSubscriptionID))
+			p.logger.Error("error on unsubscribe", zap.Error(err), zap.String("topic", ackTopic), zap.Any("sunscriptionID", ackSubscriptionID))
 		}
 		ackChannel.SafeClose()
 	}()
@@ -174,12 +198,12 @@ func (p *Provider) Post(msg *msgTY.Message) error {
 	if err != nil {
 		// failed to parse timeout, running with default
 		timeout = defaultTimeout
-		zap.L().Warn("failed to parse timeout, running with default timeout", zap.String("timeout", p.Config.Timeout), zap.String("default", defaultTimeout.String()), zap.Error(err))
+		p.logger.Warn("failed to parse timeout, running with default timeout", zap.String("timeout", p.Config.Timeout), zap.String("default", defaultTimeout.String()), zap.Error(err))
 	}
 
 	// minimum timeout
 	if timeout < timeoutAllowedMinimumLevel {
-		zap.L().Info("adjusting timeout to mimimum allowed level", zap.String("supplied", timeout.String()), zap.String("minimum", timeoutAllowedMinimumLevel.String()))
+		p.logger.Info("adjusting timeout to mimimum allowed level", zap.String("supplied", timeout.String()), zap.String("minimum", timeoutAllowedMinimumLevel.String()))
 		timeout = timeoutAllowedMinimumLevel
 	}
 
@@ -187,7 +211,7 @@ func (p *Provider) Post(msg *msgTY.Message) error {
 	// check retry count, and reset if invalid number set
 	if retryCount < 1 {
 		retryCount = 1
-		zap.L().Info("adjusting retry count", zap.Int("supplied", p.Config.RetryCount), zap.Int("updated", retryCount))
+		p.logger.Info("adjusting retry count", zap.Int("supplied", p.Config.RetryCount), zap.Int("updated", retryCount))
 	}
 
 	messageSent := false

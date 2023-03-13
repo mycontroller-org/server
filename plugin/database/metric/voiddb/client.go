@@ -1,6 +1,8 @@
 package voiddb
 
 import (
+	"context"
+
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 )
@@ -14,7 +16,7 @@ type Client struct {
 }
 
 // NewClient creates a dummy client
-func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
+func NewClient(ctx context.Context, config cmap.CustomMap) (metricTY.Plugin, error) {
 	return &Client{}, nil
 }
 

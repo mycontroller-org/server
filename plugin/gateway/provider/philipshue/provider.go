@@ -1,13 +1,16 @@
 package philipshue
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/amimof/huego"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
@@ -16,6 +19,7 @@ import (
 const PluginPhilipsHue = "philips_hue"
 
 const (
+	loggerName                = "gateway_philipshue"
 	schedulePrefix            = "philipshue_status"
 	scheduleFormatSync        = "%s_sync"
 	scheduleFormatBridge      = "%s_bridge"
@@ -33,22 +37,41 @@ type Config struct {
 
 // Provider data
 type Provider struct {
+	ctx           context.Context
 	Config        Config
 	GatewayConfig *gwTY.Config
 	bridge        *huego.Bridge
+	logger        *zap.Logger
+	scheduler     schedulerTY.CoreScheduler
+	bus           busTY.Plugin
 }
 
-// NewPluginPhilipsHue provider
-func NewPluginPhilipsHue(gatewayCfg *gwTY.Config) (providerTY.Plugin, error) {
-	cfg := Config{}
-	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, &cfg)
+// philipshue provider
+func New(ctx context.Context, config *gwTY.Config) (providerTY.Plugin, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	scheduler, err := schedulerTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	bus, err := busTY.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 
+	cfg := Config{}
+	err = utils.MapToStruct(utils.TagNameNone, config.Provider, &cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	namedLogger := logger.Named(loggerName)
+
 	_, err = time.ParseDuration(cfg.SyncInterval)
 	if err != nil {
-		zap.L().Debug("invalid sync interval supplied. set to default", zap.String("input", cfg.SyncInterval), zap.String("default", defaultSyncInterval))
+		namedLogger.Debug("invalid sync interval supplied. set to default", zap.String("input", cfg.SyncInterval), zap.String("default", defaultSyncInterval))
 		cfg.SyncInterval = defaultSyncInterval
 	}
 
@@ -57,15 +80,19 @@ func NewPluginPhilipsHue(gatewayCfg *gwTY.Config) (providerTY.Plugin, error) {
 
 	_, err = time.ParseDuration(cfg.BridgeSyncInterval)
 	if err != nil {
-		zap.L().Debug("invalid bridge sync interval supplied. set to default", zap.String("input", cfg.BridgeSyncInterval), zap.String("default", defaultBridgeSyncInterval))
+		namedLogger.Debug("invalid bridge sync interval supplied. set to default", zap.String("input", cfg.BridgeSyncInterval), zap.String("default", defaultBridgeSyncInterval))
 		cfg.BridgeSyncInterval = defaultBridgeSyncInterval
 	}
 
 	provider := &Provider{
+		ctx:           ctx,
 		Config:        cfg,
-		GatewayConfig: gatewayCfg,
+		GatewayConfig: config,
+		logger:        namedLogger,
+		scheduler:     scheduler,
+		bus:           bus,
 	}
-	zap.L().Debug("Config details", zap.Any("received", gatewayCfg.Provider), zap.Any("converted", cfg))
+	provider.logger.Debug("Config details", zap.Any("received", config.Provider), zap.Any("converted", cfg))
 	return provider, nil
 }
 
@@ -111,7 +138,7 @@ func (p *Provider) Close() error {
 }
 
 func (p *Provider) unscheduleAll() {
-	scheduleUtils.UnscheduleAll(schedulePrefix, p.GatewayConfig.ID)
+	p.scheduler.RemoveWithPrefix(fmt.Sprintf("%s_%s", schedulePrefix, p.GatewayConfig.ID))
 }
 
 func (p *Provider) scheduleBridgeSync() error {
@@ -124,9 +151,9 @@ func (p *Provider) scheduleSync() error {
 
 func (p *Provider) schedule(scheduleID, interval string, triggerFunc func()) error {
 	jobSpec := fmt.Sprintf("@every %s", interval)
-	err := scheduleUtils.Schedule(scheduleID, jobSpec, triggerFunc)
+	err := p.scheduler.AddFunc(scheduleID, jobSpec, triggerFunc)
 	if err != nil {
-		zap.L().Error("error on adding schedule", zap.Error(err))
+		p.logger.Error("error on adding schedule", zap.Error(err))
 		return err
 	}
 	return nil

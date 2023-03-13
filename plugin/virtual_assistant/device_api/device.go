@@ -1,18 +1,23 @@
 package api
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
 	"time"
 
+	actionAPI "github.com/mycontroller-org/server/v2/pkg/api/action"
+	entityAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	quickIdAPI "github.com/mycontroller-org/server/v2/pkg/api/quickid"
-	vdAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_device"
 	"github.com/mycontroller-org/server/v2/pkg/types"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	filedTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	vdTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_device"
+	converterUtil "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	filterUtil "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 
@@ -21,7 +26,47 @@ const (
 	DefaultOffset = 0
 )
 
-func ListDevices(filters []storageTY.Filter, limit, offset int64) ([]vdTY.VirtualDevice, error) {
+type DeviceAPI struct {
+	ctx        context.Context
+	logger     *zap.Logger
+	api        *entityAPI.API
+	quickIdAPI *quickIdAPI.QuickIdAPI
+	actionAPI  *actionAPI.ActionAPI
+}
+
+func New(ctx context.Context) (*DeviceAPI, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	api, err := entityAPI.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	quickIdAPI, err := quickIdAPI.New(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	_actionAPI, err := actionAPI.New(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &DeviceAPI{
+		ctx:        ctx,
+		logger:     logger.Named("device_api"),
+		api:        api,
+		quickIdAPI: quickIdAPI,
+		actionAPI:  _actionAPI,
+	}, nil
+}
+
+func (d *DeviceAPI) GetByID(ID string) (*vdTY.VirtualDevice, error) {
+	return d.api.VirtualDevice().GetByID(ID)
+}
+
+func (d *DeviceAPI) ListDevices(filters []storageTY.Filter, limit, offset int64) ([]vdTY.VirtualDevice, error) {
 	if filters == nil {
 		filters = make([]storageTY.Filter, 0)
 	} else {
@@ -47,9 +92,9 @@ func ListDevices(filters []storageTY.Filter, limit, offset int64) ([]vdTY.Virtua
 		},
 	}
 
-	result, err := vdAPI.List(filters, pagination)
+	result, err := d.api.VirtualDevice().List(filters, pagination)
 	if err != nil {
-		zap.L().Error("error on getting devices", zap.Error(err))
+		d.logger.Error("error on getting devices", zap.Error(err))
 		return nil, err
 	}
 
@@ -59,7 +104,7 @@ func ListDevices(filters []storageTY.Filter, limit, offset int64) ([]vdTY.Virtua
 			vDevices := *vDevicesPointer
 			return vDevices, nil
 		} else {
-			zap.L().Warn("error on type casting", zap.String("received", fmt.Sprintf("%T", result.Data)))
+			d.logger.Warn("error on type casting", zap.String("received", fmt.Sprintf("%T", result.Data)))
 		}
 	}
 
@@ -67,11 +112,11 @@ func ListDevices(filters []storageTY.Filter, limit, offset int64) ([]vdTY.Virtua
 	return devices, nil
 }
 
-func UpdateDeviceState(vDevices []vdTY.VirtualDevice) error {
+func (d *DeviceAPI) UpdateDeviceState(vDevices []vdTY.VirtualDevice) error {
 	for _, vDevice := range vDevices {
 		for trait := range vDevice.Traits {
 			vResource := vDevice.Traits[trait]
-			value, valueTimestamp, err := GetResourceState(&vDevice, trait, &vResource)
+			value, valueTimestamp, err := d.GetResourceState(&vDevice, trait, &vResource)
 			if err != nil {
 				return err
 			}
@@ -83,14 +128,14 @@ func UpdateDeviceState(vDevices []vdTY.VirtualDevice) error {
 	return nil
 }
 
-func GetResourceState(device *vdTY.VirtualDevice, trait string, vResource *vdTY.Resource) (interface{}, time.Time, error) {
+func (d *DeviceAPI) GetResourceState(device *vdTY.VirtualDevice, trait string, vResource *vdTY.Resource) (interface{}, time.Time, error) {
 	valueTimestamp := time.Time{}
 
 	if vResource.Type != vdTY.ResourceByQuickID {
 		return nil, valueTimestamp, errors.New("label based resources are not allowed")
 	}
 	quickID := fmt.Sprintf("%s:%s", vResource.ResourceType, vResource.QuickID)
-	responseMap, err := quickIdAPI.GetResources([]string{quickID})
+	responseMap, err := d.quickIdAPI.GetResources([]string{quickID})
 	if err != nil {
 		return nil, valueTimestamp, err
 	}
@@ -116,7 +161,7 @@ func GetResourceState(device *vdTY.VirtualDevice, trait string, vResource *vdTY.
 	// fetch value
 	_, value, err := filterUtil.GetValueByKeyPath(resource, keyPath)
 	if err != nil {
-		zap.L().Error("error on getting a value on a resource", zap.String("trait", trait), zap.String("keyPath", keyPath), zap.Error(err))
+		d.logger.Error("error on getting a value on a resource", zap.String("trait", trait), zap.String("keyPath", keyPath), zap.Error(err))
 		return nil, valueTimestamp, err
 	}
 
@@ -124,7 +169,7 @@ func GetResourceState(device *vdTY.VirtualDevice, trait string, vResource *vdTY.
 	if timestampPath != "" {
 		_, rawTimestamp, err := filterUtil.GetValueByKeyPath(resource, timestampPath)
 		if err != nil {
-			zap.L().Error("error on getting a timestamp on a resource", zap.String("trait", trait), zap.String("timestampPath", timestampPath), zap.Error(err))
+			d.logger.Error("error on getting a timestamp on a resource", zap.String("trait", trait), zap.String("timestampPath", timestampPath), zap.Error(err))
 		} else {
 			if timestamp, ok := rawTimestamp.(time.Time); ok {
 				valueTimestamp = timestamp
@@ -133,4 +178,15 @@ func GetResourceState(device *vdTY.VirtualDevice, trait string, vResource *vdTY.
 	}
 
 	return value, valueTimestamp, nil
+}
+
+func (d *DeviceAPI) PostActionOnResourceByQuickID(resourceType, quickId string, payload interface{}) error {
+	data := &handlerType.ResourceData{
+		ResourceType: resourceType,
+		QuickID:      quickId,
+		Payload:      converterUtil.ToString(payload),
+		PreDelay:     "0s",
+	}
+
+	return d.actionAPI.ExecuteActionOnResourceByQuickID(data)
 }

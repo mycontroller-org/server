@@ -173,16 +173,16 @@ func (c *Command) startFn() {
 		zap.L().Debug("stop triggered", zap.String("command", c.Command), zap.Any("args", c.Args))
 		err := c.cmd.Stop()
 		if err != nil {
-			zap.L().Error("Error on timout", zap.String("command", c.Command), zap.Any("args", c.Args))
+			zap.L().Error("error on timeout", zap.String("command", c.Command), zap.Any("args", c.Args))
 		}
 		st := c.cmd.Status()
 		onExitFn(ExitTypeStop, st)
 
 	case <-time.After(timeout): // timeout
-		zap.L().Info("Timeout hits", zap.String("command", c.Command), zap.Any("args", c.Args))
+		zap.L().Info("timeout hits", zap.String("command", c.Command), zap.Any("args", c.Args))
 		err := c.cmd.Stop()
 		if err != nil {
-			zap.L().Error("Error on timout", zap.String("command", c.Command), zap.Any("args", c.Args))
+			zap.L().Error("error on timeout", zap.String("command", c.Command), zap.Any("args", c.Args))
 		}
 		st := c.cmd.Status()
 		onExitFn(ExitTypeTimeout, st)

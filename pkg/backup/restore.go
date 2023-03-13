@@ -10,8 +10,7 @@ import (
 	"time"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	types "github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
@@ -22,73 +21,77 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var isImportJobRunning = concurrency.SafeBool{}
+// we can not allowed more than one restore operation at a time
+// hence defined it globally
+var (
+	isRestoreRunning = concurrency.SafeBool{}
+)
 
-func ExecuteRestore(storage storageTY.Plugin, apiMap map[string]backupTY.SaveAPIHolder, extractedDir string) error {
+func (br *BackupRestore) ExecuteRestore(storage storageTY.Plugin, apiMap map[string]backupTY.Backup, extractedDir string) error {
 	start := time.Now()
-	zap.L().Info("Restore job triggered", zap.String("extractedDirectory", extractedDir))
+	br.logger.Info("Restore job triggered", zap.String("extractedDirectory", extractedDir))
 
 	err := storage.Pause()
 	if err != nil {
-		zap.L().Fatal("error on pause a database", zap.Error(err))
+		br.logger.Fatal("error on pause a database", zap.Error(err))
 		return err
 	}
 
 	err = storage.ClearDatabase()
 	if err != nil {
-		zap.L().Fatal("error on emptying database", zap.Error(err))
+		br.logger.Fatal("error on emptying database", zap.Error(err))
 		return err
 	}
 
-	storageDir := path.Join(extractedDir, types.DirectoryDataStorage)
-	firmwareDir := path.Join(extractedDir, types.DirectoryDataFirmware)
+	storageDir := path.Join(extractedDir, config.DirectoryDataStorage)
+	firmwareDir := path.Join(extractedDir, config.DirectoryDataFirmware)
 
 	dataBytes, err := utils.ReadFile(extractedDir, backupTY.BackupDetailsFilename)
 	if err != nil {
-		zap.L().Fatal("error on reading export details", zap.String("dir", extractedDir), zap.String("filename", backupTY.BackupDetailsFilename), zap.Error(err))
+		br.logger.Fatal("error on reading export details", zap.String("dir", extractedDir), zap.String("filename", backupTY.BackupDetailsFilename), zap.Error(err))
 		return err
 	}
 
 	exportDetails := &backupTY.BackupDetails{}
 	err = yaml.Unmarshal(dataBytes, exportDetails)
 	if err != nil {
-		zap.L().Fatal("error on loading export details", zap.Error(err))
+		br.logger.Fatal("error on loading export details", zap.Error(err))
 		return err
 	}
 
-	err = ExecuteImportStorage(apiMap, storageDir, exportDetails.StorageExportType, false)
+	err = br.ExecuteImportStorage(apiMap, storageDir, exportDetails.StorageExportType, false)
 	if err != nil {
-		zap.L().Fatal("error on importing storage files", zap.Error(err))
+		br.logger.Fatal("error on importing storage files", zap.Error(err))
 		return err
 	}
 
 	err = storage.Resume()
 	if err != nil {
-		zap.L().Fatal("error on resume a database service", zap.Error(err))
+		br.logger.Fatal("error on resume a database service", zap.Error(err))
 		return err
 	}
 
-	zap.L().Info("Import database completed", zap.String("timeTaken", time.Since(start).String()))
+	br.logger.Info("Import database completed", zap.String("timeTaken", time.Since(start).String()))
 
 	// restore firmwares
-	err = ExecuteRestoreFirmware(firmwareDir)
+	err = br.ExecuteRestoreFirmware(firmwareDir)
 	if err != nil {
-		zap.L().Fatal("error on copying firmware files", zap.Error(err))
+		br.logger.Fatal("error on copying firmware files", zap.Error(err))
 		return err
 	}
-	zap.L().Info("restore completed successfully", zap.String("timeTaken", time.Since(start).String()))
+	br.logger.Info("restore completed successfully", zap.String("timeTaken", time.Since(start).String()))
 	return nil
 }
 
 // ExecuteRestoreFirmware copies firmwares to the actual directory
-func ExecuteRestoreFirmware(sourceDir string) error {
-	if isImportJobRunning.IsSet() {
+func (br *BackupRestore) ExecuteRestoreFirmware(sourceDir string) error {
+	if isRestoreRunning.IsSet() {
 		return errors.New("there is an import job is in progress")
 	}
-	isImportJobRunning.Set()
-	defer isImportJobRunning.Reset()
+	isRestoreRunning.Set()
+	defer isRestoreRunning.Reset()
 
-	destDir := types.GetDataDirectoryFirmware()
+	destDir := br.dirDataFirmware
 	err := utils.RemoveDir(destDir)
 	if err != nil {
 		return err
@@ -107,28 +110,28 @@ func ExecuteRestoreFirmware(sourceDir string) error {
 }
 
 // ExecuteImportStorage update data into database
-func ExecuteImportStorage(apiMap map[string]backupTY.SaveAPIHolder, sourceDir, fileType string, ignoreEmptyDir bool) error {
-	if isImportJobRunning.IsSet() {
+func (br *BackupRestore) ExecuteImportStorage(apiMap map[string]backupTY.Backup, sourceDir, fileType string, ignoreEmptyDir bool) error {
+	if isRestoreRunning.IsSet() {
 		return errors.New("there is an import job is in progress")
 	}
-	isImportJobRunning.Set()
+	isRestoreRunning.Set()
 	defer func() {
-		isImportJobRunning.Reset()
+		isRestoreRunning.Reset()
 		// resume bus service
-		mcbus.Resume()
+		br.bus.ResumePublish()
 	}()
 
-	// pause bus service
-	mcbus.Pause()
+	// pause publish service in bus
+	br.bus.PausePublish()
 
-	zap.L().Info("executing import job", zap.String("sourceDir", sourceDir), zap.String("fileType", fileType))
+	br.logger.Info("executing import job", zap.String("sourceDir", sourceDir), zap.String("fileType", fileType))
 	// check directory availability
 	if !utils.IsDirExists(sourceDir) {
 		return fmt.Errorf("specified directory not available. sourceDir:%s", sourceDir)
 	}
 	files, err := utils.ListFiles(sourceDir)
 	if err != nil {
-		zap.L().Error("error on listing files", zap.Error(err))
+		br.logger.Error("error on listing files", zap.Error(err))
 		return err
 	}
 	if len(files) == 0 {
@@ -141,44 +144,44 @@ func ExecuteImportStorage(apiMap map[string]backupTY.SaveAPIHolder, sourceDir, f
 		if !strings.HasSuffix(file.Name, fileType) {
 			continue
 		}
-		entityName := getEntityName(file.Name)
-		zap.L().Debug("importing a file", zap.String("file", file.Name), zap.String("entityName", entityName))
+		entityName := br.getEntityName(file.Name)
+		br.logger.Debug("importing a file", zap.String("file", file.Name), zap.String("entityName", entityName))
 		// read data from file
 		fileBytes, err := utils.ReadFile(sourceDir, file.Name)
 		if err != nil {
-			zap.L().Error("error on reading a file", zap.String("fileName", file.FullPath), zap.Error(err))
+			br.logger.Error("error on reading a file", zap.String("fileName", file.FullPath), zap.Error(err))
 			return err
 		}
 		apiHolder, found := apiMap[entityName]
 		if !found {
-			zap.L().Error("error on getting api map details", zap.String("entityName", entityName))
+			br.logger.Error("error on getting api map details", zap.String("entityName", entityName))
 			return fmt.Errorf("error on getting api map details. entityName:%s", entityName)
 		}
 
-		err = updateEntities(apiHolder, fileBytes, entityName, fileType)
+		err = br.updateEntities(apiHolder, fileBytes, fileType)
 		if err != nil {
-			zap.L().Error("error on updating entity", zap.String("file", file.FullPath), zap.String("entityName", entityName), zap.String("fileType", fileType), zap.Error(err))
+			br.logger.Error("error on updating entity", zap.String("file", file.FullPath), zap.String("entityName", entityName), zap.String("fileType", fileType), zap.Error(err))
 			return err
 		}
 	}
 	return nil
 }
 
-func updateEntities(apiHolder backupTY.SaveAPIHolder, fileBytes []byte, entityName, fileFormat string) error {
+func (br *BackupRestore) updateEntities(api backupTY.Backup, fileBytes []byte, fileFormat string) error {
 	// get actual type
-	entityType := reflect.TypeOf(apiHolder.EntityType)
+	entityType := reflect.TypeOf(api.GetEntityInterface())
 	entities := reflect.New(reflect.SliceOf(entityType)).Interface()
 
 	// load file data into entities
-	err := unmarshal(fileFormat, fileBytes, entities)
+	err := br.unmarshal(fileFormat, fileBytes, entities)
 	if err != nil {
 		return err
 	}
 
 	entitiesElem := reflect.ValueOf(entities).Elem()
-	// store the entities
+	// store the entities to storage database
 	for index := 0; index < entitiesElem.Len(); index++ {
-		err = apiHolder.API(entitiesElem.Index(index).Interface())
+		err = api.Import(entitiesElem.Index(index).Interface())
 		if err != nil {
 			return err
 		}
@@ -187,7 +190,7 @@ func updateEntities(apiHolder backupTY.SaveAPIHolder, fileBytes []byte, entityNa
 	return nil
 }
 
-func unmarshal(provider string, fileBytes []byte, entities interface{}) error {
+func (br *BackupRestore) unmarshal(provider string, fileBytes []byte, entities interface{}) error {
 	switch provider {
 	case backupTY.TypeJSON:
 		err := json.Unmarshal(fileBytes, entities)
@@ -205,7 +208,7 @@ func unmarshal(provider string, fileBytes []byte, entities interface{}) error {
 	return nil
 }
 
-func getEntityName(filename string) string {
+func (br *BackupRestore) getEntityName(filename string) string {
 	entity := strings.Split(filename, backupTY.EntityNameIndexSplit)
 	if len(entity) > 0 {
 		return entity[0]
@@ -213,20 +216,20 @@ func getEntityName(filename string) string {
 	return ""
 }
 
-func ExtractExportedZipFile(exportedZipFile string) error {
-	if isImportJobRunning.IsSet() {
+func (br *BackupRestore) ExtractExportedZipFile(exportedZipFile string) error {
+	if isRestoreRunning.IsSet() {
 		return errors.New("there is an import job is in progress")
 	}
-	isImportJobRunning.Set()
-	defer isImportJobRunning.Reset()
+	isRestoreRunning.Set()
+	defer isRestoreRunning.Reset()
 
 	zipFilename := path.Base(exportedZipFile)
 	baseDir := strings.TrimSuffix(zipFilename, path.Ext(zipFilename))
-	extractFullPath := path.Join(types.GetDataDirectoryInternal(), baseDir)
+	extractFullPath := path.Join(br.dirDataInternal, baseDir)
 
 	err := ziputils.Unzip(exportedZipFile, extractFullPath)
 	if err != nil {
-		zap.L().Error("error on unzip", zap.String("exportedZipfile", exportedZipFile), zap.String("extractLocation", extractFullPath), zap.Error(err))
+		br.logger.Error("error on unzip", zap.String("exportedZipfile", exportedZipFile), zap.String("extractLocation", extractFullPath), zap.Error(err))
 		return err
 	}
 
@@ -246,10 +249,10 @@ func ExtractExportedZipFile(exportedZipFile string) error {
 		return err
 	}
 
-	internalDir := types.GetDataDirectoryInternal()
+	internalDir := types.GetEnvString(types.ENV_DIR_DATA_INTERNAL)
 	err = utils.WriteFile(internalDir, config.SystemStartJobsFilename, dataBytes)
 	if err != nil {
-		zap.L().Error("failed to write data to disk", zap.String("directory", internalDir), zap.String("filename", config.SystemStartJobsFilename), zap.Error(err))
+		br.logger.Error("failed to write data to disk", zap.String("directory", internalDir), zap.String("filename", config.SystemStartJobsFilename), zap.Error(err))
 		return err
 	}
 

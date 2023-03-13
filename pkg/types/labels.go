@@ -35,4 +35,7 @@ const (
 
 	// used in virtual device
 	LabelRoom = "room"
+
+	// used in schedule, task and other resources. to activate timeout feature on javascript execution
+	LabelScriptTimeout = "script_timeout"
 )

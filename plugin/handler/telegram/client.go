@@ -1,12 +1,14 @@
 package telegram
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/types"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpClient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
 	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
@@ -17,7 +19,8 @@ import (
 const (
 	PluginTelegram = "telegram"
 
-	timeout = time.Second * 15
+	timeout    = time.Second * 15
+	loggerName = "handler_telegram"
 )
 
 // TelegramClient struct
@@ -25,12 +28,18 @@ type TelegramClient struct {
 	handlerCfg *handlerTY.Config
 	Config     *Config
 	httpClient *httpClient.Client
+	logger     *zap.Logger
 }
 
-// Init Telegram client
-func NewTelegramPlugin(cfg *handlerTY.Config) (handlerTY.Plugin, error) {
+// telegram handler
+func New(ctx context.Context, cfg *handlerTY.Config) (handlerTY.Plugin, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	config := &Config{}
-	err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
+	err = utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
 	if err != nil {
 		return nil, err
 	}
@@ -39,6 +48,7 @@ func NewTelegramPlugin(cfg *handlerTY.Config) (handlerTY.Plugin, error) {
 		httpClient: httpClient.GetClient(false, timeout),
 		handlerCfg: cfg,
 		Config:     config,
+		logger:     logger.Named(loggerName),
 	}
 
 	user, err := client.GetMe()
@@ -46,7 +56,7 @@ func NewTelegramPlugin(cfg *handlerTY.Config) (handlerTY.Plugin, error) {
 		return nil, err
 	}
 
-	zap.L().Info("telegram auth success", zap.String("handlerID", cfg.ID), zap.Any("firstname", user.FirstName))
+	client.logger.Info("telegram auth success", zap.String("handlerID", cfg.ID), zap.Any("firstname", user.FirstName))
 	return client, nil
 }
 
@@ -91,7 +101,7 @@ func (c *TelegramClient) Post(data map[string]interface{}) error {
 		telegramData := handlerTY.TelegramData{}
 		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &telegramData)
 		if err != nil {
-			zap.L().Error("error on converting telegram data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
+			c.logger.Error("error on converting telegram data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
 			continue
 		}
 
@@ -120,17 +130,17 @@ func (c *TelegramClient) Post(data map[string]interface{}) error {
 			}
 			err = c.SendMessage(msg)
 			if err != nil {
-				zap.L().Error("error on telegram sendMessage", zap.Error(err), zap.String("parameter", name))
+				c.logger.Error("error on telegram sendMessage", zap.Error(err), zap.String("parameter", name))
 				errors = append(errors, err)
 			}
 		}
 		if len(errors) > 0 {
 			for _, err := range errors {
-				zap.L().Error("telegram sendMessage error", zap.String("id", c.handlerCfg.ID), zap.Error(err))
+				c.logger.Error("telegram sendMessage error", zap.String("id", c.handlerCfg.ID), zap.Error(err))
 			}
 			return errors[0]
 		}
-		zap.L().Debug("telegram sendMessage success", zap.String("id", c.handlerCfg.ID), zap.String("timeTaken", time.Since(start).String()))
+		c.logger.Debug("telegram sendMessage success", zap.String("id", c.handlerCfg.ID), zap.String("timeTaken", time.Since(start).String()))
 
 	}
 	return nil

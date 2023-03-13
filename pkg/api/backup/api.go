@@ -1,16 +1,41 @@
 package importexport
 
 import (
+	"context"
+
+	settings "github.com/mycontroller-org/server/v2/pkg/api/settings"
+	backupRestore "github.com/mycontroller-org/server/v2/pkg/backup"
+	encryptionAPI "github.com/mycontroller-org/server/v2/pkg/encryption"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	"go.uber.org/zap"
 )
 
+type BackupAPI struct {
+	ctx           context.Context
+	logger        *zap.Logger
+	backupRestore *backupRestore.BackupRestore
+	bus           busTY.Plugin
+	settingsAPI   *settings.SettingsAPI
+}
+
+func New(ctx context.Context, logger *zap.Logger, backupRestore *backupRestore.BackupRestore, storage storageTY.Plugin, bus busTY.Plugin, enc *encryptionAPI.Encryption) *BackupAPI {
+	return &BackupAPI{
+		ctx:           ctx,
+		logger:        logger.Named("backup_api"),
+		backupRestore: backupRestore,
+		bus:           bus,
+		settingsAPI:   settings.New(ctx, logger, storage, enc, bus),
+	}
+}
+
 // List by filter and pagination
-func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
-	files, err := GetBackupFilesList()
+func (bk *BackupAPI) List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	files, err := bk.GetBackupFilesList()
 	if err != nil {
 		return nil, err
 	}
@@ -41,10 +66,10 @@ func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storag
 }
 
 // Delete backup files
-func Delete(IDs []string) (int64, error) {
+func (bk *BackupAPI) Delete(IDs []string) (int64, error) {
 	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
 
-	files, err := GetBackupFilesList()
+	files, err := bk.GetBackupFilesList()
 	if err != nil {
 		return 0, err
 	}

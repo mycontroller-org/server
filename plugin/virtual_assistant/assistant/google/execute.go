@@ -3,23 +3,19 @@ package google_assistant
 import (
 	"fmt"
 
-	actionAPI "github.com/mycontroller-org/server/v2/pkg/api/action"
-	vdAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_device"
 	vdTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_device"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
-	converterUtil "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/google/types"
 	"go.uber.org/zap"
 )
 
-func runExecuteRequest(request gaTY.ExecuteRequest) *gaTY.ExecuteResponse {
-	// zap.L().Info("received a execute request", zap.Any("request", request))
+func (a *Assistant) runExecuteRequest(request gaTY.ExecuteRequest) *gaTY.ExecuteResponse {
+	// a.logger.Info("received a execute request", zap.Any("request", request))
 
 	response := gaTY.ExecuteResponse{RequestID: request.RequestID}
 	responseCommands := make([]gaTY.ExecuteResponseCommand, 0)
 	for _, input := range request.Inputs {
-		responseCmd := executePayload(input.Payload)
+		responseCmd := a.executePayload(input.Payload)
 		responseCommands = append(responseCommands, responseCmd...)
 	}
 
@@ -27,21 +23,21 @@ func runExecuteRequest(request gaTY.ExecuteRequest) *gaTY.ExecuteResponse {
 	return &response
 }
 
-func executePayload(payload gaTY.ExecuteRequestPayload) []gaTY.ExecuteResponseCommand {
+func (a *Assistant) executePayload(payload gaTY.ExecuteRequestPayload) []gaTY.ExecuteResponseCommand {
 	responseCommands := make([]gaTY.ExecuteResponseCommand, 0)
 	for _, command := range payload.Commands {
 		for _, device := range command.Devices {
-			responseCmd := executeCommand(device, command.Execution)
+			responseCmd := a.executeCommand(device, command.Execution)
 			responseCommands = append(responseCommands, responseCmd...)
 		}
 	}
 	return responseCommands
 }
 
-func executeCommand(device gaTY.ExecuteRequestDevice, executions []gaTY.ExecuteRequestExecution) []gaTY.ExecuteResponseCommand {
+func (a *Assistant) executeCommand(device gaTY.ExecuteRequestDevice, executions []gaTY.ExecuteRequestExecution) []gaTY.ExecuteResponseCommand {
 	responseCommands := make([]gaTY.ExecuteResponseCommand, 0)
 
-	vDevice, err := vdAPI.GetByID(device.ID)
+	vDevice, err := a.deviceAPI.GetByID(device.ID)
 	if err != nil {
 		return nil
 	}
@@ -55,26 +51,24 @@ func executeCommand(device gaTY.ExecuteRequestDevice, executions []gaTY.ExecuteR
 
 			trait, found := gaTY.CommandParamsMap[key]
 			if !found {
-				zap.L().Warn("trait not found on the command params map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("paramsKey", key))
+				a.logger.Warn("trait not found on the command params map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("paramsKey", key))
 				continue
 			}
 			resource, found := vDevice.Traits[trait]
 			if !found {
-				zap.L().Warn("trait not found on the traits map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", trait))
+				a.logger.Warn("trait not found on the traits map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", trait))
 				continue
 			}
 			if resource.Type == vdTY.ResourceByQuickID {
-				err = actionAPI.ExecuteActionOnResourceByQuickID(&handlerType.ResourceData{
-					ResourceType: resource.ResourceType,
-					QuickID:      fmt.Sprintf("%s:%s", resource.ResourceType, resource.QuickID),
-					Payload:      converterUtil.ToString(val),
-					PreDelay:     "0s",
-				})
+				// post data to the actual resource
+				quickId := fmt.Sprintf("%s:%s", resource.ResourceType, resource.QuickID)
+				err = a.deviceAPI.PostActionOnResourceByQuickID(resource.ResourceType, quickId, val)
+
 				statusString := gaTY.ExecutionStatusSuccess
 				params := execution.Params
 				// TODO: include error code
 				if err != nil {
-					zap.L().Error("error on executing", zap.Error(err))
+					a.logger.Error("error on executing", zap.Error(err))
 					statusString = gaTY.ExecutionStatusError
 				}
 				params[key] = val
@@ -86,7 +80,7 @@ func executeCommand(device gaTY.ExecuteRequestDevice, executions []gaTY.ExecuteR
 				}
 				responseCommands = append(responseCommands, responseCmd)
 			} else {
-				zap.L().Warn("trait not defined with quickId", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", trait))
+				a.logger.Warn("trait not defined with quickId", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", trait))
 			}
 		}
 

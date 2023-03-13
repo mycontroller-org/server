@@ -11,7 +11,7 @@ func (p *Provider) updateDisk() {
 		if !dataCFG.Disabled {
 			stat, err := disk.Usage(dataCFG.Path)
 			if err != nil {
-				zap.L().Error("error on getting disk stat", zap.String("path", dataCFG.Path), zap.Error(err))
+				p.logger.Error("error on getting disk stat", zap.String("path", dataCFG.Path), zap.Error(err))
 				continue
 			}
 
@@ -30,7 +30,7 @@ func (p *Provider) updateDisk() {
 
 			err = p.postMsg(&presentMsg)
 			if err != nil {
-				zap.L().Error("error on posting msg", zap.Error(err))
+				p.logger.Error("error on posting msg", zap.Error(err))
 				return
 			}
 
@@ -48,7 +48,7 @@ func (p *Provider) updateDisk() {
 
 			err = p.postMsg(&msg)
 			if err != nil {
-				zap.L().Error("error on posting msg", zap.Error(err))
+				p.logger.Error("error on posting msg", zap.Error(err))
 				return
 			}
 

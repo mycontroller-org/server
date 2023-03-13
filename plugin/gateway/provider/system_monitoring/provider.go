@@ -1,8 +1,13 @@
 package systemmonitoring
 
 import (
+	"context"
+
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
 	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
@@ -12,30 +17,52 @@ import (
 const (
 	PluginSystemMonitoring = "system_monitoring"
 
+	loggerName     = "gateway_system_monitoring"
 	schedulePrefix = "schedule_system_monitoring_gw_"
 )
 
 // Provider data
 type Provider struct {
+	ctx           context.Context
 	Config        config.Config
 	HostConfig    *config.HostConfig
 	GatewayConfig *gwTY.Config
 	NodeID        string
+	logger        *zap.Logger
+	scheduler     schedulerTY.CoreScheduler
+	bus           busTY.Plugin
 }
 
-// NewPluginSystemMonitoring provider
-func NewPluginSystemMonitoring(gatewayCfg *gwTY.Config) (providerTY.Plugin, error) {
+// system monitoring provider
+func New(ctx context.Context, gatewayCfg *gwTY.Config) (providerTY.Plugin, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	scheduler, err := schedulerTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	bus, err := busTY.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	cfg := config.Config{}
-	err := utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, &cfg)
+	err = utils.MapToStruct(utils.TagNameNone, gatewayCfg.Provider, &cfg)
 	if err != nil {
 		return nil, err
 	}
 
 	provider := &Provider{
+		ctx:           ctx,
 		Config:        cfg,
 		GatewayConfig: gatewayCfg,
+		logger:        logger.Named(loggerName),
+		scheduler:     scheduler,
+		bus:           bus,
 	}
-	zap.L().Debug("Config details", zap.Any("received", gatewayCfg.Provider), zap.Any("converted", cfg))
+	provider.logger.Debug("Config details", zap.Any("received", gatewayCfg.Provider), zap.Any("converted", cfg))
 	return provider, nil
 }
 

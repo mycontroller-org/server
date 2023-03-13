@@ -26,7 +26,7 @@ func (c *Client) initIndex() error {
 		if err != nil {
 			return err
 		}
-		zap.L().Debug("Index created", zap.String("entity", k), zap.Any("index", names))
+		c.logger.Debug("index created", zap.String("entity", k), zap.Any("index", names))
 	}
 	return nil
 }

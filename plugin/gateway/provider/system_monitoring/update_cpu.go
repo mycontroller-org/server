@@ -17,7 +17,7 @@ func (p *Provider) updateCPU() {
 		// send presentation message
 		infoList, err := cpu.Info()
 		if err != nil {
-			zap.L().Error("error on getting cpu info", zap.Error(err))
+			p.logger.Error("error on getting cpu info", zap.Error(err))
 			return
 		}
 		if len(infoList) == 0 {
@@ -28,7 +28,7 @@ func (p *Provider) updateCPU() {
 		// update cpu usage
 		usage, err := cpu.Percent(0, false)
 		if err != nil {
-			zap.L().Error("error on getting cpu usage", zap.Error(err))
+			p.logger.Error("error on getting cpu usage", zap.Error(err))
 			return
 		}
 		if len(usage) == 0 {
@@ -40,7 +40,7 @@ func (p *Provider) updateCPU() {
 
 		err = p.postMsg(&msg)
 		if err != nil {
-			zap.L().Error("error on posting msg", zap.Error(err))
+			p.logger.Error("error on posting msg", zap.Error(err))
 			return
 		}
 	}
@@ -49,7 +49,7 @@ func (p *Provider) updateCPU() {
 		// send presentation message
 		infoList, err := cpu.Info()
 		if err != nil {
-			zap.L().Error("error on getting cpu info", zap.Error(err))
+			p.logger.Error("error on getting cpu info", zap.Error(err))
 			return
 		}
 		if len(infoList) == 0 {
@@ -62,7 +62,7 @@ func (p *Provider) updateCPU() {
 		// update cpu usage
 		usageList, err := cpu.Percent(0, true)
 		if err != nil {
-			zap.L().Error("error on getting cpu usage", zap.Error(err))
+			p.logger.Error("error on getting cpu usage", zap.Error(err))
 			return
 		}
 		if len(usageList) == 0 {
@@ -76,7 +76,7 @@ func (p *Provider) updateCPU() {
 
 			err = p.postMsg(&msg)
 			if err != nil {
-				zap.L().Error("error on posting msg", zap.Error(err))
+				p.logger.Error("error on posting msg", zap.Error(err))
 				return
 			}
 		}
@@ -124,7 +124,7 @@ func sendCPUInfo(p *Provider, cpuInfo *cpu.InfoStat, cpuIndex, cpuCount int) {
 
 	err := p.postMsg(&presentMsg)
 	if err != nil {
-		zap.L().Error("error on posting presentation msg", zap.Error(err))
+		p.logger.Error("error on posting presentation msg", zap.Error(err))
 		return
 	}
 }

@@ -3,7 +3,9 @@ package http_generic
 import (
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
+	"go.uber.org/zap"
 )
 
 const (
@@ -28,6 +30,8 @@ type HttpProtocol struct {
 	GatewayConfig     *gwTY.Config
 	Config            *HttpProtocolConf
 	rawMessageHandler func(rawMsg *msgTY.RawMessage) error
+	logger            *zap.Logger
+	scheduler         schedulerTY.CoreScheduler
 }
 
 // http protocol config

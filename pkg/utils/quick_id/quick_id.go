@@ -12,7 +12,7 @@ import (
 	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
 	fwdPayloadTY "github.com/mycontroller-org/server/v2/pkg/types/forward_payload"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
-	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
@@ -21,17 +21,32 @@ import (
 )
 
 // entity quick id prefix
+const (
+	QuickIdGateway        = "gateway"
+	QuickIdNode           = "node"
+	QuickIdSource         = "source"
+	QuickIdField          = "field"
+	QuickIdTask           = "task"
+	QuickIdSchedule       = "schedule"
+	QuickIdHandler        = "handler"
+	QuickIdFirmware       = "firmware"
+	QuickIdDataRepository = "data_repository"
+	QuickIdForwardPayload = "forward_payload"
+)
+
 var (
-	QuickIDGateway        = []string{"gateway"}
-	QuickIDNode           = []string{"node"}
-	QuickIDSource         = []string{"source"}
-	QuickIDField          = []string{"field"}
-	QuickIDTask           = []string{"task"}
-	QuickIDSchedule       = []string{"schedule"}
-	QuickIDHandler        = []string{"handler"}
-	QuickIDFirmware       = []string{"firmware"}
-	QuickIDDataRepository = []string{"data_repository"}
-	QuickIDForwardPayload = []string{"forward_payload"}
+	validIDs = []string{
+		QuickIdGateway,
+		QuickIdNode,
+		QuickIdSource,
+		QuickIdField,
+		QuickIdTask,
+		QuickIdSchedule,
+		QuickIdHandler,
+		QuickIdDataRepository,
+		QuickIdFirmware,
+		QuickIdForwardPayload,
+	}
 )
 
 // IsValidQuickID says is it in quikID format
@@ -43,18 +58,6 @@ func IsValidQuickID(quickID string) bool {
 	}
 	// entity type
 	entityType := strings.ToLower(typeID[0])
-
-	validIDs := make([]string, 0)
-	validIDs = append(validIDs, QuickIDGateway...)
-	validIDs = append(validIDs, QuickIDNode...)
-	validIDs = append(validIDs, QuickIDSource...)
-	validIDs = append(validIDs, QuickIDField...)
-	validIDs = append(validIDs, QuickIDTask...)
-	validIDs = append(validIDs, QuickIDSchedule...)
-	validIDs = append(validIDs, QuickIDHandler...)
-	validIDs = append(validIDs, QuickIDDataRepository...)
-	validIDs = append(validIDs, QuickIDFirmware...)
-	validIDs = append(validIDs, QuickIDForwardPayload...)
 
 	return utils.ContainsString(validIDs, entityType)
 }
@@ -84,8 +87,8 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 		return ""
 	}
 
-	switch {
-	case utils.ContainsString(QuickIDGateway, entityType):
+	switch entityType {
+	case QuickIdGateway:
 		expectedLength := 1
 		if len(values) < expectedLength {
 			return "", nil, fmt.Errorf("invalid gateway quick_id: %s, check the format", quickID)
@@ -95,7 +98,7 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 			data[types.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
-	case utils.ContainsString(QuickIDNode, entityType):
+	case QuickIdNode:
 		expectedLength := 2
 		if len(values) < expectedLength {
 			return "", nil, fmt.Errorf("invalid node quick_id: %s, check the format", quickID)
@@ -106,7 +109,7 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 			data[types.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
-	case utils.ContainsString(QuickIDSource, entityType):
+	case QuickIdSource:
 		expectedLength := 3
 		if len(values) < expectedLength {
 			return "", nil, fmt.Errorf("invalid source quick_id: %s, check the format", quickID)
@@ -118,7 +121,7 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 			data[types.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
-	case utils.ContainsString(QuickIDField, entityType):
+	case QuickIdField:
 		expectedLength := 4
 		if len(values) < expectedLength {
 			return "", nil, fmt.Errorf("invalid field quick_id: %s, check the format", quickID)
@@ -131,12 +134,12 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 			data[types.KeyKeyPath] = normalizeValue(strings.Join(values[expectedLength:], "."))
 		}
 
-	case utils.ContainsString(QuickIDTask, entityType),
-		utils.ContainsString(QuickIDSchedule, entityType),
-		utils.ContainsString(QuickIDHandler, entityType),
-		utils.ContainsString(QuickIDDataRepository, entityType),
-		utils.ContainsString(QuickIDFirmware, entityType),
-		utils.ContainsString(QuickIDForwardPayload, entityType):
+	case QuickIdTask,
+		QuickIdSchedule,
+		QuickIdHandler,
+		QuickIdDataRepository,
+		QuickIdFirmware,
+		QuickIdForwardPayload:
 		if typeID[1] == "" {
 			return "", nil, fmt.Errorf("invalid data. quickID:%s", quickID)
 		}
@@ -175,61 +178,61 @@ func GetQuickID(entity interface{}) (string, error) {
 	case reflect.TypeOf(fieldTY.Field{}):
 		res, ok := entity.(fieldTY.Field)
 		if ok {
-			return fmt.Sprintf("%s:%s.%s.%s.%s", QuickIDField[0], res.GatewayID, res.NodeID, res.SourceID, res.FieldID), nil
+			return fmt.Sprintf("%s:%s.%s.%s.%s", QuickIdField, res.GatewayID, res.NodeID, res.SourceID, res.FieldID), nil
 		}
 
 	case reflect.TypeOf(sourceTY.Source{}):
 		res, ok := entity.(sourceTY.Source)
 		if ok {
-			return fmt.Sprintf("%s:%s.%s.%s", QuickIDSource[0], res.GatewayID, res.NodeID, res.SourceID), nil
+			return fmt.Sprintf("%s:%s.%s.%s", QuickIdSource, res.GatewayID, res.NodeID, res.SourceID), nil
 		}
 
 	case reflect.TypeOf(nodeTY.Node{}):
 		res, ok := entity.(nodeTY.Node)
 		if ok {
-			return fmt.Sprintf("%s:%s.%s", QuickIDNode[0], res.GatewayID, res.NodeID), nil
+			return fmt.Sprintf("%s:%s.%s", QuickIdNode, res.GatewayID, res.NodeID), nil
 		}
 
 	case reflect.TypeOf(gatewayTY.Config{}):
 		res, ok := entity.(gatewayTY.Config)
 		if ok {
-			return fmt.Sprintf("%s:%s", QuickIDGateway[0], res.ID), nil
+			return fmt.Sprintf("%s:%s", QuickIdGateway, res.ID), nil
 		}
 
 	case reflect.TypeOf(taskTY.Config{}):
 		res, ok := entity.(taskTY.Config)
 		if ok {
-			return fmt.Sprintf("%s:%s", QuickIDTask[0], res.ID), nil
+			return fmt.Sprintf("%s:%s", QuickIdTask, res.ID), nil
 		}
 
-	case reflect.TypeOf(scheduleTY.Config{}):
-		res, ok := entity.(scheduleTY.Config)
+	case reflect.TypeOf(schedulerTY.Config{}):
+		res, ok := entity.(schedulerTY.Config)
 		if ok {
-			return fmt.Sprintf("%s:%s", QuickIDSchedule[0], res.ID), nil
+			return fmt.Sprintf("%s:%s", QuickIdSchedule, res.ID), nil
 		}
 
 	case reflect.TypeOf(handlerTY.Config{}):
 		res, ok := entity.(handlerTY.Config)
 		if ok {
-			return fmt.Sprintf("%s:%s", QuickIDHandler[0], res.ID), nil
+			return fmt.Sprintf("%s:%s", QuickIdHandler, res.ID), nil
 		}
 
 	case reflect.TypeOf(firmwareTY.Firmware{}):
 		res, ok := entity.(firmwareTY.Firmware)
 		if ok {
-			return fmt.Sprintf("%s:%s", QuickIDFirmware[0], res.ID), nil
+			return fmt.Sprintf("%s:%s", QuickIdFirmware, res.ID), nil
 		}
 
 	case reflect.TypeOf(dataRepoTY.Config{}):
 		res, ok := entity.(dataRepoTY.Config)
 		if ok {
-			return fmt.Sprintf("%s:%s", QuickIDDataRepository[0], res.ID), nil
+			return fmt.Sprintf("%s:%s", QuickIdDataRepository, res.ID), nil
 		}
 
 	case reflect.TypeOf(fwdPayloadTY.Config{}):
 		res, ok := entity.(fwdPayloadTY.Config)
 		if ok {
-			return fmt.Sprintf("%s:%s", QuickIDForwardPayload[0], res.ID), nil
+			return fmt.Sprintf("%s:%s", QuickIdForwardPayload, res.ID), nil
 		}
 
 	default:

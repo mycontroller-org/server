@@ -10,10 +10,12 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	busPluginTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	natsIO "github.com/nats-io/nats.go"
 	"go.uber.org/zap"
 )
@@ -21,6 +23,7 @@ import (
 const (
 	PluginNATSIO = "natsio"
 
+	loggerName               = "BUS:NATS.IO"
 	defaultReconnectWait     = 5 * time.Second
 	defaultConnectionTimeout = 10 * time.Second
 	defaultMaximumReconnect  = 100
@@ -40,6 +43,7 @@ type Config struct {
 	MaximumReconnect  int               `yaml:"maximum_reconnect"`
 	ReconnectWait     string            `yaml:"reconnect_wait"`
 	WebsocketOptions  *WebsocketOptions `yaml:"websocket_options"`
+	TopicPrefix       string            `yaml:"topic_prefix"`
 }
 
 // WebsocketOptions are config options for a websocket dialer
@@ -58,12 +62,19 @@ type Client struct {
 	subscriptionCounter int64
 	mutex               *sync.RWMutex
 	config              *Config
+	pauseFlag           concurrency.SafeBool
+	logger              *zap.Logger
 }
 
 // NewClient nats.io client
-func NewClient(config cmap.CustomMap) (busPluginTY.Plugin, error) {
+func NewClient(ctx context.Context, config cmap.CustomMap) (busPluginTY.Plugin, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	cfg := &Config{}
-	err := utils.MapToStruct(utils.TagNameYaml, config, cfg)
+	err = utils.MapToStruct(utils.TagNameYaml, config, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -87,6 +98,17 @@ func NewClient(config cmap.CustomMap) (busPluginTY.Plugin, error) {
 	}
 	fakeServerURI.Scheme = "nats"
 
+	client := Client{
+		ctx:                 context.TODO(),
+		topics:              make(map[string][]int64),
+		subscriptions:       make(map[int64]*natsIO.Subscription),
+		subscriptionCounter: 0,
+		config:              cfg,
+		mutex:               &sync.RWMutex{},
+		pauseFlag:           concurrency.SafeBool{},
+		logger:              logger.Named(loggerName),
+	}
+
 	opts := natsIO.Options{
 		Url:               fakeServerURI.String(),
 		Secure:            false, // will be handled by our custom dialer
@@ -95,10 +117,10 @@ func NewClient(config cmap.CustomMap) (busPluginTY.Plugin, error) {
 		AllowReconnect:    true,
 		MaxReconnect:      cfg.MaximumReconnect,
 		ReconnectBufSize:  cfg.BufferSize,
-		ClosedCB:          cbClosed,
-		ReconnectedCB:     cbReconnected,
-		DisconnectedCB:    cbDisconnected,
-		DisconnectedErrCB: cbDisconnectedError,
+		ClosedCB:          client.callBackClosed,
+		ReconnectedCB:     client.callBackReconnected,
+		DisconnectedCB:    client.callBackDisconnected,
+		DisconnectedErrCB: client.callBackDisconnectedError,
 	}
 
 	// update secure login if enabled
@@ -113,7 +135,7 @@ func NewClient(config cmap.CustomMap) (busPluginTY.Plugin, error) {
 
 	}
 
-	customDialer, err := NewCustomDialer(cfg)
+	customDialer, err := NewCustomDialer(cfg, client.logger)
 	if err != nil {
 		return nil, err
 	}
@@ -122,15 +144,7 @@ func NewClient(config cmap.CustomMap) (busPluginTY.Plugin, error) {
 	if err != nil {
 		return nil, err
 	}
-	client := Client{
-		ctx:                 context.TODO(),
-		natConn:             nc,
-		topics:              make(map[string][]int64),
-		subscriptions:       make(map[int64]*natsIO.Subscription),
-		subscriptionCounter: 0,
-		config:              cfg,
-		mutex:               &sync.RWMutex{},
-	}
+	client.natConn = nc
 	return &client, nil
 }
 
@@ -146,13 +160,32 @@ func (c *Client) Close() error {
 	return nil
 }
 
+func (c *Client) TopicPrefix() string {
+	return c.config.TopicPrefix
+}
+
+func (c *Client) PausePublish() {
+	c.pauseFlag.Set()
+}
+
+func (c *Client) ResumePublish() {
+	c.pauseFlag.Reset()
+}
+
 // Publish a data to a topic
 func (c *Client) Publish(topic string, data interface{}) error {
+	if c.pauseFlag.IsSet() {
+		return nil
+	}
+
+	// format topic with prefix
+	topic = c.formatTopic(topic)
+
 	bytes, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
-	PrintDebug("posting message", zap.String("topic", topic))
+	c.logger.Debug("posting message", zap.String("topic", topic))
 	return c.natConn.Publish(topic, bytes)
 }
 
@@ -165,6 +198,9 @@ func (c *Client) Subscribe(topic string, handler busPluginTY.CallBackFunc) (int6
 func (c *Client) QueueSubscribe(topic, queueName string, handler busPluginTY.CallBackFunc) (int64, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
+
+	// format topic with prefix
+	topic = c.formatTopic(topic)
 
 	topicName := getTopicName(topic, queueName)
 
@@ -194,13 +230,13 @@ func (c *Client) QueueSubscribe(topic, queueName string, handler busPluginTY.Cal
 	c.subscriptions[newSubscriptionID] = subscription
 	subscriptionIDs = append(subscriptionIDs, newSubscriptionID)
 	c.topics[topicName] = subscriptionIDs
-	PrintDebug("subscription created", zap.String("topic", subscription.Subject), zap.String("queueName", queueName), zap.Int64("subscriptionId", newSubscriptionID))
+	c.logger.Debug("subscription created", zap.String("topic", subscription.Subject), zap.String("queueName", queueName), zap.Int64("subscriptionId", newSubscriptionID))
 	return newSubscriptionID, nil
 }
 
 func (c *Client) handlerWrapper(handler busPluginTY.CallBackFunc) func(natsMsg *natsIO.Msg) {
 	return func(natsMsg *natsIO.Msg) {
-		PrintDebug("receiving message", zap.String("topic", natsMsg.Sub.Subject))
+		c.logger.Debug("receiving message", zap.String("topic", natsMsg.Sub.Subject))
 		handler(&busTY.BusData{Topic: natsMsg.Subject, Data: natsMsg.Data})
 	}
 }
@@ -215,6 +251,9 @@ func (c *Client) QueueUnsubscribe(topic, queueName string, subscriptionID int64)
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
+	// format topic with prefix
+	topic = c.formatTopic(topic)
+
 	topicName := getTopicName(topic, queueName)
 
 	var subscription *natsIO.Subscription
@@ -224,7 +263,7 @@ func (c *Client) QueueUnsubscribe(topic, queueName string, subscriptionID int64)
 			if id == subscriptionID {
 				subscription = c.subscriptions[id]
 				c.topics[topicName] = append(subscriptionIDs[:index], subscriptionIDs[index+1:]...)
-				PrintDebug("subscription removed", zap.String("topic", topic), zap.String("queueName", queueName), zap.Int64("subscriptionId", subscriptionID))
+				c.logger.Debug("subscription removed", zap.String("topic", topic), zap.String("queueName", queueName), zap.Int64("subscriptionId", subscriptionID))
 				break
 			}
 		}
@@ -245,23 +284,23 @@ func (c *Client) UnsubscribeAll(topic string) error {
 }
 
 // call back functions
-func cbDisconnected(con *natsIO.Conn) {
-	PrintDebug("disconnected")
+func (c *Client) callBackDisconnected(con *natsIO.Conn) {
+	c.logger.Debug("disconnected")
 }
 
-func cbReconnected(con *natsIO.Conn) {
-	PrintDebug("reconnected")
+func (c *Client) callBackReconnected(con *natsIO.Conn) {
+	c.logger.Debug("reconnected")
 }
 
-func cbClosed(con *natsIO.Conn) {
-	PrintDebug("connection closed")
+func (c *Client) callBackClosed(con *natsIO.Conn) {
+	c.logger.Debug("connection closed")
 }
 
-func cbDisconnectedError(con *natsIO.Conn, err error) {
+func (c *Client) callBackDisconnectedError(con *natsIO.Conn, err error) {
 	if err != nil {
-		PrintWarn("disconnected", zap.String("error", err.Error()))
+		c.logger.Debug("disconnected", zap.String("error", err.Error()))
 	} else {
-		PrintWarn("disconnected")
+		c.logger.Debug("disconnected")
 	}
 }
 
@@ -273,4 +312,11 @@ func (c *Client) generateSubscriptionID() int64 {
 
 func getTopicName(topic, queueName string) string {
 	return fmt.Sprintf("%s_%s", topic, queueName)
+}
+
+func (c *Client) formatTopic(topic string) string {
+	if c.config.TopicPrefix != "" {
+		return fmt.Sprintf("%s.%s", c.config.TopicPrefix, topic)
+	}
+	return topic
 }

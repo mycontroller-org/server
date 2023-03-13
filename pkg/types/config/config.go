@@ -13,7 +13,7 @@ const (
 // Config of the system
 type Config struct {
 	Secret           string             `yaml:"secret"` // secret used to encrypt sensitive data
-	Analytics        AnalyticsConfig    `yaml:"analytics"`
+	Telemetry        TelemetryConfig    `yaml:"telemetry"`
 	Web              WebConfig          `yaml:"web"`
 	Logger           LoggerConfig       `yaml:"logger"`
 	Directories      Directories        `yaml:"directories"`
@@ -37,8 +37,8 @@ type WebConfig struct {
 	HttpsACME        HttpsACMEConfig `yaml:"https_acme"`
 }
 
-// AnalyticsConfig input
-type AnalyticsConfig struct {
+// TelemetryConfig input
+type TelemetryConfig struct {
 	Enabled bool `yaml:"enabled"`
 }
 
@@ -97,4 +97,23 @@ type LogLevelConfig struct {
 type Database struct {
 	Storage cmap.CustomMap `yaml:"storage"`
 	Metric  cmap.CustomMap `yaml:"metric"`
+}
+
+func (c *Config) Clone() *Config {
+	cloned := Config{
+		Secret:           c.Secret,
+		Telemetry:        c.Telemetry,
+		Web:              c.Web,
+		Logger:           c.Logger,
+		Directories:      c.Directories,
+		Bus:              c.Bus.Clone(),
+		Gateway:          *c.Gateway.Clone(),
+		Handler:          *c.Handler.Clone(),
+		Task:             *c.Task.Clone(),
+		Schedule:         *c.Schedule.Clone(),
+		VirtualAssistant: *c.VirtualAssistant.Clone(),
+		Database:         c.Database,
+	}
+
+	return &cloned
 }

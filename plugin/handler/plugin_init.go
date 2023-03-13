@@ -8,8 +8,8 @@ import (
 )
 
 func init() {
-	Register(emailPlugin.PluginEmail, emailPlugin.NewEmailPlugin)
+	Register(emailPlugin.PluginEmail, emailPlugin.New)
 	Register(resource.PluginResourceHandler, resource.NewResourcePlugin)
-	Register(telegram.PluginTelegram, telegram.NewTelegramPlugin)
-	Register(webhook.PluginWebhook, webhook.NewWebhookPlugin)
+	Register(telegram.PluginTelegram, telegram.New)
+	Register(webhook.PluginWebhook, webhook.New)
 }

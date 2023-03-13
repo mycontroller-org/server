@@ -1,36 +1,53 @@
 package node
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/server/v2/pkg/store"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
-	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
 
+type NodeAPI struct {
+	ctx     context.Context
+	logger  *zap.Logger
+	storage storageTY.Plugin
+	bus     busTY.Plugin
+}
+
+func New(ctx context.Context, logger *zap.Logger, storage storageTY.Plugin, bus busTY.Plugin) *NodeAPI {
+	return &NodeAPI{
+		ctx:     ctx,
+		logger:  logger.Named("node_api"),
+		storage: storage,
+		bus:     bus,
+	}
+}
+
 // List by filter and pagination
-func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+func (n *NodeAPI) List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
 	result := make([]nodeTY.Node, 0)
-	return store.STORAGE.Find(types.EntityNode, &result, filters, pagination)
+	return n.storage.Find(types.EntityNode, &result, filters, pagination)
 }
 
 // Get returns a Node
-func Get(filters []storageTY.Filter) (nodeTY.Node, error) {
+func (n *NodeAPI) Get(filters []storageTY.Filter) (nodeTY.Node, error) {
 	result := nodeTY.Node{}
-	err := store.STORAGE.FindOne(types.EntityNode, &result, filters)
+	err := n.storage.FindOne(types.EntityNode, &result, filters)
 	return result, err
 }
 
 // Save Node config into disk
-func Save(node *nodeTY.Node, publishEvent bool) error {
+func (n *NodeAPI) Save(node *nodeTY.Node, publishEvent bool) error {
 	eventType := eventTY.TypeUpdated
 	if node.ID == "" {
 		node.ID = utils.RandUUID()
@@ -39,25 +56,25 @@ func Save(node *nodeTY.Node, publishEvent bool) error {
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: node.ID},
 	}
-	err := store.STORAGE.Upsert(types.EntityNode, node, filters)
+	err := n.storage.Upsert(types.EntityNode, node, filters)
 	if err != nil {
 		return err
 	}
 	if publishEvent {
 		// post node data to event listeners
-		busUtils.PostEvent(mcbus.TopicEventNode, eventType, types.EntityNode, node)
+		busUtils.PostEvent(n.logger, n.bus, topic.TopicEventNode, eventType, types.EntityNode, node)
 	}
 	return nil
 }
 
 // GetByGatewayAndNodeID returns a node details by gatewayID and nodeId of a message
-func GetByGatewayAndNodeID(gatewayID, nodeID string) (*nodeTY.Node, error) {
+func (n *NodeAPI) GetByGatewayAndNodeID(gatewayID, nodeID string) (*nodeTY.Node, error) {
 	f := []storageTY.Filter{
 		{Key: types.KeyGatewayID, Value: gatewayID},
 		{Key: types.KeyNodeID, Value: nodeID},
 	}
 	node := nodeTY.Node{}
-	err := store.STORAGE.FindOne(types.EntityNode, &node, f)
+	err := n.storage.FindOne(types.EntityNode, &node, f)
 	if err != nil {
 		return nil, err
 	}
@@ -65,29 +82,29 @@ func GetByGatewayAndNodeID(gatewayID, nodeID string) (*nodeTY.Node, error) {
 }
 
 // GetByID returns a node details by id
-func GetByID(id string) (*nodeTY.Node, error) {
+func (n *NodeAPI) GetByID(id string) (*nodeTY.Node, error) {
 	f := []storageTY.Filter{
 		{Key: types.KeyID, Value: id},
 	}
 	result := &nodeTY.Node{}
-	err := store.STORAGE.FindOne(types.EntityNode, result, f)
+	err := n.storage.FindOne(types.EntityNode, result, f)
 	return result, err
 }
 
 // GetByIDs returns a node details by id
-func GetByIDs(ids []string) ([]nodeTY.Node, error) {
+func (n *NodeAPI) GetByIDs(ids []string) ([]nodeTY.Node, error) {
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids},
 	}
 	pagination := &storageTY.Pagination{Limit: int64(len(ids))}
 	nodes := make([]nodeTY.Node, 0)
-	_, err := store.STORAGE.Find(types.EntityNode, &nodes, filters, pagination)
+	_, err := n.storage.Find(types.EntityNode, &nodes, filters, pagination)
 	return nodes, err
 }
 
 // Delete node
-func Delete(IDs []string) (int64, error) {
-	nodes, err := GetByIDs(IDs)
+func (n *NodeAPI) Delete(IDs []string) (int64, error) {
+	nodes, err := n.GetByIDs(IDs)
 	if err != nil {
 		return 0, err
 	}
@@ -96,23 +113,23 @@ func Delete(IDs []string) (int64, error) {
 	deleted := int64(0)
 	for _, node := range nodes {
 		filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorEqual, Value: node.ID}}
-		_, err = store.STORAGE.Delete(types.EntityNode, filters)
+		_, err = n.storage.Delete(types.EntityNode, filters)
 		if err != nil {
 			return deleted, err
 		}
 		deleted++
-		busUtils.PostEvent(mcbus.TopicEventNode, eventTY.TypeDeleted, types.EntityNode, node)
+		busUtils.PostEvent(n.logger, n.bus, topic.TopicEventNode, eventTY.TypeDeleted, types.EntityNode, node)
 	}
 
 	return deleted, nil
 }
 
 // UpdateFirmwareState func
-func UpdateFirmwareState(id string, data map[string]interface{}) error {
+func (n *NodeAPI) UpdateFirmwareState(id string, data map[string]interface{}) error {
 	if id == "" {
 		return errors.New("id not supplied")
 	}
-	node, err := GetByID(id)
+	node, err := n.GetByID(id)
 	if err != nil {
 		return err
 	}
@@ -143,13 +160,13 @@ func UpdateFirmwareState(id string, data map[string]interface{}) error {
 		}
 	}
 
-	return Save(node, true)
+	return n.Save(node, true)
 }
 
 // Verifies node up status by checking the last seen timestamp
 // if the last seen greater than x minutes/seconds or specified duration in that node
 // will be marked as down
-func VerifyNodeUpStatus(inactiveDuration time.Duration) {
+func (n *NodeAPI) VerifyNodeUpStatus(inactiveDuration time.Duration) {
 	filters := []storageTY.Filter{{Key: "State.Status", Value: types.StatusUp, Operator: storageTY.OperatorEqual}}
 	limit := int64(50)
 	offset := int64(0)
@@ -160,9 +177,9 @@ func VerifyNodeUpStatus(inactiveDuration time.Duration) {
 	}
 
 	for {
-		result, err := List(filters, pagination)
+		result, err := n.List(filters, pagination)
 		if err != nil {
-			zap.L().Error("error on getting active nodes list", zap.Error(err))
+			n.logger.Error("error on getting active nodes list", zap.Error(err))
 			return
 		}
 		if result.Count == 0 {
@@ -170,7 +187,7 @@ func VerifyNodeUpStatus(inactiveDuration time.Duration) {
 		}
 
 		// process received nodes
-		updateNodesUpStatus(result, inactiveDuration)
+		n.updateNodesUpStatus(result, inactiveDuration)
 
 		if result.Count < limit {
 			return
@@ -180,10 +197,10 @@ func VerifyNodeUpStatus(inactiveDuration time.Duration) {
 	}
 }
 
-func updateNodesUpStatus(result *storageTY.Result, inactiveDuration time.Duration) {
+func (n *NodeAPI) updateNodesUpStatus(result *storageTY.Result, inactiveDuration time.Duration) {
 	nodesPointer, ok := result.Data.(*[]nodeTY.Node)
 	if !ok {
-		zap.L().Error("invalid data", zap.String("receivedType", fmt.Sprintf("%T", result.Data)))
+		n.logger.Error("invalid data", zap.String("receivedType", fmt.Sprintf("%T", result.Data)))
 		return
 	}
 	nodes := *nodesPointer
@@ -202,10 +219,29 @@ func updateNodesUpStatus(result *storageTY.Result, inactiveDuration time.Duratio
 				Since:   currentTime,
 				Message: "marked by server",
 			}
-			err := Save(&node, true)
+			err := n.Save(&node, true)
 			if err != nil {
-				zap.L().Error("error on saving a node status", zap.String("gatewayId", node.GatewayID), zap.String("nodeId", node.NodeID), zap.Error(err))
+				n.logger.Error("error on saving a node status", zap.String("gatewayId", node.GatewayID), zap.String("nodeId", node.NodeID), zap.Error(err))
 			}
 		}
 	}
+}
+
+func (n *NodeAPI) Import(data interface{}) error {
+	input, ok := data.(nodeTY.Node)
+	if !ok {
+		return fmt.Errorf("invalid type:%T", data)
+	}
+	if input.ID == "" {
+		input.ID = utils.RandUUID()
+	}
+
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: input.ID},
+	}
+	return n.storage.Upsert(types.EntityNode, &input, filters)
+}
+
+func (n *NodeAPI) GetEntityInterface() interface{} {
+	return nodeTY.Node{}
 }

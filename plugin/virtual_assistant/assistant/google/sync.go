@@ -4,7 +4,6 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	gaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/google/types"
-	botAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"
 	"go.uber.org/zap"
 )
 
@@ -12,8 +11,8 @@ const (
 	AgentUserId = "1234.12345678"
 )
 
-func runSyncRequest(request gaTY.Request) *gaTY.SyncResponse {
-	// zap.L().Info("received a sync request", zap.Any("request", request))
+func (a *Assistant) runSyncRequest(request gaTY.Request) *gaTY.SyncResponse {
+	// a.logger.Info("received a sync request", zap.Any("request", request))
 
 	devices := make([]gaTY.SyncResponseDevice, 0)
 	response := gaTY.SyncResponse{
@@ -25,7 +24,7 @@ func runSyncRequest(request gaTY.Request) *gaTY.SyncResponse {
 	}
 
 	// get virtual devices
-	vDevices, err := botAPI.ListDevices(nil, 500, 0) // limits to 500 devices
+	vDevices, err := a.deviceAPI.ListDevices(nil, 500, 0) // limits to 500 devices
 
 	if err != nil {
 		response.Payload.ErrorCode = err.Error()
@@ -33,7 +32,7 @@ func runSyncRequest(request gaTY.Request) *gaTY.SyncResponse {
 		for _, vDevice := range vDevices {
 			deviceType, found := gaTY.DeviceMap[vDevice.DeviceType]
 			if !found {
-				zap.L().Info("device type not found in the defined map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("deviceType", vDevice.DeviceType))
+				a.logger.Info("device type not found in the defined map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("deviceType", vDevice.DeviceType))
 				continue
 			}
 			traits := make([]string, 0)
@@ -41,7 +40,7 @@ func runSyncRequest(request gaTY.Request) *gaTY.SyncResponse {
 				if trait, found := gaTY.TraitMap[_trait]; found {
 					traits = append(traits, trait)
 				} else {
-					zap.L().Info("trait not found in the defined map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", _trait))
+					a.logger.Info("trait not found in the defined map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", _trait))
 				}
 			}
 			vDevice.Labels = vDevice.Labels.Init()
@@ -63,7 +62,7 @@ func runSyncRequest(request gaTY.Request) *gaTY.SyncResponse {
 		}
 	}
 
-	// zap.L().Info("received a sync request", zap.Any("response", response))
+	// a.logger.Info("received a sync request", zap.Any("response", response))
 
 	response.Payload.Devices = devices
 	return &response

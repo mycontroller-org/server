@@ -1,164 +1,152 @@
 package service
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
-	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
-	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
+	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
 )
 
-var (
-	eventQueue *queueUtils.Queue
-	queueSize  = int(50)
-	workers    = int(1)
-	svcFilter  *sfTY.ServiceFilter
-)
-
 // Start starts resource server listener
-func Start(filter *sfTY.ServiceFilter) error {
-	svcFilter = filter
-	if svcFilter.Disabled {
-		zap.L().Info("gateway service disabled")
+func (svc *GatewayService) Start() error {
+	if svc.filter.Disabled {
+		svc.logger.Info("gateway service disabled")
 		return nil
 	}
 
-	if svcFilter.HasFilter() {
-		zap.L().Info("gateway service filter config", zap.Any("filter", svcFilter))
+	if svc.filter.HasFilter() {
+		svc.logger.Info("gateway service filter config", zap.Any("filter", svc.filter))
 	} else {
-		zap.L().Debug("there is no filter applied to gateway service")
+		svc.logger.Debug("there is no filter applied to gateway service")
 	}
 
-	eventQueue = queueUtils.New("gateway_service", queueSize, processEvent, workers)
-
 	// on event receive add it in to our local queue
-	topic := mcbus.FormatTopic(mcbus.TopicServiceGateway)
-	_, err := mcbus.Subscribe(topic, onEvent)
+	id, err := svc.bus.Subscribe(svc.eventsQueue.Topic, svc.onEvent)
 	if err != nil {
 		return err
 	}
+	svc.eventsQueue.SubscriptionId = id
 
 	// load gateways
 	reqEvent := rsTY.ServiceEvent{
 		Type:    rsTY.TypeGateway,
 		Command: rsTY.CommandLoadAll,
 	}
-	topicResourceServer := mcbus.FormatTopic(mcbus.TopicServiceResourceServer)
-	return mcbus.Publish(topicResourceServer, reqEvent)
+	return svc.bus.Publish(topic.TopicServiceResourceServer, reqEvent)
 }
 
 // Close the service
-func Close() {
-	if svcFilter.Disabled {
-		return
+func (svc *GatewayService) Close() error {
+	if svc.filter.Disabled {
+		return nil
 	}
-	UnloadAll()
-	eventQueue.Close()
+	svc.unloadAll()
+	svc.eventsQueue.Close()
+	return nil
 }
 
-func onEvent(event *busTY.BusData) {
+func (svc *GatewayService) onEvent(event *busTY.BusData) {
 	reqEvent := &rsTY.ServiceEvent{}
 	err := event.LoadData(reqEvent)
 	if err != nil {
-		zap.L().Warn("Failed to convert to target type", zap.Error(err))
+		svc.logger.Warn("Failed to convert to target type", zap.Error(err))
 		return
 	}
 	if reqEvent.Type == "" {
-		zap.L().Warn("received an empty event", zap.Any("event", event))
+		svc.logger.Warn("received an empty event", zap.Any("event", event))
 		return
 	}
-	zap.L().Debug("Event added into processing queue", zap.Any("event", reqEvent))
-	status := eventQueue.Produce(reqEvent)
+	svc.logger.Debug("Event added into processing queue", zap.Any("event", reqEvent))
+	status := svc.eventsQueue.Produce(reqEvent)
 	if !status {
-		zap.L().Warn("Failed to store the event into queue", zap.Any("event", reqEvent))
+		svc.logger.Warn("Failed to store the event into queue", zap.Any("event", reqEvent))
 	}
 }
 
 // processEvent from the queue
-func processEvent(event interface{}) {
+func (svc *GatewayService) processEvent(event interface{}) {
 	reqEvent := event.(*rsTY.ServiceEvent)
-	zap.L().Debug("Processing a request", zap.Any("event", reqEvent))
+	svc.logger.Debug("Processing a request", zap.Any("event", reqEvent))
 
 	if reqEvent.Type != rsTY.TypeGateway {
-		zap.L().Warn("unsupported event type", zap.Any("event", reqEvent))
+		svc.logger.Warn("unsupported event type", zap.Any("event", reqEvent))
 	}
 
 	switch reqEvent.Command {
 	case rsTY.CommandStart:
-		gwCfg := getGatewayConfig(reqEvent)
-		if gwCfg != nil && helper.IsMine(svcFilter, gwCfg.Provider.GetString(types.KeyType), gwCfg.ID, gwCfg.Labels) {
-			err := StartGW(gwCfg)
+		gwCfg := svc.getGatewayConfig(reqEvent)
+		if gwCfg != nil && helper.IsMine(svc.filter, gwCfg.Provider.GetString(types.KeyType), gwCfg.ID, gwCfg.Labels) {
+			err := svc.startGW(gwCfg)
 			if err != nil {
-				zap.L().Error("error on starting a service", zap.Error(err), zap.String("id", gwCfg.ID))
+				svc.logger.Error("error on starting a service", zap.Error(err), zap.String("id", gwCfg.ID))
 			}
 		}
 
 	case rsTY.CommandStop:
 		if reqEvent.ID != "" {
-			err := StopGW(reqEvent.ID)
+			err := svc.stopGW(reqEvent.ID)
 			if err != nil {
-				zap.L().Error("error on stopping a service", zap.Error(err), zap.String("id", reqEvent.ID))
+				svc.logger.Error("error on stopping a service", zap.Error(err), zap.String("id", reqEvent.ID))
 			}
 			return
 		}
-		gwCfg := getGatewayConfig(reqEvent)
+		gwCfg := svc.getGatewayConfig(reqEvent)
 		if gwCfg != nil {
-			err := StopGW(gwCfg.ID)
+			err := svc.stopGW(gwCfg.ID)
 			if err != nil {
-				zap.L().Error("error on stopping a service", zap.Error(err), zap.String("id", gwCfg.ID))
+				svc.logger.Error("error on stopping a service", zap.Error(err), zap.String("id", gwCfg.ID))
 			}
 		}
 
 	case rsTY.CommandReload:
-		gwCfg := getGatewayConfig(reqEvent)
+		gwCfg := svc.getGatewayConfig(reqEvent)
 		if gwCfg != nil {
-			err := StopGW(gwCfg.ID)
+			err := svc.stopGW(gwCfg.ID)
 			if err != nil {
-				zap.L().Error("error on stopping a service", zap.Error(err), zap.String("id", gwCfg.ID))
+				svc.logger.Error("error on stopping a service", zap.Error(err), zap.String("id", gwCfg.ID))
 			}
-			if helper.IsMine(svcFilter, gwCfg.Provider.GetString(types.KeyType), gwCfg.ID, gwCfg.Labels) {
-				err := StartGW(gwCfg)
+			if helper.IsMine(svc.filter, gwCfg.Provider.GetString(types.KeyType), gwCfg.ID, gwCfg.Labels) {
+				err := svc.startGW(gwCfg)
 				if err != nil {
-					zap.L().Error("error on starting a service", zap.Error(err), zap.String("id", gwCfg.ID))
+					svc.logger.Error("error on starting a service", zap.Error(err), zap.String("id", gwCfg.ID))
 				}
 			}
 		}
 
 	case rsTY.CommandUnloadAll:
-		UnloadAll()
+		svc.unloadAll()
 
 	case rsTY.CommandGetSleepingQueue:
-		processSleepingQueueRequest(reqEvent)
+		svc.processSleepingQueueRequest(reqEvent)
 
 	case rsTY.CommandClearSleepingQueue:
-		clearSleepingQueue(reqEvent)
+		svc.clearSleepingQueue(reqEvent)
 
 	default:
-		zap.L().Warn("unsupported command", zap.Any("event", reqEvent))
+		svc.logger.Warn("unsupported command", zap.Any("event", reqEvent))
 	}
 }
 
-func getGatewayConfig(reqEvent *rsTY.ServiceEvent) *gwTY.Config {
+func (svc *GatewayService) getGatewayConfig(reqEvent *rsTY.ServiceEvent) *gwTY.Config {
 	cfg := &gwTY.Config{}
 	err := reqEvent.LoadData(cfg)
 	if err != nil {
-		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
+		svc.logger.Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
 		return nil
 	}
 	return cfg
 }
 
 // clear sleeping queue messages
-func clearSleepingQueue(reqEvent *rsTY.ServiceEvent) {
+func (svc *GatewayService) clearSleepingQueue(reqEvent *rsTY.ServiceEvent) {
 	ids := make(map[string]interface{})
 	err := reqEvent.LoadData(&ids)
 	if err != nil {
-		zap.L().Error("error on parsing input", zap.Error(err), zap.Any("input", reqEvent))
+		svc.logger.Error("error on parsing input", zap.Error(err), zap.Any("input", reqEvent))
 		return
 	}
 	gatewayID := utils.GetMapValueString(ids, types.KeyGatewayID, "")
@@ -167,18 +155,18 @@ func clearSleepingQueue(reqEvent *rsTY.ServiceEvent) {
 		return
 	}
 	if nodeID != "" {
-		clearNodeSleepingQueue(gatewayID, nodeID)
+		svc.clearNodeSleepingQueue(gatewayID, nodeID)
 	} else {
-		clearGatewaySleepingQueue(gatewayID)
+		svc.clearGatewaySleepingQueue(gatewayID)
 	}
 }
 
 // process request from server and sends the available queue message details
-func processSleepingQueueRequest(reqEvent *rsTY.ServiceEvent) {
+func (svc *GatewayService) processSleepingQueueRequest(reqEvent *rsTY.ServiceEvent) {
 	ids := make(map[string]interface{})
 	err := reqEvent.LoadData(&ids)
 	if err != nil {
-		zap.L().Error("error on parsing input", zap.Error(err), zap.Any("input", reqEvent))
+		svc.logger.Error("error on parsing input", zap.Error(err), zap.Any("input", reqEvent))
 		return
 	}
 	gatewayID := utils.GetMapValueString(ids, types.KeyGatewayID, "")
@@ -194,13 +182,13 @@ func processSleepingQueueRequest(reqEvent *rsTY.ServiceEvent) {
 
 	messagesAvailable := false
 	if nodeID != "" {
-		receivedMessages := getNodeSleepingQueue(gatewayID, nodeID)
+		receivedMessages := svc.getNodeSleepingQueue(gatewayID, nodeID)
 		if receivedMessages != nil {
 			resEvent.SetData(receivedMessages)
 			messagesAvailable = true
 		}
 	} else {
-		receivedMessages := getGatewaySleepingQueue(gatewayID)
+		receivedMessages := svc.getGatewaySleepingQueue(gatewayID)
 		if receivedMessages != nil {
 			resEvent.SetData(receivedMessages)
 			messagesAvailable = true
@@ -208,17 +196,17 @@ func processSleepingQueueRequest(reqEvent *rsTY.ServiceEvent) {
 	}
 
 	if messagesAvailable {
-		err = postResponse(reqEvent.ReplyTopic, resEvent)
+		err = svc.postResponse(reqEvent.ReplyTopic, resEvent)
 		if err != nil {
-			zap.L().Error("error on sending response", zap.Error(err), zap.Any("request", reqEvent))
+			svc.logger.Error("error on sending response", zap.Error(err), zap.Any("request", reqEvent))
 		}
 	}
 }
 
 // post response to a topic
-func postResponse(topic string, response *rsTY.ServiceEvent) error {
+func (svc *GatewayService) postResponse(topic string, response *rsTY.ServiceEvent) error {
 	if topic == "" {
 		return nil
 	}
-	return mcbus.Publish(topic, response)
+	return svc.bus.Publish(topic, response)
 }

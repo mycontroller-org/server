@@ -14,11 +14,12 @@ type AdminV2 struct {
 	organizationName string
 	bucketName       string
 	ctx              context.Context
+	logger           *zap.Logger
 }
 
 // NewAdminClient returns influxdb admin client
-func NewAdminClient(ctx context.Context, client influxdb2.Client, organizationName, bucketName string) *AdminV2 {
-	return &AdminV2{ctx: ctx, client: client, organizationName: organizationName, bucketName: bucketName}
+func NewAdminClient(ctx context.Context, logger *zap.Logger, client influxdb2.Client, organizationName, bucketName string) *AdminV2 {
+	return &AdminV2{ctx: ctx, logger: logger, client: client, organizationName: organizationName, bucketName: bucketName}
 }
 
 // IsBucketAvailable returns the availability of the database
@@ -50,10 +51,10 @@ func (av2 *AdminV2) CreateBucket() error {
 	}
 	_, err = av2.client.BucketsAPI().CreateBucketWithName(av2.ctx, orgDomain, av2.bucketName)
 	if err != nil {
-		zap.L().Error("error", zap.Error(err))
+		av2.logger.Error("error", zap.Error(err))
 		return err
 	}
 
-	zap.L().Info("metrics bucket created", zap.String("organizationName", av2.organizationName), zap.String("bucketName", av2.bucketName))
+	av2.logger.Info("metrics bucket created", zap.String("organizationName", av2.organizationName), zap.String("bucketName", av2.bucketName))
 	return nil
 }

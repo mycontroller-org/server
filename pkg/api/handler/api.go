@@ -1,42 +1,65 @@
 package handler
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
-	"github.com/mycontroller-org/server/v2/pkg/store"
+	"context"
+	"errors"
+	"fmt"
+
+	encryptionAPI "github.com/mycontroller-org/server/v2/pkg/encryption"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
-	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
+	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
+	"go.uber.org/zap"
 )
 
+type HandlerAPI struct {
+	ctx     context.Context
+	logger  *zap.Logger
+	storage storageTY.Plugin
+	enc     *encryptionAPI.Encryption
+	bus     busTY.Plugin
+}
+
+func New(ctx context.Context, logger *zap.Logger, storage storageTY.Plugin, enc *encryptionAPI.Encryption, bus busTY.Plugin) *HandlerAPI {
+	return &HandlerAPI{
+		ctx:     ctx,
+		logger:  logger.Named("handler_api"),
+		storage: storage,
+		enc:     enc,
+		bus:     bus,
+	}
+}
+
 // List by filter and pagination
-func List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+func (h *HandlerAPI) List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
 	out := make([]handlerTY.Config, 0)
-	return store.STORAGE.Find(types.EntityHandler, &out, filters, pagination)
+	return h.storage.Find(types.EntityHandler, &out, filters, pagination)
 }
 
 // Get a config
-func Get(f []storageTY.Filter) (handlerTY.Config, error) {
+func (h *HandlerAPI) Get(f []storageTY.Filter) (handlerTY.Config, error) {
 	out := handlerTY.Config{}
-	err := store.STORAGE.FindOne(types.EntityHandler, &out, f)
+	err := h.storage.FindOne(types.EntityHandler, &out, f)
 	return out, err
 }
 
 // SaveAndReload handler
-func SaveAndReload(cfg *handlerTY.Config) error {
+func (h *HandlerAPI) SaveAndReload(cfg *handlerTY.Config) error {
 	cfg.State = &types.State{} // reset state
-	err := Save(cfg)
+	err := h.Save(cfg)
 	if err != nil {
 		return err
 	}
-	return Reload([]string{cfg.ID})
+	return h.Reload([]string{cfg.ID})
 }
 
 // Save config
-func Save(cfg *handlerTY.Config) error {
+func (h *HandlerAPI) Save(cfg *handlerTY.Config) error {
 	eventType := eventTY.TypeUpdated
 	if cfg.ID == "" {
 		cfg.ID = utils.RandUUID()
@@ -44,7 +67,7 @@ func Save(cfg *handlerTY.Config) error {
 	}
 
 	// encrypt passwords
-	err := cloneUtil.UpdateSecrets(cfg, store.CFG.Secret, "", true, cloneUtil.DefaultSpecialKeys)
+	err := h.enc.EncryptSecrets(cfg)
 	if err != nil {
 		return err
 	}
@@ -52,51 +75,70 @@ func Save(cfg *handlerTY.Config) error {
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: cfg.ID},
 	}
-	err = store.STORAGE.Upsert(types.EntityHandler, cfg, filters)
+	err = h.storage.Upsert(types.EntityHandler, cfg, filters)
 	if err != nil {
 		return err
 	}
-	busUtils.PostEvent(mcbus.TopicEventHandler, eventType, types.EntityHandler, cfg)
+	busUtils.PostEvent(h.logger, h.bus, topic.TopicEventHandler, eventType, types.EntityHandler, cfg)
 	return nil
 }
 
 // SetState Updates state data
-func SetState(id string, state *types.State) error {
-	cfg, err := GetByID(id)
+func (h *HandlerAPI) SetState(id string, state *types.State) error {
+	cfg, err := h.GetByID(id)
 	if err != nil {
 		return err
 	}
 	cfg.State = state
-	return Save(cfg)
+	return h.Save(cfg)
 }
 
 // GetByTypeName returns a handler by type and name
-func GetByTypeName(handlerPluginType, name string) (*handlerTY.Config, error) {
+func (h *HandlerAPI) GetByTypeName(handlerPluginType, name string) (*handlerTY.Config, error) {
 	f := []storageTY.Filter{
 		{Key: types.KeyHandlerType, Value: handlerPluginType},
 		{Key: types.KeyHandlerName, Value: name},
 	}
 	out := &handlerTY.Config{}
-	err := store.STORAGE.FindOne(types.EntityHandler, out, f)
+	err := h.storage.FindOne(types.EntityHandler, out, f)
 	return out, err
 }
 
 // GetByID returns a handler by id
-func GetByID(ID string) (*handlerTY.Config, error) {
+func (h *HandlerAPI) GetByID(ID string) (*handlerTY.Config, error) {
 	f := []storageTY.Filter{
 		{Key: types.KeyID, Value: ID},
 	}
 	out := &handlerTY.Config{}
-	err := store.STORAGE.FindOne(types.EntityHandler, out, f)
+	err := h.storage.FindOne(types.EntityHandler, out, f)
 	return out, err
 }
 
 // Delete Service
-func Delete(ids []string) (int64, error) {
-	err := Disable(ids)
+func (h *HandlerAPI) Delete(ids []string) (int64, error) {
+	err := h.Disable(ids)
 	if err != nil {
 		return 0, err
 	}
 	f := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: ids}}
-	return store.STORAGE.Delete(types.EntityHandler, f)
+	return h.storage.Delete(types.EntityHandler, f)
+}
+
+func (h *HandlerAPI) Import(data interface{}) error {
+	input, ok := data.(handlerTY.Config)
+	if !ok {
+		return fmt.Errorf("invalid type:%T", data)
+	}
+	if input.ID == "" {
+		return errors.New("'id' can not be empty")
+	}
+
+	filters := []storageTY.Filter{
+		{Key: types.KeyID, Value: input.ID},
+	}
+	return h.storage.Upsert(types.EntityHandler, &input, filters)
+}
+
+func (h *HandlerAPI) GetEntityInterface() interface{} {
+	return handlerTY.Config{}
 }

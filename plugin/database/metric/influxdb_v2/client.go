@@ -36,6 +36,7 @@ const (
 	QueryClientV2 = "v2"
 
 	DefaultMeasurementPrefix = "mc"
+	loggerName               = "metric_influxdb"
 )
 
 const (
@@ -44,18 +45,17 @@ const (
 
 // Config of the influxdb_v2
 type Config struct {
-	IsCloudInstance    bool         `yaml:"is_cloud_instance"`
-	OrganizationName   string       `yaml:"organization_name"`
-	BucketName         string       `yaml:"bucket_name"`
-	MeasurementPrefix  string       `yaml:"measurement_prefix"`
-	URI                string       `yaml:"uri"`
-	Token              string       `yaml:"token"`
-	Username           string       `yaml:"username"`
-	Password           string       `yaml:"password"`
-	Insecure           bool         `yaml:"insecure"`
-	QueryClientVersion string       `yaml:"query_client_version"`
-	FlushInterval      string       `yaml:"flush_interval"`
-	Logger             LoggerConfig `yaml:"logger"`
+	IsCloudInstance    bool   `yaml:"is_cloud_instance"`
+	OrganizationName   string `yaml:"organization_name"`
+	BucketName         string `yaml:"bucket_name"`
+	MeasurementPrefix  string `yaml:"measurement_prefix"`
+	URI                string `yaml:"uri"`
+	Token              string `yaml:"token"`
+	Username           string `yaml:"username"`
+	Password           string `yaml:"password"`
+	Insecure           bool   `yaml:"insecure"`
+	QueryClientVersion string `yaml:"query_client_version"`
+	FlushInterval      string `yaml:"flush_interval"`
 }
 
 // LoggerConfig struct
@@ -68,23 +68,29 @@ type LoggerConfig struct {
 
 // Client of the influxdb
 type Client struct {
-	Client      influxdb2.Client
-	queryClient extraTY.QueryAPI
-	adminClient extraTY.AdminAPI
-	Config      Config
-	stop        chan bool
-	logger      *myLogger
-	mutex       *sync.RWMutex
-	ctx         context.Context
+	Client               influxdb2.Client
+	queryClient          extraTY.QueryAPI
+	adminClient          extraTY.AdminAPI
+	Config               Config
+	stop                 chan bool
+	mutex                *sync.RWMutex
+	ctx                  context.Context
+	influxInternalLogger *myLogger
+	logger               *zap.Logger
 }
 
-// NewClient of influxdb
-func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
+// client of influxdb
+func NewClient(ctx context.Context, config cmap.CustomMap) (metricTY.Plugin, error) {
+	// create new logger with custom log level
+	logger := metricTY.GetMetricLogger()
+
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameYaml, config, &cfg)
 	if err != nil {
 		return nil, err
 	}
+
+	namedLogger := logger.Named(loggerName)
 
 	// update default values
 	if cfg.MeasurementPrefix == "" {
@@ -99,30 +105,32 @@ func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
 	if cfg.FlushInterval != "" {
 		flushInterval, err = time.ParseDuration(cfg.FlushInterval)
 		if err != nil {
-			zap.L().Warn("Invalid flush interval", zap.String("flushInterval", cfg.FlushInterval))
+			namedLogger.Warn("Invalid flush interval", zap.String("flushInterval", cfg.FlushInterval))
 			flushInterval = defaultFlushInterval
 		}
 	}
 	if flushInterval.Milliseconds() < 1 {
-		zap.L().Warn("Minimum supported flush interval is 1ms, switching back to default", zap.String("flushInterval", cfg.FlushInterval))
+		namedLogger.Warn("Minimum supported flush interval is 1ms, switching back to default", zap.String("flushInterval", cfg.FlushInterval))
 		flushInterval = defaultFlushInterval
 	}
 
 	// replace influxdb2 logger with our custom logger
-	_logger := getLogger(cfg.Logger.Mode, cfg.Logger.Level, cfg.Logger.Encoding, cfg.Logger.EnableStacktrace)
+	_logger := getLogger(namedLogger)
 	influxdb2log.Log = _logger
 
 	opts := influxdb2.DefaultOptions()
+	opts.SetApplicationName("MyController.org")
 	opts.SetFlushInterval(uint(flushInterval.Milliseconds()))
-	iClient := influxdb2.NewClient(cfg.URI, cfg.Token)
+	iClient := influxdb2.NewClientWithOptions(cfg.URI, cfg.Token, opts)
 
 	c := &Client{
-		Config: cfg,
-		Client: iClient,
-		stop:   make(chan bool),
-		mutex:  &sync.RWMutex{},
-		logger: _logger,
-		ctx:    context.TODO(),
+		Config:               cfg,
+		Client:               iClient,
+		stop:                 make(chan bool),
+		mutex:                &sync.RWMutex{},
+		ctx:                  ctx,
+		influxInternalLogger: _logger,
+		logger:               namedLogger,
 	}
 
 	err = c.Ping()
@@ -150,7 +158,7 @@ func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
 			if err != nil {
 				return nil, err
 			}
-			zap.L().Info("influxdb detected version data", zap.Any("health data", health))
+			c.logger.Info("influxdb detected version data", zap.Any("health data", health))
 			if health != nil && health.Version != nil {
 				detectedVersion := *health.Version
 				if strings.HasPrefix(detectedVersion, "1.8") { // 1.8.4
@@ -160,13 +168,13 @@ func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
 		}
 	}
 
-	zap.L().Debug("influx auto detect status", zap.String("version", influxAutoDetectVersion))
+	c.logger.Debug("influx auto detect status", zap.String("version", influxAutoDetectVersion))
 
 	// update admin client
 	if influxAutoDetectVersion == QueryClientV1 {
-		c.adminClient = extraV1.NewAdminClient(cfg.URI, cfg.Insecure, cfg.BucketName, cfg.Username, cfg.Password)
+		c.adminClient = extraV1.NewAdminClient(c.logger, cfg.URI, cfg.Insecure, cfg.BucketName, cfg.Username, cfg.Password)
 	} else {
-		c.adminClient = extraV2.NewAdminClient(c.ctx, iClient, cfg.OrganizationName, cfg.BucketName)
+		c.adminClient = extraV2.NewAdminClient(c.ctx, c.logger, iClient, cfg.OrganizationName, cfg.BucketName)
 	}
 
 	// update autodetect version to user version, if user forced
@@ -175,15 +183,15 @@ func NewClient(config cmap.CustomMap) (metricTY.Plugin, error) {
 		if ver == QueryClientV1 || ver == QueryClientV2 {
 			influxAutoDetectVersion = ver
 		} else {
-			zap.L().Warn("invalid query client version, going with auto detection", zap.String("input", cfg.QueryClientVersion))
+			c.logger.Warn("invalid query client version, going with auto detection", zap.String("input", cfg.QueryClientVersion))
 		}
 	}
 
 	// update query client
 	if influxAutoDetectVersion == QueryClientV1 {
-		c.queryClient = extraV1.NewQueryClient(cfg.URI, cfg.Insecure, cfg.BucketName, cfg.Username, cfg.Password)
+		c.queryClient = extraV1.NewQueryClient(c.logger, cfg.URI, cfg.Insecure, cfg.BucketName, cfg.Username, cfg.Password)
 	} else {
-		c.queryClient = extraV2.NewQueryClient(iClient.QueryAPI(cfg.OrganizationName), cfg.BucketName)
+		c.queryClient = extraV2.NewQueryClient(c.logger, iClient.QueryAPI(cfg.OrganizationName), cfg.BucketName)
 	}
 
 	// create bucket/database
@@ -203,10 +211,10 @@ func (c *Client) Name() string {
 func (c *Client) Ping() error {
 	isReachable, err := c.Client.Ping(ctx)
 	if err != nil {
-		zap.L().Error("error on getting ping status", zap.Error(err))
+		c.logger.Error("error on getting ping status", zap.Error(err))
 		return err
 	}
-	zap.L().Debug("ping status", zap.Bool("isReachable", isReachable))
+	c.logger.Debug("ping status", zap.Bool("isReachable", isReachable))
 	return nil
 }
 
@@ -242,7 +250,7 @@ func (c *Client) Query(queryConfig *metricTY.QueryConfig) (map[string][]metricTY
 		// get measurement
 		measurement, err := c.getMeasurementName(query.MetricType)
 		if err != nil {
-			zap.L().Error("error on getting measurement name", zap.Error(err))
+			c.logger.Error("error on getting measurement name", zap.Error(err))
 			return nil, err
 		}
 

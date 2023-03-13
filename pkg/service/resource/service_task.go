@@ -4,13 +4,12 @@ import (
 	"errors"
 	"fmt"
 
-	taskAPI "github.com/mycontroller-org/server/v2/pkg/api/task"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/types/task"
 	"go.uber.org/zap"
 )
 
-func taskService(reqEvent *rsTY.ServiceEvent) error {
+func (svc *ResourceService) taskService(reqEvent *rsTY.ServiceEvent) error {
 	resEvent := &rsTY.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
@@ -18,43 +17,43 @@ func taskService(reqEvent *rsTY.ServiceEvent) error {
 
 	switch reqEvent.Command {
 	case rsTY.CommandGet:
-		data, err := getTask(reqEvent)
+		data, err := svc.getTask(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
 	case rsTY.CommandUpdateState:
-		err := updateTaskState(reqEvent)
+		err := svc.updateTaskState(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 
 	case rsTY.CommandLoadAll:
-		taskAPI.LoadAll()
+		svc.api.Task().LoadAll()
 
 	case rsTY.CommandEnable:
-		return enableOrDisableTask(reqEvent, true)
+		return svc.enableOrDisableTask(reqEvent, true)
 
 	case rsTY.CommandDisable:
-		return enableOrDisableTask(reqEvent, false)
+		return svc.enableOrDisableTask(reqEvent, false)
 
 	default:
 		return fmt.Errorf("unknown command: %s", reqEvent.Command)
 	}
-	return postResponse(reqEvent.ReplyTopic, resEvent)
+	return svc.postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getTask(request *rsTY.ServiceEvent) (interface{}, error) {
+func (svc *ResourceService) getTask(request *rsTY.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
-		cfg, err := taskAPI.GetByID(request.ID)
+		cfg, err := svc.api.Task().GetByID(request.ID)
 		if err != nil {
 			return nil, err
 		}
 		return cfg, nil
 	} else if len(request.Labels) > 0 {
-		filters := getLabelsFilter(request.Labels)
-		result, err := taskAPI.List(filters, nil)
+		filters := svc.getLabelsFilter(request.Labels)
+		result, err := svc.api.Task().List(filters, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -63,37 +62,37 @@ func getTask(request *rsTY.ServiceEvent) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func updateTaskState(reqEvent *rsTY.ServiceEvent) error {
+func (svc *ResourceService) updateTaskState(reqEvent *rsTY.ServiceEvent) error {
 	if reqEvent.Data == "" {
-		zap.L().Error("handler state not supplied", zap.Any("event", reqEvent))
+		svc.logger.Error("handler state not supplied", zap.Any("event", reqEvent))
 		return errors.New("handler state not supplied")
 	}
 
 	state := &task.State{}
 	err := reqEvent.LoadData(state)
 	if err != nil {
-		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
+		svc.logger.Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
 		return err
 	}
 
-	return taskAPI.SetState(reqEvent.ID, state)
+	return svc.api.Task().SetState(reqEvent.ID, state)
 }
 
-func enableOrDisableTask(reqEvent *rsTY.ServiceEvent, enable bool) error {
+func (svc *ResourceService) enableOrDisableTask(reqEvent *rsTY.ServiceEvent, enable bool) error {
 	if reqEvent.Data == "" {
-		zap.L().Error("task id not supplied", zap.Any("event", reqEvent))
+		svc.logger.Error("task id not supplied", zap.Any("event", reqEvent))
 		return errors.New("id not supplied")
 	}
 
 	id := ""
 	err := reqEvent.LoadData(&id)
 	if err != nil {
-		zap.L().Error("error on data conversion", zap.Any("reqEvent", reqEvent), zap.Error(err))
+		svc.logger.Error("error on data conversion", zap.Any("reqEvent", reqEvent), zap.Error(err))
 		return err
 	}
 
 	if enable {
-		return taskAPI.Enable([]string{id})
+		return svc.api.Task().Enable([]string{id})
 	}
-	return taskAPI.Disable([]string{id})
+	return svc.api.Task().Disable([]string{id})
 }

@@ -9,7 +9,7 @@ import (
 	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
 	fwPayloadTY "github.com/mycontroller-org/server/v2/pkg/types/forward_payload"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
-	scheduleTY "github.com/mycontroller-org/server/v2/pkg/types/schedule"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
@@ -277,7 +277,7 @@ var scheduleGetCmd = &cobra.Command{
 			{Title: "message", ValuePath: "state.message"},
 			{Title: "last run", ValuePath: "state.lastRun", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
-		executeGetCmd(headers, client.ListSchedule, scheduleTY.Config{})
+		executeGetCmd(headers, client.ListSchedule, schedulerTY.Config{})
 	},
 }
 

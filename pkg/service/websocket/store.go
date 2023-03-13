@@ -7,41 +7,37 @@ import (
 	"go.uber.org/zap"
 )
 
-type store struct {
+type Store struct {
 	clients map[*ws.Conn]bool
 	mutex   sync.RWMutex
-}
-
-var clientStore = store{
-	clients: make(map[*ws.Conn]bool),
-	mutex:   sync.RWMutex{},
+	logger  *zap.Logger
 }
 
 // register a websocket client connection
-func (s *store) register(conn *ws.Conn) {
+func (s *Store) register(conn *ws.Conn) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
 	s.clients[conn] = true
-	zap.L().Debug("new websocket connection added", zap.String("remoteAddress", conn.RemoteAddr().String()))
+	s.logger.Debug("new websocket connection added", zap.String("remoteAddress", conn.RemoteAddr().String()))
 }
 
 // unregister a websocket client connection
-func (s *store) unregister(conn *ws.Conn) {
+func (s *Store) unregister(conn *ws.Conn) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
 	err := conn.Close()
 	if err != nil {
-		zap.L().Debug("error on closing the connection", zap.String("remoteAddress", conn.RemoteAddr().String()), zap.Error(err))
+		s.logger.Debug("error on closing the connection", zap.String("remoteAddress", conn.RemoteAddr().String()), zap.Error(err))
 	} else {
-		zap.L().Debug("websocket connection closed", zap.String("remoteAddress", conn.RemoteAddr().String()))
+		s.logger.Debug("websocket connection closed", zap.String("remoteAddress", conn.RemoteAddr().String()))
 	}
 	delete(s.clients, conn)
 }
 
 // returns available websocket client connection
-func (s *store) getClients() []*ws.Conn {
+func (s *Store) getClients() []*ws.Conn {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
@@ -53,7 +49,7 @@ func (s *store) getClients() []*ws.Conn {
 }
 
 // returns the size of the client map
-func (s *store) getSize() int {
+func (s *Store) getSize() int {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 

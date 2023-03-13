@@ -3,15 +3,14 @@ package resource
 import (
 	"errors"
 
-	firmwareAPI "github.com/mycontroller-org/server/v2/pkg/api/firmware"
-	types "github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"go.uber.org/zap"
 )
 
-func firmwareService(reqEvent *rsTY.ServiceEvent) error {
+func (svc *ResourceService) firmwareService(reqEvent *rsTY.ServiceEvent) error {
 	resEvent := &rsTY.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
@@ -19,32 +18,32 @@ func firmwareService(reqEvent *rsTY.ServiceEvent) error {
 
 	switch reqEvent.Command {
 	case rsTY.CommandGet:
-		data, err := getFirmware(reqEvent)
+		data, err := svc.getFirmware(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
 	case rsTY.CommandBlocks:
-		sendFirmwareBlocks(reqEvent)
+		svc.sendFirmwareBlocks(reqEvent)
 		return nil
 
 	default:
 		return errors.New("unknown command")
 	}
-	return postResponse(reqEvent.ReplyTopic, resEvent)
+	return svc.postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getFirmware(request *rsTY.ServiceEvent) (interface{}, error) {
+func (svc *ResourceService) getFirmware(request *rsTY.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
-		cfg, err := firmwareAPI.GetByID(request.ID)
+		cfg, err := svc.api.Firmware().GetByID(request.ID)
 		if err != nil {
 			return nil, err
 		}
 		return cfg, nil
 	} else if len(request.Labels) > 0 {
-		filters := getLabelsFilter(request.Labels)
-		result, err := firmwareAPI.List(filters, nil)
+		filters := svc.getLabelsFilter(request.Labels)
+		result, err := svc.api.Firmware().List(filters, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -53,19 +52,19 @@ func getFirmware(request *rsTY.ServiceEvent) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func sendFirmwareBlocks(reqEvent *rsTY.ServiceEvent) {
+func (svc *ResourceService) sendFirmwareBlocks(reqEvent *rsTY.ServiceEvent) {
 	if reqEvent.ID == "" || reqEvent.ReplyTopic == "" {
 		return
 	}
-	fw, err := firmwareAPI.GetByID(reqEvent.ID)
+	fw, err := svc.api.Firmware().GetByID(reqEvent.ID)
 	if err != nil {
-		zap.L().Error("error fetching firmware", zap.String("id", reqEvent.ID), zap.Error(err))
+		svc.logger.Error("error fetching firmware", zap.String("id", reqEvent.ID), zap.Error(err))
 		return
 	}
-
-	fwBytes, err := utils.ReadFile(types.GetDataDirectoryFirmware(), fw.File.InternalName)
+	firmwareBaseDir := types.GetEnvString(types.ENV_DIR_DATA_FIRMWARE)
+	fwBytes, err := utils.ReadFile(firmwareBaseDir, fw.File.InternalName)
 	if err != nil {
-		zap.L().Error("error on reading a firmware file", zap.String("directory", types.GetDataDirectoryFirmware()), zap.String("fileName", fw.File.InternalName), zap.Error(err))
+		svc.logger.Error("error on reading a firmware file", zap.String("directory", firmwareBaseDir), zap.String("fileName", fw.File.InternalName), zap.Error(err))
 		return
 	}
 
@@ -84,9 +83,9 @@ func sendFirmwareBlocks(reqEvent *rsTY.ServiceEvent) {
 			reachedEnd = true
 		}
 
-		err := postFirmwareBlock(reqEvent.ReplyTopic, fw.ID, bytes, blockNumber, totalBytes, reachedEnd)
+		err := svc.postFirmwareBlock(reqEvent.ReplyTopic, fw.ID, bytes, blockNumber, totalBytes, reachedEnd)
 		if err != nil {
-			zap.L().Error("error on posting firmware blocks", zap.String("firmwareId", fw.ID), zap.Error(err))
+			svc.logger.Error("error on posting firmware blocks", zap.String("firmwareId", fw.ID), zap.Error(err))
 		}
 
 		if reachedEnd {
@@ -97,7 +96,7 @@ func sendFirmwareBlocks(reqEvent *rsTY.ServiceEvent) {
 
 }
 
-func postFirmwareBlock(replyTopic, id string, bytes []byte, blockNumber, totalBytes int, isFinal bool) error {
+func (svc *ResourceService) postFirmwareBlock(replyTopic, id string, bytes []byte, blockNumber, totalBytes int, isFinal bool) error {
 	resEvent := &rsTY.ServiceEvent{
 		Type:    rsTY.TypeFirmware,
 		Command: rsTY.CommandBlocks,
@@ -113,5 +112,5 @@ func postFirmwareBlock(replyTopic, id string, bytes []byte, blockNumber, totalBy
 	}
 
 	resEvent.SetData(fwBlock)
-	return postResponse(replyTopic, resEvent)
+	return svc.postResponse(replyTopic, resEvent)
 }

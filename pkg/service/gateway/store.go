@@ -6,17 +6,13 @@ import (
 	gwProvider "github.com/mycontroller-org/server/v2/plugin/gateway/provider"
 )
 
-type store struct {
+type Store struct {
 	services map[string]*gwProvider.Service
 	mutex    sync.Mutex
 }
 
-var gwService = store{
-	services: make(map[string]*gwProvider.Service),
-}
-
 // Add a service
-func (s *store) Add(service *gwProvider.Service) {
+func (s *Store) Add(service *gwProvider.Service) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -24,7 +20,7 @@ func (s *store) Add(service *gwProvider.Service) {
 }
 
 // Remove a service
-func (s *store) Remove(id string) {
+func (s *Store) Remove(id string) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -32,7 +28,7 @@ func (s *store) Remove(id string) {
 }
 
 // GetByID returns service by id
-func (s *store) Get(id string) *gwProvider.Service {
+func (s *Store) Get(id string) *gwProvider.Service {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -42,7 +38,7 @@ func (s *store) Get(id string) *gwProvider.Service {
 	return nil
 }
 
-func (s *store) ListIDs() []string {
+func (s *Store) ListIDs() []string {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 

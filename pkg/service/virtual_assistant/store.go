@@ -6,17 +6,13 @@ import (
 	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
 )
 
-type store struct {
+type Store struct {
 	services map[string]vaTY.Plugin
 	mutex    sync.Mutex
 }
 
-var vaService = store{
-	services: make(map[string]vaTY.Plugin),
-}
-
 // Add a service
-func (s *store) Add(service vaTY.Plugin) {
+func (s *Store) Add(service vaTY.Plugin) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -24,7 +20,7 @@ func (s *store) Add(service vaTY.Plugin) {
 }
 
 // Remove a service
-func (s *store) Remove(id string) {
+func (s *Store) Remove(id string) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -32,7 +28,7 @@ func (s *store) Remove(id string) {
 }
 
 // GetByID returns service by id
-func (s *store) Get(id string) vaTY.Plugin {
+func (s *Store) Get(id string) vaTY.Plugin {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -42,7 +38,7 @@ func (s *store) Get(id string) vaTY.Plugin {
 	return nil
 }
 
-func (s *store) ListIDs() []string {
+func (s *Store) ListIDs() []string {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 

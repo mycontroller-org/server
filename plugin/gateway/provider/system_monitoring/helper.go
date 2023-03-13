@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	topicTY "github.com/mycontroller-org/server/v2/pkg/types/topic"
 )
 
 func (p *Provider) getData(name string, value interface{}, metricType, unit string, isReadOnly bool) msgTY.Payload {
@@ -50,6 +50,5 @@ func (p *Provider) getSourcePresentationMsg(sourceID, sourceName string) msgTY.M
 }
 
 func (p *Provider) postMsg(msg *msgTY.Message) error {
-	topic := mcbus.GetTopicPostMessageToProcessor()
-	return mcbus.Publish(topic, msg)
+	return p.bus.Publish(topicTY.TopicPostMessageToProcessor, msg)
 }

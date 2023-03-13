@@ -9,11 +9,11 @@ import (
 )
 
 // Zip func
-func Zip(sourceDirectory, zipFilename string) error {
+func Zip(logger *zap.Logger, sourceDirectory, zipFilename string) error {
 	// Get a Buffer to Write To
 	zipFile, err := os.Create(zipFilename)
 	if err != nil {
-		zap.L().Error("error", zap.Error(err))
+		logger.Error("error", zap.Error(err))
 		return err
 	}
 	defer zipFile.Close()
@@ -22,20 +22,20 @@ func Zip(sourceDirectory, zipFilename string) error {
 	writer := zip.NewWriter(zipFile)
 
 	// Add some files to the archive.
-	err = addFiles(writer, sourceDirectory, "")
+	err = addFiles(logger, writer, sourceDirectory, "")
 	if err != nil {
-		zap.L().Error("error", zap.Error(err))
+		logger.Error("error", zap.Error(err))
 		return err
 	}
 
 	return writer.Close()
 }
 
-func addFiles(writer *zip.Writer, basePath, baseInZip string) error {
+func addFiles(logger *zap.Logger, writer *zip.Writer, basePath, baseInZip string) error {
 	// Open the Directory
 	files, err := os.ReadDir(basePath)
 	if err != nil {
-		zap.L().Error("error", zap.Error(err))
+		logger.Error("error", zap.Error(err))
 		return err
 	}
 
@@ -49,8 +49,8 @@ func addFiles(writer *zip.Writer, basePath, baseInZip string) error {
 			} else {
 				newBaseInZip = fmt.Sprintf("%s/%s/", baseInZip, file.Name())
 			}
-			zap.L().Debug("file names", zap.String("newbase", newBase), zap.String("newBaseInZip", newBaseInZip))
-			err = addFiles(writer, newBase, newBaseInZip)
+			logger.Debug("file names", zap.String("newbase", newBase), zap.String("newBaseInZip", newBaseInZip))
+			err = addFiles(logger, writer, newBase, newBaseInZip)
 			if err != nil {
 				return err
 			}
@@ -58,19 +58,19 @@ func addFiles(writer *zip.Writer, basePath, baseInZip string) error {
 			filename := fmt.Sprintf("%s/%s", basePath, file.Name())
 			dat, err := os.ReadFile(filename)
 			if err != nil {
-				zap.L().Error("error", zap.Error(err))
+				logger.Error("error", zap.Error(err))
 				return err
 			}
 
 			filenameInZip := fmt.Sprintf("%s/%s", baseInZip, file.Name())
 			f, err := writer.Create(filenameInZip)
 			if err != nil {
-				zap.L().Error("error", zap.Error(err))
+				logger.Error("error", zap.Error(err))
 				return err
 			}
 			_, err = f.Write(dat)
 			if err != nil {
-				zap.L().Error("error", zap.Error(err))
+				logger.Error("error", zap.Error(err))
 				return err
 			}
 		}

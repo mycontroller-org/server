@@ -10,10 +10,10 @@ import (
 )
 
 func init() {
-	Register(esphome.PluginEspHome, esphome.NewPluginEspHome)
+	Register(esphome.PluginEspHome, esphome.New)
 	Register(generic.PluginGeneric, generic.NewPluginGeneric)
-	Register(mysensorsV2.PluginMySensorsV2, mysensorsV2.NewPluginMySensorsV2)
-	Register(philipsHue.PluginPhilipsHue, philipsHue.NewPluginPhilipsHue)
-	Register(systemMonitoring.PluginSystemMonitoring, systemMonitoring.NewPluginSystemMonitoring)
-	Register(tasmota.PluginTasmota, tasmota.NewPluginTasmota)
+	Register(mysensorsV2.PluginMySensorsV2, mysensorsV2.New)
+	Register(philipsHue.PluginPhilipsHue, philipsHue.New)
+	Register(systemMonitoring.PluginSystemMonitoring, systemMonitoring.New)
+	Register(tasmota.PluginTasmota, tasmota.New)
 }

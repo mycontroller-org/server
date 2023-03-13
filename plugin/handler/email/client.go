@@ -1,9 +1,11 @@
 package email
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
@@ -49,20 +51,25 @@ const (
 	AuthTypeCRAMMD5 = "crammd5"
 )
 
-// NewEmailPlugin email client
-func NewEmailPlugin(cfg *handlerTY.Config) (handlerTY.Plugin, error) {
-	config := &Config{}
-	err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
+// email client
+func New(ctx context.Context, rawCfg *handlerTY.Config) (handlerTY.Plugin, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	zap.L().Debug("Email client", zap.Any("config", config))
+
+	config := &Config{}
+	err = utils.MapToStruct(utils.TagNameNone, rawCfg.Spec, config)
+	if err != nil {
+		return nil, err
+	}
+	logger.Debug("email client", zap.Any("config", config))
 
 	switch config.Type {
 	case TypeSMTP, TypeNone:
-		return NewSMTPClient(cfg, config)
+		return NewSMTPClient(ctx, logger, rawCfg, config)
 
 	default:
-		return nil, fmt.Errorf("unknown email client:%s", cfg.Type)
+		return nil, fmt.Errorf("unknown email client:%s", rawCfg.Type)
 	}
 }

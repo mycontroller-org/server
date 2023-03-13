@@ -11,6 +11,7 @@ type ClientStore struct {
 	GatewayID string
 	nodes     map[string]*ESPHomeNode
 	mutex     *sync.RWMutex
+	logger    *zap.Logger
 }
 
 // AddNode adds a esphome node to the store
@@ -41,7 +42,7 @@ func (s *ClientStore) Close() {
 	for nodeID, client := range s.nodes {
 		err := client.Disconnect()
 		if err != nil {
-			zap.L().Error("error on disconnecting a client", zap.String("gatewayId", s.GatewayID), zap.String("nodeId", nodeID), zap.Error(err))
+			s.logger.Error("error on disconnecting a client", zap.String("gatewayId", s.GatewayID), zap.String("nodeId", nodeID), zap.Error(err))
 		}
 	}
 }

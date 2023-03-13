@@ -1,14 +1,13 @@
 package task
 
 import (
+	"strings"
 	"time"
 
-	commonStore "github.com/mycontroller-org/server/v2/pkg/store"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
 	variablesUtils "github.com/mycontroller-org/server/v2/pkg/utils/variables"
 	"go.uber.org/zap"
 )
@@ -17,22 +16,22 @@ const (
 	defaultExecutionsSliceLimit = 10
 )
 
-func executeTask(task *taskTY.Config, evntWrapper *eventWrapper) {
+func (svc *TaskService) executeTask(task *taskTY.Config, evntWrapper *eventWrapper) {
 	start := time.Now()
 
 	state := task.State
 	state.ExecutedCount++
 	state.LastEvaluation = start
 
-	zap.L().Debug("executing a task", zap.String("id", task.ID), zap.String("description", task.Description))
+	svc.logger.Debug("executing a task", zap.String("id", task.ID), zap.String("description", task.Description))
 	// load variables
-	variables, err := variablesUtils.LoadVariables(task.Variables, commonStore.CFG.Secret)
+	variables, err := svc.variablesEngine.Load(task.Variables)
 	if err != nil {
-		zap.L().Warn("failed to load variables", zap.Error(err), zap.String("taskID", task.ID), zap.String("taskDescription", task.Description))
+		svc.logger.Warn("failed to load variables", zap.Error(err), zap.String("taskID", task.ID), zap.String("taskDescription", task.Description))
 		// update failure message for state and send it
 		state.LastStatus = false
 		state.Message = "failed to load a variables"
-		tasksStore.UpdateState(task.ID, state)
+		svc.store.UpdateState(task.ID, state)
 		return
 	}
 
@@ -46,20 +45,40 @@ func executeTask(task *taskTY.Config, evntWrapper *eventWrapper) {
 	// execute conditions
 	switch task.EvaluationType {
 	case taskTY.EvaluationTypeRule:
-		triggered = isTriggered(task.EvaluationConfig.Rule, variables)
+		triggered = svc.isTriggered(task.EvaluationConfig.Rule, variables)
 
 	case taskTY.EvaluationTypeJavascript:
-		responseMap, triggeredStatus := isTriggeredJavascript(task.ID, task.EvaluationConfig, variables)
+		// add script timeout from label
+		var scriptTimeout *time.Duration
+		if task.Labels.IsExists(types.LabelScriptTimeout) && task.Labels.Get(types.LabelScriptTimeout) != "" {
+			timeoutStr := task.Labels.Get(types.LabelScriptTimeout)
+			timeoutDuration, err := time.ParseDuration(timeoutStr)
+			if err != nil {
+				svc.logger.Error("error on parsing script timeout", zap.String("task", task.ID), zap.String("label", types.LabelScriptTimeout), zap.Error(err))
+			} else {
+				scriptTimeout = &timeoutDuration
+			}
+		}
+		// add default timeout, if timeout label not present
+		if scriptTimeout == nil {
+			defaultTimeout, err := time.ParseDuration(defaultScriptTimeout)
+			if err != nil {
+				svc.logger.Error("error on parsing default timeout", zap.String("input", defaultScriptTimeout), zap.Error(err))
+			} else {
+				scriptTimeout = &defaultTimeout
+			}
+		}
+		responseMap, triggeredStatus := svc.isTriggeredJavascript(task.ID, task.EvaluationConfig, variables, scriptTimeout)
 		triggered = triggeredStatus
 		variables = variablesUtils.Merge(variables, responseMap)
 
 	case taskTY.EvaluationTypeWebhook:
-		responseMap, triggeredStatus := isTriggeredWebhook(task.ID, task.EvaluationConfig, variables)
+		responseMap, triggeredStatus := svc.isTriggeredWebhook(task.ID, task.EvaluationConfig, variables)
 		triggered = triggeredStatus
 		variables = variablesUtils.Merge(variables, responseMap)
 
 	default:
-		zap.L().Error("unknown evaluation type", zap.String("type", task.EvaluationType), zap.String("taskId", task.ID))
+		svc.logger.Error("unknown evaluation type", zap.String("type", task.EvaluationType), zap.String("taskId", task.ID))
 		return
 	}
 
@@ -81,16 +100,16 @@ func executeTask(task *taskTY.Config, evntWrapper *eventWrapper) {
 		dampeningTriggered = triggered
 
 	case taskTY.DampeningTypeConsecutive:
-		dampeningTriggered, executionsSliceLimit = executeDampeningConsecutive(task, triggered)
+		dampeningTriggered, executionsSliceLimit = svc.executeDampeningConsecutive(task, triggered)
 
 	case taskTY.DampeningTypeEvaluation:
-		dampeningTriggered, executionsSliceLimit = executeDampeningEvaluations(task, triggered)
+		dampeningTriggered, executionsSliceLimit = svc.executeDampeningEvaluations(task, triggered)
 
 	case taskTY.DampeningTypeActiveDuration:
-		dampeningTriggered = executeDampeningActiveDuration(task, triggered)
+		dampeningTriggered = svc.executeDampeningActiveDuration(task, triggered)
 
 	default:
-		zap.L().Error("unknown dampening type", zap.String("type", task.Dampening.Type), zap.String("taskId", task.ID))
+		svc.logger.Error("unknown dampening type", zap.String("type", task.Dampening.Type), zap.String("taskId", task.ID))
 		return
 	}
 
@@ -106,9 +125,9 @@ func executeTask(task *taskTY.Config, evntWrapper *eventWrapper) {
 
 	if notifyHandlers {
 		state.LastSuccess = start // update last success time
-		parameters := variablesUtils.UpdateParameters(variables, task.HandlerParameters)
-		variablesUtils.UpdateParameters(variables, parameters)
-		busUtils.PostToHandler(task.Handlers, parameters)
+		parameters := variablesUtils.UpdateParameters(svc.logger, variables, task.HandlerParameters, svc.variablesEngine.TemplateEngine())
+		variablesUtils.UpdateParameters(svc.logger, variables, parameters, svc.variablesEngine.TemplateEngine())
+		busUtils.PostToHandler(svc.logger, svc.bus, task.Handlers, parameters)
 	}
 
 	// limit executions status slice
@@ -118,15 +137,15 @@ func executeTask(task *taskTY.Config, evntWrapper *eventWrapper) {
 
 	state.LastStatus = dampeningTriggered           // update triggered status
 	state.LastDuration = time.Since(start).String() // update last duration
-	tasksStore.UpdateState(task.ID, state)
+	svc.store.UpdateState(task.ID, state)
 
 	// check autoDisable and re-enable (if applicable)
 	if dampeningTriggered && task.AutoDisable {
-		busUtils.DisableTask(task.ID)
+		busUtils.DisableTask(svc.logger, svc.bus, task.ID)
 	}
 }
 
-func executeDampeningConsecutive(task *taskTY.Config, triggered bool) (bool, int) {
+func (svc *TaskService) executeDampeningConsecutive(task *taskTY.Config, triggered bool) (bool, int) {
 	occurrences := int(task.Dampening.Occurrences)
 	if !triggered || len(task.State.ExecutionsHistory) < occurrences {
 		return false, occurrences
@@ -140,7 +159,7 @@ func executeDampeningConsecutive(task *taskTY.Config, triggered bool) (bool, int
 	return true, occurrences // reset executions slice
 }
 
-func executeDampeningEvaluations(task *taskTY.Config, triggered bool) (bool, int) {
+func (svc *TaskService) executeDampeningEvaluations(task *taskTY.Config, triggered bool) (bool, int) {
 	occurrences := int(task.Dampening.Occurrences)
 	evaluations := int(task.Dampening.Evaluation)
 	if !triggered || len(task.State.ExecutionsHistory) < occurrences {
@@ -164,10 +183,10 @@ func executeDampeningEvaluations(task *taskTY.Config, triggered bool) (bool, int
 }
 
 // verifies the active duration dampening
-func executeDampeningActiveDuration(task *taskTY.Config, triggered bool) bool {
-	scheduleID := scheduleUtils.GetScheduleID(schedulePrefix, task.ID, scheduleTypeActiveDuration)
+func (svc *TaskService) executeDampeningActiveDuration(task *taskTY.Config, triggered bool) bool {
+	scheduleID := svc.getScheduleId(schedulePrefix, task.ID, scheduleTypeActiveDuration)
 	if !triggered {
-		unschedule(scheduleID)
+		svc.unschedule(scheduleID)
 		task.State.ActiveSince = time.Time{}
 		return false
 	}
@@ -175,8 +194,8 @@ func executeDampeningActiveDuration(task *taskTY.Config, triggered bool) bool {
 	now := time.Now()
 	activeDuration := utils.ToDuration(task.Dampening.ActiveDuration, 0)
 	if activeDuration == 0 {
-		unschedule(scheduleID)
-		zap.L().Debug("active duration can not be zero in a task", zap.String("id", task.ID), zap.String("activeDuration", task.Dampening.ActiveDuration))
+		svc.unschedule(scheduleID)
+		svc.logger.Debug("active duration can not be zero in a task", zap.String("id", task.ID), zap.String("activeDuration", task.Dampening.ActiveDuration))
 		return false
 	}
 
@@ -185,12 +204,16 @@ func executeDampeningActiveDuration(task *taskTY.Config, triggered bool) bool {
 	// Note: in case, if active duration doesn't work properly, revisit activeSince and activeDuration
 	activeSince += time.Millisecond * 500
 	if activeSince >= activeDuration {
-		unschedule(scheduleID)
+		svc.unschedule(scheduleID)
 		return true
 	} else {
-		if !scheduleUtils.IsScheduleAvailable(scheduleID) {
-			schedule(scheduleTypeActiveDuration, task.Dampening.ActiveDuration, task)
+		if !svc.scheduler.IsAvailable(scheduleID) {
+			svc.schedule(scheduleTypeActiveDuration, task.Dampening.ActiveDuration, task)
 		}
 		return false
 	}
+}
+
+func (svc *TaskService) getScheduleId(IDs ...string) string {
+	return strings.Join(IDs, "_")
 }

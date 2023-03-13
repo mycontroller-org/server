@@ -1,16 +1,14 @@
 package task
 
 import (
-	"github.com/mycontroller-org/server/v2/pkg/service/mcbus"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
-	busTY "github.com/mycontroller-org/server/v2/pkg/types/bus"
-	eventTY "github.com/mycontroller-org/server/v2/pkg/types/bus/event"
 	dataRepositoryTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
+	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
 	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	"github.com/mycontroller-org/server/v2/pkg/types/source"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
-	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"go.uber.org/zap"
 )
@@ -20,61 +18,42 @@ type eventWrapper struct {
 	Tasks []taskTY.Config
 }
 
-const (
-	eventListenerPreQueueLimit   = 1000
-	eventListenerPostQueueLimit  = 1000
-	eventListenerPreWorkerLimit  = 5
-	eventListenerPostWorkerLimit = 1
-	eventListenerPreQueueName    = "task_event_listener_pre"
-	eventListenerPostQueueName   = "task_event_listener_post"
-)
-
-var (
-	preEventsQueue          *queueUtils.Queue
-	postEventsQueue         *queueUtils.Queue
-	preEventsSubscriptionID = int64(0)
-	preEventsTopic          = "" // updated dynamically
-)
-
 // initEventListener events listener
-func initEventListener() error {
-	preEventsQueue = queueUtils.New(eventListenerPreQueueName, eventListenerPreQueueLimit, processPreEvent, eventListenerPreWorkerLimit)
-	postEventsQueue = queueUtils.New(eventListenerPostQueueName, eventListenerPostQueueLimit, resourcePostProcessor, eventListenerPostWorkerLimit)
+func (svc *TaskService) initEventListener() error {
 
 	// on message receive add it in to our local queue
-	preEventsTopic = mcbus.FormatTopic(mcbus.TopicEventsAll)
-	sID, err := mcbus.Subscribe(preEventsTopic, onEventReceive)
+	sID, err := svc.bus.Subscribe(svc.preEventsQueue.Topic, svc.onEventReceive)
 	if err != nil {
 		return err
 	}
-	preEventsSubscriptionID = sID
+	svc.preEventsQueue.SubscriptionId = sID
 	return nil
 }
 
-func closeEventListener() error {
-	err := mcbus.Unsubscribe(preEventsTopic, preEventsSubscriptionID)
+func (svc *TaskService) closeEventListener() error {
+	err := svc.bus.Unsubscribe(svc.preEventsQueue.Topic, svc.preEventsQueue.SubscriptionId)
 	if err != nil {
 		return err
 	}
-	preEventsQueue.Close()
-	postEventsQueue.Close()
+	svc.preEventsQueue.Close()
+	svc.postEventsQueue.Close()
 	return nil
 }
 
-func onEventReceive(busData *busTY.BusData) {
-	status := preEventsQueue.Produce(busData)
+func (svc *TaskService) onEventReceive(busData *busTY.BusData) {
+	status := svc.preEventsQueue.Produce(busData)
 	if !status {
-		zap.L().Warn("failed to store the event into queue", zap.Any("event", busData))
+		svc.logger.Warn("failed to store the event into queue", zap.Any("event", busData))
 	}
 }
 
-func processPreEvent(item interface{}) {
+func (svc *TaskService) processPreEvent(item interface{}) {
 	busData := item.(*busTY.BusData)
 
 	event := &eventTY.Event{}
 	err := busData.LoadData(event)
 	if err != nil {
-		zap.L().Warn("error on convert to target type", zap.Any("topic", busData.Topic), zap.Error(err))
+		svc.logger.Warn("error on convert to target type", zap.Any("topic", busData.Topic), zap.Error(err))
 		return
 	}
 
@@ -104,35 +83,35 @@ func processPreEvent(item interface{}) {
 
 	err = event.LoadEntity(out)
 	if err != nil {
-		zap.L().Warn("error on loading entity", zap.Any("event", event), zap.Error(err))
+		svc.logger.Warn("error on loading entity", zap.Any("event", event), zap.Error(err))
 		return
 	}
 	event.Entity = out
 
 	resourceWrapper := &eventWrapper{Event: event}
-	err = resourcePreProcessor(resourceWrapper)
+	err = svc.resourcePreProcessor(resourceWrapper)
 	if err != nil {
-		zap.L().Error("error on executing a resource", zap.Any("resource", resourceWrapper), zap.Error(err))
+		svc.logger.Error("error on executing a resource", zap.Any("resource", resourceWrapper), zap.Error(err))
 		return
 	}
 
 	if len(resourceWrapper.Tasks) > 0 {
-		status := postEventsQueue.Produce(resourceWrapper)
+		status := svc.postEventsQueue.Produce(resourceWrapper)
 		if !status {
-			zap.L().Error("failed to post selected tasks on post processor queue")
+			svc.logger.Error("failed to post selected tasks on post processor queue")
 		}
 	}
 }
 
-func resourcePreProcessor(evntWrapper *eventWrapper) error {
-	zap.L().Debug("eventWrapper received", zap.Any("eventWrapper", evntWrapper))
+func (svc *TaskService) resourcePreProcessor(evntWrapper *eventWrapper) error {
+	svc.logger.Debug("eventWrapper received", zap.Any("eventWrapper", evntWrapper))
 
-	tasks := tasksStore.filterTasks(evntWrapper)
-	zap.L().Debug("filtered", zap.Any("numberOftasks", len(tasks)))
+	tasks := svc.store.filterTasks(evntWrapper)
+	svc.logger.Debug("filtered", zap.Any("numberOftasks", len(tasks)))
 
 	for index := 0; index < len(tasks); index++ {
 		task := tasks[index]
-		zap.L().Debug("executing task", zap.String("id", task.ID), zap.String("description", task.Description))
+		svc.logger.Debug("executing task", zap.String("id", task.ID), zap.String("description", task.Description))
 		if len(tasks) > 0 {
 			evntWrapper.Tasks = tasks
 		}
@@ -140,17 +119,17 @@ func resourcePreProcessor(evntWrapper *eventWrapper) error {
 	return nil
 }
 
-func resourcePostProcessor(item interface{}) {
+func (svc *TaskService) resourcePostProcessor(item interface{}) {
 	evntWrapper, ok := item.(*eventWrapper)
 	if !ok {
-		zap.L().Warn("supplied item is not resourceWrapper", zap.Any("item", item))
+		svc.logger.Warn("supplied item is not resourceWrapper", zap.Any("item", item))
 		return
 	}
 
-	zap.L().Debug("resourceWrapper received", zap.String("entityType", evntWrapper.Event.EntityType))
+	svc.logger.Debug("resourceWrapper received", zap.String("entityType", evntWrapper.Event.EntityType))
 
 	for index := 0; index < len(evntWrapper.Tasks); index++ {
 		task := evntWrapper.Tasks[index]
-		executeTask(&task, evntWrapper)
+		svc.executeTask(&task, evntWrapper)
 	}
 }

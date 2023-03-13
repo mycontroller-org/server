@@ -3,28 +3,48 @@ package alexa
 // https://stackoverflow.com/questions/38230157/cannot-finding-my-unpublished-alexa-skills-kit
 
 import (
+	"context"
 	"io"
 	"net/http"
 
-	handlerUtils "github.com/mycontroller-org/server/v2/cmd/server/app/handler/utils"
 	"github.com/mycontroller-org/server/v2/pkg/json"
+	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
+	handlerUtils "github.com/mycontroller-org/server/v2/pkg/utils/http_handler"
 	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/alexa/types"
+	deviceAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"
 	"go.uber.org/zap"
 )
 
 const (
 	PluginAlexaAssistant = "alexa_assistant"
+	loggerName           = "virtual_assistant_alexa"
 )
 
 type Assistant struct {
-	cfg *vaTY.Config
+	ctx       context.Context
+	logger    *zap.Logger
+	cfg       *vaTY.Config
+	deviceAPI *deviceAPI.DeviceAPI
 }
 
-func New(cfg *vaTY.Config) (vaTY.Plugin, error) {
-	return &Assistant{cfg: cfg}, nil
-}
+func New(ctx context.Context, cfg *vaTY.Config) (vaTY.Plugin, error) {
+	logger, err := contextTY.LoggerFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
 
+	_deviceAPI, err := deviceAPI.New(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &Assistant{
+		ctx:       ctx,
+		logger:    logger.Named(loggerName),
+		cfg:       cfg,
+		deviceAPI: _deviceAPI,
+	}, nil
+}
 func (a *Assistant) Name() string {
 	return PluginAlexaAssistant
 }
@@ -42,11 +62,11 @@ func (a *Assistant) Config() *vaTY.Config {
 }
 
 func (a *Assistant) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// zap.L().Info("a request from", zap.Any("RequestURI", r.RequestURI), zap.Any("method", r.Method), zap.Any("headers", r.Header), zap.Any("query", r.URL.RawQuery))
+	// a.logger.Info("a request from", zap.Any("RequestURI", r.RequestURI), zap.Any("method", r.Method), zap.Any("headers", r.Header), zap.Any("query", r.URL.RawQuery))
 	d, err := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
-		zap.L().Error("error on getting body", zap.Error(err))
+		a.logger.Error("error on getting body", zap.Error(err))
 		http.Error(w, "error on getting body", 500)
 		return
 	}
@@ -54,7 +74,7 @@ func (a *Assistant) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	request := alexaTY.Request{}
 	err = json.Unmarshal(d, &request)
 	if err != nil {
-		zap.L().Error("error on forming directive object", zap.Error(err))
+		a.logger.Error("error on forming directive object", zap.Error(err))
 		http.Error(w, "error on forming directive object", 500)
 		return
 	}
@@ -62,21 +82,21 @@ func (a *Assistant) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var response interface{}
 
 	if request.Directive.Header.Name == alexaTY.RequestReportState {
-		_response, err := reportState(request.Directive)
+		_response, err := a.reportState(request.Directive)
 		if err != nil {
 			http.Error(w, "error on getting device state", 500)
 			return
 		}
 		response = _response
 	} else if request.Directive.Header.Namespace == alexaTY.NamespaceDiscovery {
-		_response, err := executeDiscover(request.Directive)
+		_response, err := a.executeDiscover(request.Directive)
 		if err != nil {
 			http.Error(w, "error on executing discover devices", 500)
 			return
 		}
 		response = _response
 	} else {
-		response = executiveDirective(request.Directive)
+		response = a.executiveDirective(request.Directive)
 	}
 
 	if response != nil {

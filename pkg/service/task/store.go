@@ -7,24 +7,21 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	scheduleUtils "github.com/mycontroller-org/server/v2/pkg/utils/schedule"
+	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
 
-type store struct {
+type Store struct {
 	tasks        map[string]taskTY.Config
 	pollingTasks []string // tasks which is in polling mode (will not trigger on events)
 	mutex        sync.Mutex
-}
-
-var tasksStore = store{
-	tasks:        make(map[string]taskTY.Config),
-	pollingTasks: make([]string, 0),
+	logger       *zap.Logger
+	bus          busTY.Plugin
 }
 
 // Add a task
-func (s *store) Add(task taskTY.Config) {
+func (s *Store) Add(task taskTY.Config, schedule func(scheduleType, interval string, task *taskTY.Config) string) {
 	if !task.Enabled {
 		if task.ReEnable { // schedule re-enable job
 			schedule(scheduleTypeReEnable, task.ReEnableDuration, &task)
@@ -46,21 +43,21 @@ func (s *store) Add(task taskTY.Config) {
 }
 
 // UpdateState of a task
-func (s *store) UpdateState(id string, state *taskTY.State) {
+func (s *Store) UpdateState(id string, state *taskTY.State) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
 	if task, ok := s.tasks[id]; ok {
 		task.State = state
 	}
-	busUtils.SetTaskState(id, *state)
+	busUtils.SetTaskState(s.logger, s.bus, id, *state)
 }
 
 // Remove a task
-func (s *store) Remove(taskID string) {
+func (s *Store) Remove(taskID string, unscheduleAll func(scheduleID string), getScheduleId func(IDs ...string) string) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	scheduleID := scheduleUtils.GetScheduleID(schedulePrefix, taskID, scheduleTypePolling)
+	scheduleID := getScheduleId(schedulePrefix, taskID, scheduleTypePolling)
 	unscheduleAll(taskID)
 	if utils.ContainsString(s.pollingTasks, scheduleID) {
 		updatedSlice := make([]string, 0)
@@ -71,21 +68,21 @@ func (s *store) Remove(taskID string) {
 }
 
 // GetByID returns handler by id
-func (s *store) Get(id string) taskTY.Config {
+func (s *Store) Get(id string) taskTY.Config {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
 	return s.tasks[id]
 }
 
-func (s *store) RemoveAll() {
+func (s *Store) RemoveAll() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	tasksStore.tasks = make(map[string]taskTY.Config)
+	s.tasks = make(map[string]taskTY.Config)
 }
 
-func (s *store) ListIDs() []string {
+func (s *Store) ListIDs() []string {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -96,7 +93,7 @@ func (s *store) ListIDs() []string {
 	return ids
 }
 
-func (s *store) filterTasks(evnWrapper *eventWrapper) []taskTY.Config {
+func (s *Store) filterTasks(evnWrapper *eventWrapper) []taskTY.Config {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -121,12 +118,12 @@ func (s *store) filterTasks(evnWrapper *eventWrapper) []taskTY.Config {
 
 		filters := s.getFilters(task.EventFilter.Filters)
 		matching := false
-		zap.L().Debug("filterTasks", zap.Any("filters", filters), zap.Any("event", evnWrapper.Event))
+		s.logger.Debug("filterTasks", zap.Any("filters", filters), zap.Any("event", evnWrapper.Event))
 
 		if len(filters) == 0 {
 			matching = true
 		} else {
-			zap.L().Debug("filterTasks", zap.Any("filters", filters), zap.Any("event", evnWrapper.Event))
+			s.logger.Debug("filterTasks", zap.Any("filters", filters), zap.Any("event", evnWrapper.Event))
 			matching = filterUtils.IsMatching(evnWrapper.Event.Entity, filters)
 		}
 		if matching {
@@ -136,7 +133,7 @@ func (s *store) filterTasks(evnWrapper *eventWrapper) []taskTY.Config {
 	return filteredTasks
 }
 
-func (s *store) getFilters(filtersMap map[string]string) []storageTY.Filter {
+func (s *Store) getFilters(filtersMap map[string]string) []storageTY.Filter {
 	filters := make([]storageTY.Filter, 0)
 	for k, v := range filtersMap {
 		filters = append(filters, storageTY.Filter{Key: k, Operator: storageTY.OperatorEqual, Value: v})

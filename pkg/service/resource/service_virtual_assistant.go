@@ -3,13 +3,12 @@ package resource
 import (
 	"errors"
 
-	vaAPI "github.com/mycontroller-org/server/v2/pkg/api/virtual_assistant"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	"go.uber.org/zap"
 )
 
-func virtualAssistantService(reqEvent *rsTY.ServiceEvent) error {
+func (svc *ResourceService) virtualAssistantService(reqEvent *rsTY.ServiceEvent) error {
 	resEvent := &rsTY.ServiceEvent{
 		Type:    reqEvent.Type,
 		Command: reqEvent.ReplyCommand,
@@ -17,40 +16,40 @@ func virtualAssistantService(reqEvent *rsTY.ServiceEvent) error {
 
 	switch reqEvent.Command {
 	case rsTY.CommandGet:
-		data, err := getVirtualAssistant(reqEvent)
+		data, err := svc.getVirtualAssistant(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 		resEvent.SetData(data)
 
 	case rsTY.CommandUpdateState:
-		err := updateVirtualAssistantState(reqEvent)
+		err := svc.updateVirtualAssistantState(reqEvent)
 		if err != nil {
 			resEvent.Error = err.Error()
 		}
 
 	case rsTY.CommandLoadAll:
-		vaAPI.LoadAll()
+		svc.api.VirtualAssistant().LoadAll()
 
 	case rsTY.CommandDisable:
-		return disableVirtualAssistant(reqEvent)
+		return svc.disableVirtualAssistant(reqEvent)
 
 	default:
 		return errors.New("unknown command")
 	}
-	return postResponse(reqEvent.ReplyTopic, resEvent)
+	return svc.postResponse(reqEvent.ReplyTopic, resEvent)
 }
 
-func getVirtualAssistant(request *rsTY.ServiceEvent) (interface{}, error) {
+func (svc *ResourceService) getVirtualAssistant(request *rsTY.ServiceEvent) (interface{}, error) {
 	if request.ID != "" {
-		cfg, err := vaAPI.GetByID(request.ID)
+		cfg, err := svc.api.VirtualAssistant().GetByID(request.ID)
 		if err != nil {
 			return nil, err
 		}
 		return cfg, nil
 	} else if len(request.Labels) > 0 {
-		filters := getLabelsFilter(request.Labels)
-		result, err := vaAPI.List(filters, nil)
+		filters := svc.getLabelsFilter(request.Labels)
+		result, err := svc.api.VirtualAssistant().List(filters, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -59,34 +58,34 @@ func getVirtualAssistant(request *rsTY.ServiceEvent) (interface{}, error) {
 	return nil, errors.New("filter not supplied")
 }
 
-func updateVirtualAssistantState(reqEvent *rsTY.ServiceEvent) error {
+func (svc *ResourceService) updateVirtualAssistantState(reqEvent *rsTY.ServiceEvent) error {
 	if reqEvent.Data == "" {
-		zap.L().Error("state not supplied", zap.Any("event", reqEvent))
+		svc.logger.Error("state not supplied", zap.Any("event", reqEvent))
 		return errors.New("state not supplied")
 	}
 
 	state := &types.State{}
 	err := reqEvent.LoadData(state)
 	if err != nil {
-		zap.L().Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
+		svc.logger.Error("error on data conversion", zap.Any("data", reqEvent.Data), zap.Error(err))
 		return err
 	}
 
-	return vaAPI.SetState(reqEvent.ID, state)
+	return svc.api.VirtualAssistant().SetState(reqEvent.ID, state)
 }
 
-func disableVirtualAssistant(reqEvent *rsTY.ServiceEvent) error {
+func (svc *ResourceService) disableVirtualAssistant(reqEvent *rsTY.ServiceEvent) error {
 	if reqEvent.Data == "" {
-		zap.L().Error("virtual assistant id not supplied", zap.Any("event", reqEvent))
+		svc.logger.Error("virtual assistant id not supplied", zap.Any("event", reqEvent))
 		return errors.New("id not supplied")
 	}
 
 	id := ""
 	err := reqEvent.LoadData(&id)
 	if err != nil {
-		zap.L().Error("error on data conversion", zap.Any("reqEvent", reqEvent), zap.Error(err))
+		svc.logger.Error("error on data conversion", zap.Any("reqEvent", reqEvent), zap.Error(err))
 		return err
 	}
 
-	return vaAPI.Disable([]string{id})
+	return svc.api.VirtualAssistant().Disable([]string{id})
 }
