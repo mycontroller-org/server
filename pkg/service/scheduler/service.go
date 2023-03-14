@@ -12,7 +12,6 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
-	templateUtils "github.com/mycontroller-org/server/v2/pkg/utils/template"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
 )
@@ -33,7 +32,6 @@ type SchedulerService struct {
 	filter          *sfTY.ServiceFilter
 	eventsQueue     *queueUtils.QueueSpec
 	variablesEngine types.VariablesEngine
-	templateEngine  *templateUtils.Template
 }
 
 func New(ctx context.Context, filter *sfTY.ServiceFilter, variablesEngine types.VariablesEngine, sunriseApi types.Sunrise) (serviceTY.Service, error) {
@@ -42,10 +40,6 @@ func New(ctx context.Context, filter *sfTY.ServiceFilter, variablesEngine types.
 		return nil, err
 	}
 	bus, err := busTY.FromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-	templateEngine, err := templateUtils.New(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +59,6 @@ func New(ctx context.Context, filter *sfTY.ServiceFilter, variablesEngine types.
 		bus:             bus,
 		sunriseApi:      sunriseApi,
 		variablesEngine: variablesEngine,
-		templateEngine:  templateEngine,
 		filter:          filter,
 	}
 

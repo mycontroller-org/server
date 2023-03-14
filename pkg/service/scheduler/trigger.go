@@ -112,7 +112,7 @@ func (svc *SchedulerService) scheduleTriggerFunc(cfg *schedulerTY.Config, spec s
 	}
 
 	// post to handlers
-	parameters := variablesUtils.UpdateParameters(svc.logger, variables, cfg.HandlerParameters, svc.templateEngine)
+	parameters := variablesUtils.UpdateParameters(svc.logger, variables, cfg.HandlerParameters, svc.variablesEngine.TemplateEngine())
 	busUtils.PostToHandler(svc.logger, svc.bus, cfg.Handlers, parameters)
 
 	cfg.State.Message = fmt.Sprintf("time taken: %s", time.Since(start).String())
