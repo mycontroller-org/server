@@ -3,6 +3,7 @@ package helper
 import (
 	"context"
 	"fmt"
+	"time"
 
 	entitiesAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	bus "github.com/mycontroller-org/server/v2/pkg/bus"
@@ -59,6 +60,7 @@ func setEnvironmentVariables(cfg *cfgTY.Config) error {
 		types.ENV_LOG_MODE:               cfg.Logger.Mode,
 		types.ENV_LOG_ENCODING:           cfg.Logger.Encoding,
 		types.ENV_LOG_ENABLE_STACK_TRACE: cfg.Logger.EnableStacktrace,
+		types.ENV_RUNNING_SINCE:          time.Now().Format(time.RFC3339),
 	}
 
 	for key, value := range envMap {

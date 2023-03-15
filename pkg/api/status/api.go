@@ -54,7 +54,7 @@ type Status struct {
 	Login             settingsTY.Login `json:"login"`
 	StartTime         time.Time        `json:"startTime"`
 	ServerTime        time.Time        `json:"serverTime"`
-	Uptime            uint64           `json:"uptime"` // in seconds
+	Uptime            uint64           `json:"uptime"` // in milliseconds
 	MetricsDBDisabled bool             `json:"metricsDBDisabled"`
 	Language          string           `json:"language"`
 }
@@ -75,7 +75,7 @@ func (s *StatusAPI) get(minimal bool) Status {
 		status.Hostname = hostname
 		status.ServerTime = time.Now()
 		status.StartTime = startTime
-		status.Uptime = uint64(time.Since(startTime).Seconds())
+		status.Uptime = uint64(time.Since(startTime).Milliseconds())
 	}
 
 	// include login message

@@ -11,16 +11,17 @@ type Payload struct {
 
 // Application details
 type Application struct {
-	Version   string   `json:"version"`
-	GitCommit string   `json:"gitCommit"`
-	BuildDate string   `json:"buildDate"`
-	Platform  string   `json:"platform"`
-	Arch      string   `json:"arch"`
-	GoLang    string   `json:"goLang"`
-	RunningIn string   `json:"runningIn"`
-	Uptime    uint64   `json:"uptime"`
-	Gateways  []string `json:"gateways"`
-	Handlers  []string `json:"handlers"`
+	Version      string   `json:"version"`
+	GitCommit    string   `json:"gitCommit"`
+	BuildDate    string   `json:"buildDate"`
+	Platform     string   `json:"platform"`
+	Arch         string   `json:"arch"`
+	GoLang       string   `json:"goLang"`
+	RunningIn    string   `json:"runningIn"`
+	Uptime       uint64   `json:"uptime"`
+	RunningSince string   `json:"runningSince"`
+	Gateways     []string `json:"gateways"`
+	Handlers     []string `json:"handlers"`
 }
 
 // Location details
