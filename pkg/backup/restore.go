@@ -74,17 +74,60 @@ func (br *BackupRestore) ExecuteRestore(storage storageTY.Plugin, apiMap map[str
 	br.logger.Info("Import database completed", zap.String("timeTaken", time.Since(start).String()))
 
 	// restore firmwares
-	err = br.ExecuteRestoreFirmware(firmwareDir)
+	err = br.restoreFirmwares(firmwareDir)
 	if err != nil {
 		br.logger.Fatal("error on copying firmware files", zap.Error(err))
 		return err
 	}
+
+	// restore secure and insecure shares
+	err = br.restoreSecureInsecureShare(extractedDir)
+	if err != nil {
+		br.logger.Fatal("error on copying secure or insecure shares files", zap.Error(err))
+		return err
+	}
+
 	br.logger.Info("restore completed successfully", zap.String("timeTaken", time.Since(start).String()))
 	return nil
 }
 
-// ExecuteRestoreFirmware copies firmwares to the actual directory
-func (br *BackupRestore) ExecuteRestoreFirmware(sourceDir string) error {
+// restores the secure and insecure shares, if available in the backup
+// overwrites if the file exists on the destination directory
+func (br *BackupRestore) restoreSecureInsecureShare(extractedDir string) error {
+	// copy secure share directory if available in the backup
+	secureShareDir := path.Join(extractedDir, config.DirectorySecureShare)
+	if utils.IsDirExists(secureShareDir) {
+		secureShareDst := types.GetEnvString(types.ENV_DIR_SHARE_SECURE)
+		if secureShareDst == "" {
+			return fmt.Errorf("environment '%s' not set", types.ENV_DIR_SHARE_SECURE)
+		}
+		err := br.CopyFiles(secureShareDir, secureShareDst, true)
+		if err != nil {
+			br.logger.Error("error on coping the secure share files", zap.String("source", secureShareDir), zap.String("destination", secureShareDst))
+			return err
+		}
+	}
+
+	// copy insecure share directory if available in the backup
+	insecureShareDir := path.Join(extractedDir, config.DirectoryInsecureShare)
+	if utils.IsDirExists(insecureShareDir) {
+		insecureShareDst := types.GetEnvString(types.ENV_DIR_SHARE_INSECURE)
+		if insecureShareDst == "" {
+			return fmt.Errorf("environment '%s' not set", types.ENV_DIR_SHARE_INSECURE)
+		}
+		err := br.CopyFiles(insecureShareDir, insecureShareDst, true)
+		if err != nil {
+			br.logger.Error("error on coping the insecure share files", zap.String("source", insecureShareDir), zap.String("destination", insecureShareDst))
+			return err
+		}
+	}
+
+	return nil
+
+}
+
+// restores firmwares to the actual directory
+func (br *BackupRestore) restoreFirmwares(sourceDir string) error {
 	if isRestoreRunning.IsSet() {
 		return errors.New("there is an import job is in progress")
 	}

@@ -28,25 +28,25 @@ const (
 
 // Config struct
 type Config struct {
-	ID                string               `json:"id" yaml:"id"`
-	Description       string               `json:"description" yaml:"description"`
-	Labels            cmap.CustomStringMap `json:"labels" yaml:"labels"`
-	Enabled           bool                 `json:"enabled" yaml:"enabled"`
-	IgnoreDuplicate   bool                 `json:"ignoreDuplicate" yaml:"ignoreDuplicate"`
-	AutoDisable       bool                 `json:"autoDisable" yaml:"autoDisable"`
-	ReEnable          bool                 `json:"reEnable" yaml:"reEnable"`
-	ReEnableDuration  string               `json:"reEnableDuration" yaml:"reEnableDuration"`
-	Variables         map[string]string    `json:"variables" yaml:"variables"`
-	Dampening         DampeningConfig      `json:"dampening" yaml:"dampening"`
-	TriggerOnEvent    bool                 `json:"triggerOnEvent" yaml:"triggerOnEvent"`
-	EventFilter       EventFilter          `json:"eventFilter" yaml:"eventFilter"`
-	ExecutionInterval string               `json:"executionInterval" yaml:"executionInterval"`
-	EvaluationType    string               `json:"evaluationType" yaml:"evaluationType"`
-	EvaluationConfig  EvaluationConfig     `json:"evaluationConfig" yaml:"evaluationConfig"`
-	HandlerParameters map[string]string    `json:"handlerParameters" yaml:"handlerParameters"`
-	Handlers          []string             `json:"handlers" yaml:"handlers"`
-	ModifiedOn        time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
-	State             *State               `json:"state" yaml:"state"`
+	ID                string                 `json:"id" yaml:"id"`
+	Description       string                 `json:"description" yaml:"description"`
+	Labels            cmap.CustomStringMap   `json:"labels" yaml:"labels"`
+	Enabled           bool                   `json:"enabled" yaml:"enabled"`
+	IgnoreDuplicate   bool                   `json:"ignoreDuplicate" yaml:"ignoreDuplicate"`
+	AutoDisable       bool                   `json:"autoDisable" yaml:"autoDisable"`
+	ReEnable          bool                   `json:"reEnable" yaml:"reEnable"`
+	ReEnableDuration  string                 `json:"reEnableDuration" yaml:"reEnableDuration"`
+	Variables         map[string]interface{} `json:"variables" yaml:"variables"`
+	Dampening         DampeningConfig        `json:"dampening" yaml:"dampening"`
+	TriggerOnEvent    bool                   `json:"triggerOnEvent" yaml:"triggerOnEvent"`
+	EventFilter       EventFilter            `json:"eventFilter" yaml:"eventFilter"`
+	ExecutionInterval string                 `json:"executionInterval" yaml:"executionInterval"`
+	EvaluationType    string                 `json:"evaluationType" yaml:"evaluationType"`
+	EvaluationConfig  EvaluationConfig       `json:"evaluationConfig" yaml:"evaluationConfig"`
+	HandlerParameters map[string]interface{} `json:"handlerParameters" yaml:"handlerParameters"`
+	Handlers          []string               `json:"handlers" yaml:"handlers"`
+	ModifiedOn        time.Time              `json:"modifiedOn" yaml:"modifiedOn"`
+	State             *State                 `json:"state" yaml:"state"`
 }
 
 // EventFilter struct

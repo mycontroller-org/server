@@ -1,9 +1,12 @@
 package helper
 
 import (
+	"time"
+
 	systemJobs "github.com/mycontroller-org/server/v2/pkg/service/system_jobs"
 	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
+	"github.com/mycontroller-org/server/v2/pkg/upgrade"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 	"github.com/mycontroller-org/server/v2/pkg/version"
@@ -42,8 +45,16 @@ func (s *Server) updateInitialSystemSettings() {
 	}
 
 	// update version details
+	// these details are used on upgrade to apply patches
 	versionSettings := &settingsTY.Settings{ID: settingsTY.KeyVersion}
-	versionData := settingsTY.VersionSettings{Version: version.Get().Version}
+	ver := version.Get()
+	versionData := settingsTY.VersionSettings{
+		Version:     ver.Version,
+		GitCommit:   ver.GitCommit,
+		Database:    s.storage.Name(),
+		InstalledOn: time.Now().Format(time.RFC3339),
+		LastUpgrade: upgrade.GetLatestUpgradeVersion(),
+	}
 	versionSettings.Spec = utils.StructToMap(versionData)
 	err = s.api.Settings().UpdateSettings(versionSettings)
 	if err != nil {

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"strings"
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
@@ -21,7 +22,7 @@ type Plugin interface {
 	Name() string
 	Start() error
 	Close() error
-	Post(variables map[string]interface{}) error
+	Post(parameters map[string]interface{}) error
 	State() *types.State
 }
 
@@ -50,18 +51,11 @@ func (hdr *Config) Clone() Config {
 	return clonedConfig
 }
 
-// MessageWrapper to use in bus
+// used in bus
 // specially used to send data to handlers
 type MessageWrapper struct {
 	ID   string
 	Data map[string]interface{}
-}
-
-// GenericData struct
-type GenericData struct {
-	Type     string `json:"type" yaml:"type"`
-	Disabled string `json:"disabled" yaml:"disabled"` // string? supports template
-	Data     string `json:"data" yaml:"data"`
 }
 
 // // ConvertibleBoolean used to convert string to bool
@@ -77,8 +71,17 @@ type GenericData struct {
 // 	return nil
 // }
 
+// simple string data
+type StringData struct {
+	Disabled string `json:"disabled" yaml:"disabled"`
+	Type     string `json:"type" yaml:"type"`
+	Value    string `json:"value" yaml:"value"`
+}
+
 // ResourceData struct
 type ResourceData struct {
+	Disabled     string               `json:"disabled" yaml:"disabled"`
+	Type         string               `json:"type" yaml:"type"`
 	ResourceType string               `json:"resourceType" yaml:"resourceType"`
 	QuickID      string               `json:"quickId" yaml:"quickId"`
 	Labels       cmap.CustomStringMap `json:"labels" yaml:"labels"`
@@ -89,6 +92,8 @@ type ResourceData struct {
 
 // WebhookData struct
 type WebhookData struct {
+	Disabled        string                 `json:"disabled" yaml:"disabled"`
+	Type            string                 `json:"type" yaml:"type"`
 	Server          string                 `json:"server" yaml:"server"`
 	API             string                 `json:"api" yaml:"api"`
 	Insecure        bool                   `json:"insecure" yaml:"insecure"`
@@ -102,14 +107,18 @@ type WebhookData struct {
 
 // EmailData struct
 type EmailData struct {
-	From    string   `json:"from" yaml:"from"`
-	To      []string `json:"to" yaml:"to"`
-	Subject string   `json:"subject" yaml:"subject"`
-	Body    string   `json:"body" yaml:"body"`
+	Disabled string   `json:"disabled" yaml:"disabled"`
+	Type     string   `json:"type" yaml:"type"`
+	From     string   `json:"from" yaml:"from"`
+	To       []string `json:"to" yaml:"to"`
+	Subject  string   `json:"subject" yaml:"subject"`
+	Body     string   `json:"body" yaml:"body"`
 }
 
 // TelegramData struct
 type TelegramData struct {
+	Disabled  string   `json:"disabled" yaml:"disabled"`
+	Type      string   `json:"type" yaml:"type"`
 	ChatIDs   []string `json:"chatIds" yaml:"chatIds"`
 	ParseMode string   `json:"parseMode" yaml:"parseMode"`
 	Text      string   `json:"text" yaml:"text"`
@@ -117,6 +126,23 @@ type TelegramData struct {
 
 // BackupData struct
 type BackupData struct {
-	ProviderType string                 `json:"providerType" yaml:"providerType"`
-	Spec         map[string]interface{} `json:"spec" yaml:"spec"`
+	Type         string `json:"type" yaml:"type"`
+	ProviderType string `json:"providerType" yaml:"providerType"`
+	// additional fields will be added and used in the specific section
+}
+
+func IsTypeOf(parameter interface{}, expectedType string) (cmap.CustomMap, bool) {
+	if _parameterMap, ok := parameter.(map[string]interface{}); ok {
+		parameterCMap := cmap.CustomMap(_parameterMap)
+		return parameterCMap, parameterCMap.GetString(types.KeyType) == expectedType
+	}
+	return nil, false
+}
+
+func HasTypePrefixOf(parameter interface{}, expectedType string) (cmap.CustomMap, bool) {
+	if _parameterMap, ok := parameter.(map[string]interface{}); ok {
+		parameterCMap := cmap.CustomMap(_parameterMap)
+		return parameterCMap, strings.HasPrefix(parameterCMap.GetString(types.KeyType), expectedType)
+	}
+	return nil, false
 }

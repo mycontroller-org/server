@@ -2,7 +2,6 @@ package webhook
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -11,7 +10,6 @@ import (
 	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
-	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
@@ -131,29 +129,20 @@ func (c *WebhookClient) State() *types.State {
 }
 
 // Post handler implementation
-func (c *WebhookClient) Post(data map[string]interface{}) error {
+func (c *WebhookClient) Post(parameters map[string]interface{}) error {
 	config := c.Config.Clone()
 
-	for name, value := range data {
-		c.logger.Debug("data", zap.Any("name", name), zap.Any("value", value))
-		stringValue, ok := value.(string)
+	for name, rawParameter := range parameters {
+		parameter, ok := handlerTY.IsTypeOf(rawParameter, handlerTY.DataTypeWebhook)
 		if !ok {
 			continue
 		}
-
-		genericData := handlerTY.GenericData{}
-		err := json.Unmarshal([]byte(stringValue), &genericData)
-		if err != nil {
-			continue
-		}
-		if genericData.Type != handlerTY.DataTypeWebhook {
-			continue
-		}
+		c.logger.Debug("data", zap.Any("name", name), zap.Any("parameter", parameter))
 
 		webhookData := handlerTY.WebhookData{}
-		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &webhookData)
+		err := utils.MapToStruct(utils.TagNameNone, parameter, &webhookData)
 		if err != nil {
-			c.logger.Error("error on converting webhook data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
+			c.logger.Error("error on converting webhook data", zap.Error(err), zap.String("name", name), zap.Any("parameter", parameter))
 			continue
 		}
 

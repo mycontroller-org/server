@@ -2,7 +2,6 @@ package disk
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -12,7 +11,6 @@ import (
 	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
-	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
@@ -27,10 +25,15 @@ const (
 
 // Config of disk backup client
 type Config struct {
-	Prefix            string
-	StorageExportType string
-	TargetDirectory   string
-	RetentionCount    int
+	Disabled             string // used globally
+	Type                 string // used globally
+	ProviderType         string // used globally
+	Prefix               string
+	StorageExportType    string
+	TargetDirectory      string
+	RetentionCount       int
+	IncludeSecureShare   bool // include secure directory on the backup
+	IncludeInsecureShare bool // include insecure directory on the backup
 }
 
 // Client struct
@@ -43,8 +46,8 @@ type Client struct {
 	bus        busTY.Plugin
 }
 
-// New disk backup client
-func New(ctx context.Context, cfg *handlerTY.Config, spec map[string]interface{}) (*Client, error) {
+// disk backup client
+func New(ctx context.Context, cfg *handlerTY.Config) (*Client, error) {
 	logger, err := contextTY.LoggerFromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -59,7 +62,7 @@ func New(ctx context.Context, cfg *handlerTY.Config, spec map[string]interface{}
 	}
 
 	config := &Config{}
-	err = utils.MapToStruct(utils.TagNameNone, spec, config)
+	err = utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
 	if err != nil {
 		return nil, err
 	}
@@ -102,27 +105,18 @@ func (c *Client) State() *types.State {
 }
 
 // Post func
-func (c *Client) Post(data map[string]interface{}) error {
-	for name, value := range data {
-		c.logger.Debug("processing a request", zap.String("name", name), zap.Any("value", value))
-		stringValue, ok := value.(string)
+func (c *Client) Post(parameters map[string]interface{}) error {
+	for name, rawParameter := range parameters {
+		parameter, ok := handlerTY.IsTypeOf(rawParameter, handlerTY.DataTypeBackup)
 		if !ok {
 			continue
 		}
-
-		genericData := handlerTY.GenericData{}
-		err := json.Unmarshal([]byte(stringValue), &genericData)
-		if err != nil {
-			continue
-		}
-		if genericData.Type != handlerTY.DataTypeBackup {
-			continue
-		}
+		c.logger.Debug("data", zap.Any("name", name), zap.Any("parameter", parameter))
 
 		backupConfigData := handlerTY.BackupData{}
-		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &backupConfigData)
+		err := utils.MapToStruct(utils.TagNameNone, parameter, &backupConfigData)
 		if err != nil {
-			c.logger.Error("error on converting backup config data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
+			c.logger.Error("error on converting backup config data", zap.Error(err), zap.String("name", name), zap.Any("parameter", parameter))
 			continue
 		}
 
@@ -130,7 +124,7 @@ func (c *Client) Post(data map[string]interface{}) error {
 			continue
 		}
 
-		err = c.triggerBackup(backupConfigData.Spec)
+		err = c.triggerBackup(parameter)
 		if err != nil {
 			return err
 		}
@@ -177,7 +171,7 @@ func (c *Client) triggerBackup(spec map[string]interface{}) error {
 	start := time.Now()
 	c.logger.Debug("Backup job triggered", zap.String("handler", c.handlerCfg.ID))
 	// start backup
-	filename, err := backupUtil.Backup(c.ctx, c.logger, prefix, targetExportType, c.storage, c.bus)
+	filename, err := backupUtil.Backup(c.ctx, c.logger, prefix, targetExportType, c.cfg.IncludeSecureShare, c.cfg.IncludeInsecureShare, c.storage, c.bus)
 	if err != nil {
 		return err
 	}

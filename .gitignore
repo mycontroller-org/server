@@ -5,3 +5,5 @@
 /scripts/push_bin.sh
 binaries/*
 builds/*
+.vscode/*
+!.vscode/settings.json

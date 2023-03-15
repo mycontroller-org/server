@@ -27,7 +27,7 @@ func (svc *TaskService) executeTask(task *taskTY.Config, evntWrapper *eventWrapp
 	// load variables
 	variables, err := svc.variablesEngine.Load(task.Variables)
 	if err != nil {
-		svc.logger.Warn("failed to load variables", zap.Error(err), zap.String("taskID", task.ID), zap.String("taskDescription", task.Description))
+		svc.logger.Warn("failed to load variables", zap.String("taskID", task.ID), zap.String("taskDescription", task.Description), zap.Error(err))
 		// update failure message for state and send it
 		state.LastStatus = false
 		state.Message = "failed to load a variables"

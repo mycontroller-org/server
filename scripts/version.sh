@@ -16,8 +16,11 @@ fi
 
 # update version number
 export VERSION=`echo ${GIT_BRANCH} |  awk 'match($0, /([0-9]*\.[0-9]*\.[0-9]*)$/) { print substr($0, RSTART, RLENGTH) }'`
-if [ ${GIT_BRANCH} = "master" ]; then
-export VERSION="master"
+if [ -z "$VERSION" ]; then
+  # takes version from version file and adds branch name with that
+  STATIC_VERSION=`grep server= versions.txt | awk -F= '{print $2}'`
+  BRANCH_NAME=`git describe --contains --all HEAD`
+  export VERSION="${STATIC_VERSION}-${BRANCH_NAME}"
 fi
 
-export LD_FLAGS="-X $VERSION_PKG.version=$GIT_BRANCH -X $VERSION_PKG.buildDate=$BUILD_DATE -X $VERSION_PKG.gitCommit=$GIT_SHA"
+export LD_FLAGS="-X $VERSION_PKG.version=$VERSION -X $VERSION_PKG.buildDate=$BUILD_DATE -X $VERSION_PKG.gitCommit=$GIT_SHA"

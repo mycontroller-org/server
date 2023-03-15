@@ -2,6 +2,8 @@ package backup
 
 // backup types
 const (
+	KeyProviderType = "providerType"
+
 	ProviderDisk = "disk"
 )
 

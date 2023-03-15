@@ -10,11 +10,13 @@ const (
 	DefaultDirLogsRoot = "/tmp/mc/logs" // default logs dir location
 	DefaultDirTmp      = "/tmp/mc/tmp"  // default tmp dir location
 
-	DirectoryDataFirmware = "/firmware"     // location to keep firmware files
-	DirectoryDataStorage  = "/storage"      // location to keep storage database exported files
-	DirectoryDataInternal = "/internal"     // location to keep system internal files
-	DirectoryGatewayLogs  = "/gateway_logs" // location to keep gateway message logs
-	DirectoryGatewayTmp   = "/gateway_tmp"  // location to keep gateway related tmp items
+	DirectoryDataFirmware  = "/firmware"       // location to keep firmware files
+	DirectoryDataStorage   = "/storage"        // location to keep storage database exported files
+	DirectoryDataInternal  = "/internal"       // location to keep system internal files
+	DirectoryGatewayLogs   = "/gateway_logs"   // location to keep gateway message logs
+	DirectoryGatewayTmp    = "/gateway_tmp"    // location to keep gateway related tmp items
+	DirectorySecureShare   = "/secure_share"   // location to keep secure share contents, for now used only in backup
+	DirectoryInsecureShare = "/insecure_share" // location to keep insecure share contents, for now used only in backup
 )
 
 // return data root directory location

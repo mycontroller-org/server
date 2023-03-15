@@ -4,18 +4,17 @@ import (
 	"context"
 	"fmt"
 	"reflect"
-	"strings"
 	"time"
 
 	entitiesAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	encryptionAPI "github.com/mycontroller-org/server/v2/pkg/encryption"
-	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
-	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
@@ -53,15 +52,15 @@ func New(ctx context.Context, templateEngine types.TemplateEngine) (types.Variab
 
 	apiMap := map[string]genericAPI{
 		quickIdUtils.QuickIdDataRepository: api.DataRepository(),
-		quickIdUtils.QuickIdField:          api.DataRepository(),
-		quickIdUtils.QuickIdFirmware:       api.DataRepository(),
-		quickIdUtils.QuickIdForwardPayload: api.DataRepository(),
-		quickIdUtils.QuickIdGateway:        api.DataRepository(),
-		quickIdUtils.QuickIdHandler:        api.DataRepository(),
-		quickIdUtils.QuickIdNode:           api.DataRepository(),
-		quickIdUtils.QuickIdSchedule:       api.DataRepository(),
-		quickIdUtils.QuickIdSource:         api.DataRepository(),
-		quickIdUtils.QuickIdTask:           api.DataRepository(),
+		quickIdUtils.QuickIdField:          api.Field(),
+		quickIdUtils.QuickIdFirmware:       api.Firmware(),
+		quickIdUtils.QuickIdForwardPayload: api.ForwardPayload(),
+		quickIdUtils.QuickIdGateway:        api.Gateway(),
+		quickIdUtils.QuickIdHandler:        api.Handler(),
+		quickIdUtils.QuickIdNode:           api.Node(),
+		quickIdUtils.QuickIdSchedule:       api.Schedule(),
+		quickIdUtils.QuickIdSource:         api.Source(),
+		quickIdUtils.QuickIdTask:           api.Task(),
 	}
 
 	return &VariableSpec{
@@ -77,13 +76,18 @@ func (v *VariableSpec) TemplateEngine() types.TemplateEngine {
 	return v.templateEngine
 }
 
-// LoadVariables loads all the defined variables
-func (v *VariableSpec) Load(variablesPreMap map[string]string) (map[string]interface{}, error) {
+// loads all the defined variables
+func (v *VariableSpec) Load(variablesPreMap map[string]interface{}) (map[string]interface{}, error) {
 	variables := make(map[string]interface{})
-	for name, stringValue := range variablesPreMap {
-		value := v.getEntity(name, stringValue)
+	for name, variable := range variablesPreMap {
+		variableData, ok := variable.(map[string]interface{})
+		if !ok {
+			v.logger.Error("error on converting variable data to cmap", zap.String("name", name), zap.String("actualType", fmt.Sprintf("%T", variable)))
+			continue
+		}
+		value := v.getEntity(name, variableData)
 		if value == nil {
-			return nil, fmt.Errorf("failed to load a variable. name: %s, keyPath:%s", name, stringValue)
+			return nil, fmt.Errorf("failed to load a variable. name: %s, config:%+v", name, variable)
 		}
 		variables[name] = value
 	}
@@ -93,7 +97,7 @@ func (v *VariableSpec) Load(variablesPreMap map[string]string) (map[string]inter
 
 	backToVariables, ok := clonedVariables.(map[string]interface{})
 	if ok {
-		// descrypt the secrets, tokens
+		// decrypt the secrets, tokens
 		err := v.enc.DecryptSecrets(backToVariables)
 		if err != nil {
 			return nil, err
@@ -102,60 +106,53 @@ func (v *VariableSpec) Load(variablesPreMap map[string]string) (map[string]inter
 		return backToVariables, nil
 	}
 
-	v.logger.Error("error on clone, returning variables as is")
+	v.logger.Error("error on clone, returning variables as is", zap.String("actualType", fmt.Sprintf("%T", variables)))
 	return variables, nil
 }
 
-func (v *VariableSpec) getEntity(name, stringValue string) interface{} {
-	genericData := handlerTY.GenericData{}
-	err := json.Unmarshal([]byte(stringValue), &genericData)
-	if err != nil {
-		// if error happens, this could be a normal string or templated string
-		// try it as template
+func (v *VariableSpec) getEntity(name string, variable cmap.CustomMap) interface{} {
+	switch variable.GetString(types.KeyType) {
+	case types.VariableTypeString:
+		stringValue := variable.GetString(types.KeyValue)
 		formattedString, err := v.templateEngine.Execute(stringValue, nil)
 		if err != nil {
 			return fmt.Sprintf("error on executing template. name:%s, template:%s, error:%s", name, stringValue, err.Error())
 		}
 		return formattedString
-	}
 
-	// process only for resource type data
-	if !strings.HasPrefix(genericData.Type, handlerTY.DataTypeResource) &&
-		genericData.Type != handlerTY.DataTypeWebhook {
-		return stringValue
-	}
-
-	// calls webhook and loads the response as is
-	if genericData.Type == handlerTY.DataTypeWebhook {
+	case types.VariableTypeWebhook:
 		webhookCfg := handlerTY.WebhookData{}
-		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &webhookCfg)
+		err := utils.MapToStruct(utils.TagNameNone, variable, &webhookCfg)
 		if err != nil {
-			v.logger.Error("error on loading webhook data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
+			v.logger.Error("error on converting into webhook data", zap.Error(err), zap.String("name", name), zap.Any("input", variable))
 			return err.Error()
 		}
 		return GetWebhookData(v.logger, name, &webhookCfg)
 
-	} else {
+	case types.VariableTypeResourceByQuickID, types.VariableTypeResourceByLabels:
 		rsData := handlerTY.ResourceData{}
-		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &rsData)
+		err := utils.MapToStruct(utils.TagNameNone, variable, &rsData)
 		if err != nil {
-			v.logger.Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
+			v.logger.Error("error on converting into resource data", zap.Error(err), zap.String("name", name), zap.Any("input", variable))
 			return err.Error()
 		}
-
 		if rsData.QuickID != "" {
 			return v.getByQuickID(name, &rsData)
 		} else if rsData.ResourceType != "" && len(rsData.Labels) > 0 {
 			return v.getByLabels(name, &rsData)
 		}
+
+	default:
+		return variable
 	}
 
-	return stringValue
+	return fmt.Sprintf("variable type not supported:%s, name:%s", variable.GetString(types.KeyType), name)
 }
 
 func (v *VariableSpec) getByLabels(name string, rsData *handlerTY.ResourceData) interface{} {
 	apiImpl, found := v.genericApiMap[rsData.ResourceType]
 	if !found {
+		v.logger.Error("api not available to get a resource", zap.Any("data", rsData))
 		return fmt.Sprintf("error on getting resourceType:%s", rsData.ResourceType)
 	}
 
@@ -171,17 +168,22 @@ func (v *VariableSpec) getByLabels(name string, rsData *handlerTY.ResourceData) 
 		return err.Error()
 	}
 	if result.Count == 0 {
+		v.logger.Info("no records found", zap.String("variableName", name), zap.Any("data", rsData))
 		return nil
 	}
 
-	//get the first element
-	if reflect.TypeOf(result.Data).Kind() == reflect.Slice {
-		s := reflect.ValueOf(result.Data)
+	// get the first element
+	if reflect.TypeOf(result.Data).Elem().Kind() == reflect.Slice {
+		s := reflect.ValueOf(result.Data).Elem()
 		if s.Len() == 0 {
 			return nil
 		}
-		entity := s.Index(0)
-		if rsData.KeyPath != "" {
+		// get the entity as interface
+		entity := s.Index(0).Interface()
+
+		if rsData.KeyPath == "." || rsData.KeyPath == "" { // return the object as is
+			return entity
+		} else {
 			_, value, err := helper.GetValueByKeyPath(entity, rsData.KeyPath)
 			if err != nil {
 				v.logger.Warn("error on getting data from a given keyPath", zap.Error(err), zap.String("keyPath", rsData.KeyPath), zap.Any("entity", entity))
@@ -189,9 +191,9 @@ func (v *VariableSpec) getByLabels(name string, rsData *handlerTY.ResourceData) 
 			}
 			return value
 		}
-		return entity
 	}
 
+	v.logger.Warn("record type not as expected", zap.String("variableName", name), zap.Any("config", rsData), zap.String("resultType", fmt.Sprintf("%T", result.Data)))
 	return nil
 }
 
@@ -282,7 +284,9 @@ func (v *VariableSpec) getByQuickID(name string, rsData *handlerTY.ResourceData)
 		return nil
 	}
 
-	if rsData.KeyPath != "" {
+	if rsData.KeyPath == "." || rsData.KeyPath == "" { // return the object as is
+		return entity
+	} else {
 		_, value, err := helper.GetValueByKeyPath(entity, rsData.KeyPath)
 		if err != nil {
 			v.logger.Error("error on getting data from a given keyPath", zap.Error(err), zap.String("keyPath", rsData.KeyPath), zap.Any("entity", entity))
@@ -290,5 +294,4 @@ func (v *VariableSpec) getByQuickID(name string, rsData *handlerTY.ResourceData)
 		}
 		return value
 	}
-	return entity
 }

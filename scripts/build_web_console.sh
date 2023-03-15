@@ -23,4 +23,4 @@ cd ../
 # embed web console assets disabled, enable this if required
 # go get github.com/mjibson/esc
 # go install github.com/mjibson/esc
-# esc -pkg assets -o cmd/server/app/web-console/actual/generated_assets.go -prefix console-web/build console-web/build
+# esc -pkg assets -o  pkg/http_router/web-console/actual/generated_assets.go -prefix console-web/build console-web/build

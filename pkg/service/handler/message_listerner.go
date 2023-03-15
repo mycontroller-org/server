@@ -63,7 +63,7 @@ func (svc *HandlerService) processHandlerMessage(item interface{}) {
 
 	err := handler.Post(msg.Data)
 	if err != nil {
-		svc.logger.Warn("failed to execute handler", zap.Any("handlerID", msg.ID), zap.Error(err))
+		svc.logger.Warn("error from handler", zap.Any("handlerID", msg.ID), zap.Error(err))
 		state.Status = types.StatusError
 		state.Message = err.Error()
 	} else {

@@ -9,10 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
-	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/types"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 
@@ -20,14 +19,14 @@ const loggerNameSMTP = "handler_email_smtp"
 
 // smtp client
 type SmtpClient struct {
-	handlerCfg *handlerType.Config
+	handlerCfg *handlerTY.Config
 	cfg        *Config
 	auth       smtp.Auth
 	logger     *zap.Logger
 }
 
 // init smtp client
-func NewSMTPClient(ctx context.Context, logger *zap.Logger, handlerCfg *handlerType.Config, cfg *Config) (Client, error) {
+func NewSMTPClient(ctx context.Context, logger *zap.Logger, handlerCfg *handlerTY.Config, cfg *Config) (Client, error) {
 	var auth smtp.Auth
 
 	if cfg.AuthType == AuthTypePlain || cfg.AuthType == "" {
@@ -154,26 +153,18 @@ func (sc *SmtpClient) sendEmailSSL(from string, to []string, subject, body strin
 }
 
 // Post performs send operation
-func (sc *SmtpClient) Post(data map[string]interface{}) error {
-	for name, value := range data {
-		stringValue, ok := value.(string)
+func (sc *SmtpClient) Post(parameters map[string]interface{}) error {
+	for name, rawParameter := range parameters {
+		parameter, ok := handlerTY.IsTypeOf(rawParameter, handlerTY.DataTypeEmail)
 		if !ok {
 			continue
 		}
+		sc.logger.Debug("data", zap.Any("name", name), zap.Any("parameter", parameter))
 
-		genericData := handlerType.GenericData{}
-		err := json.Unmarshal([]byte(stringValue), &genericData)
+		emailData := handlerTY.EmailData{}
+		err := utils.MapToStruct(utils.TagNameNone, parameter, &emailData)
 		if err != nil {
-			continue
-		}
-		if genericData.Type != handlerType.DataTypeEmail {
-			continue
-		}
-
-		emailData := handlerType.EmailData{}
-		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &emailData)
-		if err != nil {
-			sc.logger.Error("error on converting email data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
+			sc.logger.Error("error on converting email data", zap.Error(err), zap.String("name", name), zap.Any("parameter", parameter))
 			continue
 		}
 

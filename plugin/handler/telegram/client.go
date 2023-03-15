@@ -11,7 +11,6 @@ import (
 	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpClient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
-	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
@@ -82,26 +81,19 @@ func (c *TelegramClient) State() *types.State {
 }
 
 // Post handler implementation
-func (c *TelegramClient) Post(data map[string]interface{}) error {
-	for name, value := range data {
-		stringValue, ok := value.(string)
+func (c *TelegramClient) Post(parameters map[string]interface{}) error {
+
+	for name, rawParameter := range parameters {
+		parameter, ok := handlerTY.IsTypeOf(rawParameter, handlerTY.DataTypeTelegram)
 		if !ok {
 			continue
 		}
-
-		genericData := handlerTY.GenericData{}
-		err := json.Unmarshal([]byte(stringValue), &genericData)
-		if err != nil {
-			continue
-		}
-		if genericData.Type != handlerTY.DataTypeTelegram {
-			continue
-		}
+		c.logger.Debug("data", zap.Any("name", name), zap.Any("parameter", parameter))
 
 		telegramData := handlerTY.TelegramData{}
-		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &telegramData)
+		err := utils.MapToStruct(utils.TagNameNone, parameter, &telegramData)
 		if err != nil {
-			c.logger.Error("error on converting telegram data", zap.Error(err), zap.String("name", name), zap.String("value", stringValue))
+			c.logger.Error("error on converting telegram data", zap.Error(err), zap.String("name", name), zap.Any("parameter", parameter))
 			continue
 		}
 

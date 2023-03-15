@@ -3,17 +3,15 @@ package resource
 import (
 	"context"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
-	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
@@ -98,27 +96,19 @@ func (c *ResourceClient) State() *types.State {
 }
 
 // Post handler implementation
-func (c *ResourceClient) Post(data map[string]interface{}) error {
-	for name, value := range data {
-		stringValue, ok := value.(string)
+func (c *ResourceClient) Post(parameters map[string]interface{}) error {
+	for name := range parameters {
+		rawParameter := parameters[name]
+		parameter, ok := handlerTY.HasTypePrefixOf(rawParameter, handlerTY.DataTypeResource)
 		if !ok {
 			continue
 		}
-
-		genericData := handlerTY.GenericData{}
-		err := json.Unmarshal([]byte(stringValue), &genericData)
-		if err != nil {
-			continue
-		}
-
-		if !strings.HasPrefix(genericData.Type, handlerTY.DataTypeResource) {
-			continue
-		}
+		c.logger.Debug("data", zap.Any("name", name), zap.Any("parameter", parameter))
 
 		rsData := handlerTY.ResourceData{}
-		err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &rsData)
+		err := utils.MapToStruct(utils.TagNameNone, parameter, &rsData)
 		if err != nil {
-			c.logger.Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.String("input", stringValue))
+			c.logger.Error("error on loading resource data", zap.Error(err), zap.String("name", name), zap.Any("input", parameter))
 			continue
 		}
 
@@ -134,7 +124,7 @@ func (c *ResourceClient) Post(data map[string]interface{}) error {
 			}
 		}
 
-		c.logger.Debug("about to perform an action", zap.String("rawData", stringValue), zap.Any("finalData", rsData))
+		c.logger.Debug("about to perform an action", zap.Any("rawData", parameter), zap.Any("finalData", rsData))
 		busUtils.PostToResourceService(c.logger, c.bus, "resource_fake_id", rsData, rsTY.TypeResourceAction, rsTY.CommandSet, "")
 	}
 	return nil

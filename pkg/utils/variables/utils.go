@@ -1,93 +1,73 @@
 package variables
 
 import (
-	"encoding/base64"
 	"net/http"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpclient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
-	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
 )
 
 // UpdateParameters updates parameter templates
-func UpdateParameters(logger *zap.Logger, variables map[string]interface{}, parameters map[string]string, templateEngine types.TemplateEngine) map[string]string {
-	updatedParameters := make(map[string]string)
-	for name, value := range parameters {
-		// load suplied string, this will be passed, if there is an error
-		updatedParameters[name] = value
+func UpdateParameters(logger *zap.Logger, variables map[string]interface{}, parameters map[string]interface{}, templateEngine types.TemplateEngine) map[string]interface{} {
+	updatedParameters := make(map[string]interface{})
+	for name, parameter := range parameters {
+		// load supplied string, this will be passed, if there is an error
+		updatedParameters[name] = parameter
 
-		genericData := handlerTY.GenericData{}
-		err := json.Unmarshal([]byte(value), &genericData)
-		if err == nil {
-			// unpack base64 to normal string
-			yamlBytes, err := base64.StdEncoding.DecodeString(genericData.Data)
-			if err != nil {
-				logger.Error("error on converting parameter data", zap.String("name", name), zap.Error(err))
-				continue
-			}
-			// execute template
-			updatedValue, err := templateEngine.Execute(string(yamlBytes), variables)
-			if err != nil {
-				logger.Error("error on executing template", zap.Error(err), zap.String("name", name), zap.Any("value", string(yamlBytes)))
-				updatedParameters[name] = err.Error()
-				continue
-			}
-
-			// update the disabled value via template
-			updatedDisable, err := templateEngine.Execute(genericData.Disabled, variables)
-			if err != nil {
-				logger.Error("error on executing template, to update disabled value", zap.Error(err), zap.String("name", name), zap.Any("value", genericData.Disabled))
-				updatedParameters[name] = err.Error()
-				continue
-			}
-			genericData.Disabled = updatedDisable
-
-			// repack string to base64 string
-			genericData.Data = base64.StdEncoding.EncodeToString([]byte(updatedValue))
-
-			// if it is a webhook data and customData not enabled, update variables on the data field
-			if genericData.Type == handlerTY.DataTypeWebhook {
-				webhookData := handlerTY.WebhookData{}
-				err = yamlUtils.UnmarshalBase64Yaml(genericData.Data, &webhookData)
-				if err != nil {
-					logger.Error("error on converting webhook data", zap.Error(err), zap.String("name", name))
-					continue
-				}
-				if webhookData.Method != http.MethodGet && !webhookData.CustomData {
-					webhookData.Data = variables
-					updatedString, err := yamlUtils.MarshalBase64Yaml(webhookData)
-					if err != nil {
-						logger.Error("error on converting webhook data to yaml", zap.Error(err), zap.String("name", name))
-						continue
-					}
-					genericData.Data = updatedString
-				}
-			}
-
-			jsonBytes, err := json.Marshal(genericData)
-			if err != nil {
-				logger.Error("error on converting to json", zap.Error(err), zap.String("name", name))
-			}
-			updatedParameters[name] = string(jsonBytes)
-		} else { // update as a normal text
-			updatedValue, err := templateEngine.Execute(value, variables)
-			if err != nil {
-				logger.Warn("error on executing template", zap.Error(err), zap.String("name", name), zap.Any("value", value))
-				updatedParameters[name] = err.Error()
-				continue
-			}
-			updatedParameters[name] = updatedValue
+		// convert it to yaml format
+		yamlBytes, err := yaml.Marshal(&parameter)
+		if err != nil {
+			logger.Error("error on converting parameter data", zap.String("name", name), zap.Error(err))
+			continue
+		}
+		// execute template
+		updatedValue, err := templateEngine.Execute(string(yamlBytes), variables)
+		if err != nil {
+			logger.Error("error on executing template", zap.String("name", name), zap.Any("value", string(yamlBytes)), zap.Error(err))
+			continue
+		}
+		// convert it back to parameter
+		updatedParameter := make(map[string]interface{})
+		err = yaml.Unmarshal([]byte(updatedValue), &updatedParameter)
+		if err != nil {
+			logger.Error("error on converting yaml to struct", zap.String("name", name), zap.Any("value", string(yamlBytes)), zap.Error(err))
+			continue
 		}
 
+		updatedParameterMap := cmap.CustomMap(updatedParameter)
+		if updatedParameterMap.GetString(types.KeyType) == handlerTY.DataTypeWebhook {
+			webhookData := handlerTY.WebhookData{}
+			err := utils.MapToStruct(utils.TagNameNone, updatedParameter, &webhookData)
+			if err != nil {
+				logger.Error("error on converting into webhook data", zap.Error(err), zap.String("name", name), zap.Any("input", updatedParameter))
+				continue
+			}
+
+			if webhookData.Method != http.MethodGet && !webhookData.CustomData {
+				webhookData.Data = variables
+				yamlVariables, err := yaml.Marshal(variables)
+				if err != nil {
+					logger.Error("error on converting webhook data to yaml", zap.Error(err), zap.String("name", name))
+					continue
+				}
+				webhookData.Data = string(yamlVariables)
+				updatedParameter = utils.StructToMap(&webhookData)
+			}
+		}
+		updatedParameters[name] = updatedParameter
 	}
+
 	return updatedParameters
 }
 
 // Merge variables and extra variables
-func Merge(variables map[string]interface{}, extra map[string]interface{}) map[string]interface{} {
+func Merge(variables, extra map[string]interface{}) map[string]interface{} {
 	finalMap := make(map[string]interface{})
 
 	if len(variables) > 0 {

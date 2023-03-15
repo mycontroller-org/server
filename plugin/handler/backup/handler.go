@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/plugin/handler/backup/disk"
 	backupUtils "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
@@ -29,17 +28,12 @@ type Client interface {
 }
 
 func New(ctx context.Context, cfg *handlerTY.Config) (handlerTY.Plugin, error) {
-	config := &BackupConfig{}
-	err := utils.MapToStruct(utils.TagNameNone, cfg.Spec, config)
-	if err != nil {
-		return nil, err
-	}
-
-	switch config.ProviderType {
+	providerType := cfg.Spec.GetString(backupUtils.KeyProviderType)
+	switch providerType {
 	case backupUtils.ProviderDisk:
-		return disk.New(ctx, cfg, config.Spec)
+		return disk.New(ctx, cfg)
 
 	default:
-		return nil, fmt.Errorf("unknown backup provider:%s", config.ProviderType)
+		return nil, fmt.Errorf("unknown backup provider:%s", providerType)
 	}
 }

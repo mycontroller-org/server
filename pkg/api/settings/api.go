@@ -372,6 +372,37 @@ func (s *SettingsAPI) Import(data interface{}) error {
 	return s.storage.Upsert(types.EntitySettings, &input, filters)
 }
 
+// return version details
+func (s *SettingsAPI) GetVersion() (*settingsTY.VersionSettings, error) {
+	settings, err := s.GetByID(settingsTY.KeyVersion)
+	if err != nil {
+		return nil, err
+	}
+
+	systemVersion := &settingsTY.VersionSettings{}
+	err = utils.MapToStruct(utils.TagNameNone, settings.Spec, systemVersion)
+	if err != nil {
+		return nil, err
+	}
+	return systemVersion, nil
+}
+
+// updates the version details
+func (s *SettingsAPI) UpdateVersion(version *settingsTY.VersionSettings) error {
+	settings, err := s.GetByID(settingsTY.KeyVersion)
+	if err != nil {
+		return err
+	}
+
+	// update version
+	settings.Spec = utils.StructToMap(version)
+	err = s.update(settings)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *SettingsAPI) GetEntityInterface() interface{} {
 	return settingsTY.Settings{}
 }

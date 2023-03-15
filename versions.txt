@@ -1,0 +1,5 @@
+# keep the next release version
+server=2.0.0
+
+# keep the console version needs to be used
+console-web=master

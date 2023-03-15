@@ -33,20 +33,20 @@ const (
 
 // Config for scheduler
 type Config struct {
-	ID                   string               `json:"id" yaml:"id"`
-	Description          string               `json:"description" yaml:"description"`
-	Enabled              bool                 `json:"enabled" yaml:"enabled"`
-	Labels               cmap.CustomStringMap `json:"labels" yaml:"labels"`
-	Validity             Validity             `json:"validity" yaml:"validity"`
-	Type                 string               `json:"type" yaml:"type"`
-	Spec                 cmap.CustomMap       `json:"spec" yaml:"spec"`
-	Variables            map[string]string    `json:"variables" yaml:"variables"`
-	CustomVariableType   string               `json:"customVariableType" yaml:"customVariableType"`
-	CustomVariableConfig CustomVariableConfig `json:"customVariableConfig" yaml:"customVariableConfig"`
-	HandlerParameters    map[string]string    `json:"handlerParameters" yaml:"handlerParameters"`
-	Handlers             []string             `json:"handlers" yaml:"handlers"`
-	ModifiedOn           time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
-	State                *State               `json:"state" yaml:"state"`
+	ID                   string                 `json:"id" yaml:"id"`
+	Description          string                 `json:"description" yaml:"description"`
+	Enabled              bool                   `json:"enabled" yaml:"enabled"`
+	Labels               cmap.CustomStringMap   `json:"labels" yaml:"labels"`
+	Validity             Validity               `json:"validity" yaml:"validity"`
+	Type                 string                 `json:"type" yaml:"type"`
+	Spec                 cmap.CustomMap         `json:"spec" yaml:"spec"`
+	Variables            map[string]interface{} `json:"variables" yaml:"variables"`
+	CustomVariableType   string                 `json:"customVariableType" yaml:"customVariableType"`
+	CustomVariableConfig CustomVariableConfig   `json:"customVariableConfig" yaml:"customVariableConfig"`
+	HandlerParameters    map[string]interface{} `json:"handlerParameters" yaml:"handlerParameters"`
+	Handlers             []string               `json:"handlers" yaml:"handlers"`
+	ModifiedOn           time.Time              `json:"modifiedOn" yaml:"modifiedOn"`
+	State                *State                 `json:"state" yaml:"state"`
 }
 
 // CustomVariableConfig struct

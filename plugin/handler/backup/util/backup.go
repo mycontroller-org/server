@@ -3,11 +3,13 @@ package backup
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"time"
 
 	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
 	bkpMap "github.com/mycontroller-org/server/v2/pkg/backup/bkp_map"
 	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/ziputils"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
@@ -16,7 +18,7 @@ import (
 )
 
 // Backup creates zip file on a tmp location and returns the location details
-func Backup(ctx context.Context, logger *zap.Logger, prefix, storageExportType string, storage storageTY.Plugin, bus busTY.Plugin) (string, error) {
+func Backup(ctx context.Context, logger *zap.Logger, prefix, storageExportType string, includeSecureShare, includeInsecureShare bool, storage storageTY.Plugin, bus busTY.Plugin) (string, error) {
 	timestamp := time.Now().Format("20060102_150405")
 	dstDir := fmt.Sprintf("%s/%s_%s_%s_%s", types.GetEnvString(types.ENV_DIR_DATA_STORAGE), prefix, BackupIdentifier, storageExportType, timestamp)
 	zipFilename := fmt.Sprintf("%s.zip", dstDir)
@@ -40,9 +42,35 @@ func Backup(ctx context.Context, logger *zap.Logger, prefix, storageExportType s
 	if baseDir == "" {
 		return "", fmt.Errorf("environment '%s' not set", types.ENV_DIR_DATA_FIRMWARE)
 	}
-	err = backupRestore.CopyFiles(baseDir, dstDir)
+	err = backupRestore.CopyFiles(baseDir, dstDir, false)
 	if err != nil {
 		return "", err
+	}
+
+	// copy shared directory: secure and insecure
+	if includeSecureShare {
+		secureShareDir := types.GetEnvString(types.ENV_DIR_SHARE_SECURE)
+		if secureShareDir == "" {
+			return "", fmt.Errorf("environment '%s' not set", types.ENV_DIR_SHARE_SECURE)
+		}
+		dstSecureShareDir := filepath.Join(dstDir, config.DirectorySecureShare)
+		err = backupRestore.CopyFiles(secureShareDir, dstSecureShareDir, false)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	// copy shared directory: insecure
+	if includeInsecureShare {
+		inSecureShareDir := types.GetEnvString(types.ENV_DIR_SHARE_INSECURE)
+		if inSecureShareDir == "" {
+			return "", fmt.Errorf("environment '%s' not set", types.ENV_DIR_SHARE_INSECURE)
+		}
+		dstInsecureShareDir := filepath.Join(dstDir, config.DirectoryInsecureShare)
+		err = backupRestore.CopyFiles(inSecureShareDir, dstInsecureShareDir, false)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	// create zip from exported directory

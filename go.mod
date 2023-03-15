@@ -42,6 +42,7 @@ require (
 )
 
 require (
+	github.com/braydonk/yaml v0.4.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/deepmap/oapi-codegen v1.8.2 // indirect
 	github.com/dlclark/regexp2 v1.7.0 // indirect
@@ -91,3 +92,8 @@ require (
 	golang.org/x/text v0.7.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
+
+// for now gopkg.in/yaml.v3 does not support for UTF-16
+// see the issue: https://github.com/go-yaml/yaml/issues/737 and PR: https://github.com/go-yaml/yaml/pull/738
+// fix included in this fork: https://github.com/braydonk/yaml
+replace gopkg.in/yaml.v3 => github.com/braydonk/yaml v0.4.1-0.20230115035319-29fa296a91d4

@@ -16,6 +16,9 @@ const (
 	KeySystemDynamicSecrets  = "system_dynamic_secrets"
 )
 
+// inside spec, we can not use time.Time, it is stored as uint64
+// but when retrieving, throws error
+
 // Settings struct
 type Settings struct {
 	ID         string                 `json:"id" yaml:"id"`
@@ -53,7 +56,11 @@ type NodeStateJob struct {
 
 // VersionSettings struct
 type VersionSettings struct {
-	Version string `json:"version" yaml:"version"`
+	Version     string `json:"version" yaml:"version"`
+	GitCommit   string `json:"gitCommit" yaml:"gitCommit"`
+	Database    string `json:"database" yaml:"database"`
+	InstalledOn string `json:"installedOn" yaml:"installedOn"`
+	LastUpgrade string `json:"lastUpgrade" yaml:"lastUpgrade"`
 }
 
 // SystemJobsSettings cron struct

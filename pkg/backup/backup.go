@@ -179,7 +179,7 @@ func (br *BackupRestore) exportEntity(targetDir, entityName string, index int, d
 }
 
 // copies files from a location to another location
-func (br *BackupRestore) CopyFiles(sourceDir, dstDir string) error {
+func (br *BackupRestore) CopyFiles(sourceDir, dstDir string, overwrite bool) error {
 	err := utils.CreateDir(dstDir)
 	if err != nil {
 		return err
@@ -192,7 +192,7 @@ func (br *BackupRestore) CopyFiles(sourceDir, dstDir string) error {
 
 	for _, file := range files {
 		destPath := fmt.Sprintf("%s/%s", dstDir, file.Name)
-		err = utils.CopyFile(file.FullPath, destPath)
+		err = utils.CopyFileForce(file.FullPath, destPath, overwrite)
 		if err != nil {
 			return err
 		}

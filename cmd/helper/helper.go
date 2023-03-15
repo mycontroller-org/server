@@ -53,6 +53,8 @@ func setEnvironmentVariables(cfg *cfgTY.Config) error {
 		types.ENV_DIR_GATEWAY_LOGS:       cfg.Directories.GetGatewayLogs(),
 		types.ENV_DIR_TMP:                cfg.Directories.GetTmp(),
 		types.ENV_DIR_GATEWAY_TMP:        cfg.Directories.GetGatewayTmp(),
+		types.ENV_DIR_SHARE_SECURE:       cfg.Directories.SecureShare,
+		types.ENV_DIR_SHARE_INSECURE:     cfg.Directories.InsecureShare,
 		types.ENV_LOG_LEVEL_CORE:         cfg.Logger.Level.Core,
 		types.ENV_LOG_LEVEL_METRIC:       cfg.Logger.Level.Metric,
 		types.ENV_LOG_LEVEL_STORAGE:      cfg.Logger.Level.Storage,

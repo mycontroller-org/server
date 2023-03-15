@@ -2,6 +2,7 @@ package helper
 
 import (
 	"context"
+	"time"
 
 	"github.com/gorilla/mux"
 	entitiesAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
@@ -24,6 +25,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
+	"github.com/mycontroller-org/server/v2/pkg/upgrade"
 	templateUtils "github.com/mycontroller-org/server/v2/pkg/utils/template"
 	variablesUtils "github.com/mycontroller-org/server/v2/pkg/utils/variables"
 	"github.com/mycontroller-org/server/v2/pkg/version"
@@ -143,6 +145,9 @@ func (s *Server) Start(ctx context.Context, configFilePath string) error {
 	// setup initial system settings
 	s.updateInitialSystemSettings()
 	s.setupInitialUser()
+
+	// start upgrade, if any
+	s.startUpgrade()
 
 	// engines needed in task and schedules service
 	// get variables engine
@@ -383,4 +388,47 @@ func (s *Server) printsHandlersPath(router *mux.Router) {
 		s.logger.Error("error on calling walk func", zap.Error(err))
 	}
 
+}
+
+// starts the upgrade process
+// checks the database for the version and applies the upgrade patches, if needed
+func (s *Server) startUpgrade() {
+	// get the version details from database
+	sysVersion, err := s.api.Settings().GetVersion()
+	if err != nil {
+		s.logger.Fatal("error on getting version details", zap.Error(err))
+	}
+	s.logger.Info("checking for upgrade", zap.String("lastUpgradePatch", sysVersion.LastUpgrade))
+
+	// if there is no version available, indicates that the software installed before the upgrade feature introduced
+	// keep 1.9.9 as last update to proceed all the upgrades
+	// Note: MyController V2 version starts from 2.0.0
+	if sysVersion.LastUpgrade == "" {
+		sysVersion.LastUpgrade = "1.9.9"
+	}
+
+	// trigger upgrade
+	start := time.Now()
+	appliedUpgradeVersion, err := upgrade.StartUpgrade(s.ctx, sysVersion.LastUpgrade)
+	if err != nil {
+		s.logger.Fatal("error on upgrade", zap.Error(err))
+	}
+
+	if appliedUpgradeVersion != "" {
+		s.logger.Info("upgrade completed", zap.String("appliedPatchVersion", appliedUpgradeVersion), zap.String("timeTaken", time.Since(start).String()))
+	}
+
+	// update the version in to storage database
+	sysVersion, err = s.api.Settings().GetVersion()
+	if err != nil {
+		s.logger.Fatal("error on getting version details", zap.Error(err))
+	}
+	ver := version.Get()
+	sysVersion.Version = ver.Version
+	sysVersion.GitCommit = ver.GitCommit
+	sysVersion.Database = s.storage.Name()
+	err = s.api.Settings().UpdateVersion(sysVersion)
+	if err != nil {
+		s.logger.Fatal("error on updating version details into database", zap.Error(err))
+	}
 }

@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mycontroller-org/server/v2/pkg/json"
 	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	yamlUtils "github.com/mycontroller-org/server/v2/pkg/utils/yaml"
 	"github.com/mycontroller-org/server/v2/plugin/handler/backup/disk"
 	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
@@ -36,37 +35,21 @@ func (bk *BackupAPI) RunOnDemandBackup(input *backupTY.OnDemandBackupConfig) err
 	bk.logger.Debug("on-demand backup request received", zap.Any("config", input))
 
 	configData := disk.Config{
+		Disabled:          "false",
+		Type:              handlerTY.DataTypeBackup,
+		ProviderType:      backupUtil.ProviderDisk,
 		Prefix:            fmt.Sprintf("%s_on_demand", input.Prefix),
 		StorageExportType: input.StorageExportType,
 		TargetDirectory:   input.TargetLocation,
 		RetentionCount:    0,
 	}
 
-	exporterData := handlerTY.BackupData{
-		ProviderType: backupUtil.ProviderDisk,
-		Spec:         utils.StructToMap(configData),
+	configMap := utils.StructToMap(&configData)
+
+	finalData := cmap.CustomMap{
+		"on_demand_backup": configMap,
 	}
 
-	base64String, err := yamlUtils.MarshalBase64Yaml(&exporterData)
-	if err != nil {
-		bk.logger.Error("error on converting exporter data to base64", zap.Error(err))
-		return err
-	}
-
-	data := handlerTY.GenericData{
-		Disabled: "false",
-		Type:     handlerTY.DataTypeBackup,
-		Data:     base64String,
-	}
-
-	dataBytes, err := json.Marshal(&data)
-	if err != nil {
-		return err
-	}
-
-	finalData := map[string]string{
-		"on_demand_backup": string(dataBytes),
-	}
 	busUtils.PostToHandler(bk.logger, bk.bus, []string{input.Handler}, finalData)
 	return nil
 }

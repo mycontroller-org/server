@@ -61,8 +61,13 @@ func RemoveFileOrEmptyDir(file string) error {
 	return nil
 }
 
-// CopyFile from a location to another location
+// copies from a location to another location
 func CopyFile(src, dst string) error {
+	return CopyFileForce(src, dst, false)
+}
+
+// copies from a location to another location with optional overwrite
+func CopyFileForce(src, dst string, overwrite bool) error {
 	bufferSize := 1024
 
 	sourceFileStat, err := os.Stat(src)
@@ -80,7 +85,14 @@ func CopyFile(src, dst string) error {
 	defer source.Close()
 
 	if IsFileExists(dst) {
-		return fmt.Errorf("destination file exists: %s", dst)
+		if !overwrite {
+			return fmt.Errorf("destination file exists: %s", dst)
+		}
+		// remove the existing file and continue
+		err = os.Remove(dst)
+		if err != nil {
+			return err
+		}
 	}
 
 	// create target dir location
