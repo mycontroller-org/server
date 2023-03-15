@@ -3,6 +3,7 @@ package backup
 import (
 	"context"
 	"fmt"
+	"path"
 	"path/filepath"
 	"time"
 
@@ -38,23 +39,24 @@ func Backup(ctx context.Context, logger *zap.Logger, prefix, storageExportType s
 	}
 
 	// copy firmware files
-	baseDir := types.GetEnvString(types.ENV_DIR_DATA_FIRMWARE)
-	if baseDir == "" {
+	firmwareDirSrc := types.GetEnvString(types.ENV_DIR_DATA_FIRMWARE)
+	if firmwareDirSrc == "" {
 		return "", fmt.Errorf("environment '%s' not set", types.ENV_DIR_DATA_FIRMWARE)
 	}
-	err = backupRestore.CopyFiles(baseDir, dstDir, false)
+	firmwareDirDst := path.Join(dstDir, config.DirectoryDataFirmware)
+	err = backupRestore.CopyFiles(firmwareDirSrc, firmwareDirDst, false)
 	if err != nil {
 		return "", err
 	}
 
 	// copy shared directory: secure and insecure
 	if includeSecureShare {
-		secureShareDir := types.GetEnvString(types.ENV_DIR_SHARE_SECURE)
-		if secureShareDir == "" {
+		secureShareDirSrc := types.GetEnvString(types.ENV_DIR_SHARE_SECURE)
+		if secureShareDirSrc == "" {
 			return "", fmt.Errorf("environment '%s' not set", types.ENV_DIR_SHARE_SECURE)
 		}
-		dstSecureShareDir := filepath.Join(dstDir, config.DirectorySecureShare)
-		err = backupRestore.CopyFiles(secureShareDir, dstSecureShareDir, false)
+		secureShareDirDst := filepath.Join(dstDir, config.DirectorySecureShare)
+		err = backupRestore.CopyFiles(secureShareDirSrc, secureShareDirDst, false)
 		if err != nil {
 			return "", err
 		}
@@ -62,12 +64,12 @@ func Backup(ctx context.Context, logger *zap.Logger, prefix, storageExportType s
 
 	// copy shared directory: insecure
 	if includeInsecureShare {
-		inSecureShareDir := types.GetEnvString(types.ENV_DIR_SHARE_INSECURE)
-		if inSecureShareDir == "" {
+		inSecureShareDirSrc := types.GetEnvString(types.ENV_DIR_SHARE_INSECURE)
+		if inSecureShareDirSrc == "" {
 			return "", fmt.Errorf("environment '%s' not set", types.ENV_DIR_SHARE_INSECURE)
 		}
-		dstInsecureShareDir := filepath.Join(dstDir, config.DirectoryInsecureShare)
-		err = backupRestore.CopyFiles(inSecureShareDir, dstInsecureShareDir, false)
+		insecureShareDirDst := filepath.Join(dstDir, config.DirectoryInsecureShare)
+		err = backupRestore.CopyFiles(inSecureShareDirSrc, insecureShareDirDst, false)
 		if err != nil {
 			return "", err
 		}

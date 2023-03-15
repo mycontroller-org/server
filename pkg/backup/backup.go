@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
@@ -191,7 +192,15 @@ func (br *BackupRestore) CopyFiles(sourceDir, dstDir string, overwrite bool) err
 	}
 
 	for _, file := range files {
-		destPath := fmt.Sprintf("%s/%s", dstDir, file.Name)
+		// have to copy recursive directories too
+		// get relative path and append with target directory
+		relativePath, err := filepath.Rel(sourceDir, file.FullPath)
+		if err != nil {
+			br.logger.Error("error on getting relative path", zap.String("basePath", dstDir), zap.String("targetPath", file.FullPath))
+		}
+		relativePathBasePath := path.Dir(relativePath)
+		finalDstPath := path.Join(dstDir, relativePathBasePath)
+		destPath := path.Join(finalDstPath, file.Name)
 		err = utils.CopyFileForce(file.FullPath, destPath, overwrite)
 		if err != nil {
 			return err

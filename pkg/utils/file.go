@@ -158,7 +158,7 @@ func ReadFile(dir, filename string) ([]byte, error) {
 	return os.ReadFile(fmt.Sprintf("%s/%s", dir, filename))
 }
 
-// ListFiles func
+// list the files recursively
 func ListFiles(dir string) ([]types.File, error) {
 	err := CreateDir(dir)
 	if err != nil {
@@ -171,10 +171,18 @@ func ListFiles(dir string) ([]types.File, error) {
 
 	items := make([]types.File, 0)
 	for _, entry := range files {
-		if !entry.IsDir() {
+		// if it is a directory, lists the files recursively
+		if entry.IsDir() {
+			subItems, err := ListFiles(path.Join(dir, entry.Name()))
+			if err != nil {
+				zap.L().Error("error on getting file detail", zap.String("dir", dir), zap.String("name", entry.Name()), zap.Error(err))
+				return nil, err
+			}
+			items = append(items, subItems...)
+		} else {
 			file, err := entry.Info()
 			if err != nil {
-				zap.L().Error("error on getting file detail", zap.String("name", entry.Name()), zap.Error(err))
+				zap.L().Error("error on getting file detail", zap.String("dir", dir), zap.String("name", entry.Name()), zap.Error(err))
 				return nil, err
 			}
 			f := types.File{
