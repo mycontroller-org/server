@@ -24,18 +24,18 @@ func (h *Routes) listBackupFiles(w http.ResponseWriter, r *http.Request) {
 
 	f, p, err := handlerUtils.Params(r)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	result, err := h.backupAPI.List(f, p)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	od, err := json.Marshal(result)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	handlerUtils.WriteResponse(w, od)
@@ -65,30 +65,35 @@ func (h *Routes) runRestore(w http.ResponseWriter, r *http.Request) {
 
 	result, err := h.backupAPI.List([]storageTY.Filter{filter}, nil)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	data, ok := result.Data.([]interface{})
 	if !ok {
-		http.Error(w, "error on converting slice interface", 500)
+		http.Error(w, "error on converting slice interface", http.StatusInternalServerError)
 		return
 	}
 
-	if len(data) != 1 {
-		http.Error(w, "no files or more than on entry found", 400)
+	if len(data) == 0 {
+		http.Error(w, "file not found", http.StatusBadRequest)
+		return
+	}
+
+	if len(data) > 1 {
+		http.Error(w, "more than on entries found", http.StatusBadRequest)
 		return
 	}
 
 	file, ok := data[0].(backupTY.BackupFile)
 	if !ok {
-		http.Error(w, "error to convert to ExportedFile", 500)
+		http.Error(w, "error on converting to backupFile struct", http.StatusInternalServerError)
 		return
 	}
 
 	err = h.backupAPI.RunRestore(file)
 	if len(data) != 1 {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -99,23 +104,23 @@ func (h *Routes) runBackup(w http.ResponseWriter, r *http.Request) {
 	entity := &backupTY.OnDemandBackupConfig{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if entity.TargetLocation == "" {
-		http.Error(w, "targetLocation should not be empty", 400)
+		http.Error(w, "targetLocation should not be empty", http.StatusBadRequest)
 		return
 	}
 
 	if entity.Handler == "" {
-		http.Error(w, "handler should not be empty", 400)
+		http.Error(w, "handler should not be empty", http.StatusBadRequest)
 		return
 	}
 
 	err = h.backupAPI.RunOnDemandBackup(entity)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

@@ -50,9 +50,12 @@ func (bk *BackupAPI) List(filters []storageTY.Filter, pagination *storageTY.Pagi
 				SortBy: []storageTY.Sort{{Field: "id", OrderBy: storageTY.SortByASC}},
 			}
 		}
-		sortedFiles, count := filterUtils.Sort(files, pagination)
+
+		// filter and then sort the files
+		filteredFiles := filterUtils.Filter(files, filters, false)
+		sortedFiles, count := filterUtils.Sort(filteredFiles, pagination)
 		totalCount = count
-		finalList = filterUtils.Filter(sortedFiles, filters, false)
+		finalList = sortedFiles
 	}
 
 	result := &storageTY.Result{
