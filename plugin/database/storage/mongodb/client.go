@@ -44,7 +44,7 @@ type Client struct {
 
 // New mongodb
 func New(ctx context.Context, config cmap.CustomMap) (storageTY.Plugin, error) {
-	logger := storageTY.GetStorageLogger()
+	logger := storageTY.GetStorageLogger().Named(loggerName)
 
 	cfg := Config{}
 	err := utils.MapToStruct(utils.TagNameYaml, config, &cfg)
@@ -61,16 +61,22 @@ func New(ctx context.Context, config cmap.CustomMap) (storageTY.Plugin, error) {
 
 	mongoClient, err := mongoDriver.Connect(ctx, clientOptions)
 	if err != nil {
+		logger.Error("error on connecting to database", zap.Error(err))
 		return nil, err
 	}
 	client := &Client{
 		Config: cfg,
 		Client: mongoClient,
 		ctx:    ctx,
-		logger: logger.Named(loggerName),
+		logger: logger,
 	}
 	err = client.initIndex()
-	return client, err
+	if err != nil {
+		logger.Error("error on creating index", zap.Error(err))
+		return nil, err
+	}
+	logger.Debug("database connected successfully")
+	return client, nil
 }
 
 func (s *Client) Name() string {
@@ -175,6 +181,9 @@ func (c *Client) FindOne(entityName string, out interface{}, filters []storageTY
 	cl := c.getCollection(entityName)
 	result := cl.FindOne(ctx, filter(filters))
 	if result.Err() != nil {
+		if result.Err() == mongoDriver.ErrNoDocuments {
+			return storageTY.ErrNoDocuments
+		}
 		return result.Err()
 	}
 	return result.Decode(out)
@@ -189,6 +198,9 @@ func (c *Client) Delete(entityName string, filters []storageTY.Filter) (int64, e
 	filterOption := options.Delete()
 	deleteResult, err := collection.DeleteMany(ctx, filter(filters), filterOption)
 	if err != nil {
+		if err == mongoDriver.ErrNoDocuments {
+			return -1, storageTY.ErrNoDocuments
+		}
 		return -1, err
 	}
 	return deleteResult.DeletedCount, nil
@@ -216,6 +228,9 @@ func (c *Client) Find(entityName string, out interface{}, filters []storageTY.Fi
 	findOption.SetSort(sortOption)
 	cur, err := collection.Find(ctx, filter(filters), findOption)
 	if err != nil {
+		if err == mongoDriver.ErrNoDocuments {
+			return nil, storageTY.ErrNoDocuments
+		}
 		return nil, err
 	}
 	err = cur.All(ctx, out)
