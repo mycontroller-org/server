@@ -12,7 +12,7 @@ import (
 	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	taskTY "github.com/mycontroller-org/server/v2/pkg/types/task"
-	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
+	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 	vdTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_device"
 	"github.com/mycontroller-org/server/v2/pkg/utils/printer"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"

@@ -1,4 +1,4 @@
-package virtual_device
+package virtual_assistant
 
 import (
 	"net/http"

@@ -9,7 +9,7 @@ import (
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
-	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
+	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"

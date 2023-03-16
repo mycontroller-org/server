@@ -15,7 +15,7 @@ func (a *Assistant) reportState(directive alexaTY.DirectiveOrEvent) (interface{}
 	endpointID := directive.Endpoint.EndpointID
 	// get devices
 	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorEqual, Value: endpointID}}
-	vDevices, err := a.deviceAPI.ListDevices(filters, 1, 0) // TODO: add an api to get device
+	vDevices, err := a.deviceAPI.ListDevices(filters, 1, 0, a.cfg.DeviceFilter) // TODO: add an api to get a device
 	if err != nil {
 		return nil, err
 	}

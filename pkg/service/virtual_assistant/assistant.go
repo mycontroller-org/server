@@ -5,7 +5,7 @@ import (
 	"time"
 
 	types "github.com/mycontroller-org/server/v2/pkg/types"
-	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
+	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	vaPlugin "github.com/mycontroller-org/server/v2/plugin/virtual_assistant"
 	"go.uber.org/zap"

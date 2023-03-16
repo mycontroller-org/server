@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	types "github.com/mycontroller-org/server/v2/pkg/types"
-	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
+	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 	handlerUtils "github.com/mycontroller-org/server/v2/pkg/utils/http_handler"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )

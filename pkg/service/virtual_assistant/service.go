@@ -10,7 +10,7 @@ import (
 	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
 	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
-	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
+	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"

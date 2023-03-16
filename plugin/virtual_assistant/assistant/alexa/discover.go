@@ -7,9 +7,13 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	DefaultDeviceLimit = int64(300) // limits to 300 devices
+)
+
 func (a *Assistant) executeDiscover(directive alexaTY.DirectiveOrEvent) (interface{}, error) {
 	// get virtual devices
-	vDevices, err := a.deviceAPI.ListDevices(nil, 300, 0) // limits to 300 devices
+	vDevices, err := a.deviceAPI.ListDevices(nil, DefaultDeviceLimit, 0, a.cfg.DeviceFilter)
 	if err != nil {
 		return nil, err
 	}

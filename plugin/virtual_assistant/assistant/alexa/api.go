@@ -9,7 +9,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
-	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
+	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 	handlerUtils "github.com/mycontroller-org/server/v2/pkg/utils/http_handler"
 	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/alexa/types"
 	deviceAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"

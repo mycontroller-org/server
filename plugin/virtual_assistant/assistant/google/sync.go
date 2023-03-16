@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	AgentUserId = "1234.12345678"
+	AgentUserId         = "1234.12345678"
+	DefaultDeviceLimits = int64(500) // limits to 500 devices
 )
 
 func (a *Assistant) runSyncRequest(request gaTY.Request) *gaTY.SyncResponse {
@@ -24,7 +25,7 @@ func (a *Assistant) runSyncRequest(request gaTY.Request) *gaTY.SyncResponse {
 	}
 
 	// get virtual devices
-	vDevices, err := a.deviceAPI.ListDevices(nil, 500, 0) // limits to 500 devices
+	vDevices, err := a.deviceAPI.ListDevices(nil, DefaultDeviceLimits, 0, a.cfg.DeviceFilter)
 
 	if err != nil {
 		response.Payload.ErrorCode = err.Error()

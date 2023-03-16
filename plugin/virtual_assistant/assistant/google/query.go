@@ -46,7 +46,7 @@ func (a *Assistant) queryDevices(devices []gaTY.QueryRequestDevice) (map[string]
 
 	// get devices
 	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
-	vDevices, err := a.deviceAPI.ListDevices(filters, int64(len(IDs)), 0)
+	vDevices, err := a.deviceAPI.ListDevices(filters, int64(len(IDs)), 0, a.cfg.DeviceFilter)
 	if err != nil {
 		return nil, err
 	}

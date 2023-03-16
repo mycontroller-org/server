@@ -2,7 +2,7 @@ package service
 
 import (
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
-	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
+	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"

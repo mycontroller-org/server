@@ -3,7 +3,7 @@ package service
 import (
 	"sync"
 
-	vaTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_assistant"
+	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 )
 
 type Store struct {

@@ -11,6 +11,7 @@ import (
 	entityAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	quickIdAPI "github.com/mycontroller-org/server/v2/pkg/api/quickid"
 	"github.com/mycontroller-org/server/v2/pkg/types"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	filedTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	vdTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_device"
@@ -66,7 +67,7 @@ func (d *DeviceAPI) GetByID(ID string) (*vdTY.VirtualDevice, error) {
 	return d.api.VirtualDevice().GetByID(ID)
 }
 
-func (d *DeviceAPI) ListDevices(filters []storageTY.Filter, limit, offset int64) ([]vdTY.VirtualDevice, error) {
+func (d *DeviceAPI) ListDevices(filters []storageTY.Filter, limit, offset int64, deviceLabelFilter cmap.CustomStringMap) ([]vdTY.VirtualDevice, error) {
 	if filters == nil {
 		filters = make([]storageTY.Filter, 0)
 	} else {
@@ -79,9 +80,13 @@ func (d *DeviceAPI) ListDevices(filters []storageTY.Filter, limit, offset int64)
 		}
 		filters = _filters
 	}
-
 	// add enabled filter
 	filters = append(filters, storageTY.Filter{Key: types.KeyEnabled, Operator: storageTY.OperatorEqual, Value: true})
+
+	// update filters devices filter by labels
+	if deviceLabelFilter != nil {
+		filters = ApplyDeviceFilter(deviceLabelFilter, filters)
+	}
 
 	pagination := &storageTY.Pagination{
 		Offset: offset,
