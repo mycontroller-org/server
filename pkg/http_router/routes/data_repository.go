@@ -31,17 +31,17 @@ func (h *Routes) updateDataRepositoryItem(w http.ResponseWriter, r *http.Request
 	entity := &dataRepositoryTY.Config{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if entity.ID == "" {
-		http.Error(w, "id should not be empty", 400)
+		http.Error(w, "id should not be empty", http.StatusBadRequest)
 		return
 	}
 	err = h.api.DataRepository().Save(entity)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

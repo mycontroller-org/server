@@ -33,7 +33,7 @@ func (h *Routes) updateTask(w http.ResponseWriter, r *http.Request) {
 	entity := &taskTY.Config{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -43,7 +43,7 @@ func (h *Routes) updateTask(w http.ResponseWriter, r *http.Request) {
 	}
 	err = h.api.Task().SaveAndReload(entity)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

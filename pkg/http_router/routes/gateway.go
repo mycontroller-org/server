@@ -40,17 +40,17 @@ func (h *Routes) updateGateway(w http.ResponseWriter, r *http.Request) {
 	entity := &gwTY.Config{}
 	err := handlerUtils.LoadEntity(w, r, entity)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if entity.ID == "" {
-		http.Error(w, "id should not be an empty", 400)
+		http.Error(w, "id should not be an empty", http.StatusBadRequest)
 		return
 	}
 	err = h.api.Gateway().SaveAndReload(entity)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
