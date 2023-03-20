@@ -68,14 +68,14 @@ jobs:
             builds/build_timestamp.txt
             builds/SHA256SUMS.txt
 
-      - name: Update executables for main branch changes
+      - name: Update executables from main branch changes
         if: startsWith(github.ref, 'refs/heads/main') # executes only for changes in main
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GH_TOKEN }}"
           automatic_release_tag: development
           prerelease: true
-          title: "main branch build - Pre Release"
+          title: "Development Build - Pre Release"
           files: |
             builds/*.tar.gz
             builds/*.zip
