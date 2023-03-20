@@ -44,7 +44,7 @@ function package {
 
   # include web console
   if [ ${COMPONENT_NAME} = "server" ]; then
-    cp console-web/build ${PACKAGE_STAGING_DIR}/web_console -r
+    cp web-console/build ${PACKAGE_STAGING_DIR}/web_console -r
     CONFIG_FILE="mycontroller.yaml"    
   fi
 

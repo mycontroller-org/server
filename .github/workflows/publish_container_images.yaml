@@ -1,7 +1,7 @@
 name: publish container images
 on:
   push:
-    branches: [master]
+    branches: [main]
     tags: ["v*"]
 
 jobs:

@@ -1,5 +1,3 @@
-[submodule "console-web"]
-	path = console-web
-	url = https://github.com/mycontroller-org/console-web
-[console-web]
-	branch = master
+[submodule "web-console"]
+	path = web-console
+	url = https://github.com/mycontroller-org/web-console.git

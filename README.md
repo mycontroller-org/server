@@ -22,7 +22,7 @@ MyController is a flexible automation and sensor controller for IoT devices. Whe
   * [Docker Hub](https://hub.docker.com/u/mycontroller)
   * [Quay.io](https://quay.io/organization/mycontroller)
 
-`master` branch images are tagged as `:2.x.x-devel`<br>
+`main` branch images are tagged as `:2.x.x-devel`<br>
 ### Executables
 * [Released versions](https://github.com/mycontroller-org/server/releases)
-* [Pre Release](https://github.com/mycontroller-org/server/releases/tag/master) - `master` branch executables
+* [Pre Release](https://github.com/mycontroller-org/server/releases/tag/development) - `main` branch executables
