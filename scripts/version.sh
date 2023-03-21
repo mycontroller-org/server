@@ -19,7 +19,6 @@ export VERSION=`echo ${GIT_BRANCH} |  awk 'match($0, /([0-9]*\.[0-9]*\.[0-9]*)$/
 if [ -z "$VERSION" ]; then
   # takes version from versions file and adds devel suffix with that
   STATIC_VERSION=`grep server= versions.txt | awk -F= '{print $2}'`
-  BRANCH_NAME=`git describe --contains --all HEAD`
   export VERSION="${STATIC_VERSION}-devel"
 fi
 
