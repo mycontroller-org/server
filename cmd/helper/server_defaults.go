@@ -4,6 +4,7 @@ import (
 	"time"
 
 	systemJobs "github.com/mycontroller-org/server/v2/pkg/service/system_jobs"
+	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	"github.com/mycontroller-org/server/v2/pkg/upgrade"
@@ -11,6 +12,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
 
@@ -88,6 +90,8 @@ func (s *Server) updateInitialSystemSettings() {
 		s.logger.Fatal("error on updating telemetry config", zap.Error(err))
 	}
 
+	// update resource handler
+	s.setupResourceHandler()
 }
 
 // setup initial user
@@ -117,5 +121,23 @@ func (s *Server) setupInitialUser() {
 		if err != nil {
 			s.logger.Error("failed to create default admin user", zap.Error(err))
 		}
+	}
+}
+
+// setup resource handler
+func (s *Server) setupResourceHandler() {
+	resourceHandler := handlerTY.Config{
+		ID:          "resource_handler",
+		Description: "Sends payload to resources",
+		Enabled:     true,
+		Labels: cmap.CustomStringMap{
+			"location": "server",
+		},
+		Type: handlerTY.DataTypeResource,
+	}
+
+	err := s.api.Handler().Save(&resourceHandler)
+	if err != nil {
+		s.logger.Error("error on adding resource handler", zap.Error(err))
 	}
 }
