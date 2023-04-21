@@ -26,24 +26,25 @@ const (
 	loggerName               = "BUS:NATS.IO"
 	defaultReconnectWait     = 5 * time.Second
 	defaultConnectionTimeout = 10 * time.Second
-	defaultMaximumReconnect  = 100
-	defaultBufferSize        = 1000
+	defaultMaximumReconnect  = 60
+	defaultBufferSize        = 4194304 // 4MB
 )
 
 // Config details of the client
 type Config struct {
-	Type              string            `yaml:"type"`
-	ServerURL         string            `yaml:"server_url"`
-	Token             string            `yaml:"token"`
-	Username          string            `yaml:"username"`
-	Password          string            `yaml:"password"`
-	Insecure          bool              `yaml:"insecure"`
-	ConnectionTimeout string            `yaml:"connection_timeout"`
-	BufferSize        int               `yaml:"buffer_size"`
-	MaximumReconnect  int               `yaml:"maximum_reconnect"`
-	ReconnectWait     string            `yaml:"reconnect_wait"`
-	WebsocketOptions  *WebsocketOptions `yaml:"websocket_options"`
-	TopicPrefix       string            `yaml:"topic_prefix"`
+	Type                 string            `yaml:"type"`
+	ServerURL            string            `yaml:"server_url"`
+	Token                string            `yaml:"token"`
+	Username             string            `yaml:"username"`
+	Password             string            `yaml:"password"`
+	Insecure             bool              `yaml:"insecure"`
+	BufferSize           int               `yaml:"buffer_size"`
+	RetryOnFailedConnect bool              `yaml:"retry_on_failed_connect"`
+	ConnectionTimeout    string            `yaml:"connection_timeout"`
+	MaximumReconnect     int               `yaml:"maximum_reconnect"`
+	ReconnectWait        string            `yaml:"reconnect_wait"`
+	WebsocketOptions     *WebsocketOptions `yaml:"websocket_options"`
+	TopicPrefix          string            `yaml:"topic_prefix"`
 }
 
 // WebsocketOptions are config options for a websocket dialer
@@ -110,17 +111,20 @@ func NewClient(ctx context.Context, config cmap.CustomMap) (busPluginTY.Plugin, 
 	}
 
 	opts := natsIO.Options{
-		Url:               fakeServerURI.String(),
-		Secure:            false, // will be handled by our custom dialer
-		Verbose:           true,
-		ReconnectWait:     utils.ToDuration(cfg.ReconnectWait, defaultReconnectWait),
-		AllowReconnect:    true,
-		MaxReconnect:      cfg.MaximumReconnect,
-		ReconnectBufSize:  cfg.BufferSize,
-		ClosedCB:          client.callBackClosed,
-		ReconnectedCB:     client.callBackReconnected,
-		DisconnectedCB:    client.callBackDisconnected,
-		DisconnectedErrCB: client.callBackDisconnectedError,
+		Url:                         fakeServerURI.String(),
+		Secure:                      false, // will be handled by our custom dialer
+		Verbose:                     true,
+		RetryOnFailedConnect:        cfg.RetryOnFailedConnect,
+		AllowReconnect:              true,
+		ReconnectWait:               utils.ToDuration(cfg.ReconnectWait, defaultReconnectWait),
+		MaxReconnect:                cfg.MaximumReconnect,
+		ReconnectBufSize:            cfg.BufferSize,
+		ConnectedCB:                 client.callBackConnected,
+		ClosedCB:                    client.callBackClosed,
+		ReconnectedCB:               client.callBackReconnected,
+		DisconnectedCB:              client.callBackDisconnected,
+		DisconnectedErrCB:           client.callBackDisconnectedError,
+		NoCallbacksAfterClientClose: true,
 	}
 
 	// update secure login if enabled
@@ -132,9 +136,9 @@ func NewClient(ctx context.Context, config cmap.CustomMap) (busPluginTY.Plugin, 
 	case cfg.Username != "":
 		opts.User = cfg.Username
 		opts.Password = cfg.Password
-
 	}
 
+	// add custom dialer
 	customDialer, err := NewCustomDialer(cfg, client.logger)
 	if err != nil {
 		return nil, err
@@ -284,21 +288,25 @@ func (c *Client) UnsubscribeAll(topic string) error {
 }
 
 // call back functions
+func (c *Client) callBackConnected(con *natsIO.Conn) {
+	c.logger.Info("connected")
+}
+
 func (c *Client) callBackDisconnected(con *natsIO.Conn) {
-	c.logger.Debug("disconnected")
+	c.logger.Info("disconnected")
 }
 
 func (c *Client) callBackReconnected(con *natsIO.Conn) {
-	c.logger.Debug("reconnected")
+	c.logger.Info("reconnected")
 }
 
 func (c *Client) callBackClosed(con *natsIO.Conn) {
-	c.logger.Debug("connection closed")
+	c.logger.Info("connection closed")
 }
 
 func (c *Client) callBackDisconnectedError(con *natsIO.Conn, err error) {
 	if err != nil {
-		c.logger.Debug("disconnected", zap.String("error", err.Error()))
+		c.logger.Error("disconnected", zap.String("error", err.Error()))
 	} else {
 		c.logger.Debug("disconnected")
 	}
