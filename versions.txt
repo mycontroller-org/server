@@ -2,4 +2,4 @@
 server=2.0.0
 
 # keep the console version needs to be used
-web-console=main
+web-console=v2.0.0
