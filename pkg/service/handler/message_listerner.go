@@ -63,9 +63,9 @@ func (svc *HandlerService) processHandlerMessage(item interface{}) {
 
 	err := handler.Post(msg.Data)
 	if err != nil {
-		if err == handlerTY.ErrReQueue {
-			// TODO: requeue and try again
-		}
+		// if err == handlerTY.ErrReQueue {
+		// 	// TODO: requeue and try again
+		// }
 		svc.logger.Warn("error from handler", zap.Any("handlerID", msg.ID), zap.Error(err))
 		state.Status = types.StatusError
 		state.Message = err.Error()
