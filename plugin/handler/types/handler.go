@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"strings"
 	"time"
 
@@ -15,6 +16,10 @@ const (
 	DataTypeTelegram = "telegram"
 	DataTypeWebhook  = "webhook"
 	DataTypeBackup   = "backup"
+)
+
+var (
+	ErrReQueue = errors.New("requeue")
 )
 
 // Plugin interface details for operation
