@@ -3,7 +3,8 @@ RUN mkdir /app
 ADD . /app
 WORKDIR /app
 
-RUN apk add --no-cache git
+# "tzdata" to print the build date with timezone
+RUN apk add --no-cache tzdata git
 
 ARG GOPROXY
 # download deps before gobuild
