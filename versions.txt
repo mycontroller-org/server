@@ -1,5 +1,5 @@
 # keep the next release version
-server=2.0.0
+server=2.1.0
 
 # keep the console version needs to be used
-web-console=v2.0.0
+web-console=main
