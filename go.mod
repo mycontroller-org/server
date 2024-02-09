@@ -22,7 +22,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.5.1-0.20220423185008-bf980b35cac4
 	github.com/mycontroller-org/esphome_api v1.3.0
-	github.com/nats-io/nats.go v1.23.0
+	github.com/nats-io/nats.go v1.28.0
 	github.com/nleeper/goment v1.4.4
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/robfig/cron/v3 v3.0.2-0.20210106135023-bc59245fe10e
@@ -35,8 +35,8 @@ require (
 	github.com/tidwall/sjson v1.2.5
 	go.mongodb.org/mongo-driver v1.11.6
 	go.uber.org/zap v1.24.0
-	golang.org/x/crypto v0.11.0
-	golang.org/x/term v0.10.0
+	golang.org/x/crypto v0.17.0
+	golang.org/x/term v0.15.0
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -61,8 +61,8 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
-	github.com/nats-io/nats-server/v2 v2.8.4 // indirect
-	github.com/nats-io/nkeys v0.3.0 // indirect
+	github.com/nats-io/nats-server/v2 v2.9.23 // indirect
+	github.com/nats-io/nkeys v0.4.6 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -86,10 +86,10 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/net v0.12.0 // indirect
+	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.10.0 // indirect
-	golang.org/x/text v0.11.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
 
