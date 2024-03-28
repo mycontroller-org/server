@@ -4,7 +4,7 @@ import (
 	"context"
 	"sort"
 
-	"github.com/Masterminds/semver"
+	semver "github.com/Masterminds/semver/v3"
 	entitiesAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
