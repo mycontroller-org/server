@@ -1,7 +1,6 @@
 package queue
 
 import (
-	queue "github.com/jaegertracing/jaeger/pkg/queue"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
 )
@@ -9,7 +8,7 @@ import (
 // Queue to hold items
 type Queue struct {
 	Name    string
-	Queue   *queue.BoundedQueue
+	Queue   *BoundedQueue
 	Limit   int
 	Workers int
 	closed  concurrency.SafeBool
@@ -21,7 +20,7 @@ func New(logger *zap.Logger, name string, limit int, consumer func(item interfac
 		logger.Error("queue full. dropping item", zap.String("queueName", name), zap.Any("item", item))
 	}
 
-	queue := queue.NewBoundedQueue(limit, droppedItemHandler)
+	queue := NewBoundedQueue(limit, droppedItemHandler)
 	queue.StartConsumers(workers, consumer)
 
 	return &Queue{
