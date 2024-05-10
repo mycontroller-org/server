@@ -1,17 +1,14 @@
-package export
+package backup
 
 import (
 	"errors"
 	"fmt"
-	"os"
 	"path"
 	"reflect"
 	"strings"
 	"time"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	"github.com/mycontroller-org/server/v2/pkg/types"
-	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
@@ -27,9 +24,9 @@ var (
 	isRestoreRunning = concurrency.SafeBool{}
 )
 
-func (br *BackupRestore) ExecuteRestore(storage storageTY.Plugin, apiMap map[string]backupTY.Backup, extractedDir string) error {
+func (br *BackupRestore) ExecuteRestore(storage storageTY.Plugin, apiMap map[string]Backup, extractedDir string) error {
 	start := time.Now()
-	br.logger.Info("Restore job triggered", zap.String("extractedDirectory", extractedDir))
+	br.logger.Info("restore job triggered", zap.String("extractedDirectory", extractedDir))
 
 	err := storage.Pause()
 	if err != nil {
@@ -43,16 +40,15 @@ func (br *BackupRestore) ExecuteRestore(storage storageTY.Plugin, apiMap map[str
 		return err
 	}
 
-	storageDir := path.Join(extractedDir, config.DirectoryDataStorage)
-	firmwareDir := path.Join(extractedDir, config.DirectoryDataFirmware)
+	storageDir := path.Join(extractedDir, StorageBackupDirectoryName)
 
-	dataBytes, err := utils.ReadFile(extractedDir, backupTY.BackupDetailsFilename)
+	dataBytes, err := utils.ReadFile(extractedDir, BackupDetailsFilename)
 	if err != nil {
-		br.logger.Fatal("error on reading export details", zap.String("dir", extractedDir), zap.String("filename", backupTY.BackupDetailsFilename), zap.Error(err))
+		br.logger.Fatal("error on reading export details", zap.String("dir", extractedDir), zap.String("filename", BackupDetailsFilename), zap.Error(err))
 		return err
 	}
 
-	exportDetails := &backupTY.BackupDetails{}
+	exportDetails := &BackupDetails{}
 	err = yaml.Unmarshal(dataBytes, exportDetails)
 	if err != nil {
 		br.logger.Fatal("error on loading export details", zap.Error(err))
@@ -70,90 +66,43 @@ func (br *BackupRestore) ExecuteRestore(storage storageTY.Plugin, apiMap map[str
 		br.logger.Fatal("error on resume a database service", zap.Error(err))
 		return err
 	}
+	br.logger.Info("import database completed", zap.String("timeTaken", time.Since(start).String()))
 
-	br.logger.Info("Import database completed", zap.String("timeTaken", time.Since(start).String()))
-
-	// restore firmwares
-	err = br.restoreFirmwares(firmwareDir)
+	// restore directories
+	br.logger.Info("restore directories started")
+	err = br.restoreDirectories(extractedDir, br.directories)
 	if err != nil {
-		br.logger.Fatal("error on copying firmware files", zap.Error(err))
 		return err
 	}
 
-	// restore secure and insecure shares
-	err = br.restoreSecureInsecureShare(extractedDir)
-	if err != nil {
-		br.logger.Fatal("error on copying secure or insecure shares files", zap.Error(err))
-		return err
-	}
-
-	br.logger.Info("restore completed successfully", zap.String("timeTaken", time.Since(start).String()))
+	br.logger.Info("restore directories successfully completed", zap.String("timeTaken", time.Since(start).String()))
 	return nil
 }
 
 // restores the secure and insecure shares, if available in the backup
 // overwrites if the file exists on the destination directory
-func (br *BackupRestore) restoreSecureInsecureShare(extractedDir string) error {
-	// copy secure share directory if available in the backup
-	secureShareDir := path.Join(extractedDir, config.DirectorySecureShare)
-	if utils.IsDirExists(secureShareDir) {
-		secureShareDst := types.GetEnvString(types.ENV_DIR_SHARE_SECURE)
-		if secureShareDst == "" {
-			return fmt.Errorf("environment '%s' not set", types.ENV_DIR_SHARE_SECURE)
+func (br *BackupRestore) restoreDirectories(extractedBaseDir string, directories map[string]string) error {
+	for name, dstDirFullPath := range directories {
+		if name == StorageBackupDirectoryName {
+			return fmt.Errorf("name '%s' is reserved for storage database backup", StorageBackupDirectoryName)
 		}
-		err := br.CopyFiles(secureShareDir, secureShareDst, true)
-		if err != nil {
-			br.logger.Error("error on coping the secure share files", zap.String("source", secureShareDir), zap.String("destination", secureShareDst))
-			return err
-		}
-	}
 
-	// copy insecure share directory if available in the backup
-	insecureShareDir := path.Join(extractedDir, config.DirectoryInsecureShare)
-	if utils.IsDirExists(insecureShareDir) {
-		insecureShareDst := types.GetEnvString(types.ENV_DIR_SHARE_INSECURE)
-		if insecureShareDst == "" {
-			return fmt.Errorf("environment '%s' not set", types.ENV_DIR_SHARE_INSECURE)
-		}
-		err := br.CopyFiles(insecureShareDir, insecureShareDst, true)
-		if err != nil {
-			br.logger.Error("error on coping the insecure share files", zap.String("source", insecureShareDir), zap.String("destination", insecureShareDst))
-			return err
+		// copy a directory if available in the backup
+		sourceDirFullPath := path.Join(extractedBaseDir, name)
+		br.logger.Debug("restoring a directory", zap.String("source", sourceDirFullPath), zap.String("dst", dstDirFullPath))
+		if utils.IsDirExists(sourceDirFullPath) {
+			err := CopyFiles(br.logger, sourceDirFullPath, dstDirFullPath, true)
+			if err != nil {
+				br.logger.Error("error on coping a directory", zap.String("name", name), zap.String("path", dstDirFullPath), zap.String("source", sourceDirFullPath), zap.String("destination", dstDirFullPath))
+				return err
+			}
 		}
 	}
-
-	return nil
-
-}
-
-// restores firmwares to the actual directory
-func (br *BackupRestore) restoreFirmwares(sourceDir string) error {
-	if isRestoreRunning.IsSet() {
-		return errors.New("there is an import job is in progress")
-	}
-	isRestoreRunning.Set()
-	defer isRestoreRunning.Reset()
-
-	destDir := br.dirDataFirmware
-	err := utils.RemoveDir(destDir)
-	if err != nil {
-		return err
-	}
-
-	if !utils.IsDirExists(sourceDir) {
-		return nil
-	}
-
-	err = os.Rename(sourceDir, destDir)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
 // ExecuteImportStorage update data into database
-func (br *BackupRestore) ExecuteImportStorage(apiMap map[string]backupTY.Backup, sourceDir, fileType string, ignoreEmptyDir bool) error {
+func (br *BackupRestore) ExecuteImportStorage(apiMap map[string]Backup, sourceDir, fileType string, ignoreEmptyDir bool) error {
 	if isRestoreRunning.IsSet() {
 		return errors.New("there is an import job is in progress")
 	}
@@ -210,7 +159,7 @@ func (br *BackupRestore) ExecuteImportStorage(apiMap map[string]backupTY.Backup,
 	return nil
 }
 
-func (br *BackupRestore) updateEntities(api backupTY.Backup, fileBytes []byte, fileFormat string) error {
+func (br *BackupRestore) updateEntities(api Backup, fileBytes []byte, fileFormat string) error {
 	// get actual type
 	entityType := reflect.TypeOf(api.GetEntityInterface())
 	entities := reflect.New(reflect.SliceOf(entityType)).Interface()
@@ -235,12 +184,12 @@ func (br *BackupRestore) updateEntities(api backupTY.Backup, fileBytes []byte, f
 
 func (br *BackupRestore) unmarshal(provider string, fileBytes []byte, entities interface{}) error {
 	switch provider {
-	case backupTY.TypeJSON:
+	case TypeJSON:
 		err := json.Unmarshal(fileBytes, entities)
 		if err != nil {
 			return err
 		}
-	case backupTY.TypeYAML:
+	case TypeYAML:
 		err := yaml.Unmarshal(fileBytes, entities)
 		if err != nil {
 			return err
@@ -252,14 +201,14 @@ func (br *BackupRestore) unmarshal(provider string, fileBytes []byte, entities i
 }
 
 func (br *BackupRestore) getEntityName(filename string) string {
-	entity := strings.Split(filename, backupTY.EntityNameIndexSplit)
+	entity := strings.Split(filename, EntityNameIndexSplit)
 	if len(entity) > 0 {
 		return entity[0]
 	}
 	return ""
 }
 
-func (br *BackupRestore) ExtractExportedZipFile(exportedZipFile string) error {
+func (br *BackupRestore) ExtractExportedZipFile(exportedZipFile, targetDir, restoreReferenceDir, restoreReferenceFilename string) error {
 	if isRestoreRunning.IsSet() {
 		return errors.New("there is an import job is in progress")
 	}
@@ -268,7 +217,7 @@ func (br *BackupRestore) ExtractExportedZipFile(exportedZipFile string) error {
 
 	zipFilename := path.Base(exportedZipFile)
 	baseDir := strings.TrimSuffix(zipFilename, path.Ext(zipFilename))
-	extractFullPath := path.Join(br.dirDataInternal, baseDir)
+	extractFullPath := path.Join(targetDir, baseDir)
 
 	err := ziputils.Unzip(exportedZipFile, extractFullPath)
 	if err != nil {
@@ -292,10 +241,9 @@ func (br *BackupRestore) ExtractExportedZipFile(exportedZipFile string) error {
 		return err
 	}
 
-	internalDir := types.GetEnvString(types.ENV_DIR_DATA_INTERNAL)
-	err = utils.WriteFile(internalDir, config.SystemStartJobsFilename, dataBytes)
+	err = utils.WriteFile(restoreReferenceDir, restoreReferenceFilename, dataBytes)
 	if err != nil {
-		br.logger.Error("failed to write data to disk", zap.String("directory", internalDir), zap.String("filename", config.SystemStartJobsFilename), zap.Error(err))
+		br.logger.Error("failed to write data to disk", zap.String("directory", restoreReferenceDir), zap.String("filename", restoreReferenceFilename), zap.Error(err))
 		return err
 	}
 

@@ -10,10 +10,10 @@ import (
 	encryptionAPI "github.com/mycontroller-org/server/v2/pkg/encryption"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
@@ -37,7 +37,7 @@ type VariableSpec struct {
 }
 
 func New(ctx context.Context, templateEngine types.TemplateEngine) (types.VariablesEngine, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
@@ -53,7 +53,7 @@ const (
 
 // email client
 func New(ctx context.Context, rawCfg *handlerTY.Config) (handlerTY.Plugin, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

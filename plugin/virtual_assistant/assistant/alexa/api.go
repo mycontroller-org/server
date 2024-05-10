@@ -8,11 +8,11 @@ import (
 	"net/http"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
-	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 	handlerUtils "github.com/mycontroller-org/server/v2/pkg/utils/http_handler"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	alexaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/assistant/alexa/types"
 	deviceAPI "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/device_api"
+	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 	"go.uber.org/zap"
 )
 
@@ -29,7 +29,7 @@ type Assistant struct {
 }
 
 func New(ctx context.Context, cfg *vaTY.Config) (vaTY.Plugin, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

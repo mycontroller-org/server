@@ -4,11 +4,15 @@ import (
 	"context"
 	"errors"
 
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 )
 
-func FrosmContext(ctx context.Context) (*Config, error) {
-	cfg, ok := ctx.Value(contextTY.MC_CONFIG).(*Config)
+const (
+	contextKey types.ContextKey = "mc_config"
+)
+
+func FromContext(ctx context.Context) (*Config, error) {
+	cfg, ok := ctx.Value(contextKey).(*Config)
 	if !ok {
 		return nil, errors.New("invalid or config instance not available in context")
 	}
@@ -19,5 +23,5 @@ func FrosmContext(ctx context.Context) (*Config, error) {
 }
 
 func WithContext(ctx context.Context, cfg *Config) context.Context {
-	return context.WithValue(ctx, contextTY.MC_CONFIG, cfg)
+	return context.WithValue(ctx, contextKey, cfg)
 }

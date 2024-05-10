@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	gwPtl "github.com/mycontroller-org/server/v2/plugin/gateway/protocol"
 	httpGenericProtocol "github.com/mycontroller-org/server/v2/plugin/gateway/provider/generic/protocol_http_generic"
@@ -38,7 +38,7 @@ type Provider struct {
 
 // NewPluginGeneric provider
 func NewPluginGeneric(ctx context.Context, config *gwTY.Config) (providerTY.Plugin, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

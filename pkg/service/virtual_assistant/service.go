@@ -5,14 +5,14 @@ import (
 
 	"github.com/gorilla/mux"
 	encryptionAPI "github.com/mycontroller-org/server/v2/pkg/encryption"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
 	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
-	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
+	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 	"go.uber.org/zap"
 )
 
@@ -33,7 +33,7 @@ type VirtualAssistantService struct {
 }
 
 func New(ctx context.Context, filter *sfTY.ServiceFilter, router *mux.Router) (serviceTY.Service, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

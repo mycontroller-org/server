@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
-	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
 	handlerUtils "github.com/mycontroller-org/server/v2/pkg/utils/http_handler"
+	backupTY "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 

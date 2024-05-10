@@ -4,7 +4,14 @@ import (
 	"context"
 	"errors"
 
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+)
+
+const (
+	contextKey types.ContextKey = "database_storage"
+
+	// keys
+	KeyType = "Type"
 )
 
 // Plugin interface storage
@@ -28,18 +35,18 @@ type Plugin interface {
 }
 
 func FromContext(ctx context.Context) (Plugin, error) {
-	bus, ok := ctx.Value(contextTY.STORAGE_DB).(Plugin)
+	storage, ok := ctx.Value(contextKey).(Plugin)
 	if !ok {
 		return nil, errors.New("invalid storage instance received in context")
 	}
-	if bus == nil {
+	if storage == nil {
 		return nil, errors.New("storage instance not provided in context")
 	}
-	return bus, nil
+	return storage, nil
 }
 
-func WithContext(ctx context.Context, bus Plugin) context.Context {
-	return context.WithValue(ctx, contextTY.STORAGE_DB, bus)
+func WithContext(ctx context.Context, storage Plugin) context.Context {
+	return context.WithValue(ctx, contextKey, storage)
 }
 
 // Storage database types

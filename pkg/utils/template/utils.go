@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	"go.uber.org/zap"
 )
 
@@ -19,7 +19,7 @@ type Template struct {
 }
 
 func New(ctx context.Context, additionalFuncs map[string]interface{}) (*Template, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

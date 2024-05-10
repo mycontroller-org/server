@@ -5,7 +5,11 @@ import (
 	"errors"
 	"time"
 
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+)
+
+const (
+	contextKey types.ContextKey = "database_metric"
 )
 
 // Plugin interface
@@ -19,7 +23,7 @@ type Plugin interface {
 }
 
 func FromContext(ctx context.Context) (Plugin, error) {
-	metric, ok := ctx.Value(contextTY.METRIC_DB).(Plugin)
+	metric, ok := ctx.Value(contextKey).(Plugin)
 	if !ok {
 		return nil, errors.New("invalid metric database instance received in context")
 	}
@@ -30,7 +34,7 @@ func FromContext(ctx context.Context) (Plugin, error) {
 }
 
 func WithContext(ctx context.Context, metric Plugin) context.Context {
-	return context.WithValue(ctx, contextTY.METRIC_DB, metric)
+	return context.WithValue(ctx, contextKey, metric)
 }
 
 // Metric types

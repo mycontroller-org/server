@@ -10,13 +10,16 @@ import (
 
 	jwt "github.com/golang-jwt/jwt/v4"
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/types/user"
 	handlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	handlerUtils "github.com/mycontroller-org/server/v2/pkg/utils/http_handler"
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	"go.uber.org/zap"
+)
+
+const (
+	contextKey types.ContextKey = "api_context_route"
 )
 
 var (
@@ -35,6 +38,12 @@ var (
 		"/api/plugin/gateway",                    // gateway plugin api
 	}
 )
+
+// struct used in api request
+type McApiContext struct {
+	Tenant string `json:"tenant" yaml:"tenant"`
+	UserID string `json:"userId" yaml:"userId"`
+}
 
 // MiddlewareAuthenticationVerification verifies user auth details
 func MiddlewareAuthenticationVerification(next http.Handler) http.Handler {
@@ -67,7 +76,7 @@ func MiddlewareAuthenticationVerification(next http.Handler) http.Handler {
 			if err, mcApiContext := IsValidToken(r); err == nil {
 
 				// include user details as context
-				ctx := context.WithValue(r.Context(), contextTY.MC_API_CONTEXT, mcApiContext)
+				ctx := context.WithValue(r.Context(), contextKey, mcApiContext)
 				reqWithCtx := r.WithContext(ctx)
 
 				next.ServeHTTP(w, reqWithCtx)
@@ -85,7 +94,7 @@ func MiddlewareAuthenticationVerification(next http.Handler) http.Handler {
 // steps to verify the authentication
 // 1. Verify the token in header
 // 2. Verify the token in cookie
-func IsValidToken(r *http.Request) (error, *contextTY.McApiContext) {
+func IsValidToken(r *http.Request) (error, *McApiContext) {
 	token, claims, err := getJwtToken(r)
 	if err != nil {
 		return err, nil
@@ -110,7 +119,7 @@ func IsValidToken(r *http.Request) (error, *contextTY.McApiContext) {
 		}
 	}
 
-	mcApiContext := contextTY.McApiContext{
+	mcApiContext := McApiContext{
 		Tenant: "",
 		UserID: r.Header.Get(handlerTY.HeaderUserID),
 	}

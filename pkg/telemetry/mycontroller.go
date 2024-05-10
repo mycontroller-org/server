@@ -7,9 +7,9 @@ import (
 
 	entityAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpClient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	gatewayTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
@@ -26,7 +26,7 @@ const (
 
 // reports telemetry data
 func ReportTelemetryData(ctx context.Context) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		// logger not available to report the error
 		return

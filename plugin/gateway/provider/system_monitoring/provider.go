@@ -3,10 +3,10 @@ package systemmonitoring
 import (
 	"context"
 
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
 	providerTY "github.com/mycontroller-org/server/v2/plugin/gateway/provider/type"
@@ -35,7 +35,7 @@ type Provider struct {
 
 // system monitoring provider
 func New(ctx context.Context, gatewayCfg *gwTY.Config) (providerTY.Plugin, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

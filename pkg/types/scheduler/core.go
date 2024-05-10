@@ -4,7 +4,11 @@ import (
 	"context"
 	"errors"
 
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
+)
+
+const (
+	contextKey types.ContextKey = "scheduler"
 )
 
 type CoreScheduler interface {
@@ -19,7 +23,7 @@ type CoreScheduler interface {
 }
 
 func FromContext(ctx context.Context) (CoreScheduler, error) {
-	scheduler, ok := ctx.Value(contextTY.SCHEDULER).(CoreScheduler)
+	scheduler, ok := ctx.Value(contextKey).(CoreScheduler)
 	if !ok {
 		return nil, errors.New("invalid scheduler instance received in context")
 	}
@@ -30,5 +34,5 @@ func FromContext(ctx context.Context) (CoreScheduler, error) {
 }
 
 func WithContext(ctx context.Context, scheduler CoreScheduler) context.Context {
-	return context.WithValue(ctx, contextTY.SCHEDULER, scheduler)
+	return context.WithValue(ctx, contextKey, scheduler)
 }

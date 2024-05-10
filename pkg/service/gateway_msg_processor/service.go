@@ -9,7 +9,6 @@ import (
 	entityAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
 	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
@@ -21,6 +20,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/server/v2/pkg/utils/javascript"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
@@ -48,7 +48,7 @@ type MessageProcessor struct {
 }
 
 func New(ctx context.Context, queueName string) (serviceTY.Service, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

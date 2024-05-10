@@ -5,7 +5,7 @@ import (
 
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	busPlugin "github.com/mycontroller-org/server/v2/plugin/bus"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
@@ -13,7 +13,7 @@ import (
 
 // return bus instance
 func Get(ctx context.Context, config cmap.CustomMap) (busTY.Plugin, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -6,7 +6,7 @@ import (
 
 	semver "github.com/Masterminds/semver/v3"
 	entitiesAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
@@ -52,7 +52,7 @@ func GetLatestUpgradeVersion() string {
 
 // starts the upgrade process
 func StartUpgrade(ctx context.Context, currentVersion string) (string, error) {
-	_logger, err := contextTY.LoggerFromContext(ctx)
+	_logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return "", err
 	}

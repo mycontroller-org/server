@@ -4,9 +4,13 @@ import (
 	"context"
 	"errors"
 
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	cloneUtil "github.com/mycontroller-org/server/v2/pkg/utils/clone"
 	"go.uber.org/zap"
+)
+
+const (
+	contextKey types.ContextKey = "encryption_api"
 )
 
 type Encryption struct {
@@ -29,7 +33,7 @@ func New(logger *zap.Logger, secret string, specialKeys []string, encryptionPref
 }
 
 func FromContext(ctx context.Context) (*Encryption, error) {
-	enc, ok := ctx.Value(contextTY.ENCRYPTION_API).(*Encryption)
+	enc, ok := ctx.Value(contextKey).(*Encryption)
 	if !ok {
 		return nil, errors.New("invalid encryption instance received in context")
 	}
@@ -40,7 +44,7 @@ func FromContext(ctx context.Context) (*Encryption, error) {
 }
 
 func WithContext(ctx context.Context, enc *Encryption) context.Context {
-	return context.WithValue(ctx, contextTY.ENCRYPTION_API, enc)
+	return context.WithValue(ctx, contextKey, enc)
 }
 
 func (e *Encryption) EncryptSecrets(source interface{}) error {

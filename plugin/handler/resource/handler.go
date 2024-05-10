@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
@@ -34,7 +34,7 @@ type ResourceClient struct {
 }
 
 func NewResourcePlugin(ctx context.Context, config *handlerTY.Config) (handlerTY.Plugin, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -8,10 +8,10 @@ import (
 	actionAPI "github.com/mycontroller-org/server/v2/pkg/api/action"
 	entityAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
@@ -34,7 +34,7 @@ type ResourceService struct {
 }
 
 func New(ctx context.Context) (serviceTY.Service, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

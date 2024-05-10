@@ -6,13 +6,13 @@ import (
 
 	entityAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
 	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
@@ -34,7 +34,7 @@ type DeletionService struct {
 }
 
 func New(ctx context.Context) (serviceTY.Service, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

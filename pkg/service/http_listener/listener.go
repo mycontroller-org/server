@@ -11,9 +11,9 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/service/http_listener/https"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 )
 
 const (
@@ -31,7 +31,7 @@ type HttpListener struct {
 }
 
 func New(ctx context.Context, cfg config.WebConfig, handler http.Handler) (serviceTY.Service, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

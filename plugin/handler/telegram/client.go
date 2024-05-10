@@ -8,9 +8,9 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	httpClient "github.com/mycontroller-org/server/v2/pkg/utils/http_client_json"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
 )
@@ -32,7 +32,7 @@ type TelegramClient struct {
 
 // telegram handler
 func New(ctx context.Context, cfg *handlerTY.Config) (handlerTY.Plugin, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

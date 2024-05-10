@@ -5,7 +5,11 @@ import (
 	"errors"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	"github.com/mycontroller-org/server/v2/pkg/types"
+)
+
+const (
+	contextKey types.ContextKey = "bus_plugin"
 )
 
 // Plugin interface
@@ -24,7 +28,7 @@ type Plugin interface {
 }
 
 func FromContext(ctx context.Context) (Plugin, error) {
-	bus, ok := ctx.Value(contextTY.BUS).(Plugin)
+	bus, ok := ctx.Value(contextKey).(Plugin)
 	if !ok {
 		return nil, errors.New("invalid bus instance received in context")
 	}
@@ -35,7 +39,7 @@ func FromContext(ctx context.Context) (Plugin, error) {
 }
 
 func WithContext(ctx context.Context, bus Plugin) context.Context {
-	return context.WithValue(ctx, contextTY.BUS, bus)
+	return context.WithValue(ctx, contextKey, bus)
 }
 
 // CallBackFunc message passed to this func

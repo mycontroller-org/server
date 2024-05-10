@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	backupTY "github.com/mycontroller-org/server/v2/pkg/types/backup"
+	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
+	backupTY "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
 	"github.com/mycontroller-org/server/v2/plugin/handler/backup/disk"
 	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
@@ -18,7 +20,12 @@ import (
 func (bk *BackupAPI) RunRestore(file backupTY.BackupFile) error {
 	bk.logger.Info("restore data request received", zap.Any("backupFile", file))
 
-	err := bk.backupRestore.ExtractExportedZipFile(file.FullPath)
+	dirDataInternal := types.GetEnvString(types.ENV_DIR_DATA_INTERNAL)
+	if dirDataInternal == "" {
+		return fmt.Errorf("environment '%s' not set", types.ENV_DIR_DATA_INTERNAL)
+	}
+
+	err := bk.backupRestore.ExtractExportedZipFile(file.FullPath, dirDataInternal, dirDataInternal, config.SystemStartJobsFilename)
 	if err != nil {
 		bk.logger.Error("error on extract", zap.Error(err), zap.Any("file", file))
 		return err

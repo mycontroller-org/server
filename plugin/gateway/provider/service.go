@@ -8,12 +8,12 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	cloneUtils "github.com/mycontroller-org/server/v2/pkg/utils/clone"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	gwPlugin "github.com/mycontroller-org/server/v2/plugin/gateway"
@@ -48,7 +48,7 @@ type Service struct {
 
 // GetService returns service instance
 func GetService(ctx context.Context, gatewayCfg *gwTY.Config) (*Service, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

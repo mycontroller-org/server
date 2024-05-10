@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	backupUtil "github.com/mycontroller-org/server/v2/plugin/handler/backup/util"
@@ -48,7 +48,7 @@ type Client struct {
 
 // disk backup client
 func New(ctx context.Context, cfg *handlerTY.Config) (*Client, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

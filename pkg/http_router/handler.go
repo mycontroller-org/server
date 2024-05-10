@@ -14,8 +14,8 @@ import (
 	authRoutes "github.com/mycontroller-org/server/v2/pkg/http_router/routes/auth"
 	webConsole "github.com/mycontroller-org/server/v2/pkg/http_router/web-console"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	webHandlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"github.com/rs/cors"
@@ -25,7 +25,7 @@ import (
 // NewHandler for http access
 func New(ctx context.Context, cfg *config.Config, router *mux.Router) (http.Handler, error) {
 	webCfg := cfg.Web
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

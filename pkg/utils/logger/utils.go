@@ -1,16 +1,20 @@
 package utils
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"strings"
 
+	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 const (
-	ModeRecordAll = "record_all"
-	ModeSampled   = "sampled"
+	ModeRecordAll                  = "record_all"
+	ModeSampled                    = "sampled"
+	contextKey    types.ContextKey = "logger"
 )
 
 // GetLogger returns a logger
@@ -68,4 +72,19 @@ func GetLogger(mode, logLevel, encoding string, showFullCaller bool, callerSkip 
 		panic(err)
 	}
 	return logger
+}
+
+func FromContext(ctx context.Context) (*zap.Logger, error) {
+	logger, ok := ctx.Value(contextKey).(*zap.Logger)
+	if !ok {
+		return nil, errors.New("invalid logger instance received in context")
+	}
+	if logger == nil {
+		return nil, errors.New("logger instance not provided in context")
+	}
+	return logger, nil
+}
+
+func WithContext(ctx context.Context, logger *zap.Logger) context.Context {
+	return context.WithValue(ctx, contextKey, logger)
 }

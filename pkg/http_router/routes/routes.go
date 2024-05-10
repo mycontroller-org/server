@@ -8,11 +8,12 @@ import (
 	backupRestoreAPI "github.com/mycontroller-org/server/v2/pkg/api/backup"
 	entitiesAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	quickIdAPI "github.com/mycontroller-org/server/v2/pkg/api/quickid"
-	export "github.com/mycontroller-org/server/v2/pkg/backup"
+	bkpMap "github.com/mycontroller-org/server/v2/pkg/backup"
 	encryptionAPI "github.com/mycontroller-org/server/v2/pkg/encryption"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
+	export "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
@@ -31,7 +32,7 @@ type Routes struct {
 }
 
 func New(ctx context.Context, router *mux.Router, enableProfiling bool) (*Routes, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +64,12 @@ func New(ctx context.Context, router *mux.Router, enableProfiling bool) (*Routes
 	if err != nil {
 		return nil, err
 	}
-	backupRestore, err := export.New(ctx)
+
+	bkpDirs, err := bkpMap.GetDirectories(true, true)
+	if err != nil {
+		return nil, err
+	}
+	backupRestore, err := export.New(ctx, bkpDirs)
 	if err != nil {
 		return nil, err
 	}

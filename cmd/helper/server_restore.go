@@ -3,26 +3,30 @@ package helper
 import (
 	"fmt"
 
-	export "github.com/mycontroller-org/server/v2/pkg/backup"
-	br_map "github.com/mycontroller-org/server/v2/pkg/backup/bkp_map"
-	"github.com/mycontroller-org/server/v2/pkg/database"
-	"github.com/mycontroller-org/server/v2/pkg/types/backup"
+	bkpMap "github.com/mycontroller-org/server/v2/pkg/backup"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
+	storage "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	backupAPI "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )
 
 // returns restoreEngine api and storage import api map
 // used in data import and restore
-func (s *Server) getRestoreMap() (*export.BackupRestore, map[string]backup.Backup, error) {
-	restoreEngine, err := export.New(s.ctx)
+func (s *Server) getRestoreMap() (*backupAPI.BackupRestore, map[string]backupAPI.Backup, error) {
+	bkpDirs, err := bkpMap.GetDirectories(true, true)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	restoreEngine, err := backupAPI.New(s.ctx, bkpDirs)
 	if err != nil {
 		s.logger.Error("error on getting backup/restore api", zap.Error(err))
 		return nil, nil, err
 
 	}
-	storageApiMap, err := br_map.GetStorageApiMap(s.ctx)
+	storageApiMap, err := bkpMap.GetStorageApiMap(s.ctx)
 	if err != nil {
 		s.logger.Error("error on getting storage api map", zap.Error(err))
 		return nil, nil, err
@@ -39,7 +43,7 @@ func (s *Server) runStorageImport() error {
 		return err
 	}
 
-	err = database.RunStorageImport(s.ctx, s.logger, s.storage, storageApiMap, restoreEngine.ExecuteImportStorage)
+	err = storage.RunImport(s.ctx, s.logger, s.storage, storageApiMap, restoreEngine.ExecuteImportStorage)
 	if err != nil {
 		s.logger.Error("error on storage import", zap.Error(err))
 		return err
@@ -99,6 +103,7 @@ func (s *Server) triggerSystemRestore(cfg *config.StartupRestore) {
 	}
 
 	s.logger.Info("found a restore setup on startup. Performing restore operation", zap.Any("config", cfg))
+
 	err = restoreEngine.ExecuteRestore(s.storage, storageApiMap, cfg.ExtractedDirectory)
 	if err != nil {
 		s.logger.Fatal("error on restore", zap.Error(err))

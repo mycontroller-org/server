@@ -7,12 +7,12 @@ import (
 	actionAPI "github.com/mycontroller-org/server/v2/pkg/api/action"
 	entityAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
 	"github.com/mycontroller-org/server/v2/pkg/types/field"
 	fedPayloadTY "github.com/mycontroller-org/server/v2/pkg/types/forward_payload"
 	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	quickIdUtils "github.com/mycontroller-org/server/v2/pkg/utils/quick_id"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
@@ -35,7 +35,7 @@ type ForwardPayloadService struct {
 }
 
 func New(ctx context.Context) (serviceTY.Service, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

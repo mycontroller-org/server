@@ -3,17 +3,14 @@ package backup
 import (
 	"context"
 	"fmt"
-	"path"
-	"path/filepath"
 	"time"
 
-	backupAPI "github.com/mycontroller-org/server/v2/pkg/backup"
-	bkpMap "github.com/mycontroller-org/server/v2/pkg/backup/bkp_map"
+	bkpMap "github.com/mycontroller-org/server/v2/pkg/backup"
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/ziputils"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
+	backupAPI "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
@@ -24,8 +21,15 @@ func Backup(ctx context.Context, logger *zap.Logger, prefix, storageExportType s
 	dstDir := fmt.Sprintf("%s/%s_%s_%s_%s", types.GetEnvString(types.ENV_DIR_DATA_STORAGE), prefix, BackupIdentifier, storageExportType, timestamp)
 	zipFilename := fmt.Sprintf("%s.zip", dstDir)
 
+	// get backup directories
+	bkpDirectories, err := bkpMap.GetDirectories(includeSecureShare, includeInsecureShare)
+	if err != nil {
+		logger.Error("error on get backup directories", zap.Error(err))
+		return "", err
+	}
+
 	// create new backup instance
-	backupRestore, err := backupAPI.New(ctx)
+	backupRestore, err := backupAPI.New(ctx, bkpDirectories)
 	if err != nil {
 		return "", err
 	}
@@ -33,46 +37,11 @@ func Backup(ctx context.Context, logger *zap.Logger, prefix, storageExportType s
 	if err != nil {
 		return "", err
 	}
-	err = backupRestore.ExportStorage(exportFuncMap, dstDir, storageExportType)
+
+	// exports storage and directories
+	err = backupRestore.ExportStorage(exportFuncMap, bkpMap.MyControllerDataTransformationExportFunc, dstDir, storageExportType)
 	if err != nil {
 		return "", err
-	}
-
-	// copy firmware files
-	firmwareDirSrc := types.GetEnvString(types.ENV_DIR_DATA_FIRMWARE)
-	if firmwareDirSrc == "" {
-		return "", fmt.Errorf("environment '%s' not set", types.ENV_DIR_DATA_FIRMWARE)
-	}
-	firmwareDirDst := path.Join(dstDir, config.DirectoryDataFirmware)
-	err = backupRestore.CopyFiles(firmwareDirSrc, firmwareDirDst, false)
-	if err != nil {
-		return "", err
-	}
-
-	// copy shared directory: secure and insecure
-	if includeSecureShare {
-		secureShareDirSrc := types.GetEnvString(types.ENV_DIR_SHARE_SECURE)
-		if secureShareDirSrc == "" {
-			return "", fmt.Errorf("environment '%s' not set", types.ENV_DIR_SHARE_SECURE)
-		}
-		secureShareDirDst := filepath.Join(dstDir, config.DirectorySecureShare)
-		err = backupRestore.CopyFiles(secureShareDirSrc, secureShareDirDst, false)
-		if err != nil {
-			return "", err
-		}
-	}
-
-	// copy shared directory: insecure
-	if includeInsecureShare {
-		inSecureShareDirSrc := types.GetEnvString(types.ENV_DIR_SHARE_INSECURE)
-		if inSecureShareDirSrc == "" {
-			return "", fmt.Errorf("environment '%s' not set", types.ENV_DIR_SHARE_INSECURE)
-		}
-		insecureShareDirDst := filepath.Join(dstDir, config.DirectoryInsecureShare)
-		err = backupRestore.CopyFiles(inSecureShareDirSrc, insecureShareDirDst, false)
-		if err != nil {
-			return "", err
-		}
 	}
 
 	// create zip from exported directory

@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	ws "github.com/gorilla/websocket"
 	entityAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
@@ -34,7 +34,7 @@ type WebsocketService struct {
 }
 
 func New(ctx context.Context, router *mux.Router) (serviceTY.Service, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

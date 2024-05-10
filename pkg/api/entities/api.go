@@ -24,10 +24,14 @@ import (
 	virtualDevice "github.com/mycontroller-org/server/v2/pkg/api/virtual_device"
 	encryptionAPI "github.com/mycontroller-org/server/v2/pkg/encryption"
 	"github.com/mycontroller-org/server/v2/pkg/types"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
+)
+
+const (
+	contextKey types.ContextKey = "entity_api"
 )
 
 type API struct {
@@ -39,7 +43,7 @@ type API struct {
 }
 
 func FromContext(ctx context.Context) (*API, error) {
-	api, ok := ctx.Value(contextTY.ENTITY_API).(*API)
+	api, ok := ctx.Value(contextKey).(*API)
 	if !ok {
 		return nil, errors.New("invalid entity api instance received in context")
 	}
@@ -50,11 +54,11 @@ func FromContext(ctx context.Context) (*API, error) {
 }
 
 func WithContext(ctx context.Context, api *API) context.Context {
-	return context.WithValue(ctx, contextTY.ENTITY_API, api)
+	return context.WithValue(ctx, contextKey, api)
 }
 
 func New(ctx context.Context) (*API, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

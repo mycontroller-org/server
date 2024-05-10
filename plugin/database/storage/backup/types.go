@@ -5,6 +5,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	"go.uber.org/zap"
 )
 
 // global backup/restore constants
@@ -18,14 +19,18 @@ const (
 
 	DefaultStorageExporter = "default_storage_exporter"
 	BackupDetailsFilename  = "backup.yaml"
+
+	// storage backup directory name
+	StorageBackupDirectoryName = "storage_db"
 )
 
 // BackupDetails of a export
 type BackupDetails struct {
-	Filename          string          `json:"filename" yaml:"filename"`
-	StorageExportType string          `json:"storage_export_type" yaml:"storage_export_type"`
-	CreatedOn         time.Time       `json:"created_on" yaml:"created_on"`
-	Version           version.Version `json:"version" yaml:"version"`
+	Filename          string            `json:"filename" yaml:"filename"`
+	StorageExportType string            `json:"storage_export_type" yaml:"storage_export_type"`
+	CreatedOn         time.Time         `json:"created_on" yaml:"created_on"`
+	Version           version.Version   `json:"version" yaml:"version"`
+	Directories       map[string]string `json:"directories" yaml:"directories"`
 }
 
 // BackupFile details
@@ -52,6 +57,9 @@ type OnDemandBackupConfig struct {
 type BackupLocationDisk struct {
 	TargetDirectory string
 }
+
+// data transformer used to modify entity data
+type DataTransformerFunc func(logger *zap.Logger, entityName string, data interface{}, storageExportType string) (interface{}, error)
 
 // used to import and export data to database via existing api
 type Backup interface {

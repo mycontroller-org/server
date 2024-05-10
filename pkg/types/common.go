@@ -30,3 +30,6 @@ type File struct {
 	IsDir        bool      `json:"isDir" yaml:"isDir"`
 	FullPath     string    `json:"fullPath" yaml:"fullPath"`
 }
+
+// context key used on context
+type ContextKey string

@@ -4,12 +4,12 @@ import (
 	"context"
 
 	encryptionAPI "github.com/mycontroller-org/server/v2/pkg/encryption"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	rsTY "github.com/mycontroller-org/server/v2/pkg/types/resource_service"
 	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
 	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	helper "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	handlerTY "github.com/mycontroller-org/server/v2/plugin/handler/types"
@@ -33,7 +33,7 @@ type HandlerService struct {
 }
 
 func New(ctx context.Context, filter *sfTY.ServiceFilter) (serviceTY.Service, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

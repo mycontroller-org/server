@@ -4,7 +4,7 @@ import (
 	"context"
 
 	entityAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
 )
@@ -16,7 +16,7 @@ type ActionAPI struct {
 }
 
 func New(ctx context.Context) (*ActionAPI, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

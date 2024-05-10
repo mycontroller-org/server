@@ -8,9 +8,9 @@ import (
 	"sync"
 
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	busPluginTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
@@ -40,7 +40,7 @@ type Client struct {
 
 // NewClient func
 func NewClient(ctx context.Context, config cmap.CustomMap) (busPluginTY.Plugin, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

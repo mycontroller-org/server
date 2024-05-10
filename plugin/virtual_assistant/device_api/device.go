@@ -12,11 +12,11 @@ import (
 	quickIdAPI "github.com/mycontroller-org/server/v2/pkg/api/quickid"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	filedTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	vdTY "github.com/mycontroller-org/server/v2/pkg/types/virtual_device"
 	converterUtil "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	filterUtil "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	handlerType "github.com/mycontroller-org/server/v2/plugin/handler/types"
 	"go.uber.org/zap"
@@ -36,7 +36,7 @@ type DeviceAPI struct {
 }
 
 func New(ctx context.Context) (*DeviceAPI, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}

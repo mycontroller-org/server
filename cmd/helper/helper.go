@@ -7,18 +7,18 @@ import (
 
 	entitiesAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	bus "github.com/mycontroller-org/server/v2/pkg/bus"
-	"github.com/mycontroller-org/server/v2/pkg/database"
 	"github.com/mycontroller-org/server/v2/pkg/encryption"
 	coreScheduler "github.com/mycontroller-org/server/v2/pkg/service/core_scheduler"
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	cfgTY "github.com/mycontroller-org/server/v2/pkg/types/config"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	"github.com/mycontroller-org/server/v2/pkg/version"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
+	metric "github.com/mycontroller-org/server/v2/plugin/database/metric"
 	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
+	storage "github.com/mycontroller-org/server/v2/plugin/database/storage"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
@@ -37,7 +37,7 @@ func loadLogger(ctx context.Context, cfg cfgTY.LoggerConfig, component string) (
 	// to fix this, do `grep -rl "zap\.L()"` and fix those manually.
 	zap.ReplaceGlobals(logger)
 
-	return contextTY.LoggerWithContext(ctx, logger), logger
+	return loggerUtils.WithContext(ctx, logger), logger
 }
 
 // set environment values, will be used by other sub components
@@ -99,7 +99,7 @@ func loadBus(ctx context.Context, cfg cmap.CustomMap) (context.Context, busTY.Pl
 
 // load storage database
 func loadStorageDatabase(ctx context.Context, cfg cmap.CustomMap) (context.Context, storageTY.Plugin, error) {
-	storage, err := database.GetStorage(ctx, cfg)
+	storage, err := storage.Get(ctx, cfg)
 	if err != nil {
 		return ctx, nil, err
 	}
@@ -109,7 +109,7 @@ func loadStorageDatabase(ctx context.Context, cfg cmap.CustomMap) (context.Conte
 
 // load metric database
 func loadMetricDatabase(ctx context.Context, cfg cmap.CustomMap) (context.Context, metricTY.Plugin, error) {
-	metric, err := database.GetMetric(ctx, cfg)
+	metric, err := metric.Get(ctx, cfg)
 	if err != nil {
 		return ctx, nil, err
 	}

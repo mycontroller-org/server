@@ -5,12 +5,12 @@ import (
 	"fmt"
 
 	types "github.com/mycontroller-org/server/v2/pkg/types"
-	contextTY "github.com/mycontroller-org/server/v2/pkg/types/context"
 	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
 	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
+	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	queueUtils "github.com/mycontroller-org/server/v2/pkg/utils/queue"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
@@ -35,7 +35,7 @@ type SchedulerService struct {
 }
 
 func New(ctx context.Context, filter *sfTY.ServiceFilter, variablesEngine types.VariablesEngine, sunriseApi types.Sunrise) (serviceTY.Service, error) {
-	logger, err := contextTY.LoggerFromContext(ctx)
+	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
