@@ -18,7 +18,7 @@ import (
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	metric "github.com/mycontroller-org/server/v2/plugin/database/metric"
 	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
-	storage "github.com/mycontroller-org/server/v2/plugin/database/storage"
+	storageDB "github.com/mycontroller-org/server/v2/plugin/database/storage"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 )
@@ -99,7 +99,7 @@ func loadBus(ctx context.Context, cfg cmap.CustomMap) (context.Context, busTY.Pl
 
 // load storage database
 func loadStorageDatabase(ctx context.Context, cfg cmap.CustomMap) (context.Context, storageTY.Plugin, error) {
-	storage, err := storage.Get(ctx, cfg)
+	storage, err := storageDB.Get(ctx, cfg)
 	if err != nil {
 		return ctx, nil, err
 	}
