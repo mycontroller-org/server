@@ -21,7 +21,7 @@ const (
 	BackupDetailsFilename  = "backup.yaml"
 
 	// storage backup directory name
-	StorageBackupDirectoryName = "storage_db"
+	StorageBackupDirectoryName = "storage"
 )
 
 // BackupDetails of a export
