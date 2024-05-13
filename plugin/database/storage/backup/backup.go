@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/json"
@@ -171,7 +172,7 @@ func (br *BackupRestore) exportEntity(targetDir, entityName string, index int, d
 
 func (br *BackupRestore) exportDirectories(targetDir string) error {
 	for name, path := range br.directories {
-		if name == StorageBackupDirectoryName {
+		if !br.isValidDirectoryName(name) {
 			return fmt.Errorf("name '%s' is reserved for storage database backup", StorageBackupDirectoryName)
 		}
 		targetDirFullPath := fmt.Sprintf("%s/%s", targetDir, name)
@@ -182,4 +183,10 @@ func (br *BackupRestore) exportDirectories(targetDir string) error {
 		}
 	}
 	return nil
+}
+
+func (br *BackupRestore) isValidDirectoryName(name string) bool {
+	// remove '/' from prefix
+	name = strings.TrimPrefix(name, "/")
+	return name != StorageBackupDirectoryName
 }
