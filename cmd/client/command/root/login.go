@@ -115,9 +115,12 @@ var logoutCmd = &cobra.Command{
 }
 
 func promptUsername() (string, error) {
-	_, err := fmt.Fprint(IOStreams.Out, "Username: ")
 	var username string
-	fmt.Fscanln(IOStreams.In, &username)
+	_, err := fmt.Fprint(IOStreams.Out, "Username: ")
+	if err != nil {
+		return username, err
+	}
+	_, err = fmt.Fscanln(IOStreams.In, &username)
 	return username, err
 }
 
