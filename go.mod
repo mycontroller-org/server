@@ -7,8 +7,8 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/amimof/huego v1.2.1
 	github.com/btittelbach/astrotime v0.0.0-20160515101311-7ddba43aa26e
-	github.com/dop251/goja v0.0.0-20240220182346-e401ed450204
-	github.com/dop251/goja_nodejs v0.0.0-20240221231712-27eeffc9c235
+	github.com/dop251/goja v0.0.0-20240610225006-393f6d42497b
+	github.com/dop251/goja_nodejs v0.0.0-20240418154818-2aae10d4cbcf
 	github.com/eclipse/paho.mqtt.golang v1.4.3
 	github.com/fatih/structs v1.1.0
 	github.com/go-cmd/cmd v1.4.2
