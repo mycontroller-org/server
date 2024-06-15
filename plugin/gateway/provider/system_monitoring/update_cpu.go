@@ -8,7 +8,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
-	"github.com/shirou/gopsutil/v3/cpu"
+	"github.com/shirou/gopsutil/v4/cpu"
 	"go.uber.org/zap"
 )
 

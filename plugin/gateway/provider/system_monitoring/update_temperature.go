@@ -1,17 +1,18 @@
 package systemmonitoring
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
-	"github.com/shirou/gopsutil/v3/host"
+	"github.com/shirou/gopsutil/v4/sensors"
 	"go.uber.org/zap"
 )
 
 func (p *Provider) updateTemperature() {
-	temperatures, err := host.SensorsTemperatures()
+	temperatures, err := sensors.TemperaturesWithContext(context.Background())
 	if err != nil && !strings.Contains(err.Error(), "Number of warnings") {
 		p.logger.Error("error on getting usage", zap.Error(err))
 		return

@@ -3,7 +3,7 @@ package systemmonitoring
 import (
 	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 	"github.com/mycontroller-org/server/v2/plugin/gateway/provider/system_monitoring/config"
-	"github.com/shirou/gopsutil/v3/mem"
+	"github.com/shirou/gopsutil/v4/mem"
 	"go.uber.org/zap"
 )
 

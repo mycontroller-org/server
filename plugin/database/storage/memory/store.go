@@ -151,12 +151,7 @@ func (s *Store) ClearDatabase() error {
 	s.data = make(map[string][]interface{})
 
 	// remove all the files from disk
-	baseDir := types.GetEnvString(types.ENV_DIR_DATA_STORAGE)
-	if baseDir == "" {
-		return fmt.Errorf("environment '%s' not set", types.ENV_DIR_DATA_STORAGE)
-	}
-	storageDir := path.Join(baseDir, s.Config.DumpDir)
-	return utils.RemoveDir(storageDir)
+	return utils.RemoveDir(s.Config.DumpDir)
 }
 
 func (s *Store) writeToDisk() {

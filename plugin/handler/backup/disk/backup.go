@@ -170,8 +170,15 @@ func (c *Client) triggerBackup(spec map[string]interface{}) error {
 
 	start := time.Now()
 	c.logger.Debug("Backup job triggered", zap.String("handler", c.handlerCfg.ID))
+
+	// get base directory for storage
+	baseDir := types.GetEnvString(types.ENV_DIR_DATA_STORAGE)
+	if baseDir == "" {
+		return fmt.Errorf("environment '%s' not set", types.ENV_DIR_DATA_STORAGE)
+	}
+
 	// start backup
-	filename, err := backupUtil.Backup(c.ctx, c.logger, prefix, targetExportType, c.cfg.IncludeSecureShare, c.cfg.IncludeInsecureShare, c.storage, c.bus)
+	filename, err := backupUtil.Backup(c.ctx, c.logger, baseDir, prefix, targetExportType, c.cfg.IncludeSecureShare, c.cfg.IncludeInsecureShare, c.storage, c.bus)
 	if err != nil {
 		return err
 	}

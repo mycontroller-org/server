@@ -6,7 +6,6 @@ import (
 	"time"
 
 	bkpMap "github.com/mycontroller-org/server/v2/pkg/backup"
-	"github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/ziputils"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
@@ -16,9 +15,9 @@ import (
 )
 
 // Backup creates zip file on a tmp location and returns the location details
-func Backup(ctx context.Context, logger *zap.Logger, prefix, storageExportType string, includeSecureShare, includeInsecureShare bool, storage storageTY.Plugin, bus busTY.Plugin) (string, error) {
+func Backup(ctx context.Context, logger *zap.Logger, baseDir, prefix, storageExportType string, includeSecureShare, includeInsecureShare bool, storage storageTY.Plugin, bus busTY.Plugin) (string, error) {
 	timestamp := time.Now().Format("20060102_150405")
-	dstDir := fmt.Sprintf("%s/%s_%s_%s_%s", types.GetEnvString(types.ENV_DIR_DATA_STORAGE), prefix, BackupIdentifier, storageExportType, timestamp)
+	dstDir := fmt.Sprintf("%s/%s_%s_%s_%s", baseDir, prefix, BackupIdentifier, storageExportType, timestamp)
 	zipFilename := fmt.Sprintf("%s.zip", dstDir)
 
 	// get backup directories
