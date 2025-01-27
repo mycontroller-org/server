@@ -48,6 +48,12 @@ type McApiContext struct {
 // MiddlewareAuthenticationVerification verifies user auth details
 func MiddlewareAuthenticationVerification(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// allows 'options' method without authentication
+		if r.Method == http.MethodOptions {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		path := r.URL.Path
 		isSecurePrefix := false
 
