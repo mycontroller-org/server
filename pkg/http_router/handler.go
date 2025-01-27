@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/gorilla/mux"
@@ -91,6 +92,7 @@ func New(ctx context.Context, cfg *config.Config, router *mux.Router) (http.Hand
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"*"},
+		MaxAge:         int(time.Hour * 24 / time.Second), // 24 hours
 		// Enable Debugging for testing, consider disabling in production
 		Debug: false,
 	})

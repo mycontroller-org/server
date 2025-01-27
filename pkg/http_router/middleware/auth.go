@@ -51,9 +51,6 @@ func MiddlewareAuthenticationVerification(next http.Handler) http.Handler {
 		// allows 'options' method without authentication
 		if r.Method == http.MethodOptions {
 			next.ServeHTTP(w, r)
-			// To reduce the frequency of OPTIONS, use the "Access-Control-Max-Age" response header.
-			// This tells the browser to cache the preflight response for a specified duration
-			w.Header().Set("Access-Control-Max-Age", "86400") // 86400 = 60 * 60 * 24 (24 hours)
 			return
 		}
 
