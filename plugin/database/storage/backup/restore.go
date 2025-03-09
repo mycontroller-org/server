@@ -24,7 +24,9 @@ var (
 	isRestoreRunning = concurrency.SafeBool{}
 )
 
-func (br *BackupRestore) ExecuteRestore(storage storageTY.Plugin, apiMap map[string]Backup, extractedDir string) error {
+type updateRestoreApiMap func(storage storageTY.Plugin, backupVersion string, apiMap map[string]Backup) (map[string]Backup, error)
+
+func (br *BackupRestore) ExecuteRestore(storage storageTY.Plugin, apiMap map[string]Backup, extractedDir string, updateRestoreApiMapFn updateRestoreApiMap) error {
 	start := time.Now()
 	br.logger.Info("restore job triggered", zap.String("extractedDirectory", extractedDir))
 
@@ -54,6 +56,13 @@ func (br *BackupRestore) ExecuteRestore(storage storageTY.Plugin, apiMap map[str
 		br.logger.Fatal("error on loading export details", zap.Error(err))
 		return err
 	}
+
+	// update restore api with actual backed up server version
+	_updateApiMap, err := updateRestoreApiMapFn(storage, exportDetails.Version.Version, apiMap)
+	if err != nil {
+		return err
+	}
+	apiMap = _updateApiMap
 
 	err = br.ExecuteImportStorage(apiMap, storageDir, exportDetails.StorageExportType, false)
 	if err != nil {

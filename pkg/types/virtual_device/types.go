@@ -23,7 +23,7 @@ type VirtualDevice struct {
 	Description string               `json:"description" yaml:"description"`
 	Enabled     bool                 `json:"enabled" yaml:"enabled"`
 	DeviceType  string               `json:"deviceType" yaml:"deviceType"`
-	Traits      map[string]Resource  `json:"traits" yaml:"traits"`
+	Traits      []Resource           `json:"traits" yaml:"traits"`
 	Location    string               `json:"location" yaml:"location"`
 	Labels      cmap.CustomStringMap `json:"labels" yaml:"labels"`
 	ModifiedOn  time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
@@ -31,8 +31,9 @@ type VirtualDevice struct {
 }
 
 type Resource struct {
-	Type           string               `json:"type" yaml:"type"`
-	ResourceType   string               `json:"resourceType" yaml:"resourceType"`
+	Name           string               `json:"name" yaml:"name"`
+	TraitType      string               `json:"traitType" yaml:"traitType"`
+	ResourceType   string               `json:"resourceType"`
 	QuickID        string               `json:"quickId" yaml:"quickId"`
 	Labels         cmap.CustomStringMap `json:"labels" yaml:"labels"`
 	Value          interface{}          `json:"-" yaml:"-"`

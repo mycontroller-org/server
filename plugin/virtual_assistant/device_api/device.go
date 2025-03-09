@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -119,15 +118,13 @@ func (d *DeviceAPI) ListDevices(filters []storageTY.Filter, limit, offset int64,
 
 func (d *DeviceAPI) UpdateDeviceState(vDevices []vdTY.VirtualDevice) error {
 	for _, vDevice := range vDevices {
-		for trait := range vDevice.Traits {
-			vResource := vDevice.Traits[trait]
-			value, valueTimestamp, err := d.GetResourceState(&vDevice, trait, &vResource)
+		for _, vResource := range vDevice.Traits {
+			value, valueTimestamp, err := d.GetResourceState(&vDevice, vResource.TraitType, &vResource)
 			if err != nil {
 				return err
 			}
 			vResource.Value = value
 			vResource.ValueTimestamp = valueTimestamp
-			vDevice.Traits[trait] = vResource // in map we are not getting the reference, hence replace with the original resource
 		}
 	}
 	return nil
@@ -136,9 +133,6 @@ func (d *DeviceAPI) UpdateDeviceState(vDevices []vdTY.VirtualDevice) error {
 func (d *DeviceAPI) GetResourceState(device *vdTY.VirtualDevice, trait string, vResource *vdTY.Resource) (interface{}, time.Time, error) {
 	valueTimestamp := time.Time{}
 
-	if vResource.Type != vdTY.ResourceByQuickID {
-		return nil, valueTimestamp, errors.New("label based resources are not allowed")
-	}
 	quickID := fmt.Sprintf("%s:%s", vResource.ResourceType, vResource.QuickID)
 	responseMap, err := d.quickIdAPI.GetResources([]string{quickID})
 	if err != nil {

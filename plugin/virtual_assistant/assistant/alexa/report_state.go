@@ -34,25 +34,25 @@ func (a *Assistant) reportState(directive alexaTY.DirectiveOrEvent) (interface{}
 
 	properties := make([]alexaTY.Property, 0)
 
-	for trait, resource := range vDevice.Traits {
+	for _, vResource := range vDevice.Traits {
 		// get interface
-		aInterface, found := alexaTY.TraitControllerMap[trait]
+		aInterface, found := alexaTY.TraitControllerMap[vResource.TraitType]
 		if !found {
-			a.logger.Warn("trait not implemented", zap.String("deviceId", vDevice.ID), zap.String("deviceName", vDevice.Name), zap.String("trait", trait))
+			a.logger.Warn("trait not implemented", zap.String("deviceId", vDevice.ID), zap.String("deviceName", vDevice.Name), zap.String("trait", vResource.TraitType))
 			continue
 		}
 		// get property name
 		propertyName, found := alexaTY.InterfacePropertyNameMap[aInterface]
 		if !found {
-			a.logger.Warn("interface name not implemented", zap.String("deviceId", vDevice.ID), zap.String("deviceName", vDevice.Name), zap.String("trait", trait), zap.String("interface", aInterface))
+			a.logger.Warn("interface name not implemented", zap.String("deviceId", vDevice.ID), zap.String("deviceName", vDevice.Name), zap.String("trait", vResource.TraitType), zap.String("interface", aInterface))
 			continue
 		}
 
 		properties = append(properties, alexaTY.Property{
 			Namespace:    aInterface,
 			Name:         propertyName,
-			Value:        alexaTY.GetValue(propertyName, resource.Value),
-			TimeOfSample: resource.ValueTimestamp.Format(time.RFC3339),
+			Value:        alexaTY.GetValue(propertyName, vResource.Value),
+			TimeOfSample: vResource.ValueTimestamp.Format(time.RFC3339),
 		})
 	}
 

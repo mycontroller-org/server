@@ -15,4 +15,5 @@ type upgradeFunction = func(ctx context.Context, logger *zap.Logger, storage sto
 // with this version format also it is possible to upgrade between development version and production version
 var upgrades = map[string]upgradeFunction{
 	"2.0.0-1": upgrade_2_0_0__1, // 2.0.0 upgrade #1
+	"2.1.1-1": upgrade_2_1_1__1, // 2.1.1 upgrade #2
 }

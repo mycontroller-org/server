@@ -54,34 +54,41 @@ func (a *Assistant) executeCommand(device gaTY.ExecuteRequestDevice, executions 
 				a.logger.Warn("trait not found on the command params map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("paramsKey", key))
 				continue
 			}
-			resource, found := vDevice.Traits[trait]
+
+			var resource vdTY.Resource
+			found = false
+
+			for _, vResource := range vDevice.Traits {
+				if vResource.TraitType == trait {
+					resource = vResource
+					found = true
+					break
+				}
+			}
 			if !found {
 				a.logger.Warn("trait not found on the traits map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", trait))
 				continue
 			}
-			if resource.Type == vdTY.ResourceByQuickID {
-				// post data to the actual resource
-				quickId := fmt.Sprintf("%s:%s", resource.ResourceType, resource.QuickID)
-				err = a.deviceAPI.PostActionOnResourceByQuickID(resource.ResourceType, quickId, val)
+			// post data to the actual resource
+			quickId := fmt.Sprintf("%s:%s", resource.ResourceType, resource.QuickID)
+			err = a.deviceAPI.PostActionOnResourceByQuickID(resource.ResourceType, quickId, val)
 
-				statusString := gaTY.ExecutionStatusSuccess
-				params := execution.Params
-				// TODO: include error code
-				if err != nil {
-					a.logger.Error("error on executing", zap.Error(err))
-					statusString = gaTY.ExecutionStatusError
-				}
-				params[key] = val
-				params["online"] = true
-				responseCmd := gaTY.ExecuteResponseCommand{
-					IDs:    []string{device.ID},
-					Status: statusString,
-					States: gaTY.ExecuteResponseState{Online: true, Others: params},
-				}
-				responseCommands = append(responseCommands, responseCmd)
-			} else {
-				a.logger.Warn("trait not defined with quickId", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", trait))
+			statusString := gaTY.ExecutionStatusSuccess
+			params := execution.Params
+			// TODO: include error code
+			if err != nil {
+				a.logger.Error("error on executing", zap.Error(err))
+				statusString = gaTY.ExecutionStatusError
 			}
+			params[key] = val
+			params["online"] = true
+			responseCmd := gaTY.ExecuteResponseCommand{
+				IDs:    []string{device.ID},
+				Status: statusString,
+				States: gaTY.ExecuteResponseState{Online: true, Others: params},
+			}
+			responseCommands = append(responseCommands, responseCmd)
+
 		}
 
 	}

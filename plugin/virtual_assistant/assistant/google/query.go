@@ -70,8 +70,8 @@ func (a *Assistant) queryDevices(devices []gaTY.QueryRequestDevice) (map[string]
 
 func (a *Assistant) queryDeviceState(vDevice vdTY.VirtualDevice) (*gaTY.QueryResponseDevice, error) {
 	params := make(map[string]interface{})
-	for trait, resource := range vDevice.Traits {
-		_params, err := a.getResourceParams(trait, resource)
+	for _, vResource := range vDevice.Traits {
+		_params, err := a.getResourceParams(vResource.TraitType, vResource)
 		if err != nil {
 			return nil, err
 		}

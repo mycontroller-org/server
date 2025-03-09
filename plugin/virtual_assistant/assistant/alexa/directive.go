@@ -61,15 +61,20 @@ func (a *Assistant) executeResourceAction(endpointID, namespace, name string, tr
 		return a.getErrorResponse(endpointID, alexaTY.ErrorTypeNoSuchEndpoint, "there is no virtual device with this id")
 	}
 
-	resource, found := vDevice.Traits[trait]
+	var resource vdTY.Resource
+	found := false
+
+	for _, vResource := range vDevice.Traits {
+		if vResource.TraitType == trait {
+			resource = vResource
+			found = true
+			break
+		}
+	}
+
 	if !found {
 		a.logger.Error("error on getting virtual device trait", zap.String("endpointId", endpointID), zap.String("deviceName", vDevice.Name), zap.String("trait", vdTY.DeviceTraitOnOff))
 		return a.getErrorResponse(endpointID, alexaTY.ErrorTypeNoSuchEndpoint, "trait not configured for this directive")
-	}
-
-	if resource.Type != vdTY.ResourceByQuickID {
-		a.logger.Error("label based trait not supported for OnOff", zap.String("deviceId", vDevice.ID), zap.String("deviceName", vDevice.Name))
-		return a.getErrorResponse(endpointID, alexaTY.ErrorTypeNoSuchEndpoint, "label based trait not supported for OnOff")
 	}
 
 	// post data to the actual resource

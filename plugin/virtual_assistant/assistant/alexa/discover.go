@@ -23,8 +23,8 @@ func (a *Assistant) executeDiscover(directive alexaTY.DirectiveOrEvent) (interfa
 	ver := version.Get()
 	for _, vDevice := range vDevices {
 		capabilities := make([]alexaTY.Capability, 0)
-		for trait := range vDevice.Traits {
-			if aInterface, found := alexaTY.TraitControllerMap[trait]; found {
+		for _, vResource := range vDevice.Traits {
+			if aInterface, found := alexaTY.TraitControllerMap[vResource.TraitType]; found {
 				properties := alexaTY.GetInterfaceProperties(aInterface)
 				capabilities = append(capabilities, alexaTY.Capability{
 					Type:       "AlexaInterface",
@@ -34,7 +34,7 @@ func (a *Assistant) executeDiscover(directive alexaTY.DirectiveOrEvent) (interfa
 				})
 
 			} else {
-				a.logger.Info("trait not found in the defined map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", trait))
+				a.logger.Info("trait not found in the defined map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", vResource.TraitType))
 			}
 		}
 

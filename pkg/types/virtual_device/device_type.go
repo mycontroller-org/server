@@ -73,8 +73,8 @@ const (
 	DeviceTypeStreamingStick         = "streaming_stick"
 	DeviceTypeSwitch                 = "switch"
 	DeviceTypeTank                   = "tank" // added additionally
-	DeviceTypeThermostat             = "thermostat"
 	DeviceTypeTelevision             = "television"
+	DeviceTypeThermostat             = "thermostat"
 	DeviceTypeVacuum                 = "vacuum"
 	DeviceTypeValve                  = "valve"
 	DeviceTypeWasher                 = "washer"

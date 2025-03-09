@@ -1,13 +1,16 @@
 package helper
 
 import (
+	"context"
 	"fmt"
 
 	bkpMap "github.com/mycontroller-org/server/v2/pkg/backup"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
+	"github.com/mycontroller-org/server/v2/pkg/upgrade"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	storage "github.com/mycontroller-org/server/v2/plugin/database/storage"
 	backupAPI "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )
@@ -104,7 +107,7 @@ func (s *Server) triggerSystemRestore(cfg *config.StartupRestore) {
 
 	s.logger.Info("found a restore setup on startup. Performing restore operation", zap.Any("config", cfg))
 
-	err = restoreEngine.ExecuteRestore(s.storage, storageApiMap, cfg.ExtractedDirectory)
+	err = restoreEngine.ExecuteRestore(s.storage, storageApiMap, cfg.ExtractedDirectory, s.updateRestoreApiMap)
 	if err != nil {
 		s.logger.Fatal("error on restore", zap.Error(err))
 		return
@@ -116,4 +119,13 @@ func (s *Server) triggerSystemRestore(cfg *config.StartupRestore) {
 		s.logger.Fatal("error on deleting extracted backup files", zap.Any("restoreConfig", cfg), zap.Error(err))
 		return
 	}
+}
+
+// updates required apis on restore
+// this will allow to restore from any lower version
+// if there is a schema changed on a version, old schema can be handled with this
+// data will be migrated on startup via upgrade
+func (s *Server) updateRestoreApiMap(storage storageTY.Plugin, backupVersion string, apiMap map[string]backupAPI.Backup) (map[string]backupAPI.Backup, error) {
+	s.logger.Info("backup file", zap.String("serverVersion", backupVersion))
+	return upgrade.UpdateStorageRestoreApiMap(context.Background(), s.logger, storage, backupVersion, apiMap)
 }

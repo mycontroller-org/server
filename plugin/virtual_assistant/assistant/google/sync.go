@@ -37,11 +37,11 @@ func (a *Assistant) runSyncRequest(request gaTY.Request) *gaTY.SyncResponse {
 				continue
 			}
 			traits := make([]string, 0)
-			for _trait := range vDevice.Traits {
-				if trait, found := gaTY.TraitMap[_trait]; found {
+			for _, vResource := range vDevice.Traits {
+				if trait, found := gaTY.TraitMap[vResource.TraitType]; found {
 					traits = append(traits, trait)
 				} else {
-					a.logger.Info("trait not found in the defined map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", _trait))
+					a.logger.Info("trait not found in the defined map", zap.String("virtualDeviceId", vDevice.ID), zap.String("virtualDeviceName", vDevice.Name), zap.String("trait", vResource.TraitType))
 				}
 			}
 			vDevice.Labels = vDevice.Labels.Init()
