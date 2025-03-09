@@ -150,8 +150,10 @@ func (s *Store) ClearDatabase() error {
 	// remove all the data
 	s.data = make(map[string][]interface{})
 
+	storageDirPath := s.getStorageLocation("")
+	s.logger.Info("removing storage directory", zap.String("dir", storageDirPath))
 	// remove all the files from disk
-	return utils.RemoveDir(s.Config.DumpDir)
+	return utils.RemoveDir(storageDirPath)
 }
 
 func (s *Store) writeToDisk() {
@@ -234,5 +236,9 @@ func (s *Store) dump(entityName string, index int, data interface{}, extension s
 }
 
 func (s *Store) getStorageLocation(provider string) string {
-	return path.Join(types.GetEnvString(types.ENV_DIR_DATA_STORAGE), s.Config.DumpDir, provider)
+	storageDir := path.Join(types.GetEnvString(types.ENV_DIR_DATA_STORAGE), s.Config.DumpDir)
+	if provider != "" {
+		return path.Join(storageDir, provider)
+	}
+	return storageDir
 }
