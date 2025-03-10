@@ -46,7 +46,7 @@ func (s *Server) runStorageImport() error {
 		return err
 	}
 
-	err = storage.RunImport(s.ctx, s.logger, s.storage, storageApiMap, restoreEngine.ExecuteImportStorage)
+	err = storage.RunImport(s.ctx, s.logger, s.storage, storageApiMap, restoreEngine.ExecuteImportStorage, s.updateRestoreApiMap)
 	if err != nil {
 		s.logger.Error("error on storage import", zap.Error(err))
 		return err

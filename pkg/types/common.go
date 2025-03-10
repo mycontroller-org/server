@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -29,6 +30,11 @@ type File struct {
 	Data         string    `json:"data" yaml:"data"`
 	IsDir        bool      `json:"isDir" yaml:"isDir"`
 	FullPath     string    `json:"fullPath" yaml:"fullPath"`
+}
+
+func (f *File) ToString() string {
+	return fmt.Sprintf("name=%s, size=%d, creationTime=%v, modifiedTime=%v, isDir=%v, fullPath=%s",
+		f.Name, f.Size, f.CreationTime, f.ModifiedTime, f.IsDir, f.FullPath)
 }
 
 // context key used on context
