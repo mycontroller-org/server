@@ -10,7 +10,12 @@ import (
 
 var (
 	gitCommit string
-	version   string
+
+	// if we use go build, go run, server failed to start. needs version details
+	// adding a static version here, this will be replaced on actual build
+	// TODO: create a make file to address this issue on development time
+	version string = "2.1.1-devel"
+
 	buildDate string
 
 	runOnce  sync.Once

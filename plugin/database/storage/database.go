@@ -52,11 +52,13 @@ func RunImport(ctx context.Context, logger *zap.Logger, storage storageTY.Plugin
 			return err
 		}
 		// update restore api with actual backed up server version
-		_updateApiMap, err := updateRestoreApiMapFn(storage, versionSettings.Version, apiMap)
-		if err != nil {
-			return err
+		if versionSettings != nil {
+			_updateApiMap, err := updateRestoreApiMapFn(storage, versionSettings.Version, apiMap)
+			if err != nil {
+				return err
+			}
+			apiMap = _updateApiMap
 		}
-		apiMap = _updateApiMap
 
 		err = importFunc(apiMap, filesDir, fileFormat, true)
 		if err != nil {
@@ -121,5 +123,6 @@ func getVersionFromFile(_logger *zap.Logger, filesDir, fileFormat string) (*sett
 		}
 	}
 
-	return nil, errors.New("unable to get version details")
+	_logger.Info("unable to get version details from disk, this could be a very first run")
+	return nil, nil
 }

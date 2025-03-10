@@ -19,9 +19,16 @@ func UpdateStorageRestoreApiMap(ctx context.Context, logger *zap.Logger, storage
 		logger.Error("error on parsing backup version", zap.String("backupVersion", backupVersion), zap.Error(err))
 		return nil, err
 	}
+	// remove pre release (2.1.1-devel => 2.1.1)
+	updatedBackupSemver, err := backupSemver.SetPrerelease("")
+	if err != nil {
+		logger.Error("error on removing preRelease", zap.String("backupVersion", backupVersion), zap.Error(err))
+		return nil, err
+	}
+	logger.Debug("removed preRelease from version details", zap.String("updatedBackupVersion", updatedBackupSemver.Original()))
 
 	// there is change on version 2.1.1 on "virtual_devices"
-	if backupSemver.LessThan(semver.MustParse("2.1.1")) {
+	if updatedBackupSemver.LessThan(semver.MustParse("2.1.1")) {
 		logger.Info("backup is from 2.1.0 or lower version of server, updating required schema changes")
 		return updateRestoreApiMap_2_1_1(ctx, logger, storage, apiMap)
 	}
