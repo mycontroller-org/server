@@ -112,7 +112,7 @@ func (h *Routes) executePostAction(w http.ResponseWriter, r *http.Request) {
 	for _, axn := range actions {
 		resourceData := &handlerTY.ResourceData{
 			QuickID: axn.Resource,
-			KeyPath: axn.KayPath,
+			KeyPath: axn.KeyPath,
 			Payload: axn.Payload,
 		}
 		err := h.action.ExecuteActionOnResourceByQuickID(resourceData)

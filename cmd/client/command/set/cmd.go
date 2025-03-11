@@ -38,7 +38,7 @@ func executeSetCmd(quickIdPrefix, keyPath string, resources []string, payload st
 	for _, resource := range resources {
 		action := webHandlerTY.ActionConfig{
 			Resource: fmt.Sprintf("%s:%s", quickIdPrefix, resource),
-			KayPath:  keyPath,
+			KeyPath:  keyPath,
 			Payload:  payload,
 		}
 		actions = append(actions, action)

@@ -56,6 +56,6 @@ type Response struct {
 // ActionConfig struct
 type ActionConfig struct {
 	Resource string `json:"resource" yaml:"resource"`
-	KayPath  string `json:"keyPath" yaml:"keyPath"`
+	KeyPath  string `json:"keyPath" yaml:"keyPath"`
 	Payload  string `json:"payload" yaml:"payload"`
 }
