@@ -1,6 +1,9 @@
 module github.com/mycontroller-org/server/v2
 
-go 1.23
+go 1.23.0
+
+toolchain go1.23.7
+
 require (
 	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/NYTimes/gziphandler v1.1.1
