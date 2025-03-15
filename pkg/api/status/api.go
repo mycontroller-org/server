@@ -59,13 +59,13 @@ type Status struct {
 	Language          string           `json:"language"`
 }
 
-func (s *StatusAPI) get(minimal bool) Status {
+func (s *StatusAPI) get(isDetailed bool) Status {
 	status := Status{
 		DocumentationURL: types.GetEnvString(types.ENV_DOCUMENTATION_URL),
 	}
 	status.MetricsDBDisabled = types.GetEnvBool(types.ENV_METRIC_DB_DISABLED)
 
-	if !minimal {
+	if isDetailed {
 		hostname, err := os.Hostname()
 		if err != nil {
 			s.logger.Error("error on getting hostname", zap.Error(err))
@@ -96,12 +96,12 @@ func (s *StatusAPI) get(minimal bool) Status {
 
 // Get returns status with all fields
 func (s *StatusAPI) Get() Status {
-	return s.get(false)
+	return s.get(true)
 }
 
 // GetMinimal returns limited fields, can be used under status rest api (login not required)
 func (s *StatusAPI) GetMinimal() Status {
-	return s.get(true)
+	return s.get(false)
 }
 
 // docker creates a .dockerenv file at the root of the directory tree inside the container.

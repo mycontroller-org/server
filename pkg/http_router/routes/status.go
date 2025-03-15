@@ -12,12 +12,25 @@ import (
 func (h *Routes) registerStatusRoutes() {
 	h.router.HandleFunc("/api/version", h.versionData).Methods(http.MethodGet)
 	h.router.HandleFunc("/api/status", h.status).Methods(http.MethodGet)
+	h.router.HandleFunc("/api/server/status", h.statusDetailed).Methods(http.MethodGet) // provides detailed status, available with valid auth
 }
 
 func (h *Routes) status(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	status := h.api.Status().GetMinimal()
+	od, err := json.Marshal(&status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	handlerUtils.WriteResponse(w, od)
+}
+
+func (h *Routes) statusDetailed(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	status := h.api.Status().Get()
 	od, err := json.Marshal(&status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
