@@ -51,19 +51,68 @@ func (ll *Convert) ToStringFromBase64(data interface{}) string {
 	return string(bytes)
 }
 
+// ToUInt16LE converts a 2-byte little-endian slice to a uint16.
 func (ll *Convert) ToUInt16LE(bytes []byte) uint16 {
 	return binary.LittleEndian.Uint16(bytes)
 }
 
-func (ll *Convert) ToInt16LE(bytes []byte) int16 {
-	ref := ll.ToUInt16LE(bytes)
-	if ref > 0x7fff {
-		return int16(-65536 + int(ref))
-	} else {
-		return int16(ref)
-	}
+// ToUInt32LE converts a 4-byte little-endian slice to a uint32.
+func (ll *Convert) ToUInt32LE(bytes []byte) uint32 {
+	return binary.LittleEndian.Uint32(bytes)
 }
 
+// ToUInt64LE converts an 8-byte little-endian slice to a uint64.
+func (ll *Convert) ToUInt64LE(bytes []byte) uint64 {
+	return binary.LittleEndian.Uint64(bytes)
+}
+
+// ToInt16LE converts a 2-byte little-endian slice to an int16,
+// preserving the sign using two's complement representation.
+func (ll *Convert) ToInt16LE(bytes []byte) int16 {
+	return int16(binary.LittleEndian.Uint16(bytes))
+}
+
+// ToInt32LE converts a 4-byte little-endian slice to an int32,
+// preserving the sign using two's complement representation.
+func (ll *Convert) ToInt32LE(bytes []byte) int32 {
+	return int32(binary.LittleEndian.Uint32(bytes))
+}
+
+// ToInt64LE converts an 8-byte little-endian slice to an int64,
+// preserving the sign using two's complement representation.
+func (ll *Convert) ToInt64LE(bytes []byte) int64 {
+	return int64(binary.LittleEndian.Uint64(bytes))
+}
+
+// ToUInt16BE converts a 2-byte big-endian slice to a uint16.
 func (ll *Convert) ToUInt16BE(bytes []byte) uint16 {
 	return binary.BigEndian.Uint16(bytes)
+}
+
+// ToUInt32BE converts a 4-byte big-endian slice to a uint32.
+func (ll *Convert) ToUInt32BE(bytes []byte) uint32 {
+	return binary.BigEndian.Uint32(bytes)
+}
+
+// ToUInt64BE converts an 8-byte big-endian slice to a uint64.
+func (ll *Convert) ToUInt64BE(bytes []byte) uint64 {
+	return binary.BigEndian.Uint64(bytes)
+}
+
+// ToInt16BE converts a 2-byte big-endian slice to an int16,
+// preserving the sign using two's complement representation.
+func (ll *Convert) ToInt16BE(bytes []byte) int16 {
+	return int16(binary.BigEndian.Uint16(bytes))
+}
+
+// ToInt32BE converts a 4-byte big-endian slice to an int32,
+// preserving the sign using two's complement representation.
+func (ll *Convert) ToInt32BE(bytes []byte) int32 {
+	return int32(binary.BigEndian.Uint32(bytes))
+}
+
+// ToInt64BE converts an 8-byte big-endian slice to an int64,
+// preserving the sign using two's complement representation.
+func (ll *Convert) ToInt64BE(bytes []byte) int64 {
+	return int64(binary.BigEndian.Uint64(bytes))
 }
