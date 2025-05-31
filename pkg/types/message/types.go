@@ -61,6 +61,7 @@ type Message struct {
 	IsAckEnabled bool                 `json:"isAckEnabled" yaml:"isAckEnabled"` // Is Acknowledge enabled?
 	IsSleepNode  bool                 `json:"isSleepNode" yaml:"isSleepNode"`   // Is this message for active node or sleep node?
 	Timestamp    time.Time            `json:"timestamp" yaml:"timestamp"`
+	Validity     string               `json:"validity,omitempty" yaml:"validity,omitempty"` // if the message entered in to sleeping queue, validity duration
 }
 
 // NewMessage returns empty message
