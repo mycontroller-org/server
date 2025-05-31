@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
@@ -28,6 +30,8 @@ const (
 	sleepingQueuePerNodeLimit = 20 // number of messages can be in sleeping queue per node
 	messageWorkersCount       = 1
 	rawMessageWorkersCount    = 1
+
+	defaultValidity = time.Hour * 24 // by default all the sleeping queue messages are valid for 24 hours
 
 	defaultReconnectDelay = "15s"
 	loggerName            = "gateway_service"
@@ -109,7 +113,10 @@ func (s *Service) Start() error {
 
 		s.messageQueue.Close()
 		s.rawMessageQueue.Close()
+	} else {
+		go s.startValidityCheckFn() // run the validity check in a go routine
 	}
+
 	return err
 }
 
@@ -278,8 +285,10 @@ func (s *Service) publishSleepingMessageQueue(nodeID string) {
 	if !ok {
 		return
 	}
+	validMsgs := s.getValidMessages(msgQueue)
+
 	// post messages
-	for _, msg := range msgQueue {
+	for _, msg := range validMsgs {
 		s.postMessage(&msg, false)
 	}
 
@@ -306,8 +315,10 @@ func (s *Service) GetNodeSleepingQueue(nodeID string) []msgTY.Message {
 	if !ok {
 		return make([]msgTY.Message, 0)
 	}
+	validMsgs := s.getValidMessages(msgQueue)
+	s.sleepingMessageQueue[nodeID] = validMsgs
 	// clone the queue and return
-	clonedQueue := cloneUtils.Clone(msgQueue)
+	clonedQueue := cloneUtils.Clone(validMsgs)
 	return clonedQueue.([]msgTY.Message)
 }
 
@@ -327,4 +338,55 @@ func (s *Service) ClearNodeSleepingQueue(nodeID string) {
 
 	// remove messages for a node
 	s.sleepingMessageQueue[nodeID] = make([]msgTY.Message, 0)
+}
+
+// verifies the validity of the message in queue, if expires remove them from the queue
+func (s *Service) checkValidity() {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
+	for nodeId, msgs := range s.sleepingMessageQueue {
+		s.sleepingMessageQueue[nodeId] = s.getValidMessages(msgs)
+	}
+}
+
+func (s *Service) getValidMessages(msgs []msgTY.Message) []msgTY.Message {
+	updatedMsgs := []msgTY.Message{}
+	for _, msg := range msgs {
+		if s.isValid(msg) {
+			updatedMsgs = append(updatedMsgs, msg)
+		}
+	}
+	return updatedMsgs
+}
+
+func (s *Service) isValid(msg msgTY.Message) bool {
+	validity := utils.ToDuration(msg.Validity, defaultValidity)
+	now := time.Now()
+	var validTil time.Time
+	if msg.Timestamp.IsZero() {
+		validTil = now.Add(validity)
+	} else {
+		validTil = msg.Timestamp.Add(validity)
+	}
+
+	return now.Before(validTil)
+}
+
+func (s *Service) startValidityCheckFn() {
+	// Create a context that cancels on OS signal
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+	ticker := time.NewTicker(time.Minute * 10) // execute 10 minutes once
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			s.logger.Debug("received exit signal")
+			return
+		case <-ticker.C:
+			s.checkValidity()
+		}
+	}
 }

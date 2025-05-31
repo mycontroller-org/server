@@ -3,6 +3,7 @@ package action
 import (
 	"fmt"
 
+	types "github.com/mycontroller-org/server/v2/pkg/types"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	"go.uber.org/zap"
@@ -43,14 +44,18 @@ func (a *ActionAPI) toNode(node *nodeTY.Node, gatewayID, nodeID, action string) 
 
 	// get node details and update isSleepNode
 	if node == nil {
-		node, err := a.api.Node().GetByGatewayAndNodeID(gatewayID, nodeID)
+		_node, err := a.api.Node().GetByGatewayAndNodeID(gatewayID, nodeID)
 		if err == nil {
+			node = _node
 			msg.IsSleepNode = node.IsSleepNode()
 		}
 	} else {
 		msg.IsSleepNode = node.IsSleepNode()
 	}
 
+	if node != nil {
+		msg.Validity = node.Labels.Get(types.LabelNodeSleepMessageValidity)
+	}
 	pl := msgTY.NewPayload()
 	pl.Key = action
 	msg.Payloads = append(msg.Payloads, pl)

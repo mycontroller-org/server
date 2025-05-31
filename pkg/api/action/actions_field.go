@@ -24,13 +24,13 @@ func (a *ActionAPI) ToFieldByQuickID(quickID string, payload string) error {
 
 // toField sends the payload to the given ids
 func (a *ActionAPI) toField(gatewayID, nodeID, sourceID, fieldID, payload string) error {
-	if payload == types.ActionToggle {
-		// get field current data
-		field, err := a.api.Field().GetByIDs(gatewayID, nodeID, sourceID, fieldID)
-		if err != nil {
-			return err
-		}
+	// get field current data
+	field, err := a.api.Field().GetByIDs(gatewayID, nodeID, sourceID, fieldID)
+	if err != nil {
+		return err
+	}
 
+	if payload == types.ActionToggle {
 		if converterUtils.ToBool(field.Current.Value) {
 			payload = "false"
 		} else {
@@ -54,5 +54,11 @@ func (a *ActionAPI) toField(gatewayID, nodeID, sourceID, fieldID, payload string
 	pl.SetValue(payload)
 	msg.Payloads = append(msg.Payloads, pl)
 	msg.Type = msgTY.TypeSet
+
+	msg.Validity = field.Labels.Get(types.LabelNodeSleepMessageValidity)
+	if msg.Validity == "" {
+		msg.Validity = node.Labels.Get(types.LabelNodeSleepMessageValidity)
+	}
+
 	return a.Post(&msg)
 }
