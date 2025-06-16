@@ -15,6 +15,7 @@ const (
 	DataTypeEmail    = "email"
 	DataTypeTelegram = "telegram"
 	DataTypeWebhook  = "webhook"
+	DataTypeMqtt     = "mqtt"
 	DataTypeBackup   = "backup"
 )
 
@@ -127,6 +128,15 @@ type TelegramData struct {
 	ChatIDs   []string `json:"chatIds" yaml:"chatIds"`
 	ParseMode string   `json:"parseMode" yaml:"parseMode"`
 	Text      string   `json:"text" yaml:"text"`
+}
+
+// MqttData struct
+type MqttData struct {
+	Disabled string      `json:"disabled" yaml:"disabled"`
+	Type     string      `json:"type" yaml:"type"`
+	Publish  string      `json:"publish" yaml:"publish"`
+	QoS      int         `json:"qos" yaml:"qos"`
+	Data     interface{} `json:"data" yaml:"data"`
 }
 
 // BackupData struct
