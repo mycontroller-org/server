@@ -106,8 +106,12 @@ func (p *Provider) executeFirmwareRequest(msg *msgTY.Message) (string, error) {
 
 	startAddr := fwReq.Block * firmwareBlockSize
 	endAddr := startAddr + firmwareBlockSize
+	if int(endAddr) >= len(fwRaw.Data) {
+		p.logger.Error("requested block is not available", zap.Uint16("startAddr", startAddr), zap.Uint16("endAddr", endAddr), zap.Int("maxAvailableAddr", len(fwRaw.Data)))
+		return "", fmt.Errorf("requested block is not available: %v", endAddr)
+	}
 	copy(fwRes.Data[:], fwRaw.Data[startAddr:endAddr])
-	p.logger.Debug("sending a firmware respose", zap.Any("request", fwReq), zap.Any("response", fwRes), zap.String("timeTaken", time.Since(startTime).String()))
+	p.logger.Debug("sending a firmware response", zap.Any("request", fwReq), zap.Any("response", fwRes), zap.String("timeTaken", time.Since(startTime).String()))
 
 	p.updateFirmwareProgressStatus(node, int(fwReq.Block), len(fwRaw.Data))
 
