@@ -106,7 +106,7 @@ func (p *Provider) executeFirmwareRequest(msg *msgTY.Message) (string, error) {
 
 	startAddr := fwReq.Block * firmwareBlockSize
 	endAddr := startAddr + firmwareBlockSize
-	if int(endAddr) >= len(fwRaw.Data) {
+	if int(endAddr) > len(fwRaw.Data) {
 		p.logger.Error("requested block is not available", zap.Uint16("startAddr", startAddr), zap.Uint16("endAddr", endAddr), zap.Int("maxAvailableAddr", len(fwRaw.Data)))
 		return "", fmt.Errorf("requested block is not available: %v", endAddr)
 	}
