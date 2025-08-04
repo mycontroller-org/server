@@ -40,7 +40,8 @@ const (
 )
 
 const (
-	defaultFlushInterval = 1 * time.Second
+	defaultFlushInterval  = 1 * time.Second
+	defaultConnectTimeout = 10 * time.Second
 )
 
 // Config of the influxdb_v2
@@ -56,6 +57,7 @@ type Config struct {
 	Insecure           bool   `yaml:"insecure"`
 	QueryClientVersion string `yaml:"query_client_version"`
 	FlushInterval      string `yaml:"flush_interval"`
+	ConnectTimeout     string `yaml:"connect_timeout"`
 }
 
 // LoggerConfig struct
@@ -114,6 +116,9 @@ func NewClient(ctx context.Context, config cmap.CustomMap) (metricTY.Plugin, err
 		flushInterval = defaultFlushInterval
 	}
 
+	connectTimeout := utils.ToDuration(cfg.ConnectTimeout, defaultConnectTimeout)
+	namedLogger.Debug("connect timeout details", zap.String("connectTimeout", cfg.ConnectTimeout), zap.Duration("connectTimeoutDuration", connectTimeout))
+
 	// replace influxdb2 logger with our custom logger
 	_logger := getLogger(namedLogger)
 	influxdb2log.Log = _logger
@@ -133,10 +138,27 @@ func NewClient(ctx context.Context, config cmap.CustomMap) (metricTY.Plugin, err
 		logger:               namedLogger,
 	}
 
-	err = c.Ping()
-	if err != nil {
-		return nil, err
+	// repeat ping in 5 seconds interval, until timeout
+	pingInterval := 5 * time.Second
+	ticker := time.NewTicker(pingInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-time.After(connectTimeout):
+			return nil, fmt.Errorf("influxdb connection timeout after %v", connectTimeout)
+		case <-ticker.C:
+			err = c.Ping()
+			if err == nil {
+				// ping successful, continue
+				c.logger.Debug("influxdb ping successful")
+				goto pingSuccess
+			}
+			c.logger.Warn("influxdb ping failed, retrying...", zap.Error(err))
+		}
 	}
+
+pingSuccess:
 
 	influxAutoDetectVersion := ""
 
