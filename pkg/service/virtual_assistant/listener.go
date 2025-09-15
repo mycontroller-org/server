@@ -27,7 +27,7 @@ func (svc *VirtualAssistantService) onEvent(event *busTY.BusData) {
 }
 
 // processEvent from the queue
-func (svc *VirtualAssistantService) processEvent(event interface{}) {
+func (svc *VirtualAssistantService) processEvent(event interface{}) error {
 	reqEvent := event.(*rsTY.ServiceEvent)
 	svc.logger.Debug("processing a request", zap.Any("event", reqEvent))
 
@@ -51,7 +51,7 @@ func (svc *VirtualAssistantService) processEvent(event interface{}) {
 			if err != nil {
 				svc.logger.Error("error on stopping a service", zap.Error(err), zap.String("id", reqEvent.ID))
 			}
-			return
+			return nil
 		}
 		gwCfg := svc.getConfig(reqEvent)
 		if gwCfg != nil {
@@ -82,6 +82,7 @@ func (svc *VirtualAssistantService) processEvent(event interface{}) {
 	default:
 		svc.logger.Warn("unsupported command", zap.Any("event", reqEvent))
 	}
+	return nil
 }
 
 func (svc *VirtualAssistantService) getConfig(reqEvent *rsTY.ServiceEvent) *vaTY.Config {

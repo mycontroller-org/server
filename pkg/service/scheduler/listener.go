@@ -70,7 +70,7 @@ func (svc *SchedulerService) onServiceEvent(event *busTY.BusData) {
 }
 
 // processServiceEvent from the queue
-func (svc *SchedulerService) processServiceEvent(event interface{}) {
+func (svc *SchedulerService) processServiceEvent(event interface{}) error {
 	reqEvent := event.(*rsTY.ServiceEvent)
 	svc.logger.Debug("processing a request", zap.Any("event", reqEvent))
 
@@ -105,6 +105,7 @@ func (svc *SchedulerService) processServiceEvent(event interface{}) {
 	default:
 		svc.logger.Warn("unsupported command", zap.Any("event", reqEvent))
 	}
+	return nil
 }
 
 func (svc *SchedulerService) getConfig(reqEvent *rsTY.ServiceEvent) *schedulerTY.Config {

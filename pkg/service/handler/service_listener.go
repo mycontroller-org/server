@@ -138,12 +138,13 @@ func (svc *HandlerService) onServiceEvent(event *busTY.BusData) {
 }
 
 // postProcessServiceEvent from the queue
-func (svc *HandlerService) postProcessServiceEvent(event interface{}) {
+func (svc *HandlerService) postProcessServiceEvent(event interface{}) error {
 	reqEvent := event.(*rsTY.ServiceEvent)
 	svc.logger.Debug("processing a request", zap.Any("event", reqEvent))
 
 	if reqEvent.Type != rsTY.TypeHandler {
 		svc.logger.Warn("unsupported event type", zap.Any("event", reqEvent))
+		return nil
 	}
 
 	switch reqEvent.Command {
@@ -162,7 +163,7 @@ func (svc *HandlerService) postProcessServiceEvent(event interface{}) {
 			if err != nil {
 				svc.logger.Error("error on stopping a service", zap.Error(err))
 			}
-			return
+			return nil
 		}
 		cfg := svc.getConfig(reqEvent)
 		if cfg != nil {
@@ -187,6 +188,7 @@ func (svc *HandlerService) postProcessServiceEvent(event interface{}) {
 	default:
 		svc.logger.Warn("unsupported command", zap.Any("event", reqEvent))
 	}
+	return nil
 }
 
 func (svc *HandlerService) getConfig(reqEvent *rsTY.ServiceEvent) *handlerTY.Config {

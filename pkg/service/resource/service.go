@@ -113,7 +113,7 @@ func (svc *ResourceService) onEvent(data *busTY.BusData) {
 }
 
 // processEvent from the queue
-func (svc *ResourceService) processEvent(item interface{}) {
+func (svc *ResourceService) processEvent(item interface{}) error {
 	request := item.(*rsTY.ServiceEvent)
 	svc.logger.Debug("processing an event", zap.Any("event", request))
 	start := time.Now()
@@ -170,6 +170,7 @@ func (svc *ResourceService) processEvent(item interface{}) {
 		svc.logger.Warn("unknown event type", zap.Any("event", request))
 	}
 	svc.logger.Debug("completed a resource service", zap.String("timeTaken", time.Since(start).String()), zap.Any("data", request))
+	return nil
 }
 
 func (svc *ResourceService) postResponse(topic string, response *rsTY.ServiceEvent) error {

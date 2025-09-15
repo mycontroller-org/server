@@ -38,10 +38,10 @@ func (svc *WebsocketService) onEventReceive(data *busTY.BusData) {
 	}
 }
 
-func (svc *WebsocketService) processEvent(item interface{}) {
+func (svc *WebsocketService) processEvent(item interface{}) error {
 	// if there is no clients, just ignore the event
 	if svc.store.getSize() == 0 {
-		return
+		return nil
 	}
 
 	data := item.(*busTY.BusData)
@@ -50,7 +50,7 @@ func (svc *WebsocketService) processEvent(item interface{}) {
 	err := data.LoadData(event)
 	if err != nil {
 		svc.logger.Warn("failed to convert to target type", zap.Any("topic", data.Topic), zap.Error(err))
-		return
+		return nil
 	}
 
 	svc.logger.Debug("event received", zap.Any("event", event))
@@ -64,7 +64,7 @@ func (svc *WebsocketService) processEvent(item interface{}) {
 	dataBytes, err := json.Marshal(response)
 	if err != nil {
 		svc.logger.Error("error on converting to json", zap.Error(err))
-		return
+		return nil
 	}
 
 	wsClients := svc.store.getClients()
@@ -76,7 +76,7 @@ func (svc *WebsocketService) processEvent(item interface{}) {
 		if err != nil {
 			svc.logger.Debug("error on setting write deadline", zap.Any("remoteAddress", client.RemoteAddr().String()), zap.Error(err))
 			svc.store.unregister(client)
-			return
+			return nil
 		}
 		err = client.WriteMessage(ws.TextMessage, dataBytes)
 		if err != nil {
@@ -84,4 +84,5 @@ func (svc *WebsocketService) processEvent(item interface{}) {
 			svc.store.unregister(client)
 		}
 	}
+	return nil
 }

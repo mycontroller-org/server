@@ -173,11 +173,11 @@ func (s *Service) startMessageListener() {
 	}
 }
 
-func (s *Service) messageConsumer(item interface{}) {
+func (s *Service) messageConsumer(item interface{}) error {
 	msg, ok := item.(*msgTY.Message)
 	if !ok {
 		s.logger.Error("invalid message type", zap.Any("received", item))
-		return
+		return nil // Don't requeue invalid messages
 	}
 
 	// include timestamp, if not set
@@ -188,19 +188,19 @@ func (s *Service) messageConsumer(item interface{}) {
 	// if it is awake message send the sleeping queue messages
 	if msg.Type == msgTY.TypeAction && len(msg.Payloads) > 0 && msg.Payloads[0].Value == nodeTY.ActionAwake {
 		s.publishSleepingMessageQueue(msg.NodeID)
-		return
+		return nil
 	} else if msg.IsSleepNode {
 		// for sleeping node message to be added in to the sleeping queue
 		// when node sends awake signal, queue message will be published
 		s.addToSleepingMessageQueue(msg)
-		return
+		return nil
 	} else {
-		s.postMessage(msg, s.GatewayConfig.QueueFailedMessage)
+		return s.postMessage(msg, s.GatewayConfig.QueueFailedMessage)
 	}
 }
 
 // postMessage to the provider
-func (s *Service) postMessage(msg *msgTY.Message, queueFailedMessage bool) {
+func (s *Service) postMessage(msg *msgTY.Message, queueFailedMessage bool) error {
 	err := s.provider.Post(msg)
 	if err != nil {
 		s.logger.Warn("error on sending", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
@@ -209,23 +209,26 @@ func (s *Service) postMessage(msg *msgTY.Message, queueFailedMessage bool) {
 			isSleepingQueueDisabled := msg.Labels.IsExists(types.LabelNodeSleepQueueDisabled) && msg.Labels.GetBool(types.LabelNodeSleepQueueDisabled)
 			if !isSleepingQueueDisabled {
 				s.addToSleepingMessageQueue(msg)
+				return nil // Message was queued, no need to requeue
 			}
+			return err // Return error to requeue the message
 		}
 	}
+	return nil
 }
 
 // process received raw messages from protocol
-func (s *Service) rawMessageProcessor(data interface{}) {
+func (s *Service) rawMessageProcessor(data interface{}) error {
 	rawMsg := data.(*msgTY.RawMessage)
 	s.logger.Debug("received rawMessage", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
 	messages, err := s.provider.ConvertToMessages(rawMsg)
 	if err != nil {
 		s.logger.Warn("failed to parse", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg), zap.Error(err))
-		return
+		return nil // Don't requeue unparseable messages
 	}
 	if len(messages) == 0 {
 		s.logger.Debug("messages not parsed", zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("rawMessage", rawMsg))
-		return
+		return nil
 	}
 	// update gatewayID if not found
 	for index := 0; index < len(messages); index++ {
@@ -237,10 +240,11 @@ func (s *Service) rawMessageProcessor(data interface{}) {
 			err = s.bus.Publish(s.rawMessageQueue.Topic, msg)
 			if err != nil {
 				s.logger.Debug("failed to post on topic", zap.String("topic", s.rawMessageQueue.Topic), zap.String("gatewayId", s.GatewayConfig.ID), zap.Any("message", msg), zap.Error(err))
-				return
+				return err // Return error to requeue the message
 			}
 		}
 	}
+	return nil
 }
 
 // add message in to sleeping queue
@@ -289,7 +293,7 @@ func (s *Service) publishSleepingMessageQueue(nodeID string) {
 
 	// post messages
 	for _, msg := range validMsgs {
-		s.postMessage(&msg, false)
+		_ = s.postMessage(&msg, false) // Ignore error for sleeping queue messages
 	}
 
 	// remove messages from the map

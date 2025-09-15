@@ -127,13 +127,13 @@ func (svc *ForwardPayloadService) Close() error {
 }
 
 // processEvent from the queue
-func (svc *ForwardPayloadService) processEvent(item interface{}) {
+func (svc *ForwardPayloadService) processEvent(item interface{}) error {
 	field := item.(*field.Field)
 
 	quickID, err := quickIdUtils.GetQuickID(*field)
 	if err != nil {
 		svc.logger.Error("unable to get quick id", zap.Error(err), zap.String("gateway", field.GatewayID), zap.String("node", field.NodeID), zap.String("source", field.SourceID), zap.String("field", field.FieldID))
-		return
+		return nil
 	}
 
 	// fetch mapped filed for this event
@@ -145,11 +145,11 @@ func (svc *ForwardPayloadService) processEvent(item interface{}) {
 	response, err := svc.api.ForwardPayload().List(filters, pagination)
 	if err != nil {
 		svc.logger.Error("error getting mapping data from database", zap.Error(err))
-		return
+		return nil
 	}
 
 	if response.Count == 0 {
-		return
+		return nil
 	}
 
 	svc.logger.Debug("Starting data forwarding", zap.Any("data", field))
@@ -167,4 +167,5 @@ func (svc *ForwardPayloadService) processEvent(item interface{}) {
 			}
 		}
 	}
+	return nil
 }

@@ -52,18 +52,18 @@ func (svc *SystemJobsService) onEvent(event *busTY.BusData) {
 }
 
 // processEvent from the queue
-func (svc *SystemJobsService) processEvent(event interface{}) {
+func (svc *SystemJobsService) processEvent(event interface{}) error {
 	reqEvent := event.(*rsTY.ServiceEvent)
 	svc.logger.Debug("processing a request", zap.Any("event", reqEvent))
 
 	if reqEvent.Type != rsTY.TypeSystemJobs {
 		svc.logger.Warn("unsupported event type", zap.Any("event", reqEvent))
-		return
+		return nil
 	}
 
 	if reqEvent.Command != rsTY.CommandReload {
 		svc.logger.Warn("unsupported command", zap.Any("event", reqEvent))
-		return
+		return nil
 	}
 
 	switch reqEvent.Data {
@@ -77,4 +77,5 @@ func (svc *SystemJobsService) processEvent(event interface{}) {
 	default:
 		// NOOP
 	}
+	return nil
 }

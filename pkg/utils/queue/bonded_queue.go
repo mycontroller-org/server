@@ -21,12 +21,13 @@ package queue
 import (
 	"sync"
 	"sync/atomic"
+	"time"
 	"unsafe"
 )
 
 // Consumer consumes data from a bounded queue
 type Consumer interface {
-	Consume(item interface{})
+	Consume(item interface{}) error
 }
 
 // BoundedQueue implements a producer-consumer exchange similar to a ring buffer queue,
@@ -44,6 +45,14 @@ type BoundedQueue struct {
 	onDroppedItem func(item interface{})
 	factory       func() Consumer
 	stopCh        chan struct{}
+	retryConfig   RetryConfig
+}
+
+// RetryConfig holds configuration for retrying failed items
+type RetryConfig struct {
+	isEnabled bool
+	maxCount  uint32
+	delay     time.Duration
 }
 
 // NewBoundedQueue constructs the new queue of specified capacity, and with an optional
@@ -54,6 +63,24 @@ func NewBoundedQueue(capacity int, onDroppedItem func(item interface{})) *Bounde
 		onDroppedItem: onDroppedItem,
 		items:         &queue,
 		stopCh:        make(chan struct{}),
+	}
+	bq.capacity.Store(uint32(capacity))
+	return bq
+}
+
+// NewBoundedQueue constructs the new queue of specified capacity, and with an optional
+// callback for dropped items (e.g. useful to emit metrics).
+func NewBoundedQueueWithRetry(capacity int, onDroppedItem func(item interface{}), retryMaxCount uint32, retryDelay time.Duration) *BoundedQueue {
+	queue := make(chan interface{}, capacity)
+	bq := &BoundedQueue{
+		onDroppedItem: onDroppedItem,
+		items:         &queue,
+		stopCh:        make(chan struct{}),
+		retryConfig: RetryConfig{
+			isEnabled: true,
+			maxCount:  retryMaxCount,
+			delay:     retryDelay,
+		},
 	}
 	bq.capacity.Store(uint32(capacity))
 	return bq
@@ -73,19 +100,117 @@ func (q *BoundedQueue) StartConsumersWithFactory(num int, factory func() Consume
 			defer q.stopWG.Done()
 			consumer := q.factory()
 			queue := *q.items
-			for {
-				select {
-				case item, ok := <-queue:
-					if ok {
-						q.size.Add(-1)
-						consumer.Consume(item)
+
+			if q.retryConfig.isEnabled {
+				// Create a local queue for retrying items at the front
+				var retryItem interface{}
+				hasRetry := false
+				retryDelay := time.Millisecond * 100
+				retryAttemptNumber := uint32(0)
+
+				for {
+					// If we have a retry item, process it first
+					if hasRetry {
+						if q.retryConfig.maxCount > 0 && retryAttemptNumber >= q.retryConfig.maxCount {
+							// Max retries exceeded, drop the item
+							q.size.Add(-1)
+							if q.onDroppedItem != nil {
+								q.onDroppedItem(retryItem)
+							}
+							hasRetry = false
+							retryItem = nil
+							retryDelay = time.Millisecond * 100
+							retryAttemptNumber = 0
+							continue
+						}
+
+						select {
+						case <-time.After(retryDelay):
+							retryAttemptNumber++
+							func() {
+								defer func() {
+									if r := recover(); r != nil {
+										// Panic occurred, treat as error by not clearing hasRetry
+									}
+								}()
+								err := consumer.Consume(retryItem)
+								if err != nil {
+									// Still failing, increase delay (exponential backoff)
+									retryDelay = retryDelay * 2
+									if retryDelay > q.retryConfig.delay {
+										retryDelay = q.retryConfig.delay
+									}
+								} else {
+									// Success! Clear retry state and decrement size
+									hasRetry = false
+									retryItem = nil
+									retryDelay = time.Millisecond * 100
+									retryAttemptNumber = 0
+									q.size.Add(-1)
+								}
+							}()
+						case <-q.stopCh:
+							// Queue is closing
+							if hasRetry {
+								q.size.Add(-1)
+							}
+							return
+						}
 					} else {
-						// channel closed, finish worker
+						// No retry item, get next from queue
+						select {
+						case item, ok := <-queue:
+							if ok {
+								func() {
+									defer func() {
+										if r := recover(); r != nil {
+											// Panic occurred, treat as error
+											retryItem = item
+											hasRetry = true
+										}
+									}()
+									err := consumer.Consume(item)
+									if err != nil {
+										// Failed, set as retry item
+										retryItem = item
+										hasRetry = true
+									} else {
+										// Success, decrement size
+										q.size.Add(-1)
+									}
+								}()
+							} else {
+								// channel closed, finish worker
+								return
+							}
+						case <-q.stopCh:
+							// the whole queue is closing, finish worker
+							return
+						}
+					}
+				}
+			} else {
+				for {
+					select {
+					case item, ok := <-queue:
+						if ok {
+							func() {
+								defer func() {
+									if r := recover(); r != nil {
+										// Panic occurred, but with retry disabled we still decrement size
+									}
+								}()
+								_ = consumer.Consume(item)
+							}()
+							q.size.Add(-1)
+						} else {
+							// channel closed, finish worker
+							return
+						}
+					case <-q.stopCh:
+						// the whole queue is closing, finish worker
 						return
 					}
-				case <-q.stopCh:
-					// the whole queue is closing, finish worker
-					return
 				}
 			}
 		}()
@@ -95,16 +220,16 @@ func (q *BoundedQueue) StartConsumersWithFactory(num int, factory func() Consume
 
 // ConsumerFunc is an adapter to allow the use of
 // a consume function callback as a Consumer.
-type ConsumerFunc func(item interface{})
+type ConsumerFunc func(item interface{}) error
 
 // Consume calls c(item)
-func (c ConsumerFunc) Consume(item interface{}) {
-	c(item)
+func (c ConsumerFunc) Consume(item interface{}) error {
+	return c(item)
 }
 
 // StartConsumers starts a given number of goroutines consuming items from the queue
 // and passing them into the consumer callback.
-func (q *BoundedQueue) StartConsumers(num int, callback func(item interface{})) {
+func (q *BoundedQueue) StartConsumers(num int, callback func(item interface{}) error) {
 	q.StartConsumersWithFactory(num, func() Consumer {
 		return ConsumerFunc(callback)
 	})
@@ -119,7 +244,9 @@ func (q *BoundedQueue) StopConsumers() {
 // Produce is used by the producer to submit new item to the queue. Returns false in case of queue overflow.
 func (q *BoundedQueue) Produce(item interface{}) bool {
 	if q.stopped.Load() != 0 {
-		q.onDroppedItem(item)
+		if q.onDroppedItem != nil {
+			q.onDroppedItem(item)
+		}
 		return false
 	}
 
@@ -128,7 +255,9 @@ func (q *BoundedQueue) Produce(item interface{}) bool {
 	// should match the capacity of the new queue
 	if q.Size() >= q.Capacity() {
 		// note that all items will be dropped if the capacity is 0
-		q.onDroppedItem(item)
+		if q.onDroppedItem != nil {
+			q.onDroppedItem(item)
+		}
 		return false
 	}
 
@@ -149,10 +278,12 @@ func (q *BoundedQueue) Produce(item interface{}) bool {
 // Stop stops all consumers, as well as the length reporter if started,
 // and releases the items channel. It blocks until all consumers have stopped.
 func (q *BoundedQueue) Stop() {
-	q.stopped.Store(1) // disable producer
-	close(q.stopCh)
-	q.stopWG.Wait()
-	close(*q.items)
+	// Use atomic CAS to ensure Stop is only executed once
+	if q.stopped.CompareAndSwap(0, 1) {
+		close(q.stopCh)
+		q.stopWG.Wait()
+		close(*q.items)
+	}
 }
 
 // Size returns the current size of the queue

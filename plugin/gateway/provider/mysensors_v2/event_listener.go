@@ -83,7 +83,7 @@ func (p *Provider) onEvent(data *busTY.BusData) {
 }
 
 // processServiceEvent from the queue
-func (p *Provider) processServiceEvent(item interface{}) {
+func (p *Provider) processServiceEvent(item interface{}) error {
 	event := item.(*eventTY.Event)
 	p.logger.Debug("Processing a request", zap.Any("event", event))
 
@@ -94,7 +94,7 @@ func (p *Provider) processServiceEvent(item interface{}) {
 		err := event.LoadEntity(&firmware)
 		if err != nil {
 			p.logger.Error("error on loading firmware entity", zap.String("eventQuickId", event.EntityQuickID), zap.Error(err))
-			return
+			return nil // Don't requeue invalid events
 		}
 		fwRawStore.Remove(firmware.ID)
 		fwStore.Remove(firmware.ID)
@@ -104,7 +104,7 @@ func (p *Provider) processServiceEvent(item interface{}) {
 		err := event.LoadEntity(&node)
 		if err != nil {
 			p.logger.Error("error on loading node entity", zap.String("eventQuickId", event.EntityQuickID), zap.Error(err))
-			return
+			return nil // Don't requeue invalid events
 		}
 		localID := p.getNodeStoreID(node.GatewayID, node.NodeID)
 		if nodeStore.IsAvailable(localID) {
@@ -114,4 +114,5 @@ func (p *Provider) processServiceEvent(item interface{}) {
 	default:
 		p.logger.Info("received unsupported event", zap.Any("event", event))
 	}
+	return nil
 }

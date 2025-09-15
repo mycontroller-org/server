@@ -131,7 +131,7 @@ func (svc *MessageProcessor) Close() error {
 }
 
 // processMessage from the queue
-func (svc *MessageProcessor) processMessage(item interface{}) {
+func (svc *MessageProcessor) processMessage(item interface{}) error {
 	msg := item.(*msgTY.Message)
 	svc.logger.Debug("Starting Message Processing", zap.Any("message", msg))
 
@@ -142,6 +142,7 @@ func (svc *MessageProcessor) processMessage(item interface{}) {
 			err := svc.setFieldData(msg)
 			if err != nil {
 				svc.logger.Error("error on field data set", zap.Error(err))
+				return err // Requeue on error
 			}
 			// update last seen
 			svc.updateSourceLastSeen(msg.GatewayID, msg.NodeID, msg.SourceID, msg.Timestamp)
@@ -151,12 +152,14 @@ func (svc *MessageProcessor) processMessage(item interface{}) {
 			err := svc.requestFieldData(msg)
 			if err != nil {
 				svc.logger.Error("error on field data request", zap.Error(err))
+				return err // Requeue on error
 			}
 
 		case msgTY.TypePresentation: // update source data, like name or other details
 			err := svc.updateSourceDetail(msg)
 			if err != nil {
 				svc.logger.Error("error on source data update", zap.Error(err))
+				return err // Requeue on error
 			}
 			// update last seen
 			svc.updateSourceLastSeen(msg.GatewayID, msg.NodeID, msg.SourceID, msg.Timestamp)
@@ -172,6 +175,7 @@ func (svc *MessageProcessor) processMessage(item interface{}) {
 			err := svc.updateNodeData(msg)
 			if err != nil {
 				svc.logger.Error("error on node data update", zap.Error(err))
+				return err // Requeue on error
 			}
 			// node last seen managed in updateNodeData
 
@@ -194,6 +198,7 @@ func (svc *MessageProcessor) processMessage(item interface{}) {
 	}
 
 	svc.logger.Debug("message processed", zap.String("timeTaken", time.Since(msg.Timestamp).String()), zap.Any("message", msg))
+	return nil
 }
 
 // update node detail

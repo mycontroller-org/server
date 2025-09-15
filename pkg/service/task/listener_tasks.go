@@ -76,7 +76,7 @@ func (svc *TaskService) onServiceEvent(busData *busTY.BusData) {
 }
 
 // processServiceEvent from the queue
-func (svc *TaskService) processServiceEvent(event interface{}) {
+func (svc *TaskService) processServiceEvent(event interface{}) error {
 	reqEvent := event.(*rsTY.ServiceEvent)
 	svc.logger.Debug("processing a request", zap.Any("event", reqEvent))
 
@@ -116,6 +116,7 @@ func (svc *TaskService) processServiceEvent(event interface{}) {
 	default:
 		svc.logger.Warn("unsupported command", zap.Any("event", reqEvent))
 	}
+	return nil
 }
 
 func (svc *TaskService) getConfig(reqEvent *rsTY.ServiceEvent) *taskTY.Config {

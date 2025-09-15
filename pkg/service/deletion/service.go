@@ -92,18 +92,18 @@ func (svc *DeletionService) onEventReceive(busData *busTY.BusData) {
 	}
 }
 
-func (svc *DeletionService) processEvent(item interface{}) {
+func (svc *DeletionService) processEvent(item interface{}) error {
 	busData := item.(*busTY.BusData)
 	event := &eventTY.Event{}
 	err := busData.LoadData(event)
 	if err != nil {
 		svc.logger.Warn("error on convert to target type", zap.Any("topic", busData.Topic), zap.Error(err))
-		return
+		return nil
 	}
 
 	// if it is not a deletion event, return from here
 	if event.Type != eventTY.TypeDeleted {
-		return
+		return nil
 	}
 
 	svc.logger.Debug("received an deletion event", zap.Any("event", event))
@@ -116,7 +116,7 @@ func (svc *DeletionService) processEvent(item interface{}) {
 		err = event.LoadEntity(gateway)
 		if err != nil {
 			svc.logger.Warn("error on loading entity", zap.Any("event", event), zap.Error(err))
-			return
+			return nil
 		}
 		svc.deleteNodes(gateway)
 
@@ -125,7 +125,7 @@ func (svc *DeletionService) processEvent(item interface{}) {
 		err = event.LoadEntity(node)
 		if err != nil {
 			svc.logger.Warn("error on loading entity", zap.Any("event", event), zap.Error(err))
-			return
+			return nil
 		}
 		svc.deleteSources(node)
 
@@ -134,14 +134,15 @@ func (svc *DeletionService) processEvent(item interface{}) {
 		err = event.LoadEntity(source)
 		if err != nil {
 			svc.logger.Warn("error on loading entity", zap.Any("event", event), zap.Error(err))
-			return
+			return nil
 		}
 		svc.deleteFields(source)
 
 	default:
 		// do not proceed further
-		return
+		return nil
 	}
+	return nil
 }
 
 // deletes nodes
