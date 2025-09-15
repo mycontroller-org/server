@@ -68,7 +68,7 @@ func (svc *GatewayService) onEvent(event *busTY.BusData) {
 }
 
 // processEvent from the queue
-func (svc *GatewayService) processEvent(event interface{}) {
+func (svc *GatewayService) processEvent(event interface{}) error {
 	reqEvent := event.(*rsTY.ServiceEvent)
 	svc.logger.Debug("Processing a request", zap.Any("event", reqEvent))
 
@@ -92,7 +92,7 @@ func (svc *GatewayService) processEvent(event interface{}) {
 			if err != nil {
 				svc.logger.Error("error on stopping a service", zap.Error(err), zap.String("id", reqEvent.ID))
 			}
-			return
+			return nil
 		}
 		gwCfg := svc.getGatewayConfig(reqEvent)
 		if gwCfg != nil {
@@ -129,6 +129,7 @@ func (svc *GatewayService) processEvent(event interface{}) {
 	default:
 		svc.logger.Warn("unsupported command", zap.Any("event", reqEvent))
 	}
+	return nil
 }
 
 func (svc *GatewayService) getGatewayConfig(reqEvent *rsTY.ServiceEvent) *gwTY.Config {

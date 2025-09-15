@@ -47,14 +47,14 @@ func (svc *TaskService) onEventReceive(busData *busTY.BusData) {
 	}
 }
 
-func (svc *TaskService) processPreEvent(item interface{}) {
+func (svc *TaskService) processPreEvent(item interface{}) error {
 	busData := item.(*busTY.BusData)
 
 	event := &eventTY.Event{}
 	err := busData.LoadData(event)
 	if err != nil {
 		svc.logger.Warn("error on convert to target type", zap.Any("topic", busData.Topic), zap.Error(err))
-		return
+		return nil
 	}
 
 	var out interface{}
@@ -78,13 +78,13 @@ func (svc *TaskService) processPreEvent(item interface{}) {
 
 	default:
 		// return do not proceed further
-		return
+		return nil
 	}
 
 	err = event.LoadEntity(out)
 	if err != nil {
 		svc.logger.Warn("error on loading entity", zap.Any("event", event), zap.Error(err))
-		return
+		return nil
 	}
 	event.Entity = out
 
@@ -92,7 +92,7 @@ func (svc *TaskService) processPreEvent(item interface{}) {
 	err = svc.resourcePreProcessor(resourceWrapper)
 	if err != nil {
 		svc.logger.Error("error on executing a resource", zap.Any("resource", resourceWrapper), zap.Error(err))
-		return
+		return err
 	}
 
 	if len(resourceWrapper.Tasks) > 0 {
@@ -101,6 +101,7 @@ func (svc *TaskService) processPreEvent(item interface{}) {
 			svc.logger.Error("failed to post selected tasks on post processor queue")
 		}
 	}
+	return nil
 }
 
 func (svc *TaskService) resourcePreProcessor(evntWrapper *eventWrapper) error {
@@ -119,11 +120,11 @@ func (svc *TaskService) resourcePreProcessor(evntWrapper *eventWrapper) error {
 	return nil
 }
 
-func (svc *TaskService) resourcePostProcessor(item interface{}) {
+func (svc *TaskService) resourcePostProcessor(item interface{}) error {
 	evntWrapper, ok := item.(*eventWrapper)
 	if !ok {
 		svc.logger.Warn("supplied item is not resourceWrapper", zap.Any("item", item))
-		return
+		return nil
 	}
 
 	svc.logger.Debug("resourceWrapper received", zap.String("entityType", evntWrapper.Event.EntityType))
@@ -132,4 +133,5 @@ func (svc *TaskService) resourcePostProcessor(item interface{}) {
 		task := evntWrapper.Tasks[index]
 		svc.executeTask(&task, evntWrapper)
 	}
+	return nil
 }

@@ -47,7 +47,7 @@ func (svc *HandlerService) closeMessageListener() {
 	svc.messageQueue.Close()
 }
 
-func (svc *HandlerService) processHandlerMessage(item interface{}) {
+func (svc *HandlerService) processHandlerMessage(item interface{}) error {
 	msg := item.(*handlerTY.MessageWrapper)
 	start := time.Now()
 
@@ -56,16 +56,18 @@ func (svc *HandlerService) processHandlerMessage(item interface{}) {
 	handler := svc.store.Get(msg.ID)
 	if handler == nil {
 		svc.logger.Info("handler not available", zap.Any("handlerID", msg.ID), zap.Any("availableHandlers", svc.store.ListIDs()))
-		return
+		return nil // Don't requeue if handler not available
 	}
 
 	state := handler.State()
 
 	err := handler.Post(msg.Data)
 	if err != nil {
-		// if err == handlerTY.ErrReQueue {
-		// 	// TODO: requeue and try again
-		// }
+		if err == handlerTY.ErrReQueue {
+			// Requeue the message to try again
+			svc.logger.Info("requeuing message", zap.Any("handlerID", msg.ID))
+			return err
+		}
 		svc.logger.Warn("error from handler", zap.Any("handlerID", msg.ID), zap.Error(err))
 		state.Status = types.StatusError
 		state.Message = err.Error()
@@ -76,4 +78,5 @@ func (svc *HandlerService) processHandlerMessage(item interface{}) {
 
 	state.Since = time.Now()
 	busUtils.SetHandlerState(svc.logger, svc.bus, msg.ID, *state)
+	return nil
 }

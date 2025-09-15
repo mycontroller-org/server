@@ -1,6 +1,8 @@
 package queue
 
 import (
+	"time"
+
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	"go.uber.org/zap"
 )
@@ -15,12 +17,24 @@ type Queue struct {
 }
 
 // New returns brandnew queue
-func New(logger *zap.Logger, name string, limit int, consumer func(item interface{}), workers int) *Queue {
+func New(logger *zap.Logger, name string, limit int, consumer func(item interface{}) error, workers int) *Queue {
+	// Enable retry by default with unlimited retries (0 means unlimited) and 5 second max delay
+	return NewWithRetry(logger, name, limit, consumer, workers, true, 0, 5*time.Second)
+}
+
+// New returns brandnew queue with retry options
+func NewWithRetry(logger *zap.Logger, name string, limit int, consumer func(item interface{}) error, workers int, isRetryEnabled bool, maxRetryCount uint32, retryDelay time.Duration) *Queue {
 	droppedItemHandler := func(item interface{}) {
 		logger.Error("queue full. dropping item", zap.String("queueName", name), zap.Any("item", item))
 	}
 
-	queue := NewBoundedQueue(limit, droppedItemHandler)
+	var queue *BoundedQueue
+	if isRetryEnabled {
+		queue = NewBoundedQueueWithRetry(limit, droppedItemHandler, maxRetryCount, retryDelay)
+	} else {
+		queue = NewBoundedQueue(limit, droppedItemHandler)
+	}
+
 	queue.StartConsumers(workers, consumer)
 
 	return &Queue{
