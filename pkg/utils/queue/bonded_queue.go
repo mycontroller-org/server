@@ -127,28 +127,21 @@ func (q *BoundedQueue) StartConsumersWithFactory(num int, factory func() Consume
 						select {
 						case <-time.After(retryDelay):
 							retryAttemptNumber++
-							func() {
-								defer func() {
-									if r := recover(); r != nil {
-										// Panic occurred, treat as error by not clearing hasRetry
-									}
-								}()
-								err := consumer.Consume(retryItem)
-								if err != nil {
-									// Still failing, increase delay (exponential backoff)
-									retryDelay = retryDelay * 2
-									if retryDelay > q.retryConfig.delay {
-										retryDelay = q.retryConfig.delay
-									}
-								} else {
-									// Success! Clear retry state and decrement size
-									hasRetry = false
-									retryItem = nil
-									retryDelay = time.Millisecond * 100
-									retryAttemptNumber = 0
-									q.size.Add(-1)
+							err := consumer.Consume(retryItem)
+							if err != nil {
+								// Still failing, increase delay (exponential backoff)
+								retryDelay = retryDelay * 2
+								if retryDelay > q.retryConfig.delay {
+									retryDelay = q.retryConfig.delay
 								}
-							}()
+							} else {
+								// Success! Clear retry state and decrement size
+								hasRetry = false
+								retryItem = nil
+								retryDelay = time.Millisecond * 100
+								retryAttemptNumber = 0
+								q.size.Add(-1)
+							}
 						case <-q.stopCh:
 							// Queue is closing
 							if hasRetry {
@@ -161,24 +154,15 @@ func (q *BoundedQueue) StartConsumersWithFactory(num int, factory func() Consume
 						select {
 						case item, ok := <-queue:
 							if ok {
-								func() {
-									defer func() {
-										if r := recover(); r != nil {
-											// Panic occurred, treat as error
-											retryItem = item
-											hasRetry = true
-										}
-									}()
-									err := consumer.Consume(item)
-									if err != nil {
-										// Failed, set as retry item
-										retryItem = item
-										hasRetry = true
-									} else {
-										// Success, decrement size
-										q.size.Add(-1)
-									}
-								}()
+								err := consumer.Consume(item)
+								if err != nil {
+									// Failed, set as retry item
+									retryItem = item
+									hasRetry = true
+								} else {
+									// Success, decrement size
+									q.size.Add(-1)
+								}
 							} else {
 								// channel closed, finish worker
 								return
@@ -194,14 +178,7 @@ func (q *BoundedQueue) StartConsumersWithFactory(num int, factory func() Consume
 					select {
 					case item, ok := <-queue:
 						if ok {
-							func() {
-								defer func() {
-									if r := recover(); r != nil {
-										// Panic occurred, but with retry disabled we still decrement size
-									}
-								}()
-								_ = consumer.Consume(item)
-							}()
+							_ = consumer.Consume(item)
 							q.size.Add(-1)
 						} else {
 							// channel closed, finish worker

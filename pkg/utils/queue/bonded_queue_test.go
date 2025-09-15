@@ -558,55 +558,6 @@ func TestConsumerFunc(t *testing.T) {
 	})
 }
 
-// TestBoundedQueuePanicHandling tests panic recovery in consumers
-func TestBoundedQueuePanicHandling(t *testing.T) {
-	tests := []struct {
-		name         string
-		retryEnabled bool
-		expectedMin  int // Minimum expected processed items
-	}{
-		{"panic with retry disabled", false, 1},
-		{"panic with retry enabled", true, 0}, // With retry, panic item may be retried and dropped
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			var processed int32
-			consumer := func(item interface{}) error {
-				if item == "panic" {
-					panic("test panic")
-				}
-				atomic.AddInt32(&processed, 1)
-				return nil
-			}
-
-			var q *BoundedQueue
-			if tt.retryEnabled {
-				q = NewBoundedQueueWithRetry(10, nil, 2, 10*time.Millisecond)
-			} else {
-				q = NewBoundedQueue(10, nil)
-			}
-			defer q.Stop()
-
-			q.StartConsumers(1, consumer)
-			time.Sleep(10 * time.Millisecond)
-
-			// This should not crash the test
-			q.Produce("panic")
-			time.Sleep(200 * time.Millisecond) // Longer wait for retry scenarios
-
-			// Queue should still be functional
-			q.Produce("normal")
-			time.Sleep(200 * time.Millisecond)
-
-			finalProcessed := atomic.LoadInt32(&processed)
-			if int(finalProcessed) < tt.expectedMin {
-				t.Errorf("Expected at least %d processed items, got %d", tt.expectedMin, finalProcessed)
-			}
-		})
-	}
-}
-
 // min helper function for Go versions that don't have it built-in
 func min(a, b int) int {
 	if a < b {
