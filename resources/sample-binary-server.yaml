@@ -3,14 +3,17 @@ secret: 5a2f6ff25b0025aeae12ae096363b51a # !!! WARNING: CHANGE THIS SECRET !!!
 # disable telemetry service, if you do not wish to share non-PII data
 # non-PII - non Personally Identifiable Information
 telemetry:
-  enabled: true 
+  enabled: true
+
+# optional static jwt seed used when deriving JWT secret, otherwise host-id is used
+jwt_seed:
 
 web:
   web_directory: web_console
   enable_profiling: false
   read_timeout: 60s
   http:
-    enabled: true 
+    enabled: true
     bind_address: "0.0.0.0"
     port: 8080
   https_ssl:
@@ -23,7 +26,7 @@ web:
     bind_address: "0.0.0.0"
     port: 9443
     cache_dir: mc_home/certs/https_acme
-    acme_directory: 
+    acme_directory:
     email: hello@example.com
     domains: ["mycontroller.example.com"]
 
@@ -71,17 +74,17 @@ database:
     dump_enabled: true
     dump_interval: 10m
     dump_dir: "memory_db"
-    dump_format: ["yaml","json"]
+    dump_format: ["yaml", "json"]
     load_format: "yaml"
 
   metric:
     disabled: true
     type: influxdb
     uri: http://127.0.0.1:8086
-    token: 
+    token:
     username:
     password:
-    organization_name: 
+    organization_name:
     bucket_name: mycontroller
     batch_size:
     flush_interval: 1s

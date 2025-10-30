@@ -12,7 +12,8 @@ const (
 
 // Config of the system
 type Config struct {
-	Secret           string             `yaml:"secret"` // secret used to encrypt sensitive data
+	Secret           string             `yaml:"secret"`   // secret used to encrypt sensitive data
+	JwtSeed          string             `yaml:"jwt_seed"` // optional static seed used when deriving JWT secret, otherwise host-id is used
 	Telemetry        TelemetryConfig    `yaml:"telemetry"`
 	Web              WebConfig          `yaml:"web"`
 	Logger           LoggerConfig       `yaml:"logger"`

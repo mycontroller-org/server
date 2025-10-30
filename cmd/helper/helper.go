@@ -63,6 +63,7 @@ func setEnvironmentVariables(cfg *cfgTY.Config) error {
 		types.ENV_LOG_ENCODING:           cfg.Logger.Encoding,
 		types.ENV_LOG_ENABLE_STACK_TRACE: cfg.Logger.EnableStacktrace,
 		types.ENV_RUNNING_SINCE:          time.Now().Format(time.RFC3339),
+		types.ENV_JWT_SEED:               cfg.JwtSeed,
 	}
 
 	for key, value := range envMap {

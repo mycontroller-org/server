@@ -29,6 +29,7 @@ const (
 	ENV_RUNNING_SINCE = "MC_RUNNING_SINCE" // update starting time
 
 	ENV_JWT_ACCESS_SECRET = "JWT_ACCESS_SECRET" // environment variable to set secret for JWT token
+	ENV_JWT_SEED          = "JWT_SEED"          // environment variable to set seed for JWT token
 )
 
 func GetEnvBool(key string) bool {

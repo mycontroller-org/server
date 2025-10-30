@@ -218,7 +218,11 @@ func GetUserID(r *http.Request) string {
 }
 
 func getJwtSecret() []byte {
-	return []byte(fmt.Sprintf("%s_%s", types.GetEnvString(types.ENV_JWT_ACCESS_SECRET), version.Get().HostID))
+	jwtSeed := types.GetEnvString(types.ENV_JWT_SEED)
+	if jwtSeed == "" {
+		jwtSeed = version.Get().HostID
+	}
+	return []byte(fmt.Sprintf("%s_%s", types.GetEnvString(types.ENV_JWT_ACCESS_SECRET), jwtSeed))
 }
 
 // doSignout clears the cookies
