@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"sort"
 	"time"
+	"unicode"
 
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
@@ -40,6 +41,46 @@ func Sort(entities []interface{}, pagination *storageTY.Pagination) ([]interface
 	return entities, entitiesCount
 }
 
+// naturalStringLess compares strings using natural sort order
+// Numbers within strings are compared numerically
+func naturalStringLess(a, b string) bool {
+	aRunes := []rune(a)
+	bRunes := []rune(b)
+	i, j := 0, 0
+
+	for i < len(aRunes) && j < len(bRunes) {
+		// Check if both are digits
+		if unicode.IsDigit(aRunes[i]) && unicode.IsDigit(bRunes[j]) {
+			// Extract numbers
+			aNum, aEnd := extractNumber(aRunes, i)
+			bNum, bEnd := extractNumber(bRunes, j)
+
+			if aNum != bNum {
+				return aNum < bNum
+			}
+			i = aEnd
+			j = bEnd
+		} else {
+			if aRunes[i] != bRunes[j] {
+				return aRunes[i] < bRunes[j]
+			}
+			i++
+			j++
+		}
+	}
+	return len(aRunes) < len(bRunes)
+}
+
+// extractNumber extracts a number from rune slice starting at pos
+func extractNumber(runes []rune, pos int) (int, int) {
+	num := 0
+	for pos < len(runes) && unicode.IsDigit(runes[pos]) {
+		num = num*10 + int(runes[pos]-'0')
+		pos++
+	}
+	return num, pos
+}
+
 // GetSortByKeyPath returns the slice in order
 func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{} {
 	sort.Slice(data, func(a, b int) bool {
@@ -64,9 +105,9 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 				return false
 			}
 			if orderBy == storageTY.SortByASC {
-				return aFinalValue < bFinalValue
+				return naturalStringLess(aFinalValue, bFinalValue)
 			}
-			return aFinalValue > bFinalValue
+			return naturalStringLess(bFinalValue, aFinalValue)
 
 		case reflect.Int:
 			aFinalValue, aOK := aValue.(int)
