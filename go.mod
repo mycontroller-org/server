@@ -1,8 +1,6 @@
 module github.com/mycontroller-org/server/v2
 
-go 1.23.0
-
-toolchain go1.23.7
+go 1.24.0
 
 require (
 	github.com/Masterminds/semver/v3 v3.2.1
@@ -11,7 +9,7 @@ require (
 	github.com/btittelbach/astrotime v0.0.0-20160515101311-7ddba43aa26e
 	github.com/dop251/goja v0.0.0-20241024094426-79f3a7efcdbd
 	github.com/dop251/goja_nodejs v0.0.0-20240728170619-29b559befffc
-	github.com/eclipse/paho.mqtt.golang v1.5.0
+	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/fatih/structs v1.1.0
 	github.com/go-cmd/cmd v1.4.3
 	github.com/golang-jwt/jwt/v5 v5.2.2
@@ -36,8 +34,8 @@ require (
 	github.com/tidwall/sjson v1.2.5
 	go.mongodb.org/mongo-driver v1.17.2
 	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.36.0
-	golang.org/x/term v0.30.0
+	golang.org/x/crypto v0.42.0
+	golang.org/x/term v0.35.0
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -91,10 +89,10 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc // indirect
-	golang.org/x/net v0.38.0 // indirect
-	golang.org/x/sync v0.12.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
+	golang.org/x/net v0.44.0 // indirect
+	golang.org/x/sync v0.17.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
 
