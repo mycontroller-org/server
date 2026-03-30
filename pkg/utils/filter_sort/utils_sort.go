@@ -3,11 +3,16 @@ package helper
 import (
 	"reflect"
 	"sort"
+	"strings"
 	"time"
 	"unicode"
 
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
+
+func isSortAscending(orderBy string) bool {
+	return strings.EqualFold(orderBy, storageTY.SortByASC)
+}
 
 // Sort given slice
 func Sort(entities []interface{}, pagination *storageTY.Pagination) ([]interface{}, int64) {
@@ -83,6 +88,7 @@ func extractNumber(runes []rune, pos int) (int, int) {
 
 // GetSortByKeyPath returns the slice in order
 func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{} {
+	isAscending := isSortAscending(orderBy)
 	sort.Slice(data, func(a, b int) bool {
 		aKind, aValue, err := GetValueByKeyPath(data[a], keyPath)
 		if err != nil {
@@ -104,7 +110,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return naturalStringLess(aFinalValue, bFinalValue)
 			}
 			return naturalStringLess(bFinalValue, aFinalValue)
@@ -115,7 +121,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue < bFinalValue
 			}
 			return aFinalValue > bFinalValue
@@ -126,7 +132,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue < bFinalValue
 			}
 			return aFinalValue > bFinalValue
@@ -137,7 +143,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue < bFinalValue
 			}
 			return aFinalValue > bFinalValue
@@ -148,7 +154,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue < bFinalValue
 			}
 			return aFinalValue > bFinalValue
@@ -159,7 +165,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue < bFinalValue
 			}
 			return aFinalValue > bFinalValue
@@ -170,7 +176,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue < bFinalValue
 			}
 			return aFinalValue > bFinalValue
@@ -181,7 +187,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue < bFinalValue
 			}
 			return aFinalValue > bFinalValue
@@ -192,7 +198,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue
 			}
 			return !bFinalValue
@@ -203,7 +209,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue < bFinalValue
 			}
 			return aFinalValue > bFinalValue
@@ -214,7 +220,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue < bFinalValue
 			}
 			return aFinalValue > bFinalValue
@@ -225,7 +231,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue < bFinalValue
 			}
 			return aFinalValue > bFinalValue
@@ -236,7 +242,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue < bFinalValue
 			}
 			return aFinalValue > bFinalValue
@@ -247,7 +253,7 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
+			if isAscending {
 				return aFinalValue < bFinalValue
 			}
 			return aFinalValue > bFinalValue
@@ -258,10 +264,10 @@ func GetSortByKeyPath(keyPath, orderBy string, data []interface{}) []interface{}
 			if !aOK || !bOK {
 				return false
 			}
-			if orderBy == storageTY.SortByASC {
-				return aFinalValue.After(bFinalValue)
+			if isAscending {
+				return aFinalValue.Before(bFinalValue)
 			}
-			return aFinalValue.Before(bFinalValue)
+			return aFinalValue.After(bFinalValue)
 		}
 		return false
 	})

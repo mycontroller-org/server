@@ -2,7 +2,9 @@ package helper
 
 import (
 	"testing"
+	"time"
 
+	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -139,6 +141,78 @@ func TestNaturalStringLess(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			result := naturalStringLess(tc.a, tc.b)
 			assert.Equal(t, tc.expected, result, "naturalStringLess(%q, %q) should return %v", tc.a, tc.b, tc.expected)
+		})
+	}
+}
+
+func TestGetSortByKeyPath_TimeSort(t *testing.T) {
+	older := time.Date(2024, time.January, 2, 3, 4, 5, 0, time.UTC)
+	newer := time.Date(2024, time.February, 2, 3, 4, 5, 0, time.UTC)
+
+	type sortTestEntity struct {
+		ID           string
+		StartDate    time.Time
+		DeliveryDate time.Time
+		Name         string
+	}
+
+	testCases := []struct {
+		name     string
+		keyPath  string
+		orderBy  string
+		data     []interface{}
+		expected []string
+	}{
+		{
+			name:    "ascending lower case",
+			keyPath: "startDate",
+			orderBy: storageTY.SortByASC,
+			data: []interface{}{
+				&sortTestEntity{ID: "2", StartDate: newer},
+				&sortTestEntity{ID: "1", StartDate: older},
+			},
+			expected: []string{"1", "2"},
+		},
+		{
+			name:    "descending lower case",
+			keyPath: "deliveryDate",
+			orderBy: storageTY.SortByDESC,
+			data: []interface{}{
+				&sortTestEntity{ID: "1", DeliveryDate: older},
+				&sortTestEntity{ID: "2", DeliveryDate: newer},
+			},
+			expected: []string{"2", "1"},
+		},
+		{
+			name:    "ascending upper case",
+			keyPath: "startDate",
+			orderBy: "ASC",
+			data: []interface{}{
+				&sortTestEntity{ID: "2", StartDate: newer},
+				&sortTestEntity{ID: "1", StartDate: older},
+			},
+			expected: []string{"1", "2"},
+		},
+		{
+			name:    "descending upper case",
+			keyPath: "deliveryDate",
+			orderBy: "DESC",
+			data: []interface{}{
+				&sortTestEntity{ID: "1", DeliveryDate: older},
+				&sortTestEntity{ID: "2", DeliveryDate: newer},
+			},
+			expected: []string{"2", "1"},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			sorted := GetSortByKeyPath(tc.keyPath, tc.orderBy, tc.data)
+			actual := []string{
+				sorted[0].(*sortTestEntity).ID,
+				sorted[1].(*sortTestEntity).ID,
+			}
+			assert.Equal(t, tc.expected, actual)
 		})
 	}
 }
