@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	sfTY "github.com/mycontroller-org/server/v2/pkg/types/service_filter"
@@ -60,6 +61,14 @@ func IsMatching(entity interface{}, filters []storageTY.Filter) bool {
 
 		case reflect.Bool:
 			match = CompareBool(value, filter.Operator, filter.Value)
+
+		case reflect.Struct:
+			timeValue, ok := value.(time.Time)
+			if !ok {
+				match = false
+				break
+			}
+			match = CompareTime(timeValue, filter.Operator, filter.Value)
 
 		default:
 			match = false
@@ -247,6 +256,30 @@ func VerifyFloatSlice(value float64, operator string, expectedValue interface{})
 		highRange := floatSlice[1]
 		return value < lowRange || value > highRange
 
+	}
+	return false
+}
+
+// CompareTime compares time.Time values
+func CompareTime(value time.Time, operator string, expectedValue interface{}) bool {
+	expectedStr := converterUtils.ToString(expectedValue)
+	expected, err := time.Parse(time.RFC3339, expectedStr)
+	if err != nil {
+		return false
+	}
+	switch operator {
+	case storageTY.OperatorEqual, storageTY.OperatorNone:
+		return value.Equal(expected)
+	case storageTY.OperatorNotEqual:
+		return !value.Equal(expected)
+	case storageTY.OperatorGreaterThan:
+		return value.After(expected)
+	case storageTY.OperatorGreaterThanEqual:
+		return value.After(expected) || value.Equal(expected)
+	case storageTY.OperatorLessThan:
+		return value.Before(expected)
+	case storageTY.OperatorLessThanEqual:
+		return value.Before(expected) || value.Equal(expected)
 	}
 	return false
 }
