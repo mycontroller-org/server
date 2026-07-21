@@ -1,8 +1,6 @@
 module github.com/mycontroller-org/server/v2
 
-go 1.23.0
-
-toolchain go1.23.7
+go 1.26.2
 
 require (
 	github.com/Masterminds/semver/v3 v3.2.1
