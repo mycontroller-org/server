@@ -56,6 +56,12 @@ type HttpsSSLConfig struct {
 	BindAddress string `yaml:"bind_address"`
 	Port        uint   `yaml:"port"`
 	CertDir     string `yaml:"cert_dir"`
+	// ValidityDays is the lifetime of a self-signed certificate in days.
+	// Optional; defaults to 365 when unset or non-positive.
+	ValidityDays int `yaml:"validity_days"`
+	// RenewBeforeDays regenerates the self-signed certificate when remaining
+	// validity is less than this many days. Optional; defaults to 30 when unset or non-positive.
+	RenewBeforeDays int `yaml:"renew_before_days"`
 }
 
 // HttpsACMEConfig struct

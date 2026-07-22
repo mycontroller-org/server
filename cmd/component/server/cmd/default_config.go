@@ -45,10 +45,12 @@ func getDefaultServerConfig() *config.Config {
 				Port:        8080,
 			},
 			HttpsSSL: config.HttpsSSLConfig{
-				Enabled:     true,
-				BindAddress: "0.0.0.0",
-				Port:        8443,
-				CertDir:     "/mc_home/certs/https_ssl",
+				Enabled:            true,
+				BindAddress:        "0.0.0.0",
+				Port:               8443,
+				CertDir:            "/mc_home/certs/https_ssl",
+				ValidityDays:    365, // optional; self-signed cert lifetime in days
+				RenewBeforeDays: 30,  // optional; regenerate when remaining validity is below this many days
 			},
 			HttpsACME: config.HttpsACMEConfig{
 				Enabled:     false,
