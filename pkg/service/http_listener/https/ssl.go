@@ -206,7 +206,26 @@ func (m *SSLManager) loadOrCreate() error {
 	m.mu.Lock()
 	m.cert = &certificate
 	m.mu.Unlock()
+
+	// print certificate validity on startup (custom and managed)
+	logCertificateValidity(m.logger, &certificate)
 	return nil
+}
+
+// logCertificateValidity prints the loaded certificate's NotBefore/NotAfter and remaining lifetime.
+func logCertificateValidity(logger *zap.Logger, certificate *tls.Certificate) {
+	if certificate == nil || len(certificate.Certificate) == 0 {
+		return
+	}
+
+	x509Cert, err := x509.ParseCertificate(certificate.Certificate[0])
+	if err != nil {
+		logger.Warn("unable to parse SSL certificate for validity info", zap.Error(err))
+		return
+	}
+
+	remaining := time.Until(x509Cert.NotAfter)
+	logger.Info("SSL certificate validity", zap.Time("notBefore", x509Cert.NotBefore), zap.Time("notAfter", x509Cert.NotAfter), zap.Duration("remaining", remaining))
 }
 
 // isManagedByMyController is true when no operator-supplied custom cert/key pair is present.
