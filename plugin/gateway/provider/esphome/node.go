@@ -44,9 +44,18 @@ func (en *ESPHomeNode) Connect() error {
 	if err != nil {
 		return err
 	}
-	err = ehClient.Login(en.Config.Password)
-	if err != nil {
-		return err
+
+	// the password login is removed since esphome 2026.1.0, but still keeping it for devices running older versions
+	if en.Config.Password != "" {
+		err = ehClient.Login(en.Config.Password)
+		if err != nil {
+			return err
+		}
+	} else {
+		_, err = ehClient.Hello()
+		if err != nil {
+			return err
+		}
 	}
 
 	err = ehClient.SubscribeStates()
