@@ -94,6 +94,31 @@ func TestShouldRegenerateCert_InvalidCert(t *testing.T) {
 	}
 }
 
+func TestNewSSLManager_LogsCertificateValidityOnStartup(t *testing.T) {
+	core, logs := observer.New(zap.InfoLevel)
+	logger := zap.New(core)
+	dir := t.TempDir()
+
+	_, err := NewSSLManager(logger, config.HttpsSSLConfig{CertDir: dir}, nil)
+	if err != nil {
+		t.Fatalf("NewSSLManager failed: %v", err)
+	}
+
+	var found bool
+	for _, e := range logs.All() {
+		if e.Message == "SSL certificate validity" {
+			found = true
+			if e.ContextMap()["notBefore"] == nil || e.ContextMap()["notAfter"] == nil || e.ContextMap()["remaining"] == nil {
+				t.Fatalf("expected notBefore, notAfter, and remaining fields, got: %v", e.ContextMap())
+			}
+			break
+		}
+	}
+	if !found {
+		t.Fatal("expected SSL certificate validity log on startup")
+	}
+}
+
 func TestGetSSLTLSConfig_ReusesGeneratedCert(t *testing.T) {
 	logger := zap.NewNop()
 	dir := t.TempDir()
