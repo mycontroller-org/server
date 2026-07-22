@@ -30,7 +30,7 @@ func translateRecursive(copy, original reflect.Value) {
 	// The first cases handle nested structures and translate them recursively
 
 	// If it is a pointer we need to unwrap and call once again
-	case reflect.Ptr:
+	case reflect.Pointer:
 		// To get the actual value of the original we have to call Elem()
 		// At the same time this unwraps the pointer so we don't end up in
 		// an infinite recursion
@@ -144,7 +144,7 @@ func UpdateSecrets(source interface{}, secret, encryptionPrefix string, encrypt 
 func updateSecretRecursive(value reflect.Value, secret, encryptionPrefix string, encrypt bool, specialKeys []string) error {
 	switch value.Kind() {
 
-	case reflect.Ptr:
+	case reflect.Pointer:
 		originalValue := value.Elem()
 		// Check if the pointer is nil
 		if !originalValue.IsValid() {

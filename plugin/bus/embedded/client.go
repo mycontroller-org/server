@@ -11,7 +11,6 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/concurrency"
 	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
-	busPluginTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
 )
@@ -30,7 +29,7 @@ type Config struct {
 // Client struct
 type Client struct {
 	topics              map[string][]int64
-	subscriptions       map[int64]busPluginTY.CallBackFunc
+	subscriptions       map[int64]busTY.CallBackFunc
 	subscriptionCounter int64
 	mutex               *sync.RWMutex
 	pauseFlag           concurrency.SafeBool
@@ -39,7 +38,7 @@ type Client struct {
 }
 
 // NewClient func
-func NewClient(ctx context.Context, config cmap.CustomMap) (busPluginTY.Plugin, error) {
+func NewClient(ctx context.Context, config cmap.CustomMap) (busTY.Plugin, error) {
 	logger, err := loggerUtils.FromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -53,7 +52,7 @@ func NewClient(ctx context.Context, config cmap.CustomMap) (busPluginTY.Plugin, 
 
 	client := &Client{
 		topics:              make(map[string][]int64),
-		subscriptions:       make(map[int64]busPluginTY.CallBackFunc),
+		subscriptions:       make(map[int64]busTY.CallBackFunc),
 		subscriptionCounter: 0,
 		mutex:               &sync.RWMutex{},
 		pauseFlag:           concurrency.SafeBool{},
@@ -75,7 +74,7 @@ func (c *Client) Close() error {
 	// clear all the call backs and topics
 	c.subscriptionCounter = 0
 	c.topics = make(map[string][]int64)
-	c.subscriptions = make(map[int64]busPluginTY.CallBackFunc)
+	c.subscriptions = make(map[int64]busTY.CallBackFunc)
 	return nil
 }
 
@@ -132,7 +131,7 @@ func (c *Client) Publish(topic string, data interface{}) error {
 }
 
 // Subscribe a topic
-func (c *Client) Subscribe(topic string, handler busPluginTY.CallBackFunc) (int64, error) {
+func (c *Client) Subscribe(topic string, handler busTY.CallBackFunc) (int64, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -156,7 +155,7 @@ func (c *Client) Subscribe(topic string, handler busPluginTY.CallBackFunc) (int6
 }
 
 // QueueSubscribe not supported in embedded bus, just call subscribe
-func (c *Client) QueueSubscribe(topic, _queueName string, handler busPluginTY.CallBackFunc) (int64, error) {
+func (c *Client) QueueSubscribe(topic, _queueName string, handler busTY.CallBackFunc) (int64, error) {
 	return c.Subscribe(topic, handler)
 }
 

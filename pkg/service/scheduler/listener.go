@@ -47,7 +47,10 @@ func (svc *SchedulerService) Close() error {
 	svc.unloadAll()
 	svc.eventsQueue.Close()
 	// close core scheduler
-	svc.coreScheduler.Close()
+	err := svc.coreScheduler.Close()
+	if err != nil {
+		svc.logger.Error("error on closing core scheduler", zap.Error(err))
+	}
 	return nil
 }
 

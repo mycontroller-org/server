@@ -32,7 +32,7 @@ type GeoLocationAPIResponse struct {
 func (s *SettingsAPI) GetLocation() (*GeoLocationAPIResponse, error) {
 	response, err := http.Get(geoLocationURL)
 	if response != nil {
-		defer response.Body.Close()
+		defer func() { _ = response.Body.Close() }()
 	}
 	if err != nil {
 		return nil, err

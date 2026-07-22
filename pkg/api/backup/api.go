@@ -9,7 +9,6 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
-	backupRestore "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
 	backupTY "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
@@ -18,12 +17,12 @@ import (
 type BackupAPI struct {
 	ctx           context.Context
 	logger        *zap.Logger
-	backupRestore *backupRestore.BackupRestore
+	backupRestore *backupTY.BackupRestore
 	bus           busTY.Plugin
 	settingsAPI   *settings.SettingsAPI
 }
 
-func New(ctx context.Context, logger *zap.Logger, backupRestore *backupRestore.BackupRestore, storage storageTY.Plugin, bus busTY.Plugin, enc *encryptionAPI.Encryption) *BackupAPI {
+func New(ctx context.Context, logger *zap.Logger, backupRestore *backupTY.BackupRestore, storage storageTY.Plugin, bus busTY.Plugin, enc *encryptionAPI.Encryption) *BackupAPI {
 	return &BackupAPI{
 		ctx:           ctx,
 		logger:        logger.Named("backup_api"),

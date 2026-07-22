@@ -79,7 +79,7 @@ func MiddlewareAuthenticationVerification(next http.Handler) http.Handler {
 				}
 			}
 			// authentication required
-			if err, mcApiContext := IsValidToken(r); err == nil {
+			if mcApiContext, err := IsValidToken(r); err == nil {
 
 				// include user details as context
 				ctx := context.WithValue(r.Context(), contextKey, mcApiContext)
@@ -100,19 +100,19 @@ func MiddlewareAuthenticationVerification(next http.Handler) http.Handler {
 // steps to verify the authentication
 // 1. Verify the token in header
 // 2. Verify the token in cookie
-func IsValidToken(r *http.Request) (error, *McApiContext) {
+func IsValidToken(r *http.Request) (*McApiContext, error) {
 	token, claims, err := getJwtToken(r)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
 	if !token.Valid {
-		return errors.New("invalid token"), nil
+		return nil, errors.New("invalid token")
 	}
 
 	// verify the validity
 	expiresAt := convertor.ToInteger(claims[handlerTY.KeyExpiresAt])
 	if time.Now().Unix() >= expiresAt {
-		return errors.New("expired token"), nil
+		return nil, errors.New("expired token")
 	}
 
 	// clear userID header, might be injected from external
@@ -130,7 +130,7 @@ func IsValidToken(r *http.Request) (error, *McApiContext) {
 		UserID: r.Header.Get(handlerTY.HeaderUserID),
 	}
 
-	return nil, &mcApiContext
+	return &mcApiContext, nil
 }
 
 func getJwtToken(r *http.Request) (*jwt.Token, jwt.MapClaims, error) {

@@ -43,7 +43,7 @@ func Print(out io.Writer, headers []Header, data interface{}, hideHeader bool, o
 	case OutputConsole, OutputConsoleWide:
 		dataConsole, ok := data.([]interface{})
 		if !ok {
-			fmt.Fprintln(out, "data not in table format")
+			_, _ = fmt.Fprintln(out, "data not in table format")
 			return
 		}
 		wideEnabled := false
@@ -65,7 +65,7 @@ func Print(out io.Writer, headers []Header, data interface{}, hideHeader bool, o
 			fmt.Println("error on converting to json", err)
 			return
 		}
-		fmt.Fprint(out, string(jsonBytes))
+		_, _ = fmt.Fprint(out, string(jsonBytes))
 
 	case OutputYAML:
 		bytes, err := yaml.Marshal(data)
@@ -73,7 +73,7 @@ func Print(out io.Writer, headers []Header, data interface{}, hideHeader bool, o
 			fmt.Println("error on converting to yaml", err)
 			return
 		}
-		fmt.Fprint(out, string(bytes))
+		_, _ = fmt.Fprint(out, string(bytes))
 	}
 }
 

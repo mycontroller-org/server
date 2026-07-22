@@ -29,11 +29,12 @@ func (a *Assistant) executiveDirective(directive alexaTY.DirectiveOrEvent) *alex
 // PowerController
 func (a *Assistant) executeDirectivePowerController(endpointID, directive string) *alexaTY.Response {
 	payload := false
-	if directive == alexaTY.DirectiveTurnOn {
+	switch directive {
+	case alexaTY.DirectiveTurnOn:
 		payload = true
-	} else if directive == alexaTY.DirectiveTurnOff {
+	case alexaTY.DirectiveTurnOff:
 		payload = false
-	} else {
+	default:
 		return a.getErrorResponse(endpointID, alexaTY.ErrorTypeInvalidDirective, fmt.Sprintf("%s directive not supported for %s", directive, alexaTY.NamespacePowerController))
 	}
 	return a.executeResourceAction(endpointID, alexaTY.NamespacePowerController, directive, vdTY.DeviceTraitOnOff, payload)

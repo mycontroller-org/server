@@ -66,7 +66,7 @@ func UpdateData(w http.ResponseWriter, r *http.Request, entity interface{}, upda
 	}
 
 	d, err := io.ReadAll(r.Body)
-	defer r.Body.Close()
+	defer func() { _ = r.Body.Close() }()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -145,7 +145,7 @@ func LoadEntity(w http.ResponseWriter, r *http.Request, entity interface{}) erro
 	w.Header().Set("Content-Type", "application/json")
 
 	d, err := io.ReadAll(r.Body)
-	defer r.Body.Close()
+	defer func() { _ = r.Body.Close() }()
 	if err != nil {
 		return err
 	}

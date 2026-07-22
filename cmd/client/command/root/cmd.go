@@ -68,7 +68,7 @@ func UpdateStreams(cmd *cobra.Command) {
 func Execute(streams clientTY.IOStreams) {
 	IOStreams = streams
 	if err := Cmd.Execute(); err != nil {
-		fmt.Fprintln(IOStreams.ErrOut, err)
+		_, _ = fmt.Fprintln(IOStreams.ErrOut, err)
 		os.Exit(1)
 	}
 }
@@ -85,11 +85,11 @@ func WriteConfigFile() {
 
 	configBytes, err := yaml.Marshal(CONFIG)
 	if err != nil {
-		fmt.Fprintf(IOStreams.ErrOut, "error on config file marshal. error:[%s]\n", err.Error())
+		_, _ = fmt.Fprintf(IOStreams.ErrOut, "error on config file marshal. error:[%s]\n", err.Error())
 	}
 	err = os.WriteFile(cfgFile, configBytes, os.ModePerm)
 	if err != nil {
-		fmt.Fprintf(IOStreams.ErrOut, "error on writing config file to disk, filename:%s, error:[%s]\n", cfgFile, err.Error())
+		_, _ = fmt.Fprintf(IOStreams.ErrOut, "error on writing config file to disk, filename:%s, error:[%s]\n", cfgFile, err.Error())
 	}
 }
 
@@ -117,7 +117,7 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		err = viper.Unmarshal(&CONFIG)
 		if err != nil {
-			fmt.Fprint(IOStreams.ErrOut, "error on unmarshal of config\n", err)
+			_, _ = fmt.Fprint(IOStreams.ErrOut, "error on unmarshal of config\n", err)
 		}
 	}
 }

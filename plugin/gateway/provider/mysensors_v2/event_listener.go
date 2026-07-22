@@ -70,7 +70,7 @@ func (p *Provider) onEvent(data *busTY.BusData) {
 	}
 	p.logger.Debug("Received an event", zap.Any("event", event))
 
-	if !(event.EntityType == types.EntityNode || event.EntityType == types.EntityFirmware) ||
+	if (event.EntityType != types.EntityNode && event.EntityType != types.EntityFirmware) ||
 		event.Entity == nil {
 		return
 	}
