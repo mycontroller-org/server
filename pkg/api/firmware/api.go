@@ -166,7 +166,7 @@ func (fw *FirmwareAPI) Upload(sourceFile multipart.File, id, filename string) er
 	if err != nil {
 		return err
 	}
-	defer savedFile.Close()
+	defer func() { _ = savedFile.Close() }()
 
 	hash := sha256.New()
 	if _, err := io.Copy(hash, savedFile); err != nil {

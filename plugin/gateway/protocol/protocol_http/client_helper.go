@@ -52,7 +52,7 @@ func (ep *Endpoint) newRequest(cfg RequestConfig, body interface{}) (*ResponseCo
 	}
 
 	if resp.StatusCode != cfg.ResponseCode {
-		return nil, nil, fmt.Errorf("Failed with status code. [url:%v, status: %v, statusCode: %v]", fullPath.String(), resp.Status, resp.StatusCode)
+		return nil, nil, fmt.Errorf("failed with status code. [url:%v, status: %v, statusCode: %v]", fullPath.String(), resp.Status, resp.StatusCode)
 	}
 
 	respBodyBytes, err := io.ReadAll(resp.Body)

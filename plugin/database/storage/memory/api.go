@@ -64,7 +64,7 @@ func (s *Store) Find(entityName string, out interface{}, filters []storageTY.Fil
 	defer s.mutex.RUnlock()
 
 	outVal := reflect.ValueOf(out)
-	if outVal.Kind() != reflect.Ptr {
+	if outVal.Kind() != reflect.Pointer {
 		return nil, errors.New("results argument must be a pointer to a slice")
 	}
 

@@ -238,9 +238,10 @@ func (hp *HttpProtocol) executeSupportRuns(client *httpclient.Client, runType st
 		if cfg.Script != "" {
 			// update variables
 			variables := map[string]interface{}{}
-			if runType == PreRun {
+			switch runType {
+			case PreRun:
 				variables[ScriptKeyPreRunResponse] = runResponses
-			} else if runType == PostRun {
+			case PostRun:
 				variables[ScriptKeyPreRunResponse] = preRunResponse
 				variables[ScriptKeyPostRunResponse] = runResponses
 			}

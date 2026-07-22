@@ -22,8 +22,8 @@ var reloadCmd = &cobra.Command{
 
 func printStatus(err error) {
 	if err != nil {
-		fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
+		_, _ = fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
 		return
 	}
-	fmt.Fprintln(rootCmd.IOStreams.Out, "Reloaded successfully")
+	_, _ = fmt.Fprintln(rootCmd.IOStreams.Out, "Reloaded successfully")
 }

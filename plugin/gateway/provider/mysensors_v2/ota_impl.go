@@ -321,16 +321,18 @@ func (p *Provider) updateFirmwareProgressStatus(node *nodeTY.Node, currentBlock,
 		if otaBlockOrder == OTABlockOrderReverse {
 			percentage = 1 - percentage
 			isRunning = currentBlock != 0
-			if currentBlock == lastBlock {
+			switch currentBlock {
+			case lastBlock:
 				startTime = time.Now()
-			} else if currentBlock == 0 {
+			case 0:
 				endTime = time.Now()
 			}
 		} else {
 			isRunning = currentBlock != lastBlock
-			if currentBlock == 0 {
+			switch currentBlock {
+			case 0:
 				startTime = time.Now()
-			} else if currentBlock == lastBlock {
+			case lastBlock:
 				endTime = time.Now()
 			}
 		}

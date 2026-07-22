@@ -64,7 +64,7 @@ func (a *Assistant) Config() *vaTY.Config {
 func (a *Assistant) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// a.logger.Info("a request from", zap.Any("RequestURI", r.RequestURI), zap.Any("method", r.Method), zap.Any("headers", r.Header), zap.Any("query", r.URL.RawQuery))
 	d, err := io.ReadAll(r.Body)
-	defer r.Body.Close()
+	defer func() { _ = r.Body.Close() }()
 	if err != nil {
 		a.logger.Error("error on getting body", zap.Error(err))
 		http.Error(w, "error on getting body", 500)

@@ -18,19 +18,19 @@ const CustomDateFormat = "2006-01-02"
 
 // MarshalJSON custom implementation
 func (cd CustomDate) MarshalJSON() ([]byte, error) {
-	if cd.Time.IsZero() {
+	if cd.IsZero() {
 		return []byte("\"\""), nil
 	}
-	stamp := fmt.Sprintf("\"%s\"", cd.Time.Format(CustomDateFormat))
+	stamp := fmt.Sprintf("\"%s\"", cd.Format(CustomDateFormat))
 	return []byte(stamp), nil
 }
 
 // MarshalYAML implementation
 func (cd CustomDate) MarshalYAML() (interface{}, error) {
-	if cd.Time.IsZero() {
+	if cd.IsZero() {
 		return "", nil
 	}
-	return cd.Time.Format(CustomDateFormat), nil
+	return cd.Format(CustomDateFormat), nil
 }
 
 // UnmarshalJSON custom implementation
@@ -72,19 +72,19 @@ const customTimeFormat = "15:04:05"
 
 // MarshalJSON custom implementation
 func (ct CustomTime) MarshalJSON() ([]byte, error) {
-	if ct.Time.IsZero() {
+	if ct.IsZero() {
 		return []byte("\"\""), nil
 	}
-	stamp := fmt.Sprintf("\"%s\"", ct.Time.Format(customTimeFormat))
+	stamp := fmt.Sprintf("\"%s\"", ct.Format(customTimeFormat))
 	return []byte(stamp), nil
 }
 
 // MarshalYAML implementation
 func (ct CustomTime) MarshalYAML() (interface{}, error) {
-	if ct.Time.IsZero() {
+	if ct.IsZero() {
 		return "", nil
 	}
-	return ct.Time.Format(customTimeFormat), nil
+	return ct.Format(customTimeFormat), nil
 }
 
 // UnmarshalJSON custom implementation

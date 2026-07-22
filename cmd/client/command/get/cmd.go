@@ -112,23 +112,23 @@ func getQueryParams(headers []printer.Header) (map[string]interface{}, error) {
 func executeGetCmd(headers []printer.Header, listFunc ListFunc, dataType interface{}) {
 	queryParams, err := getQueryParams(headers)
 	if err != nil {
-		fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
+		_, _ = fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
 		return
 	}
 
 	result, err := listFunc(queryParams)
 	if err != nil {
-		fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
+		_, _ = fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
 		return
 	}
 	res, ok := result.Data.([]interface{})
 	if !ok {
-		fmt.Fprintf(rootCmd.IOStreams.ErrOut, "invalid response type:%T\n", result.Data)
+		_, _ = fmt.Fprintf(rootCmd.IOStreams.ErrOut, "invalid response type:%T\n", result.Data)
 		return
 	}
 
 	if len(res) == 0 {
-		fmt.Fprintln(rootCmd.IOStreams.Out, "No resource found")
+		_, _ = fmt.Fprintln(rootCmd.IOStreams.Out, "No resource found")
 		return
 	}
 
@@ -141,7 +141,7 @@ func executeGetCmd(headers []printer.Header, listFunc ListFunc, dataType interfa
 		item := reflect.New(reflect.TypeOf(dataType)).Interface()
 		err = utils.MapToStruct(utils.TagNameJSON, data, item)
 		if err != nil {
-			fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error on map to struct. %s", err.Error())
+			_, _ = fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error on map to struct. %s", err.Error())
 			continue
 		}
 

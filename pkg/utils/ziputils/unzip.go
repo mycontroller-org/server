@@ -16,7 +16,7 @@ func Unzip(zipFilename string, destinationDirectory string) error {
 		return err
 	}
 
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 
 	for _, file := range reader.File {
 		fPath := filepath.Join(destinationDirectory, file.Name)
@@ -48,13 +48,16 @@ func Unzip(zipFilename string, destinationDirectory string) error {
 		}
 
 		_, err = io.Copy(outFile, rc)
-
 		if err != nil {
 			return err
 		}
 
-		outFile.Close()
-		rc.Close()
+		err = outFile.Close()
+		if err != nil {
+			return err
+		}
+
+		err = rc.Close()
 		if err != nil {
 			return err
 		}
