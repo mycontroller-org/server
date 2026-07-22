@@ -409,11 +409,6 @@ func TestSSLManager_CheckAndRenew_HotReload(t *testing.T) {
 		t.Fatal("expected managed SSL")
 	}
 
-	// startup already renewed because remaining < default renew_before
-	certAfterStart, err := os.ReadFile(certPath)
-	if err != nil {
-		t.Fatal(err)
-	}
 	// force another near-expiry and call CheckAndRenew again
 	writeTestCert(t, dir, time.Now().Add(-360*24*time.Hour), time.Now().Add(5*24*time.Hour))
 	// restore original key so renew reuses it (writeTestCert overwrites key)
@@ -435,15 +430,7 @@ func TestSSLManager_CheckAndRenew_HotReload(t *testing.T) {
 		t.Fatal(err)
 	}
 	if bytes.Equal(beforeReload.Certificate[0], afterReload.Certificate[0]) {
-		// in-memory may differ from pre-seeded disk; ensure disk changed from forced expiring cert
-		certOnDisk, err := os.ReadFile(certPath)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if bytes.Equal(certAfterStart, certOnDisk) {
-			// certAfterStart was from first renew; after second renew should be newer content potentially same length
-			// more reliable: remaining validity should be ~1 year
-		}
+		t.Fatal("expected in-memory certificate to be hot-reloaded after CheckAndRenew")
 	}
 
 	remaining, err := certificateRemainingValidity(certPath)

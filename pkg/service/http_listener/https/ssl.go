@@ -213,7 +213,7 @@ func (m *SSLManager) loadOrCreate() error {
 func isManagedByMyController(cfg config.HttpsSSLConfig) bool {
 	customCertFile := filepath.Join(cfg.CertDir, CustomCertFileName)
 	customKeyFile := filepath.Join(cfg.CertDir, CustomKeyFileName)
-	return !(utils.IsFileExists(customCertFile) && utils.IsFileExists(customKeyFile))
+	return !utils.IsFileExists(customCertFile) || !utils.IsFileExists(customKeyFile)
 }
 
 // GetSSLTLSConfig returns ssl certificate (startup-only path without daily renewal).
