@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	ws "github.com/gorilla/websocket"
 	entityAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
+	policyAPI "github.com/mycontroller-org/server/v2/pkg/api/policy"
 	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
@@ -55,7 +56,7 @@ func New(ctx context.Context, router *mux.Router) (serviceTY.Service, error) {
 		router: router,
 	}
 
-	svc.store = &Store{clients: make(map[*ws.Conn]bool), mutex: sync.RWMutex{}, logger: svc.logger}
+	svc.store = &Store{clients: make(map[*ws.Conn]policyAPI.Subject), mutex: sync.RWMutex{}, logger: svc.logger}
 
 	svc.eventsQueue = &queueUtils.QueueSpec{
 		Queue:          queueUtils.New(svc.logger, "websocket_event_listener", defaultQueueSize, svc.processEvent, defaultWorkers),

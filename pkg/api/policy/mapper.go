@@ -32,7 +32,9 @@ func MapRequest(r *http.Request) RequestAccess {
 	path = strings.TrimPrefix(path, "api/")
 
 	// special non-restricted already handled by auth middleware
-	if path == "status" || path == "version" || strings.HasPrefix(path, "user/login") ||
+	// /api/ws is authenticated (cookie/JWT) but not RBAC-gated: every signed-in
+	// user may hold a socket. Events are filtered per principal when sent.
+	if path == "status" || path == "version" || path == "ws" || strings.HasPrefix(path, "user/login") ||
 		strings.HasPrefix(path, "oauth/") || strings.HasPrefix(path, "plugin/gateway") {
 		return RequestAccess{Skip: true}
 	}

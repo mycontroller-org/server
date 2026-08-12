@@ -4,8 +4,10 @@ import (
 	"time"
 
 	ws "github.com/gorilla/websocket"
+	policyAPI "github.com/mycontroller-org/server/v2/pkg/api/policy"
 	"github.com/mycontroller-org/server/v2/pkg/json"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
+	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
 	wsTY "github.com/mycontroller-org/server/v2/pkg/types/websocket"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	"go.uber.org/zap"
@@ -68,15 +70,17 @@ func (svc *WebsocketService) processEvent(item interface{}) error {
 	}
 
 	wsClients := svc.store.getClients()
-	for index := range wsClients {
-		client := wsClients[index]
+	for client, subject := range wsClients {
+		if !svc.eventAllowed(subject, event) {
+			continue
+		}
 
 		// write with write timeout
 		err := client.SetWriteDeadline(time.Now().Add(defaultWriteTimeout))
 		if err != nil {
 			svc.logger.Debug("error on setting write deadline", zap.Any("remoteAddress", client.RemoteAddr().String()), zap.Error(err))
 			svc.store.unregister(client)
-			return nil
+			continue
 		}
 		err = client.WriteMessage(ws.TextMessage, dataBytes)
 		if err != nil {
@@ -85,4 +89,34 @@ func (svc *WebsocketService) processEvent(item interface{}) error {
 		}
 	}
 	return nil
+}
+
+// eventAllowed reports whether this principal may see the live event.
+// Quick ids are checked as the named resource; otherwise the check is
+// kind:entityId. Events with neither a parseable quick id nor EntityID are denied.
+func (svc *WebsocketService) eventAllowed(subject policyAPI.Subject, event *eventTY.Event) bool {
+	if subject.UserID == "" {
+		return false
+	}
+	ac := svc.api.Policy()
+	if ac == nil {
+		return false
+	}
+	resource := ""
+	if event.EntityQuickID != "" {
+		if res, err := policyAPI.ResourceFromQuickID(event.EntityQuickID); err == nil {
+			resource = res
+		}
+	}
+	if resource == "" {
+		if event.EntityID == "" {
+			return false
+		}
+		kind := policyTY.NormalizeKind(event.EntityType)
+		if kind == "" {
+			return false
+		}
+		resource = policyAPI.FormatResource(kind, event.EntityID)
+	}
+	return ac.Allowed(subject, policyTY.ActionGet, resource) == nil
 }

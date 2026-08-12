@@ -4,22 +4,23 @@ import (
 	"sync"
 
 	ws "github.com/gorilla/websocket"
+	policyAPI "github.com/mycontroller-org/server/v2/pkg/api/policy"
 	"go.uber.org/zap"
 )
 
 type Store struct {
-	clients map[*ws.Conn]bool
+	clients map[*ws.Conn]policyAPI.Subject
 	mutex   sync.RWMutex
 	logger  *zap.Logger
 }
 
 // register a websocket client connection
-func (s *Store) register(conn *ws.Conn) {
+func (s *Store) register(conn *ws.Conn, subject policyAPI.Subject) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	s.clients[conn] = true
-	s.logger.Debug("new websocket connection added", zap.String("remoteAddress", conn.RemoteAddr().String()))
+	s.clients[conn] = subject
+	s.logger.Debug("new websocket connection added", zap.String("remoteAddress", conn.RemoteAddr().String()), zap.String("userId", subject.UserID))
 }
 
 // unregister a websocket client connection
@@ -36,16 +37,16 @@ func (s *Store) unregister(conn *ws.Conn) {
 	delete(s.clients, conn)
 }
 
-// returns available websocket client connection
-func (s *Store) getClients() []*ws.Conn {
+// returns available websocket client connections with their access subject
+func (s *Store) getClients() map[*ws.Conn]policyAPI.Subject {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
-	wsClients := make([]*ws.Conn, 0)
-	for client := range s.clients {
-		wsClients = append(wsClients, client)
+	out := make(map[*ws.Conn]policyAPI.Subject, len(s.clients))
+	for client, subject := range s.clients {
+		out[client] = subject
 	}
-	return wsClients
+	return out
 }
 
 // returns the size of the client map
