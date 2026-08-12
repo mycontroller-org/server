@@ -14,6 +14,8 @@ type User struct {
 	Email      string               `json:"email" yaml:"email"`
 	Password   string               `json:"password" yaml:"password"` // keep the hashed password, not the actual password
 	FullName   string               `json:"fullName" yaml:"fullName"`
+	Disabled   bool                 `json:"disabled" yaml:"disabled"` // when true, JWT and login are rejected
+	Policies   []string             `json:"policies" yaml:"policies"` // attached policy ids
 	Labels     cmap.CustomStringMap `json:"labels" yaml:"labels"`
 	ModifiedOn time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }
@@ -39,4 +41,16 @@ type UserProfileUpdate struct {
 	ConfirmPassword string               `json:"confirmPassword" yaml:"confirmPassword"`
 	FullName        string               `json:"fullName" yaml:"fullName"`
 	Labels          cmap.CustomStringMap `json:"labels" yaml:"labels"`
+}
+
+// UserAdminUpdate used when an admin updates another user (policies, disabled, profile fields)
+type UserAdminUpdate struct {
+	ID       string               `json:"id" yaml:"id"`
+	Username string               `json:"username" yaml:"username"`
+	Email    string               `json:"email" yaml:"email"`
+	FullName string               `json:"fullName" yaml:"fullName"`
+	Disabled *bool                `json:"disabled,omitempty" yaml:"disabled,omitempty"`
+	Policies []string             `json:"policies" yaml:"policies"`
+	Password string               `json:"password" yaml:"password"` // optional new password (plain); empty = keep
+	Labels   cmap.CustomStringMap `json:"labels" yaml:"labels"`
 }

@@ -16,6 +16,7 @@ import (
 	webConsole "github.com/mycontroller-org/server/v2/pkg/http_router/web-console"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	webHandlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
+	handlerUtils "github.com/mycontroller-org/server/v2/pkg/utils/http_handler"
 	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
@@ -57,17 +58,49 @@ func New(ctx context.Context, cfg *config.Config, router *mux.Router) (http.Hand
 		return nil, err
 	}
 
+	// wire access control (policies + user cache) into auth middleware
+	_policyAPI := coreApi.Policy()
+	if err := _policyAPI.EnsureBuiltInPolicies(); err != nil {
+		namedLogger.Error("error on ensuring built-in policies", zap.Error(err))
+		return nil, err
+	}
+	// Users with no policies have no access. Report them instead of backfilling here:
+	// the pre-RBAC migration (upgrade 2.2.0-1) is the only place allowed to grant admin,
+	// so an intentionally stripped user is never silently re-promoted on restart.
+	if err := _policyAPI.ReportUsersWithoutPolicies(); err != nil {
+		namedLogger.Error("error on verifying user policies", zap.Error(err))
+		return nil, err
+	}
+	middleware.SetAccessControl(_policyAPI)
+	// List APIs: AND resource-scope filters into the storage query (not post-filter)
+	handlerUtils.SetListQueryScope(func(r *http.Request, kind string) ([]storageTY.Filter, error) {
+		// identity comes from the verified request context, never from a header
+		// (headers are only sanitized on the authenticated path)
+		subject, err := middleware.SubjectFromRequest(r)
+		if err != nil {
+			return nil, err
+		}
+		unrestricted, filters, err := _policyAPI.StorageFiltersForList(subject, kind)
+		if err != nil {
+			return nil, err
+		}
+		if unrestricted {
+			return nil, nil
+		}
+		return filters, nil
+	})
+
+	// Auth routes first so /api/user/profile is not captured by /api/user/{id}
+	_authRoutes := authRoutes.NewAuthRoutes(logger, coreApi, router)
+	_oAuthRoutes := authRoutes.NewOAuthRoutes(logger, coreApi, router)
+	_authRoutes.RegisterRoutes()
+	_oAuthRoutes.RegisterRoutes()
+
 	// register application api routes
 	_, err = routes.New(ctx, router, webCfg.EnableProfiling)
 	if err != nil {
 		return nil, err
 	}
-
-	// register authentication routes, used in google, alexa and others
-	_authRoutes := authRoutes.NewAuthRoutes(logger, coreApi, router)
-	_oAuthRoutes := authRoutes.NewOAuthRoutes(logger, coreApi, router)
-	_authRoutes.RegisterRoutes()
-	_oAuthRoutes.RegisterRoutes()
 
 	// add secure and insecure directories into handler
 	addFileServers(namedLogger, cfg.Directories, router)

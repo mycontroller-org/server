@@ -3,8 +3,10 @@ package http_handler
 import (
 	"io"
 	"net/http"
+	"strings"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
+	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
 
@@ -39,6 +41,14 @@ func LoadData(w http.ResponseWriter, r *http.Request, entityFn func(f []storageT
 	f, p, err := Params(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// RBAC: inject resource-scope filters into the storage query
+	kind := kindFromRequest(r)
+	f, err = applyListQueryScope(r, kind, f)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusForbidden)
 		return
 	}
 
@@ -101,6 +111,14 @@ func FindMany(storage storageTY.Plugin, w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
+	// RBAC: inject resource-scope filters into the storage query
+	kind := EntityNameToKind(entityName)
+	f, err = applyListQueryScope(r, kind, f)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusForbidden)
+		return
+	}
+
 	result, err := storage.Find(entityName, entities, f, p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -112,6 +130,25 @@ func FindMany(storage storageTY.Plugin, w http.ResponseWriter, r *http.Request, 
 		return
 	}
 	WriteResponse(w, od)
+}
+
+// EntityNameToKind maps a storage entity name to a policy kind.
+func EntityNameToKind(entityName string) string {
+	return policyTY.NormalizeKind(entityName)
+}
+
+// kindFromRequest derives the policy kind from the first api path segment.
+func kindFromRequest(r *http.Request) string {
+	const prefix = "/api/"
+	path := r.URL.Path
+	if !strings.HasPrefix(path, prefix) {
+		return ""
+	}
+	segment := strings.TrimPrefix(path, prefix)
+	if index := strings.IndexByte(segment, '/'); index >= 0 {
+		segment = segment[:index]
+	}
+	return policyTY.NormalizeKind(segment)
 }
 
 // SaveEntity func

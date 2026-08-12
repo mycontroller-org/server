@@ -34,6 +34,14 @@ func New(ctx context.Context, logger *zap.Logger, backupRestore *backupTY.Backup
 
 // List by filter and pagination
 func (bk *BackupAPI) List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	if pagination == nil {
+		pagination = &storageTY.Pagination{
+			Limit:  10,
+			Offset: 0,
+			SortBy: []storageTY.Sort{{Field: "id", OrderBy: storageTY.SortByASC}},
+		}
+	}
+
 	files, err := bk.GetBackupFilesList()
 	if err != nil {
 		return nil, err
@@ -42,14 +50,6 @@ func (bk *BackupAPI) List(filters []storageTY.Filter, pagination *storageTY.Pagi
 	finalList := make([]interface{}, 0)
 	totalCount := int64(0)
 	if len(files) > 0 {
-		if pagination == nil {
-			pagination = &storageTY.Pagination{
-				Limit:  10,
-				Offset: 0,
-				SortBy: []storageTY.Sort{{Field: "id", OrderBy: storageTY.SortByASC}},
-			}
-		}
-
 		// filter and then sort the files
 		filteredFiles := filterUtils.Filter(files, filters, false)
 		sortedFiles, count := filterUtils.Sort(filteredFiles, pagination)

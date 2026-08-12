@@ -12,6 +12,7 @@ import (
 	gateway "github.com/mycontroller-org/server/v2/pkg/api/gateway"
 	handler "github.com/mycontroller-org/server/v2/pkg/api/handler"
 	node "github.com/mycontroller-org/server/v2/pkg/api/node"
+	policy "github.com/mycontroller-org/server/v2/pkg/api/policy"
 	schedule "github.com/mycontroller-org/server/v2/pkg/api/schedule"
 	serviceToken "github.com/mycontroller-org/server/v2/pkg/api/service_token"
 	settings "github.com/mycontroller-org/server/v2/pkg/api/settings"
@@ -114,6 +115,10 @@ func (a *API) Handler() *handler.HandlerAPI {
 
 func (a *API) Node() *node.NodeAPI {
 	return node.New(a.ctx, a.logger, a.storage, a.bus)
+}
+
+func (a *API) Policy() *policy.API {
+	return policy.New(a.ctx, a.logger, a.storage)
 }
 
 func (a *API) Schedule() *schedule.ScheduleAPI {

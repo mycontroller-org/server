@@ -65,7 +65,7 @@ func TestShouldRegenerateCert_AboveThreshold(t *testing.T) {
 func TestShouldRegenerateCert_CustomRenewBeforeDays(t *testing.T) {
 	logger := zap.NewNop()
 	dir := t.TempDir()
-	// remaining validity: 15 days — regenerate only when threshold is higher than 15
+	// remaining validity: 15 days - regenerate only when threshold is higher than 15
 	certFile, keyFile := writeTestCert(t, dir, time.Now().Add(-350*24*time.Hour), time.Now().Add(15*24*time.Hour))
 
 	if shouldRegenerateCert(logger, certFile, keyFile, 10) {

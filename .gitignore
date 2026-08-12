@@ -3,6 +3,7 @@
 !/resources/control-scripts
 !/resources/sample*.yaml
 /scripts/push_bin.sh
+/scripts/.web_console_dir
 binaries/*
 builds/*
 .vscode/*

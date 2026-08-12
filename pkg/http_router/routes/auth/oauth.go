@@ -98,7 +98,7 @@ func (oa *OAuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		userInDB = _userInDB
-		svcTokenID = svcToken.ID
+		svcTokenID = svcToken.Token.ID
 	} else { // user based authentication
 		// get user details
 		_userInDB, err := oa.api.User().GetByUsername(userLogin.Username)
@@ -113,6 +113,11 @@ func (oa *OAuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		userInDB = _userInDB
+	}
+
+	if userInDB.Disabled {
+		handlerUtils.PostErrorResponse(w, "user is disabled", http.StatusUnauthorized)
+		return
 	}
 
 	accessToken, err := middleware.CreateToken(userInDB, userLogin.ExpiresIn, svcTokenID)

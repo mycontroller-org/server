@@ -7,7 +7,9 @@ import (
 	"strings"
 	"time"
 
+	policyAPI "github.com/mycontroller-org/server/v2/pkg/api/policy"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
+	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
@@ -27,6 +29,14 @@ func New(ctx context.Context, logger *zap.Logger, storage storageTY.Plugin) *Use
 		logger:  logger.Named("user_api"),
 		storage: storage,
 	}
+}
+
+func (u *UserAPI) notifyCache(user *userTY.User) {
+	if user == nil {
+		return
+	}
+	// keep access-control cache in sync
+	policyAPI.New(u.ctx, u.logger, u.storage).NotifyUserUpdated(user)
 }
 
 // List by filter and pagination
@@ -77,18 +87,90 @@ func (u *UserAPI) Save(user *userTY.User) error {
 	if user.ID == "" {
 		user.ID = utils.RandUUID()
 	}
+	if user.Policies == nil {
+		user.Policies = []string{}
+	}
+	// default new users without policies get admin only when list is empty on first create -
+	// callers should set policies; migration assigns admin for empty.
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: user.ID},
 	}
 	user.ModifiedOn = time.Now()
 
-	return u.storage.Upsert(types.EntityUser, user, filters)
+	if err := u.storage.Upsert(types.EntityUser, user, filters); err != nil {
+		return err
+	}
+	u.notifyCache(user)
+	return nil
 }
 
 // Delete items
 func (u *UserAPI) Delete(IDs []string) (int64, error) {
 	filters := []storageTY.Filter{{Key: types.KeyID, Operator: storageTY.OperatorIn, Value: IDs}}
-	return u.storage.Delete(types.EntityUser, filters)
+	n, err := u.storage.Delete(types.EntityUser, filters)
+	if err != nil {
+		return n, err
+	}
+	pac := policyAPI.New(u.ctx, u.logger, u.storage)
+	for _, id := range IDs {
+		pac.NotifyUserDeleted(id)
+	}
+	return n, nil
+}
+
+// Create creates a new user with plain password and optional policies.
+func (u *UserAPI) Create(user *userTY.User, plainPassword string) error {
+	if user.Username == "" {
+		return errors.New("username can not be empty")
+	}
+	if plainPassword == "" {
+		return errors.New("password can not be empty")
+	}
+	hashedPassword, err := hashed.GenerateHash(plainPassword)
+	if err != nil {
+		return err
+	}
+	user.Password = hashedPassword
+	if len(user.Policies) == 0 {
+		user.Policies = []string{policyTY.PolicyReadOnly}
+	}
+	user.ID = ""
+	return u.Save(user)
+}
+
+// SaveAdmin updates user including disabled flag and policies (admin path).
+func (u *UserAPI) SaveAdmin(update *userTY.UserAdminUpdate) error {
+	if update.ID == "" {
+		return errors.New("user id can not be empty")
+	}
+	user, err := u.GetByID(update.ID)
+	if err != nil {
+		return err
+	}
+	if update.Username != "" {
+		user.Username = update.Username
+	}
+	if update.Email != "" {
+		user.Email = update.Email
+	}
+	user.FullName = update.FullName
+	if update.Disabled != nil {
+		user.Disabled = *update.Disabled
+	}
+	if update.Policies != nil {
+		user.Policies = update.Policies
+	}
+	if update.Labels != nil {
+		user.Labels = update.Labels
+	}
+	if strings.TrimSpace(update.Password) != "" {
+		hashedPassword, err := hashed.GenerateHash(update.Password)
+		if err != nil {
+			return err
+		}
+		user.Password = hashedPassword
+	}
+	return u.Save(&user)
 }
 
 // UpdateProfile updates the user profile
@@ -130,6 +212,7 @@ func (u *UserAPI) UpdateProfile(userData *userTY.UserProfileUpdate) error {
 
 	user.FullName = userData.FullName
 	user.Labels = userData.Labels
+	// profile update does not change Disabled or Policies
 
 	return u.Save(&user)
 }
@@ -142,11 +225,18 @@ func (u *UserAPI) Import(data interface{}) error {
 	if input.ID == "" {
 		input.ID = utils.RandUUID()
 	}
+	if input.Policies == nil {
+		input.Policies = []string{}
+	}
 
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: input.ID},
 	}
-	return u.storage.Upsert(types.EntityUser, &input, filters)
+	if err := u.storage.Upsert(types.EntityUser, &input, filters); err != nil {
+		return err
+	}
+	u.notifyCache(&input)
+	return nil
 }
 
 func (u *UserAPI) GetEntityInterface() interface{} {

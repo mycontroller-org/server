@@ -266,49 +266,131 @@ func defaultFilter(filters []storageTY.Filter, data interface{}) *bson.M {
 	return filter(filters)
 }
 
+// matchNothing is a predicate no document can satisfy. Used when a compound
+// filter cannot be decoded, so an unusable constraint fails closed.
+func matchNothing() bson.M {
+	return bson.M{"_id": bson.M{"$in": []interface{}{}}}
+}
+
 func filter(filters []storageTY.Filter) *bson.M {
 	bm := bson.M{}
 	if len(filters) == 0 {
 		return &bm
 	}
+	// Compound ops ($or / $nor) that must be AND-ed with field predicates.
+	// Multiple top-level OperatorOr must not be flattened into one $or.
+	andParts := make([]bson.M, 0)
+	// fields already placed in bm, to detect a second predicate on the same field
+	andedKeys := make(map[string]struct{}, len(filters))
+
 	for _, _f := range filters {
-		fl := strings.ToLower(_f.Key)
-		switch strings.ToLower(_f.Operator) {
-		case storageTY.OperatorNone:
-			bm[fl] = _f.Value
+		op := strings.ToLower(_f.Operator)
 
-		case storageTY.OperatorEqual:
-			bm[fl] = bson.M{"$eq": _f.Value}
-
-		case storageTY.OperatorNotEqual:
-			bm[fl] = bson.M{"$ne": _f.Value}
-
-		case storageTY.OperatorIn:
-			bm[fl] = bson.M{"$in": _f.Value}
-
-		case storageTY.OperatorNotIn:
-			bm[fl] = bson.M{"$nin": _f.Value}
-
-		case storageTY.OperatorGreaterThan:
-			bm[fl] = bson.M{"$gt": _f.Value}
-
-		case storageTY.OperatorLessThan:
-			bm[fl] = bson.M{"$lt": _f.Value}
-
-		case storageTY.OperatorGreaterThanEqual:
-			bm[fl] = bson.M{"$gte": _f.Value}
-
-		case storageTY.OperatorLessThanEqual:
-			bm[fl] = bson.M{"$lte": _f.Value}
-
-		case storageTY.OperatorExists:
-			bm[fl] = bson.M{"$exists": _f.Value}
-
-		case storageTY.OperatorRegex:
-			bm[fl] = bson.M{"$regex": _f.Value, "$options": "i"}
+		// OR of AND-groups (RBAC list allow scope)
+		if op == storageTY.OperatorOr {
+			groups, ok := _f.Value.([][]storageTY.Filter)
+			if !ok {
+				// unusable scope filter: match nothing rather than drop the
+				// constraint (these carry access-control scope)
+				andParts = append(andParts, matchNothing())
+				continue
+			}
+			orClauses := make([]bson.M, 0, len(groups))
+			for _, group := range groups {
+				sub := filter(group)
+				if sub != nil && len(*sub) > 0 {
+					orClauses = append(orClauses, *sub)
+				}
+			}
+			if len(orClauses) == 1 {
+				andParts = append(andParts, orClauses[0])
+			} else if len(orClauses) > 1 {
+				andParts = append(andParts, bson.M{"$or": orClauses})
+			}
+			continue
 		}
+
+		// NOR of one AND-group (RBAC Deny exclude)
+		if op == storageTY.OperatorNor {
+			group, ok := _f.Value.([]storageTY.Filter)
+			if !ok {
+				andParts = append(andParts, matchNothing())
+				continue
+			}
+			sub := filter(group)
+			if sub != nil && len(*sub) > 0 {
+				andParts = append(andParts, bson.M{"$nor": []bson.M{*sub}})
+			}
+			continue
+		}
+
+		fl := strings.ToLower(_f.Key)
+		predicate, ok := fieldPredicate(op, _f.Value)
+		if !ok {
+			continue
+		}
+		// Two filters on the same field must both apply. Merging them into one
+		// bson.M key would silently keep only the last one, which drops access
+		// control scope: an allow on id plus a deny on id would leave only the deny
+		// (= everything except), and a client filter could override a path id.
+		if existing, duplicate := bm[fl]; duplicate {
+			andParts = append(andParts, bson.M{fl: existing}, bson.M{fl: predicate})
+			delete(bm, fl)
+			continue
+		}
+		if _, alreadyAnded := andedKeys[fl]; alreadyAnded {
+			andParts = append(andParts, bson.M{fl: predicate})
+			continue
+		}
+		bm[fl] = predicate
+		andedKeys[fl] = struct{}{}
 	}
-	return &bm
+
+	if len(andParts) == 0 {
+		return &bm
+	}
+	if len(bm) == 0 && len(andParts) == 1 {
+		return &andParts[0]
+	}
+	parts := make([]bson.M, 0, 1+len(andParts))
+	if len(bm) > 0 {
+		parts = append(parts, bm)
+	}
+	parts = append(parts, andParts...)
+	return &bson.M{"$and": parts}
+}
+
+// fieldPredicate converts one operator into its mongo predicate.
+// ok is false for an unsupported operator (the filter is then ignored, as before).
+func fieldPredicate(operator string, value interface{}) (interface{}, bool) {
+	switch operator {
+	case storageTY.OperatorNone:
+		return value, true
+	case storageTY.OperatorEqual:
+		return bson.M{"$eq": value}, true
+	case storageTY.OperatorNotEqual:
+		return bson.M{"$ne": value}, true
+	case storageTY.OperatorIn:
+		return bson.M{"$in": value}, true
+	case storageTY.OperatorNotIn:
+		return bson.M{"$nin": value}, true
+	case storageTY.OperatorGreaterThan:
+		return bson.M{"$gt": value}, true
+	case storageTY.OperatorLessThan:
+		return bson.M{"$lt": value}, true
+	case storageTY.OperatorGreaterThanEqual:
+		return bson.M{"$gte": value}, true
+	case storageTY.OperatorLessThanEqual:
+		return bson.M{"$lte": value}, true
+	case storageTY.OperatorExists:
+		return bson.M{"$exists": value}, true
+	case storageTY.OperatorRegex:
+		return bson.M{"$regex": value, "$options": "i"}, true
+	case storageTY.OperatorRegexCaseSensitive:
+		return bson.M{"$regex": value}, true
+	default:
+		return nil, false
+	}
 }
 
 func sort(sort []storageTY.Sort) *bson.M {

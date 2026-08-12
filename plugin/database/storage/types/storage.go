@@ -77,7 +77,18 @@ const (
 	OperatorGreaterThanEqual = "gte"
 	OperatorLessThanEqual    = "lte"
 	OperatorExists           = "exists"
-	OperatorRegex            = "regex"
+	OperatorRegex            = "regex" // case insensitive, used by client supplied filters
+	// OperatorRegexCaseSensitive matches exactly as written. Access control scope
+	// uses it so a list query cannot return rows that a direct get would deny
+	// (resource names are compared case sensitively by the policy engine).
+	OperatorRegexCaseSensitive = "regex_cs"
+	// OperatorOr groups alternative filter sets (OR of AND-groups).
+	// Filter.Value must be [][]Filter (each inner slice is AND-ed; groups are OR-ed).
+	OperatorOr = "or"
+	// OperatorNor negates one AND-group. Filter.Value must be []Filter.
+	// Matches entities that do NOT satisfy all filters in the group.
+	// Used for RBAC Deny excludes (e.g. NOT (GatewayID=gw AND NodeID=1)).
+	OperatorNor = "nor"
 )
 
 // Sort options

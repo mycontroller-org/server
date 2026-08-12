@@ -35,6 +35,7 @@ func GetStorageApiMap(ctx context.Context) (map[string]backupTY.Backup, error) {
 		types.EntityVirtualAssistant: entities.VirtualAssistant(),
 		types.EntityVirtualDevice:    entities.VirtualDevice(),
 		types.EntityServiceToken:     entities.ServiceToken(),
+		types.EntityPolicy:           entities.Policy(),
 	}
 
 	return funcMap, nil
