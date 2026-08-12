@@ -5,6 +5,19 @@ import (
 	settingsTY "github.com/mycontroller-org/server/v2/pkg/types/settings"
 )
 
+// IsBuiltInPolicyID reports whether id is a code-owned system policy.
+func IsBuiltInPolicyID(id string) bool {
+	if id == "" {
+		return false
+	}
+	for _, p := range BuiltInPolicies() {
+		if p.ID == id {
+			return true
+		}
+	}
+	return false
+}
+
 // BuiltInPolicies returns system policies that should always exist.
 func BuiltInPolicies() []policyTY.Policy {
 	allActions := []string{policyTY.ActionAll}

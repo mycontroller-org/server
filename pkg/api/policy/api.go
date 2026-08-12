@@ -182,9 +182,9 @@ func (a *API) listAllPolicies() ([]policyTY.Policy, error) {
 // Save persists a user authored policy.
 //
 // System policies are code: their statements are rewritten on every start, so
-// accepting edits here would silently discard them. The System flag itself is never
-// taken from the request - otherwise a client could mark its own policy
-// undeletable.
+// accepting edits here would silently discard them. The System flag itself is
+// never taken from the request - a client cannot mark a custom policy undeletable
+// or create a policy with a built-in id.
 func (a *API) Save(policy *policyTY.Policy) error {
 	if policy.ID == "" {
 		policy.ID = utils.RandID()
@@ -192,8 +192,11 @@ func (a *API) Save(policy *policyTY.Policy) error {
 	existing, err := a.loadPolicyFromStorage(policy.ID)
 	isExisting := err == nil && existing.ID != ""
 
-	if isExisting && existing.System {
-		return fmt.Errorf("cannot modify system policy: %s", policy.ID)
+	if IsBuiltInPolicyID(policy.ID) || (isExisting && existing.System) {
+		return fmt.Errorf("%w: %s", ErrSystemPolicyImmutable, policy.ID)
+	}
+	if policy.System {
+		return fmt.Errorf("%w: %s", ErrSystemFlagNotAllowed, policy.ID)
 	}
 	policy.System = false
 
@@ -259,15 +262,11 @@ func (a *API) Import(data interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid type:%T", data)
 	}
-	if input.ID == "" {
-		input.ID = utils.RandID()
+	if IsBuiltInPolicyID(input.ID) {
+		return nil
 	}
-	filters := []storageTY.Filter{{Key: types.KeyID, Value: input.ID}}
-	if err := a.storage.Upsert(types.EntityPolicy, &input, filters); err != nil {
-		return err
-	}
-	a.cache.PutPolicy(&input)
-	return nil
+	input.System = false
+	return a.Save(&input)
 }
 
 func (a *API) GetEntityInterface() interface{} {
@@ -312,4 +311,8 @@ func (a *API) ValidatePoliciesExist(ids []string) error {
 	return nil
 }
 
-var ErrNotFound = errors.New("not found")
+var (
+	ErrNotFound              = errors.New("not found")
+	ErrSystemPolicyImmutable = errors.New("cannot modify system policy")
+	ErrSystemFlagNotAllowed  = errors.New("system flag is not allowed on custom policies")
+)

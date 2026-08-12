@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	policyAPI "github.com/mycontroller-org/server/v2/pkg/api/policy"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
 	handlerUtils "github.com/mycontroller-org/server/v2/pkg/utils/http_handler"
@@ -41,7 +42,11 @@ func (h *Routes) updatePolicy(w http.ResponseWriter, r *http.Request) {
 	}
 	err = h.api.Policy().Save(entity)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		status := http.StatusInternalServerError
+		if errors.Is(err, policyAPI.ErrSystemPolicyImmutable) || errors.Is(err, policyAPI.ErrSystemFlagNotAllowed) {
+			status = http.StatusBadRequest
+		}
+		http.Error(w, err.Error(), status)
 		return
 	}
 }
