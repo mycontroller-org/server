@@ -87,6 +87,13 @@ func (p *Provider) toRawMessage(msg *msgTY.Message) (*msgTY.RawMessage, error) {
 		if err != nil {
 			return nil, err
 		}
+		if msMsg.Type == "" {
+			switch payload.Key {
+			case nodeTY.ActionFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST", "ST_FIRMWARE_REQUEST":
+				p.logger.Debug("firmware action produced no message", zap.String("action", payload.Key))
+				return nil, nil
+			}
+		}
 
 	default:
 		return nil, fmt.Errorf("this command not implemented: %s", msg.Type)

@@ -160,6 +160,12 @@ func (svc *ResourceService) processEvent(item interface{}) error {
 			svc.logger.Error("error on serving firmware service request", zap.Error(err))
 		}
 
+	case rsTY.TypeDataRepository:
+		err := svc.dataRepositoryService(request)
+		if err != nil {
+			svc.logger.Error("error on serving data repository service request", zap.Error(err))
+		}
+
 	case rsTY.TypeVirtualAssistant:
 		err := svc.virtualAssistantService(request)
 		if err != nil {

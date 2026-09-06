@@ -22,6 +22,16 @@ const (
 	LabelFirmwareVersionID = "ms_version_id"       // MySensors firmware version id
 	LabelSmartSleepNode    = "ms_smart_sleep_node" // set true, if it is a smart sleeping node
 
+	// LabelFotaScript is the data_repository id that holds custom FOTA policy scripts
+	// (data.onConfig required, data.onBlock optional). When set (non-empty after trim),
+	// firmware selection is owned by those scripts; assigned_firmware is never used.
+	// If the repository is missing or data.disabled is true, no firmware is served.
+	// When empty, stock path uses assigned_firmware.
+	LabelFotaScript = "fota_script"
+	// LabelFotaDisabled on a node turns off all OTA for that node (script and stock).
+	// ParseBool: true/1. Missing or false keeps FOTA enabled.
+	LabelFotaDisabled = "fota_disabled"
+
 	FieldAwakeDuration = "awake_duration" // smart sleep node awake duration
 	FieldSleepDuration = "sleep_duration" // smart sleep node sleep duration
 )

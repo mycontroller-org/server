@@ -80,6 +80,9 @@ func (p *Provider) handleActions(gwCfg *gwTY.Config, fn string, msg *msgTY.Messa
 		if err != nil {
 			return err
 		}
+		if pl == "" {
+			return nil
+		}
 		msMsg.Command = cmdStream
 		msMsg.Type = actionFirmwareConfigResponse
 		msMsg.Payload = strings.ToUpper(pl)
@@ -88,6 +91,9 @@ func (p *Provider) handleActions(gwCfg *gwTY.Config, fn string, msg *msgTY.Messa
 		pl, err := p.executeFirmwareRequest(msg)
 		if err != nil {
 			return err
+		}
+		if pl == "" {
+			return nil
 		}
 		msMsg.Command = cmdStream
 		msMsg.Type = actionFirmwareResponse

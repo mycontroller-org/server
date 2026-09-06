@@ -146,21 +146,65 @@ func (n *NodeAPI) UpdateFirmwareState(id string, data map[string]interface{}) er
 	if startTime != nil {
 		node.Others.Set(types.FieldOTAStartTime, startTime, nil)
 		node.Others.Set(types.FieldOTATimeTaken, "", nil)
+		node.Others.Set(types.FieldOTATimeTakenStr, "", nil)
 		node.Others.Set(types.FieldOTAEndTime, "", nil)
 	}
 
 	endTime := utils.GetMapValue(data, types.FieldOTAEndTime, nil)
 	if endTime != nil {
 		node.Others.Set(types.FieldOTAEndTime, endTime, nil)
-		startTime = node.Others.Get(types.FieldOTAStartTime)
-		if st, stOK := startTime.(time.Time); stOK {
-			if et, etOK := endTime.(time.Time); etOK {
-				node.Others.Set(types.FieldOTATimeTaken, et.Sub(st).String(), nil)
-			}
+		st, stOK := parseOTATime(node.Others.Get(types.FieldOTAStartTime))
+		et, etOK := parseOTATime(endTime)
+		if stOK && etOK && !et.Before(st) {
+			d := et.Sub(st)
+			node.Others.Set(types.FieldOTATimeTaken, int64(d.Round(time.Second)/time.Second), nil)
+			node.Others.Set(types.FieldOTATimeTakenStr, formatOTADuration(d), nil)
 		}
 	}
 
 	return n.Save(node, true)
+}
+
+func parseOTATime(v interface{}) (time.Time, bool) {
+	if v == nil {
+		return time.Time{}, false
+	}
+	switch t := v.(type) {
+	case time.Time:
+		return t, !t.IsZero()
+	case *time.Time:
+		return *t, t != nil && !t.IsZero()
+	case string:
+		s := t
+		if s == "" {
+			return time.Time{}, false
+		}
+		if parsed, err := time.Parse(time.RFC3339Nano, s); err == nil {
+			return parsed, true
+		}
+		if parsed, err := time.Parse(time.RFC3339, s); err == nil {
+			return parsed, true
+		}
+	}
+	return time.Time{}, false
+}
+
+// formatOTADuration is a compact clock string, e.g. 40s, 1m40s, 1h2m3s.
+func formatOTADuration(d time.Duration) string {
+	if d < 0 {
+		d = 0
+	}
+	sec := int64(d.Round(time.Second) / time.Second)
+	h := sec / 3600
+	m := (sec % 3600) / 60
+	s := sec % 60
+	if h > 0 {
+		return fmt.Sprintf("%dh%dm%ds", h, m, s)
+	}
+	if m > 0 {
+		return fmt.Sprintf("%dm%ds", m, s)
+	}
+	return fmt.Sprintf("%ds", s)
 }
 
 // Verifies node up status by checking the last seen timestamp

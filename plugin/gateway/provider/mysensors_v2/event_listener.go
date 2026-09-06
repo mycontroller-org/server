@@ -2,8 +2,10 @@ package mysensors
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
+	repositoryTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
 	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
@@ -19,9 +21,10 @@ const (
 )
 
 var (
-	eventsQueue            *queueUtils.Queue
-	firmwareSubscriptionID = int64(0)
-	nodeSubscriptionID     = int64(0)
+	eventsQueue                  *queueUtils.Queue
+	firmwareSubscriptionID       = int64(0)
+	nodeSubscriptionID           = int64(0)
+	dataRepositorySubscriptionID = int64(0)
 )
 
 // initEventListener service
@@ -39,6 +42,11 @@ func (p *Provider) initEventListener(gatewayID string) error {
 		return err
 	}
 	nodeSubscriptionID = sID
+	sID, err = p.bus.Subscribe(topicTY.TopicEventDataRepository, p.onEvent)
+	if err != nil {
+		return err
+	}
+	dataRepositorySubscriptionID = sID
 	return nil
 }
 
@@ -58,6 +66,13 @@ func (p *Provider) closeEventListener() {
 			p.logger.Error("error on unsubscribe", zap.Error(err), zap.String("topic", topic))
 		}
 	}
+	if dataRepositorySubscriptionID != 0 {
+		topic := topicTY.TopicEventDataRepository
+		err := p.bus.Unsubscribe(topic, dataRepositorySubscriptionID)
+		if err != nil {
+			p.logger.Error("error on unsubscribe", zap.Error(err), zap.String("topic", topic))
+		}
+	}
 	eventsQueue.Close()
 }
 
@@ -70,7 +85,9 @@ func (p *Provider) onEvent(data *busTY.BusData) {
 	}
 	p.logger.Debug("Received an event", zap.Any("event", event))
 
-	if !(event.EntityType == types.EntityNode || event.EntityType == types.EntityFirmware) ||
+	if !(event.EntityType == types.EntityNode ||
+		event.EntityType == types.EntityFirmware ||
+		event.EntityType == types.EntityDataRepository) ||
 		event.Entity == nil {
 		return
 	}
@@ -96,7 +113,12 @@ func (p *Provider) processServiceEvent(item interface{}) error {
 			p.logger.Error("error on loading firmware entity", zap.String("eventQuickId", event.EntityQuickID), zap.Error(err))
 			return nil // Don't requeue invalid events
 		}
-		fwRawStore.Remove(firmware.ID)
+		prefix := firmware.ID + "#"
+		for _, key := range fwRawStore.Keys() {
+			if key == firmware.ID || strings.HasPrefix(key, prefix) {
+				fwRawStore.Remove(key)
+			}
+		}
 		fwStore.Remove(firmware.ID)
 
 	case types.EntityNode:
@@ -109,6 +131,18 @@ func (p *Provider) processServiceEvent(item interface{}) error {
 		localID := p.getNodeStoreID(node.GatewayID, node.NodeID)
 		if nodeStore.IsAvailable(localID) {
 			nodeStore.Add(localID, &node)
+		}
+
+	case types.EntityDataRepository:
+		repo := repositoryTY.Config{}
+		err := event.LoadEntity(&repo)
+		if err != nil {
+			p.logger.Error("error on loading data repository entity", zap.String("eventQuickId", event.EntityQuickID), zap.Error(err))
+			return nil
+		}
+		// invalidate cached FOTA scripts
+		if repo.ID != "" {
+			fotaScriptStore.Remove(repo.ID)
 		}
 
 	default:

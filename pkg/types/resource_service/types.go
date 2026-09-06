@@ -13,6 +13,7 @@ const (
 	TypeHandler          = "handler"
 	TypeScheduler        = "scheduler"
 	TypeFirmware         = "firmware"
+	TypeDataRepository   = "data_repository"
 	TypeResourceAction   = "resource_action"
 	TypeSystemJobs       = "system_jobs"
 	TypeVirtualAssistant = "virtual_assistant"
