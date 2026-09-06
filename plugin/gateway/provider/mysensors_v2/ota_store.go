@@ -15,10 +15,18 @@ import (
 )
 
 var (
-	nodeStore  = concurrency.NewStore()
-	fwStore    = concurrency.NewStore()
-	fwRawStore = concurrency.NewStore()
+	nodeStore        = concurrency.NewStore()
+	fwStore          = concurrency.NewStore()
+	fwRawStore       = concurrency.NewStore()
+	fotaScriptStore  = concurrency.NewStore() // data_repository id → *fotaScriptBundle
+	fotaSessionStore = concurrency.NewStore() // gateway_node → *fotaSession
 )
+
+// fotaSession is the firmware + slice size advertised in onConfig, reused for every block.
+type fotaSession struct {
+	FirmwareID string
+	BlockSize  int
+}
 
 func firmwareRawPurge() {
 	for _, fwID := range fwRawStore.Keys() {
@@ -121,7 +129,7 @@ func (p *Provider) updateFirmware(id string) error {
 }
 
 // getFirmwareRaw func
-func (p *Provider) getFirmwareRaw(id string, fwTypeID, fwVersionID uint16) (*firmwareRaw, error) {
+func (p *Provider) getFirmwareRaw(id string, fwTypeID, fwVersionID uint16, blockSize int) (*firmwareRaw, error) {
 	toFirmwareRaw := func(item interface{}) (*firmwareRaw, error) {
 		if fw, ok := item.(*firmwareRaw); ok {
 			return fw, nil
@@ -129,58 +137,97 @@ func (p *Provider) getFirmwareRaw(id string, fwTypeID, fwVersionID uint16) (*fir
 		return nil, fmt.Errorf("unknown data received in the place node: %T", item)
 	}
 
-	data := fwRawStore.Get(id)
+	if blockSize <= 0 {
+		blockSize = defaultFirmwareBlockSize
+	}
+	cacheKey := firmwareRawCacheKey(id, blockSize)
+	data := fwRawStore.Get(cacheKey)
 	if data != nil {
 		return toFirmwareRaw(data)
 	}
 
-	err := p.updateFirmwareFile(id, fwTypeID, fwVersionID)
+	err := p.updateFirmwareFile(id, fwTypeID, fwVersionID, blockSize)
 	if err != nil {
 		return nil, err
 	}
-	data = fwRawStore.Get(id)
+	data = fwRawStore.Get(cacheKey)
 	if data != nil {
 		return toFirmwareRaw(data)
 	}
 	return nil, fmt.Errorf("firmware not available. id:%v", id)
 }
 
-func (p *Provider) updateFirmwareFile(id string, fwTypeID, fwVersionID uint16) error {
-	var hexBytes []byte
+func assembleFirmwareBytes(blocks map[int][]byte, totalBytes int) ([]byte, bool) {
+	if totalBytes <= 0 || len(blocks) == 0 {
+		return nil, false
+	}
+	out := make([]byte, totalBytes)
+	seen := make([]bool, totalBytes)
+	for n, data := range blocks {
+		start := firmwareTY.BlockSize * n
+		for i, v := range data {
+			pos := start + i
+			if pos >= totalBytes {
+				break
+			}
+			out[pos] = v
+			seen[pos] = true
+		}
+	}
+	for i := 0; i < totalBytes; i++ {
+		if !seen[i] {
+			return nil, false
+		}
+	}
+	return out, true
+}
+
+func (p *Provider) updateFirmwareFile(id string, fwTypeID, fwVersionID uint16, blockSize int) error {
+	// Load metadata first. Do not CommandGet from inside the block callback;
+	// that nested query races with remaining block replies on the same bus.
+	fw, err := p.getFirmware(id)
+	if err != nil {
+		return err
+	}
+
+	blocks := map[int][]byte{}
+	totalBytes := 0
 	addToStore := func(item interface{}) bool {
 		fwBlock, ok := item.(*firmwareTY.FirmwareBlock)
 		if !ok {
 			p.logger.Error("error on data conversion", zap.String("receivedType", fmt.Sprintf("%T", item)))
 			return false
 		}
-		if hexBytes == nil {
-			hexBytes = make([]byte, fwBlock.TotalBytes)
+		if fwBlock.TotalBytes > 0 {
+			totalBytes = fwBlock.TotalBytes
 		}
-		startPos := int(firmwareTY.BlockSize * fwBlock.BlockNumber)
-		for offset, byteData := range fwBlock.Data {
-			hexBytes[startPos+offset] = byteData
+		cp := make([]byte, len(fwBlock.Data))
+		copy(cp, fwBlock.Data)
+		blocks[fwBlock.BlockNumber] = cp
+
+		hexBytes, complete := assembleFirmwareBytes(blocks, totalBytes)
+		if !complete {
+			return true
 		}
-		if fwBlock.IsFinal {
-			receivedCheckSum := fmt.Sprintf("sha256:%x", sha256.Sum256(hexBytes))
-			fw, err := p.getFirmware(id)
-			if err != nil {
-				p.logger.Error("error on getting firmare config", zap.Error(err), zap.String("firmwareId", id))
-				return false
-			}
-			if fw.File.Checksum == receivedCheckSum {
-				// convert the hex file to raw format
-				fwRaw, err := p.hexByteToLocalFormat(fwTypeID, fwVersionID, hexBytes, firmwareBlockSize)
-				if err != nil {
-					p.logger.Error("error on converting hex to local format", zap.String("firmwareId", id), zap.Error(err))
-					return false
-				}
-				fwRawStore.Add(id, fwRaw)
-			} else {
-				p.logger.Info("received firmware checksum mismatch", zap.String("fwID", fw.ID), zap.String("remote", fw.File.Checksum), zap.String("received", receivedCheckSum))
-			}
+		receivedCheckSum := fmt.Sprintf("sha256:%x", sha256.Sum256(hexBytes))
+		if fw.File.Checksum != receivedCheckSum {
+			p.logger.Info("firmware file checksum mismatch (re-upload the firmware in the UI)",
+				zap.String("fwID", fw.ID),
+				zap.String("file", fw.File.Name),
+				zap.Int("bytes", len(hexBytes)),
+				zap.Int("blockCount", len(blocks)),
+				zap.String("stored", fw.File.Checksum),
+				zap.String("computed", receivedCheckSum),
+			)
 			return false
 		}
-		return true // continue
+		fwRaw, err := p.hexByteToLocalFormat(fwTypeID, fwVersionID, hexBytes, blockSize)
+		if err != nil {
+			p.logger.Error("error on converting hex to local format", zap.String("firmwareId", id), zap.Error(err))
+			return false
+		}
+		fwRawStore.Add(firmwareRawCacheKey(id, blockSize), fwRaw)
+		return false
 	}
 
 	return query.QueryResource(p.logger, p.bus, id, rsTY.TypeFirmware, rsTY.CommandBlocks, nil, addToStore, &firmwareTY.FirmwareBlock{}, queryFirmwareFileTimeout)

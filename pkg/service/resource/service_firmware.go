@@ -68,32 +68,12 @@ func (svc *ResourceService) sendFirmwareBlocks(reqEvent *rsTY.ServiceEvent) {
 		return
 	}
 
-	blockNumber := 0
-	totalBytes := len(fwBytes)
-	for {
-		positionStart := blockNumber * firmwareTY.BlockSize
-		positionEnd := positionStart + firmwareTY.BlockSize
-
-		reachedEnd := false
-		var bytes []byte
-		if positionEnd < len(fwBytes) {
-			bytes = fwBytes[positionStart:positionEnd]
-		} else {
-			bytes = fwBytes[positionStart:]
-			reachedEnd = true
-		}
-
-		err := svc.postFirmwareBlock(reqEvent.ReplyTopic, fw.ID, bytes, blockNumber, totalBytes, reachedEnd)
-		if err != nil {
-			svc.logger.Error("error on posting firmware blocks", zap.String("firmwareId", fw.ID), zap.Error(err))
-		}
-
-		if reachedEnd {
-			return
-		}
-		blockNumber++
+	// One message with the whole file. Chunking into 512-byte bus replies races:
+	// IsFinal can be handled while earlier chunks are still in flight, and a
+	// nested CommandGet from the gateway mutates the shared decode buffer.
+	if err := svc.postFirmwareBlock(reqEvent.ReplyTopic, fw.ID, fwBytes, 0, len(fwBytes), true); err != nil {
+		svc.logger.Error("error on posting firmware blocks", zap.String("firmwareId", fw.ID), zap.Error(err))
 	}
-
 }
 
 func (svc *ResourceService) postFirmwareBlock(replyTopic, id string, bytes []byte, blockNumber, totalBytes int, isFinal bool) error {

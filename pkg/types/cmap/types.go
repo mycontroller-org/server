@@ -90,7 +90,11 @@ func (csm CustomStringMap) CopyFrom(another CustomStringMap) {
 // GetBool a value by key
 func (csm CustomStringMap) GetBool(key string) bool {
 	key = normalize.Key(key)
-	v, err := strconv.ParseBool(csm.Get(key))
+	raw := csm.Get(key)
+	if raw == "" {
+		return false
+	}
+	v, err := strconv.ParseBool(raw)
 	if err != nil {
 		zap.L().Debug("error on conversion", zap.Error(err), zap.Any("value", v))
 	}

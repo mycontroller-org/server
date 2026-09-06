@@ -18,5 +18,6 @@ const (
 	FieldOTAStatusOn    = "ota_status_on"    // time
 	FieldOTAStartTime   = "ota_start_time"   // start time
 	FieldOTAEndTime     = "ota_end_time"     // end time
-	FieldOTATimeTaken   = "ota_time_taken"   // time taken to complete the update
+	FieldOTATimeTaken    = "ota_time_taken"     // duration in seconds
+	FieldOTATimeTakenStr = "ota_time_taken_str" // compact duration, e.g. 1m40s
 )

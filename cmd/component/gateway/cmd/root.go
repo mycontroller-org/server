@@ -34,9 +34,7 @@ var root = &cobra.Command{
 		ctx := context.Background()
 		gateway := helper.Gateway{}
 		err := gateway.Start(ctx, configFile)
-		if err != nil {
-			logger.Fatal("error on starting gateway", zap.Error(err))
-		}
+		logger.Fatal("error on starting gateway", zap.Error(err))
 	},
 }
 

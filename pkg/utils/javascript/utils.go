@@ -3,6 +3,7 @@ package javascript
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/dop251/goja"
@@ -35,7 +36,7 @@ func Execute(logger *zap.Logger, scriptString string, variables map[string]inter
 			logger.Warn("error on setting a value", zap.String("name", name), zap.Any("value", value), zap.Error(err))
 		}
 	}
-	logger.Debug("executing script", zap.Any("variables", variables), zap.String("scriptString", scriptString))
+	logger.Debug("executing script", zap.Any("variables", loggableScriptVariables(variables)), zap.String("scriptString", scriptString))
 
 	// include helper functions
 	err := rt.Set(jsHelper.KeyMcUtils, jsHelper.GetHelperUtils())
@@ -65,9 +66,25 @@ func Execute(logger *zap.Logger, scriptString string, variables map[string]inter
 		return nil, err
 	}
 	output := response.Export()
-	logger.Debug("executed script", zap.String("timeTaken", time.Since(start).String()), zap.Any("variables", variables), zap.String("scriptString", scriptString), zap.Any("output", output))
+	logger.Debug("executed script", zap.String("timeTaken", time.Since(start).String()), zap.Any("variables", loggableScriptVariables(variables)), zap.String("scriptString", scriptString), zap.Any("output", output))
 
 	return output, nil
+}
+
+// loggableScriptVariables omits func values (e.g. getFirmware) so zap/json can encode the map.
+func loggableScriptVariables(variables map[string]interface{}) map[string]interface{} {
+	if variables == nil {
+		return nil
+	}
+	out := make(map[string]interface{}, len(variables))
+	for k, v := range variables {
+		if v != nil && reflect.ValueOf(v).Kind() == reflect.Func {
+			out[k] = fmt.Sprintf("<%T>", v)
+			continue
+		}
+		out[k] = v
+	}
+	return out
 }
 
 // converts the interface data to map[string]interface{}
