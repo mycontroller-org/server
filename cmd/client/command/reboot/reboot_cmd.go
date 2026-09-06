@@ -24,9 +24,9 @@ var nodeRebootCmd = &cobra.Command{
 		client := rootCmd.GetClient()
 		err := client.ExecuteNodeAction(nodeTY.ActionReboot, args)
 		if err != nil {
-			fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
+			_, _ = fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
 			return
 		}
-		fmt.Fprintln(rootCmd.IOStreams.Out, "Nodes reboot command supplied")
+		_, _ = fmt.Fprintln(rootCmd.IOStreams.Out, "Nodes reboot command supplied")
 	},
 }

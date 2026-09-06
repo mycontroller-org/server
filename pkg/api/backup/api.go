@@ -9,7 +9,6 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
-	backupRestore "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
 	backupTY "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
@@ -18,12 +17,12 @@ import (
 type BackupAPI struct {
 	ctx           context.Context
 	logger        *zap.Logger
-	backupRestore *backupRestore.BackupRestore
+	backupRestore *backupTY.BackupRestore
 	bus           busTY.Plugin
 	settingsAPI   *settings.SettingsAPI
 }
 
-func New(ctx context.Context, logger *zap.Logger, backupRestore *backupRestore.BackupRestore, storage storageTY.Plugin, bus busTY.Plugin, enc *encryptionAPI.Encryption) *BackupAPI {
+func New(ctx context.Context, logger *zap.Logger, backupRestore *backupTY.BackupRestore, storage storageTY.Plugin, bus busTY.Plugin, enc *encryptionAPI.Encryption) *BackupAPI {
 	return &BackupAPI{
 		ctx:           ctx,
 		logger:        logger.Named("backup_api"),
@@ -35,6 +34,14 @@ func New(ctx context.Context, logger *zap.Logger, backupRestore *backupRestore.B
 
 // List by filter and pagination
 func (bk *BackupAPI) List(filters []storageTY.Filter, pagination *storageTY.Pagination) (*storageTY.Result, error) {
+	if pagination == nil {
+		pagination = &storageTY.Pagination{
+			Limit:  10,
+			Offset: 0,
+			SortBy: []storageTY.Sort{{Field: "id", OrderBy: storageTY.SortByASC}},
+		}
+	}
+
 	files, err := bk.GetBackupFilesList()
 	if err != nil {
 		return nil, err
@@ -43,14 +50,6 @@ func (bk *BackupAPI) List(filters []storageTY.Filter, pagination *storageTY.Pagi
 	finalList := make([]interface{}, 0)
 	totalCount := int64(0)
 	if len(files) > 0 {
-		if pagination == nil {
-			pagination = &storageTY.Pagination{
-				Limit:  10,
-				Offset: 0,
-				SortBy: []storageTY.Sort{{Field: "id", OrderBy: storageTY.SortByASC}},
-			}
-		}
-
 		// filter and then sort the files
 		filteredFiles := filterUtils.Filter(files, filters, false)
 		sortedFiles, count := filterUtils.Sort(filteredFiles, pagination)

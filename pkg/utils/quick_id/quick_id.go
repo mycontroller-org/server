@@ -163,7 +163,7 @@ func EntityKeyValueMap(quickID string) (string, map[string]string, error) {
 func GetQuickID(entity interface{}) (string, error) {
 	itemValueType := reflect.ValueOf(entity).Kind()
 
-	if itemValueType == reflect.Ptr {
+	if itemValueType == reflect.Pointer {
 		entity = reflect.ValueOf(entity).Elem().Interface()
 		itemValueType = reflect.ValueOf(entity).Kind()
 	}

@@ -45,6 +45,6 @@ func executeSetCmd(quickIdPrefix, keyPath string, resources []string, payload st
 	}
 	err := client.ExecuteAction(actions)
 	if err != nil {
-		fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s", err.Error())
+		_, _ = fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s", err.Error())
 	}
 }

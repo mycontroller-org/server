@@ -116,7 +116,7 @@ func (h *Routes) getMetricList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	d, err := io.ReadAll(r.Body)
-	defer r.Body.Close()
+	defer func() { _ = r.Body.Close() }()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

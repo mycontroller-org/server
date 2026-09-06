@@ -63,42 +63,53 @@ func (bk *BackupAPI) RunOnDemandBackup(input *backupTY.OnDemandBackupConfig) err
 
 // GetBackupFilesList details
 func (bk *BackupAPI) GetBackupFilesList() ([]interface{}, error) {
+	exportedFiles := make([]interface{}, 0)
+
 	locationsSettings, err := bk.settingsAPI.GetBackupLocations()
 	if err != nil {
-		return nil, err
+		// No locations configured (or settings missing): return empty list, not an error.
+		// UI calls GET /api/backup on the backup page; 500 here breaks the whole page.
+		bk.logger.Debug("backup locations not available", zap.Error(err))
+		return exportedFiles, nil
 	}
 
 	locations := locationsSettings.Locations
 
-	exportedFiles := make([]interface{}, 0)
-
 	for _, location := range locations {
-		if location.Type == backupUtil.ProviderDisk {
-			diskLocation := &backupTY.BackupLocationDisk{}
-			err = utils.MapToStruct(utils.TagNameNone, location.Config, diskLocation)
-			if err != nil {
-				return exportedFiles, err
+		if location.Type != backupUtil.ProviderDisk {
+			continue
+		}
+		diskLocation := &backupTY.BackupLocationDisk{}
+		err = utils.MapToStruct(utils.TagNameNone, location.Config, diskLocation)
+		if err != nil {
+			bk.logger.Warn("skip backup location: invalid config", zap.String("location", location.Name), zap.Error(err))
+			continue
+		}
+		if strings.TrimSpace(diskLocation.TargetDirectory) == "" {
+			bk.logger.Debug("skip backup location: empty target directory", zap.String("location", location.Name))
+			continue
+		}
+		rawFiles, err := utils.ListFiles(diskLocation.TargetDirectory)
+		if err != nil {
+			// Do not fail the whole list if one path is missing/unreadable
+			bk.logger.Warn("skip backup location: cannot list files", zap.String("location", location.Name), zap.String("dir", diskLocation.TargetDirectory), zap.Error(err))
+			continue
+		}
+		for _, rawFile := range rawFiles {
+			if rawFile.IsDir || !strings.Contains(rawFile.Name, backupUtil.BackupIdentifier) {
+				continue
 			}
-			rawFiles, err := utils.ListFiles(diskLocation.TargetDirectory)
-			if err != nil {
-				return exportedFiles, err
+			exportedFile := backupTY.BackupFile{
+				ID:           rawFile.FullPath,
+				LocationName: location.Name,
+				ProviderType: location.Type,
+				Directory:    diskLocation.TargetDirectory,
+				FileName:     rawFile.Name,
+				FileSize:     rawFile.Size,
+				FullPath:     rawFile.FullPath,
+				ModifiedOn:   rawFile.ModifiedTime,
 			}
-			for _, rawFile := range rawFiles {
-				if rawFile.IsDir || !strings.Contains(rawFile.Name, backupUtil.BackupIdentifier) {
-					continue
-				}
-				exportedFile := backupTY.BackupFile{
-					ID:           rawFile.FullPath,
-					LocationName: location.Name,
-					ProviderType: location.Type,
-					Directory:    diskLocation.TargetDirectory,
-					FileName:     rawFile.Name,
-					FileSize:     rawFile.Size,
-					FullPath:     rawFile.FullPath,
-					ModifiedOn:   rawFile.ModifiedTime,
-				}
-				exportedFiles = append(exportedFiles, exportedFile)
-			}
+			exportedFiles = append(exportedFiles, exportedFile)
 		}
 	}
 

@@ -162,7 +162,10 @@ func (ep *Endpoint) Write(rawMsg *msgTY.RawMessage) error {
 	time.Sleep(ep.txPreDelay) // transmit pre delay
 
 	for _, t := range topics {
-		_topic := fmt.Sprintf("%s/%s", ep.Config.Publish, t)
+		_topic := t
+		if ep.Config.Publish != "" {
+			_topic = fmt.Sprintf("%s/%s", ep.Config.Publish, t)
+		}
 		rawMsgCloned := rawMsg.Clone()
 		rawMsgCloned.Others.Set(gwPtl.KeyMqttTopic, _topic, nil)
 		rawMsgCloned.Timestamp = time.Now()

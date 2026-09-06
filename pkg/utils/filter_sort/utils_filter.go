@@ -48,6 +48,26 @@ func IsMatching(entity interface{}, filters []storageTY.Filter) bool {
 	match := true
 	for index := 0; index < len(filters); index++ {
 		filter := filters[index]
+
+		// OR of filter groups (used by RBAC list scoping)
+		if filter.Operator == storageTY.OperatorOr {
+			if !matchOrGroups(entity, filter.Value) {
+				match = false
+				break
+			}
+			continue
+		}
+
+		// NOR of one AND-group (RBAC Deny exclude: NOT (gw=X AND node=Y))
+		if filter.Operator == storageTY.OperatorNor {
+			if matchNorGroup(entity, filter.Value) {
+				// matchNorGroup true means entity IS in the denied set
+				match = false
+				break
+			}
+			continue
+		}
+
 		valKind, value, err := GetValueByKeyPath(entity, filter.Key)
 		if err != nil {
 			//zap.L().Debug("failed to get value", zap.Any("filter", filter), zap.Error(err))
@@ -79,6 +99,64 @@ func IsMatching(entity interface{}, filters []storageTY.Filter) bool {
 		}
 	}
 	return match
+}
+
+// matchOrGroups evaluates Value as [][]Filter (OR of AND-groups).
+func matchOrGroups(entity interface{}, value interface{}) bool {
+	groups, ok := value.([][]storageTY.Filter)
+	if !ok {
+		// tolerate []interface{} from generic unmarshalling
+		raw, ok := value.([]interface{})
+		if !ok {
+			return false
+		}
+		groups = make([][]storageTY.Filter, 0, len(raw))
+		for _, g := range raw {
+			switch gg := g.(type) {
+			case []storageTY.Filter:
+				groups = append(groups, gg)
+			case []interface{}:
+				inner := make([]storageTY.Filter, 0, len(gg))
+				for _, item := range gg {
+					if f, ok := item.(storageTY.Filter); ok {
+						inner = append(inner, f)
+					}
+				}
+				groups = append(groups, inner)
+			}
+		}
+	}
+	if len(groups) == 0 {
+		return false
+	}
+	for _, group := range groups {
+		if IsMatching(entity, group) {
+			return true
+		}
+	}
+	return false
+}
+
+// matchNorGroup returns true if the entity matches the positive AND-group
+// (i.e. should be excluded by OperatorNor). Value is []Filter.
+func matchNorGroup(entity interface{}, value interface{}) bool {
+	group, ok := value.([]storageTY.Filter)
+	if !ok {
+		raw, ok := value.([]interface{})
+		if !ok {
+			return false
+		}
+		group = make([]storageTY.Filter, 0, len(raw))
+		for _, item := range raw {
+			if f, ok := item.(storageTY.Filter); ok {
+				group = append(group, f)
+			}
+		}
+	}
+	if len(group) == 0 {
+		return false
+	}
+	return IsMatching(entity, group)
 }
 
 // VerifyStringSlice implementation
@@ -125,6 +203,12 @@ func CompareString(value interface{}, operator string, filterValue interface{}) 
 	case storageTY.OperatorRegex:
 		expression := fmt.Sprintf("(?i)%s", converterUtils.ToString(filterValue))
 		compiled, err := regexp.Compile(expression)
+		if err != nil {
+			return false
+		}
+		return compiled.MatchString(valueString)
+	case storageTY.OperatorRegexCaseSensitive:
+		compiled, err := regexp.Compile(converterUtils.ToString(filterValue))
 		if err != nil {
 			return false
 		}

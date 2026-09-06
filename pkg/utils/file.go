@@ -82,7 +82,7 @@ func CopyFileForce(src, dst string, overwrite bool) error {
 	if err != nil {
 		return err
 	}
-	defer source.Close()
+	defer func() { _ = source.Close() }()
 
 	if IsFileExists(dst) {
 		if !overwrite {
@@ -106,7 +106,7 @@ func CopyFileForce(src, dst string, overwrite bool) error {
 	if err != nil {
 		return err
 	}
-	defer destination.Close()
+	defer func() { _ = destination.Close() }()
 
 	buf := make([]byte, bufferSize)
 	for {
@@ -144,7 +144,7 @@ func AppendFile(dir, filename string, data []byte) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	_, err = f.Write(data)
 	return err
 }

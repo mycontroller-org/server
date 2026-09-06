@@ -16,7 +16,7 @@ func Zip(logger *zap.Logger, sourceDirectory, zipFilename string) error {
 		logger.Error("error", zap.Error(err))
 		return err
 	}
-	defer zipFile.Close()
+	defer func() { _ = zipFile.Close() }()
 
 	// Create a new zip archive.
 	writer := zip.NewWriter(zipFile)

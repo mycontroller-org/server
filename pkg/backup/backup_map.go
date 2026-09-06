@@ -8,7 +8,6 @@ import (
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
-	backupPlugin "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
 	backupTY "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
 	"go.uber.org/zap"
 )
@@ -36,6 +35,7 @@ func GetStorageApiMap(ctx context.Context) (map[string]backupTY.Backup, error) {
 		types.EntityVirtualAssistant: entities.VirtualAssistant(),
 		types.EntityVirtualDevice:    entities.VirtualDevice(),
 		types.EntityServiceToken:     entities.ServiceToken(),
+		types.EntityPolicy:           entities.Policy(),
 	}
 
 	return funcMap, nil
@@ -74,7 +74,7 @@ func GetDirectories(includeSecureShare, includeInsecureShare bool) (map[string]s
 }
 
 // verify MyControllerDataTransformationExportFunc, implements DataTransformerFunc
-var _ backupPlugin.DataTransformerFunc = MyControllerDataTransformationExportFunc
+var _ backupTY.DataTransformerFunc = MyControllerDataTransformationExportFunc
 
 func MyControllerDataTransformationExportFunc(logger *zap.Logger, entityName string, data interface{}, storageExportType string) (interface{}, error) {
 

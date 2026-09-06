@@ -22,8 +22,8 @@ var deleteCmd = &cobra.Command{
 
 func printStatus(err error) {
 	if err != nil {
-		fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
+		_, _ = fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
 		return
 	}
-	fmt.Fprintln(rootCmd.IOStreams.Out, "Deleted successfully")
+	_, _ = fmt.Fprintln(rootCmd.IOStreams.Out, "Deleted successfully")
 }

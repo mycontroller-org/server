@@ -17,7 +17,6 @@ import (
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
-	"github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	converterUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	"github.com/mycontroller-org/server/v2/pkg/utils/javascript"
 	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
@@ -560,8 +559,8 @@ func (svc *MessageProcessor) updateFieldData(
 	field.Current = fieldTY.Payload{Value: convertedValue, IsReceived: msg.IsReceived, Timestamp: msg.Timestamp}
 
 	// update no change since
-	oldValue := convertor.ToString(field.Previous.Value)
-	newValue := convertor.ToString(field.Current.Value)
+	oldValue := converterUtils.ToString(field.Previous.Value)
+	newValue := converterUtils.ToString(field.Current.Value)
 	if oldValue != newValue {
 		field.NoChangeSince = msg.Timestamp
 	}
@@ -577,10 +576,7 @@ func (svc *MessageProcessor) updateFieldData(
 	// post field data to event listeners
 	busUtils.PostEvent(svc.logger, svc.bus, topic.TopicEventField, eventTY.TypeUpdated, types.EntityField, field)
 
-	updateMetric := true
-	if field.MetricType == metricTY.MetricTypeNone {
-		updateMetric = false
-	}
+	updateMetric := field.MetricType != metricTY.MetricTypeNone
 	// for binary do not update duplicate values
 	if field.MetricType == metricTY.MetricTypeBinary {
 		updateMetric = field.Current.Timestamp.Equal(field.NoChangeSince)

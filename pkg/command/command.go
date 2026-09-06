@@ -87,7 +87,7 @@ func (c *Command) Stop() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	if !c.isRunning {
-		return errors.New("This command is not started")
+		return errors.New("this command is not started")
 	}
 	c.stopCh <- true
 	return nil

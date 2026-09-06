@@ -116,6 +116,8 @@ func (s *Server) setupInitialUser() {
 			Password: hashedPassword,
 			FullName: "Admin User",
 			Email:    "admin@example.com",
+			Policies: []string{"admin"},
+			Disabled: false,
 		}
 		err = s.api.User().Save(adminUser)
 		if err != nil {

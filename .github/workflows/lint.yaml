@@ -10,16 +10,17 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up Go
+        uses: actions/setup-go@v7
         with:
-          go-version: ^1.23
+          go-version-file: go.mod
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v2
+        uses: golangci/golangci-lint-action@v9
         with:
           version: latest
-          skip-go-installation: true
           args: "--build-tags server --timeout=10m --max-same-issues 20"
           # Optional: show only new issues if it's a pull request. The default value is `false`.
           # only-new-issues: true

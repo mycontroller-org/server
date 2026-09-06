@@ -32,7 +32,7 @@ func CloneSlice(src []interface{}) ([]interface{}, error) {
 // returns reflect.Kind, value, error
 func GetValueByKeyPath(data interface{}, keyPath string) (reflect.Kind, interface{}, error) {
 	dataVal := reflect.ValueOf(data)
-	if dataVal.Kind() == reflect.Ptr {
+	if dataVal.Kind() == reflect.Pointer {
 		dataVal = dataVal.Elem()
 	}
 
@@ -48,7 +48,7 @@ func GetValueByKeyPath(data interface{}, keyPath string) (reflect.Kind, interfac
 		found := false
 		expectedName := strings.ToLower(keys[keyIndex])
 		//fmt.Printf("\nin loop[%d], key:%s, kind:%v, \nvalue:%+v\n", keyIndex, expectedName, finalVal.Kind(), finalVal)
-		if finalVal.Kind() == reflect.Ptr || finalVal.Kind() == reflect.Interface {
+		if finalVal.Kind() == reflect.Pointer || finalVal.Kind() == reflect.Interface {
 			finalVal = finalVal.Elem()
 			//fmt.Printf("\nin loop[%d], key:%s, kind:%v, \nvalue:%+v\n", keyIndex, expectedName, finalVal.Kind(), finalVal)
 		}
@@ -94,7 +94,7 @@ func GetValueByKeyPath(data interface{}, keyPath string) (reflect.Kind, interfac
 	}
 	//fmt.Printf("returning, kind:%v, \nvalue:%+v\n\n", finalVal.Kind(), finalVal)
 
-	if finalVal.Kind() == reflect.Ptr || finalVal.Kind() == reflect.Interface {
+	if finalVal.Kind() == reflect.Pointer || finalVal.Kind() == reflect.Interface {
 		if finalVal.IsNil() {
 			return finalVal.Kind(), nil, nil
 		}

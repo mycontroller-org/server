@@ -76,7 +76,7 @@ func (h *Routes) uploadFirmware(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer file.Close() // Close the file when we finish
+	defer func() { _ = file.Close() }() // Close the file when we finish
 
 	err = h.api.Firmware().Upload(file, id, handler.Filename)
 	if err != nil {

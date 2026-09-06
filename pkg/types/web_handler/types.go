@@ -10,8 +10,9 @@ const (
 	KeyAuthorized     = "authorized"
 	KeyExpiresAt      = "expires_at"
 
-	HeaderAuthorization = "Authorization"
-	HeaderUserID        = "mc_userid"
+	HeaderAuthorization  = "Authorization"
+	HeaderUserID         = "mc_userid"
+	HeaderServiceTokenID = "mc_svc_token_id"
 
 	AccessToken = "access_token"
 

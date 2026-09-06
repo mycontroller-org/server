@@ -103,6 +103,11 @@ func (a *AuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 		userInDB = _userInDB
 	}
 
+	if userInDB.Disabled {
+		handlerUtils.PostErrorResponse(w, "user is disabled", http.StatusUnauthorized)
+		return
+	}
+
 	token, err := middleware.CreateToken(userInDB, login.ExpiresIn, svcTokenID)
 	if err != nil {
 		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusInternalServerError)
@@ -148,6 +153,7 @@ func (a *AuthRoutes) profile(w http.ResponseWriter, r *http.Request) {
 	user, err := a.api.User().GetByID(userID)
 	if err != nil {
 		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 	handlerUtils.PostSuccessResponse(w, &user)
 }
@@ -163,6 +169,7 @@ func (a *AuthRoutes) updateProfile(w http.ResponseWriter, r *http.Request) {
 	user, err := a.api.User().GetByID(userID)
 	if err != nil {
 		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	entity := &userTY.UserProfileUpdate{}

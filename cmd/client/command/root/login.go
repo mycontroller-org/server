@@ -57,7 +57,7 @@ var loginCmd = &cobra.Command{
 			if loginUsername == "" {
 				_username, err := promptUsername()
 				if err != nil {
-					fmt.Fprintln(IOStreams.ErrOut, err.Error())
+					_, _ = fmt.Fprintln(IOStreams.ErrOut, err.Error())
 					return
 				}
 				loginUsername = _username
@@ -67,7 +67,7 @@ var loginCmd = &cobra.Command{
 			if loginPassword == "" {
 				_password, err := promptPassword()
 				if err != nil {
-					fmt.Fprintln(IOStreams.ErrOut, err.Error())
+					_, _ = fmt.Fprintln(IOStreams.ErrOut, err.Error())
 					return
 				}
 				loginPassword = _password
@@ -79,11 +79,11 @@ var loginCmd = &cobra.Command{
 		client := GetClient()
 		res, err := client.Login(loginUsername, loginPassword, loginToken, loginExpiresIn)
 		if err != nil {
-			fmt.Fprintln(IOStreams.ErrOut, "error on login", err)
+			_, _ = fmt.Fprintln(IOStreams.ErrOut, "error on login", err)
 			return
 		}
 		if res != nil {
-			fmt.Fprintln(IOStreams.ErrOut, "Login successful.")
+			_, _ = fmt.Fprintln(IOStreams.ErrOut, "Login successful.")
 			CONFIG.URL = args[0]
 			CONFIG.Username = loginUsername
 			CONFIG.Password = res.Token
@@ -102,14 +102,14 @@ var logoutCmd = &cobra.Command{
   mc logout`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if CONFIG.URL == "" {
-			fmt.Fprintln(IOStreams.ErrOut, "There is no connection information.")
+			_, _ = fmt.Fprintln(IOStreams.ErrOut, "There is no connection information.")
 			return
 		}
 		CONFIG.URL = ""
 		CONFIG.Username = ""
 		CONFIG.Password = ""
 		CONFIG.Insecure = false
-		fmt.Fprintln(IOStreams.Out, "Logout successful.")
+		_, _ = fmt.Fprintln(IOStreams.Out, "Logout successful.")
 		WriteConfigFile()
 	},
 }
@@ -125,10 +125,10 @@ func promptUsername() (string, error) {
 }
 
 func promptPassword() (string, error) {
-	fmt.Fprint(IOStreams.Out, "Password: ")
+	_, _ = fmt.Fprint(IOStreams.Out, "Password: ")
 	// TODO: should use IOStreams.In in the place of os.Stdin.Fd
 	pw, err := term.ReadPassword(int(os.Stdin.Fd()))
-	fmt.Fprintln(IOStreams.Out)
+	_, _ = fmt.Fprintln(IOStreams.Out)
 	if err != nil {
 		return "", err
 	}

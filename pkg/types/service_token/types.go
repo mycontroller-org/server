@@ -13,14 +13,18 @@ import (
 
 type ServiceToken struct {
 	ID          string                `json:"id" yaml:"id"`
-	UserID      string                `json:"userId" yaml:"userId"`
+	UserID      string                `json:"userId" yaml:"userId"` // always tied to a user; permissions cannot exceed this user
 	Name        string                `json:"name" yaml:"name"`
 	Description string                `json:"description" yaml:"description"`
 	Token       Token                 `json:"token" yaml:"token"` // keeps hashed token, not the actual token
 	NeverExpire bool                  `json:"neverExpire" yaml:"neverExpire"`
 	ExpiresOn   dateTimeTY.CustomDate `json:"expiresOn" yaml:"expiresOn"`
-	Labels      cmap.CustomStringMap  `json:"labels" yaml:"labels"`
-	CreatedOn   time.Time             `json:"createdOn" yaml:"createdOn"`
+	// Optional restrictions - empty means same access as the owning user.
+	// When set, effective access = user policies ∩ these limits (can only lower).
+	Actions   []string             `json:"actions" yaml:"actions"`
+	Resources []string             `json:"resources" yaml:"resources"`
+	Labels    cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	CreatedOn time.Time            `json:"createdOn" yaml:"createdOn"`
 }
 
 type CreateTokenResponse struct {

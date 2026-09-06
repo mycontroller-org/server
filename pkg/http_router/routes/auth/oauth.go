@@ -46,7 +46,7 @@ func (oa *OAuthRoutes) landing(w http.ResponseWriter, r *http.Request) {
 
 func (oa *OAuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 	userInput, err := io.ReadAll(r.Body)
-	defer r.Body.Close()
+	defer func() { _ = r.Body.Close() }()
 	if err != nil {
 		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -98,7 +98,7 @@ func (oa *OAuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		userInDB = _userInDB
-		svcTokenID = svcToken.ID
+		svcTokenID = svcToken.Token.ID
 	} else { // user based authentication
 		// get user details
 		_userInDB, err := oa.api.User().GetByUsername(userLogin.Username)
@@ -113,6 +113,11 @@ func (oa *OAuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		userInDB = _userInDB
+	}
+
+	if userInDB.Disabled {
+		handlerUtils.PostErrorResponse(w, "user is disabled", http.StatusUnauthorized)
+		return
 	}
 
 	accessToken, err := middleware.CreateToken(userInDB, userLogin.ExpiresIn, svcTokenID)
@@ -172,7 +177,7 @@ func (oa *OAuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 
 func (oa *OAuthRoutes) token(w http.ResponseWriter, r *http.Request) {
 	inputBytes, err := io.ReadAll(r.Body)
-	defer r.Body.Close()
+	defer func() { _ = r.Body.Close() }()
 	if err != nil {
 		oa.logger.Error("error on getting data", zap.Error(err))
 	}
@@ -203,7 +208,7 @@ func (oa *OAuthRoutes) token(w http.ResponseWriter, r *http.Request) {
 	}
 
 	r.Header.Set(handlerTY.HeaderAuthorization, accessToken)
-	err, _ = middleware.IsValidToken(r)
+	_, err = middleware.IsValidToken(r)
 	if err != nil {
 		oa.logger.Info("invalid token", zap.Error(err))
 		http.Error(w, "invalid token", http.StatusUnauthorized)
@@ -250,7 +255,7 @@ func (oa *OAuthRoutes) token(w http.ResponseWriter, r *http.Request) {
 }
 
 func (oa *OAuthRoutes) tokenAlexa(w http.ResponseWriter, r *http.Request) {
-	err, _ := middleware.IsValidToken(r)
+	_, err := middleware.IsValidToken(r)
 	if err != nil {
 		oa.logger.Info("invalid token", zap.Error(err))
 		http.Error(w, "invalid token", http.StatusUnauthorized)

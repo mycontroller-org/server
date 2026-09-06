@@ -107,11 +107,11 @@ func (ep *Endpoint) Write(rawMsg *msgTY.RawMessage) error {
 	requestRaw := rawMsg.Others.Get(gwPtl.KeyHTTPRequestConf)
 
 	if requestRaw == nil {
-		return fmt.Errorf("There is no requestConfig found. Have you supplied cfg with key: %s?", gwPtl.KeyHTTPRequestConf)
+		return fmt.Errorf("there is no requestConfig found. Have you supplied cfg with key: %s?", gwPtl.KeyHTTPRequestConf)
 	}
 	reqCfg, ok := requestRaw.(RequestConfig)
 	if !ok {
-		return fmt.Errorf("Failed to convert request conf, %v", requestRaw)
+		return fmt.Errorf("failed to convert request conf, %v", requestRaw)
 	}
 
 	if reqCfg.ResponseCode == 0 {

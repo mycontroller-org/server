@@ -32,10 +32,18 @@ func ReceivedQueryMap(request *http.Request) (map[string][]string, error) {
 
 // Params func
 func Params(request *http.Request) ([]storageTY.Filter, *storageTY.Pagination, error) {
-	f := mux.Vars(request)
 	q := request.URL.Query()
+	vars := mux.Vars(request)
+	f := make(map[string]string, len(q)+len(vars))
 	for key, value := range q {
-		f[key] = value[0] // TODO: FIX this to fetch all the values
+		if len(value) > 0 {
+			f[key] = value[0]
+		}
+	}
+	// Path variables win so GET /api/{kind}/{id}?id=other cannot load a
+	// different entity than the one authorized from the path.
+	for key, value := range vars {
+		f[key] = value
 	}
 
 	// get Pagination arguments

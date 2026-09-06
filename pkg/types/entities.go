@@ -18,6 +18,7 @@ const (
 	EntityVirtualDevice    = "virtual_device"    // holds virtual devices
 	EntityVirtualAssistant = "virtual_assistant" // holds virtual assistants
 	EntityServiceToken     = "service_token"     // holds service token
+	EntityPolicy           = "policy"            // access control policies
 )
 
 // Entity field keys

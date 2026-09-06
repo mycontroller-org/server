@@ -11,6 +11,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/service/http_listener/https"
 	"github.com/mycontroller-org/server/v2/pkg/types/config"
+	schedulerTY "github.com/mycontroller-org/server/v2/pkg/types/scheduler"
 	serviceTY "github.com/mycontroller-org/server/v2/pkg/types/service"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	loggerUtils "github.com/mycontroller-org/server/v2/pkg/utils/logger"
@@ -25,9 +26,11 @@ const (
 )
 
 type HttpListener struct {
-	logger  *zap.Logger
-	config  config.WebConfig
-	handler http.Handler
+	logger     *zap.Logger
+	config     config.WebConfig
+	handler    http.Handler
+	scheduler  schedulerTY.CoreScheduler
+	sslManager *https.SSLManager
 }
 
 func New(ctx context.Context, cfg config.WebConfig, handler http.Handler) (serviceTY.Service, error) {
@@ -36,10 +39,17 @@ func New(ctx context.Context, cfg config.WebConfig, handler http.Handler) (servi
 		return nil, err
 	}
 
+	scheduler, err := schedulerTY.FromContext(ctx)
+	if err != nil {
+		logger.Error("unable to get the core scheduler", zap.Error(err))
+		return nil, err
+	}
+
 	return &HttpListener{
-		logger:  logger.Named("http_listener"),
-		config:  cfg,
-		handler: handler,
+		logger:    logger.Named("http_listener"),
+		config:    cfg,
+		handler:   handler,
+		scheduler: scheduler,
 	}, nil
 }
 
@@ -82,26 +92,32 @@ func (l *HttpListener) Start() error {
 
 	// https ssl service
 	if l.config.HttpsSSL.Enabled {
+		sslManager, err := https.NewSSLManager(l.logger, l.config.HttpsSSL, l.scheduler)
+		if err != nil {
+			l.logger.Error("error on getting https/ssl manager", zap.Error(err), zap.Any("sslConfig", l.config.HttpsSSL))
+			return err
+		}
+		l.sslManager = sslManager
+
+		// daily renewal only when HTTPS/SSL is enabled and MyController manages the certificate
+		if err := sslManager.StartDailyRenewalCheck(); err != nil {
+			l.logger.Error("error on starting SSL daily renewal check", zap.Error(err))
+			return err
+		}
+
 		go func() {
 			addr := fmt.Sprintf("%s:%d", l.config.HttpsSSL.BindAddress, l.config.HttpsSSL.Port)
 			l.logger.Info("listening HTTPS/SSL service on", zap.String("address", addr))
 
-			tlsConfig, err := https.GetSSLTLSConfig(l.logger, l.config.HttpsSSL)
-			if err != nil {
-				l.logger.Error("error on getting https/ssl tlsConfig", zap.Error(err), zap.Any("sslConfig", l.config.HttpsSSL))
-				errs <- err
-				return
-			}
-
 			server := &http.Server{
 				ReadTimeout: readTimeout,
 				Addr:        addr,
-				TLSConfig:   tlsConfig,
+				TLSConfig:   sslManager.TLSConfig(),
 				Handler:     l.handler,
 				ErrorLog:    log.New(getLogger(LoggerPrefixSSL, l.logger), "", 0),
 			}
 
-			err = server.ListenAndServeTLS("", "")
+			err := server.ListenAndServeTLS("", "")
 			if err != nil {
 				l.logger.Error("error on starting https/ssl handler", zap.Error(err))
 				errs <- err
@@ -145,5 +161,8 @@ func (l *HttpListener) Start() error {
 }
 
 func (l *HttpListener) Close() error {
+	if l.sslManager != nil {
+		return l.sslManager.Close()
+	}
 	return nil
 }

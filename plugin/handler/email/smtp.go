@@ -29,11 +29,12 @@ type SmtpClient struct {
 func NewSMTPClient(ctx context.Context, logger *zap.Logger, handlerCfg *handlerTY.Config, cfg *Config) (Client, error) {
 	var auth smtp.Auth
 
-	if cfg.AuthType == AuthTypePlain || cfg.AuthType == "" {
+	switch cfg.AuthType {
+	case AuthTypePlain, "":
 		auth = smtp.PlainAuth("", cfg.Username, cfg.Password, cfg.Host)
-	} else if cfg.AuthType == AuthTypeCRAMMD5 {
+	case AuthTypeCRAMMD5:
 		auth = smtp.CRAMMD5Auth(cfg.Username, cfg.Password)
-	} else {
+	default:
 		return nil, fmt.Errorf("unknown auth type:%s", cfg.AuthType)
 	}
 
