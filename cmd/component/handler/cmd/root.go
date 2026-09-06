@@ -34,9 +34,7 @@ var root = &cobra.Command{
 		ctx := context.Background()
 		handler := helper.Handler{}
 		err := handler.Start(ctx, configFile)
-		if err != nil {
-			logger.Fatal("error on starting handler", zap.Error(err))
-		}
+		logger.Fatal("error on starting handler", zap.Error(err))
 	},
 }
 
