@@ -107,12 +107,66 @@ func (c *Client) SetResourcePath(kind, selector, keyPath, value string, rawText 
 	}
 }
 
+func (c *Client) ResolveGatewayIDs(selectors []string, requireEnabled bool) ([]string, error) {
+	ids := make([]string, 0, len(selectors))
+	missing := make([]string, 0)
+	disabled := make([]string, 0)
+	for _, selector := range selectors {
+		selector = strings.TrimPrefix(selector, "gateway:")
+		item, err := c.FindGateway(selector)
+		if err != nil {
+			return ids, err
+		}
+		if item == nil {
+			missing = append(missing, selector)
+			continue
+		}
+		if requireEnabled && !item.Enabled {
+			disabled = append(disabled, selector)
+			continue
+		}
+		ids = append(ids, item.ID)
+	}
+	parts := make([]string, 0, 2)
+	if len(missing) > 0 {
+		parts = append(parts, "gateway(s) not present: "+strings.Join(missing, ", "))
+	}
+	if len(disabled) > 0 {
+		parts = append(parts, "gateway(s) disabled: "+strings.Join(disabled, ", "))
+	}
+	if len(parts) > 0 {
+		return ids, fmt.Errorf("%s", strings.Join(parts, "; "))
+	}
+	return ids, nil
+}
+
+func (c *Client) ResolveNodeIDs(selectors []string) ([]string, error) {
+	ids := make([]string, 0, len(selectors))
+	missing := make([]string, 0)
+	for _, selector := range selectors {
+		item, err := c.findNodeSelector(selector)
+		if err != nil {
+			return ids, err
+		}
+		if item == nil {
+			missing = append(missing, selector)
+			continue
+		}
+		ids = append(ids, item.ID)
+	}
+	if len(missing) > 0 {
+		return ids, fmt.Errorf("node(s) not present: %s", strings.Join(missing, ", "))
+	}
+	return ids, nil
+}
+
 func (c *Client) findNodeSelector(selector string) (*nodeTY.Node, error) {
+	selector = strings.TrimPrefix(selector, "node:")
 	item, err := c.FindNode(selector, "", "")
 	if err != nil || item != nil {
 		return item, err
 	}
-	parts := strings.Split(selector, ".")
+	parts := strings.SplitN(selector, ".", 2)
 	if len(parts) == 2 {
 		return c.FindNode("", parts[0], parts[1])
 	}

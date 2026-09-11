@@ -19,6 +19,8 @@ This document describes the **MyController command-line client**: how to build i
 | `delete` | Delete resources by id |
 | `enable` / `disable` | Enable or disable resources |
 | `reload` | Reload a gateway or virtual assistant |
+| `reboot` | Reboot a node |
+| `action` | Send a node or gateway action (reboot, reset, discover-nodes, …) |
 
 ### Build
 
@@ -617,9 +619,9 @@ Do not use `myc set field` for this. `set field` always updates a stored key pat
 
 ---
 
-## 8. Delete, enable, disable, reload
+## 8. Delete, enable, disable, reload, reboot, action
 
-These commands take one or more **storage ids** (the `id` column from `get`, not the quick id), except as noted.
+`delete`, `enable`, `disable`, and `reload` take **storage ids** (the `id` column from `get`). Node `reboot` and `action node` take **quick ids** (`gatewayId.nodeId`).
 
 ### Delete
 
@@ -658,11 +660,44 @@ Supported: `gateway`, `virtual-device`, `virtual-assistant`, `task`, `schedule`,
 ### Reload
 
 ```bash
-myc reload gateway <id>
-myc reload virtual-assistant <id>
+myc reload gateway mysensor gw2
+myc reload virtual-assistant <id> [<id>...]
 ```
 
 Supported: `gateway`, `virtual-assistant`.
+
+### Reboot
+
+```bash
+myc reboot node mysensor.1 mysensor.2
+```
+
+Sends a reboot action to each node. Same as `myc action node reboot …`.
+
+### Action
+
+Node ids are quick ids: `gatewayId.nodeId`. Gateway ids are the gateway id. Separate multiple ids with spaces.
+
+```bash
+myc action node <action> <gateway.node> [<gateway.node>...]
+myc action gateway discover-nodes <id> [<id>...]
+```
+
+| Target | Actions |
+| --- | --- |
+| `node` | `reboot`, `reset`, `firmware-update`, `heartbeat`, `refresh-node-info` |
+| `gateway` | `discover-nodes` |
+
+```bash
+myc action node reboot mysensor.1 mysensor.2
+myc action node reset mysensor.1
+myc action node firmware-update mysensor.1
+myc action node heartbeat mysensor.1
+myc action node refresh-node-info mysensor.1
+myc action gateway discover-nodes mysensor gw2
+```
+
+To reload gateways, use `myc reload gateway <id> [<id>...]`. There is no gateway restart or reboot action.
 
 ---
 
@@ -679,7 +714,7 @@ Several commands and the UI refer to resources by **quick id**:
 
 `get` shows a `quick id` column in `-o wide`. `apply` prints the same shape after the kind in the RESOURCE column (`node: mysensor.1`).
 
-`delete`, `enable`, `disable`, and `reload` use the storage **id** (UUID or configured gateway id), not the dotted quick id.
+`delete`, `enable`, `disable`, and `reload` use the storage **id** (UUID or configured gateway id). `reboot node` and `action node` use the node quick id (`gatewayId.nodeId`).
 
 ---
 

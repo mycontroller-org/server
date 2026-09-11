@@ -20,10 +20,10 @@ var reloadCmd = &cobra.Command{
 	},
 }
 
-func printStatus(err error) {
+func printStatus(err error, count int, kind string) {
 	if err != nil {
 		_, _ = fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
 		return
 	}
-	_, _ = fmt.Fprintln(rootCmd.IOStreams.Out, "Reloaded successfully")
+	_, _ = fmt.Fprintf(rootCmd.IOStreams.Out, "reloaded %d %s(s)\n", count, kind)
 }

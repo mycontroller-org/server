@@ -108,7 +108,14 @@ func (c *Client) ExecuteJson(url, method string, headers map[string]string, quer
 	if queryParams != nil {
 		q := req.URL.Query()
 		for k, v := range queryParams {
-			q.Add(k, fmt.Sprintf("%v", v))
+			switch typed := v.(type) {
+			case []string:
+				for _, item := range typed {
+					q.Add(k, item)
+				}
+			default:
+				q.Add(k, fmt.Sprintf("%v", v))
+			}
 		}
 		req.URL.RawQuery = q.Encode()
 	}
