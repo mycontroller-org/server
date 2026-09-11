@@ -12,7 +12,7 @@ func init() {
 
 var rebootCmd = &cobra.Command{
 	Use:   "reboot",
-	Short: "Reboots the requested resources",
+	Short: "Reboot nodes",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},

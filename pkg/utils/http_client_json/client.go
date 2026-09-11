@@ -5,8 +5,11 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/cookiejar"
+	"os"
+	"path/filepath"
 	"time"
 
 	json "github.com/mycontroller-org/server/v2/pkg/json"
@@ -105,7 +108,14 @@ func (c *Client) ExecuteJson(url, method string, headers map[string]string, quer
 	if queryParams != nil {
 		q := req.URL.Query()
 		for k, v := range queryParams {
-			q.Add(k, fmt.Sprintf("%v", v))
+			switch typed := v.(type) {
+			case []string:
+				for _, item := range typed {
+					q.Add(k, item)
+				}
+			default:
+				q.Add(k, fmt.Sprintf("%v", v))
+			}
 		}
 		req.URL.RawQuery = q.Encode()
 	}
@@ -137,6 +147,66 @@ func (c *Client) ExecuteJson(url, method string, headers map[string]string, quer
 		respCfg.Headers[k] = resp.Header.Get(k)
 	}
 
+	return respCfg, nil
+}
+
+// ExecuteMultipart posts a file as multipart form field "file".
+func (c *Client) ExecuteMultipart(url, method string, headers map[string]string, fieldName, filename string, responseCode int) (*ResponseConfig, error) {
+	if fieldName == "" {
+		fieldName = "file"
+	}
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = file.Close() }()
+
+	var buf bytes.Buffer
+	writer := multipart.NewWriter(&buf)
+	part, err := writer.CreateFormFile(fieldName, filepath.Base(filename))
+	if err != nil {
+		return nil, err
+	}
+	if _, err := io.Copy(part, file); err != nil {
+		return nil, err
+	}
+	if err := writer.Close(); err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(method, url, &buf)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	respBodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if responseCode > 0 && resp.StatusCode != responseCode {
+		return nil, fmt.Errorf("failed with status code. [status: %v, statusCode: %v, body: %s]", resp.Status, resp.StatusCode, string(respBodyBytes))
+	}
+
+	respCfg := &ResponseConfig{
+		StatusCode: resp.StatusCode,
+		URL:        url,
+		Method:     method,
+		Body:       respBodyBytes,
+		Headers:    make(map[string]string),
+	}
+	for k := range resp.Header {
+		respCfg.Headers[k] = resp.Header.Get(k)
+	}
 	return respCfg, nil
 }
 

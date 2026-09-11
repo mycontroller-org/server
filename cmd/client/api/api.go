@@ -14,8 +14,9 @@ const (
 	API_NODE_LIST   = "/api/node"
 	API_NODE_DELETE = "/api/node"
 
-	API_ACTION      = "/api/action"
-	API_ACTION_NODE = "/api/action/node"
+	API_ACTION         = "/api/action"
+	API_ACTION_NODE    = "/api/action/node"
+	API_ACTION_GATEWAY = "/api/action/gateway"
 
 	API_FIELD_LIST   = "/api/field"
 	API_FIELD_DELETE = "/api/field"
@@ -25,6 +26,7 @@ const (
 
 	API_FIRMWARE_LIST   = "/api/firmware"
 	API_FIRMWARE_DELETE = "/api/firmware"
+	API_FIRMWARE_UPLOAD = "/api/firmware/upload"
 
 	API_DATA_REPOSITORY_LIST   = "/api/datarepository"
 	API_DATA_REPOSITORY_DELETE = "/api/datarepository"
