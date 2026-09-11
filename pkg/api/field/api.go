@@ -67,11 +67,15 @@ func (f *FieldAPI) Save(field *fieldTY.Field, retainValue bool) error {
 
 	if retainValue && eventType != eventTY.TypeCreated {
 		fieldOrg, err := f.GetByID(field.ID)
-		if err != nil {
+		if err == nil {
+			field.Current = fieldOrg.Current
+			field.Previous = fieldOrg.Previous
+		} else if err != storageTY.ErrNoDocuments {
 			return err
+		} else {
+			// supplied id with no stored document is a create (POST after delete)
+			eventType = eventTY.TypeCreated
 		}
-		field.Current = fieldOrg.Current
-		field.Previous = fieldOrg.Previous
 	}
 	err := f.storage.Upsert(types.EntityField, field, filters)
 	if err != nil {

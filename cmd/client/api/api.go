@@ -25,6 +25,7 @@ const (
 
 	API_FIRMWARE_LIST   = "/api/firmware"
 	API_FIRMWARE_DELETE = "/api/firmware"
+	API_FIRMWARE_UPLOAD = "/api/firmware/upload"
 
 	API_DATA_REPOSITORY_LIST   = "/api/datarepository"
 	API_DATA_REPOSITORY_DELETE = "/api/datarepository"
