@@ -1,6 +1,6 @@
 # MyController CLI (`myc`)
 
-This document describes the **MyController command-line client**: how to build it, log in, list and change resources, and apply gateways, nodes, sources, and fields from YAML or JSON files.
+This document describes the **MyController command-line client**: how to build it, configure aliases, list and change resources, and apply gateways, nodes, sources, and fields from YAML or JSON files.
 
 ---
 
@@ -10,8 +10,8 @@ This document describes the **MyController command-line client**: how to build i
 
 | Command | Purpose |
 | --- | --- |
-| `login` / `logout` | Store or clear server credentials |
-| `version` | Print client and server version |
+| `alias` | Add, list, or remove named server connections |
+| `server` | Show server information for an alias |
 | `get` | List resources |
 | `apply` | Add, merge, or delete resources from a YAML or JSON file |
 | `upload` | Upload a firmware binary to an existing firmware resource |
@@ -37,49 +37,62 @@ go build -trimpath -o builds/myc ./cmd/client
 
 ---
 
-## 2. Configuration
+## 2. Configuration and aliases
 
-After a successful login, `myc` writes `$HOME/.mycontroller.yaml` (override with `--config`).
+`myc` stores named connections (aliases) in a YAML config file. Each alias is a server URL plus a logged-in user session. Use this to talk to more than one server, or as more than one user.
 
-Environment variables use the prefix `MYC_` (Viper automatic env). Example: `MYC_URL`.
+Config file location, in order: `--config`, then `$MYC_CONFIG`, then `$HOME/.mycontroller.yaml`.
+
+There is **no default alias**. Every server command takes the alias as its first argument.
+
+```yaml
+aliases:
+  home:
+    url: http://localhost:8080
+    username: admin
+    password: BASE64/...
+    insecure: false
+    expiresIn: 720h
+  prod:
+    url: https://mc.example.com
+    username: operator
+    insecure: true
+```
 
 The stored password field is the session token, encoded as `BASE64/...`.
 
 ### Global flags
 
-These flags apply to every command:
-
 | Flag | Default | Description |
 | --- | --- | --- |
-| `--config` | `$HOME/.mycontroller.yaml` | Client config file |
+| `--config` | `$MYC_CONFIG` or `$HOME/.mycontroller.yaml` | Client config file |
+| `--version` | | Print full client version details (no alias required) |
 | `-o`, `--output` | `console` | Output format: `console`, `wide`, `yaml`, `json` |
 | `--hide-header` | `false` | Hide table headers on console output |
 | `--pretty` | `false` | Pretty-print JSON |
 
-`wide` is the same as `console` plus extra columns marked as wide (for example quick id).
-
 ---
 
-## 3. Login and logout
+## 3. Alias
 
 ```bash
-# username and password
-myc login http://localhost:8080 --username admin --password password
+# add an alias and log in (prompts for username and password)
+myc alias set home http://localhost:8080
 
-# prompt for username and password
-myc login http://localhost:8080
+# with credentials on the command line
+myc alias set home http://localhost:8080 -u admin -p password
 
-# prompt for password only
-myc login http://localhost:8080 --username admin
-
-# service token
-myc login http://localhost:8080 --token <token>
+# token
+myc alias set ci http://localhost:8080 --token <token>
 
 # TLS without certificate verification
-myc login https://localhost:8443 --username admin --password password --insecure
+myc alias set prod https://mc.example.com -u admin --insecure
+
+myc alias list
+myc alias remove home
 ```
 
-| Flag | Default | Description |
+| Flag (`alias set`) | Default | Description |
 | --- | --- | --- |
 | `-u`, `--username` | | Login username |
 | `-p`, `--password` | | Login password |
@@ -87,15 +100,23 @@ myc login https://localhost:8443 --username admin --password password --insecure
 | `--expires-in` | `720h` | Session lifetime |
 | `--insecure` | `false` | Skip TLS certificate verification |
 
-```bash
-myc logout
-```
+Every server command names the alias:
 
 ```bash
-myc version
+myc get node home
+myc apply prod -f resources.yaml
+myc server info home
 ```
 
-Prints client build information. If logged in, also queries the server version.
+Client version (no alias):
+
+```bash
+myc --version
+```
+
+Prints version, build date, git commit, Go version, platform, and arch.
+
+Alias names start with a letter and may contain letters, numbers, `-`, and `_`. Command names such as `get` and `apply` are reserved.
 
 ---
 
@@ -104,14 +125,20 @@ Prints client build information. If logged in, also queries the server version.
 List resources from the server.
 
 ```bash
-myc get gateway
-myc get node
-myc get source --limit 50 --sort-by name --sort-order desc
-myc get field --filter "gateway id=mysensor" --filter "node id==1"
-myc get gateway -o yaml
-myc get node -o json --pretty
-myc get field -o wide
+myc get gateway home
+myc get node home
+myc get source home --limit 50 --sort-by name --sort-order desc
+myc get field home --filter "gateway id=mysensor" --filter "node id==1"
+myc get gateway home -o yaml
+myc get node home -o json --pretty
+myc get field home -o wide
+myc get settings home
+myc get settings home geoLocation
+myc get settings home geoLocation.latitude
+myc get settings home -o yaml
 ```
+
+With no key path, `get settings` lists all keys and values. A map key lists all nested keys and values under it. A leaf key prints only that key and value.
 
 ### Persistent flags
 
@@ -165,11 +192,11 @@ The key is matched against the table header title (spaces ignored, case insensit
 Firmware **binaries** are not part of apply. Create the firmware resource with apply, then upload the file with `myc upload firmware`.
 
 ```bash
-myc apply -f resources.yaml
-myc apply -f resources.yaml --dry-run
-myc apply -f resources.yaml --replace
-myc apply -f nodes.yaml -f sources.yaml
-myc apply -f - --dry-run < resources.json
+myc apply home -f resources.yaml
+myc apply home -f resources.yaml --dry-run
+myc apply home -f resources.yaml --replace
+myc apply home -f nodes.yaml -f sources.yaml
+myc apply home -f - --dry-run < resources.json
 ```
 
 | Flag | Description |
@@ -513,7 +540,7 @@ data:
 Verify first:
 
 ```bash
-myc apply -f resources.yaml --dry-run
+myc apply home -f resources.yaml --dry-run
 ```
 
 Then apply. Use `--replace` when you want existing `add` targets recreated instead of failing.
@@ -525,9 +552,9 @@ Then apply. Use `--replace` when you want existing `add` targets recreated inste
 Upload a binary to an **existing** firmware resource. Apply the firmware metadata first.
 
 ```bash
-myc apply -f firmware.yaml
-myc upload firmware stm32-app-slot-a ./app-slot-a.signed.bin
-myc upload fw stm32-app-slot-a ./app-slot-a.signed.bin
+myc apply home -f firmware.yaml
+myc upload firmware home stm32-app-slot-a ./app-slot-a.signed.bin
+myc upload fw home stm32-app-slot-a ./app-slot-a.signed.bin
 ```
 
 | Argument | Description |
@@ -564,9 +591,9 @@ firmware stm32-app-slot-a is not present
 ### Nested property (scripts and other text)
 
 ```bash
-myc set <kind> <id> <key-path> <value>
-myc set <kind> <id> <key-path> --file script.js
-myc set <kind> <id> --path <key-path> --file script.js
+myc set <kind> <alias> <id> <key-path> <value>
+myc set <kind> <alias> <id> <key-path> --file script.js
+myc set <kind> <alias> <id> --path <key-path> --file script.js
 ```
 
 | Kind | Aliases | Id |
@@ -591,19 +618,41 @@ The key path uses dots and matches JSON field names:
 `--file` always stores the file contents as raw text (useful for JavaScript). Without `--file`, the last argument is the value. Inline values that are valid JSON (`true`, `false`, numbers, objects, arrays) are stored as that type; other inline text is stored as a string.
 
 ```bash
-myc set field mysensor.1.dht.temperature formatter.onReceive --file on_receive.js
-myc set field mysensor.1.dht.temperature formatter.onReceive "return value;"
-myc set data-repository ota_stm32_ab data.onConfig --file onConfig.js
-myc set data-repo ota_stm32_ab --path data.onBlock --file onBlock.js
-myc set gateway mysensor description "USB gateway"
-myc set node mysensor.1 others.note --file note.txt
-myc set firmware stm32-app-slot-a labels.ms_flash_slot A
+myc set field home mysensor.1.dht.temperature formatter.onReceive --file on_receive.js
+myc set field home mysensor.1.dht.temperature formatter.onReceive "return value;"
+myc set data-repository home ota_stm32_ab data.onConfig --file onConfig.js
+myc set data-repo home --path data.onBlock --file onBlock.js
+myc set gateway home mysensor description "USB gateway"
+myc set node home mysensor.1 others.note --file note.txt
+myc set firmware home stm32-app-slot-a labels.ms_flash_slot A
 ```
 
 Several ids can be given; they all receive the same path and value:
 
 ```bash
-myc set field id-1 id-2 formatter.onReceive --file on_receive.js
+myc set field home id-1 id-2 formatter.onReceive --file on_receive.js
+```
+
+### System settings
+
+Paths are relative to the settings spec. Nested maps are merged; keys not in the update stay as they are.
+
+```bash
+myc get settings home
+myc set settings home language en
+myc set settings home geoLocation.autoUpdate true
+myc set settings home geoLocation.latitude 12.97
+myc set settings home login.message --file message.txt
+myc set settings home --file settings.yaml
+```
+
+`--file` without a key path merges a YAML/JSON object into the spec:
+
+```yaml
+language: en
+geoLocation:
+  autoUpdate: true
+  locationName: Berlin
 ```
 
 ### Live field value
@@ -611,8 +660,8 @@ myc set field id-1 id-2 formatter.onReceive --file on_receive.js
 Use `set value field`. This sends an action; it does not change stored metadata.
 
 ```bash
-myc set value field gw1.1.1.V_CUSTOM 23.5
-myc set value field mysensor.1.dht.temperature 21.0
+myc set value field home gw1.1.1.V_CUSTOM 23.5
+myc set value field home mysensor.1.dht.temperature 21.0
 ```
 
 Do not use `myc set field` for this. `set field` always updates a stored key path (`formatter.onReceive`, `name`, `unit`, …).
@@ -621,15 +670,15 @@ Do not use `myc set field` for this. `set field` always updates a stored key pat
 
 ## 8. Delete, enable, disable, reload, reboot, action
 
-`delete`, `enable`, `disable`, and `reload` take **storage ids** (the `id` column from `get`). Node `reboot` and `action node` take **quick ids** (`gatewayId.nodeId`).
+`delete`, `enable`, `disable`, and `reload` take the **alias** first, then **storage ids** (the `id` column from `get`). Node `reboot` and `action node` take the alias, then **quick ids** (`gatewayId.nodeId`).
 
 ### Delete
 
 ```bash
-myc delete gateway <id> [<id>...]
-myc delete node <id>
-myc delete source <id>
-myc delete field <id>
+myc delete gateway <alias> <id> [<id>...]
+myc delete node <alias> <id>
+myc delete source <alias> <id>
+myc delete field <alias> <id>
 ```
 
 | Resource | Aliases |
@@ -651,8 +700,8 @@ myc delete field <id>
 ### Enable / disable
 
 ```bash
-myc enable gateway <id>
-myc disable task <id>
+myc enable gateway <alias> <id>
+myc disable task <alias> <id>
 ```
 
 Supported: `gateway`, `virtual-device`, `virtual-assistant`, `task`, `schedule`, `handler` (same aliases as `get`).
@@ -660,8 +709,8 @@ Supported: `gateway`, `virtual-device`, `virtual-assistant`, `task`, `schedule`,
 ### Reload
 
 ```bash
-myc reload gateway mysensor gw2
-myc reload virtual-assistant <id> [<id>...]
+myc reload gateway home mysensor gw2
+myc reload virtual-assistant home <id> [<id>...]
 ```
 
 Supported: `gateway`, `virtual-assistant`.
@@ -669,18 +718,18 @@ Supported: `gateway`, `virtual-assistant`.
 ### Reboot
 
 ```bash
-myc reboot node mysensor.1 mysensor.2
+myc reboot node home mysensor.1 mysensor.2
 ```
 
-Sends a reboot action to each node. Same as `myc action node reboot …`.
+Sends a reboot action to each node. Same as `myc action node home reboot …`.
 
 ### Action
 
 Node ids are quick ids: `gatewayId.nodeId`. Gateway ids are the gateway id. Separate multiple ids with spaces.
 
 ```bash
-myc action node <action> <gateway.node> [<gateway.node>...]
-myc action gateway discover-nodes <id> [<id>...]
+myc action node <alias> <action> <gateway.node> [<gateway.node>...]
+myc action gateway <alias> discover-nodes <id> [<id>...]
 ```
 
 | Target | Actions |
@@ -689,15 +738,15 @@ myc action gateway discover-nodes <id> [<id>...]
 | `gateway` | `discover-nodes` |
 
 ```bash
-myc action node reboot mysensor.1 mysensor.2
-myc action node reset mysensor.1
-myc action node firmware-update mysensor.1
-myc action node heartbeat mysensor.1
-myc action node refresh-node-info mysensor.1
-myc action gateway discover-nodes mysensor gw2
+myc action node home reboot mysensor.1 mysensor.2
+myc action node home reset mysensor.1
+myc action node home firmware-update mysensor.1
+myc action node home heartbeat mysensor.1
+myc action node home refresh-node-info mysensor.1
+myc action gateway home discover-nodes mysensor gw2
 ```
 
-To reload gateways, use `myc reload gateway <id> [<id>...]`. There is no gateway restart or reboot action.
+To reload gateways, use `myc reload gateway <alias> <id> [<id>...]`. There is no gateway restart or reboot action.
 
 ---
 

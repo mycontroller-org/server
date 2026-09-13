@@ -13,19 +13,19 @@ func init() {
 }
 
 var nodeRebootCmd = &cobra.Command{
-	Use:     "node <gateway.node> [<gateway.node>...]",
+	Use:     "node <alias> <gateway.node> [<gateway.node>...]",
 	Aliases: []string{"nodes"},
 	Short:   "Reboot one or more nodes",
-	Example: `  myc reboot node mysensor.1 mysensor.2`,
+	Example: `  myc reboot node home mysensor.1 mysensor.2`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args:          cobra.MinimumNArgs(1),
+	Args:          cobra.MinimumNArgs(2),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		client := rootCmd.GetClient()
-		ids, resolveErr := client.ResolveNodeIDs(args)
+		client, rest := rootCmd.TakeAlias(args)
+		ids, resolveErr := client.ResolveNodeIDs(rest)
 		if len(ids) > 0 {
 			if err := client.ExecuteNodeAction(nodeTY.ActionReboot, ids); err != nil {
 				return err

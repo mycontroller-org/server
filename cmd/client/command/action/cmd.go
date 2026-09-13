@@ -24,9 +24,8 @@ var actionCmd = &cobra.Command{
 Node actions: reboot, reset, firmware-update, heartbeat, refresh-node-info
 Gateway actions: discover-nodes
 
-Node ids are quick ids: gatewayId.nodeId (for example mysensor.1).
-Gateway ids are the gateway id (for example mysensor).
-Reload a gateway with myc reload gateway; there is no gateway restart action.
+  myc action node home reboot mysensor.1
+  myc action gateway home discover-nodes mysensor
 `,
 	SilenceUsage:  true,
 	SilenceErrors: true,
@@ -36,27 +35,27 @@ Reload a gateway with myc reload gateway; there is no gateway restart action.
 }
 
 var nodeActionCmd = &cobra.Command{
-	Use:     "node <action> <gateway.node> [<gateway.node>...]",
+	Use:     "node <alias> <action> <gateway.node> [<gateway.node>...]",
 	Aliases: []string{"nodes"},
 	Short:   "Send an action to one or more nodes",
-	Example: `  myc action node reboot mysensor.1 mysensor.2
-  myc action node reset mysensor.1
-  myc action node firmware-update mysensor.1
-  myc action node heartbeat mysensor.1
-  myc action node refresh-node-info mysensor.1`,
-	Args:          cobra.MinimumNArgs(2),
+	Example: `  myc action node home reboot mysensor.1 mysensor.2
+  myc action node home reset mysensor.1
+  myc action node home firmware-update mysensor.1
+  myc action node home heartbeat mysensor.1
+  myc action node home refresh-node-info mysensor.1`,
+	Args:          cobra.MinimumNArgs(3),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		action, err := normalizeNodeAction(args[0])
+		client, rest := rootCmd.TakeAlias(args)
+		action, err := normalizeNodeAction(rest[0])
 		if err != nil {
 			return err
 		}
-		client := rootCmd.GetClient()
-		ids, resolveErr := client.ResolveNodeIDs(args[1:])
+		ids, resolveErr := client.ResolveNodeIDs(rest[1:])
 		if len(ids) > 0 {
 			if err := client.ExecuteNodeAction(action, ids); err != nil {
 				return err
@@ -68,23 +67,23 @@ var nodeActionCmd = &cobra.Command{
 }
 
 var gatewayActionCmd = &cobra.Command{
-	Use:           "gateway <action> <id> [<id>...]",
+	Use:           "gateway <alias> <action> <id> [<id>...]",
 	Aliases:       []string{"gw", "gateways"},
 	Short:         "Send an action to one or more gateways",
-	Example:       `  myc action gateway discover-nodes mysensor gw2`,
-	Args:          cobra.MinimumNArgs(2),
+	Example:       `  myc action gateway home discover-nodes mysensor gw2`,
+	Args:          cobra.MinimumNArgs(3),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		action, err := normalizeGatewayAction(args[0])
+		client, rest := rootCmd.TakeAlias(args)
+		action, err := normalizeGatewayAction(rest[0])
 		if err != nil {
 			return err
 		}
-		client := rootCmd.GetClient()
-		ids, resolveErr := client.ResolveGatewayIDs(args[1:], true)
+		ids, resolveErr := client.ResolveGatewayIDs(rest[1:], true)
 		if len(ids) > 0 {
 			if err := client.ExecuteGatewayAction(action, ids); err != nil {
 				return err

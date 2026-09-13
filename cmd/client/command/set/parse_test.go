@@ -61,6 +61,21 @@ func TestParseSetArgsKeyPathWithoutValue(t *testing.T) {
 	assert.Contains(t, err.Error(), "formatter.onReceive")
 }
 
+func TestParseSettingsArgs(t *testing.T) {
+	path, value, err := parseSettingsArgs([]string{"language", "en"}, "", "")
+	require.NoError(t, err)
+	assert.Equal(t, "language", path)
+	assert.Equal(t, "en", value)
+
+	_, _, err = parseSettingsArgs([]string{"geoLocation.autoUpdate"}, "", "")
+	require.Error(t, err)
+
+	path, value, err = parseSettingsArgs([]string{"true"}, "", "geoLocation.autoUpdate")
+	require.NoError(t, err)
+	assert.Equal(t, "geoLocation.autoUpdate", path)
+	assert.Equal(t, "true", value)
+}
+
 func TestParseSetArgsBareNameRequiresValue(t *testing.T) {
 	_, _, _, err := parseSetArgs([]string{"gw1.1.1.V_CUSTOM", "name"}, "", "")
 	require.Error(t, err)

@@ -15,91 +15,91 @@ func init() {
 }
 
 var gatewayEnableCmd = &cobra.Command{
-	Use:     "gateway",
+	Use:     "gateway <alias> <id> [<id>...]",
 	Aliases: []string{"gw", "gateways"},
 	Short:   "Enables the given gateways",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.EnableGateway(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.EnableGateway(ids...)
 		printStatus(err)
 	},
 }
 
 var virtualDeviceEnableCmd = &cobra.Command{
-	Use:     "virtual-device",
+	Use:     "virtual-device <alias> <id> [<id>...]",
 	Aliases: []string{"virtual-devices", "vd"},
 	Short:   "Enables the given virtual devices",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.EnableVirtualDevice(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.EnableVirtualDevice(ids...)
 		printStatus(err)
 	},
 }
 
 var virtualAssistantEnableCmd = &cobra.Command{
-	Use:     "virtual-assistant",
+	Use:     "virtual-assistant <alias> <id> [<id>...]",
 	Aliases: []string{"virtual-assistants", "va"},
 	Short:   "Enables the given virtual assistants",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.EnableVirtualAssistant(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.EnableVirtualAssistant(ids...)
 		printStatus(err)
 	},
 }
 
 var taskEnableCmd = &cobra.Command{
-	Use:     "task",
+	Use:     "task <alias> <id> [<id>...]",
 	Aliases: []string{"tasks"},
 	Short:   "Enables the given tasks",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.EnableTask(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.EnableTask(ids...)
 		printStatus(err)
 	},
 }
 
 var scheduleEnableCmd = &cobra.Command{
-	Use:     "schedule",
+	Use:     "schedule <alias> <id> [<id>...]",
 	Aliases: []string{"schedules"},
 	Short:   "Enables the given schedules",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.EnableSchedule(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.EnableSchedule(ids...)
 		printStatus(err)
 	},
 }
 
 var handlerEnableCmd = &cobra.Command{
-	Use:     "handler",
+	Use:     "handler <alias> <id> [<id>...]",
 	Aliases: []string{"handlers"},
 	Short:   "Enables the given handlers",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.EnableHandler(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.EnableHandler(ids...)
 		printStatus(err)
 	},
 }

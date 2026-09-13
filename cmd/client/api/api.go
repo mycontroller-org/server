@@ -62,4 +62,7 @@ const (
 
 	API_BACKUP_LIST   = "/api/backup"
 	API_BACKUP_DELETE = "/api/backup"
+
+	API_SETTINGS        = "/api/settings"
+	API_SETTINGS_SYSTEM = "/api/settings/system"
 )

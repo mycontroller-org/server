@@ -37,14 +37,15 @@ func init() {
 }
 
 var gwGetCmd = &cobra.Command{
-	Use:     "gateway",
+	Use:     "gateway <alias>",
 	Aliases: []string{"gw", "gateways"},
 	Short:   "Print the gateway details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "id"},
@@ -63,14 +64,15 @@ var gwGetCmd = &cobra.Command{
 }
 
 var nodeGetCmd = &cobra.Command{
-	Use:     "node",
+	Use:     "node <alias>",
 	Aliases: []string{"nodes"},
 	Short:   "Print the node details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "id", IsWide: true},
@@ -90,14 +92,15 @@ var nodeGetCmd = &cobra.Command{
 }
 
 var sourceGetCmd = &cobra.Command{
-	Use:     "source",
+	Use:     "source <alias>",
 	Aliases: []string{"sources"},
 	Short:   "Print the source details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "id", IsWide: true},
@@ -113,14 +116,15 @@ var sourceGetCmd = &cobra.Command{
 }
 
 var fieldGetCmd = &cobra.Command{
-	Use:     "field",
+	Use:     "field <alias>",
 	Aliases: []string{"fields"},
 	Short:   "Print the field details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "id", IsWide: true},
@@ -142,14 +146,15 @@ var fieldGetCmd = &cobra.Command{
 }
 
 var firmwareGetCmd = &cobra.Command{
-	Use:     "firmware",
+	Use:     "firmware <alias>",
 	Aliases: []string{"firmwares", "fw"},
 	Short:   "Print the firmware details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "id"},
@@ -164,14 +169,15 @@ var firmwareGetCmd = &cobra.Command{
 }
 
 var dataRepositoryGetCmd = &cobra.Command{
-	Use:     "data-repository",
+	Use:     "data-repository <alias>",
 	Aliases: []string{"data-repositories", "data-repo"},
 	Short:   "Print the data repository details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "id"},
@@ -185,14 +191,15 @@ var dataRepositoryGetCmd = &cobra.Command{
 }
 
 var virtualDeviceGetCmd = &cobra.Command{
-	Use:     "virtual-device",
+	Use:     "virtual-device <alias>",
 	Aliases: []string{"virtual-devices", "vd"},
 	Short:   "Print the virtual device details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "id", IsWide: true},
@@ -209,14 +216,15 @@ var virtualDeviceGetCmd = &cobra.Command{
 }
 
 var virtualAssistantGetCmd = &cobra.Command{
-	Use:     "virtual-assistant",
+	Use:     "virtual-assistant <alias>",
 	Aliases: []string{"virtual-assistants", "va"},
 	Short:   "Print the virtual assistant details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "id"},
@@ -233,14 +241,15 @@ var virtualAssistantGetCmd = &cobra.Command{
 }
 
 var taskGetCmd = &cobra.Command{
-	Use:     "task",
+	Use:     "task <alias>",
 	Aliases: []string{"tasks"},
 	Short:   "Print the task details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "id"},
@@ -259,14 +268,15 @@ var taskGetCmd = &cobra.Command{
 }
 
 var scheduleGetCmd = &cobra.Command{
-	Use:     "schedule",
+	Use:     "schedule <alias>",
 	Aliases: []string{"schedules"},
 	Short:   "Print the schedule details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "id"},
@@ -282,14 +292,15 @@ var scheduleGetCmd = &cobra.Command{
 }
 
 var handlerGetCmd = &cobra.Command{
-	Use:     "handler",
+	Use:     "handler <alias>",
 	Aliases: []string{"handlers"},
 	Short:   "Print the handler details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "id"},
@@ -305,14 +316,15 @@ var handlerGetCmd = &cobra.Command{
 }
 
 var forwardPayloadGetCmd = &cobra.Command{
-	Use:     "forward-payload",
+	Use:     "forward-payload <alias>",
 	Aliases: []string{"forward-payloads"},
 	Short:   "Print the forward payload details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "id"},
@@ -327,14 +339,15 @@ var forwardPayloadGetCmd = &cobra.Command{
 }
 
 var backupGetCmd = &cobra.Command{
-	Use:     "backup",
+	Use:     "backup <alias>",
 	Aliases: []string{"backups"},
 	Short:   "Print the backup details",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
 
 		headers := []printer.Header{
 			{Title: "filename", ValuePath: "id"},
