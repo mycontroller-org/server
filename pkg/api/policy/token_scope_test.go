@@ -4,34 +4,38 @@ import (
 	"testing"
 
 	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
-	svcTokenTY "github.com/mycontroller-org/server/v2/pkg/types/service_token"
+	svcAccountTY "github.com/mycontroller-org/server/v2/pkg/types/service_account"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 )
 
-// tokenScopeAPI builds an API with one user, one policy and one service token in cache.
+// tokenScopeAPI builds an API with one user, one policy and one service account in cache.
 func tokenScopeAPI(t *testing.T, p policyTY.Policy, tokenResources []string) *API {
 	t.Helper()
 	c := newCache()
 	c.PutUser(&userTY.User{ID: "u1", Username: "u", Policies: []string{p.ID}})
 	cp := p
 	c.PutPolicy(&cp)
-	c.PutToken(&svcTokenTY.ServiceToken{
+	c.PutToken(&svcAccountTY.ServiceAccount{
 		ID:          "t-entity",
 		UserID:      "u1",
 		NeverExpire: true,
-		Token:       svcTokenTY.Token{ID: "t1"},
-		Resources:   tokenResources,
+		Token:       svcAccountTY.Token{ID: "t1"},
+		Statements: []policyTY.Statement{{
+			Effect:    policyTY.EffectAllow,
+			Actions:   []string{"*"},
+			Resources: tokenResources,
+		}},
 	})
 	c.setLoaders(
 		func(id string) (*userTY.User, error) { return nil, ErrUserNotFound },
 		func(id string) (*policyTY.Policy, error) { return nil, ErrNotFound },
-		func(tokenID string) (*svcTokenTY.ServiceToken, error) { return nil, ErrTokenNotFound },
+		func(tokenID string) (*svcAccountTY.ServiceAccount, error) { return nil, ErrTokenNotFound },
 		func() ([]policyTY.Policy, error) { return nil, nil },
 	)
 	return &API{cache: c}
 }
 
-// A service token must only be able to narrow the user's scope, never widen it.
+// A service account must only be able to narrow the user's scope, never widen it.
 func TestResourceNamesForList_TokenCanOnlyNarrow(t *testing.T) {
 	userPolicy := policyTY.Policy{
 		ID: "p1",
@@ -73,7 +77,7 @@ func TestResourceNamesForList_TokenCanOnlyNarrow(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			a := tokenScopeAPI(t, userPolicy, tc.tokenResources)
-			subject := Subject{UserID: "u1", ServiceTokenID: "t1"}
+			subject := Subject{UserID: "u1", ServiceAccountID: "t1"}
 
 			unrestricted, patterns, err := a.ResourceNamesForList(subject, policyTY.ResourceField)
 			if tc.wantDenied {
@@ -132,7 +136,7 @@ func TestResourceNamesForList_TokenEmptiesScopeDropsDenyOnly(t *testing.T) {
 	// token reaches the field kind (gateway is an ancestor) but names a gateway
 	// the user policy does not cover
 	a := tokenScopeAPI(t, userPolicy, []string{"gateway:other-gw"})
-	subject := Subject{UserID: "u1", ServiceTokenID: "t1"}
+	subject := Subject{UserID: "u1", ServiceAccountID: "t1"}
 
 	_, patterns, err := a.ResourceNamesForList(subject, policyTY.ResourceField)
 	if err != nil {

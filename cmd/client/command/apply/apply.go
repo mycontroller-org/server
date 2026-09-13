@@ -10,7 +10,10 @@ import (
 	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
+	svcAccountTY "github.com/mycontroller-org/server/v2/pkg/types/service_account"
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
+	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"github.com/olekukonko/tablewriter"
@@ -35,19 +38,33 @@ type ResourceClient interface {
 	FindField(id, gatewayID, nodeID, sourceID, fieldID string) (idFound string, err error)
 	FindFirmware(id string) (idFound string, err error)
 	FindDataRepository(id string) (idFound string, err error)
+	FindUser(id, username string) (idFound string, err error)
+	FindPolicy(id string) (idFound string, err error)
+	FindServiceAccount(id, name, userRef string) (idFound string, err error)
 	SaveGateway(resource Resource) error
 	SaveNode(resource Resource) error
 	SaveSource(resource Resource) error
 	SaveField(resource Resource) error
 	SaveFirmware(resource Resource) error
 	SaveDataRepository(resource Resource) error
+	SaveUser(resource Resource) error
+	SavePolicy(resource Resource) error
+	SaveServiceAccount(resource Resource) (token string, err error)
 	DeleteGateway(ids ...string) error
 	DeleteNode(ids ...string) error
 	DeleteSource(ids ...string) error
 	DeleteField(ids ...string) error
 	DeleteFirmware(ids ...string) error
 	DeleteDataRepository(ids ...string) error
+	DeleteUser(ids ...string) error
+	DeletePolicy(ids ...string) error
+	DeleteServiceAccount(ids ...string) error
 	GetExisting(resource Resource) ([]byte, error)
+}
+
+type createdToken struct {
+	resource string
+	token    string
 }
 
 type plannedAction struct {
@@ -90,6 +107,7 @@ func Apply(client ResourceClient, resources []Resource, replace, dryRun bool, ou
 	}
 
 	rows := make([]applyRow, 0, len(plans))
+	tokens := make([]createdToken, 0)
 	var applyErr error
 	executed := newPendingParents()
 	for _, plan := range plans {
@@ -97,8 +115,10 @@ func Apply(client ResourceClient, resources []Resource, replace, dryRun bool, ou
 		if plan.Err == nil && plan.Action != actionNotAvailable && !dryRun {
 			if err := checkExecutedParent(plan.Resource, executed); err != nil {
 				execErr = err
-			} else if err := executePlan(client, plan); err != nil {
+			} else if token, err := executePlan(client, plan); err != nil {
 				execErr = err
+			} else if token != "" {
+				tokens = append(tokens, createdToken{resource: plan.Resource.TableResource(), token: token})
 			}
 			switch plan.Action {
 			case actionAdd, actionMerge, actionReplace:
@@ -118,6 +138,7 @@ func Apply(client ResourceClient, resources []Resource, replace, dryRun bool, ou
 	}
 
 	printApplyTable(out, rows)
+	printCreatedTokens(out, tokens)
 
 	if planFailed || applyErr != nil {
 		return ErrApplyFailed
@@ -178,6 +199,17 @@ func printApplyTable(out io.Writer, rows []applyRow) {
 		table.Append([]string{row.Resource, row.Action, row.Status})
 	}
 	table.Render()
+}
+
+func printCreatedTokens(out io.Writer, tokens []createdToken) {
+	if len(tokens) == 0 {
+		return
+	}
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Save these tokens now. They will not be shown again.")
+	for _, item := range tokens {
+		fmt.Fprintf(out, "\n  %s\n  %s\n", item.resource, item.token)
+	}
 }
 
 func planResource(client ResourceClient, resource Resource, replace bool, pending *pendingParents) plannedAction {
@@ -412,6 +444,15 @@ func decodeMerged(resource *Resource, merged []byte) error {
 	case KindDataRepository:
 		resource.DataRepository = &dataRepoTY.Config{}
 		return json.Unmarshal(merged, resource.DataRepository)
+	case KindUser:
+		resource.User = &userTY.User{}
+		return json.Unmarshal(merged, resource.User)
+	case KindPolicy:
+		resource.Policy = &policyTY.Policy{}
+		return json.Unmarshal(merged, resource.Policy)
+	case KindServiceAccount:
+		resource.ServiceAccount = &svcAccountTY.ServiceAccount{}
+		return json.Unmarshal(merged, resource.ServiceAccount)
 	default:
 		return fmt.Errorf("unsupported kind %q", resource.Kind)
 	}
@@ -423,31 +464,32 @@ func assignSaveID(resource *Resource) {
 	if resource.ID() != "" {
 		return
 	}
-	if resource.Kind == KindField || resource.Kind == KindGateway || resource.Kind == KindFirmware || resource.Kind == KindDataRepository {
+	if resource.Kind == KindField || resource.Kind == KindGateway || resource.Kind == KindFirmware || resource.Kind == KindDataRepository || resource.Kind == KindUser || resource.Kind == KindServiceAccount {
 		return
 	}
 	resource.SetID(utils.RandUUID())
 }
 
-func executePlan(client ResourceClient, plan plannedAction) error {
+func executePlan(client ResourceClient, plan plannedAction) (string, error) {
 	switch plan.Action {
 	case actionAdd, actionMerge:
 		return saveResource(client, plan.Resource)
 	case actionReplace:
 		if err := deleteResource(client, plan.Resource, plan.ExistingID); err != nil {
-			return fmt.Errorf("replace delete failed: %w", err)
+			return "", fmt.Errorf("replace delete failed: %w", err)
 		}
-		if err := saveResource(client, plan.Resource); err != nil {
+		token, err := saveResource(client, plan.Resource)
+		if err != nil {
 			if plan.Resource.Kind == KindFirmware {
-				return fmt.Errorf("deleted existing resource, but recreate failed: %w (upload the firmware binary again)", err)
+				return "", fmt.Errorf("deleted existing resource, but recreate failed: %w (upload the firmware binary again)", err)
 			}
-			return fmt.Errorf("deleted existing resource, but recreate failed: %w", err)
+			return "", fmt.Errorf("deleted existing resource, but recreate failed: %w", err)
 		}
-		return nil
+		return token, nil
 	case actionDelete:
-		return deleteResource(client, plan.Resource, plan.ExistingID)
+		return "", deleteResource(client, plan.Resource, plan.ExistingID)
 	default:
-		return fmt.Errorf("unknown action %q", plan.Action)
+		return "", fmt.Errorf("unknown action %q", plan.Action)
 	}
 }
 
@@ -461,6 +503,12 @@ func findExisting(client ResourceClient, resource Resource) (string, error) {
 		return client.FindFirmware(id)
 	case KindDataRepository:
 		return client.FindDataRepository(id)
+	case KindUser:
+		return client.FindUser(id, gatewayID)
+	case KindPolicy:
+		return client.FindPolicy(id)
+	case KindServiceAccount:
+		return client.FindServiceAccount(id, nodeID, gatewayID)
 	case KindNode:
 		return client.FindNode(id, gatewayID, nodeID)
 	case KindSource:
@@ -472,23 +520,31 @@ func findExisting(client ResourceClient, resource Resource) (string, error) {
 	}
 }
 
-func saveResource(client ResourceClient, resource Resource) error {
+func saveResource(client ResourceClient, resource Resource) (string, error) {
+	var err error
 	switch resource.Kind {
 	case KindGateway:
-		return client.SaveGateway(resource)
+		err = client.SaveGateway(resource)
 	case KindFirmware:
-		return client.SaveFirmware(resource)
+		err = client.SaveFirmware(resource)
 	case KindDataRepository:
-		return client.SaveDataRepository(resource)
+		err = client.SaveDataRepository(resource)
+	case KindUser:
+		err = client.SaveUser(resource)
+	case KindPolicy:
+		err = client.SavePolicy(resource)
+	case KindServiceAccount:
+		return client.SaveServiceAccount(resource)
 	case KindNode:
-		return client.SaveNode(resource)
+		err = client.SaveNode(resource)
 	case KindSource:
-		return client.SaveSource(resource)
+		err = client.SaveSource(resource)
 	case KindField:
-		return client.SaveField(resource)
+		err = client.SaveField(resource)
 	default:
-		return fmt.Errorf("unsupported kind %q", resource.Kind)
+		return "", fmt.Errorf("unsupported kind %q", resource.Kind)
 	}
+	return "", err
 }
 
 func deleteResource(client ResourceClient, resource Resource, existingID string) error {
@@ -506,6 +562,12 @@ func deleteResource(client ResourceClient, resource Resource, existingID string)
 		return client.DeleteFirmware(id)
 	case KindDataRepository:
 		return client.DeleteDataRepository(id)
+	case KindUser:
+		return client.DeleteUser(id)
+	case KindPolicy:
+		return client.DeletePolicy(id)
+	case KindServiceAccount:
+		return client.DeleteServiceAccount(id)
 	case KindNode:
 		return client.DeleteNode(id)
 	case KindSource:

@@ -12,6 +12,7 @@ func init() {
 	enableCmd.AddCommand(taskEnableCmd)
 	enableCmd.AddCommand(scheduleEnableCmd)
 	enableCmd.AddCommand(handlerEnableCmd)
+	enableCmd.AddCommand(userEnableCmd)
 }
 
 var gatewayEnableCmd = &cobra.Command{
@@ -101,5 +102,21 @@ var handlerEnableCmd = &cobra.Command{
 		client, ids := rootCmd.TakeAlias(args)
 		err := client.EnableHandler(ids...)
 		printStatus(err)
+	},
+}
+
+var userEnableCmd = &cobra.Command{
+	Use:     "user <alias> <username-or-id> [<username-or-id>...]",
+	Aliases: []string{"users"},
+	Short:   "Enables the given users",
+	Example: `  myc enable user <alias> alice
+  myc enable user <alias> alice bob`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		rootCmd.UpdateStreams(cmd)
+	},
+	Args: cobra.MinimumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		client, selectors := rootCmd.TakeAlias(args)
+		printStatus(client.EnableUser(selectors...))
 	},
 }

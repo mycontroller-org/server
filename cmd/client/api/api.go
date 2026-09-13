@@ -65,4 +65,16 @@ const (
 
 	API_SETTINGS        = "/api/settings"
 	API_SETTINGS_SYSTEM = "/api/settings/system"
+
+	API_USER_LIST    = "/api/user"
+	API_USER_DELETE  = "/api/user"
+	API_USER_PROFILE = "/api/user/profile"
+
+	API_POLICY_LIST   = "/api/policy"
+	API_POLICY_DELETE = "/api/policy"
+
+	API_SERVICE_ACCOUNT_LIST   = "/api/serviceaccount"
+	API_SERVICE_ACCOUNT_CREATE = "/api/serviceaccount/create"
+	API_SERVICE_ACCOUNT_UPDATE = "/api/serviceaccount/update"
+	API_SERVICE_ACCOUNT_DELETE = "/api/serviceaccount"
 )

@@ -1,6 +1,6 @@
 # Access control (policies)
 
-This document describes MyController’s **policy-based access control**: how identities, policies, resources, and service tokens work, and how to configure them with examples.
+This document describes MyController’s **policy-based access control**: how identities, policies, resources, and service accounts work, and how to configure them with examples.
 
 ---
 
@@ -8,16 +8,16 @@ This document describes MyController’s **policy-based access control**: how id
 
 MyController authorizes HTTP API calls with:
 
-1. **Authentication** – valid JWT (login or service token).
+1. **Authentication** – valid JWT (login or service account).
 2. **User state** – user must exist and must not be **disabled**.
-3. **Service token** (if used) – must exist, belong to the user, and not be expired.
+3. **Service account** (if used) – must exist, belong to the user, and not be expired.
 4. **Authorization** – at least one attached **policy** must **Allow** the requested **action** on the requested **resource**.
 
 There is no multi-tenant isolation in this model. Policies define _what_ a principal may do on _which_ named resources.
 
 ### Naming
 
-This feature is **policy-based access control**: reusable **policies** are attached to **users** (and optionally narrowed on service tokens). It is not classical role-based access control (User → Role → permissions).
+This feature is **policy-based access control**: reusable **policies** are attached to **users** (and optionally narrowed on service accounts). It is not classical role-based access control (User → Role → permissions).
 
 | Term              | Meaning                                            |
 | ----------------- | -------------------------------------------------- |
@@ -31,11 +31,11 @@ This feature is **policy-based access control**: reusable **policies** are attac
 | ------------------- | -------------------------------------------------------------------------------- |
 | **User**            | Identity; holds password, `disabled`, and a list of **policy IDs**               |
 | **Policy**          | Named document: list of **statements** (effect, actions, resources)              |
-| **Service token**   | Always tied to a user; optional **extra limits** that can only **reduce** access |
+| **Service account** | Always tied to a user; optional **extra limits** that can only **reduce** access |
 | **Resource string** | `kind` or `kind:name` (name may use hierarchical wildcards)                      |
 | **Action**          | Verb such as `get`, `list`, `update`, `delete`, …                                |
 
-Effective access for a service token:
+Effective access for a service account:
 
 ```text
 effective = permissions(user policies)  ∩  token restrictions (if any)
@@ -147,18 +147,17 @@ You do **not** need separate `source:` / `field:` lines unless you want a narrow
 scope (e.g. only one source). Kind-wide Deny (`node`, `node:*`, `*`) still blocks
 the whole kind (and descendants).
 
-### 2.4 Service tokens
+### 2.4 Service accounts
 
-Service tokens always have a `userId`. They act **as that user**, with optional tightening:
+Service accounts (API path `/api/serviceaccount`) always have a `userId`. They act **as that user**, with optional tightening:
 
 | Field                       | Description                                                   |
 | --------------------------- | ------------------------------------------------------------- |
-| `userId`                    | Owning user (immutable after create)                          |
+| `userId` / `username`       | Owning user (immutable after create). Admins may set this     |
 | `neverExpire` / `expiresOn` | Lifetime of the token                                         |
-| `actions`                   | Optional: only these actions (subset of the user’s)           |
-| `resources`                 | Optional: only these resource patterns (subset of the user’s) |
+| `statements`                | Optional Allow/Deny rules (same shape as a policy statement)  |
 
-Empty `actions` and `resources` mean “no extra limit” (same as the user).
+Empty statements mean “no extra limit” (same as the user).
 
 Evaluation:
 
@@ -220,7 +219,7 @@ All kinds recognized by the authorization engine are listed below.
 | `datarepository`   | `/api/datarepository`         | id                                                                  | Yes                                        |
 | `virtualdevice`    | `/api/virtualdevice`          | id                                                                  | Yes                                        |
 | `virtualassistant` | `/api/virtualassistant`       | id                                                                  | Yes                                        |
-| `servicetoken`     | `/api/servicetoken`           | entity id                                                           | Yes                                        |
+| `serviceaccount`   | `/api/serviceaccount`         | entity id                                                           | Yes                                        |
 | `metric`           | `/api/metric`                 | same hierarchy as **field** path                                    | Yes (kind-level in built-ins; see metrics) |
 | `action`           | `/api/action`                 | optional target name                                                | Yes                                        |
 | `status`           | `/api/server/status`          | (kind only)                                                         | Yes                                        |
@@ -270,7 +269,7 @@ Storage may still use a UUID as primary key for node/source/field. For **get by 
 | `datarepository`   | id                | API path `/api/datarepository`     |
 | `virtualdevice`    | id                |                                    |
 | `virtualassistant` | id                |                                    |
-| `servicetoken`     | entity id         |                                    |
+| `serviceaccount`   | entity id         |                                    |
 | `user`             | user management   | Create/list/update/delete users    |
 | `policy`           | policy management | Create/list/update/delete policies |
 | `settings`         | system settings   |                                    |
@@ -338,7 +337,7 @@ Default user on fresh install: `admin` / `admin` with policy `admin`.
 HTTP request
   → JWT valid?
   → user active (not disabled)?
-  → service token valid (if present)?
+  → service account valid (if present)?
   → map path + method → action + resource
   → (optional) resolve UUID → business name
   → Allowed(user policies ∩ token limits)?          ← layer 1: may you reach this endpoint?
@@ -372,11 +371,12 @@ A payload that names **no** target — creating an object whose id the server ge
 **kind-wide** grant (`*`, `gateway`, or `gateway:*`). A grant on one named object is never enough to
 create new ones, which is what keeps `user:<own-id>` from being a path to `admin`.
 
-### 6.1b Service tokens are personal
+### 6.1b Service accounts are personal
 
-`/api/servicetoken` is always scoped to the caller, whatever the policies say. Tokens act as their
-owner, so no principal can read, widen (drop the `actions`/`resources` limits, set `neverExpire`) or
-delete another principal's tokens. To revoke someone else's access, disable the user.
+A service account acts as its owner. Callers without user-admin rights only see and manage their
+own accounts. A principal with kind-wide `user` update (for example built-in `admin`) can create,
+list, update, and delete service accounts for any user. The owner (`userId`) cannot be changed
+after create. To revoke someone else's access, disable the user.
 
 ### 6.2 List queries
 
@@ -466,7 +466,7 @@ Managing other users requires the `user` resource (typically `admin` or a custom
 | -------------- | ------------------- | ------------------------- |
 | Users          | `/api/user`         | Settings → Users          |
 | Policies       | `/api/policy`       | Settings → Policies       |
-| Service tokens | `/api/servicetoken` | Settings → Service Tokens |
+| Service accounts | `/api/serviceaccount` | Settings → Service Accounts |
 
 Only principals with policy rights on `user` / `policy` can manage them (e.g. built-in `admin`).
 
@@ -628,22 +628,22 @@ statements:
 
 Combine with another policy if that person also needs device access.
 
-### 8.8 Service token narrower than the user
+### 8.8 Service account narrower than the user
 
-User has `readwrite`. Token for automation:
+User has `readwrite`. Service account for automation:
 
 ```yaml
 name: plant-room-metrics-bot
 userId: <alice-user-id>
 neverExpire: false
 expiresOn: "2027-12-31"
-actions:
-  - get
-  - list
-resources:
-  - field:plant-room.*
-  - metric:plant-room.*
-  - quickid
+statements:
+  - effect: Allow
+    actions: [get, list]
+    resources:
+      - field:plant-room.*
+      - metric:plant-room.*
+      - quickid
 ```
 
 The bot cannot update devices or touch other gateways, even though Alice could.
@@ -705,7 +705,7 @@ silently becoming empty (which would remove all of their access).
 
 ## 11. Performance notes
 
-- Users, policies, and service tokens used for auth are kept in an **in-memory cache**, refreshed on write.
+- Users, policies, and service accounts used for auth are kept in an **in-memory cache**, refreshed on write.
 - List scoping is applied as **storage query filters** (including OR of name patterns).
 - Get-by-UUID for device entities does one lookup to resolve the business name before the policy check.
 
@@ -767,4 +767,4 @@ resources:
 
 ## 14. Changelog (feature introduction)
 
-Policy-based access control was introduced for server release line **2.2.0** (upgrade id `2.2.0-1`): built-in policies, user `policies` / `disabled`, service token restrictions, and enforcement on the HTTP API.
+Policy-based access control was introduced for server release line **2.2.0** (upgrade id `2.2.0-1`): built-in policies, user `policies` / `disabled`, service account restrictions, and enforcement on the HTTP API.

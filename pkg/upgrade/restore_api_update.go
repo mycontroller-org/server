@@ -4,6 +4,7 @@ import (
 	"context"
 
 	semver "github.com/Masterminds/semver/v3"
+	"github.com/mycontroller-org/server/v2/pkg/types"
 	backupTY "github.com/mycontroller-org/server/v2/plugin/database/storage/backup"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 	"go.uber.org/zap"
@@ -30,7 +31,16 @@ func UpdateStorageRestoreApiMap(ctx context.Context, logger *zap.Logger, storage
 	// there is change on version 2.1.1 on "virtual_devices"
 	if updatedBackupSemver.LessThan(semver.MustParse("2.1.1")) {
 		logger.Info("backup is from 2.1.0 or lower version of server, updating required schema changes")
-		return updateRestoreApiMap_2_1_1(ctx, logger, storage, apiMap)
+		var err error
+		apiMap, err = updateRestoreApiMap_2_1_1(ctx, logger, storage, apiMap)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// service_token was renamed to service_account
+	if api, ok := apiMap[types.EntityServiceAccount]; ok {
+		apiMap[oldServiceTokenEntity] = api
 	}
 
 	return apiMap, nil

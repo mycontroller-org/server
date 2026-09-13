@@ -10,7 +10,7 @@ import (
 
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
-	svcTokenTY "github.com/mycontroller-org/server/v2/pkg/types/service_token"
+	svcAccountTY "github.com/mycontroller-org/server/v2/pkg/types/service_account"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
@@ -58,7 +58,7 @@ func New(ctx context.Context, logger *zap.Logger, storage storageTY.Plugin) *API
 				}
 				return &p, nil
 			},
-			func(tokenID string) (*svcTokenTY.ServiceToken, error) {
+			func(tokenID string) (*svcAccountTY.ServiceAccount, error) {
 				t, err := a.loadTokenFromStorage(tokenID)
 				if err != nil {
 					return nil, err
@@ -167,9 +167,9 @@ func (a *API) loadUserFromStorage(id string) (userTY.User, error) {
 	return result, err
 }
 
-func (a *API) loadTokenFromStorage(tokenID string) (svcTokenTY.ServiceToken, error) {
-	result := svcTokenTY.ServiceToken{}
-	err := a.storage.FindOne(types.EntityServiceToken, &result, []storageTY.Filter{{Key: types.KeyTokenID, Value: tokenID}})
+func (a *API) loadTokenFromStorage(tokenID string) (svcAccountTY.ServiceAccount, error) {
+	result := svcAccountTY.ServiceAccount{}
+	err := a.storage.FindOne(types.EntityServiceAccount, &result, []storageTY.Filter{{Key: types.KeyTokenID, Value: tokenID}})
 	return result, err
 }
 
@@ -284,7 +284,7 @@ func (a *API) NotifyUserDeleted(id string) {
 }
 
 // NotifyTokenUpdated refreshes token cache.
-func (a *API) NotifyTokenUpdated(token *svcTokenTY.ServiceToken) {
+func (a *API) NotifyTokenUpdated(token *svcAccountTY.ServiceAccount) {
 	a.cache.PutToken(token)
 }
 

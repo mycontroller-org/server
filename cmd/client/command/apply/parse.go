@@ -11,7 +11,10 @@ import (
 	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
+	svcAccountTY "github.com/mycontroller-org/server/v2/pkg/types/service_account"
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
+	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"gopkg.in/yaml.v3"
@@ -24,6 +27,9 @@ const (
 	KindField          = "field"
 	KindFirmware       = "firmware"
 	KindDataRepository = "data-repository"
+	KindUser           = "user"
+	KindPolicy         = "policy"
+	KindServiceAccount = "service-account"
 
 	OperationAdd    = "add"
 	OperationMerge  = "merge"
@@ -43,6 +49,9 @@ type Resource struct {
 	Field          *fieldTY.Field
 	Firmware       *firmwareTY.Firmware
 	DataRepository *dataRepoTY.Config
+	User           *userTY.User
+	Policy         *policyTY.Policy
+	ServiceAccount *svcAccountTY.ServiceAccount
 	Payload        map[string]interface{}
 }
 
@@ -71,6 +80,18 @@ func (r Resource) ID() string {
 	case KindDataRepository:
 		if r.DataRepository != nil {
 			return r.DataRepository.ID
+		}
+	case KindUser:
+		if r.User != nil {
+			return r.User.ID
+		}
+	case KindPolicy:
+		if r.Policy != nil {
+			return r.Policy.ID
+		}
+	case KindServiceAccount:
+		if r.ServiceAccount != nil {
+			return r.ServiceAccount.ID
 		}
 	}
 	return ""
@@ -102,6 +123,18 @@ func (r Resource) SetID(id string) {
 		if r.DataRepository != nil {
 			r.DataRepository.ID = id
 		}
+	case KindUser:
+		if r.User != nil {
+			r.User.ID = id
+		}
+	case KindPolicy:
+		if r.Policy != nil {
+			r.Policy.ID = id
+		}
+	case KindServiceAccount:
+		if r.ServiceAccount != nil {
+			r.ServiceAccount.ID = id
+		}
 	}
 }
 
@@ -130,6 +163,22 @@ func (r Resource) NaturalKeys() (gatewayID, nodeID, sourceID, fieldID string) {
 	case KindDataRepository:
 		if r.DataRepository != nil {
 			return r.DataRepository.ID, "", "", ""
+		}
+	case KindUser:
+		if r.User != nil {
+			return r.User.Username, "", "", ""
+		}
+	case KindPolicy:
+		if r.Policy != nil {
+			return r.Policy.ID, "", "", ""
+		}
+	case KindServiceAccount:
+		if r.ServiceAccount != nil {
+			userRef := r.ServiceAccount.Username
+			if userRef == "" {
+				userRef = r.ServiceAccount.UserID
+			}
+			return userRef, r.ServiceAccount.Name, "", ""
 		}
 	}
 	return "", "", "", ""
@@ -211,6 +260,24 @@ func (r Resource) Validate() error {
 	case KindDataRepository:
 		if !hasID {
 			return fmt.Errorf("data-repository requires id")
+		}
+	case KindUser:
+		if r.Operation == OperationAdd && (gatewayID == "" || (r.User != nil && r.User.Password == "")) {
+			return fmt.Errorf("add user requires username and password")
+		}
+		if r.Operation != OperationAdd && !hasID && gatewayID == "" {
+			return fmt.Errorf("user requires id or username")
+		}
+	case KindPolicy:
+		if r.Operation != OperationDelete && !hasID && r.Operation != OperationAdd {
+			return fmt.Errorf("policy requires id")
+		}
+	case KindServiceAccount:
+		if r.Operation != OperationDelete && nodeID == "" {
+			return fmt.Errorf("service-account requires name")
+		}
+		if r.Operation == OperationDelete && !hasID && nodeID == "" {
+			return fmt.Errorf("delete service-account requires id or name")
 		}
 	case KindNode:
 		if r.Operation != OperationDelete && (gatewayID == "" || nodeID == "") {
@@ -455,6 +522,24 @@ func resourceFromMap(doc map[string]interface{}, index int, source string) (Reso
 			return Resource{}, fmt.Errorf("invalid data-repository: %w", err)
 		}
 		resource.DataRepository = item
+	case KindUser:
+		user := &userTY.User{}
+		if err := utils.MapToStruct(utils.TagNameJSON, payload, user); err != nil {
+			return Resource{}, fmt.Errorf("invalid user: %w", err)
+		}
+		resource.User = user
+	case KindPolicy:
+		policy := &policyTY.Policy{}
+		if err := utils.MapToStruct(utils.TagNameJSON, payload, policy); err != nil {
+			return Resource{}, fmt.Errorf("invalid policy: %w", err)
+		}
+		resource.Policy = policy
+	case KindServiceAccount:
+		account := &svcAccountTY.ServiceAccount{}
+		if err := utils.MapToStruct(utils.TagNameJSON, payload, account); err != nil {
+			return Resource{}, fmt.Errorf("invalid service-account: %w", err)
+		}
+		resource.ServiceAccount = account
 	}
 
 	if err := resource.Validate(); err != nil {
@@ -484,10 +569,16 @@ func normalizeKind(kind string) (string, error) {
 		return KindFirmware, nil
 	case KindDataRepository, "datarepository", "data-repo", "data-repositories", "datarepo":
 		return KindDataRepository, nil
+	case KindUser, "users":
+		return KindUser, nil
+	case KindPolicy, "policies":
+		return KindPolicy, nil
+	case KindServiceAccount, "service-accounts", "sa":
+		return KindServiceAccount, nil
 	case "":
 		return "", fmt.Errorf("kind is required")
 	default:
-		return "", fmt.Errorf("unsupported kind %q (supported: gateway, node, source, field, firmware, data-repository)", kind)
+		return "", fmt.Errorf("unsupported kind %q (supported: gateway, node, source, field, firmware, data-repository, user, policy, service-account)", kind)
 	}
 }
 

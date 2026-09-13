@@ -4,15 +4,15 @@ import "time"
 
 // global constants
 const (
-	KeyUserID         = "user_id"
-	KeyServiceTokenID = "svc_token_id"
-	KeyFullName       = "fullname"
-	KeyAuthorized     = "authorized"
-	KeyExpiresAt      = "expires_at"
+	KeyUserID           = "user_id"
+	KeyServiceAccountID = "svc_account_id"
+	KeyFullName         = "fullname"
+	KeyAuthorized       = "authorized"
+	KeyExpiresAt        = "expires_at"
 
-	HeaderAuthorization  = "Authorization"
-	HeaderUserID         = "mc_userid"
-	HeaderServiceTokenID = "mc_svc_token_id"
+	HeaderAuthorization    = "Authorization"
+	HeaderUserID           = "mc_userid"
+	HeaderServiceAccountID = "mc_svc_account_id"
 
 	AccessToken = "access_token"
 
@@ -26,10 +26,10 @@ const (
 
 // UserLogin struct
 type UserLogin struct {
-	Username  string `json:"username" yaml:"username"`
-	Password  string `json:"password" yaml:"password"`
-	SvcToken  string `json:"token" yaml:"token"`
-	ExpiresIn string `json:"expiresIn" yaml:"expiresIn"`
+	Username            string `json:"username" yaml:"username"`
+	Password            string `json:"password" yaml:"password"`
+	ServiceAccountToken string `json:"token" yaml:"token"`
+	ExpiresIn           string `json:"expiresIn" yaml:"expiresIn"`
 }
 
 // JwtToken struct

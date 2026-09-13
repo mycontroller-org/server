@@ -72,3 +72,15 @@ func (c *Client) ListForwardPayload(queryParams map[string]interface{}) (*storag
 func (c *Client) ListBackup(queryParams map[string]interface{}) (*storageTY.Result, error) {
 	return c.listResource(API_BACKUP_LIST, queryParams)
 }
+
+func (c *Client) ListUser(queryParams map[string]interface{}) (*storageTY.Result, error) {
+	return c.listResource(API_USER_LIST, queryParams)
+}
+
+func (c *Client) ListPolicy(queryParams map[string]interface{}) (*storageTY.Result, error) {
+	return c.listResource(API_POLICY_LIST, queryParams)
+}
+
+func (c *Client) ListServiceAccount(queryParams map[string]interface{}) (*storageTY.Result, error) {
+	return c.listResource(API_SERVICE_ACCOUNT_LIST, queryParams)
+}

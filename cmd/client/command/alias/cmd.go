@@ -19,9 +19,11 @@ import (
 var aliasNamePattern = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_-]*$`)
 
 var reservedAliasNames = map[string]struct{}{
-	"alias": {}, "apply": {}, "action": {}, "completion": {}, "delete": {},
+	"alias": {}, "add": {}, "create": {}, "apply": {}, "action": {}, "completion": {}, "delete": {},
 	"disable": {}, "enable": {}, "get": {}, "help": {}, "reboot": {},
-	"reload": {}, "server": {}, "set": {}, "upload": {}, "myc": {},
+	"reload": {}, "server": {}, "set": {}, "upload": {}, "user": {}, "policy": {},
+	"service-account": {}, "service-accounts": {}, "sa": {},
+	"myc": {},
 }
 
 var (
@@ -40,7 +42,7 @@ func init() {
 
 	aliasSetCmd.Flags().StringVarP(&aliasUsername, "username", "u", "", "username to login")
 	aliasSetCmd.Flags().StringVarP(&aliasPassword, "password", "p", "", "password to login")
-	aliasSetCmd.Flags().StringVarP(&aliasToken, "token", "t", "", "service token to login")
+	aliasSetCmd.Flags().StringVarP(&aliasToken, "token", "t", "", "service account token to login")
 	aliasSetCmd.Flags().StringVar(&aliasExpiresIn, "expires-in", "720h", "session expires in")
 	aliasSetCmd.Flags().BoolVar(&aliasInsecure, "insecure", false, "skip TLS certificate verification")
 }

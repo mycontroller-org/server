@@ -5,6 +5,7 @@ import (
 
 	"github.com/mycontroller-org/server/v2/cmd/client/api"
 	"github.com/mycontroller-org/server/v2/pkg/json"
+	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 )
 
 type apiResourceClient struct {
@@ -63,6 +64,30 @@ func (c *apiResourceClient) FindDataRepository(id string) (string, error) {
 	return item.ID, nil
 }
 
+func (c *apiResourceClient) FindUser(id, username string) (string, error) {
+	item, err := c.client.FindUser(id, username)
+	if err != nil || item == nil {
+		return "", err
+	}
+	return item.ID, nil
+}
+
+func (c *apiResourceClient) FindPolicy(id string) (string, error) {
+	item, err := c.client.FindPolicy(id)
+	if err != nil || item == nil {
+		return "", err
+	}
+	return item.ID, nil
+}
+
+func (c *apiResourceClient) FindServiceAccount(id, name, userRef string) (string, error) {
+	item, err := c.client.FindServiceAccount(id, name, userRef)
+	if err != nil || item == nil {
+		return "", err
+	}
+	return item.ID, nil
+}
+
 func (c *apiResourceClient) SaveGateway(resource Resource) error {
 	if resource.Gateway == nil {
 		return nil
@@ -105,6 +130,45 @@ func (c *apiResourceClient) SaveDataRepository(resource Resource) error {
 	return c.client.SaveDataRepository(resource.DataRepository)
 }
 
+func (c *apiResourceClient) SaveUser(resource Resource) error {
+	if resource.User == nil {
+		return nil
+	}
+	user := resource.User
+	disabled := user.Disabled
+	return c.client.SaveUser(&userTY.UserAdminUpdate{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+		FullName: user.FullName,
+		Disabled: &disabled,
+		Policies: user.Policies,
+		Password: user.Password,
+		Labels:   user.Labels,
+	})
+}
+
+func (c *apiResourceClient) SavePolicy(resource Resource) error {
+	if resource.Policy == nil {
+		return nil
+	}
+	return c.client.SavePolicy(resource.Policy)
+}
+
+func (c *apiResourceClient) SaveServiceAccount(resource Resource) (string, error) {
+	if resource.ServiceAccount == nil {
+		return "", nil
+	}
+	if resource.Operation == OperationMerge {
+		return "", c.client.UpdateServiceAccount(resource.ServiceAccount)
+	}
+	created, err := c.client.CreateServiceAccount(resource.ServiceAccount)
+	if err != nil || created == nil {
+		return "", err
+	}
+	return created.Token, nil
+}
+
 func (c *apiResourceClient) DeleteGateway(ids ...string) error {
 	return c.client.DeleteGateway(ids...)
 }
@@ -129,6 +193,18 @@ func (c *apiResourceClient) DeleteDataRepository(ids ...string) error {
 	return c.client.DeleteDataRepository(ids...)
 }
 
+func (c *apiResourceClient) DeleteUser(ids ...string) error {
+	return c.client.DeleteUser(ids...)
+}
+
+func (c *apiResourceClient) DeletePolicy(ids ...string) error {
+	return c.client.DeletePolicy(ids...)
+}
+
+func (c *apiResourceClient) DeleteServiceAccount(ids ...string) error {
+	return c.client.DeleteServiceAccount(ids...)
+}
+
 func (c *apiResourceClient) GetExisting(resource Resource) ([]byte, error) {
 	var item interface{}
 	var err error
@@ -148,6 +224,14 @@ func (c *apiResourceClient) GetExisting(resource Resource) ([]byte, error) {
 		item, err = c.client.FindFirmware(resource.ID())
 	case KindDataRepository:
 		item, err = c.client.FindDataRepository(resource.ID())
+	case KindUser:
+		username, _, _, _ := resource.NaturalKeys()
+		item, err = c.client.FindUser(resource.ID(), username)
+	case KindPolicy:
+		item, err = c.client.FindPolicy(resource.ID())
+	case KindServiceAccount:
+		userRef, name, _, _ := resource.NaturalKeys()
+		item, err = c.client.FindServiceAccount(resource.ID(), name, userRef)
 	default:
 		return nil, fmt.Errorf("unsupported kind %q", resource.Kind)
 	}

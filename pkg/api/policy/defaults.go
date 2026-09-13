@@ -33,7 +33,7 @@ func BuiltInPolicies() []policyTY.Policy {
 		policyTY.ResourceGateway, policyTY.ResourceNode, policyTY.ResourceSource, policyTY.ResourceField,
 		policyTY.ResourceTask, policyTY.ResourceSchedule, policyTY.ResourceHandler, policyTY.ResourceDashboard,
 		policyTY.ResourceFirmware, policyTY.ResourceForwardPayload, policyTY.ResourceDataRepository,
-		policyTY.ResourceVirtualDevice, policyTY.ResourceVirtualAssistant, policyTY.ResourceServiceToken,
+		policyTY.ResourceVirtualDevice, policyTY.ResourceVirtualAssistant, policyTY.ResourceServiceAccount,
 		policyTY.ResourceMetric, policyTY.ResourceAction, policyTY.ResourceStatus, policyTY.ResourceQuickID,
 	}
 

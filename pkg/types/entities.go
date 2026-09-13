@@ -17,7 +17,7 @@ const (
 	EntityDataRepository   = "data_repository"   // holds user data, can be used across
 	EntityVirtualDevice    = "virtual_device"    // holds virtual devices
 	EntityVirtualAssistant = "virtual_assistant" // holds virtual assistants
-	EntityServiceToken     = "service_token"     // holds service token
+	EntityServiceAccount   = "service_account"   // holds service account
 	EntityPolicy           = "policy"            // access control policies
 )
 

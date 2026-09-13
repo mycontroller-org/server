@@ -19,6 +19,9 @@ func init() {
 	deleteCmd.AddCommand(handlerDeleteCmd)
 	deleteCmd.AddCommand(forwardPayloadDeleteCmd)
 	deleteCmd.AddCommand(backupDeleteCmd)
+	deleteCmd.AddCommand(userDeleteCmd)
+	deleteCmd.AddCommand(policyDeleteCmd)
+	deleteCmd.AddCommand(serviceAccountDeleteCmd)
 }
 
 var gwDeleteCmd = &cobra.Command{
@@ -213,5 +216,57 @@ var backupDeleteCmd = &cobra.Command{
 		client, ids := rootCmd.TakeAlias(args)
 		err := client.DeleteBackup(ids...)
 		printStatus(err)
+	},
+}
+
+var userDeleteCmd = &cobra.Command{
+	Use:     "user <alias> <username-or-id> [<username-or-id>...]",
+	Aliases: []string{"users"},
+	Short:   "Deletes the given users",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		rootCmd.UpdateStreams(cmd)
+	},
+	Args: cobra.MinimumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		client, selectors := rootCmd.TakeAlias(args)
+		ids, err := client.ResolveUserIDs(selectors)
+		if err != nil {
+			printStatus(err)
+			return
+		}
+		printStatus(client.DeleteUser(ids...))
+	},
+}
+
+var policyDeleteCmd = &cobra.Command{
+	Use:     "policy <alias> <id> [<id>...]",
+	Aliases: []string{"policies"},
+	Short:   "Deletes the given policies",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		rootCmd.UpdateStreams(cmd)
+	},
+	Args: cobra.MinimumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		client, ids := rootCmd.TakeAlias(args)
+		printStatus(client.DeletePolicy(ids...))
+	},
+}
+
+var serviceAccountDeleteCmd = &cobra.Command{
+	Use:     "service-account <alias> <name-or-id> [<name-or-id>...]",
+	Aliases: []string{"service-accounts", "sa"},
+	Short:   "Deletes the given service accounts",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		rootCmd.UpdateStreams(cmd)
+	},
+	Args: cobra.MinimumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		client, selectors := rootCmd.TakeAlias(args)
+		ids, err := client.ResolveServiceAccountIDs(selectors)
+		if err != nil {
+			printStatus(err)
+			return
+		}
+		printStatus(client.DeleteServiceAccount(ids...))
 	},
 }

@@ -103,7 +103,7 @@ func New(ctx context.Context, router *mux.Router, enableProfiling bool) (*Routes
 	routes.registerPolicyRoutes()
 	routes.registerQuickIDRoutes()
 	routes.registerSchedulerRoutes()
-	routes.registerServiceTokenRoutes()
+	routes.registerServiceAccountRoutes()
 	routes.registerSourceRoutes()
 	routes.registerStatusRoutes()
 	routes.registerSystemRoutes()

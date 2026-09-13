@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	middleware "github.com/mycontroller-org/server/v2/pkg/http_router/middleware"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	handlerUtils "github.com/mycontroller-org/server/v2/pkg/utils/http_handler"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
@@ -69,6 +70,10 @@ func (h *Routes) updateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	if entity.ID != "" && entity.Disabled != nil && *entity.Disabled && entity.ID == middleware.GetUserID(r) {
+		http.Error(w, "cannot disable the current user", http.StatusBadRequest)
+		return
+	}
 	if entity.ID == "" {
 		// create new user from admin update payload
 		disabled := false
@@ -108,14 +113,20 @@ func (h *Routes) createUserWithPassword(user *userTY.User, plainPassword string)
 func (h *Routes) deleteUsers(w http.ResponseWriter, r *http.Request) {
 	IDs := make([]string, 0)
 	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
-		if len(IDs) > 0 {
-			count, err := h.api.User().Delete(IDs)
-			if err != nil {
-				return nil, err
-			}
-			return count, nil
+		if len(IDs) == 0 {
+			return nil, errors.New("supply id(s)")
 		}
-		return nil, errors.New("supply id(s)")
+		callerID := middleware.GetUserID(r)
+		for _, id := range IDs {
+			if id == callerID {
+				return nil, errors.New("cannot delete the current user")
+			}
+		}
+		count, err := h.api.User().Delete(IDs)
+		if err != nil {
+			return nil, err
+		}
+		return count, nil
 	}
 	handlerUtils.UpdateData(w, r, &IDs, updateFn)
 }

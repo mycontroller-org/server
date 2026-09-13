@@ -17,4 +17,5 @@ var upgrades = map[string]upgradeFunction{
 	"2.0.0-1": upgrade_2_0_0__1, // 2.0.0 upgrade #1
 	"2.1.1-1": upgrade_2_1_1__1, // 2.1.1 upgrade #2
 	"2.2.0-1": upgrade_2_2_0__1, // 2.2.0: RBAC policies + admin for existing users
+	"2.2.0-2": upgrade_2_2_0__2, // 2.2.0: rename service_token entity to service_account
 }

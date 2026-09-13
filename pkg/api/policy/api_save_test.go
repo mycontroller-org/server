@@ -6,7 +6,7 @@ import (
 
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
-	svcTokenTY "github.com/mycontroller-org/server/v2/pkg/types/service_token"
+	svcAccountTY "github.com/mycontroller-org/server/v2/pkg/types/service_account"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
 )
@@ -34,10 +34,10 @@ func (s *policyMemStore) Find(string, interface{}, []storageTY.Filter, *storageT
 func (s *policyMemStore) Delete(string, []storageTY.Filter) (int64, error) {
 	return 0, errors.New("not implemented")
 }
-func (s *policyMemStore) Pause() error                                 { return nil }
-func (s *policyMemStore) Resume() error                                { return nil }
-func (s *policyMemStore) ClearDatabase() error                         { return nil }
-func (s *policyMemStore) DoStartupImport() (bool, string, string)      { return false, "", "" }
+func (s *policyMemStore) Pause() error                            { return nil }
+func (s *policyMemStore) Resume() error                           { return nil }
+func (s *policyMemStore) ClearDatabase() error                    { return nil }
+func (s *policyMemStore) DoStartupImport() (bool, string, string) { return false, "", "" }
 
 func (s *policyMemStore) FindOne(entityName string, out interface{}, filters []storageTY.Filter) error {
 	if entityName != types.EntityPolicy || len(filters) == 0 {
@@ -66,7 +66,7 @@ func testPolicyAPI(store *policyMemStore) *API {
 	c.setLoaders(
 		func(id string) (*userTY.User, error) { return nil, ErrUserNotFound },
 		func(id string) (*policyTY.Policy, error) { return nil, ErrUserNotFound },
-		func(id string) (*svcTokenTY.ServiceToken, error) { return nil, ErrTokenNotFound },
+		func(id string) (*svcAccountTY.ServiceAccount, error) { return nil, ErrTokenNotFound },
 		func() ([]policyTY.Policy, error) { return nil, nil },
 	)
 	return &API{storage: store, cache: c}

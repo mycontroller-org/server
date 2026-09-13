@@ -34,6 +34,9 @@ func init() {
 	getCmd.AddCommand(handlerGetCmd)
 	getCmd.AddCommand(forwardPayloadGetCmd)
 	getCmd.AddCommand(backupGetCmd)
+	getCmd.AddCommand(userGetCmd)
+	getCmd.AddCommand(policyGetCmd)
+	getCmd.AddCommand(serviceAccountGetCmd)
 }
 
 var gwGetCmd = &cobra.Command{

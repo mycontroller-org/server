@@ -9,10 +9,10 @@ import (
 
 func (c *Client) Login(username, password, token, expiresIn string) (*handlerTY.JwtTokenResponse, error) {
 	req := &handlerTY.UserLogin{
-		Username:  username,
-		Password:  password,
-		SvcToken:  token,
-		ExpiresIn: expiresIn,
+		Username:            username,
+		Password:            password,
+		ServiceAccountToken: token,
+		ExpiresIn:           expiresIn,
 	}
 	res, err := c.executeJson(API_LOGIN, http.MethodPost, nil, nil, req, http.StatusOK)
 	if err != nil {

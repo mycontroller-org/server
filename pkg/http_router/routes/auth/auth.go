@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	entityAPI "github.com/mycontroller-org/server/v2/pkg/api/entities"
 	middleware "github.com/mycontroller-org/server/v2/pkg/http_router/middleware"
-	svcTokenTY "github.com/mycontroller-org/server/v2/pkg/types/service_token"
+	svcAccountTY "github.com/mycontroller-org/server/v2/pkg/types/service_account"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	handlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
 	"github.com/mycontroller-org/server/v2/pkg/utils/hashed"
@@ -48,18 +48,18 @@ func (a *AuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var userInDB userTY.User
-	var svcTokenID string
+	var svcAccountID string
 
 	// if token available, it is token based authentication
-	if login.SvcToken != "" {
-		parsedToken, err := svcTokenTY.ParseToken(login.SvcToken)
+	if login.ServiceAccountToken != "" {
+		parsedToken, err := svcAccountTY.ParseToken(login.ServiceAccountToken)
 		if err != nil {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return
 		}
 
 		// get actual token
-		actualToken, err := a.api.ServiceToken().GetByTokenID(parsedToken.ID)
+		actualToken, err := a.api.ServiceAccount().GetByTokenID(parsedToken.ID)
 		if err != nil {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return
@@ -86,7 +86,7 @@ func (a *AuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		userInDB = _userInDB
-		svcTokenID = parsedToken.ID
+		svcAccountID = parsedToken.ID
 	} else { // user based authentication
 		// get user details
 		_userInDB, err := a.api.User().GetByUsername(login.Username)
@@ -108,7 +108,7 @@ func (a *AuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := middleware.CreateToken(userInDB, login.ExpiresIn, svcTokenID)
+	token, err := middleware.CreateToken(userInDB, login.ExpiresIn, svcAccountID)
 	if err != nil {
 		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return

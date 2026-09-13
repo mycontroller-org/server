@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
+	dateTimeTY "github.com/mycontroller-org/server/v2/pkg/types/cusom_datetime"
 	convertorUtils "github.com/mycontroller-org/server/v2/pkg/utils/convertor"
 	filterUtils "github.com/mycontroller-org/server/v2/pkg/utils/filter_sort"
 	"github.com/nleeper/goment"
@@ -121,17 +122,14 @@ func PrintConsole(out io.Writer, headers []Header, data []interface{}, hideHeade
 			if value != nil {
 				switch _value := value.(type) {
 				case time.Time:
-					if !_value.IsZero() {
-						if header.DisplayStyle == DisplayStyleRelativeTime {
-							g, err := goment.New(_value.UnixNano())
-							if err != nil {
-								rowValue = err.Error()
-							} else {
-								rowValue = g.FromNow()
-							}
-						}
+					rowValue = FormatTimeValue(_value, header.DisplayStyle)
+				case dateTimeTY.CustomDate:
+					rowValue = FormatTimeValue(_value.Time, header.DisplayStyle)
+				case *dateTimeTY.CustomDate:
+					if _value == nil {
+						rowValue = "-"
 					} else {
-						rowValue = ""
+						rowValue = FormatTimeValue(_value.Time, header.DisplayStyle)
 					}
 
 				case cmap.CustomStringMap:
@@ -169,4 +167,18 @@ func PrintConsole(out io.Writer, headers []Header, data []interface{}, hideHeade
 	table.SetNoWhiteSpace(true)
 	table.AppendBulk(rows) // Add Bulk Data
 	table.Render()
+}
+
+func FormatTimeValue(value time.Time, displayStyle string) string {
+	if value.IsZero() {
+		return "-"
+	}
+	if displayStyle != DisplayStyleRelativeTime {
+		return value.Format(time.RFC3339)
+	}
+	g, err := goment.New(value.UnixNano())
+	if err != nil {
+		return err.Error()
+	}
+	return g.FromNow()
 }

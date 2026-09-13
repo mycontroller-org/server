@@ -1,6 +1,9 @@
 package api
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 func (c *Client) DeleteGateway(items ...string) error {
 	_, err := c.executeJson(API_GATEWAY_DELETE, http.MethodDelete, nil, nil, items, http.StatusOK)
@@ -64,5 +67,29 @@ func (c *Client) DeleteForwardPayload(items ...string) error {
 
 func (c *Client) DeleteBackup(items ...string) error {
 	_, err := c.executeJson(API_BACKUP_DELETE, http.MethodDelete, nil, nil, items, http.StatusOK)
+	return err
+}
+
+func (c *Client) DeleteUser(items ...string) error {
+	profile, err := c.GetProfile()
+	if err != nil {
+		return err
+	}
+	for _, id := range items {
+		if id == profile.ID {
+			return fmt.Errorf("cannot delete the current user %s", profile.Username)
+		}
+	}
+	_, err = c.executeJson(API_USER_DELETE, http.MethodDelete, nil, nil, items, http.StatusOK)
+	return err
+}
+
+func (c *Client) DeletePolicy(items ...string) error {
+	_, err := c.executeJson(API_POLICY_DELETE, http.MethodDelete, nil, nil, items, http.StatusOK)
+	return err
+}
+
+func (c *Client) DeleteServiceAccount(items ...string) error {
+	_, err := c.executeJson(API_SERVICE_ACCOUNT_DELETE, http.MethodDelete, nil, nil, items, http.StatusOK)
 	return err
 }
