@@ -16,6 +16,7 @@ var (
 	saDescription string
 	saNeverExpire bool
 	saExpiresOn   string
+	saEffect      string
 	saActions     []string
 	saResources   []string
 )
@@ -27,15 +28,19 @@ var serviceAccountAddCmd = &cobra.Command{
 	Example: `  myc add service-account <alias> ci-bot
   myc add sa <alias> mobile --user alice --description "phone login"
   myc add sa <alias> ci-bot --action get --action list --resource "node:*"
+  myc add sa <alias> limited --effect Deny --action "*" --resource settings
   myc add sa <alias> temp --expires-on 2027-12-31`,
-	Args: cobra.ExactArgs(2),
+	Args:          cobra.ExactArgs(2),
+	SilenceUsage:  true,
+	SilenceErrors: true,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := addServiceAccount(args[0], args[1]); err != nil {
-			_, _ = fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
+			return fmt.Errorf("error:%s", err)
 		}
+		return nil
 	},
 }
 
@@ -44,8 +49,9 @@ func init() {
 	serviceAccountAddCmd.Flags().StringVarP(&saDescription, "description", "d", "", "description")
 	serviceAccountAddCmd.Flags().BoolVar(&saNeverExpire, "never-expire", true, "token never expires")
 	serviceAccountAddCmd.Flags().StringVar(&saExpiresOn, "expires-on", "", "expiry date (YYYY-MM-DD); turns off never-expire")
-	serviceAccountAddCmd.Flags().StringArrayVar(&saActions, "action", nil, "statement action (repeatable)")
-	serviceAccountAddCmd.Flags().StringArrayVar(&saResources, "resource", nil, "statement resource (repeatable)")
+	serviceAccountAddCmd.Flags().StringVar(&saEffect, "effect", policyTY.EffectAllow, "statement effect: Allow or Deny")
+	serviceAccountAddCmd.Flags().StringArrayVar(&saActions, "action", nil, "statement action (repeatable; requires --resource)")
+	serviceAccountAddCmd.Flags().StringArrayVar(&saResources, "resource", nil, "statement resource (repeatable; requires --action)")
 }
 
 func addServiceAccount(alias, name string) error {
@@ -55,11 +61,19 @@ func addServiceAccount(alias, name string) error {
 	}
 	client := rootCmd.MustClient(alias)
 
-	existing, err := client.FindServiceAccount("", name, saUser)
+	userRef := strings.TrimSpace(saUser)
+	if userRef == "" {
+		profile, err := client.GetProfile()
+		if err != nil {
+			return err
+		}
+		userRef = profile.ID
+	}
+	existing, err := client.FindServiceAccounts(name, userRef)
 	if err != nil {
 		return err
 	}
-	if existing != nil {
+	if len(existing) > 0 {
 		return fmt.Errorf("service-account %s is already present", name)
 	}
 
@@ -81,8 +95,23 @@ func addServiceAccount(alias, name string) error {
 	}
 
 	if len(saActions) > 0 || len(saResources) > 0 {
+		if len(saActions) == 0 || len(saResources) == 0 {
+			return fmt.Errorf("--action and --resource must be used together")
+		}
+		effect := strings.TrimSpace(saEffect)
+		if effect == "" {
+			effect = policyTY.EffectAllow
+		}
+		switch strings.ToLower(effect) {
+		case "allow":
+			effect = policyTY.EffectAllow
+		case "deny":
+			effect = policyTY.EffectDeny
+		default:
+			return fmt.Errorf("effect must be Allow or Deny")
+		}
 		account.Statements = []policyTY.Statement{{
-			Effect:    policyTY.EffectAllow,
+			Effect:    effect,
 			Actions:   saActions,
 			Resources: saResources,
 		}}

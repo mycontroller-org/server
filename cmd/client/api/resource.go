@@ -217,18 +217,29 @@ func (c *Client) getByID(api, id string, dest interface{}) (bool, error) {
 }
 
 func (c *Client) findResource(api string, filters []storageTY.Filter, dest interface{}) (bool, error) {
-	if len(filters) == 0 {
-		return false, nil
-	}
-	queryParams, err := listQueryParams(filters, 1)
-	if err != nil {
+	items, err := c.findResources(api, filters, 1)
+	if err != nil || len(items) == 0 {
 		return false, err
+	}
+	if err := utils.MapToStruct(utils.TagNameJSON, items[0], dest); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (c *Client) findResources(api string, filters []storageTY.Filter, limit uint64) ([]map[string]interface{}, error) {
+	if len(filters) == 0 {
+		return nil, nil
+	}
+	queryParams, err := listQueryParams(filters, limit)
+	if err != nil {
+		return nil, err
 	}
 	result, err := c.listResource(api, queryParams)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	return decodeFirst(result, dest)
+	return decodeItems(result)
 }
 
 func listQueryParams(filters []storageTY.Filter, limit uint64) (map[string]interface{}, error) {
@@ -243,25 +254,23 @@ func listQueryParams(filters []storageTY.Filter, limit uint64) (map[string]inter
 	}, nil
 }
 
-func decodeFirst(result *storageTY.Result, dest interface{}) (bool, error) {
+func decodeItems(result *storageTY.Result) ([]map[string]interface{}, error) {
 	if result == nil || result.Data == nil {
-		return false, nil
+		return nil, nil
 	}
-	items, ok := result.Data.([]interface{})
+	raw, ok := result.Data.([]interface{})
 	if !ok {
-		return false, fmt.Errorf("invalid response type:%T", result.Data)
+		return nil, fmt.Errorf("invalid response type:%T", result.Data)
 	}
-	if len(items) == 0 {
-		return false, nil
+	items := make([]map[string]interface{}, 0, len(raw))
+	for _, item := range raw {
+		data, ok := item.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("invalid item type:%T", item)
+		}
+		items = append(items, data)
 	}
-	data, ok := items[0].(map[string]interface{})
-	if !ok {
-		return false, fmt.Errorf("invalid item type:%T", items[0])
-	}
-	if err := utils.MapToStruct(utils.TagNameJSON, data, dest); err != nil {
-		return false, err
-	}
-	return true, nil
+	return items, nil
 }
 
 func idFilters(id string) []storageTY.Filter {

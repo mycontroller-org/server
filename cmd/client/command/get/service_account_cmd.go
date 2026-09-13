@@ -2,7 +2,6 @@ package get
 
 import (
 	"fmt"
-	"strconv"
 
 	rootCmd "github.com/mycontroller-org/server/v2/cmd/client/command/root"
 	svcAccountTY "github.com/mycontroller-org/server/v2/pkg/types/service_account"
@@ -10,13 +9,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var saGetUser string
+
 var serviceAccountGetCmd = &cobra.Command{
 	Use:     "service-account <alias> [<name-or-id>]",
 	Aliases: []string{"service-accounts", "sa"},
 	Short:   "Print service accounts",
 	Example: `  myc get service-account <alias>
   myc get service-account <alias> ci-bot
-  myc get sa <alias> ci-bot`,
+  myc get sa <alias> ci-bot --user alice`,
 	Args: cobra.RangeArgs(1, 2),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
@@ -37,7 +38,7 @@ var serviceAccountGetCmd = &cobra.Command{
 			executeGetCmd(headers, client.ListServiceAccount, svcAccountTY.ServiceAccount{})
 			return
 		}
-		account, err := client.FindServiceAccount(args[1], args[1], "")
+		account, err := client.FindServiceAccount(args[1], args[1], saGetUser)
 		if err != nil {
 			_, _ = fmt.Fprintf(rootCmd.IOStreams.ErrOut, "error:%s\n", err)
 			return
@@ -49,6 +50,10 @@ var serviceAccountGetCmd = &cobra.Command{
 		account.Token.Token = ""
 		printOne(headers, account)
 	},
+}
+
+func init() {
+	serviceAccountGetCmd.Flags().StringVarP(&saGetUser, "user", "u", "", "username or user id when the account name is not unique")
 }
 
 func serviceAccountFromItem(item interface{}) *svcAccountTY.ServiceAccount {
@@ -73,7 +78,7 @@ func formatServiceAccountExpiresOn(item interface{}) string {
 func formatServiceAccountStatements(item interface{}) string {
 	account := serviceAccountFromItem(item)
 	if account == nil {
-		return "0"
+		return "-"
 	}
-	return strconv.Itoa(len(account.Statements))
+	return formatStatements(account.Statements)
 }

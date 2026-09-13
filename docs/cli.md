@@ -13,7 +13,7 @@ This document describes the **MyController command-line client**: how to build i
 | `alias` | Add, list, or remove named server connections |
 | `server` | Show server information for an alias |
 | `get` | List resources |
-| `add` | Add a service account (`create` is an alias) |
+| `add` | Add a user or service account (`create` is an alias) |
 | `apply` | Add, merge, or delete resources from a YAML or JSON file |
 | `upload` | Upload a firmware binary to an existing firmware resource |
 | `set` | Update a stored property, or set a live field value |
@@ -191,11 +191,22 @@ myc get policy <alias>
 myc get policy <alias> admin
 myc get service-account <alias>
 myc get service-account <alias> ci-bot
+myc get sa <alias> ci-bot --user alice
 ```
 
 `get user <alias> <username-or-id> policies` lists the policies attached to that user.
 
-`get service-account` lists accounts owned by the logged-in user. The secret token is never stored; it is shown only when the account is created.
+`get service-account` lists accounts the caller can see. The secret token is never stored; it is shown only when the account is created. If the same name exists for more than one user, pass `--user`.
+
+### Add a user
+
+```bash
+myc add user <alias> alice --password secret
+myc add user <alias> alice --email alice@example.com --full-name Alice --policy readonly
+myc add user <alias> alice
+```
+
+If `--password` is omitted, myc prompts. Repeat `--policy` to attach policies. Add fails if the username already exists.
 
 ### Add a service account
 
@@ -203,12 +214,13 @@ myc get service-account <alias> ci-bot
 myc add service-account <alias> ci-bot
 myc add sa <alias> mobile --user alice --description "phone login"
 myc add sa <alias> ci-bot --action get --action list --resource "node:*" --resource "field:*"
+myc add sa <alias> limited --effect Deny --action "*" --resource settings
 myc add sa <alias> temp --expires-on 2027-12-31
 ```
 
-`create` is an alias of `add`. Omit `--user` to create the account for the logged-in user. `--never-expire` defaults to true; `--expires-on` (YYYY-MM-DD) turns that off. Repeat `--action` and `--resource` to add one Allow statement; omit both for the same access as the owning user.
+`create` is an alias of `add`. Omit `--user` to create the account for the logged-in user. `--never-expire` defaults to true; `--expires-on` (YYYY-MM-DD) turns that off. `--action` and `--resource` must be used together (repeatable) and form one statement; `--effect` is Allow or Deny (default Allow). Omit both for the same access as the owning user.
 
-The token is printed once. Save it; it cannot be retrieved later. If the name already exists for that user, add fails. Use `myc apply` to merge or replace.
+The token is printed once. Save it; it cannot be retrieved later. If the name already exists for that user, add fails. Use `myc apply` to merge or replace. Add exits `1` on error.
 
 ---
 
@@ -744,6 +756,7 @@ myc delete source <alias> <id>
 myc delete field <alias> <id>
 myc delete user <alias> alice
 myc delete service-account <alias> ci-bot
+myc delete sa <alias> ci-bot --user alice
 ```
 
 | Resource | Aliases |

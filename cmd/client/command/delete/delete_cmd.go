@@ -22,6 +22,7 @@ func init() {
 	deleteCmd.AddCommand(userDeleteCmd)
 	deleteCmd.AddCommand(policyDeleteCmd)
 	deleteCmd.AddCommand(serviceAccountDeleteCmd)
+	serviceAccountDeleteCmd.Flags().StringVarP(&saDeleteUser, "user", "u", "", "username or user id when the account name is not unique")
 }
 
 var gwDeleteCmd = &cobra.Command{
@@ -252,17 +253,21 @@ var policyDeleteCmd = &cobra.Command{
 	},
 }
 
+var saDeleteUser string
+
 var serviceAccountDeleteCmd = &cobra.Command{
 	Use:     "service-account <alias> <name-or-id> [<name-or-id>...]",
 	Aliases: []string{"service-accounts", "sa"},
 	Short:   "Deletes the given service accounts",
+	Example: `  myc delete service-account <alias> ci-bot
+  myc delete sa <alias> ci-bot --user alice`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
 	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		client, selectors := rootCmd.TakeAlias(args)
-		ids, err := client.ResolveServiceAccountIDs(selectors)
+		ids, err := client.ResolveServiceAccountIDs(selectors, saDeleteUser)
 		if err != nil {
 			printStatus(err)
 			return

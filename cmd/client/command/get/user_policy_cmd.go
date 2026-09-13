@@ -165,5 +165,28 @@ func formatPolicyStatements(item interface{}) string {
 	default:
 		return ""
 	}
-	return fmt.Sprintf("%d", len(statements))
+	return formatStatements(statements)
+}
+
+func formatStatements(statements []policyTY.Statement) string {
+	if len(statements) == 0 {
+		return "-"
+	}
+	parts := make([]string, 0, len(statements))
+	for _, st := range statements {
+		effect := st.Effect
+		if effect == "" {
+			effect = policyTY.EffectAllow
+		}
+		actions := strings.Join(st.Actions, ",")
+		if actions == "" {
+			actions = "-"
+		}
+		resources := strings.Join(st.Resources, ",")
+		if resources == "" {
+			resources = "-"
+		}
+		parts = append(parts, fmt.Sprintf("%s %s %s", effect, actions, resources))
+	}
+	return strings.Join(parts, "; ")
 }
