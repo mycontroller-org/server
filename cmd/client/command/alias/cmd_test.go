@@ -19,4 +19,5 @@ func TestValidateAliasName(t *testing.T) {
 	assert.Contains(t, validateAliasName("apply").Error(), "reserved")
 	assert.Contains(t, validateAliasName("add").Error(), "reserved")
 	assert.Contains(t, validateAliasName("create").Error(), "reserved")
+	assert.Contains(t, validateAliasName("update").Error(), "reserved")
 }

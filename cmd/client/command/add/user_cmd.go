@@ -2,13 +2,12 @@ package add
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
+	"github.com/mycontroller-org/server/v2/cmd/client/command/common"
 	rootCmd "github.com/mycontroller-org/server/v2/cmd/client/command/root"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 )
 
 var (
@@ -63,7 +62,7 @@ func addUser(alias, username string) error {
 
 	password := userPassword
 	if strings.TrimSpace(password) == "" {
-		password, err = promptPassword()
+		password, err = common.PromptPassword()
 		if err != nil {
 			return err
 		}
@@ -83,14 +82,4 @@ func addUser(alias, username string) error {
 	}
 	_, _ = fmt.Fprintf(rootCmd.IOStreams.Out, "user: %s\n", username)
 	return nil
-}
-
-func promptPassword() (string, error) {
-	_, _ = fmt.Fprint(rootCmd.IOStreams.Out, "Password: ")
-	pw, err := term.ReadPassword(int(os.Stdin.Fd()))
-	_, _ = fmt.Fprintln(rootCmd.IOStreams.Out)
-	if err != nil {
-		return "", err
-	}
-	return string(pw), nil
 }

@@ -21,7 +21,7 @@ var aliasNamePattern = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_-]*$`)
 var reservedAliasNames = map[string]struct{}{
 	"alias": {}, "add": {}, "create": {}, "apply": {}, "action": {}, "completion": {}, "delete": {},
 	"disable": {}, "enable": {}, "get": {}, "help": {}, "reboot": {},
-	"reload": {}, "server": {}, "set": {}, "upload": {}, "user": {}, "policy": {},
+	"reload": {}, "server": {}, "set": {}, "update": {}, "upload": {}, "user": {}, "policy": {},
 	"service-account": {}, "service-accounts": {}, "sa": {},
 	"myc": {},
 }

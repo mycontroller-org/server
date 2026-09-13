@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/mycontroller-org/server/v2/cmd/client/command/common"
 	rootCmd "github.com/mycontroller-org/server/v2/cmd/client/command/root"
 	dateTimeTY "github.com/mycontroller-org/server/v2/pkg/types/cusom_datetime"
 	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
@@ -94,27 +95,12 @@ func addServiceAccount(alias, name string) error {
 		return fmt.Errorf("--expires-on is required when never-expire is false")
 	}
 
-	if len(saActions) > 0 || len(saResources) > 0 {
-		if len(saActions) == 0 || len(saResources) == 0 {
-			return fmt.Errorf("--action and --resource must be used together")
-		}
-		effect := strings.TrimSpace(saEffect)
-		if effect == "" {
-			effect = policyTY.EffectAllow
-		}
-		switch strings.ToLower(effect) {
-		case "allow":
-			effect = policyTY.EffectAllow
-		case "deny":
-			effect = policyTY.EffectDeny
-		default:
-			return fmt.Errorf("effect must be Allow or Deny")
-		}
-		account.Statements = []policyTY.Statement{{
-			Effect:    effect,
-			Actions:   saActions,
-			Resources: saResources,
-		}}
+	statements, provided, err := common.ParseOptionalStatement(saEffect, saActions, saResources)
+	if err != nil {
+		return err
+	}
+	if provided {
+		account.Statements = statements
 	}
 
 	created, err := client.CreateServiceAccount(account)

@@ -14,6 +14,7 @@ This document describes the **MyController command-line client**: how to build i
 | `server` | Show server information for an alias |
 | `get` | List resources |
 | `add` | Add a user or service account (`create` is an alias) |
+| `update` | Update a user or service account |
 | `apply` | Add, merge, or delete resources from a YAML or JSON file |
 | `upload` | Upload a firmware binary to an existing firmware resource |
 | `set` | Update a stored property, or set a live field value |
@@ -221,6 +222,31 @@ myc add sa <alias> temp --expires-on 2027-12-31
 `create` is an alias of `add`. Omit `--user` to create the account for the logged-in user. `--never-expire` defaults to true; `--expires-on` (YYYY-MM-DD) turns that off. `--action` and `--resource` must be used together (repeatable) and form one statement; `--effect` is Allow or Deny (default Allow). Omit both for the same access as the owning user.
 
 The token is printed once. Save it; it cannot be retrieved later. If the name already exists for that user, add fails. Use `myc apply` to merge or replace. Add exits `1` on error.
+
+### Update a user
+
+```bash
+myc update user <alias> alice --email alice@example.com --full-name Alice
+myc update user <alias> alice --policy readonly --policy admin
+myc update user <alias> alice --password newsecret
+myc update user <alias> alice --username alice2
+myc update user <alias> alice --clear-policies
+```
+
+Only flags you pass are changed. `--policy` replaces the attached list. `--clear-policies` removes all policies. Password is not prompted; pass `--password` to change it.
+
+### Update a service account
+
+```bash
+myc update sa <alias> ci-bot --description "CI"
+myc update sa <alias> ci-bot --user alice --name ci-bot-2
+myc update sa <alias> ci-bot --never-expire
+myc update sa <alias> ci-bot --expires-on 2027-12-31
+myc update sa <alias> ci-bot --action get --resource "node:*"
+myc update sa <alias> ci-bot --clear-statements
+```
+
+The owner and token are not changed. If the name is used by more than one user, pass `--user`. `--action`/`--resource` replace statements; `--clear-statements` removes them. Update exits `1` on error.
 
 ---
 
