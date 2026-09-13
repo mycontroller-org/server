@@ -21,8 +21,8 @@ var valueFieldCmd = &cobra.Command{
 	Use:     "field <alias> <quick-id> [quick-id...] <payload>",
 	Aliases: []string{"fields"},
 	Short:   "Set a live field value",
-	Example: `  myc set value field home gw1.1.1.V_CUSTOM 23.5
-  myc set value field home mysensor.1.dht.temperature 21.0`,
+	Example: `  myc set value field <alias> gw1.1.1.V_CUSTOM 23.5
+  myc set value field <alias> mysensor.1.dht.temperature 21.0`,
 	Args:          cobra.MinimumNArgs(3),
 	SilenceUsage:  true,
 	SilenceErrors: true,

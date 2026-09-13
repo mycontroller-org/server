@@ -30,14 +30,14 @@ With no key path, lists all keys and values.
 With a map key, lists all nested keys and values under it.
 With a leaf key, prints only that key and value.
 
-  myc get settings home
-  myc get settings home geoLocation
-  myc get settings home geoLocation.latitude
+  myc get settings <alias>
+  myc get settings <alias> geoLocation
+  myc get settings <alias> geoLocation.latitude
 `,
-	Example: `  myc get settings home
-  myc get settings home geoLocation
-  myc get settings home language
-  myc get settings home geoLocation.latitude -o yaml`,
+	Example: `  myc get settings <alias>
+  myc get settings <alias> geoLocation
+  myc get settings <alias> language
+  myc get settings <alias> geoLocation.latitude -o yaml`,
 	Args: cobra.RangeArgs(1, 2),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)

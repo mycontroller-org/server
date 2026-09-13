@@ -16,7 +16,7 @@ var nodeRebootCmd = &cobra.Command{
 	Use:     "node <alias> <gateway.node> [<gateway.node>...]",
 	Aliases: []string{"nodes"},
 	Short:   "Reboot one or more nodes",
-	Example: `  myc reboot node home mysensor.1 mysensor.2`,
+	Example: `  myc reboot node <alias> mysensor.1 mysensor.2`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},

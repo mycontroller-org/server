@@ -24,8 +24,8 @@ var actionCmd = &cobra.Command{
 Node actions: reboot, reset, firmware-update, heartbeat, refresh-node-info
 Gateway actions: discover-nodes
 
-  myc action node home reboot mysensor.1
-  myc action gateway home discover-nodes mysensor
+  myc action node <alias> reboot mysensor.1
+  myc action gateway <alias> discover-nodes mysensor
 `,
 	SilenceUsage:  true,
 	SilenceErrors: true,
@@ -38,11 +38,11 @@ var nodeActionCmd = &cobra.Command{
 	Use:     "node <alias> <action> <gateway.node> [<gateway.node>...]",
 	Aliases: []string{"nodes"},
 	Short:   "Send an action to one or more nodes",
-	Example: `  myc action node home reboot mysensor.1 mysensor.2
-  myc action node home reset mysensor.1
-  myc action node home firmware-update mysensor.1
-  myc action node home heartbeat mysensor.1
-  myc action node home refresh-node-info mysensor.1`,
+	Example: `  myc action node <alias> reboot mysensor.1 mysensor.2
+  myc action node <alias> reset mysensor.1
+  myc action node <alias> firmware-update mysensor.1
+  myc action node <alias> heartbeat mysensor.1
+  myc action node <alias> refresh-node-info mysensor.1`,
 	Args:          cobra.MinimumNArgs(3),
 	SilenceUsage:  true,
 	SilenceErrors: true,
@@ -70,7 +70,7 @@ var gatewayActionCmd = &cobra.Command{
 	Use:           "gateway <alias> <action> <id> [<id>...]",
 	Aliases:       []string{"gw", "gateways"},
 	Short:         "Send an action to one or more gateways",
-	Example:       `  myc action gateway home discover-nodes mysensor gw2`,
+	Example:       `  myc action gateway <alias> discover-nodes mysensor gw2`,
 	Args:          cobra.MinimumNArgs(3),
 	SilenceUsage:  true,
 	SilenceErrors: true,

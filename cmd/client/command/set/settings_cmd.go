@@ -22,14 +22,14 @@ var settingsSetCmd = &cobra.Command{
 A key path is relative to the settings spec, for example language or geoLocation.latitude.
 Use --file to read a single value or, without a key path, to merge a YAML/JSON object.
 
-  myc set settings home language en
-  myc set settings home geoLocation.autoUpdate true
-  myc set settings home login.message --file message.txt
-  myc set settings home --file settings.yaml
+  myc set settings <alias> language en
+  myc set settings <alias> geoLocation.autoUpdate true
+  myc set settings <alias> login.message --file message.txt
+  myc set settings <alias> --file settings.yaml
 `,
-	Example: `  myc set settings home language en
-  myc set settings home geoLocation.latitude 12.97
-  myc set settings home --file settings.yaml`,
+	Example: `  myc set settings <alias> language en
+  myc set settings <alias> geoLocation.latitude 12.97
+  myc set settings <alias> --file settings.yaml`,
 	Args:          cobra.MinimumNArgs(1),
 	SilenceUsage:  true,
 	SilenceErrors: true,

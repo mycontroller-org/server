@@ -29,8 +29,7 @@ type infoRow struct {
 var infoCmd = &cobra.Command{
 	Use:   "info <alias>",
 	Short: "Print version details of a MyController server",
-	Example: `  myc server info home
-  myc server info prod`,
+	Example: `  myc server info <alias>`,
 	Args:          cobra.ExactArgs(1),
 	SilenceUsage:  true,
 	SilenceErrors: true,

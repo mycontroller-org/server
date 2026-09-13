@@ -34,12 +34,12 @@ var setCmd = &cobra.Command{
 	Short: "Set a nested property on a resource, or a live field value",
 	Long: `Update a nested property (scripts and other text) on a resource.
 
-  myc set field home gw1.1.1.V_CUSTOM formatter.onReceive --file on_receive.js
-  myc set data-repository home ota_stm32_ab data.onConfig --file onConfig.js
+  myc set field <alias> gw1.1.1.V_CUSTOM formatter.onReceive --file on_receive.js
+  myc set data-repository <alias> ota_stm32_ab data.onConfig --file onConfig.js
 
 Set a live field value with a separate command:
 
-  myc set value field home gw1.1.1.V_CUSTOM 23.5
+  myc set value field <alias> gw1.1.1.V_CUSTOM 23.5
 `,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)

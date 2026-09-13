@@ -47,16 +47,12 @@ There is **no default alias**. Every server command takes the alias as its first
 
 ```yaml
 aliases:
-  home:
+  <alias>:
     url: http://localhost:8080
     username: admin
     password: BASE64/...
     insecure: false
     expiresIn: 720h
-  prod:
-    url: https://mc.example.com
-    username: operator
-    insecure: true
 ```
 
 The stored password field is the session token, encoded as `BASE64/...`.
@@ -77,19 +73,19 @@ The stored password field is the session token, encoded as `BASE64/...`.
 
 ```bash
 # add an alias and log in (prompts for username and password)
-myc alias set home http://localhost:8080
+myc alias set <alias> http://localhost:8080
 
 # with credentials on the command line
-myc alias set home http://localhost:8080 -u admin -p password
+myc alias set <alias> http://localhost:8080 -u admin -p password
 
 # token
-myc alias set ci http://localhost:8080 --token <token>
+myc alias set <alias> http://localhost:8080 --token <token>
 
 # TLS without certificate verification
-myc alias set prod https://mc.example.com -u admin --insecure
+myc alias set <alias> https://mc.example.com -u admin --insecure
 
 myc alias list
-myc alias remove home
+myc alias remove <alias>
 ```
 
 | Flag (`alias set`) | Default | Description |
@@ -103,9 +99,9 @@ myc alias remove home
 Every server command names the alias:
 
 ```bash
-myc get node home
-myc apply prod -f resources.yaml
-myc server info home
+myc get node <alias>
+myc apply <alias> -f resources.yaml
+myc server info <alias>
 ```
 
 Client version (no alias):
@@ -125,17 +121,17 @@ Alias names start with a letter and may contain letters, numbers, `-`, and `_`. 
 List resources from the server.
 
 ```bash
-myc get gateway home
-myc get node home
-myc get source home --limit 50 --sort-by name --sort-order desc
-myc get field home --filter "gateway id=mysensor" --filter "node id==1"
-myc get gateway home -o yaml
-myc get node home -o json --pretty
-myc get field home -o wide
-myc get settings home
-myc get settings home geoLocation
-myc get settings home geoLocation.latitude
-myc get settings home -o yaml
+myc get gateway <alias>
+myc get node <alias>
+myc get source <alias> --limit 50 --sort-by name --sort-order desc
+myc get field <alias> --filter "gateway id=mysensor" --filter "node id==1"
+myc get gateway <alias> -o yaml
+myc get node <alias> -o json --pretty
+myc get field <alias> -o wide
+myc get settings <alias>
+myc get settings <alias> geoLocation
+myc get settings <alias> geoLocation.latitude
+myc get settings <alias> -o yaml
 ```
 
 With no key path, `get settings` lists all keys and values. A map key lists all nested keys and values under it. A leaf key prints only that key and value.
@@ -192,11 +188,11 @@ The key is matched against the table header title (spaces ignored, case insensit
 Firmware **binaries** are not part of apply. Create the firmware resource with apply, then upload the file with `myc upload firmware`.
 
 ```bash
-myc apply home -f resources.yaml
-myc apply home -f resources.yaml --dry-run
-myc apply home -f resources.yaml --replace
-myc apply home -f nodes.yaml -f sources.yaml
-myc apply home -f - --dry-run < resources.json
+myc apply <alias> -f resources.yaml
+myc apply <alias> -f resources.yaml --dry-run
+myc apply <alias> -f resources.yaml --replace
+myc apply <alias> -f nodes.yaml -f sources.yaml
+myc apply <alias> -f - --dry-run < resources.json
 ```
 
 | Flag | Description |
@@ -540,7 +536,7 @@ data:
 Verify first:
 
 ```bash
-myc apply home -f resources.yaml --dry-run
+myc apply <alias> -f resources.yaml --dry-run
 ```
 
 Then apply. Use `--replace` when you want existing `add` targets recreated instead of failing.
@@ -552,9 +548,9 @@ Then apply. Use `--replace` when you want existing `add` targets recreated inste
 Upload a binary to an **existing** firmware resource. Apply the firmware metadata first.
 
 ```bash
-myc apply home -f firmware.yaml
-myc upload firmware home stm32-app-slot-a ./app-slot-a.signed.bin
-myc upload fw home stm32-app-slot-a ./app-slot-a.signed.bin
+myc apply <alias> -f firmware.yaml
+myc upload firmware <alias> stm32-app-slot-a ./app-slot-a.signed.bin
+myc upload fw <alias> stm32-app-slot-a ./app-slot-a.signed.bin
 ```
 
 | Argument | Description |
@@ -618,19 +614,19 @@ The key path uses dots and matches JSON field names:
 `--file` always stores the file contents as raw text (useful for JavaScript). Without `--file`, the last argument is the value. Inline values that are valid JSON (`true`, `false`, numbers, objects, arrays) are stored as that type; other inline text is stored as a string.
 
 ```bash
-myc set field home mysensor.1.dht.temperature formatter.onReceive --file on_receive.js
-myc set field home mysensor.1.dht.temperature formatter.onReceive "return value;"
-myc set data-repository home ota_stm32_ab data.onConfig --file onConfig.js
-myc set data-repo home --path data.onBlock --file onBlock.js
-myc set gateway home mysensor description "USB gateway"
-myc set node home mysensor.1 others.note --file note.txt
-myc set firmware home stm32-app-slot-a labels.ms_flash_slot A
+myc set field <alias> mysensor.1.dht.temperature formatter.onReceive --file on_receive.js
+myc set field <alias> mysensor.1.dht.temperature formatter.onReceive "return value;"
+myc set data-repository <alias> ota_stm32_ab data.onConfig --file onConfig.js
+myc set data-repo <alias> --path data.onBlock --file onBlock.js
+myc set gateway <alias> mysensor description "USB gateway"
+myc set node <alias> mysensor.1 others.note --file note.txt
+myc set firmware <alias> stm32-app-slot-a labels.ms_flash_slot A
 ```
 
 Several ids can be given; they all receive the same path and value:
 
 ```bash
-myc set field home id-1 id-2 formatter.onReceive --file on_receive.js
+myc set field <alias> id-1 id-2 formatter.onReceive --file on_receive.js
 ```
 
 ### System settings
@@ -638,12 +634,12 @@ myc set field home id-1 id-2 formatter.onReceive --file on_receive.js
 Paths are relative to the settings spec. Nested maps are merged; keys not in the update stay as they are.
 
 ```bash
-myc get settings home
-myc set settings home language en
-myc set settings home geoLocation.autoUpdate true
-myc set settings home geoLocation.latitude 12.97
-myc set settings home login.message --file message.txt
-myc set settings home --file settings.yaml
+myc get settings <alias>
+myc set settings <alias> language en
+myc set settings <alias> geoLocation.autoUpdate true
+myc set settings <alias> geoLocation.latitude 12.97
+myc set settings <alias> login.message --file message.txt
+myc set settings <alias> --file settings.yaml
 ```
 
 `--file` without a key path merges a YAML/JSON object into the spec:
@@ -660,8 +656,8 @@ geoLocation:
 Use `set value field`. This sends an action; it does not change stored metadata.
 
 ```bash
-myc set value field home gw1.1.1.V_CUSTOM 23.5
-myc set value field home mysensor.1.dht.temperature 21.0
+myc set value field <alias> gw1.1.1.V_CUSTOM 23.5
+myc set value field <alias> mysensor.1.dht.temperature 21.0
 ```
 
 Do not use `myc set field` for this. `set field` always updates a stored key path (`formatter.onReceive`, `name`, `unit`, …).
@@ -709,8 +705,8 @@ Supported: `gateway`, `virtual-device`, `virtual-assistant`, `task`, `schedule`,
 ### Reload
 
 ```bash
-myc reload gateway home mysensor gw2
-myc reload virtual-assistant home <id> [<id>...]
+myc reload gateway <alias> mysensor gw2
+myc reload virtual-assistant <alias> <id> [<id>...]
 ```
 
 Supported: `gateway`, `virtual-assistant`.
@@ -718,10 +714,10 @@ Supported: `gateway`, `virtual-assistant`.
 ### Reboot
 
 ```bash
-myc reboot node home mysensor.1 mysensor.2
+myc reboot node <alias> mysensor.1 mysensor.2
 ```
 
-Sends a reboot action to each node. Same as `myc action node home reboot …`.
+Sends a reboot action to each node. Same as `myc action node <alias> reboot …`.
 
 ### Action
 
@@ -738,12 +734,12 @@ myc action gateway <alias> discover-nodes <id> [<id>...]
 | `gateway` | `discover-nodes` |
 
 ```bash
-myc action node home reboot mysensor.1 mysensor.2
-myc action node home reset mysensor.1
-myc action node home firmware-update mysensor.1
-myc action node home heartbeat mysensor.1
-myc action node home refresh-node-info mysensor.1
-myc action gateway home discover-nodes mysensor gw2
+myc action node <alias> reboot mysensor.1 mysensor.2
+myc action node <alias> reset mysensor.1
+myc action node <alias> firmware-update mysensor.1
+myc action node <alias> heartbeat mysensor.1
+myc action node <alias> refresh-node-info mysensor.1
+myc action gateway <alias> discover-nodes mysensor gw2
 ```
 
 To reload gateways, use `myc reload gateway <alias> <id> [<id>...]`. There is no gateway restart or reboot action.

@@ -86,10 +86,10 @@ YAML example:
 If an item includes fieldId, it is applied as a field even when kind is source.
 A JSON array of the same objects is also supported.
 `,
-	Example: `  myc apply home -f resources.yaml
-  myc apply home -f resources.yaml --dry-run
-  myc apply home -f nodes.yaml -f sources.yaml --replace
-  myc apply home -f - --dry-run < resources.json`,
+	Example: `  myc apply <alias> -f resources.yaml
+  myc apply <alias> -f resources.yaml --dry-run
+  myc apply <alias> -f nodes.yaml -f sources.yaml --replace
+  myc apply <alias> -f - --dry-run < resources.json`,
 	Args: cobra.ExactArgs(1),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)

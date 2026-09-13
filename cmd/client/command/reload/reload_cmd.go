@@ -16,7 +16,7 @@ var gwReloadCmd = &cobra.Command{
 	Use:     "gateway <alias> <id> [<id>...]",
 	Aliases: []string{"gw", "gateways"},
 	Short:   "Reload one or more gateways",
-	Example: `  myc reload gateway home mysensor gw2`,
+	Example: `  myc reload gateway <alias> mysensor gw2`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},

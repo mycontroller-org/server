@@ -51,11 +51,11 @@ var aliasCmd = &cobra.Command{
 	Long: `Aliases store a server URL and a logged-in user session.
 Every server command takes the alias as its first argument.
 
-  myc alias set home http://localhost:8080
-  myc alias set prod https://mc.example.com -u admin --insecure
+  myc alias set <alias> http://localhost:8080
+  myc alias set <alias> https://mc.example.com -u admin --insecure
   myc alias list
-  myc get node home
-  myc apply home -f resources.yaml
+  myc get node <alias>
+  myc apply <alias> -f resources.yaml
 `,
 	SilenceUsage: true,
 	PreRun: func(cmd *cobra.Command, args []string) {
@@ -66,10 +66,10 @@ Every server command takes the alias as its first argument.
 var aliasSetCmd = &cobra.Command{
 	Use:   "set <name> <url>",
 	Short: "Add or update an alias and log in",
-	Example: `  myc alias set home http://localhost:8080
-  myc alias set home http://localhost:8080 -u admin
-  myc alias set prod https://mc.example.com -u admin -p secret --insecure
-  myc alias set ci http://localhost:8080 --token <token>`,
+	Example: `  myc alias set <alias> http://localhost:8080
+  myc alias set <alias> http://localhost:8080 -u admin
+  myc alias set <alias> https://mc.example.com -u admin -p secret --insecure
+  myc alias set <alias> http://localhost:8080 --token <token>`,
 	Args:          cobra.ExactArgs(2),
 	SilenceUsage:  true,
 	SilenceErrors: true,

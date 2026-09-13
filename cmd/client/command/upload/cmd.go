@@ -32,11 +32,11 @@ var firmwareUploadCmd = &cobra.Command{
 
 Create the firmware metadata first with myc apply, then upload the file:
 
-  myc apply home -f firmware.yaml
-  myc upload firmware home stm32-app ./app.signed.bin
+  myc apply <alias> -f firmware.yaml
+  myc upload firmware <alias> stm32-app ./app.signed.bin
 `,
-	Example: `  myc upload firmware home stm32-app ./app.signed.bin
-  myc upload fw home stm32-app ./app.bin`,
+	Example: `  myc upload firmware <alias> stm32-app ./app.signed.bin
+  myc upload fw <alias> stm32-app ./app.bin`,
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	Args:          cobra.ExactArgs(3),
