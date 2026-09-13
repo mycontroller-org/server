@@ -13,17 +13,17 @@ func init() {
 }
 
 var gwReloadCmd = &cobra.Command{
-	Use:     "gateway <id> [<id>...]",
+	Use:     "gateway <alias> <id> [<id>...]",
 	Aliases: []string{"gw", "gateways"},
 	Short:   "Reload one or more gateways",
-	Example: `  myc reload gateway mysensor gw2`,
+	Example: `  myc reload gateway <alias> mysensor gw2`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		ids, resolveErr := client.ResolveGatewayIDs(args, false)
+		client, rest := rootCmd.TakeAlias(args)
+		ids, resolveErr := client.ResolveGatewayIDs(rest, false)
 		if len(ids) > 0 {
 			err := client.ReloadGateway(ids...)
 			printStatus(err, len(ids), "gateway")
@@ -38,15 +38,16 @@ var gwReloadCmd = &cobra.Command{
 }
 
 var virtualAssistantReloadCmd = &cobra.Command{
-	Use:     "virtual-assistant <id> [<id>...]",
+	Use:     "virtual-assistant <alias> <id> [<id>...]",
 	Aliases: []string{"virtual-assistants", "va"},
 	Short:   "Reload one or more virtual assistants",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		err := rootCmd.GetClient().ReloadVirtualAssistant(args...)
-		printStatus(err, len(args), "virtual assistant")
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.ReloadVirtualAssistant(ids...)
+		printStatus(err, len(ids), "virtual assistant")
 	},
 }

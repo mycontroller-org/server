@@ -25,28 +25,28 @@ var uploadCmd = &cobra.Command{
 }
 
 var firmwareUploadCmd = &cobra.Command{
-	Use:     "firmware <id> <file>",
+	Use:     "firmware <alias> <id> <file>",
 	Aliases: []string{"fw"},
 	Short:   "Upload a firmware binary to an existing firmware resource",
 	Long: `Upload a firmware binary to an existing firmware resource.
 
 Create the firmware metadata first with myc apply, then upload the file:
 
-  myc apply -f firmware.yaml
-  myc upload firmware stm32-app ./app.signed.bin
+  myc apply <alias> -f firmware.yaml
+  myc upload firmware <alias> stm32-app ./app.signed.bin
 `,
-	Example: `  myc upload firmware stm32-app ./app.signed.bin
-  myc upload fw stm32-app ./app.bin`,
+	Example: `  myc upload firmware <alias> stm32-app ./app.signed.bin
+  myc upload fw <alias> stm32-app ./app.bin`,
 	SilenceUsage:  true,
 	SilenceErrors: true,
-	Args:          cobra.ExactArgs(2),
+	Args:          cobra.ExactArgs(3),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		id := args[0]
-		filename := args[1]
-		client := rootCmd.GetClient()
+		client := rootCmd.MustClient(args[0])
+		id := args[1]
+		filename := args[2]
 		existing, err := client.FindFirmware(id)
 		if err != nil {
 			return fmt.Errorf("failed to look up firmware %s: %w", id, err)

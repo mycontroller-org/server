@@ -22,196 +22,196 @@ func init() {
 }
 
 var gwDeleteCmd = &cobra.Command{
-	Use:     "gateway",
+	Use:     "gateway <alias> <id> [<id>...]",
 	Aliases: []string{"gw", "gateways"},
 	Short:   "Deletes the given gateways",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteGateway(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteGateway(ids...)
 		printStatus(err)
 	},
 }
 
 var nodeDeleteCmd = &cobra.Command{
-	Use:     "node",
+	Use:     "node <alias> <id> [<id>...]",
 	Aliases: []string{"nodes"},
 	Short:   "Deletes the given nodes",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteNode(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteNode(ids...)
 		printStatus(err)
 	},
 }
 
 var sourceDeleteCmd = &cobra.Command{
-	Use:     "source",
+	Use:     "source <alias> <id> [<id>...]",
 	Aliases: []string{"sources"},
 	Short:   "Deletes the given sources",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteSource(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteSource(ids...)
 		printStatus(err)
 	},
 }
 
 var fieldDeleteCmd = &cobra.Command{
-	Use:     "field",
+	Use:     "field <alias> <id> [<id>...]",
 	Aliases: []string{"fields"},
 	Short:   "Deletes the given fields",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteField(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteField(ids...)
 		printStatus(err)
 	},
 }
 
 var firmwareDeleteCmd = &cobra.Command{
-	Use:     "firmware",
+	Use:     "firmware <alias> <id> [<id>...]",
 	Aliases: []string{"firmwares", "fw"},
 	Short:   "Deletes the given firmwares",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteFirmware(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteFirmware(ids...)
 		printStatus(err)
 	},
 }
 
 var dataRepositoryDeleteCmd = &cobra.Command{
-	Use:     "data-repository",
+	Use:     "data-repository <alias> <id> [<id>...]",
 	Aliases: []string{"data-repositories", "data-repo"},
 	Short:   "Deletes the given data repositories",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteDataRepository(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteDataRepository(ids...)
 		printStatus(err)
 	},
 }
 
 var virtualDeviceDeleteCmd = &cobra.Command{
-	Use:     "virtual-device",
+	Use:     "virtual-device <alias> <id> [<id>...]",
 	Aliases: []string{"virtual-devices", "vd"},
 	Short:   "Deletes the given virtual devices",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteVirtualDevice(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteVirtualDevice(ids...)
 		printStatus(err)
 	},
 }
 
 var virtualAssistantDeleteCmd = &cobra.Command{
-	Use:     "virtual-assistant",
+	Use:     "virtual-assistant <alias> <id> [<id>...]",
 	Aliases: []string{"virtual-assistants", "va"},
 	Short:   "Deletes the given virtual assistants",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteVirtualAssistant(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteVirtualAssistant(ids...)
 		printStatus(err)
 	},
 }
 
 var taskDeleteCmd = &cobra.Command{
-	Use:     "task",
+	Use:     "task <alias> <id> [<id>...]",
 	Aliases: []string{"tasks"},
 	Short:   "Deletes the given tasks",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteTask(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteTask(ids...)
 		printStatus(err)
 	},
 }
 
 var scheduleDeleteCmd = &cobra.Command{
-	Use:     "schedule",
+	Use:     "schedule <alias> <id> [<id>...]",
 	Aliases: []string{"schedules"},
 	Short:   "Deletes the given schedules",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteSchedule(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteSchedule(ids...)
 		printStatus(err)
 	},
 }
 
 var handlerDeleteCmd = &cobra.Command{
-	Use:     "handler",
+	Use:     "handler <alias> <id> [<id>...]",
 	Aliases: []string{"handlers"},
 	Short:   "Deletes the given handlers",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteHandler(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteHandler(ids...)
 		printStatus(err)
 	},
 }
 
 var forwardPayloadDeleteCmd = &cobra.Command{
-	Use:     "forward-payload",
+	Use:     "forward-payload <alias> <id> [<id>...]",
 	Aliases: []string{"forward-payloads"},
 	Short:   "Deletes the given forward payloads",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteForwardPayload(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteForwardPayload(ids...)
 		printStatus(err)
 	},
 }
 
 var backupDeleteCmd = &cobra.Command{
-	Use:     "backup",
+	Use:     "backup <alias> <id> [<id>...]",
 	Aliases: []string{"backups"},
 	Short:   "Deletes the given backups",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		client := rootCmd.GetClient()
-		err := client.DeleteBackup(args...)
+		client, ids := rootCmd.TakeAlias(args)
+		err := client.DeleteBackup(ids...)
 		printStatus(err)
 	},
 }

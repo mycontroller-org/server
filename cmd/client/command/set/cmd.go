@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/mycontroller-org/server/v2/cmd/client/api"
 	rootCmd "github.com/mycontroller-org/server/v2/cmd/client/command/root"
 	webHandlerTY "github.com/mycontroller-org/server/v2/pkg/types/web_handler"
 	"github.com/spf13/cobra"
@@ -33,20 +34,19 @@ var setCmd = &cobra.Command{
 	Short: "Set a nested property on a resource, or a live field value",
 	Long: `Update a nested property (scripts and other text) on a resource.
 
-  myc set field gw1.1.1.V_CUSTOM formatter.onReceive --file on_receive.js
-  myc set data-repository ota_stm32_ab data.onConfig --file onConfig.js
+  myc set field <alias> gw1.1.1.V_CUSTOM formatter.onReceive --file on_receive.js
+  myc set data-repository <alias> ota_stm32_ab data.onConfig --file onConfig.js
 
 Set a live field value with a separate command:
 
-  myc set value field gw1.1.1.V_CUSTOM 23.5
+  myc set value field <alias> gw1.1.1.V_CUSTOM 23.5
 `,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		rootCmd.UpdateStreams(cmd)
 	},
 }
 
-func executeSetFieldValue(resources []string, payload string) error {
-	client := rootCmd.GetClient()
+func executeSetFieldValue(client *api.Client, resources []string, payload string) error {
 	actions := make([]webHandlerTY.ActionConfig, 0, len(resources))
 	for _, resource := range resources {
 		actions = append(actions, webHandlerTY.ActionConfig{
@@ -63,8 +63,7 @@ func executeSetFieldValue(resources []string, payload string) error {
 	return nil
 }
 
-func executeSetPath(kind string, selectors []string, keyPath, value string) error {
-	client := rootCmd.GetClient()
+func executeSetPath(client *api.Client, kind string, selectors []string, keyPath, value string) error {
 	failed := 0
 	for _, selector := range selectors {
 		if err := client.SetResourcePath(kind, selector, keyPath, value, setFile != ""); err != nil {
