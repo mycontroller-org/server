@@ -123,23 +123,6 @@ func (a *API) AllowedKindWide(subject Subject, action, kind string) error {
 	return nil
 }
 
-// resourcesCoverKindWide reports whether any resource pattern covers the whole kind.
-func resourcesCoverKindWide(resources []string, kind string) bool {
-	for _, res := range resources {
-		if res == "*" {
-			return true
-		}
-		k, name := splitResource(res)
-		if k != kind && k != "*" {
-			continue
-		}
-		if name == "" || name == "*" {
-			return true
-		}
-	}
-	return false
-}
-
 // EnsureUserActive loads user from cache and verifies not disabled (for auth middleware).
 func (a *API) EnsureUserActive(userID string) (*userTY.User, error) {
 	user, err := a.cache.GetUser(userID)

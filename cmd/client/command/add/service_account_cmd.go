@@ -112,9 +112,9 @@ func addServiceAccount(alias, name string) error {
 	}
 
 	out := rootCmd.IOStreams.Out
-	fmt.Fprintf(out, "service-account: %s\n", tableName(account))
-	fmt.Fprintln(out, "Save this token now. It will not be shown again.")
-	fmt.Fprintln(out, created.Token)
+	_, _ = fmt.Fprintf(out, "service-account: %s\n", tableName(account))
+	_, _ = fmt.Fprintln(out, "Save this token now. It will not be shown again.")
+	_, _ = fmt.Fprintln(out, created.Token)
 	return nil
 }
 

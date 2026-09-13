@@ -205,10 +205,10 @@ func printCreatedTokens(out io.Writer, tokens []createdToken) {
 	if len(tokens) == 0 {
 		return
 	}
-	fmt.Fprintln(out)
-	fmt.Fprintln(out, "Save these tokens now. They will not be shown again.")
+	_, _ = fmt.Fprintln(out)
+	_, _ = fmt.Fprintln(out, "Save these tokens now. They will not be shown again.")
 	for _, item := range tokens {
-		fmt.Fprintf(out, "\n  %s\n  %s\n", item.resource, item.token)
+		_, _ = fmt.Fprintf(out, "\n  %s\n  %s\n", item.resource, item.token)
 	}
 }
 
