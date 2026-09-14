@@ -1,0 +1,92 @@
+/*
+.pf-c-page__sidebar .pf-c-nav .pf-c-nav__simple-list .pf-c-nav__link {
+  font-size: 14px;
+}
+*/
+
+/* 
+--pf-c-page__header--MinHeight: 4.75rem
+--pf-c-page__sidebar-body--PaddingTop: var(--pf-global--spacer--sm);
+*/
+
+/*
+Limits the height of the header
+*/
+.pf-c-page__header {
+  max-height: 50px !important;
+  min-height: 50px !important;
+}
+
+.mc-header-logo {
+  max-height: 38px !important;
+  min-height: 38px !important;
+  margin-top: 1px;
+  margin-right: 4px;
+}
+
+.rb-logo-text {
+  margin-top: -3px;
+}
+.rb-logo-text,
+a:hover {
+  text-decoration: none;
+}
+
+.pf-c-page__header-brand-toggle {
+  margin-right: -10px;
+}
+
+/*
+Removes the top padding on left side menu
+*/
+.pf-c-page__sidebar-body {
+  padding-top: 0px !important;
+}
+
+/*
+page section padding fixed
+*/
+.pf-c-page__main-section {
+  padding-top: 10px !important;
+  padding-bottom: 5px !important;
+}
+
+/*
+Removes the gray color of bottom page
+*/
+.pf-c-page__main {
+  background-color: var(--mc-background-color);
+}
+
+/* hides some of the elements on mobile view */
+@media only screen and (max-width: 768px) {
+  .mc-mobile-view {
+    display: none;
+  }
+}
+
+.pf-c-select__toggle-clear {
+  margin-top: 3px;
+}
+
+.language_icon {
+  padding: 1px;
+}
+
+.language_item {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.language_selected {
+  background-color: var(--pf-global--palette--blue-100);
+}
+
+.mc-badge-experimental {
+  padding-left: 5px;
+  .pf-c-badge {
+    background-color: var(--pf-global--warning-color--100);
+    color: var(--pf-global--palette--black-900);
+  }
+}

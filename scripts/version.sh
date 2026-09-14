@@ -22,4 +22,5 @@ if [ -z "$VERSION" ]; then
   export VERSION="${STATIC_VERSION}-devel"
 fi
 
-export LD_FLAGS="-X $VERSION_PKG.version=$VERSION -X $VERSION_PKG.buildDate=$BUILD_DATE -X $VERSION_PKG.gitCommit=$GIT_SHA"
+# -s -w strip symbol table and DWARF to shrink the binary
+export LD_FLAGS="-s -w -X $VERSION_PKG.version=$VERSION -X $VERSION_PKG.buildDate=$BUILD_DATE -X $VERSION_PKG.gitCommit=$GIT_SHA"

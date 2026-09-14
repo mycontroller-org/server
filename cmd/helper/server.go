@@ -9,6 +9,7 @@ import (
 	"github.com/mycontroller-org/server/v2/pkg/configuration"
 	"github.com/mycontroller-org/server/v2/pkg/encryption"
 	httpRouter "github.com/mycontroller-org/server/v2/pkg/http_router"
+	webConsole "github.com/mycontroller-org/server/v2/pkg/http_router/web-console"
 	deletionSVC "github.com/mycontroller-org/server/v2/pkg/service/deletion"
 	fwdPayloadSVC "github.com/mycontroller-org/server/v2/pkg/service/forward_payload"
 	gatewaySVC "github.com/mycontroller-org/server/v2/pkg/service/gateway"
@@ -78,6 +79,11 @@ func (s *Server) Start(ctx context.Context, configFilePath string) error {
 	err = setEnvironmentVariables(cfg)
 	if err != nil {
 		logger.Error("error on setting environment variables", zap.Error(err))
+		return err
+	}
+
+	if err := webConsole.Ensure(logger, cfg); err != nil {
+		logger.Error("error on preparing web console", zap.Error(err))
 		return err
 	}
 

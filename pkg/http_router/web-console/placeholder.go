@@ -1,5 +1,3 @@
-// +build !web
-
 package web
 
 import (

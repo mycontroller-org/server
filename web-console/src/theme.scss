@@ -1,0 +1,37 @@
+// include/update only color scheme
+// for complete details supported variables
+// visit: https://www.patternfly.org/v4/developer-resources/global-css-variables
+
+:root {
+  --mc-background-color: #fff;
+  --mc-components-background-color: #fff;
+  --mc-dashboard-background-color: #f7f7f7;
+  --mc-widget-background-color: #fff;
+  --mc-widget-title-background-color: #f6f6f6;
+  --mc-widget-title-color: #434343;
+  --mc-timestamp-color: var(--pf-global--palette--black-600);
+  --mc-widget-utilization-title-color: var(--pf-global--palette--black-600);
+  --mc-widget-utilization-value-color: var(--pf-global--palette--black-800);
+  --mc-widget-utilization-unit-color: var(--pf-global--palette--black-600);
+  --mc-widget-utilization-function-color: var(--pf-global--palette--black-400);
+}
+
+.pf-c-card {
+  --pf-c-card--BackgroundColor: var(--mc-background-color);
+}
+
+.pf-c-table {
+  --pf-c-table--BackgroundColor: var(--mc-background-color);
+}
+
+.pf-c-pagination {
+  --pf-c-pagination--m-bottom--BackgroundColor: var(--mc-background-color);
+  --pf-c-pagination--BackgroundColor: var(--mc-background-color);
+}
+.pf-c-toolbar {
+  --pf-c-toolbar--BackgroundColor: var(--mc-background-color);
+}
+
+.pf-c-modal-box {
+  --pf-c-modal-box--BackgroundColor: var(--mc-background-color);
+}

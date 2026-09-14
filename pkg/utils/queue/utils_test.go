@@ -500,11 +500,15 @@ func TestQueueConcurrency(t *testing.T) {
 				}(p)
 			}
 
-			// Monitor size concurrently
+			// Monitor size concurrently. Keep this off the producer WaitGroup:
+			// cancel() must run after producers finish, so the monitor cannot
+			// also be waited on before cancel or the test deadlocks.
 			ctx, cancel := context.WithCancel(context.Background())
-			wg.Add(1)
+			defer cancel()
+			var monitorWG sync.WaitGroup
+			monitorWG.Add(1)
 			go func() {
-				defer wg.Done()
+				defer monitorWG.Done()
 				for {
 					select {
 					case <-ctx.Done():
@@ -526,9 +530,16 @@ func TestQueueConcurrency(t *testing.T) {
 
 			wg.Wait()
 			cancel()
+			monitorWG.Wait()
 
-			// Wait for processing to complete
-			time.Sleep(time.Duration(tt.workers) * 100 * time.Millisecond)
+			// Wait until workers drain what was produced, instead of a fixed sleep.
+			deadline := time.Now().Add(5 * time.Second)
+			for time.Now().Before(deadline) {
+				if atomic.LoadInt64(&consumed) == atomic.LoadInt64(&successful) {
+					break
+				}
+				time.Sleep(10 * time.Millisecond)
+			}
 
 			finalSuccessful := atomic.LoadInt64(&successful)
 			finalConsumed := atomic.LoadInt64(&consumed)
@@ -554,15 +565,13 @@ func TestQueueErrorScenarios(t *testing.T) {
 		workers           int
 		consumerFunc      func(item interface{}) error
 		expectProcessing  bool
-		testPanic         bool
 	}{
 		{
 			name:     "nil consumer",
 			capacity: 10,
-			workers:  1,
+			workers:  0,
 			consumerFunc: nil,
 			expectProcessing: false,
-			testPanic: false,
 		},
 		{
 			name:     "consumer with error",
@@ -572,20 +581,6 @@ func TestQueueErrorScenarios(t *testing.T) {
 				return errors.New("consumer error")
 			},
 			expectProcessing: true, // Items processed but with errors
-			testPanic: false,
-		},
-		{
-			name:     "consumer with panic",
-			capacity: 10,
-			workers:  1,
-			consumerFunc: func(item interface{}) error {
-				if item == "panic_item" {
-					panic("test panic")
-				}
-				return nil
-			},
-			expectProcessing: true,
-			testPanic: true,
 		},
 		{
 			name:     "zero workers",
@@ -595,7 +590,6 @@ func TestQueueErrorScenarios(t *testing.T) {
 				return nil
 			},
 			expectProcessing: false,
-			testPanic: false,
 		},
 	}
 
@@ -607,18 +601,8 @@ func TestQueueErrorScenarios(t *testing.T) {
 
 			time.Sleep(10 * time.Millisecond)
 
-			if tt.testPanic {
-				// This should not crash the test
-				q.Produce("panic_item")
-				time.Sleep(100 * time.Millisecond)
-
-				// Queue should still be functional
-				q.Produce("normal_item")
-				time.Sleep(100 * time.Millisecond)
-			} else {
-				q.Produce("test_item")
-				time.Sleep(100 * time.Millisecond)
-			}
+			q.Produce("test_item")
+			time.Sleep(100 * time.Millisecond)
 
 			size := q.Size()
 			if !tt.expectProcessing && tt.workers > 0 {

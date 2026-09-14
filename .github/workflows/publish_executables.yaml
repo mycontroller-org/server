@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout backend repository
+      - name: checkout
         uses: actions/checkout@v7
 
       - uses: actions/setup-go@v7
@@ -20,9 +20,6 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "22"
-
-      - name: setup web console repository
-        run: ./scripts/setup_web_console.sh
 
       - name: cache node modules
         uses: actions/cache@v6
@@ -35,8 +32,6 @@ jobs:
 
       - name: build web console
         run: ./scripts/build_web_console.sh
-        env:
-          TX_TOKEN: '${{ secrets.TRANSIFEX_TOKEN_MC_V2 }}'
 
       - name: Cache go modules
         uses: actions/cache@v6

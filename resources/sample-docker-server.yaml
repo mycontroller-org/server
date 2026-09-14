@@ -9,7 +9,10 @@ telemetry:
 jwt_secret:
 
 web:
-  web_directory: /ui
+  # leave empty to extract the packed UI into directories.data/internal/web_console
+  # set a path to serve a directory on disk instead
+  # upgrades that still set web_console or /ui must keep that directory or clear this field
+  web_directory:
   enable_profiling: false
   read_timeout: 60s
   http:

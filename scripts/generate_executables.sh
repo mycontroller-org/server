@@ -20,6 +20,13 @@ if [ "${BUILD_UI}" = true ] ; then
   ./scripts/build_web_console.sh
 fi
 
+# pack the UI into the server binary (extract-on-start)
+go run ./scripts/cmd/pack_web_console
+if [ $? -ne 0 ]; then
+  echo "failed to pack web console assets"
+  exit 1
+fi
+
 # download dependencies
 go mod tidy
 
@@ -42,10 +49,8 @@ function package {
   # config file name
   local CONFIG_FILE=${COMPONENT_NAME}.yaml
 
-  # include web console
   if [ ${COMPONENT_NAME} = "server" ]; then
-    cp web-console/build ${PACKAGE_STAGING_DIR}/web_console -r
-    CONFIG_FILE="mycontroller.yaml"    
+    CONFIG_FILE="mycontroller.yaml"
   fi
 
   if [[ "${COMPONENT_NAME}" != "client" ]]; then
@@ -85,31 +90,29 @@ do
   package_handler="mycontroller-handler-${GOOS}-${GOARCH}"
   package_client="myc"
 
-  # to use embed web assets use tag "web"
-  # embed assets takes extra ~40 MiB when running
-  env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=server -o ${BUILD_DIR}/${BINARY_DIR}/${package_server} -ldflags "$LD_FLAGS" cmd/component/server/main.go
+  env CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build -trimpath -tags=server,embedui -o ${BUILD_DIR}/${BINARY_DIR}/${package_server} -ldflags "$LD_FLAGS" cmd/component/server/main.go
   build_status=$?
   if [ $build_status -ne 0 ]; then
       echo "an error has occurred. aborting the build process, status:${build_status}"
-      exit $status
+      exit ${build_status}
   fi
-  env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=standalone -o ${BUILD_DIR}/${BINARY_DIR}/${package_gateway} -ldflags "$LD_FLAGS" cmd/component/gateway/main.go
+  env CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build -trimpath -tags=standalone -o ${BUILD_DIR}/${BINARY_DIR}/${package_gateway} -ldflags "$LD_FLAGS" cmd/component/gateway/main.go
   build_status=$?
   if [ $build_status -ne 0 ]; then
       echo "an error has occurred. aborting the build process, status:${build_status}"
-      exit $status
+      exit ${build_status}
   fi
-  env GOOS=${GOOS} GOARCH=${GOARCH} go build -tags=standalone -o ${BUILD_DIR}/${BINARY_DIR}/${package_handler} -ldflags "$LD_FLAGS" cmd/component/handler/main.go
+  env CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build -trimpath -tags=standalone -o ${BUILD_DIR}/${BINARY_DIR}/${package_handler} -ldflags "$LD_FLAGS" cmd/component/handler/main.go
   build_status=$?
   if [ $build_status -ne 0 ]; then
       echo "an error has occurred. aborting the build process, status:${build_status}"
-      exit $status
+      exit ${build_status}
   fi
-  env GOOS=${GOOS} GOARCH=${GOARCH} go build -o ${BUILD_DIR}/${BINARY_DIR}/${package_client} -ldflags "$LD_FLAGS" cmd/client/main.go
+  env CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build -trimpath -o ${BUILD_DIR}/${BINARY_DIR}/${package_client} -ldflags "$LD_FLAGS" cmd/client/main.go
   build_status=$?
   if [ $build_status -ne 0 ]; then
       echo "an error has occurred. aborting the build process, status:${build_status}"
-      exit $status
+      exit ${build_status}
   fi
 
   FILE_EXTENSION=""
