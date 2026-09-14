@@ -1,0 +1,38 @@
+.mc-control-panel {
+  background-color: var(--mc-widget-background-color);
+  .text {
+    float: left;
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+      color: var(--pf-global--palette--blue-400);
+    }
+  }
+  .enabled {
+    font-weight: bold;
+  }
+  .value-timestamp {
+    color: var(--mc-timestamp-color);
+    font-size: 14px;
+    font-weight: 400;
+    padding-right: 10px;
+  }
+
+  &.pf-c-table thead > tr > *,
+  &.pf-c-table tbody > tr > * {
+    vertical-align: bottom;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 7px;
+  }
+}
+
+.mixed-ctl-input-field {
+  --pf-c-popover__content--BackgroundColor: #fff;
+  --pf-c-popover__arrow--BackgroundColor: #fff;
+  border: 1px solid #2124276e;
+  .pf-c-popover__arrow {
+    border: 1px solid #2124276e;
+  }
+}

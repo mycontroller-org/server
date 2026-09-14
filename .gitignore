@@ -3,8 +3,17 @@
 !/resources/control-scripts
 !/resources/sample*.yaml
 /scripts/push_bin.sh
-/scripts/.web_console_dir
 binaries/*
 builds/*
 .vscode/*
 !.vscode/settings.json
+
+# web-console build artifacts (also listed in web-console/.gitignore)
+/web-console/node_modules
+/web-console/build
+/web-console/coverage
+/web-console/.yarn
+/web-console/.cache_*
+/web-console/.env
+/web-console/tx
+/pkg/http_router/web-console/assets/web_console.zip

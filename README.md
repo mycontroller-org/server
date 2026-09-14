@@ -17,6 +17,13 @@ MyController is a flexible automation and sensor controller for IoT devices. Whe
 * [Overview](https://mycontroller.org/docs/overview/)
 * [Quick Installation](https://mycontroller.org/docs/quick-installation/)
 
+## Web console
+The UI lives in [`web-console/`](web-console/). See that directory for development setup.
+
+Production server binaries pack the UI and extract it to `directories.data/internal/web_console` on first start when `web.web_directory` is empty. Local flow: `make web-console` then `make server`. To serve a directory on disk instead, set `web.web_directory` to that path.
+
+Upgrading from a sidecar install (`web_directory: web_console` or `/ui`): either keep that directory on disk, or clear `web.web_directory` so the packed UI is extracted.
+
 ## Download
 ### Container images
   * [Docker Hub](https://hub.docker.com/u/mycontroller)
