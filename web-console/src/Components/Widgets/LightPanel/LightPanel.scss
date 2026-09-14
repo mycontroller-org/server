@@ -1,0 +1,40 @@
+.mc-rgb-light-panel {
+  .component {
+    .slider-brightness {
+      background-image: linear-gradient(to right, #000, #fff);
+      margin-top: 3px;
+      margin-bottom: 0px;
+      padding-top: 2px;
+      padding-bottom: 2px;
+      border-radius: 2px;
+    }
+    .slider-color-temperature {
+      background-image: linear-gradient(to right, #eff, #f81);
+      margin-top: 3px;
+      margin-bottom: 0px;
+      padding-top: 2px;
+      padding-bottom: 2px;
+      border-radius: 2px;
+    }
+    .hue-color{
+      margin-top: 5px;
+      margin-bottom: 0px;
+      border-radius: 2px;
+    }
+    .slider-saturation {
+      margin-top: 5px;
+      margin-bottom: 0px;
+      border-radius: 2px;
+    }
+  }
+  .row {
+    margin-bottom: 7px;
+    .icon {
+      margin-right: 15px;
+    }
+    .field {
+      margin-left: 0px;
+      margin-right: 0px;
+    }
+  }
+}

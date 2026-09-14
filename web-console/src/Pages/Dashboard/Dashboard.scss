@@ -1,0 +1,32 @@
+.react-grid-layout {
+  background: var(--mc-dashboard-background-color);
+}
+
+.react-grid-item:not(.react-grid-placeholder) {
+  background: #eee;
+  border: 1px solid rgb(235, 235, 235);
+}
+
+.react-grid-item.resizing {
+  opacity: 0.9;
+}
+
+.react-grid-item.static {
+  background: #cce;
+}
+
+.react-grid-item .add {
+  cursor: pointer;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: var(--pf-global--palette--blue-200);
+}
+
+.dashboard {
+  .mc-page-content {
+    .pf-c-page__main-section {
+      background-color: var(--mc-dashboard-background-color);
+    }
+  }
+}

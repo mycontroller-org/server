@@ -1,0 +1,46 @@
+.mc-form {
+  --pf-c-form--GridGap: 0.6rem; // default: --pf-c-form--GridGap: var(--pf-global--gutter--md); // 1.5rem
+  .mc-form-group {
+    padding-bottom: 7px;
+  }
+  .mc-form-group-header {
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
+  .mc-form-header-label {
+    font-size: var(--pf-global--FontSize--lg);
+    font-style: normal;
+    color: #000000a0;
+  }
+}
+
+.mc-key-value-map-items {
+  grid-gap: 7px;
+  .btn-layout {
+    justify-content: left;
+  }
+  .icon-btn {
+    font-size: var(--pf-global--icon--FontSize--md);
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  .btn-remove {
+    color: #faa49e;
+    &:hover {
+      color: var(--pf-global--danger-color--100);
+    }
+  }
+  .btn-add {
+    color: #99d392;
+    &:hover {
+      color: var(--pf-global--success-color--100);
+    }
+  }
+  .btn-split {
+    --pf-l-split--m-gutter--MarginRight: 7px;
+  }
+  .field-title{
+    color: #000000a0;
+  }
+}

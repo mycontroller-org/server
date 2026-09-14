@@ -1,0 +1,12 @@
+.co-filter-search--full-width {
+  flex-grow: 1;
+  max-width: 370px;
+}
+
+.pf-c-input-group {
+  display: block;
+  .pf-c-dropdown__toggle {
+    margin-bottom: 2px;
+    width: 100%;
+  }
+}

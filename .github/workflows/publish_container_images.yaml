@@ -14,7 +14,7 @@ jobs:
         container_image: ["server", "gateway", "handler"]
 
     steps:
-      - name: backend repository
+      - name: checkout
         uses: actions/checkout@v7
 
       - uses: actions/setup-go@v7
@@ -39,9 +39,6 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_TOKEN }}
 
-      - name: Setup Web UI Repository
-        run: ./scripts/setup_web_console.sh
-
       - name: Cache node modules
         uses: actions/cache@v6
         env:
@@ -51,10 +48,8 @@ jobs:
             **/node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Build Web UI Repository
+      - name: Build web console
         run: ./scripts/build_web_console.sh
-        env:
-          TX_TOKEN: '${{ secrets.TRANSIFEX_TOKEN_MC_V2 }}'
 
       - name: Cache go modules
         uses: actions/cache@v6

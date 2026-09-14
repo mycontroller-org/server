@@ -1,0 +1,19 @@
+.mc-error-boundary {
+  margin: 2px;
+  .has-margin {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 20px;
+  }
+  pre {
+    white-space: pre-line;
+    overflow: auto;
+  }
+  .detail {
+    margin-top: 5px;
+  }
+  .pf-c-card__title {
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
+}

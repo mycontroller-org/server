@@ -1,0 +1,36 @@
+.mc-selector {
+  &.disabled {
+    background-color: var(--pf-global--disabled-color--300);
+    cursor: not-allowed;
+  }
+
+  .mc-selector-dropdown {
+    padding: 0px;
+  }
+
+  .mc-selector-favorite {
+    padding: 10px;
+    padding-right: 5px;
+    padding-left: 10px;
+    color: var(--pf-global--palette--black-500);
+    &:hover {
+      color: var(--pf-global--palette--black-600);
+    }
+  }
+
+  .mc-selector-item {
+    padding: 10px;
+    padding-left: 5px;
+    font-size: 16px;
+  }
+
+  .pf-c-dropdown__toggle {
+    color: inherit;
+  }
+
+  .pf-c-dropdown__menu {
+    max-height: 45vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}

@@ -1,0 +1,16 @@
+.mc-resource-variables {
+  padding: 2px;
+  margin-bottom: 1px;
+  overflow: hidden;
+  .key {
+    display: inline-block;
+    color: #0303038c;
+    min-width: 125px;
+    padding-right: 5px;
+  }
+  .pf-c-label {
+    --pf-c-label--BorderRadius: 10px;
+    margin-right: 2px;
+    //margin-bottom: 2px;
+  }
+}

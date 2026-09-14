@@ -1,0 +1,7 @@
+{
+  //  "prettier.packageManager": "yarn", // now vs code detects the package manager automatically
+  "prettier.printWidth": 110,
+  "prettier.semi": false,
+  "svg.preview.background": "white",
+  "sort-imports.on-save": false,
+}

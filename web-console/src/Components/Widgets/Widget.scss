@@ -1,0 +1,51 @@
+.dashboard-widget {
+  height: 100%;
+  width: 100%;
+  background-color: var(--mc-widget-background-color);
+  border-radius: 0px;
+  position: relative;
+  overflow: auto;
+  .dashboard-widget-body {
+    padding: 0px 0px;
+    .dashboard-widget-title-stick-top {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      opacity: 0.3;
+      .dashboard-widget-title-text {
+        opacity: 0;
+      }
+      &:hover {
+        opacity: 1;
+        .dashboard-widget-title-text {
+          opacity: 1;
+        }
+      }
+    }
+    .dashboard-widget-title {
+      padding: 5px 0px 5px 10px;
+      background-color: var(--mc-widget-title-background-color);
+      color: var(--mc-widget-title-color);
+    }
+    .dashboard-widget-action {
+      margin-left: 3px;
+      margin-right: 7px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    .dashboard-widget-content {
+      padding: 10px 10px;
+    }
+  }
+}
+
+// enable / disable scrollbar
+.disable-scrollbar {
+  overflow: visible;
+}
+
+.enable-scrollbar {
+  overflow: auto;
+}
