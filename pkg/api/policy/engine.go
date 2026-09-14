@@ -6,7 +6,7 @@ import (
 	"time"
 
 	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
-	svcTokenTY "github.com/mycontroller-org/server/v2/pkg/types/service_token"
+	svcAccountTY "github.com/mycontroller-org/server/v2/pkg/types/service_account"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 )
 
@@ -14,15 +14,15 @@ var (
 	errCacheNotReady = errors.New("access control cache not ready")
 	ErrUserDisabled  = errors.New("user is disabled")
 	ErrUserNotFound  = errors.New("user not found")
-	ErrTokenExpired  = errors.New("service token expired")
-	ErrTokenNotFound = errors.New("service token not found")
+	ErrTokenExpired  = errors.New("service account expired")
+	ErrTokenNotFound = errors.New("service account not found")
 	ErrAccessDenied  = errors.New("access denied")
 )
 
 // Subject is the authenticated principal for an access check.
 type Subject struct {
-	UserID         string
-	ServiceTokenID string // raw Token.ID from JWT; empty for interactive login
+	UserID           string
+	ServiceAccountID string // raw Token.ID from JWT; empty for interactive login
 }
 
 // Allowed reports whether the subject may perform action on resource.
@@ -30,7 +30,7 @@ type Subject struct {
 //
 // Rules:
 //  1. User must exist and not be disabled
-//  2. If service token: must exist, not expired, belong to user
+//  2. If service account: must exist, not expired, belong to user
 //  3. User policies must allow (ceiling)
 //  4. If token has restrictions, they must also allow (can only lower)
 func (a *API) Allowed(subject Subject, action, resource string) error {
@@ -48,8 +48,8 @@ func (a *API) Allowed(subject Subject, action, resource string) error {
 	}
 
 	// Token restrictions (optional lower bound): can only narrow further
-	if token != nil && (len(token.Actions) > 0 || len(token.Resources) > 0) {
-		if !restrictionsAllow(token.Actions, token.Resources, action, resource) {
+	if token != nil {
+		if !tokenRestrictionsAllow(token, action, resource) {
 			return ErrAccessDenied
 		}
 	}
@@ -76,13 +76,13 @@ func (a *API) activeUser(subject Subject) (*userTY.User, error) {
 	return user, nil
 }
 
-// activeToken loads the subject's service token, if the request presented one.
+// activeToken loads the subject's service account, if the request presented one.
 // Returns (nil, nil) for an interactive login.
-func (a *API) activeToken(subject Subject) (*svcTokenTY.ServiceToken, error) {
-	if subject.ServiceTokenID == "" {
+func (a *API) activeToken(subject Subject) (*svcAccountTY.ServiceAccount, error) {
+	if subject.ServiceAccountID == "" {
 		return nil, nil
 	}
-	token, err := a.cache.GetToken(subject.ServiceTokenID)
+	token, err := a.cache.GetToken(subject.ServiceAccountID)
 	if err != nil {
 		return nil, ErrTokenNotFound
 	}
@@ -117,32 +117,10 @@ func (a *API) AllowedKindWide(subject Subject, action, kind string) error {
 		return ErrAccessDenied
 	}
 	// A token restriction naming individual objects cannot satisfy a kind-wide check
-	if token != nil && (len(token.Actions) > 0 || len(token.Resources) > 0) {
-		if len(token.Actions) > 0 && !anyActionMatch(token.Actions, action) {
-			return ErrAccessDenied
-		}
-		if len(token.Resources) > 0 && !resourcesCoverKindWide(token.Resources, kind) {
-			return ErrAccessDenied
-		}
+	if token != nil && !tokenRestrictionsAllowKindWide(token, action, kind) {
+		return ErrAccessDenied
 	}
 	return nil
-}
-
-// resourcesCoverKindWide reports whether any resource pattern covers the whole kind.
-func resourcesCoverKindWide(resources []string, kind string) bool {
-	for _, res := range resources {
-		if res == "*" {
-			return true
-		}
-		k, name := splitResource(res)
-		if k != kind && k != "*" {
-			continue
-		}
-		if name == "" || name == "*" {
-			return true
-		}
-	}
-	return false
 }
 
 // EnsureUserActive loads user from cache and verifies not disabled (for auth middleware).
@@ -157,8 +135,8 @@ func (a *API) EnsureUserActive(userID string) (*userTY.User, error) {
 	return user, nil
 }
 
-// EnsureServiceTokenActive validates token still valid for requests.
-func (a *API) EnsureServiceTokenActive(userID, tokenID string) error {
+// EnsureServiceAccountActive validates service account still valid for requests.
+func (a *API) EnsureServiceAccountActive(userID, tokenID string) error {
 	if tokenID == "" {
 		return nil
 	}
@@ -172,7 +150,7 @@ func (a *API) EnsureServiceTokenActive(userID, tokenID string) error {
 	return validateTokenExpiry(token)
 }
 
-func validateTokenExpiry(token *svcTokenTY.ServiceToken) error {
+func validateTokenExpiry(token *svcAccountTY.ServiceAccount) error {
 	if token.NeverExpire {
 		return nil
 	}
@@ -332,6 +310,35 @@ func statementsAllow(statements []policyTY.Statement, action, resource string) b
 	return evaluateStatements(statements, action, resource)
 }
 
+func tokenRestrictionsAllow(token *svcAccountTY.ServiceAccount, action, resource string) bool {
+	if token == nil || len(token.Statements) == 0 {
+		return true
+	}
+	return evaluateStatements(token.Statements, action, resource)
+}
+
+func tokenRestrictionsAllowKindWide(token *svcAccountTY.ServiceAccount, action, kind string) bool {
+	if token == nil || len(token.Statements) == 0 {
+		return true
+	}
+	return evaluateStatements(token.Statements, action, kind) ||
+		evaluateStatements(token.Statements, action, FormatResource(kind, "*"))
+}
+
+func tokenResourceLimits(token *svcAccountTY.ServiceAccount) []string {
+	if token == nil || len(token.Statements) == 0 {
+		return nil
+	}
+	resources := make([]string, 0)
+	for _, st := range token.Statements {
+		if normalizeEffect(st.Effect) == policyTY.EffectDeny {
+			continue
+		}
+		resources = append(resources, st.Resources...)
+	}
+	return resources
+}
+
 func restrictionsAllow(actions, resources []string, action, resource string) bool {
 	// empty actions in restriction means all actions (still under user ceiling)
 	if len(actions) > 0 && !anyActionMatch(actions, action) {
@@ -484,13 +491,13 @@ func (a *API) ResourceNamesForList(subject Subject, kind string) (unrestricted b
 	}
 
 	// Intersect with token restrictions (token can only narrow)
-	if subject.ServiceTokenID != "" {
-		token, err := a.cache.GetToken(subject.ServiceTokenID)
+	if subject.ServiceAccountID != "" {
+		token, err := a.cache.GetToken(subject.ServiceAccountID)
 		if err != nil {
 			return false, nil, ErrTokenNotFound
 		}
-		if len(token.Resources) > 0 {
-			tokenPatterns, tokenWild := tokenNamePatternsForKind(token.Resources, kind)
+		if tokenResources := tokenResourceLimits(token); len(tokenResources) > 0 {
+			tokenPatterns, tokenWild := tokenNamePatternsForKind(tokenResources, kind)
 			if !tokenWild {
 				unrestricted = false
 				allowPart, denyPart := splitAllowDenyPatterns(patterns)
@@ -517,7 +524,7 @@ func (a *API) ResourceNamesForList(subject Subject, kind string) (unrestricted b
 	return unrestricted, patterns, nil
 }
 
-// tokenNamePatternsForKind collects the name patterns a service token allows for kind.
+// tokenNamePatternsForKind collects the name patterns a service account allows for kind.
 // Mirrors the policy loop above, including the device-tree parent cascade
 // (token resource "gateway:gw" reaches node/source/field/metric rows under gw),
 // so list scoping matches what Allowed() permits for a single resource.
@@ -579,7 +586,7 @@ func subtractPatterns(allow, deny []string) []string {
 }
 
 // intersectPatterns keeps only name patterns allowed by both sides
-// (a = user policy scope, b = service token scope). When one pattern covers the
+// (a = user policy scope, b = service account scope). When one pattern covers the
 // other, the narrower one survives. No overlap means no access, so an empty
 // result is a valid answer and must be treated as "no rows" by the caller.
 func intersectPatterns(a, b []string) []string {

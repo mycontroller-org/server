@@ -13,6 +13,8 @@ This document describes the **MyController command-line client**: how to build i
 | `alias` | Add, list, or remove named server connections |
 | `server` | Show server information for an alias |
 | `get` | List resources |
+| `add` | Add a user or service account (`create` is an alias) |
+| `update` | Update a user or service account |
 | `apply` | Add, merge, or delete resources from a YAML or JSON file |
 | `upload` | Upload a firmware binary to an existing firmware resource |
 | `set` | Update a stored property, or set a live field value |
@@ -92,7 +94,7 @@ myc alias remove <alias>
 | --- | --- | --- |
 | `-u`, `--username` | | Login username |
 | `-p`, `--password` | | Login password |
-| `-t`, `--token` | | Service token (skips username/password) |
+| `-t`, `--token` | | Service account token (skips username/password) |
 | `--expires-in` | `720h` | Session lifetime |
 | `--insecure` | `false` | Skip TLS certificate verification |
 
@@ -176,14 +178,81 @@ The key is matched against the table header title (spaces ignored, case insensit
 | `get task` | `tasks` |
 | `get schedule` | `schedules` |
 | `get handler` | `handlers` |
+| `get user` | `users` |
+| `get policy` | `policies` |
+| `get service-account` | `service-accounts`, `sa` |
 | `get forward-payload` | `forward-payloads` |
 | `get backup` | `backups` |
+
+```bash
+myc get user <alias>
+myc get user <alias> alice
+myc get user <alias> alice policies
+myc get policy <alias>
+myc get policy <alias> admin
+myc get service-account <alias>
+myc get service-account <alias> ci-bot
+myc get sa <alias> ci-bot --user alice
+```
+
+`get user <alias> <username-or-id> policies` lists the policies attached to that user.
+
+`get service-account` lists accounts the caller can see. The secret token is never stored; it is shown only when the account is created. If the same name exists for more than one user, pass `--user`.
+
+### Add a user
+
+```bash
+myc add user <alias> alice --password secret
+myc add user <alias> alice --email alice@example.com --full-name Alice --policy readonly
+myc add user <alias> alice
+```
+
+If `--password` is omitted, myc prompts. Repeat `--policy` to attach policies. Add fails if the username already exists.
+
+### Add a service account
+
+```bash
+myc add service-account <alias> ci-bot
+myc add sa <alias> mobile --user alice --description "phone login"
+myc add sa <alias> ci-bot --action get --action list --resource "node:*" --resource "field:*"
+myc add sa <alias> limited --effect Deny --action "*" --resource settings
+myc add sa <alias> temp --expires-on 2027-12-31
+```
+
+`create` is an alias of `add`. Omit `--user` to create the account for the logged-in user. `--never-expire` defaults to true; `--expires-on` (YYYY-MM-DD) turns that off. `--action` and `--resource` must be used together (repeatable) and form one statement; `--effect` is Allow or Deny (default Allow). Omit both for the same access as the owning user.
+
+The token is printed once. Save it; it cannot be retrieved later. If the name already exists for that user, add fails. Use `myc apply` to merge or replace. Add exits `1` on error.
+
+### Update a user
+
+```bash
+myc update user <alias> alice --email alice@example.com --full-name Alice
+myc update user <alias> alice --policy readonly --policy admin
+myc update user <alias> alice --password newsecret
+myc update user <alias> alice --username alice2
+myc update user <alias> alice --clear-policies
+```
+
+Only flags you pass are changed. `--policy` replaces the attached list. `--clear-policies` removes all policies. Password is not prompted; pass `--password` to change it.
+
+### Update a service account
+
+```bash
+myc update sa <alias> ci-bot --description "CI"
+myc update sa <alias> ci-bot --user alice --name ci-bot-2
+myc update sa <alias> ci-bot --never-expire
+myc update sa <alias> ci-bot --expires-on 2027-12-31
+myc update sa <alias> ci-bot --action get --resource "node:*"
+myc update sa <alias> ci-bot --clear-statements
+```
+
+The owner and token are not changed. If the name is used by more than one user, pass `--user`. `--action`/`--resource` replace statements; `--clear-statements` removes them. Update exits `1` on error.
 
 ---
 
 ## 5. Apply
 
-`myc apply` creates, merges, or deletes **gateways**, **nodes**, **sources**, **fields**, **firmware**, and **data repositories** from a YAML or JSON file.
+`myc apply` creates, merges, or deletes **gateways**, **nodes**, **sources**, **fields**, **firmware**, **data repositories**, **users**, **policies**, and **service accounts** from a YAML or JSON file.
 
 Firmware **binaries** are not part of apply. Create the firmware resource with apply, then upload the file with `myc upload firmware`.
 
@@ -274,7 +343,7 @@ sourceId: dht
 fieldId: temperature
 ```
 
-`kind` aliases: `gateway` / `gw` / `gateways`, `node` / `nodes`, `source` / `sources`, `field` / `fields`.
+`kind` aliases: `gateway` / `gw` / `gateways`, `node` / `nodes`, `source` / `sources`, `field` / `fields`, `user` / `users`, `policy` / `policies`, `service-account` / `service-accounts` / `sa`.
 
 `operation` aliases: `add` / `create`, `update`, `delete` / `remove`.
 
@@ -325,15 +394,22 @@ That item is a field, not a source.
 | gateway | `id` | `id` | `id` |
 | firmware | `id` | `id` | `id` |
 | data-repository | `id` | `id` | `id` |
+| user | `username` or `id` | `username` and `password` on add | `id` or `username` |
+| policy | `id` | `id` (generated on add if omitted) | `id` |
+| service-account | `name` or `id` | `name`; optional `username` or `userId` (defaults to the logged-in user) | `id` or `name` |
 | node | `gatewayId` + `nodeId` | `gatewayId`, `nodeId` | `id` or `gatewayId`+`nodeId` |
 | source | `gatewayId` + `nodeId` + `sourceId` | those three | `id` or those three |
 | field | `gatewayId` + `nodeId` + `sourceId` + `fieldId` | those four | `id` or those four |
 
 Lookup uses `id` when it is set, otherwise the natural keys.
 
-Gateway, firmware, and data-repository HTTP APIs require an `id` on save; supply it in the file. For a new node or source without `id`, the client generates a UUID. A new field may omit `id`; the server assigns one.
+Gateway, firmware, and data-repository HTTP APIs require an `id` on save; supply it in the file. For a new node or source without `id`, the client generates a UUID. A new field, user, or service account may omit `id`; the server assigns one.
 
 Apply of firmware writes **metadata only** (`id`, `description`, `labels`). The binary stays empty until `myc upload firmware`. Updating firmware metadata keeps the existing file. Replacing a firmware deletes the old file; upload again after replace.
+
+Adding or replacing a service account prints the secret token after the table. Save it immediately; it cannot be retrieved later. Replace issues a **new** token and keeps the same storage id. Merge updates name, description, expiry, and limits without rotating the token.
+
+Omit `username` / `userId` to create the account for the logged-in user. Set `username` or `userId` to create it for another user (requires user-admin rights).
 
 ### 5.6 Operations
 
@@ -518,6 +594,35 @@ items:
 ```
 
 ```yaml
+kind: user
+operation: add
+username: alice
+password: secret
+email: alice@example.com
+fullName: Alice
+policies:
+  - readonly
+---
+kind: policy
+operation: add
+id: sensors-read
+description: read sensors
+statements:
+  - effect: Allow
+    actions: ["get", "list"]
+    resources: ["node:*", "source:*", "field:*"]
+---
+kind: service-account
+operation: add
+name: ci-bot
+username: alice
+description: CI automation
+neverExpire: true
+statements:
+  - effect: Allow
+    actions: ["get", "list"]
+    resources: ["node:*", "source:*", "field:*"]
+---
 kind: firmware
 operation: add
 id: stm32-app-slot-a
@@ -666,7 +771,7 @@ Do not use `myc set field` for this. `set field` always updates a stored key pat
 
 ## 8. Delete, enable, disable, reload, reboot, action
 
-`delete`, `enable`, `disable`, and `reload` take the **alias** first, then **storage ids** (the `id` column from `get`). Node `reboot` and `action node` take the alias, then **quick ids** (`gatewayId.nodeId`).
+`delete`, `enable`, `disable`, and `reload` take the **alias** first, then **storage ids** (the `id` column from `get`). User and service-account delete also accept name. You cannot disable or delete the user you are logged in as. Node `reboot` and `action node` take the alias, then **quick ids** (`gatewayId.nodeId`).
 
 ### Delete
 
@@ -675,6 +780,9 @@ myc delete gateway <alias> <id> [<id>...]
 myc delete node <alias> <id>
 myc delete source <alias> <id>
 myc delete field <alias> <id>
+myc delete user <alias> alice
+myc delete service-account <alias> ci-bot
+myc delete sa <alias> ci-bot --user alice
 ```
 
 | Resource | Aliases |
@@ -692,15 +800,20 @@ myc delete field <alias> <id>
 | `handler` | `handlers` |
 | `forward-payload` | `forward-payloads` |
 | `backup` | `backups` |
+| `user` | `users` |
+| `policy` | `policies` |
+| `service-account` | `service-accounts`, `sa` |
 
 ### Enable / disable
 
 ```bash
 myc enable gateway <alias> <id>
 myc disable task <alias> <id>
+myc enable user <alias> alice
+myc disable user <alias> alice bob
 ```
 
-Supported: `gateway`, `virtual-device`, `virtual-assistant`, `task`, `schedule`, `handler` (same aliases as `get`).
+Supported: `gateway`, `virtual-device`, `virtual-assistant`, `task`, `schedule`, `handler`, `user`. User enable/disable accept username or id. A disabled user cannot log in. You cannot disable the user you are logged in as.
 
 ### Reload
 

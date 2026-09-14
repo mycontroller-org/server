@@ -82,6 +82,9 @@ func IsMatching(entity interface{}, filters []storageTY.Filter) bool {
 		case reflect.Bool:
 			match = CompareBool(value, filter.Operator, filter.Value)
 
+		case reflect.Slice, reflect.Array:
+			match = CompareStringSliceContains(value, filter.Operator, filter.Value)
+
 		case reflect.Struct:
 			timeValue, ok := value.(time.Time)
 			if !ok {
@@ -219,6 +222,71 @@ func CompareString(value interface{}, operator string, filterValue interface{}) 
 		return VerifyStringSlice(valueString, operator, filterValue)
 	}
 	return false
+}
+
+// CompareStringSliceContains matches a stored string slice (e.g. user.policies)
+// against a scalar or list filter value.
+func CompareStringSliceContains(value interface{}, operator string, filterValue interface{}) bool {
+	items := stringSliceOf(value)
+	switch operator {
+	case storageTY.OperatorEqual, storageTY.OperatorNone:
+		want := converterUtils.ToString(filterValue)
+		for _, item := range items {
+			if item == want {
+				return true
+			}
+		}
+		return false
+	case storageTY.OperatorNotEqual:
+		want := converterUtils.ToString(filterValue)
+		for _, item := range items {
+			if item == want {
+				return false
+			}
+		}
+		return true
+	case storageTY.OperatorIn:
+		for _, item := range items {
+			if VerifyStringSlice(item, storageTY.OperatorIn, filterValue) {
+				return true
+			}
+		}
+		return false
+	case storageTY.OperatorNotIn:
+		for _, item := range items {
+			if VerifyStringSlice(item, storageTY.OperatorIn, filterValue) {
+				return false
+			}
+		}
+		return true
+	case storageTY.OperatorExists:
+		return len(items) > 0
+	default:
+		return false
+	}
+}
+
+func stringSliceOf(value interface{}) []string {
+	switch typed := value.(type) {
+	case []string:
+		return typed
+	case []interface{}:
+		out := make([]string, 0, len(typed))
+		for _, item := range typed {
+			out = append(out, converterUtils.ToString(item))
+		}
+		return out
+	default:
+		rv := reflect.ValueOf(value)
+		if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
+			return nil
+		}
+		out := make([]string, 0, rv.Len())
+		for i := 0; i < rv.Len(); i++ {
+			out = append(out, converterUtils.ToString(rv.Index(i).Interface()))
+		}
+		return out
+	}
 }
 
 // VerifyBoolSlice implementation

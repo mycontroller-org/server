@@ -12,6 +12,7 @@ func init() {
 	disableCmd.AddCommand(taskDisableCmd)
 	disableCmd.AddCommand(scheduleDisableCmd)
 	disableCmd.AddCommand(handlerDisableCmd)
+	disableCmd.AddCommand(userDisableCmd)
 }
 
 var gatewayDisableCmd = &cobra.Command{
@@ -101,5 +102,21 @@ var handlerDisableCmd = &cobra.Command{
 		client, ids := rootCmd.TakeAlias(args)
 		err := client.DisableHandler(ids...)
 		printStatus(err)
+	},
+}
+
+var userDisableCmd = &cobra.Command{
+	Use:     "user <alias> <username-or-id> [<username-or-id>...]",
+	Aliases: []string{"users"},
+	Short:   "Disables the given users",
+	Example: `  myc disable user <alias> alice
+  myc disable user <alias> alice bob`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		rootCmd.UpdateStreams(cmd)
+	},
+	Args: cobra.MinimumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		client, selectors := rootCmd.TakeAlias(args)
+		printStatus(client.DisableUser(selectors...))
 	},
 }

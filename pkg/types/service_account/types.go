@@ -1,4 +1,4 @@
-package service_token
+package service_account
 
 import (
 	"errors"
@@ -8,12 +8,14 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/types/cmap"
 	dateTimeTY "github.com/mycontroller-org/server/v2/pkg/types/cusom_datetime"
+	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 )
 
-type ServiceToken struct {
+type ServiceAccount struct {
 	ID          string                `json:"id" yaml:"id"`
 	UserID      string                `json:"userId" yaml:"userId"` // always tied to a user; permissions cannot exceed this user
+	Username    string                `json:"username" yaml:"username"`
 	Name        string                `json:"name" yaml:"name"`
 	Description string                `json:"description" yaml:"description"`
 	Token       Token                 `json:"token" yaml:"token"` // keeps hashed token, not the actual token
@@ -21,13 +23,12 @@ type ServiceToken struct {
 	ExpiresOn   dateTimeTY.CustomDate `json:"expiresOn" yaml:"expiresOn"`
 	// Optional restrictions - empty means same access as the owning user.
 	// When set, effective access = user policies ∩ these limits (can only lower).
-	Actions   []string             `json:"actions" yaml:"actions"`
-	Resources []string             `json:"resources" yaml:"resources"`
-	Labels    cmap.CustomStringMap `json:"labels" yaml:"labels"`
-	CreatedOn time.Time            `json:"createdOn" yaml:"createdOn"`
+	Statements []policyTY.Statement `json:"statements" yaml:"statements"`
+	Labels     cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	CreatedOn  time.Time            `json:"createdOn" yaml:"createdOn"`
 }
 
-type CreateTokenResponse struct {
+type CreateAccountResponse struct {
 	ID    string `json:"id" yaml:"id"`
 	Token string `json:"token" yaml:"token"`
 }

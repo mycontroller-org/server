@@ -29,10 +29,11 @@ var applyCmd = &cobra.Command{
 	Short:         "Add, merge, or delete resources from a YAML or JSON file",
 	SilenceUsage:  true,
 	SilenceErrors: true,
-	Long: `Apply gateways, nodes, sources, fields, firmware, and data repositories from a YAML or JSON file.
+	Long: `Apply gateways, nodes, sources, fields, firmware, data repositories, users, policies, and service accounts from a YAML or JSON file.
 
-Each resource must include kind (gateway, node, source, field, firmware, data-repository) and operation (add, merge, delete).
+Each resource must include kind (gateway, node, source, field, firmware, data-repository, user, policy, service-account) and operation (add, merge, delete).
 Firmware binary files are not part of apply; upload them with myc upload firmware.
+Adding a service account prints the token once; save it immediately.
 Add fails when the resource already exists, unless --replace is set or the
 resource has replace: true.
 With replace, the existing resource is deleted and recreated with the same id

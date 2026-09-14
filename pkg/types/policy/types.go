@@ -49,7 +49,7 @@ const (
 	ResourceDataRepository   = "datarepository"
 	ResourceVirtualDevice    = "virtualdevice"
 	ResourceVirtualAssistant = "virtualassistant"
-	ResourceServiceToken     = "servicetoken"
+	ResourceServiceAccount   = "serviceaccount"
 	ResourceSettings         = "settings"
 	ResourceBackup           = "backup"
 	ResourceUser             = "user"
@@ -82,8 +82,8 @@ func NormalizeKind(value string) string {
 		return ResourceVirtualDevice
 	case "virtual_assistant", "virtualassistant":
 		return ResourceVirtualAssistant
-	case "service_token", "servicetoken":
-		return ResourceServiceToken
+	case "service_account", "serviceaccount", "service_token", "servicetoken":
+		return ResourceServiceAccount
 	default:
 		return s
 	}

@@ -67,9 +67,9 @@ func getAccessControl() *policyAPI.API {
 
 // struct used in api request
 type McApiContext struct {
-	Tenant         string `json:"tenant" yaml:"tenant"`
-	UserID         string `json:"userId" yaml:"userId"`
-	ServiceTokenID string `json:"serviceTokenId" yaml:"serviceTokenId"`
+	Tenant           string `json:"tenant" yaml:"tenant"`
+	UserID           string `json:"userId" yaml:"userId"`
+	ServiceAccountID string `json:"serviceAccountId" yaml:"serviceAccountId"`
 }
 
 // MiddlewareAuthenticationVerification verifies user auth details
@@ -105,7 +105,7 @@ func MiddlewareAuthenticationVerification(next http.Handler) http.Handler {
 			}
 			// authentication required
 			if mcApiContext, err := IsValidToken(r); err == nil {
-				// verify user still active (cached) and service token still valid
+				// verify user still active (cached) and service account still valid
 				if err := verifyPrincipalActive(mcApiContext); err != nil {
 					w.Header().Set("Content-Type", "application/json")
 					handlerUtils.PostErrorResponse(w, "401 Unauthorized", http.StatusUnauthorized)
@@ -162,7 +162,7 @@ func verifyPrincipalActive(mc *McApiContext) error {
 	if _, err := ac.EnsureUserActive(mc.UserID); err != nil {
 		return err
 	}
-	if err := ac.EnsureServiceTokenActive(mc.UserID, mc.ServiceTokenID); err != nil {
+	if err := ac.EnsureServiceAccountActive(mc.UserID, mc.ServiceAccountID); err != nil {
 		return err
 	}
 	return nil
@@ -188,7 +188,7 @@ func authorizeRequest(mc *McApiContext, r *http.Request) error {
 	if isOwnProfilePath(r.URL.Path) {
 		return nil
 	}
-	subject := policyAPI.Subject{UserID: mc.UserID, ServiceTokenID: mc.ServiceTokenID}
+	subject := policyAPI.Subject{UserID: mc.UserID, ServiceAccountID: mc.ServiceAccountID}
 
 	// Metrics: enforce per target field/node/gateway (quick_id or body tags.id), not bare "metric"
 	if access.Kind == policyTY.ResourceMetric {
@@ -247,7 +247,7 @@ func IsValidToken(r *http.Request) (*McApiContext, error) {
 
 	// clear userID / svc token headers, might be injected from external
 	r.Header.Del(handlerTY.HeaderUserID)
-	r.Header.Del(handlerTY.HeaderServiceTokenID)
+	r.Header.Del(handlerTY.HeaderServiceAccountID)
 
 	userID := ""
 	if v, ok := claims[handlerTY.KeyUserID]; ok {
@@ -257,18 +257,18 @@ func IsValidToken(r *http.Request) (*McApiContext, error) {
 		}
 	}
 
-	svcTokenID := ""
-	if v, ok := claims[handlerTY.KeyServiceTokenID]; ok {
+	svcAccountID := ""
+	if v, ok := claims[handlerTY.KeyServiceAccountID]; ok {
 		if id, ok := v.(string); ok && id != "" {
-			svcTokenID = id
-			r.Header.Set(handlerTY.HeaderServiceTokenID, id)
+			svcAccountID = id
+			r.Header.Set(handlerTY.HeaderServiceAccountID, id)
 		}
 	}
 
 	mcApiContext := McApiContext{
-		Tenant:         "",
-		UserID:         userID,
-		ServiceTokenID: svcTokenID,
+		Tenant:           "",
+		UserID:           userID,
+		ServiceAccountID: svcAccountID,
 	}
 
 	return &mcApiContext, nil
@@ -326,7 +326,7 @@ func extractJwtToken(r *http.Request) string {
 }
 
 // CreateToken creates a token for a user
-func CreateToken(user user.User, expiresIn, svcTokenID string) (string, error) {
+func CreateToken(user user.User, expiresIn, svcAccountID string) (string, error) {
 	if user.Disabled {
 		return "", errors.New("user is disabled")
 	}
@@ -335,7 +335,7 @@ func CreateToken(user user.User, expiresIn, svcTokenID string) (string, error) {
 	atClaims[handlerTY.KeyAuthorized] = true
 	atClaims[handlerTY.KeyUserID] = user.ID
 	atClaims[handlerTY.KeyFullName] = user.FullName
-	atClaims[handlerTY.KeyServiceTokenID] = svcTokenID
+	atClaims[handlerTY.KeyServiceAccountID] = svcAccountID
 
 	expiresInDuration := handlerTY.DefaultTokenExpiration
 
@@ -362,9 +362,9 @@ func GetUserID(r *http.Request) string {
 	return r.Header.Get(handlerTY.HeaderUserID)
 }
 
-// GetServiceTokenID returns service token id from request (if login used a service token)
-func GetServiceTokenID(r *http.Request) string {
-	return r.Header.Get(handlerTY.HeaderServiceTokenID)
+// GetServiceAccountID returns the service account token id from the request (if login used a service account)
+func GetServiceAccountID(r *http.Request) string {
+	return r.Header.Get(handlerTY.HeaderServiceAccountID)
 }
 
 // GetAPIContext returns McApiContext from request context if present
@@ -387,7 +387,7 @@ func SubjectFromRequest(r *http.Request) (policyAPI.Subject, error) {
 	if mc == nil || mc.UserID == "" {
 		return policyAPI.Subject{}, errors.New("unauthenticated request")
 	}
-	return policyAPI.Subject{UserID: mc.UserID, ServiceTokenID: mc.ServiceTokenID}, nil
+	return policyAPI.Subject{UserID: mc.UserID, ServiceAccountID: mc.ServiceAccountID}, nil
 }
 
 func getJwtSecret() []byte {

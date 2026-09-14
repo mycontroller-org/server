@@ -4,23 +4,23 @@ import (
 	"sync"
 
 	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
-	svcTokenTY "github.com/mycontroller-org/server/v2/pkg/types/service_token"
+	svcAccountTY "github.com/mycontroller-org/server/v2/pkg/types/service_account"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 )
 
-// Cache holds users, policies, and service tokens in memory for fast auth checks.
+// Cache holds users, policies, and service accounts in memory for fast auth checks.
 // Call Invalidate* after any write so the next request reloads from storage.
 type Cache struct {
 	mu sync.RWMutex
 
-	users    map[string]*userTY.User             // by user id
-	policies map[string]*policyTY.Policy         // by policy id
-	tokens   map[string]*svcTokenTY.ServiceToken // by token.Token.ID (token id used in JWT)
+	users    map[string]*userTY.User                 // by user id
+	policies map[string]*policyTY.Policy             // by policy id
+	tokens   map[string]*svcAccountTY.ServiceAccount // by token.Token.ID (token id used in JWT)
 
 	// loaders - set by API
 	loadUser   func(id string) (*userTY.User, error)
 	loadPolicy func(id string) (*policyTY.Policy, error)
-	loadToken  func(tokenID string) (*svcTokenTY.ServiceToken, error)
+	loadToken  func(tokenID string) (*svcAccountTY.ServiceAccount, error)
 	loadAllPol func() ([]policyTY.Policy, error)
 }
 
@@ -28,14 +28,14 @@ func newCache() *Cache {
 	return &Cache{
 		users:    make(map[string]*userTY.User),
 		policies: make(map[string]*policyTY.Policy),
-		tokens:   make(map[string]*svcTokenTY.ServiceToken),
+		tokens:   make(map[string]*svcAccountTY.ServiceAccount),
 	}
 }
 
 func (c *Cache) setLoaders(
 	loadUser func(id string) (*userTY.User, error),
 	loadPolicy func(id string) (*policyTY.Policy, error),
-	loadToken func(tokenID string) (*svcTokenTY.ServiceToken, error),
+	loadToken func(tokenID string) (*svcAccountTY.ServiceAccount, error),
 	loadAllPol func() ([]policyTY.Policy, error),
 ) {
 	c.mu.Lock()
@@ -58,7 +58,7 @@ func (c *Cache) policyLoader() func(id string) (*policyTY.Policy, error) {
 	return c.loadPolicy
 }
 
-func (c *Cache) tokenLoader() func(tokenID string) (*svcTokenTY.ServiceToken, error) {
+func (c *Cache) tokenLoader() func(tokenID string) (*svcAccountTY.ServiceAccount, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.loadToken
@@ -114,8 +114,8 @@ func (c *Cache) GetPolicy(id string) (*policyTY.Policy, error) {
 	return &cp, nil
 }
 
-// GetToken returns a cached service token by raw token id (Token.ID), or loads it.
-func (c *Cache) GetToken(tokenID string) (*svcTokenTY.ServiceToken, error) {
+// GetToken returns a cached service account by raw token id (Token.ID), or loads it.
+func (c *Cache) GetToken(tokenID string) (*svcAccountTY.ServiceAccount, error) {
 	c.mu.RLock()
 	if t, ok := c.tokens[tokenID]; ok {
 		cp := *t
@@ -162,7 +162,7 @@ func (c *Cache) PutPolicy(p *policyTY.Policy) {
 }
 
 // PutToken updates the cache after a write (keyed by Token.ID).
-func (c *Cache) PutToken(t *svcTokenTY.ServiceToken) {
+func (c *Cache) PutToken(t *svcAccountTY.ServiceAccount) {
 	if t == nil {
 		return
 	}
@@ -188,7 +188,7 @@ func (c *Cache) InvalidatePolicy(id string) {
 	c.mu.Unlock()
 }
 
-// InvalidateToken drops a service token from cache by Token.ID.
+// InvalidateToken drops a service account from cache by Token.ID.
 func (c *Cache) InvalidateToken(tokenID string) {
 	c.mu.Lock()
 	delete(c.tokens, tokenID)

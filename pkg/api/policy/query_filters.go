@@ -151,7 +151,7 @@ func isIDKeyedKind(kind string) bool {
 		policyTY.ResourceHandler, policyTY.ResourceDashboard, policyTY.ResourceFirmware,
 		policyTY.ResourceForwardPayload, policyTY.ResourceDataRepository,
 		policyTY.ResourceVirtualDevice, policyTY.ResourceVirtualAssistant,
-		policyTY.ResourceServiceToken, policyTY.ResourceUser, policyTY.ResourcePolicy:
+		policyTY.ResourceServiceAccount, policyTY.ResourceUser, policyTY.ResourcePolicy:
 		return true
 	default:
 		return false
@@ -178,7 +178,7 @@ func patternToFilterGroup(kind, namePattern string) []storageTY.Filter {
 		policyTY.ResourceDataRepository,
 		policyTY.ResourceVirtualDevice,
 		policyTY.ResourceVirtualAssistant,
-		policyTY.ResourceServiceToken,
+		policyTY.ResourceServiceAccount,
 		policyTY.ResourceUser,
 		policyTY.ResourcePolicy:
 		return idPatternFilters(types.KeyID, namePattern)

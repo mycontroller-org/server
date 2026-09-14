@@ -217,6 +217,20 @@ func TestCompareTime(t *testing.T) {
 	}
 }
 
+func TestIsMatchingStringSliceContains(t *testing.T) {
+	type user struct {
+		ID       string
+		Policies []string
+	}
+	entity := &user{ID: "u1", Policies: []string{"admin", "readwrite"}}
+	assert.True(t, IsMatching(entity, []storageTY.Filter{
+		{Key: "policies", Operator: storageTY.OperatorEqual, Value: "admin"},
+	}))
+	assert.False(t, IsMatching(entity, []storageTY.Filter{
+		{Key: "policies", Operator: storageTY.OperatorEqual, Value: "readonly"},
+	}))
+}
+
 func TestIsMatchingTimeField(t *testing.T) {
 	type event struct {
 		ID        string

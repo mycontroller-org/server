@@ -60,45 +60,45 @@ func (oa *OAuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userLogin := handlerTY.UserLogin{
-		Username:  credentials.Get("username"),
-		Password:  credentials.Get("password"),
-		SvcToken:  credentials.Get("token"),
-		ExpiresIn: "168h", // 7 days
+		Username:            credentials.Get("username"),
+		Password:            credentials.Get("password"),
+		ServiceAccountToken: credentials.Get("token"),
+		ExpiresIn:           "168h", // 7 days
 	}
 
 	var userInDB userTY.User
-	var svcTokenID string
+	var svcAccountID string
 
 	// if token available, it is token based authentication
-	if userLogin.SvcToken != "" {
+	if userLogin.ServiceAccountToken != "" {
 		// get hashed token
-		hashedToken, err := hashed.GenerateHash(userLogin.SvcToken)
+		hashedToken, err := hashed.GenerateHash(userLogin.ServiceAccountToken)
 		if err != nil {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return
 		}
 
 		// verify token
-		svcToken, err := oa.api.ServiceToken().GetByTokenID(hashedToken)
+		svcAccount, err := oa.api.ServiceAccount().GetByTokenID(hashedToken)
 		if err != nil {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return
 		}
 
 		// verify validity
-		if svcToken.ExpiresOn.After(time.Now()) {
+		if svcAccount.ExpiresOn.After(time.Now()) {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return
 		}
 
 		// get user details
-		_userInDB, err := oa.api.User().GetByID(svcToken.UserID)
+		_userInDB, err := oa.api.User().GetByID(svcAccount.UserID)
 		if err != nil {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return
 		}
 		userInDB = _userInDB
-		svcTokenID = svcToken.Token.ID
+		svcAccountID = svcAccount.Token.ID
 	} else { // user based authentication
 		// get user details
 		_userInDB, err := oa.api.User().GetByUsername(userLogin.Username)
@@ -120,7 +120,7 @@ func (oa *OAuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessToken, err := middleware.CreateToken(userInDB, userLogin.ExpiresIn, svcTokenID)
+	accessToken, err := middleware.CreateToken(userInDB, userLogin.ExpiresIn, svcAccountID)
 	if err != nil {
 		handlerUtils.PostErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -14,7 +14,7 @@ import (
 	node "github.com/mycontroller-org/server/v2/pkg/api/node"
 	policy "github.com/mycontroller-org/server/v2/pkg/api/policy"
 	schedule "github.com/mycontroller-org/server/v2/pkg/api/schedule"
-	serviceToken "github.com/mycontroller-org/server/v2/pkg/api/service_token"
+	serviceAccount "github.com/mycontroller-org/server/v2/pkg/api/service_account"
 	settings "github.com/mycontroller-org/server/v2/pkg/api/settings"
 	source "github.com/mycontroller-org/server/v2/pkg/api/source"
 	status "github.com/mycontroller-org/server/v2/pkg/api/status"
@@ -125,8 +125,8 @@ func (a *API) Schedule() *schedule.ScheduleAPI {
 	return schedule.New(a.ctx, a.logger, a.storage, a.bus)
 }
 
-func (a *API) ServiceToken() *serviceToken.ServiceTokenAPI {
-	return serviceToken.New(a.ctx, a.logger, a.storage)
+func (a *API) ServiceAccount() *serviceAccount.ServiceAccountAPI {
+	return serviceAccount.New(a.ctx, a.logger, a.storage)
 }
 func (a *API) Settings() *settings.SettingsAPI {
 	return settings.New(a.ctx, a.logger, a.storage, a.enc, a.bus)

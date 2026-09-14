@@ -60,6 +60,81 @@ data:
 	assert.Equal(t, false, resources[1].DataRepository.Data["disabled"])
 }
 
+func TestParseResourcesUserAndPolicy(t *testing.T) {
+	data := []byte(`
+kind: user
+operation: add
+username: alice
+password: secret
+email: alice@example.com
+policies:
+  - admin
+---
+kind: policy
+operation: add
+id: sensors-read
+description: read sensors
+statements:
+  - effect: Allow
+    actions: ["get", "list"]
+    resources: ["node:*", "field:*"]
+`)
+	resources, err := ParseResources(data, "acl.yaml")
+	require.NoError(t, err)
+	require.Len(t, resources, 2)
+	assert.Equal(t, KindUser, resources[0].Kind)
+	assert.Equal(t, "alice", resources[0].User.Username)
+	assert.Equal(t, "secret", resources[0].User.Password)
+	assert.Equal(t, []string{"admin"}, resources[0].User.Policies)
+	assert.Equal(t, KindPolicy, resources[1].Kind)
+	assert.Equal(t, "sensors-read", resources[1].Policy.ID)
+	require.Len(t, resources[1].Policy.Statements, 1)
+	assert.Equal(t, "Allow", resources[1].Policy.Statements[0].Effect)
+}
+
+func TestParseResourcesServiceAccount(t *testing.T) {
+	data := []byte(`
+kind: sa
+operation: add
+name: ci-bot
+description: CI automation
+neverExpire: true
+statements:
+  - effect: Allow
+    actions: ["get", "list"]
+    resources: ["node:*"]
+`)
+	resources, err := ParseResources(data, "sa.yaml")
+	require.NoError(t, err)
+	require.Len(t, resources, 1)
+	assert.Equal(t, KindServiceAccount, resources[0].Kind)
+	require.NotNil(t, resources[0].ServiceAccount)
+	assert.Equal(t, "ci-bot", resources[0].ServiceAccount.Name)
+	assert.Equal(t, "CI automation", resources[0].ServiceAccount.Description)
+	assert.True(t, resources[0].ServiceAccount.NeverExpire)
+	require.Len(t, resources[0].ServiceAccount.Statements, 1)
+	assert.Equal(t, "Allow", resources[0].ServiceAccount.Statements[0].Effect)
+	assert.Equal(t, []string{"get", "list"}, resources[0].ServiceAccount.Statements[0].Actions)
+	assert.Equal(t, []string{"node:*"}, resources[0].ServiceAccount.Statements[0].Resources)
+	assert.Equal(t, "service-account: ci-bot", resources[0].TableResource())
+}
+
+func TestParseResourcesServiceAccountForUser(t *testing.T) {
+	data := []byte(`
+kind: service-account
+operation: add
+name: mobile
+username: alice
+neverExpire: true
+`)
+	resources, err := ParseResources(data, "sa.yaml")
+	require.NoError(t, err)
+	require.Len(t, resources, 1)
+	assert.Equal(t, "alice", resources[0].ServiceAccount.Username)
+	assert.Equal(t, "mobile", resources[0].ServiceAccount.Name)
+	assert.Equal(t, "service-account: alice.mobile", resources[0].TableResource())
+}
+
 func TestParseResourcesYAMLSingle(t *testing.T) {
 	data := []byte(`
 kind: node
@@ -200,6 +275,11 @@ func TestParseResourcesValidation(t *testing.T) {
 			name:    "data-repository missing id",
 			input:   "kind: data-repo\noperation: add\ndescription: repo\n",
 			wantErr: "data-repository requires id",
+		},
+		{
+			name:    "service-account missing name",
+			input:   "kind: service-account\noperation: add\ndescription: ci\n",
+			wantErr: "service-account requires name",
 		},
 		{
 			name:    "unsupported operation",

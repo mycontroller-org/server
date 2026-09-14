@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
-	svcTokenTY "github.com/mycontroller-org/server/v2/pkg/types/service_token"
+	svcAccountTY "github.com/mycontroller-org/server/v2/pkg/types/service_account"
 	userTY "github.com/mycontroller-org/server/v2/pkg/types/user"
 )
 
@@ -24,7 +24,7 @@ func apiWithPolicies(t *testing.T, policies ...policyTY.Policy) *API {
 	c.setLoaders(
 		func(id string) (*userTY.User, error) { return nil, ErrUserNotFound },
 		func(id string) (*policyTY.Policy, error) { return nil, ErrNotFound },
-		func(tokenID string) (*svcTokenTY.ServiceToken, error) { return nil, ErrTokenNotFound },
+		func(tokenID string) (*svcAccountTY.ServiceAccount, error) { return nil, ErrTokenNotFound },
 		func() ([]policyTY.Policy, error) { return nil, nil },
 	)
 	return &API{cache: c}

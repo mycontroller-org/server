@@ -10,6 +10,7 @@ import (
 	fieldTY "github.com/mycontroller-org/server/v2/pkg/types/field"
 	firmwareTY "github.com/mycontroller-org/server/v2/pkg/types/firmware"
 	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
+	svcAccountTY "github.com/mycontroller-org/server/v2/pkg/types/service_account"
 	sourceTY "github.com/mycontroller-org/server/v2/pkg/types/source"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
 	"github.com/stretchr/testify/assert"
@@ -63,6 +64,30 @@ func (f *fakeClient) FindFirmware(id string) (string, error) {
 func (f *fakeClient) FindDataRepository(id string) (string, error) {
 	return f.find(KindDataRepository, id, "", "", "", "")
 }
+func (f *fakeClient) FindUser(id, username string) (string, error) {
+	if id != "" {
+		if found, err := f.find(KindUser, id, "", "", "", ""); err != nil || found != "" {
+			return found, err
+		}
+	}
+	return f.find(KindUser, "", username, "", "", "")
+}
+func (f *fakeClient) FindPolicy(id string) (string, error) {
+	return f.find(KindPolicy, id, "", "", "", "")
+}
+func (f *fakeClient) FindServiceAccount(id, name, userRef string) (string, error) {
+	if id != "" {
+		if found, err := f.find(KindServiceAccount, id, "", "", "", ""); err != nil || found != "" {
+			return found, err
+		}
+	}
+	if userRef != "" {
+		if found, err := f.find(KindServiceAccount, "", userRef, name, "", ""); err != nil || found != "" {
+			return found, err
+		}
+	}
+	return f.find(KindServiceAccount, "", name, "", "", "")
+}
 func (f *fakeClient) SaveGateway(resource Resource) error {
 	if f.saveErr != nil {
 		return f.saveErr
@@ -105,6 +130,30 @@ func (f *fakeClient) SaveDataRepository(resource Resource) error {
 	f.saved = append(f.saved, resource)
 	return nil
 }
+func (f *fakeClient) SaveUser(resource Resource) error {
+	if f.saveErr != nil {
+		return f.saveErr
+	}
+	f.saved = append(f.saved, resource)
+	return nil
+}
+func (f *fakeClient) SavePolicy(resource Resource) error {
+	if f.saveErr != nil {
+		return f.saveErr
+	}
+	f.saved = append(f.saved, resource)
+	return nil
+}
+func (f *fakeClient) SaveServiceAccount(resource Resource) (string, error) {
+	if f.saveErr != nil {
+		return "", f.saveErr
+	}
+	f.saved = append(f.saved, resource)
+	if resource.Operation == OperationMerge {
+		return "", nil
+	}
+	return "tok-once", nil
+}
 func (f *fakeClient) DeleteGateway(ids ...string) error {
 	f.deleted = append(f.deleted, ids...)
 	return nil
@@ -126,6 +175,18 @@ func (f *fakeClient) DeleteFirmware(ids ...string) error {
 	return nil
 }
 func (f *fakeClient) DeleteDataRepository(ids ...string) error {
+	f.deleted = append(f.deleted, ids...)
+	return nil
+}
+func (f *fakeClient) DeleteUser(ids ...string) error {
+	f.deleted = append(f.deleted, ids...)
+	return nil
+}
+func (f *fakeClient) DeletePolicy(ids ...string) error {
+	f.deleted = append(f.deleted, ids...)
+	return nil
+}
+func (f *fakeClient) DeleteServiceAccount(ids ...string) error {
 	f.deleted = append(f.deleted, ids...)
 	return nil
 }
@@ -670,6 +731,75 @@ func TestApplyReplaceFirmwareKeepsID(t *testing.T) {
 	require.Len(t, client.saved, 1)
 	assert.Equal(t, "stm32-app", client.saved[0].Firmware.ID)
 	assertApplyRow(t, out.String(), "firmware: stm32-app", "add", "replaced")
+}
+
+func testServiceAccount(operation, name, id string) Resource {
+	return Resource{
+		Kind:      KindServiceAccount,
+		Operation: operation,
+		ServiceAccount: &svcAccountTY.ServiceAccount{
+			ID:          id,
+			Name:        name,
+			Description: "ci",
+			NeverExpire: true,
+		},
+		Payload: map[string]interface{}{
+			"name":        name,
+			"description": "ci",
+			"neverExpire": true,
+		},
+	}
+}
+
+func TestApplyAddServiceAccountPrintsToken(t *testing.T) {
+	client := &fakeClient{}
+	out, errOut := &bytes.Buffer{}, &bytes.Buffer{}
+	err := Apply(client, []Resource{testServiceAccount(OperationAdd, "ci-bot", "")}, false, false, out, errOut)
+	require.NoError(t, err)
+	require.Len(t, client.saved, 1)
+	assert.Empty(t, client.saved[0].ServiceAccount.ID)
+	assertApplyRow(t, out.String(), "service-account: ci-bot", "add", "ok")
+	assert.Contains(t, out.String(), "Save these tokens now. They will not be shown again.")
+	assert.Contains(t, out.String(), "tok-once")
+}
+
+func TestApplyMergeServiceAccountDoesNotPrintToken(t *testing.T) {
+	client := &fakeClient{existing: map[string]string{
+		"service-account/ci-bot///": "sa-id",
+	}}
+	out, errOut := &bytes.Buffer{}, &bytes.Buffer{}
+	err := Apply(client, []Resource{testServiceAccount(OperationMerge, "ci-bot", "")}, false, false, out, errOut)
+	require.NoError(t, err)
+	require.Len(t, client.saved, 1)
+	assert.Equal(t, "sa-id", client.saved[0].ServiceAccount.ID)
+	assertApplyRow(t, out.String(), "service-account: ci-bot", "merge", "ok")
+	assert.NotContains(t, out.String(), "tok-once")
+	assert.NotContains(t, out.String(), "Save these tokens now")
+}
+
+func TestApplyReplaceServiceAccountKeepsIDAndPrintsToken(t *testing.T) {
+	client := &fakeClient{existing: map[string]string{
+		"service-account/ci-bot///": "sa-id",
+	}}
+	out, errOut := &bytes.Buffer{}, &bytes.Buffer{}
+	err := Apply(client, []Resource{testServiceAccount(OperationAdd, "ci-bot", "")}, true, false, out, errOut)
+	require.NoError(t, err)
+	assert.Equal(t, []string{"sa-id"}, client.deleted)
+	require.Len(t, client.saved, 1)
+	assert.Equal(t, "sa-id", client.saved[0].ServiceAccount.ID)
+	assertApplyRow(t, out.String(), "service-account: ci-bot", "add", "replaced")
+	assert.Contains(t, out.String(), "tok-once")
+}
+
+func TestApplyDeleteServiceAccount(t *testing.T) {
+	client := &fakeClient{existing: map[string]string{
+		"service-account/ci-bot///": "sa-id",
+	}}
+	out, errOut := &bytes.Buffer{}, &bytes.Buffer{}
+	err := Apply(client, []Resource{testServiceAccount(OperationDelete, "ci-bot", "")}, false, false, out, errOut)
+	require.NoError(t, err)
+	assert.Equal(t, []string{"sa-id"}, client.deleted)
+	assertApplyRow(t, out.String(), "service-account: ci-bot", "delete", "ok")
 }
 
 func TestApplyUpdateFailsWhenParentMissing(t *testing.T) {
