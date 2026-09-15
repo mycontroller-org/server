@@ -1,6 +1,6 @@
 import v from "validator"
 import { t } from "typy"
-import { isDate } from "moment"
+import moment from "moment"
 import { getValue } from "./Util"
 import { DataType, FieldType } from "../Constants/Form"
 
@@ -105,7 +105,7 @@ export const validate = (func, val, opts) => {
       return t(val).isObject
 
     case "isDate":
-      return isDate(val)
+      return moment.isDate(val)
 
     case "isLengthArray":
       return isLengthArray(val, opts)

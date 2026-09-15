@@ -30,7 +30,9 @@ export const HTTP_VERBS = {
 }
 
 const myAxios = axios.create({
-  paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
+  paramsSerializer: {
+    serialize: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
+  },
 })
 
 // Add a request interceptor

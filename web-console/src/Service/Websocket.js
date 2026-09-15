@@ -1,5 +1,4 @@
 import { api } from "../Service/Api"
-import { w3cwebsocket as W3CWebSocket } from "websocket"
 import { store } from "../store/persister"
 import { connected, disconnected, updateEvent } from "../store/entities/websocket"
 
@@ -31,7 +30,7 @@ const getWebsocketUrl = () => {
 }
 
 export const wsConnect = () => {
-  wsClient = new W3CWebSocket(getWebsocketUrl())
+  wsClient = new WebSocket(getWebsocketUrl())
 
   wsClient.onopen = () => {
     store.dispatch(connected())

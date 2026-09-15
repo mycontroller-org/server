@@ -4,7 +4,23 @@ import backend from "i18next-http-backend"
 import YAML from "js-yaml"
 import { initReactI18next } from "react-i18next"
 import { DEFAULT_LANGUAGE } from "../Constants/Common"
+import { languages } from "./languages"
 import { reduxLanguageDetector } from "./languageDetector"
+
+const supportedLngs = languages.map((l) => l.lng)
+
+const normalizeLng = (lng) => {
+  if (!lng) {
+    return DEFAULT_LANGUAGE
+  }
+  const normalized = String(lng).replace(/-/g, "_")
+  if (supportedLngs.includes(normalized)) {
+    return normalized
+  }
+  const prefix = normalized.split("_")[0]
+  const match = supportedLngs.find((s) => s.startsWith(`${prefix}_`))
+  return match || DEFAULT_LANGUAGE
+}
 
 const languageDetector = new LanguageDetector()
 languageDetector.addDetector(reduxLanguageDetector)
@@ -16,13 +32,17 @@ i18n
   .init({
     ns: "translation",
     fallbackLng: DEFAULT_LANGUAGE,
-    // lng: "en_GB",
-    // language to use, more information here: https://www.i18next.com/overview/configuration-options#languages-namespaces-resources
-    // you can use the i18n.changeLanguage function to change the language manually: https://www.i18next.com/overview/api#changelanguage
-    // if you're using a language detector, do not define the lng option
+    supportedLngs,
+    load: "currentOnly",
+    nonExplicitSupportedLngs: false,
     debug: !process.env.NODE_ENV || process.env.NODE_ENV === "development",
+    detection: {
+      order: ["redux_language_detector", "navigator"],
+      caches: [],
+      convertDetectedLanguage: normalizeLng,
+    },
     backend: {
-      loadPath: "/locales/{{lng}}/{{ns}}.yaml",
+      loadPath: "/locales/{{lng}}.yaml",
       parse: function (data) {
         return YAML.load(data)
       },
@@ -35,4 +55,5 @@ i18n
     },
   })
 
+export { normalizeLng }
 export default i18n

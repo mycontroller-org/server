@@ -45,7 +45,7 @@ if (gitBranch === "HEAD") {
 }
 
 const env = {
-  CHOKIDAR_USEPOLLING: "true",
+  REACT_APP_IS_DEV_ENV: process.env.REACT_APP_IS_DEV_ENV || "",
   REACT_APP_VERSION: backendVersion(gitBranch),
   REACT_APP_GIT_BRANCH: gitBranch,
   REACT_APP_GIT_SHA: process.env.GIT_SHA || git("git rev-parse HEAD"),
