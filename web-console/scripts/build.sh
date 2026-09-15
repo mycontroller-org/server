@@ -5,4 +5,4 @@ set -euo pipefail
 yarn install
 
 # build
-CI=false yarn build
+yarn build

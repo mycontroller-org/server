@@ -17,18 +17,14 @@ jobs:
         with:
           go-version-file: go.mod
 
+      - name: enable yarn
+        run: corepack enable && corepack prepare yarn@4.18.0 --activate
+
       - uses: actions/setup-node@v7
         with:
           node-version: "22"
-
-      - name: cache node modules
-        uses: actions/cache@v6
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          cache: yarn
+          cache-dependency-path: web-console/yarn.lock
 
       - name: build web console
         run: ./scripts/build_web_console.sh

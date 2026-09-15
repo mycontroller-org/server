@@ -4,7 +4,7 @@ import { connect } from "react-redux"
 import t from "typy"
 import ErrorBoundary from "../Components/ErrorBoundary/ErrorBoundary"
 import { URL_DOCUMENTATION } from "../Constants/Common"
-import i18n from "../i18n/i18n"
+import i18n, { normalizeLng } from "../i18n/i18n"
 import { api } from "../Service/Api"
 import { updateDocumentationUrl, updateMetricsDBStatus } from "../store/entities/about"
 import PageLayoutExpandableNav from "./Layout"
@@ -28,8 +28,9 @@ class IndexPage extends React.Component {
   // listens language change event from redux and updates
   updateLocale = () => {
     const { languageSelected } = this.props
-    if (i18n.language !== languageSelected) {
-      i18n.changeLanguage(languageSelected)
+    const lng = normalizeLng(languageSelected)
+    if (i18n.language !== lng) {
+      i18n.changeLanguage(lng)
     }
   }
 

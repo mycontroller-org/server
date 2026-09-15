@@ -1,17 +1,43 @@
 import { Tooltip } from "@patternfly/react-core"
 import moment from "moment"
 import React from "react"
-import Moment from "react-moment"
 
-// pooled timer enabled on App.js
-// read more on: https://github.com/headzoo/react-moment#pooled-timer
+const FROM_NOW_INTERVAL_MS = 30000
+const tickListeners = new Set()
+let tickTimer = null
+
+const subscribeFromNowTick = (fn) => {
+  tickListeners.add(fn)
+  if (tickTimer == null) {
+    tickTimer = setInterval(() => {
+      tickListeners.forEach((listener) => listener())
+    }, FROM_NOW_INTERVAL_MS)
+  }
+  return () => {
+    tickListeners.delete(fn)
+    if (tickListeners.size === 0 && tickTimer != null) {
+      clearInterval(tickTimer)
+      tickTimer = null
+    }
+  }
+}
+
 export const LastSeen = ({ date = "", tooltipPosition = "left" }) => {
-  if (date === "" || date === null) {
+  const [, setTick] = React.useState(0)
+  const hasDate = date !== "" && date !== null
+  React.useEffect(() => {
+    if (!hasDate) {
+      return undefined
+    }
+    return subscribeFromNowTick(() => setTick((n) => n + 1))
+  }, [hasDate])
+
+  if (!hasDate) {
     return <span></span>
   }
   const lastSeen = moment(date)
   const disabled = lastSeen.year() <= 1 // set "-" of zero year
-  const value = disabled ? <span>-</span> : <Moment date={date} fromNow />
+  const value = disabled ? <span>-</span> : <span>{lastSeen.fromNow()}</span>
   return (
     <Tooltip
       position={tooltipPosition}

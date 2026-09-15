@@ -5,7 +5,7 @@ import { withTranslation } from "react-i18next"
 import { toObject, toString } from "../../Util/Language"
 import ActionBar from "../ActionBar/ActionBar"
 import Loading from "../Loading/Loading"
-import CodeEditorBasic from "./CodeEditorBasic"
+import CodeEditorBasic from "./CodeEditorLazy"
 
 class CodeEditor extends React.Component {
   state = {

@@ -349,6 +349,8 @@ class Dashboard extends React.Component {
           onLayoutChange={this.onLayoutChange}
           preventCollision={false}
           resizeHandles={["se"]}
+          draggableHandle=".dashboard-widget-title"
+          draggableCancel=".dashboard-widget-action"
         >
           {widgetsLoaded}
         </ResponsiveGridLayout>

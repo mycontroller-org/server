@@ -7,10 +7,12 @@
   overflow: auto;
   .dashboard-widget-body {
     padding: 0px 0px;
+    position: relative;
     .dashboard-widget-title-stick-top {
-      position: fixed;
+      position: absolute;
       top: 0;
-      width: 100%;
+      left: 0;
+      right: 0;
       z-index: 100;
       opacity: 0.3;
       .dashboard-widget-title-text {
@@ -27,6 +29,12 @@
       padding: 5px 0px 5px 10px;
       background-color: var(--mc-widget-title-background-color);
       color: var(--mc-widget-title-color);
+    }
+    .dashboard-widget-title-edit {
+      opacity: 0.45;
+      &:hover {
+        opacity: 1;
+      }
     }
     .dashboard-widget-action {
       margin-left: 3px;

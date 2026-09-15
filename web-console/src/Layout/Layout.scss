@@ -54,8 +54,30 @@ page section padding fixed
 /*
 Removes the gray color of bottom page
 */
+.pf-c-page {
+  --pf-c-page--BackgroundColor: var(--mc-background-color);
+  background-color: var(--mc-background-color);
+}
+
 .pf-c-page__main {
   background-color: var(--mc-background-color);
+}
+
+// keep skip-to-content out of auto-placement
+.pf-c-page > .pf-c-skip-to-content {
+  position: absolute;
+  grid-area: header;
+}
+
+// Notification drawer wraps main; it must fill the "main" grid cell or the page
+// chrome shows through under the content.
+.pf-c-page__drawer,
+.pf-c-page__drawer > .pf-c-drawer,
+.pf-c-page__drawer .pf-c-drawer__main,
+.pf-c-page__drawer .pf-c-drawer__content,
+.pf-c-page__drawer .pf-c-drawer__body {
+  height: 100%;
+  min-height: 0;
 }
 
 /* hides some of the elements on mobile view */

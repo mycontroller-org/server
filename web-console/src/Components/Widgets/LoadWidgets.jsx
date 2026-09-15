@@ -127,20 +127,25 @@ const cardWrapper = (items, editEnabled, onEditClick, onDeleteClick) => {
         const widgetId = item.config.id
         onDeleteClick(widgetId)
       }
+      const stopGridDrag = (event) => {
+        event.stopPropagation()
+      }
       actionButtons.push(
         <FlexItem key="edit-mode-btns" align={{ default: "alignRight" }}>
-          <IconButton
-            key="btn-edit"
-            icon={CogIcon}
-            className="dashboard-widget-action"
-            onClick={onEditClickFunc}
-          />
-          <IconButton
-            key="btn-close"
-            icon={CloseIcon}
-            className="dashboard-widget-action"
-            onClick={onDeleteClickFunc}
-          />
+          <span className="dashboard-widget-action" onMouseDown={stopGridDrag} onTouchStart={stopGridDrag}>
+            <IconButton
+              key="btn-edit"
+              icon={CogIcon}
+              className="dashboard-widget-action"
+              onClick={onEditClickFunc}
+            />
+            <IconButton
+              key="btn-close"
+              icon={CloseIcon}
+              className="dashboard-widget-action"
+              onClick={onDeleteClickFunc}
+            />
+          </span>
         </FlexItem>
       )
     }
@@ -148,9 +153,10 @@ const cardWrapper = (items, editEnabled, onEditClick, onDeleteClick) => {
     // &nbsp;
     let titleComponent = null
     const stickTitleOnTopClass = !item.showTitle ? "dashboard-widget-title-stick-top" : ""
+    const editTitleClass = editEnabled ? "dashboard-widget-title-edit" : ""
     if (item.showTitle || editEnabled) {
       titleComponent = (
-        <CardTitle className={"dashboard-widget-title " + stickTitleOnTopClass}>
+        <CardTitle className={`dashboard-widget-title ${stickTitleOnTopClass} ${editTitleClass}`}>
           <Split>
             <SplitItem isFilled className="dashboard-widget-title-text">
               <span>{item.title}</span>
