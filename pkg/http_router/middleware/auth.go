@@ -51,7 +51,7 @@ var (
 	accessControl   *policyAPI.API
 )
 
-// SetAccessControl wires the policy API used by auth middleware (user disabled, RBAC).
+// SetAccessControl wires the policy API used by auth middleware (user enabled, RBAC).
 // Call once during server HTTP setup.
 func SetAccessControl(api *policyAPI.API) {
 	accessControlMu.Lock()
@@ -327,7 +327,7 @@ func extractJwtToken(r *http.Request) string {
 
 // CreateToken creates a token for a user
 func CreateToken(user user.User, expiresIn, svcAccountID string) (string, error) {
-	if user.Disabled {
+	if !user.Enabled {
 		return "", errors.New("user is disabled")
 	}
 

@@ -15,6 +15,7 @@ import (
 var (
 	saUser        string
 	saDescription string
+	saEnabled     bool
 	saNeverExpire bool
 	saExpiresOn   string
 	saEffect      string
@@ -30,7 +31,8 @@ var serviceAccountAddCmd = &cobra.Command{
   myc add sa <alias> mobile --user alice --description "phone login"
   myc add sa <alias> ci-bot --action get --action list --resource "node:*"
   myc add sa <alias> limited --effect Deny --action "*" --resource settings
-  myc add sa <alias> temp --expires-on 2027-12-31`,
+  myc add sa <alias> temp --expires-on 2027-12-31
+  myc add sa <alias> ci-bot --enabled=false`,
 	Args:          cobra.ExactArgs(2),
 	SilenceUsage:  true,
 	SilenceErrors: true,
@@ -48,6 +50,7 @@ var serviceAccountAddCmd = &cobra.Command{
 func init() {
 	serviceAccountAddCmd.Flags().StringVarP(&saUser, "user", "u", "", "username or user id (defaults to the logged-in user)")
 	serviceAccountAddCmd.Flags().StringVarP(&saDescription, "description", "d", "", "description")
+	serviceAccountAddCmd.Flags().BoolVar(&saEnabled, "enabled", true, "create the service account as enabled")
 	serviceAccountAddCmd.Flags().BoolVar(&saNeverExpire, "never-expire", true, "token never expires")
 	serviceAccountAddCmd.Flags().StringVar(&saExpiresOn, "expires-on", "", "expiry date (YYYY-MM-DD); turns off never-expire")
 	serviceAccountAddCmd.Flags().StringVar(&saEffect, "effect", policyTY.EffectAllow, "statement effect: Allow or Deny")
@@ -82,6 +85,7 @@ func addServiceAccount(alias, name string) error {
 		Name:        name,
 		Username:    strings.TrimSpace(saUser),
 		Description: saDescription,
+		Enabled:     saEnabled,
 		NeverExpire: saNeverExpire,
 	}
 	if saExpiresOn != "" {

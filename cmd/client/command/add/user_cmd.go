@@ -14,6 +14,7 @@ var (
 	userPassword string
 	userEmail    string
 	userFullName string
+	userEnabled  bool
 	userPolicies []string
 )
 
@@ -23,6 +24,7 @@ var userAddCmd = &cobra.Command{
 	Short:   "Adds a user",
 	Example: `  myc add user <alias> alice --password secret
   myc add user <alias> alice --email alice@example.com --full-name Alice --policy readonly
+  myc add user <alias> alice --enabled=false
   myc add user <alias> alice`,
 	Args:          cobra.ExactArgs(2),
 	SilenceUsage:  true,
@@ -42,6 +44,7 @@ func init() {
 	userAddCmd.Flags().StringVarP(&userPassword, "password", "p", "", "password (prompted if omitted)")
 	userAddCmd.Flags().StringVar(&userEmail, "email", "", "email")
 	userAddCmd.Flags().StringVar(&userFullName, "full-name", "", "full name")
+	userAddCmd.Flags().BoolVar(&userEnabled, "enabled", true, "create the user as enabled")
 	userAddCmd.Flags().StringArrayVar(&userPolicies, "policy", nil, "policy id to attach (repeatable)")
 }
 
@@ -76,6 +79,7 @@ func addUser(alias, username string) error {
 		Password: password,
 		Email:    userEmail,
 		FullName: userFullName,
+		Enabled:  &userEnabled,
 		Policies: userPolicies,
 	}); err != nil {
 		return err

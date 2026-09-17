@@ -527,6 +527,9 @@ func resourceFromMap(doc map[string]interface{}, index int, source string) (Reso
 		if err := utils.MapToStruct(utils.TagNameJSON, payload, user); err != nil {
 			return Resource{}, fmt.Errorf("invalid user: %w", err)
 		}
+		if _, ok := payload["enabled"]; !ok {
+			user.Enabled = true
+		}
 		resource.User = user
 	case KindPolicy:
 		policy := &policyTY.Policy{}
@@ -538,6 +541,9 @@ func resourceFromMap(doc map[string]interface{}, index int, source string) (Reso
 		account := &svcAccountTY.ServiceAccount{}
 		if err := utils.MapToStruct(utils.TagNameJSON, payload, account); err != nil {
 			return Resource{}, fmt.Errorf("invalid service-account: %w", err)
+		}
+		if _, ok := payload["enabled"]; !ok {
+			account.Enabled = true
 		}
 		resource.ServiceAccount = account
 	}

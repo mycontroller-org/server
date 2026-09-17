@@ -9,7 +9,7 @@ This document describes MyController’s **policy-based access control**: how id
 MyController authorizes HTTP API calls with:
 
 1. **Authentication** – valid JWT (login or service account).
-2. **User state** – user must exist and must not be **disabled**.
+2. **User state** – user must exist and must be **enabled**.
 3. **Service account** (if used) – must exist, belong to the user, and not be expired.
 4. **Authorization** – at least one attached **policy** must **Allow** the requested **action** on the requested **resource**.
 
@@ -29,7 +29,7 @@ This feature is **policy-based access control**: reusable **policies** are attac
 
 | Concept             | Role                                                                             |
 | ------------------- | -------------------------------------------------------------------------------- |
-| **User**            | Identity; holds password, `disabled`, and a list of **policy IDs**               |
+| **User**            | Identity; holds password, `enabled`, and a list of **policy IDs**               |
 | **Policy**          | Named document: list of **statements** (effect, actions, resources)              |
 | **Service account** | Always tied to a user; optional **extra limits** that can only **reduce** access |
 | **Resource string** | `kind` or `kind:name` (name may use hierarchical wildcards)                      |
@@ -55,7 +55,7 @@ Relevant fields:
 | ---------- | -------------------------------------------------------------------- |
 | `id`       | Storage identifier                                                   |
 | `username` | Login name                                                           |
-| `disabled` | If `true`, login and all API calls with that user’s JWT fail (`401`) |
+| `enabled` | If `false`, login and all API calls with that user’s JWT fail (`401`) |
 | `policies` | List of policy IDs attached to this user                             |
 
 Manage users:
@@ -154,6 +154,7 @@ Service accounts (API path `/api/serviceaccount`) always have a `userId`. They a
 | Field                       | Description                                                   |
 | --------------------------- | ------------------------------------------------------------- |
 | `userId` / `username`       | Owning user (immutable after create). Admins may set this     |
+| `enabled`                   | If `false`, login and API calls with that token fail (`401`)  |
 | `neverExpire` / `expiresOn` | Lifetime of the token                                         |
 | `statements`                | Optional Allow/Deny rules (same shape as a policy statement)  |
 
@@ -336,7 +337,7 @@ Default user on fresh install: `admin` / `admin` with policy `admin`.
 ```text
 HTTP request
   → JWT valid?
-  → user active (not disabled)?
+  → user active (enabled)?
   → service account valid (if present)?
   → map path + method → action + resource
   → (optional) resolve UUID → business name
@@ -571,7 +572,7 @@ Attach to a user:
 ```yaml
 username: alice
 policies: [plant-room-viewer]
-disabled: false
+enabled: true
 ```
 
 ### 8.5 Control only the pump under plant-room
@@ -653,7 +654,7 @@ The bot cannot update devices or touch other gateways, even though Alice could.
 
 ```yaml
 username: bob
-disabled: true
+enabled: false
 policies: [readonly]
 ```
 
@@ -749,7 +750,7 @@ resources:
 | Dashboard title in policy   | Use dashboard **id** (often UUID)  |
 | Node UUID in policy         | Use `gatewayId.nodeId`             |
 | Token can elevate rights    | Token can only **narrow** the user |
-| Disabled user keeps working | JWT rejected while disabled        |
+| Disabled user keeps working | JWT rejected while not enabled     |
 
 ---
 
@@ -768,4 +769,4 @@ resources:
 
 ## 14. Changelog (feature introduction)
 
-Policy-based access control was introduced for server release line **2.2.0** (upgrade id `2.2.0-1`): built-in policies, user `policies` / `disabled`, service account restrictions, and enforcement on the HTTP API.
+Policy-based access control was introduced for server release line **2.2.0** (upgrade id `2.2.0-1`): built-in policies, user `policies` / `enabled`, service account restrictions, and enforcement on the HTTP API.

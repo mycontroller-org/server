@@ -131,14 +131,14 @@ func (c *Client) ResolveServiceAccountIDs(selectors []string, userRef string) ([
 }
 
 func (c *Client) DisableServiceAccount(selectors []string, userRef string) error {
-	return c.setServiceAccountsDisabled(selectors, userRef, true)
+	return c.setServiceAccountsEnabled(selectors, userRef, false)
 }
 
 func (c *Client) EnableServiceAccount(selectors []string, userRef string) error {
-	return c.setServiceAccountsDisabled(selectors, userRef, false)
+	return c.setServiceAccountsEnabled(selectors, userRef, true)
 }
 
-func (c *Client) setServiceAccountsDisabled(selectors []string, userRef string, disabled bool) error {
+func (c *Client) setServiceAccountsEnabled(selectors []string, userRef string, enabled bool) error {
 	var firstErr error
 	updated := 0
 	for _, selector := range selectors {
@@ -158,7 +158,7 @@ func (c *Client) setServiceAccountsDisabled(selectors []string, userRef string, 
 			}
 			continue
 		}
-		account.Disabled = disabled
+		account.Enabled = enabled
 		account.Token.Token = ""
 		if err := c.UpdateServiceAccount(account); err != nil {
 			if firstErr == nil {

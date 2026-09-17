@@ -16,7 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type updateRestoreApiMap func(storage storageTY.Plugin, backupVersion string, apiMap map[string]backupTY.Backup) (map[string]backupTY.Backup, error)
+type updateRestoreApiMap func(storage storageTY.Plugin, backupVersion, lastUpgrade string, apiMap map[string]backupTY.Backup) (map[string]backupTY.Backup, error)
 
 // Init storage service
 func Get(ctx context.Context, storageCfg cmap.CustomMap) (storageTY.Plugin, error) {
@@ -53,7 +53,7 @@ func RunImport(ctx context.Context, logger *zap.Logger, storage storageTY.Plugin
 		}
 		// update restore api with actual backed up server version
 		if versionSettings != nil {
-			_updateApiMap, err := updateRestoreApiMapFn(storage, versionSettings.Version, apiMap)
+			_updateApiMap, err := updateRestoreApiMapFn(storage, versionSettings.Version, versionSettings.LastUpgrade, apiMap)
 			if err != nil {
 				return err
 			}

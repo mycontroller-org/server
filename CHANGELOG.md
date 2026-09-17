@@ -14,7 +14,7 @@ Draft for **2.3.0** (`versions.txt`). Compared to [v2.2.0](https://github.com/my
 ### Added
 
 - **Created on** timestamp on all stored resources (gateway, node, source, field, firmware, dashboard, data repository, forward payload, schedule, task, handler, virtual device, virtual assistant, user, settings). New records get the current time. Existing records stay at the zero time (shown as empty / never). Policy and service account already had this field.
-- **Service account disable**: edit form, list, details, and bulk list actions (Enable / Disable). Disabled tokens cannot log in or keep a session.
+- **Service account enable**: edit form, list, details, and bulk list actions (Enable / Disable), using the same `enabled` field as other resources. Accounts that are not enabled cannot log in or keep a session.
 - CLI: `myc disable service-account` / `myc enable sa` (optional `--user`).
 - Topology: hierarchical **quick id** with copy (`gw1`, `gw1.node1`, `gw1.node1.source1`, `gw1.node1.source1.field1`) on the sidebar and resource details. CLI `myc get` already printed this column.
 - Topology: **Download** (SVG of the current graph, as shown on screen).
@@ -41,7 +41,8 @@ Draft for **2.3.0** (`versions.txt`). Compared to [v2.2.0](https://github.com/my
 
 ### Upgrade notes
 
-- No data migration is required. Existing resources keep a zero `createdOn`.
+- No data migration is required for `createdOn`. Existing resources keep a zero timestamp.
+- User and service account `disabled` becomes `enabled` (upgrade `2.3.0-1`). Existing accounts stay usable.
 
 ---
 

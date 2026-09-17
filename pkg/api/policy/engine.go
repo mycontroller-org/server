@@ -30,7 +30,7 @@ type Subject struct {
 // resource should be FormatResource(kind, name) e.g. "field:gw.n.s.f" or "gateway" for list-all.
 //
 // Rules:
-//  1. User must exist and not be disabled
+//  1. User must exist and be enabled
 //  2. If service account: must exist, not expired, belong to user
 //  3. User policies must allow (ceiling)
 //  4. If token has restrictions, they must also allow (can only lower)
@@ -68,7 +68,7 @@ func (a *API) activeUser(subject Subject) (*userTY.User, error) {
 	if err != nil {
 		return nil, ErrUserNotFound
 	}
-	if user.Disabled {
+	if !user.Enabled {
 		return nil, ErrUserDisabled
 	}
 	if len(user.Policies) == 0 {
@@ -124,13 +124,13 @@ func (a *API) AllowedKindWide(subject Subject, action, kind string) error {
 	return nil
 }
 
-// EnsureUserActive loads user from cache and verifies not disabled (for auth middleware).
+// EnsureUserActive loads user from cache and verifies it is enabled (for auth middleware).
 func (a *API) EnsureUserActive(userID string) (*userTY.User, error) {
 	user, err := a.cache.GetUser(userID)
 	if err != nil {
 		return nil, ErrUserNotFound
 	}
-	if user.Disabled {
+	if !user.Enabled {
 		return nil, ErrUserDisabled
 	}
 	return user, nil
@@ -152,7 +152,7 @@ func (a *API) EnsureServiceAccountActive(userID, tokenID string) error {
 }
 
 func validateTokenExpiry(token *svcAccountTY.ServiceAccount) error {
-	if token.Disabled {
+	if !token.Enabled {
 		return ErrTokenDisabled
 	}
 	if token.NeverExpire {

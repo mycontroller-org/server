@@ -28,7 +28,7 @@ const getDetailsFuncImpl = (data) => {
   fieldsList1.push({ key: "name", value: data.name })
   fieldsList1.push({ key: "username", value: data.username })
   fieldsList1.push({ key: "description", value: data.description })
-  fieldsList1.push({ key: "disabled", value: data.disabled ? "true" : "false" })
+  fieldsList1.push({ key: "enabled", value: data.enabled ? "true" : "false" })
   fieldsList1.push({ key: "never_expire", value: data.neverExpire ? "true" : "false" })
   fieldsList2.push({ key: "user_id", value: data.userId })
   fieldsList2.push({ key: "expires_on", value: <LastSeen date={data.expiresOn} tooltipPosition="top" /> })

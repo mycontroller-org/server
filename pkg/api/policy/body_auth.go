@@ -154,7 +154,7 @@ func (a *API) authorizeEntity(subject Subject, body []byte, access *RequestAcces
 }
 
 // authorizeUserPrivilegedFields requires a kind-wide user grant to change
-// policies or disabled. Assigning the built-in admin policy additionally
+// policies or enabled. Assigning the built-in admin policy additionally
 // requires that the caller already holds equivalent full access.
 func (a *API) authorizeUserPrivilegedFields(subject Subject, body []byte, access *RequestAccess) error {
 	raw := map[string]json.RawMessage{}
@@ -166,9 +166,9 @@ func (a *API) authorizeUserPrivilegedFields(subject Subject, body []byte, access
 			return fmt.Errorf("update user policies: %w", err)
 		}
 	}
-	if _, ok := raw["disabled"]; ok {
+	if _, ok := raw["enabled"]; ok {
 		if err := a.AllowedKindWide(subject, access.Action, policyTY.ResourceUser); err != nil {
-			return fmt.Errorf("update user disabled: %w", err)
+			return fmt.Errorf("update user enabled: %w", err)
 		}
 	}
 	if userPayloadAssignsAdmin(raw) && !a.subjectHoldsAdmin(subject) {

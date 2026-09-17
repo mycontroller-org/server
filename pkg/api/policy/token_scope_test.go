@@ -12,12 +12,13 @@ import (
 func tokenScopeAPI(t *testing.T, p policyTY.Policy, tokenResources []string) *API {
 	t.Helper()
 	c := newCache()
-	c.PutUser(&userTY.User{ID: "u1", Username: "u", Policies: []string{p.ID}})
+	c.PutUser(&userTY.User{ID: "u1", Username: "u", Enabled: true, Policies: []string{p.ID}})
 	cp := p
 	c.PutPolicy(&cp)
 	c.PutToken(&svcAccountTY.ServiceAccount{
 		ID:          "t-entity",
 		UserID:      "u1",
+		Enabled:     true,
 		NeverExpire: true,
 		Token:       svcAccountTY.Token{ID: "t1"},
 		Statements: []policyTY.Statement{{
@@ -43,7 +44,7 @@ func TestEnsureServiceAccountActiveRejectsDisabled(t *testing.T) {
 	if err != nil {
 		t.Fatalf("token: %v", err)
 	}
-	tok.Disabled = true
+	tok.Enabled = false
 	a.cache.PutToken(tok)
 	if err := a.EnsureServiceAccountActive("u1", "t1"); err != ErrTokenDisabled {
 		t.Fatalf("got %v, want %v", err, ErrTokenDisabled)

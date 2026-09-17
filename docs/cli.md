@@ -207,7 +207,7 @@ myc add user <alias> alice --email alice@example.com --full-name Alice --policy 
 myc add user <alias> alice
 ```
 
-If `--password` is omitted, myc prompts. Repeat `--policy` to attach policies. Add fails if the username already exists.
+If `--password` is omitted, myc prompts. Repeat `--policy` to attach policies. `--enabled` defaults to true; pass `--enabled=false` to create a disabled user. Add fails if the username already exists.
 
 ### Add a service account
 
@@ -219,7 +219,7 @@ myc add sa <alias> limited --effect Deny --action "*" --resource settings
 myc add sa <alias> temp --expires-on 2027-12-31
 ```
 
-`create` is an alias of `add`. Omit `--user` to create the account for the logged-in user. `--never-expire` defaults to true; `--expires-on` (YYYY-MM-DD) turns that off. `--action` and `--resource` must be used together (repeatable) and form one statement; `--effect` is Allow or Deny (default Allow). Omit both for the same access as the owning user.
+`create` is an alias of `add`. Omit `--user` to create the account for the logged-in user. `--enabled` and `--never-expire` default to true; pass `--enabled=false` to create a disabled account. `--expires-on` (YYYY-MM-DD) turns never-expire off. `--action` and `--resource` must be used together (repeatable) and form one statement; `--effect` is Allow or Deny (default Allow). Omit both for the same access as the owning user.
 
 The token is printed once. Save it; it cannot be retrieved later. If the name already exists for that user, add fails. Use `myc apply` to merge or replace. Add exits `1` on error.
 
@@ -600,6 +600,7 @@ username: alice
 password: secret
 email: alice@example.com
 fullName: Alice
+enabled: true
 policies:
   - readonly
 ---
@@ -617,6 +618,7 @@ operation: add
 name: ci-bot
 username: alice
 description: CI automation
+enabled: true
 neverExpire: true
 statements:
   - effect: Allow
