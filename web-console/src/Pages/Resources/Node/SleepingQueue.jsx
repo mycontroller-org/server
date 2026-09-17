@@ -23,6 +23,46 @@ class SleepingQueue extends React.Component {
     this.loadData()
   }
 
+  finishWithoutQueue = (resource, ids) => {
+    this.setState({
+      loading: false,
+      resource: resource,
+      messages: [],
+      cleaningQueue: false,
+      lastUpdate: new Date(),
+      ids: ids,
+    })
+  }
+
+  fetchQueue = (resource, ids) => {
+    api.gateway
+      .getSleepingQueue(ids.gatewayId, ids.nodeId)
+      .then((sRes) => {
+        const allMessages = sRes.data
+        const messages = []
+        if (this.props.isGateway) {
+          Object.keys(allMessages || {}).forEach((k) => {
+            if (allMessages[k].length > 0) {
+              messages.push(...allMessages[k])
+            }
+          })
+        } else {
+          messages.push(...(allMessages || []))
+        }
+        this.setState({
+          loading: false,
+          resource: resource,
+          messages: messages,
+          cleaningQueue: false,
+          lastUpdate: new Date(),
+          ids: ids,
+        })
+      })
+      .catch((_e) => {
+        this.setState({ loading: false, cleaningQueue: false, lastUpdate: new Date() })
+      })
+  }
+
   loadData = () => {
     const { isGateway, id } = this.props
     const resourceApi = isGateway ? api.gateway.get : api.node.get
@@ -31,37 +71,36 @@ class SleepingQueue extends React.Component {
         const resource = res.data
         const ids = {}
         if (isGateway) {
-          ids["gatewayId"] = resource.id
-          ids["nodeId"] = ""
-        } else {
-          ids["gatewayId"] = resource.gatewayId
-          ids["nodeId"] = resource.nodeId
+          ids.gatewayId = resource.id
+          ids.nodeId = ""
+          // Disabled gateways have no running service, so the queue query times out.
+          if (resource.enabled === false) {
+            this.finishWithoutQueue(resource, ids)
+            return
+          }
+          this.fetchQueue(resource, ids)
+          return
+        }
+        ids.gatewayId = resource.gatewayId
+        ids.nodeId = resource.nodeId
+        const labels = resource.labels || {}
+        const sleepQueueDisabled =
+          labels.sleep_queue_disabled === true || labels.sleep_queue_disabled === "true"
+        if (sleepQueueDisabled) {
+          this.finishWithoutQueue(resource, ids)
+          return
         }
         api.gateway
-          .getSleepingQueue(ids.gatewayId, ids.nodeId)
-          .then((sRes) => {
-            const allMessages = sRes.data
-            const messages = []
-            if (isGateway) {
-              Object.keys(allMessages).forEach((k) => {
-                if (allMessages[k].length > 0) {
-                  messages.push(...allMessages[k])
-                }
-              })
-            } else {
-              messages.push(...allMessages)
+          .get(resource.gatewayId)
+          .then((gwRes) => {
+            if (gwRes.data && gwRes.data.enabled === false) {
+              this.finishWithoutQueue(resource, ids)
+              return
             }
-            this.setState({
-              loading: false,
-              resource: resource,
-              messages: messages,
-              cleaningQueue: false,
-              lastUpdate: new Date(),
-              ids: ids,
-            })
+            this.fetchQueue(resource, ids)
           })
           .catch((_e) => {
-            this.setState({ loading: false, cleaningQueue: false, lastUpdate: new Date() })
+            this.finishWithoutQueue(resource, ids)
           })
       })
       .catch((_e) => {

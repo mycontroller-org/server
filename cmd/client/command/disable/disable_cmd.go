@@ -13,6 +13,7 @@ func init() {
 	disableCmd.AddCommand(scheduleDisableCmd)
 	disableCmd.AddCommand(handlerDisableCmd)
 	disableCmd.AddCommand(userDisableCmd)
+	disableCmd.AddCommand(serviceAccountDisableCmd)
 }
 
 var gatewayDisableCmd = &cobra.Command{
@@ -119,4 +120,26 @@ var userDisableCmd = &cobra.Command{
 		client, selectors := rootCmd.TakeAlias(args)
 		printStatus(client.DisableUser(selectors...))
 	},
+}
+
+var saDisableUser string
+
+var serviceAccountDisableCmd = &cobra.Command{
+	Use:     "service-account <alias> <name-or-id> [<name-or-id>...]",
+	Aliases: []string{"service-accounts", "sa"},
+	Short:   "Disables the given service accounts",
+	Example: `  myc disable service-account <alias> ci-bot
+  myc disable sa <alias> ci-bot --user alice`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		rootCmd.UpdateStreams(cmd)
+	},
+	Args: cobra.MinimumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		client, selectors := rootCmd.TakeAlias(args)
+		printStatus(client.DisableServiceAccount(selectors, saDisableUser))
+	},
+}
+
+func init() {
+	serviceAccountDisableCmd.Flags().StringVarP(&saDisableUser, "user", "u", "", "username or user id when the account name is not unique")
 }

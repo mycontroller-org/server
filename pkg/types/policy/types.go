@@ -96,6 +96,7 @@ type Policy struct {
 	System      bool                 `json:"system" yaml:"system"` // built-in; protect from delete
 	Statements  []Statement          `json:"statements" yaml:"statements"`
 	Labels      cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	CreatedOn   time.Time            `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn  time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }
 

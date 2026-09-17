@@ -16,6 +16,7 @@ MyController is a flexible automation and sensor controller for IoT devices. Whe
 * [Website](https://mycontroller.org)
 * [Overview](https://mycontroller.org/docs/overview/)
 * [Quick Installation](https://mycontroller.org/docs/quick-installation/)
+* [Changelog](CHANGELOG.md) — draft notes for the next release
 
 ## Web console
 The UI lives in [`web-console/`](web-console/). See that directory for development setup.

@@ -61,6 +61,7 @@ var gwGetCmd = &cobra.Command{
 			{Title: "status", ValuePath: "state.status"},
 			{Title: "message", ValuePath: "state.message"},
 			{Title: "since", ValuePath: "state.since", DisplayStyle: printer.DisplayStyleRelativeTime},
+			{Title: "created on", ValuePath: "createdOn", DisplayStyle: printer.DisplayStyleRelativeTime, IsWide: true},
 		}
 		executeGetCmd(headers, client.ListGateway, gwTY.Config{})
 	},
@@ -89,6 +90,7 @@ var nodeGetCmd = &cobra.Command{
 			{Title: "status", ValuePath: "state.status"},
 			{Title: "since", ValuePath: "state.since", DisplayStyle: printer.DisplayStyleRelativeTime},
 			{Title: "last seen", ValuePath: "lastSeen", DisplayStyle: printer.DisplayStyleRelativeTime},
+			{Title: "created on", ValuePath: "createdOn", DisplayStyle: printer.DisplayStyleRelativeTime, IsWide: true},
 		}
 		executeGetCmd(headers, client.ListNode, nodeTY.Node{})
 	},
@@ -113,6 +115,7 @@ var sourceGetCmd = &cobra.Command{
 			{Title: "source id", ValuePath: "sourceId"},
 			{Title: "name"},
 			{Title: "last seen", ValuePath: "lastSeen", DisplayStyle: printer.DisplayStyleRelativeTime},
+			{Title: "created on", ValuePath: "createdOn", DisplayStyle: printer.DisplayStyleRelativeTime, IsWide: true},
 		}
 		executeGetCmd(headers, client.ListSource, sourceTY.Source{})
 	},
@@ -142,6 +145,7 @@ var fieldGetCmd = &cobra.Command{
 			{Title: "previous value", ValuePath: "previous.value"},
 			{Title: "unit"},
 			{Title: "last seen", ValuePath: "lastSeen", DisplayStyle: printer.DisplayStyleRelativeTime},
+			{Title: "created on", ValuePath: "createdOn", DisplayStyle: printer.DisplayStyleRelativeTime, IsWide: true},
 			{Title: "no change since", ValuePath: "noChangeSince", DisplayStyle: printer.DisplayStyleRelativeTime},
 		}
 		executeGetCmd(headers, client.ListField, fieldTY.Field{})

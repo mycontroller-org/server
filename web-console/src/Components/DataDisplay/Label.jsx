@@ -45,6 +45,7 @@ export const KeyValue = ({ name, value, index = 0 }) => {
       finalValue = <IFrame url={value} />
       break
 
+    case "createdOn":
     case "modifiedOn":
     case "timestamp":
     case "lastEvaluation":

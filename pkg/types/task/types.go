@@ -45,6 +45,7 @@ type Config struct {
 	EvaluationConfig  EvaluationConfig       `json:"evaluationConfig" yaml:"evaluationConfig"`
 	HandlerParameters map[string]interface{} `json:"handlerParameters" yaml:"handlerParameters"`
 	Handlers          []string               `json:"handlers" yaml:"handlers"`
+	CreatedOn         time.Time              `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn        time.Time              `json:"modifiedOn" yaml:"modifiedOn"`
 	State             *State                 `json:"state" yaml:"state"`
 }

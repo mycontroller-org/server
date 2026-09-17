@@ -62,6 +62,7 @@ const tableColumns = [
   { title: "id", fieldKey: "id", sortable: true },
   { title: "description", fieldKey: "description", sortable: true },
   { title: "system", fieldKey: "system", sortable: true },
+  { title: "created_on", fieldKey: "createdOn", sortable: true },
   { title: "modified_on", fieldKey: "modifiedOn", sortable: true },
 ]
 
@@ -91,6 +92,7 @@ const toRowFuncImpl = (rawData, history) => {
           ""
         ),
       },
+      { title: <LastSeen date={rawData.createdOn} /> },
       { title: <LastSeen date={rawData.modifiedOn} /> },
     ],
     rid: rawData.id,
@@ -102,6 +104,8 @@ const filtersDefinition = [
   { category: "id", categoryName: "id", fieldType: "input", dataType: "string" },
   { category: "description", categoryName: "description", fieldType: "input", dataType: "string" },
   { category: "system", categoryName: "system", fieldType: "enabled", dataType: "boolean" },
+  { category: "createdOn", categoryName: "created_on", fieldType: "input", dataType: "string" },
+  { category: "modifiedOn", categoryName: "modified_on", fieldType: "input", dataType: "string" },
 ]
 
 List.defaultProps = {

@@ -49,9 +49,22 @@ func (n *NodeAPI) Get(filters []storageTY.Filter) (nodeTY.Node, error) {
 // Save Node config into disk
 func (n *NodeAPI) Save(node *nodeTY.Node, publishEvent bool) error {
 	eventType := eventTY.TypeUpdated
-	if node.ID == "" {
+	isNew := node.ID == ""
+	if isNew {
 		node.ID = utils.RandUUID()
 		eventType = eventTY.TypeCreated
+	}
+	var existingOn time.Time
+	var lookupErr error
+	if !isNew {
+		if existing, err := n.GetByID(node.ID); err == nil {
+			existingOn = existing.CreatedOn
+		} else {
+			lookupErr = err
+		}
+	}
+	if err := utils.StampCreatedOnLookup(&node.CreatedOn, existingOn, lookupErr, isNew); err != nil {
+		return err
 	}
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: node.ID},

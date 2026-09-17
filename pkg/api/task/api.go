@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
@@ -48,9 +49,22 @@ func (t *TaskAPI) Get(filters []storageTY.Filter) (*taskTY.Config, error) {
 // Save a task details
 func (t *TaskAPI) Save(task *taskTY.Config) error {
 	eventType := eventTY.TypeUpdated
-	if task.ID == "" {
+	isNew := task.ID == ""
+	if isNew {
 		task.ID = utils.RandUUID()
 		eventType = eventTY.TypeCreated
+	}
+	var existingOn time.Time
+	var lookupErr error
+	if !isNew {
+		if existing, err := t.GetByID(task.ID); err == nil {
+			existingOn = existing.CreatedOn
+		} else {
+			lookupErr = err
+		}
+	}
+	if err := utils.StampCreatedOnLookup(&task.CreatedOn, existingOn, lookupErr, isNew); err != nil {
+		return err
 	}
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: task.ID},

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 	"sync"
 	"time"
@@ -81,16 +82,58 @@ func (a *API) Cache() *Cache {
 }
 
 // EnsureBuiltInPolicies creates system policies if missing and warms cache.
-// Built-in statements are reset on every start: they are code, not user data.
+// Built-in statements are reset when the code definition changes. An unchanged
+// policy is left as stored so CreatedOn / ModifiedOn survive a restart (in-memory
+// dump included).
 func (a *API) EnsureBuiltInPolicies() error {
 	for _, p := range BuiltInPolicies() {
 		cp := p
 		cp.System = true
+		existing, err := a.loadPolicyFromStorage(cp.ID)
+		if err == nil && existing.ID != "" && builtInDefinitionEqual(existing, cp) {
+			if existing.CreatedOn.IsZero() {
+				if err := a.persistCreatedOn(&existing); err != nil {
+					return fmt.Errorf("ensure built-in policy %s: %w", p.ID, err)
+				}
+			} else {
+				a.cache.PutPolicy(&existing)
+			}
+			continue
+		}
+		if err == nil && existing.ID != "" {
+			cp.CreatedOn = firstNonZeroTime(existing.CreatedOn, existing.ModifiedOn)
+		}
 		if err := a.saveSystemPolicy(&cp); err != nil {
 			return fmt.Errorf("ensure built-in policy %s: %w", p.ID, err)
 		}
 	}
 	return a.cache.WarmPolicies()
+}
+
+func builtInDefinitionEqual(stored, want policyTY.Policy) bool {
+	return stored.System &&
+		stored.Description == want.Description &&
+		reflect.DeepEqual(stored.Statements, want.Statements)
+}
+
+func firstNonZeroTime(values ...time.Time) time.Time {
+	for _, t := range values {
+		if !t.IsZero() {
+			return t
+		}
+	}
+	return time.Time{}
+}
+
+// persistCreatedOn writes CreatedOn without touching ModifiedOn (one-time backfill).
+func (a *API) persistCreatedOn(policy *policyTY.Policy) error {
+	policy.CreatedOn = firstNonZeroTime(policy.ModifiedOn, time.Now())
+	filters := []storageTY.Filter{{Key: types.KeyID, Value: policy.ID}}
+	if err := a.storage.Upsert(types.EntityPolicy, policy, filters); err != nil {
+		return err
+	}
+	a.cache.PutPolicy(policy)
+	return nil
 }
 
 // ReportUsersWithoutPolicies logs users that cannot access anything and warms the
@@ -181,10 +224,10 @@ func (a *API) listAllPolicies() ([]policyTY.Policy, error) {
 
 // Save persists a user authored policy.
 //
-// System policies are code: their statements are rewritten on every start, so
-// accepting edits here would silently discard them. The System flag itself is
-// never taken from the request - a client cannot mark a custom policy undeletable
-// or create a policy with a built-in id.
+// System policies are code: EnsureBuiltInPolicies rewrites statements only when
+// the built-in definition changes, so timestamps survive a restart. Accepting
+// edits here would still be discarded on the next definition change. The System
+// flag is never taken from the request.
 func (a *API) Save(policy *policyTY.Policy) error {
 	if policy.ID == "" {
 		policy.ID = utils.RandID()
@@ -210,7 +253,17 @@ func (a *API) saveSystemPolicy(policy *policyTY.Policy) error {
 }
 
 func (a *API) upsert(policy *policyTY.Policy) error {
-	policy.ModifiedOn = time.Now()
+	existing, err := a.loadPolicyFromStorage(policy.ID)
+	exists := err == nil && existing.ID != ""
+	now := time.Now()
+	if policy.CreatedOn.IsZero() {
+		if exists {
+			policy.CreatedOn = firstNonZeroTime(existing.CreatedOn, existing.ModifiedOn, now)
+		} else {
+			policy.CreatedOn = now
+		}
+	}
+	policy.ModifiedOn = now
 	filters := []storageTY.Filter{{Key: types.KeyID, Value: policy.ID}}
 	if err := a.storage.Upsert(types.EntityPolicy, policy, filters); err != nil {
 		return err
@@ -265,8 +318,16 @@ func (a *API) Import(data interface{}) error {
 	if IsBuiltInPolicyID(input.ID) {
 		return nil
 	}
+	if input.ID == "" {
+		input.ID = utils.RandUUID()
+	}
 	input.System = false
-	return a.Save(&input)
+	filters := []storageTY.Filter{{Key: types.KeyID, Value: input.ID}}
+	if err := a.storage.Upsert(types.EntityPolicy, &input, filters); err != nil {
+		return err
+	}
+	a.cache.PutPolicy(&input)
+	return nil
 }
 
 func (a *API) GetEntityInterface() interface{} {

@@ -18,6 +18,7 @@ type Firmware struct {
 	Description string               `json:"description" yaml:"description"`
 	File        FileConfig           `json:"file" yaml:"file"`
 	Labels      cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	CreatedOn   time.Time            `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn  time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }
 

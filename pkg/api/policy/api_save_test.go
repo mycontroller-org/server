@@ -3,6 +3,7 @@ package policy
 import (
 	"errors"
 	"testing"
+	"time"
 
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	policyTY "github.com/mycontroller-org/server/v2/pkg/types/policy"
@@ -112,6 +113,77 @@ func TestSavePersistsCustomPolicyWithoutSystem(t *testing.T) {
 	if got.Description != "ok" {
 		t.Fatalf("description=%q", got.Description)
 	}
+	if got.CreatedOn.IsZero() || got.ModifiedOn.IsZero() {
+		t.Fatalf("expected createdOn and modifiedOn, got created=%v modified=%v", got.CreatedOn, got.ModifiedOn)
+	}
+}
+
+func TestSaveKeepsCreatedOnOnUpdate(t *testing.T) {
+	store := newPolicyMemStore()
+	a := testPolicyAPI(store)
+	if err := a.Save(&policyTY.Policy{ID: "living-room", Description: "first"}); err != nil {
+		t.Fatalf("Save: %v", err)
+	}
+	created := store.policies["living-room"].CreatedOn
+	modified := store.policies["living-room"].ModifiedOn
+	time.Sleep(2 * time.Millisecond)
+	if err := a.Save(&policyTY.Policy{ID: "living-room", Description: "second"}); err != nil {
+		t.Fatalf("Save update: %v", err)
+	}
+	got := store.policies["living-room"]
+	if !got.CreatedOn.Equal(created) {
+		t.Fatalf("createdOn changed: %v -> %v", created, got.CreatedOn)
+	}
+	if !got.ModifiedOn.After(modified) {
+		t.Fatalf("modifiedOn not updated: %v -> %v", modified, got.ModifiedOn)
+	}
+	if got.Description != "second" {
+		t.Fatalf("description=%q", got.Description)
+	}
+}
+
+func TestEnsureBuiltInPoliciesPreservesTimestamps(t *testing.T) {
+	store := newPolicyMemStore()
+	a := testPolicyAPI(store)
+	if err := a.EnsureBuiltInPolicies(); err != nil {
+		t.Fatalf("first ensure: %v", err)
+	}
+	first := store.policies[policyTY.PolicyAdmin]
+	if first.CreatedOn.IsZero() || first.ModifiedOn.IsZero() {
+		t.Fatalf("expected timestamps on create, got created=%v modified=%v", first.CreatedOn, first.ModifiedOn)
+	}
+	time.Sleep(2 * time.Millisecond)
+	if err := a.EnsureBuiltInPolicies(); err != nil {
+		t.Fatalf("second ensure: %v", err)
+	}
+	second := store.policies[policyTY.PolicyAdmin]
+	if !second.CreatedOn.Equal(first.CreatedOn) {
+		t.Fatalf("createdOn changed on restart: %v -> %v", first.CreatedOn, second.CreatedOn)
+	}
+	if !second.ModifiedOn.Equal(first.ModifiedOn) {
+		t.Fatalf("modifiedOn changed on restart: %v -> %v", first.ModifiedOn, second.ModifiedOn)
+	}
+}
+
+func TestEnsureBuiltInPoliciesBackfillsCreatedOn(t *testing.T) {
+	store := newPolicyMemStore()
+	modified := time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC)
+	want := BuiltInPolicies()[0]
+	want.System = true
+	want.ModifiedOn = modified
+	store.policies[want.ID] = want
+
+	a := testPolicyAPI(store)
+	if err := a.EnsureBuiltInPolicies(); err != nil {
+		t.Fatalf("ensure: %v", err)
+	}
+	got := store.policies[want.ID]
+	if !got.CreatedOn.Equal(modified) {
+		t.Fatalf("createdOn=%v, want backfill from modifiedOn %v", got.CreatedOn, modified)
+	}
+	if !got.ModifiedOn.Equal(modified) {
+		t.Fatalf("modifiedOn changed during createdOn backfill: %v -> %v", modified, got.ModifiedOn)
+	}
 }
 
 func TestImportSkipsBuiltInAndStripsSystemFlag(t *testing.T) {
@@ -126,7 +198,14 @@ func TestImportSkipsBuiltInAndStripsSystemFlag(t *testing.T) {
 		t.Fatalf("built-in was overwritten: %+v", store.policies["admin"])
 	}
 
-	if err := a.Import(policyTY.Policy{ID: "custom-1", System: true, Description: "restored"}); err != nil {
+	fromFile := time.Date(2024, 6, 1, 12, 0, 0, 0, time.UTC)
+	if err := a.Import(policyTY.Policy{
+		ID:          "custom-1",
+		System:      true,
+		Description: "restored",
+		CreatedOn:   fromFile,
+		ModifiedOn:  fromFile,
+	}); err != nil {
 		t.Fatalf("Import custom: %v", err)
 	}
 	got := store.policies["custom-1"]
@@ -135,5 +214,8 @@ func TestImportSkipsBuiltInAndStripsSystemFlag(t *testing.T) {
 	}
 	if got.Description != "restored" {
 		t.Fatalf("description=%q", got.Description)
+	}
+	if !got.CreatedOn.Equal(fromFile) || !got.ModifiedOn.Equal(fromFile) {
+		t.Fatalf("import overwrote timestamps: created=%v modified=%v", got.CreatedOn, got.ModifiedOn)
 	}
 }

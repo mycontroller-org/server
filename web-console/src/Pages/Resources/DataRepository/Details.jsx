@@ -27,6 +27,7 @@ const getDetailsFuncImpl = (data) => {
   fieldsList1.push({ key: "description", value: data.description })
   fieldsList1.push({ key: "read_only", value: data.enabled ? "true" : "false" })
   fieldsList2.push({ key: "labels", value: <Labels data={data.labels} /> })
+  fieldsList2.push({ key: "created_on", value: <LastSeen date={data.createdOn} tooltipPosition="top" /> })
   fieldsList2.push({ key: "modified_on", value: <LastSeen date={data.modifiedOn} tooltipPosition="top" /> })
 
   return {

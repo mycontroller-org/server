@@ -34,6 +34,7 @@ const getDetailsFuncImpl = (data) => {
 
   fieldsList1.push({ key: "id", value: data.id })
   fieldsList1.push({ key: "description", value: data.description })
+  fieldsList1.push({ key: "created_on", value: <LastSeen date={data.createdOn} /> })
   fieldsList1.push({ key: "modified_on", value: <LastSeen date={data.modifiedOn} /> })
   fieldsList1.push({ key: "labels", value: <Labels data={data.labels} /> })
   fieldsList2.push({ key: "file_details", value: <KeyValueMap data={data.file} /> })

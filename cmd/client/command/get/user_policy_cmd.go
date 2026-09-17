@@ -82,6 +82,8 @@ var policyGetCmd = &cobra.Command{
 				{Title: "id"},
 				{Title: "description"},
 				{Title: "system"},
+				{Title: "created on", ValuePath: "createdOn", DisplayStyle: printer.DisplayStyleRelativeTime},
+				{Title: "modified on", ValuePath: "modifiedOn", DisplayStyle: printer.DisplayStyleRelativeTime},
 				{Title: "statements", ValueFunc: formatPolicyStatements},
 			}
 			executeGetCmd(headers, client.ListPolicy, policyTY.Policy{})
@@ -100,6 +102,8 @@ var policyGetCmd = &cobra.Command{
 			{Title: "id"},
 			{Title: "description"},
 			{Title: "system"},
+			{Title: "created on", ValuePath: "createdOn", DisplayStyle: printer.DisplayStyleRelativeTime},
+			{Title: "modified on", ValuePath: "modifiedOn", DisplayStyle: printer.DisplayStyleRelativeTime},
 			{Title: "statements", ValueFunc: formatPolicyStatements},
 		}
 		printOne(headers, policy)

@@ -1,11 +1,13 @@
 import React from "react"
 import TabDetailsBase from "../../../Components/BasePage/TabDetailsBase"
 import { RouteLink } from "../../../Components/Buttons/Buttons"
+import CopyableQuickId from "../../../Components/Buttons/CopyableQuickId"
 import { KeyValueMap, Labels } from "../../../Components/DataDisplay/Label"
 import { getStatus } from "../../../Components/Icons/Icons"
 import { LastSeen } from "../../../Components/Time/Time"
 import { api } from "../../../Service/Api"
 import { routeMap as rMap } from "../../../Service/Routes"
+import { resourceQuickId } from "../../../Util/ResourceId"
 import { getValue } from "../../../Util/Util"
 
 const tabDetails = ({ resourceId, history }) => {
@@ -33,12 +35,14 @@ const getDetailsFuncImpl = (data) => {
   const fieldsList1 = []
   const fieldsList2 = []
 
+  fieldsList1.push({ key: "quick_id", value: <CopyableQuickId value={resourceQuickId("node", data)} /> })
   fieldsList1.push({ key: "id", value: data.id })
   fieldsList1.push({ key: "gateway_id", value: data.gatewayId })
   fieldsList1.push({ key: "node_id", value: data.nodeId })
   fieldsList1.push({ key: "name", value: data.name })
   fieldsList1.push({ key: "status", value: getStatus(getValue(data, "state.status", "")) })
   fieldsList1.push({ key: "last_seen", value: <LastSeen date={data.lastSeen} tooltipPosition="top" /> })
+  fieldsList1.push({ key: "created_on", value: <LastSeen date={data.createdOn} tooltipPosition="top" /> })
   fieldsList2.push({ key: "labels", value: <Labels data={data.labels} /> })
   fieldsList2.push({ key: "others", value: <KeyValueMap data={data.others} /> })
 

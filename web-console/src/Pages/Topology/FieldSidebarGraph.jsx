@@ -1,3 +1,4 @@
+import { Divider } from "@patternfly/react-core"
 import moment from "moment"
 import React from "react"
 import Measure from "react-measure"
@@ -101,24 +102,27 @@ const FieldSidebarGraph = ({ field }) => {
 
   return (
     <div className="topology-sidebar-graph">
-      <Measure offset>
-        {({ measureRef, contentRect }) => (
-          <div ref={measureRef}>
-            <LineChart
-              title=""
-              unit={unit}
-              data={points}
-              interpolation={interpolation}
-              type={field.metricType === MetricType.Binary ? "line" : "area"}
-              height={140}
-              width={contentRect.offset.width ? contentRect.offset.width : 280}
-              tickCountX={3}
-              tickCountY={3}
-              minDomainY={minDomainY}
-            />
-          </div>
-        )}
-      </Measure>
+      <Divider className="topology-sidebar-rule" />
+      <div className="topology-sidebar-graph-body">
+        <Measure offset>
+          {({ measureRef, contentRect }) => (
+            <div ref={measureRef}>
+              <LineChart
+                title=""
+                unit={unit}
+                data={points}
+                interpolation={interpolation}
+                type={field.metricType === MetricType.Binary ? "line" : "area"}
+                height={140}
+                width={contentRect.offset.width ? contentRect.offset.width : 280}
+                tickCountX={3}
+                tickCountY={3}
+                minDomainY={minDomainY}
+              />
+            </div>
+          )}
+        </Measure>
+      </div>
     </div>
   )
 }

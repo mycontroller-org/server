@@ -51,6 +51,14 @@ func (s *SettingsAPI) Save(settings *settingsTY.Settings) error {
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: settings.ID},
 	}
+	existing, lookupErr := s.GetByID(settings.ID)
+	existingOn := time.Time{}
+	if lookupErr == nil {
+		existingOn = existing.CreatedOn
+	}
+	if err := utils.StampCreatedOnLookup(&settings.CreatedOn, existingOn, lookupErr, false); err != nil {
+		return err
+	}
 	return s.storage.Upsert(types.EntitySettings, settings, filters)
 }
 
@@ -258,6 +266,14 @@ func (s *SettingsAPI) update(settings *settingsTY.Settings) error {
 		{Key: types.KeyID, Value: settings.ID},
 	}
 	settings.ModifiedOn = time.Now()
+	existing, lookupErr := s.GetByID(settings.ID)
+	existingOn := time.Time{}
+	if lookupErr == nil {
+		existingOn = existing.CreatedOn
+	}
+	if err := utils.StampCreatedOnLookup(&settings.CreatedOn, existingOn, lookupErr, false); err != nil {
+		return err
+	}
 
 	// encrypt passwords, tokens, etc
 	err := s.enc.EncryptSecrets(settings)

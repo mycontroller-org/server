@@ -29,6 +29,7 @@ var serviceAccountGetCmd = &cobra.Command{
 			{Title: "username"},
 			{Title: "name"},
 			{Title: "description"},
+			{Title: "disabled"},
 			{Title: "never expire", ValuePath: "neverExpire"},
 			{Title: "expires on", ValueFunc: formatServiceAccountExpiresOn},
 			{Title: "statements", ValueFunc: formatServiceAccountStatements},

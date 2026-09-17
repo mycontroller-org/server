@@ -172,7 +172,7 @@ const routes = [
       },
       {
         id: "dashboardTopology",
-        title: "Topology",
+        title: "topology",
         to: "/dashboard/topology",
         component: TopologyPage,
       },

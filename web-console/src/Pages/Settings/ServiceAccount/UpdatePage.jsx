@@ -128,6 +128,7 @@ export default withTranslation()(UpdatePage)
 const getFormItems = (rootObject, isNew = false) => {
   // default values
   objectPath.set(rootObject, "neverExpire", true, true)
+  objectPath.set(rootObject, "disabled", false, true)
 
   const neverExpire = objectPath.get(rootObject, "neverExpire", false)
   if (neverExpire) {
@@ -180,6 +181,13 @@ const getFormItems = (rootObject, isNew = false) => {
       fieldId: "description",
       fieldType: FieldType.Text,
       dataType: DataType.String,
+    },
+    {
+      label: "disabled",
+      fieldId: "disabled",
+      fieldType: FieldType.Switch,
+      dataType: DataType.Boolean,
+      value: false,
     },
     {
       label: "never_expire",

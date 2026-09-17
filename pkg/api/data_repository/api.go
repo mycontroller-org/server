@@ -12,6 +12,7 @@ import (
 	repositoryTY "github.com/mycontroller-org/server/v2/pkg/types/data_repository"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
+	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
@@ -66,6 +67,14 @@ func (dr *DataRepositoryAPI) Save(data *repositoryTY.Config) error {
 	}
 
 	data.ModifiedOn = time.Now()
+	existing, lookupErr := dr.GetByID(data.ID)
+	existingOn := time.Time{}
+	if lookupErr == nil {
+		existingOn = existing.CreatedOn
+	}
+	if err := utils.StampCreatedOnLookup(&data.CreatedOn, existingOn, lookupErr, false); err != nil {
+		return err
+	}
 
 	// encrypt passwords, tokens
 	err := dr.enc.EncryptSecrets(data)

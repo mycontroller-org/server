@@ -34,7 +34,22 @@ class List extends ListBase {
     super.componentDidMount()
   }
 
-  actions = [{ type: "delete", onClick: this.onDeleteActionClick }]
+  actions = [
+    {
+      type: "enable",
+      onClick: () => {
+        this.actionFuncWithRefresh(api.serviceAccount.enable)
+      },
+    },
+    {
+      type: "disable",
+      onClick: () => {
+        this.actionFuncWithRefresh(api.serviceAccount.disable)
+      },
+    },
+    { type: "separator" },
+    { type: "delete", onClick: this.onDeleteActionClick },
+  ]
 
   toolbar = [
     { type: "refresh", group: "right1" },
@@ -63,6 +78,7 @@ const tableColumns = [
   { title: "name", fieldKey: "name", sortable: true },
   { title: "username", fieldKey: "username", sortable: true },
   { title: "description", fieldKey: "description", sortable: true },
+  { title: "disabled", fieldKey: "disabled", sortable: true },
   { title: "never_expire", fieldKey: "neverExpire", sortable: true },
   { title: "expires_on", fieldKey: "expiresOn", sortable: true },
   { title: "created_on", fieldKey: "createdOn", sortable: true },
@@ -101,6 +117,7 @@ const toRowFuncImpl = (rawData, history) => {
           ),
       },
       { title: rawData.description },
+      { title: <div className="align-center">{getStatusBool(!!rawData.disabled)}</div> },
       { title: <div className="align-center">{getStatusBool(rawData.neverExpire)}</div> },
       { title: <LastSeen date={rawData.expiresOn} /> },
       { title: <LastSeen date={rawData.createdOn} /> },
@@ -113,6 +130,7 @@ const filtersDefinition = [
   { category: "name", categoryName: "name", fieldType: "input", dataType: "string" },
   { category: "username", categoryName: "username", fieldType: "input", dataType: "string" },
   { category: "description", categoryName: "description", fieldType: "input", dataType: "string" },
+  { category: "disabled", categoryName: "disabled", fieldType: "enabled", dataType: "boolean" },
   { category: "neverExpire", categoryName: "never_expire", fieldType: "neverExpire", dataType: "boolean" },
   { category: "expiresOn", categoryName: "expires_on", fieldType: "input", dataType: "string" },
   { category: "createdOn", categoryName: "created_on", fieldType: "input", dataType: "string" },

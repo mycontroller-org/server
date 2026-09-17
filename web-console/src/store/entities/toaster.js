@@ -22,9 +22,13 @@ const slice = createSlice({
     toasterRemove: (toaster, action) => {
       toaster.items = toaster.items.filter((a) => a.id !== action.payload.id)
     },
+
+    toasterClearAll: (toaster) => {
+      toaster.items = []
+    },
   },
 })
 
 export default slice.reducer
 
-export const { toasterAdd, toasterRemove } = slice.actions
+export const { toasterAdd, toasterRemove, toasterClearAll } = slice.actions

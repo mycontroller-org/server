@@ -15,6 +15,7 @@ var (
 	ErrUserDisabled  = errors.New("user is disabled")
 	ErrUserNotFound  = errors.New("user not found")
 	ErrTokenExpired  = errors.New("service account expired")
+	ErrTokenDisabled = errors.New("service account is disabled")
 	ErrTokenNotFound = errors.New("service account not found")
 	ErrAccessDenied  = errors.New("access denied")
 )
@@ -151,6 +152,9 @@ func (a *API) EnsureServiceAccountActive(userID, tokenID string) error {
 }
 
 func validateTokenExpiry(token *svcAccountTY.ServiceAccount) error {
+	if token.Disabled {
+		return ErrTokenDisabled
+	}
 	if token.NeverExpire {
 		return nil
 	}

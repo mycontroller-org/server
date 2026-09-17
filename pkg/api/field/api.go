@@ -3,6 +3,7 @@ package field
 import (
 	"context"
 	"fmt"
+	"time"
 
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
@@ -57,9 +58,22 @@ func (f *FieldAPI) GetByID(id string) (*fieldTY.Field, error) {
 // Save a field details
 func (f *FieldAPI) Save(field *fieldTY.Field, retainValue bool) error {
 	eventType := eventTY.TypeUpdated
-	if field.ID == "" {
+	isNew := field.ID == ""
+	if isNew {
 		field.ID = utils.RandUUID()
 		eventType = eventTY.TypeCreated
+	}
+	var existingOn time.Time
+	var lookupErr error
+	if !isNew {
+		if existing, err := f.GetByID(field.ID); err == nil {
+			existingOn = existing.CreatedOn
+		} else {
+			lookupErr = err
+		}
+	}
+	if err := utils.StampCreatedOnLookup(&field.CreatedOn, existingOn, lookupErr, isNew); err != nil {
+		return err
 	}
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: field.ID},

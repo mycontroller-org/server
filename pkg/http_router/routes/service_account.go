@@ -22,6 +22,8 @@ func (h *Routes) registerServiceAccountRoutes() {
 	h.router.HandleFunc("/api/serviceaccount/{id}", h.getServiceAccount).Methods(http.MethodGet)
 	h.router.HandleFunc("/api/serviceaccount/create", h.createServiceAccount).Methods(http.MethodPost)
 	h.router.HandleFunc("/api/serviceaccount/update", h.updateServiceAccount).Methods(http.MethodPost)
+	h.router.HandleFunc("/api/serviceaccount/enable", h.enableServiceAccount).Methods(http.MethodPost)
+	h.router.HandleFunc("/api/serviceaccount/disable", h.disableServiceAccount).Methods(http.MethodPost)
 	h.router.HandleFunc("/api/serviceaccount", h.deleteServiceAccount).Methods(http.MethodDelete)
 }
 
@@ -168,6 +170,42 @@ func (h *Routes) createServiceAccount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	handlerUtils.PostSuccessResponse(w, generatedToken)
+}
+
+func (h *Routes) enableServiceAccount(w http.ResponseWriter, r *http.Request) {
+	h.setServiceAccountsDisabled(w, r, false)
+}
+
+func (h *Routes) disableServiceAccount(w http.ResponseWriter, r *http.Request) {
+	h.setServiceAccountsDisabled(w, r, true)
+}
+
+func (h *Routes) setServiceAccountsDisabled(w http.ResponseWriter, r *http.Request, disabled bool) {
+	IDs := []string{}
+	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
+		if len(IDs) == 0 {
+			return nil, errors.New("supply id(s)")
+		}
+		for _, id := range IDs {
+			if _, err := h.loadServiceAccount(r, id); err != nil {
+				return nil, err
+			}
+		}
+		var err error
+		if disabled {
+			err = h.api.ServiceAccount().Disable(IDs)
+		} else {
+			err = h.api.ServiceAccount().Enable(IDs)
+		}
+		if err != nil {
+			return nil, err
+		}
+		if disabled {
+			return "Disabled", nil
+		}
+		return "Enabled", nil
+	}
+	handlerUtils.UpdateData(w, r, &IDs, updateFn)
 }
 
 func (h *Routes) deleteServiceAccount(w http.ResponseWriter, r *http.Request) {

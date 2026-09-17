@@ -86,6 +86,10 @@ func (oa *OAuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// verify validity
+		if svcAccount.Disabled {
+			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
 		if svcAccount.ExpiresOn.After(time.Now()) {
 			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
 			return

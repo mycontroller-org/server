@@ -64,6 +64,7 @@ const tableColumns = [
   { title: "email", fieldKey: "email", sortable: true },
   { title: "enabled", fieldKey: "disabled", sortable: true },
   { title: "policies", fieldKey: "policies", sortable: false },
+  { title: "created_on", fieldKey: "createdOn", sortable: true },
   { title: "modified_on", fieldKey: "modifiedOn", sortable: true },
 ]
 
@@ -88,6 +89,7 @@ const toRowFuncImpl = (rawData, history) => {
       { title: rawData.email },
       { title: <div className="align-center">{getStatusBool(!rawData.disabled)}</div> },
       { title: policies },
+      { title: <LastSeen date={rawData.createdOn} /> },
       { title: <LastSeen date={rawData.modifiedOn} /> },
     ],
     rid: rawData.id,

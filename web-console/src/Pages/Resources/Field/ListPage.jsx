@@ -72,6 +72,7 @@ const tableColumns = [
   { title: "previous_value", fieldKey: "previous.value", sortable: true },
   { title: "unit", fieldKey: "unit", sortable: true },
   { title: "last_seen", fieldKey: "lastSeen", sortable: true },
+  { title: "created_on", fieldKey: "createdOn", sortable: true },
 ]
 
 const toRowFuncImpl = (rawData, history) => {
@@ -139,6 +140,7 @@ const toRowFuncImpl = (rawData, history) => {
       getFieldValue(getValue(rawData, "previous.value", "")),
       rawData.unit,
       { title: <LastSeen date={rawData.lastSeen} /> },
+      { title: <LastSeen date={rawData.createdOn} /> },
     ],
     rid: rawData.id,
   }

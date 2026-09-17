@@ -75,12 +75,16 @@ func (fw *FirmwareAPI) Save(firmware *firmwareTY.Firmware, keepFile bool) error 
 	}
 
 	firmware.ModifiedOn = time.Now()
-
-	if keepFile {
-		firmwareOld, err := fw.GetByID(firmware.ID)
-		if err == nil {
+	firmwareOld, lookupErr := fw.GetByID(firmware.ID)
+	existingOn := time.Time{}
+	if lookupErr == nil {
+		existingOn = firmwareOld.CreatedOn
+		if keepFile {
 			firmware.File = firmwareOld.File
 		}
+	}
+	if err := utils.StampCreatedOnLookup(&firmware.CreatedOn, existingOn, lookupErr, eventType == eventTY.TypeCreated); err != nil {
+		return err
 	}
 
 	err := fw.storage.Upsert(types.EntityFirmware, firmware, filters)

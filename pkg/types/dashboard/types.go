@@ -21,6 +21,7 @@ type Config struct {
 	Disabled    bool                 `json:"disabled" yaml:"disabled"`
 	Labels      cmap.CustomStringMap `json:"labels" yaml:"labels"`
 	Widgets     []Widget             `json:"widgets" yaml:"widgets"`
+	CreatedOn   time.Time            `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn  time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }
 

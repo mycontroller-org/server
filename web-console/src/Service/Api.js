@@ -68,12 +68,16 @@ myAxios.interceptors.response.use(
     // update redux, if authenticated
     if (store.getState().entities.auth.authenticated) {
       // if unauthorized clear auth data
-      if (error.response.status === 401) {
+      if (error.response && error.response.status === 401) {
         store.dispatch(clearAuth())
       }
       store.dispatch(spinnerHide())
-      store.dispatch(notificationAdd(alert))
-      store.dispatch(toasterAdd(alert))
+      const url = (error.config && error.config.url) || ""
+      const isLoginRequest = url.indexOf("/user/login") !== -1
+      if (!isLoginRequest) {
+        store.dispatch(notificationAdd(alert))
+        store.dispatch(toasterAdd(alert))
+      }
     }
 
     return Promise.reject(error)
@@ -263,6 +267,8 @@ export const api = {
     get: (id) => newRequest(HTTP_VERBS.GET, "/serviceaccount/" + id, {}, {}),
     create: (data) => newRequest(HTTP_VERBS.POST, "/serviceaccount/create", {}, data),
     update: (data) => newRequest(HTTP_VERBS.POST, "/serviceaccount/update", {}, data),
+    enable: (data) => newRequest(HTTP_VERBS.POST, "/serviceaccount/enable", {}, data),
+    disable: (data) => newRequest(HTTP_VERBS.POST, "/serviceaccount/disable", {}, data),
     delete: (data) => newRequest(HTTP_VERBS.DELETE, "/serviceaccount", {}, data),
   },
   user: {

@@ -3,6 +3,7 @@ package source
 import (
 	"context"
 	"fmt"
+	"time"
 
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
@@ -46,13 +47,34 @@ func (s *SourceAPI) Get(filters []storageTY.Filter) (*sourceTY.Source, error) {
 
 // Save a source details
 func (s *SourceAPI) Save(source *sourceTY.Source) error {
-	if source.ID == "" {
+	isNew := source.ID == ""
+	if isNew {
 		source.ID = utils.RandUUID()
+	}
+	var existingOn time.Time
+	var lookupErr error
+	if !isNew {
+		if existing, err := s.GetByID(source.ID); err == nil {
+			existingOn = existing.CreatedOn
+		} else {
+			lookupErr = err
+		}
+	}
+	if err := utils.StampCreatedOnLookup(&source.CreatedOn, existingOn, lookupErr, isNew); err != nil {
+		return err
 	}
 	f := []storageTY.Filter{
 		{Key: types.KeyID, Value: source.ID},
 	}
 	return s.storage.Upsert(types.EntitySource, source, f)
+}
+
+// GetByID returns a source by storage id.
+func (s *SourceAPI) GetByID(id string) (*sourceTY.Source, error) {
+	result := &sourceTY.Source{}
+	filters := []storageTY.Filter{{Key: types.KeyID, Value: id}}
+	err := s.storage.FindOne(types.EntitySource, result, filters)
+	return result, err
 }
 
 // GetByIDs returns a source details by gatewayID, nodeId and sourceID of a message

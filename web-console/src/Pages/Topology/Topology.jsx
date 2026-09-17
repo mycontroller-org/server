@@ -1,6 +1,7 @@
 import "./Topology.scss"
 
 import {
+  Button,
   Checkbox,
   EmptyState,
   EmptyStateBody,
@@ -50,6 +51,7 @@ import PageTitle from "../../Components/PageTitle/PageTitle"
 import React from "react"
 import Select from "../../Components/Form/Select"
 import { MicrochipIcon as SourceIcon } from "@patternfly/react-icons"
+import { DownloadIcon } from "@patternfly/react-icons"
 import { TopologyIcon } from "@patternfly/react-icons"
 import { getQuickId, ResourceType } from "../../Constants/ResourcePicker"
 import { api } from "../../Service/Api"
@@ -69,12 +71,32 @@ const WS_KEY = TOPOLOGY_WS_KEY
 const CLICK_MOVE_PX = 5
 
 const DEFAULT_PREFS = {
-  selectedGatewayId: ALL_GATEWAYS,
-  selectedNodeKey: ALL_NODES,
+  selectedGatewayIds: [],
+  selectedNodeKeys: [],
   showSources: false,
   showFields: false,
   includeChildNodes: false,
   selectedLayout: LAYOUT_FORCE,
+}
+
+const normalizeNodeKeys = (value) => {
+  if (Array.isArray(value)) {
+    return value.filter((key) => key && key !== ALL_NODES)
+  }
+  if (value && value !== ALL_NODES) {
+    return [value]
+  }
+  return []
+}
+
+const normalizeGatewayIds = (value) => {
+  if (Array.isArray(value)) {
+    return value.filter((id) => id && id !== ALL_GATEWAYS).map(String)
+  }
+  if (value && value !== ALL_GATEWAYS) {
+    return [String(value)]
+  }
+  return []
 }
 
 const loadPrefs = () => {
@@ -85,18 +107,18 @@ const loadPrefs = () => {
     }
     const parsed = JSON.parse(raw)
     const selectedLayout = parsed.selectedLayout === LAYOUT_DAGRE ? LAYOUT_DAGRE : LAYOUT_FORCE
-    const selectedGatewayId = parsed.selectedGatewayId || ALL_GATEWAYS
-    const allGateways = selectedGatewayId === ALL_GATEWAYS
+    const selectedGatewayIds = normalizeGatewayIds(parsed.selectedGatewayIds || parsed.selectedGatewayId)
+    const allGateways = selectedGatewayIds.length === 0
     return {
       ...DEFAULT_PREFS,
       ...parsed,
       selectedLayout,
-      selectedGatewayId,
-      selectedNodeKey: allGateways ? ALL_NODES : parsed.selectedNodeKey || ALL_NODES,
+      selectedGatewayIds,
+      selectedNodeKeys: allGateways ? [] : normalizeNodeKeys(parsed.selectedNodeKeys || parsed.selectedNodeKey),
       showSources: allGateways ? false : !!parsed.showSources,
       showFields: allGateways ? false : !!parsed.showFields,
       includeChildNodes:
-        allGateways || !parsed.selectedNodeKey || parsed.selectedNodeKey === ALL_NODES
+        allGateways || !normalizeNodeKeys(parsed.selectedNodeKeys || parsed.selectedNodeKey).length
           ? false
           : !!parsed.includeChildNodes,
     }
@@ -104,6 +126,78 @@ const loadPrefs = () => {
     return { ...DEFAULT_PREFS }
   }
 }
+const SVG_STYLE_PROPS = [
+  "fill",
+  "fill-opacity",
+  "stroke",
+  "stroke-width",
+  "stroke-dasharray",
+  "stroke-opacity",
+  "opacity",
+  "font-family",
+  "font-size",
+  "font-weight",
+  "font-style",
+  "text-anchor",
+  "dominant-baseline",
+  "letter-spacing",
+  "color",
+  "display",
+  "visibility",
+]
+
+const copySvgComputedStyles = (source, target) => {
+  if (!source || !target || source.nodeType !== 1) {
+    return
+  }
+  const computed = window.getComputedStyle(source)
+  const css = SVG_STYLE_PROPS.map((prop) => {
+    const value = computed.getPropertyValue(prop)
+    return value ? `${prop}:${value}` : ""
+  })
+    .filter(Boolean)
+    .join(";")
+  if (css) {
+    target.setAttribute("style", css)
+  }
+  const sourceKids = source.children || []
+  const targetKids = target.children || []
+  for (let i = 0; i < sourceKids.length && i < targetKids.length; i++) {
+    copySvgComputedStyles(sourceKids[i], targetKids[i])
+  }
+}
+
+const downloadSvg = (svg, background, fileName) => {
+  if (!svg) {
+    return
+  }
+  const rect = svg.getBoundingClientRect()
+  const width = Math.max(1, Math.round(rect.width))
+  const height = Math.max(1, Math.round(rect.height))
+  const clone = svg.cloneNode(true)
+  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg")
+  clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink")
+  clone.setAttribute("width", String(width))
+  clone.setAttribute("height", String(height))
+  copySvgComputedStyles(svg, clone)
+  const backdrop = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+  backdrop.setAttribute("x", "0")
+  backdrop.setAttribute("y", "0")
+  backdrop.setAttribute("width", "100%")
+  backdrop.setAttribute("height", "100%")
+  backdrop.setAttribute("fill", background || "#f0f0f0")
+  clone.insertBefore(backdrop, clone.firstChild)
+  const source = new XMLSerializer().serializeToString(clone)
+  const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" })
+  const link = document.createElement("a")
+  link.href = URL.createObjectURL(blob)
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  window.setTimeout(() => URL.revokeObjectURL(link.href), 1000)
+}
+
 const MIN_READABLE_SCALE = 0.85
 const LAYOUT_PADDING = 48
 const NODE_DIAMETER = 64
@@ -141,6 +235,44 @@ const applyReadableView = (graph) => {
   )
 }
 
+// ForceLayout hardcodes layoutOnDrag: true. Turn that off so dragging one
+// node does not restart the simulation and bounce the rest.
+class TopologyForceLayout extends ForceLayout {
+  constructor(graph, options = {}) {
+    super(graph, options)
+    this.options.layoutOnDrag = false
+  }
+
+  // PatternFly calls getParent() on every link. During fromModel / halt,
+  // a node can exist without a parent yet and the whole layout throws,
+  // leaving every resource stacked. We do not use groups, so skip that.
+  getLinkDistance = (link) => {
+    const source = link && link.source
+    const target = link && link.target
+    const sourceRadius = source && source.radius ? source.radius : 0
+    const targetRadius = target && target.radius ? target.radius : 0
+    return this.options.linkDistance + sourceRadius + targetRadius
+  }
+
+  stopSimulation() {
+    try {
+      super.stopSimulation()
+    } catch (_err) {
+      // stale links after a model merge
+    }
+  }
+}
+
+const MIN_GRAPH_SIZE = 40
+
+const graphHasSize = (graph) => {
+  if (!graph || typeof graph.getDimensions !== "function") {
+    return false
+  }
+  const { width, height } = graph.getDimensions()
+  return width >= MIN_GRAPH_SIZE && height >= MIN_GRAPH_SIZE
+}
+
 const baselineLayoutFactory = (type, graph) => {
   if (type === LAYOUT_DAGRE) {
     return new DagreLayout(graph, {
@@ -154,10 +286,11 @@ const baselineLayoutFactory = (type, graph) => {
       marginy: 24,
     })
   }
-  return new ForceLayout(graph, {
+  return new TopologyForceLayout(graph, {
     nodeDistance: 50,
     linkDistance: 80,
     collideDistance: 16,
+    chargeStrength: -80,
   })
 }
 
@@ -336,6 +469,66 @@ const graphIdOf = (kind, resource) => {
   return null
 }
 
+// Live Alt state: left or right, press/release anytime during the drag.
+let altHeld = false
+
+const syncAltFromEvent = (event) => {
+  if (!event) {
+    return
+  }
+  if (typeof event.altKey === "boolean") {
+    altHeld = event.altKey
+    return
+  }
+  const key = event.key || event.code
+  if (key === "Alt" || key === "AltLeft" || key === "AltRight") {
+    altHeld = event.type !== "keyup"
+  }
+}
+
+const onAltKeyChange = (event) => {
+  syncAltFromEvent(event)
+}
+
+const onAltLost = () => {
+  altHeld = false
+}
+
+const onAltVisibilityChange = () => {
+  if (document.hidden) {
+    altHeld = false
+  }
+}
+
+const collectDescendantNodes = (node) => {
+  if (!node || typeof node.getGraph !== "function") {
+    return []
+  }
+  let graph
+  try {
+    graph = node.getGraph()
+  } catch (_err) {
+    return []
+  }
+  const descendants = []
+  const seen = new Set([node.getId()])
+  const walk = (id) => {
+    const edges = (graph.getEdges && graph.getEdges()) || []
+    edges.forEach((edge) => {
+      const source = edge.getSource && edge.getSource()
+      const target = edge.getTarget && edge.getTarget()
+      if (!source || !target || source.getId() !== id || seen.has(target.getId())) {
+        return
+      }
+      seen.add(target.getId())
+      descendants.push(target)
+      walk(target.getId())
+    })
+  }
+  walk(node.getId())
+  return descendants
+}
+
 const CustomNode = ({ element, dragNodeRef, onSelectResource, selected }) => {
   const history = useHistory()
   const data = (element.getData && element.getData()) || {}
@@ -358,8 +551,10 @@ const CustomNode = ({ element, dragNodeRef, onSelectResource, selected }) => {
   const onPointerDown = (event) => {
     movedRef.current = false
     startRef.current = { x: event.clientX, y: event.clientY }
+    syncAltFromEvent(event)
   }
   const onPointerMove = (event) => {
+    syncAltFromEvent(event)
     if (!startRef.current || movedRef.current) {
       return
     }
@@ -419,7 +614,29 @@ const CustomNode = ({ element, dragNodeRef, onSelectResource, selected }) => {
   )
 }
 
-const DraggableNode = withSelection()(withDragNode()(CustomNode))
+const DraggableNode = withSelection()(
+  withDragNode({
+    drag: (event, monitor) => {
+      const sourceEvent = event && (event.sourceEvent || event.event)
+      syncAltFromEvent(sourceEvent)
+      if (!altHeld) {
+        return
+      }
+      const dx = event.dx
+      const dy = event.dy
+      if (!dx && !dy) {
+        return
+      }
+      const dragged = monitor.getItem()
+      collectDescendantNodes(dragged).forEach((child) => {
+        const pos = child.getPosition && child.getPosition()
+        if (pos && pos.clone) {
+          child.setPosition(pos.clone().translate(dx, dy))
+        }
+      })
+    },
+  })(CustomNode)
+)
 const PannableGraph = withPanZoom()(GraphComponent)
 
 const graphSignature = (model) => {
@@ -491,10 +708,39 @@ const collectChildNodes = (nodes, rootKey) => {
   return children
 }
 
+const collectChildNodesForKeys = (nodes, rootKeys) => {
+  const extra = []
+  const seen = new Set(rootKeys)
+  rootKeys.forEach((key) => {
+    collectChildNodes(nodes, key).forEach((n) => {
+      const keyId = nodeKey(n)
+      if (!seen.has(keyId)) {
+        seen.add(keyId)
+        extra.push(n)
+      }
+    })
+  })
+  return extra
+}
+
 const listPayload = (response) => {
   const data = response && response.data ? response.data.data : null
   return Array.isArray(data) ? data : []
 }
+
+const compareAlphanumeric = (a, b) =>
+  String(a ?? "").localeCompare(String(b ?? ""), undefined, { numeric: true, sensitivity: "base" })
+
+const sortGateways = (items) => [...items].sort((a, b) => compareAlphanumeric(a.id, b.id))
+
+const sortNodes = (items) =>
+  [...items].sort((a, b) => {
+    const byGateway = compareAlphanumeric(a.gatewayId, b.gatewayId)
+    if (byGateway !== 0) {
+      return byGateway
+    }
+    return compareAlphanumeric(a.nodeId, b.nodeId)
+  })
 
 const eqFilter = (key, value) => ({ k: key, o: "eq", v: String(value) })
 
@@ -509,44 +755,42 @@ const buildTopologyModel = ({
   nodes,
   sources,
   fields,
-  selectedGatewayId,
-  selectedNodeKey,
+  selectedGatewayIds,
+  selectedNodeKeys,
   showSources,
   showFields,
   includeChildNodes,
   selectedLayout,
 }) => {
-  const visibleGateways =
-    selectedGatewayId === ALL_GATEWAYS
+  const selectedGwIds = normalizeGatewayIds(selectedGatewayIds)
+  const visibleGateways = sortGateways(
+    selectedGwIds.length === 0
       ? gateways
-      : gateways.filter((gw) => String(gw.id) === String(selectedGatewayId))
-  let visibleNodes =
-    selectedGatewayId === ALL_GATEWAYS
+      : gateways.filter((gw) => selectedGwIds.indexOf(String(gw.id)) !== -1)
+  )
+  let visibleNodes = sortNodes(
+    selectedGwIds.length === 0
       ? nodes
-      : nodes.filter((n) => String(n.gatewayId) === String(selectedGatewayId))
-  if (selectedNodeKey !== ALL_NODES) {
-    const selected = visibleNodes.filter((n) => nodeKey(n) === selectedNodeKey)
-    visibleNodes = includeChildNodes
-      ? selected.concat(collectChildNodes(visibleNodes, selectedNodeKey))
-      : selected
+      : nodes.filter((n) => selectedGwIds.indexOf(String(n.gatewayId)) !== -1)
+  )
+  const selectedKeys = normalizeNodeKeys(selectedNodeKeys)
+  if (selectedKeys.length) {
+    const selected = visibleNodes.filter((n) => selectedKeys.indexOf(nodeKey(n)) !== -1)
+    const extra = includeChildNodes ? collectChildNodesForKeys(visibleNodes, selectedKeys) : []
+    visibleNodes = selected.concat(extra)
   }
   const visibleNodeKeys = new Set(visibleNodes.map(nodeKey))
+  const gatewayAllowed = (gatewayId) =>
+    selectedGwIds.length === 0 || selectedGwIds.indexOf(String(gatewayId)) !== -1
+  const nodeAllowed = (item) => !selectedKeys.length || visibleNodeKeys.has(nodeKey(item))
 
+  // Keep orphan sources/fields. They attach to the nearest parent that is on the graph.
   const visibleSources = showSources
-    ? sources.filter((s) => visibleNodeKeys.has(nodeKey(s)))
+    ? sources.filter((s) => gatewayAllowed(s.gatewayId) && nodeAllowed(s))
     : []
-  const visibleSourceKeys = new Set(visibleSources.map(sourceKey))
 
   const visibleFields = showFields
-    ? fields.filter((f) => {
-        if (!visibleNodeKeys.has(nodeKey(f))) {
-          return false
-        }
-        if (showSources) {
-          return visibleSourceKeys.has(sourceKey(f))
-        }
-        return true
-      })
+    ? fields.filter((f) => gatewayAllowed(f.gatewayId) && nodeAllowed(f))
     : []
 
   const items = visibleGateways.map((gw) => ({
@@ -612,7 +856,10 @@ const buildTopologyModel = ({
       status: nodeStatus(s),
       data: resourceData("source", s.id, { secondaryLabel: secondaryName(s.sourceId, s.name) }),
     })
-    addEdge(`edge-src-${index}`, `node-${String(s.gatewayId)}-${String(s.nodeId)}`, id, EdgeStyle.default)
+    const nodeId = `node-${String(s.gatewayId)}-${String(s.nodeId)}`
+    const gatewayId = `gw-${String(s.gatewayId)}`
+    const parent = itemIds.has(nodeId) ? nodeId : gatewayId
+    addEdge(`edge-src-${index}`, parent, id, EdgeStyle.default)
   })
 
   visibleFields.forEach((f, index) => {
@@ -633,9 +880,10 @@ const buildTopologyModel = ({
         fieldValue: formatFieldValue(f),
       }),
     })
-    const parent = showSources
-      ? `src-${String(f.gatewayId)}-${String(f.nodeId)}-${String(f.sourceId)}`
-      : `node-${String(f.gatewayId)}-${String(f.nodeId)}`
+    const sourceId = `src-${String(f.gatewayId)}-${String(f.nodeId)}-${String(f.sourceId)}`
+    const nodeId = `node-${String(f.gatewayId)}-${String(f.nodeId)}`
+    const gatewayId = `gw-${String(f.gatewayId)}`
+    const parent = itemIds.has(sourceId) ? sourceId : itemIds.has(nodeId) ? nodeId : gatewayId
     addEdge(`edge-fld-${index}`, parent, id, EdgeStyle.dashed)
   })
 
@@ -656,8 +904,8 @@ class TopologyPage extends React.Component {
     const prefs = loadPrefs()
     this.state = {
       loading: true,
-      selectedGatewayId: prefs.selectedGatewayId,
-      selectedNodeKey: prefs.selectedNodeKey,
+      selectedGatewayIds: prefs.selectedGatewayIds,
+      selectedNodeKeys: prefs.selectedNodeKeys,
       selectedLayout: prefs.selectedLayout,
       showSources: prefs.showSources,
       showFields: prefs.showFields,
@@ -676,6 +924,12 @@ class TopologyPage extends React.Component {
     this.listRequestId = 0
     this.sidebarSourceRequestId = 0
     this.lastGraphSignature = ""
+    this.needsLayout = true
+    this.layoutAttempts = 0
+    this.hadValidSize = false
+    this.fitTimer = null
+    this.resizeObserver = null
+    this.surfaceHost = null
   }
 
   setSelectedIds = (_id) => {}
@@ -765,8 +1019,8 @@ class TopologyPage extends React.Component {
       window.localStorage.setItem(
         PREFS_KEY,
         JSON.stringify({
-          selectedGatewayId: this.state.selectedGatewayId,
-          selectedNodeKey: this.state.selectedNodeKey,
+          selectedGatewayIds: this.state.selectedGatewayIds,
+          selectedNodeKeys: this.state.selectedNodeKeys,
           selectedLayout: this.state.selectedLayout,
           showSources: this.state.showSources,
           showFields: this.state.showFields,
@@ -779,6 +1033,10 @@ class TopologyPage extends React.Component {
   }
 
   componentDidMount() {
+    window.addEventListener("keydown", onAltKeyChange, true)
+    window.addEventListener("keyup", onAltKeyChange, true)
+    window.addEventListener("blur", onAltLost)
+    document.addEventListener("visibilitychange", onAltVisibilityChange)
     this.topologyController = new Visualization()
     this.topologyController.registerLayoutFactory(baselineLayoutFactory)
     this.topologyController.registerComponentFactory((_kind, type) => {
@@ -807,28 +1065,25 @@ class TopologyPage extends React.Component {
         if (!this.alive) {
           return
         }
-        const gateways = listPayload(values[0])
-        const nodes = listPayload(values[1])
-        const gatewayExists =
-          prefs.selectedGatewayId === ALL_GATEWAYS ||
-          gateways.some((gw) => String(gw.id) === String(prefs.selectedGatewayId))
-        const selectedGatewayId = gatewayExists ? prefs.selectedGatewayId : ALL_GATEWAYS
-        const nodeExists = nodes.some((n) => nodeKey(n) === prefs.selectedNodeKey)
+        const gateways = sortGateways(listPayload(values[0]))
+        const nodes = sortNodes(listPayload(values[1]))
+        const availableGw = new Set(gateways.map((gw) => String(gw.id)))
+        const selectedGatewayIds = prefs.selectedGatewayIds.filter((id) => availableGw.has(String(id)))
+        const allGateways = selectedGatewayIds.length === 0
+        const availableKeys = new Set(nodes.map(nodeKey))
+        const selectedNodeKeys = allGateways
+          ? []
+          : prefs.selectedNodeKeys.filter((key) => availableKeys.has(key))
         this.setState(
           {
             gateways,
             nodes,
-            selectedGatewayId,
-            selectedNodeKey:
-              selectedGatewayId === ALL_GATEWAYS || !nodeExists ? ALL_NODES : prefs.selectedNodeKey,
-            showSources: selectedGatewayId === ALL_GATEWAYS ? false : prefs.showSources,
-            showFields: selectedGatewayId === ALL_GATEWAYS ? false : prefs.showFields,
+            selectedGatewayIds,
+            selectedNodeKeys,
+            showSources: allGateways ? false : prefs.showSources,
+            showFields: allGateways ? false : prefs.showFields,
             includeChildNodes:
-              selectedGatewayId === ALL_GATEWAYS ||
-              !prefs.selectedNodeKey ||
-              prefs.selectedNodeKey === ALL_NODES
-                ? false
-                : prefs.includeChildNodes,
+              allGateways || selectedNodeKeys.length === 0 ? false : prefs.includeChildNodes,
             selectedLayout: prefs.selectedLayout,
             loading: false,
           },
@@ -845,20 +1100,25 @@ class TopologyPage extends React.Component {
       })
   }
 
-  filtersForSelection = (gatewayId, nodeKey, includeChildNodes, nodes) => {
+  filtersForSelection = (gatewayIds, nodeKeys, includeChildNodes, nodes) => {
     const filters = []
-    if (gatewayId && gatewayId !== ALL_GATEWAYS) {
-      filters.push(eqFilter("gatewayId", gatewayId))
+    const gwIds = normalizeGatewayIds(gatewayIds)
+    if (gwIds.length === 1) {
+      filters.push(eqFilter("gatewayId", gwIds[0]))
+    } else if (gwIds.length > 1) {
+      filters.push({ k: "gatewayId", o: "in", v: gwIds })
     }
-    if (nodeKey && nodeKey !== ALL_NODES) {
-      const nodeIds = [nodeKey.split("::")[1]]
+    const keys = normalizeNodeKeys(nodeKeys)
+    if (keys.length) {
+      const nodeIds = keys.map((key) => String(key.split("::")[1]))
       if (includeChildNodes) {
-        collectChildNodes(nodes || [], nodeKey).forEach((n) => nodeIds.push(String(n.nodeId)))
+        collectChildNodesForKeys(nodes || [], keys).forEach((n) => nodeIds.push(String(n.nodeId)))
       }
-      if (nodeIds.length === 1) {
-        filters.push(eqFilter("nodeId", nodeIds[0]))
+      const uniqueIds = [...new Set(nodeIds)]
+      if (uniqueIds.length === 1) {
+        filters.push(eqFilter("nodeId", uniqueIds[0]))
       } else {
-        filters.push({ k: "nodeId", o: "in", v: nodeIds })
+        filters.push({ k: "nodeId", o: "in", v: uniqueIds })
       }
     }
     return filters
@@ -867,8 +1127,8 @@ class TopologyPage extends React.Component {
   refreshDetails = (nextState) => {
     const requestId = this.detailsRequestId + 1
     this.detailsRequestId = requestId
-    const gatewayId = nextState.selectedGatewayId
-    const nodeKey = nextState.selectedNodeKey
+    const gatewayIds = nextState.selectedGatewayIds
+    const nodeKeys = nextState.selectedNodeKeys
     const showSources = nextState.showSources
     const showFields = nextState.showFields
     const includeChildNodes = nextState.includeChildNodes
@@ -878,7 +1138,7 @@ class TopologyPage extends React.Component {
       }
       this.setState(patch)
     }
-    if (gatewayId === ALL_GATEWAYS) {
+    if (!normalizeGatewayIds(gatewayIds).length) {
       apply({
         sources: nextState.sources.length ? [] : nextState.sources,
         fields: nextState.fields.length ? [] : nextState.fields,
@@ -891,7 +1151,7 @@ class TopologyPage extends React.Component {
     if (!showFields && nextState.fields.length) {
       apply({ fields: [] })
     }
-    const filters = this.filtersForSelection(gatewayId, nodeKey, includeChildNodes, nextState.nodes)
+    const filters = this.filtersForSelection(gatewayIds, nodeKeys, includeChildNodes, nextState.nodes)
     if (showSources) {
       api.source
         .list(scopedQuery(filters))
@@ -931,8 +1191,8 @@ class TopologyPage extends React.Component {
       prevState.nodes !== this.state.nodes ||
       prevState.sources !== this.state.sources ||
       prevState.fields !== this.state.fields ||
-      prevState.selectedGatewayId !== this.state.selectedGatewayId ||
-      prevState.selectedNodeKey !== this.state.selectedNodeKey ||
+      prevState.selectedGatewayIds !== this.state.selectedGatewayIds ||
+      prevState.selectedNodeKeys !== this.state.selectedNodeKeys ||
       prevState.showSources !== this.state.showSources ||
       prevState.showFields !== this.state.showFields ||
       prevState.includeChildNodes !== this.state.includeChildNodes ||
@@ -946,20 +1206,94 @@ class TopologyPage extends React.Component {
     if (this.layoutTimer) {
       window.clearTimeout(this.layoutTimer)
     }
+    if (this.fitTimer) {
+      window.clearTimeout(this.fitTimer)
+      this.fitTimer = null
+    }
     this.layoutTimer = window.setTimeout(() => {
       this.layoutTimer = null
       if (!this.topologyController) {
         return
       }
+      const graph = this.topologyController.getGraph()
+      if (!graph) {
+        return
+      }
+      if (!graphHasSize(graph)) {
+        this.hadValidSize = false
+        this.layoutAttempts += 1
+        if (this.layoutAttempts < 25) {
+          this.scheduleLayout()
+        }
+        return
+      }
+      this.hadValidSize = true
+      this.layoutAttempts = 0
       action(() => {
-        const graph = this.topologyController.getGraph()
-        if (graph) {
-          graph.setScaleExtent([0.35, 3])
+        graph.setScaleExtent([0.35, 3])
+        try {
           graph.layout()
+        } catch (_err) {
+          // Force can throw if a node is mid-attach; retry once after a paint.
+          window.requestAnimationFrame(() => {
+            if (!this.topologyController) {
+              return
+            }
+            try {
+              this.topologyController.getGraph().layout()
+            } catch (_retryErr) {
+              // leave whatever positions we have
+            }
+          })
+        }
+        if (this.state.selectedLayout === LAYOUT_DAGRE) {
           applyReadableView(graph)
+          this.needsLayout = false
+        } else {
+          this.fitTimer = window.setTimeout(() => {
+            this.fitTimer = null
+            if (!this.topologyController) {
+              return
+            }
+            action(() => {
+              const next = this.topologyController.getGraph()
+              if (next && graphHasSize(next)) {
+                applyReadableView(next)
+                this.needsLayout = false
+              }
+            })()
+          }, 600)
         }
       })()
-    }, 50)
+    }, this.layoutAttempts === 0 ? 50 : 100)
+  }
+
+  setSurfaceHost = (el) => {
+    if (this.surfaceHost === el) {
+      return
+    }
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+      this.resizeObserver = null
+    }
+    this.surfaceHost = el
+    if (!el || typeof ResizeObserver === "undefined") {
+      return
+    }
+    this.resizeObserver = new ResizeObserver(() => {
+      if (!this.needsLayout || !this.topologyController) {
+        return
+      }
+      const graph = this.topologyController.getGraph()
+      const ready = graphHasSize(graph)
+      if (ready && !this.hadValidSize) {
+        this.scheduleLayout()
+      }
+      if (!ready) {
+        this.hadValidSize = false
+      }
+    })
+    this.resizeObserver.observe(el)
   }
 
   onSurfaceReady = () => {
@@ -975,8 +1309,21 @@ class TopologyPage extends React.Component {
     const signature = graphSignature(model)
     const structureChanged = signature !== this.lastGraphSignature
     this.lastGraphSignature = signature
+    try {
+      const graph = this.topologyController.hasGraph && this.topologyController.hasGraph()
+        ? this.topologyController.getGraph()
+        : null
+      const layout = graph && graph.getLayout && graph.getLayout()
+      if (layout && typeof layout.stopSimulation === "function") {
+        layout.stopSimulation()
+      }
+    } catch (_err) {
+      // previous force run may already be torn down
+    }
     this.topologyController.fromModel(model, true)
     if (structureChanged && model.nodes.length) {
+      this.needsLayout = true
+      this.layoutAttempts = 0
       this.scheduleLayout()
     }
   }
@@ -989,24 +1336,38 @@ class TopologyPage extends React.Component {
     if (this.layoutTimer) {
       window.clearTimeout(this.layoutTimer)
     }
+    if (this.fitTimer) {
+      window.clearTimeout(this.fitTimer)
+    }
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+      this.resizeObserver = null
+    }
+    window.removeEventListener("keydown", onAltKeyChange, true)
+    window.removeEventListener("keyup", onAltKeyChange, true)
+    window.removeEventListener("blur", onAltLost)
+    document.removeEventListener("visibilitychange", onAltVisibilityChange)
+    altHeld = false
     this.props.unloadData({ key: WS_KEY })
   }
 
   visibleNodesForFilter = () => {
-    const { nodes, selectedGatewayId } = this.state
-    if (selectedGatewayId === ALL_GATEWAYS) {
+    const { nodes, selectedGatewayIds } = this.state
+    const gwIds = normalizeGatewayIds(selectedGatewayIds)
+    if (!gwIds.length) {
       return nodes
     }
-    return nodes.filter((n) => String(n.gatewayId) === String(selectedGatewayId))
+    const allowed = new Set(gwIds)
+    return nodes.filter((n) => allowed.has(String(n.gatewayId)))
   }
 
   onGatewaySelect = (selection) => {
-    const selectedGatewayId = selection || ALL_GATEWAYS
-    const goingToAll = selectedGatewayId === ALL_GATEWAYS
+    const selectedGatewayIds = normalizeGatewayIds(selection)
+    const goingToAll = selectedGatewayIds.length === 0
     this.setState(
       {
-        selectedGatewayId,
-        selectedNodeKey: ALL_NODES,
+        selectedGatewayIds,
+        selectedNodeKeys: [],
         includeChildNodes: false,
         showSources: goingToAll ? false : this.state.showSources,
         showFields: goingToAll ? false : this.state.showFields,
@@ -1022,11 +1383,11 @@ class TopologyPage extends React.Component {
   }
 
   onNodeSelect = (selection) => {
-    const selectedNodeKey = selection || ALL_NODES
+    const selectedNodeKeys = normalizeNodeKeys(selection)
     this.setState(
       {
-        selectedNodeKey,
-        includeChildNodes: selectedNodeKey === ALL_NODES ? false : this.state.includeChildNodes,
+        selectedNodeKeys,
+        includeChildNodes: selectedNodeKeys.length === 0 ? false : this.state.includeChildNodes,
         sources: [],
         fields: [],
         ...this.closedSidebarState(),
@@ -1081,6 +1442,20 @@ class TopologyPage extends React.Component {
     )
   }
 
+  onDownloadImage = () => {
+    const host = this.surfaceHost
+    const svg = host && host.querySelector("svg")
+    if (!svg) {
+      return
+    }
+    const background =
+      (host && window.getComputedStyle(host).backgroundColor) ||
+      window.getComputedStyle(document.body).backgroundColor ||
+      "#f0f0f0"
+    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")
+    downloadSvg(svg, background, `topology-${stamp}.svg`)
+  }
+
   onRefresh = () => {
     this.setState({ ...this.closedSidebarState() })
     const requestId = this.listRequestId + 1
@@ -1095,8 +1470,8 @@ class TopologyPage extends React.Component {
         }
         this.setState(
           {
-            gateways: listPayload(values[0]),
-            nodes: listPayload(values[1]),
+            gateways: sortGateways(listPayload(values[0])),
+            nodes: sortNodes(listPayload(values[1])),
           },
           () => this.refreshDetails(this.state)
         )
@@ -1109,8 +1484,8 @@ class TopologyPage extends React.Component {
     const {
       gateways,
       nodes,
-      selectedGatewayId,
-      selectedNodeKey,
+      selectedGatewayIds,
+      selectedNodeKeys,
       selectedLayout,
       includeChildNodes,
       showSources,
@@ -1119,26 +1494,27 @@ class TopologyPage extends React.Component {
       fields,
       loading,
     } = this.state
-    const gatewayOptions = [{ value: ALL_GATEWAYS, label: t("all_gateways"), searchText: t("all_gateways") }]
+    const gatewayOptions = []
     gateways.forEach((gw) => {
       const count = nodes.filter((n) => String(n.gatewayId) === String(gw.id)).length
       const name = gw.name || ""
       gatewayOptions.push({
-        value: gw.id,
+        value: String(gw.id),
         label: `${gw.id} (${count})`,
+        toggleLabel: String(gw.id),
         name,
         description: name && name !== gw.id ? name : gw.description || undefined,
         searchText: `${gw.id} ${name} ${gw.description || ""}`,
       })
     })
 
-    const detailsDisabled = loading || selectedGatewayId === ALL_GATEWAYS
-    const childNodesDisabled = detailsDisabled || selectedNodeKey === ALL_NODES
-    const nodeOptions = [{ value: ALL_NODES, label: t("all_nodes"), searchText: t("all_nodes") }]
+    const detailsDisabled = loading || selectedGatewayIds.length === 0
+    const childNodesDisabled = detailsDisabled || selectedNodeKeys.length === 0
+    const nodeOptions = []
     this.visibleNodesForFilter().forEach((n) => {
       const name = n.name || ""
       const id = String(n.nodeId)
-      const description = [name && name !== id ? name : "", selectedGatewayId === ALL_GATEWAYS ? n.gatewayId : ""]
+      const description = [name && name !== id ? name : "", selectedGatewayIds.length !== 1 ? n.gatewayId : ""]
         .filter(Boolean)
         .join(" · ")
       nodeOptions.push({
@@ -1162,12 +1538,14 @@ class TopologyPage extends React.Component {
               <div className="topology-filter-select">
                 <Select
                   options={gatewayOptions}
-                  selected={selectedGatewayId}
+                  selected={selectedGatewayIds}
                   onChange={this.onGatewaySelect}
                   isDisabled={loading || gateways.length === 0}
                   isSearchable
+                  isMulti
+                  isArrayData
                   maxHeight="300px"
-                  label={t("select_gateway")}
+                  label={t("all_gateways")}
                 />
               </div>
             </ToolbarItem>
@@ -1175,12 +1553,14 @@ class TopologyPage extends React.Component {
               <div className="topology-filter-select">
                 <Select
                   options={nodeOptions}
-                  selected={selectedNodeKey}
+                  selected={selectedNodeKeys}
                   onChange={this.onNodeSelect}
                   isDisabled={detailsDisabled || this.visibleNodesForFilter().length === 0}
                   isSearchable
+                  isMulti
+                  isArrayData
                   maxHeight="300px"
-                  label={t("node")}
+                  label={t("all_nodes")}
                 />
               </div>
             </ToolbarItem>
@@ -1220,6 +1600,19 @@ class TopologyPage extends React.Component {
             <ToolbarItem>
               <ResetButton onClick={this.onReset} isDisabled={loading} isSmall variant="secondary" />
             </ToolbarItem>
+            <ToolbarItem>
+              <Tooltip content={t("download")}>
+                <Button
+                  variant="secondary"
+                  isSmall
+                  onClick={this.onDownloadImage}
+                  isDisabled={loading}
+                  aria-label={t("download")}
+                >
+                  <DownloadIcon />
+                </Button>
+              </Tooltip>
+            </ToolbarItem>
           </ToolbarGroup>
           <ToolbarGroup alignment={{ default: "alignRight" }}>
             <ToolbarItem>
@@ -1243,11 +1636,9 @@ class TopologyPage extends React.Component {
 
   renderEmptyState = () => {
     const { t } = this.props
-    const { selectedGatewayId } = this.state
+    const { selectedGatewayIds } = this.state
     const titleKey =
-      selectedGatewayId && selectedGatewayId !== ALL_GATEWAYS
-        ? "no_topology_nodes_for_gateway"
-        : "no_topology_nodes"
+      selectedGatewayIds.length > 0 ? "no_topology_nodes_for_gateway" : "no_topology_nodes"
     return (
       <EmptyState variant={EmptyStateVariant.small} className="topology-empty-state">
         <EmptyStateIcon icon={TopologyIcon} />
@@ -1266,28 +1657,30 @@ class TopologyPage extends React.Component {
       nodes,
       sources,
       sidebarExtraSources,
-      selectedGatewayId,
-      selectedNodeKey,
+      selectedGatewayIds,
+      selectedNodeKeys,
       sidebarKind,
       sidebarResource,
       selectedGraphId,
     } = this.state
+    const selectedGwIds = normalizeGatewayIds(selectedGatewayIds)
     let visibleNodes =
-      selectedGatewayId === ALL_GATEWAYS
+      selectedGwIds.length === 0
         ? nodes
-        : nodes.filter((n) => String(n.gatewayId) === String(selectedGatewayId))
-    if (selectedNodeKey !== ALL_NODES) {
-      visibleNodes = visibleNodes.filter((n) => nodeKey(n) === selectedNodeKey)
+        : nodes.filter((n) => selectedGwIds.indexOf(String(n.gatewayId)) !== -1)
+    if (selectedNodeKeys.length) {
+      const selected = new Set(selectedNodeKeys)
+      visibleNodes = visibleNodes.filter((n) => selected.has(nodeKey(n)))
     }
     const visibleGatewayCount =
-      selectedGatewayId === ALL_GATEWAYS
+      selectedGwIds.length === 0
         ? gateways.length
-        : gateways.filter((gw) => String(gw.id) === String(selectedGatewayId)).length
+        : gateways.filter((gw) => selectedGwIds.indexOf(String(gw.id)) !== -1).length
     const hasGraph = !loading && (visibleGatewayCount > 0 || visibleNodes.length > 0)
 
     return (
       <React.Fragment>
-        <PageTitle title="Topology" />
+        <PageTitle title="topology" />
         <PageContent>
           {this.renderToolbar()}
           {loading ? (
@@ -1334,9 +1727,11 @@ class TopologyPage extends React.Component {
               {hasGraph ? (
                 <VisualizationProvider controller={this.topologyController}>
                   <SurfaceReady onReady={this.onSurfaceReady}>
-                    <VisualizationSurface
-                      state={{ selectedIds: selectedGraphId ? [selectedGraphId] : [] }}
-                    />
+                    <div className="topology-surface-host" ref={this.setSurfaceHost}>
+                      <VisualizationSurface
+                        state={{ selectedIds: selectedGraphId ? [selectedGraphId] : [] }}
+                      />
+                    </div>
                   </SurfaceReady>
                 </VisualizationProvider>
               ) : (

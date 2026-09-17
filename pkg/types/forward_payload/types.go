@@ -14,5 +14,6 @@ type Config struct {
 	SrcFieldID  string               `json:"srcFieldId" yaml:"srcFieldId"`
 	DstFieldID  string               `json:"dstFieldId" yaml:"dstFieldId"`
 	Labels      cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	CreatedOn   time.Time            `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn  time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }

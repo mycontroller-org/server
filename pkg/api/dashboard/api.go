@@ -40,8 +40,17 @@ func (d *DashboardAPI) Get(filters []storageTY.Filter) (*dashboardTY.Config, err
 
 // Save an item
 func (d *DashboardAPI) Save(dashboard *dashboardTY.Config) error {
-	if dashboard.ID == "" {
+	isNew := dashboard.ID == ""
+	if isNew {
 		dashboard.ID = utils.RandUUID()
+	}
+	existing := &dashboardTY.Config{}
+	var lookupErr error
+	if !isNew {
+		lookupErr = d.storage.FindOne(types.EntityDashboard, existing, []storageTY.Filter{{Key: types.KeyID, Value: dashboard.ID}})
+	}
+	if err := utils.StampCreatedOnLookup(&dashboard.CreatedOn, existing.CreatedOn, lookupErr, isNew); err != nil {
+		return err
 	}
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: dashboard.ID},
