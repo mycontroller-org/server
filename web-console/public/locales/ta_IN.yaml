@@ -711,87 +711,87 @@ opts:
     label_alexa: Alexa
     label_google_assistant: Google Assistant
   vd_type:
-    label_air_conditioner: Air Conditioner
-    label_air_cooler: Air Cooler
-    label_air_freshener: Air Freshener
-    label_air_purifier: Air Purifier
-    label_audio_video_receiver: Audio Video Receiver
-    label_awning: Awning
+    label_air_conditioner: ஏர் கண்டிஷனர்
+    label_air_cooler: ஏர் கூலர்
+    label_air_freshener: ஏர் ஃப்ரெஷனர்
+    label_air_purifier: காற்று சுத்திகரிப்பான்
+    label_audio_video_receiver: ஆடியோ வீடியோ ரிசீவர்
+    label_awning: விதானம்
     label_bathtub: குளியல் தொட்டி
     label_bed: படுக்கை
-    label_blender: Blender
-    label_blinds: Blinds
-    label_boiler: Boiler
-    label_camera: Camera
-    label_carbon_monoxide_detector: Carbon Monoxide Detector
-    label_charger: Charger
+    label_blender: கலவை இயந்திரம்
+    label_blinds: பிளைண்ட்ஸ்
+    label_boiler: பாய்லர்
+    label_camera: கேமரா
+    label_carbon_monoxide_detector: கார்பன் மோனாக்சைடு கண்டறிவி
+    label_charger: சார்ஜர்
     label_closet: அலமாரி
-    label_coffee_maker: Coffee Maker
-    label_cooktop: Cooktop
+    label_coffee_maker: காபி இயந்திரம்
+    label_cooktop: அடுப்பு மேல்பலகை
     label_curtain: திரைச்சீலை
-    label_dehumidifier: Dehumidifier
-    label_dehydrator: Dehydrator
-    label_dishwasher: Dishwasher
+    label_dehumidifier: ஈரப்பதம் நீக்கி
+    label_dehydrator: உலர்த்தி
+    label_dishwasher: பாத்திரம் கழுவி
     label_door: கதவு
     label_door_bell: கதவு மணி
     label_drawer: இழுப்பறை
-    label_dryer: Dryer
+    label_dryer: துணி உலர்த்தி
     label_fan: விசிறி
     label_faucet: குழாய்
-    label_fireplace: Fireplace
-    label_freezer: Freezer
-    label_fryer: Fryer
-    label_garage_door: Garage Door
+    label_fireplace: நெருப்பிடம்
+    label_freezer: ஃப்ரீசர்
+    label_fryer: வறுக்கும் இயந்திரம்
+    label_garage_door: கேரேஜ் கதவு
     label_gate: வாயில்
-    label_grill: Grill
-    label_heater: Heater
-    label_hood: Hood
-    label_humidifier: Humidifier
-    label_kettle: Kettle
+    label_grill: கிரில்
+    label_heater: ஹீட்டர்
+    label_hood: புகைப்போக்கி
+    label_humidifier: ஈரப்பதமூட்டி
+    label_kettle: கெட்டில்
     label_light: விளக்கு
     label_lock: பூட்டு
-    label_media_remote: Media Remote
-    label_microwave: Microwave
-    label_mop: Mop
-    label_mower: Mower
-    label_multicooker: Multicooker
-    label_network: Network
-    label_outlet: Outlet
-    label_oven: Oven
-    label_pergola: Pergola
-    label_pet_feeder: Pet Feeder
-    label_pressure_cooker: Pressure Cooker
-    label_radiator: Radiator
+    label_media_remote: மீடியா ரிமோட்
+    label_microwave: மைக்ரோவேவ்
+    label_mop: தரை துடைப்பான்
+    label_mower: புல் வெட்டி
+    label_multicooker: மல்டிகூக்கர்
+    label_network: பிணையம்
+    label_outlet: பிளக்
+    label_oven: ஓவன்
+    label_pergola: பெர்கோலா
+    label_pet_feeder: செல்லப்பிராணி உணவி
+    label_pressure_cooker: பிரஷர் குக்கர்
+    label_radiator: ரேடியேட்டர்
     label_refrigerator: குளிர்சாதன பெட்டி
-    label_router: Router
-    label_scene: Scene
-    label_security_system: Security System
-    label_sensor: Sensor
-    label_set_top_box: Set Top Box
-    label_shower: Shower
-    label_shutter: Shutter
-    label_smoke_detector: Smoke Detector
-    label_soundbar: Soundbar
-    label_sous_vide: Sous Vide
-    label_speaker: Speaker
-    label_sprinkler: Sprinkler
-    label_stand_mixer: Stand Mixer
-    label_streaming_box: Streaming Box
-    label_streaming_soundbar: Streaming Soundbar
-    label_streaming_stick: Streaming Stick
-    label_switch: Switch
-    label_tank: Tank
-    label_television: Television
-    label_thermostat: Thermostat
-    label_vacuum: Vacuum
-    label_valve: Valve
-    label_washer: Washer
-    label_water_heater: Water Heater
-    label_water_purifier: Water Purifier
-    label_water_softener: Water Softener
-    label_weather_station: Weather Station
+    label_router: ரவுட்டர்
+    label_scene: காட்சி
+    label_security_system: பாதுகாப்பு அமைப்பு
+    label_sensor: சென்சார்
+    label_set_top_box: செட் டாப் பாக்ஸ்
+    label_shower: ஷவர்
+    label_shutter: ஷட்டர்
+    label_smoke_detector: புகை கண்டறிவி
+    label_soundbar: சவுண்ட்பார்
+    label_sous_vide: சூ வீட்
+    label_speaker: ஸ்பீக்கர்
+    label_sprinkler: தெளிப்பான்
+    label_stand_mixer: ஸ்டாண்ட் மிக்சர்
+    label_streaming_box: ஸ்ட்ரீமிங் பாக்ஸ்
+    label_streaming_soundbar: ஸ்ட்ரீமிங் சவுண்ட்பார்
+    label_streaming_stick: ஸ்ட்ரீமிங் ஸ்டிக்
+    label_switch: சுவிட்ச்
+    label_tank: தொட்டி
+    label_television: தொலைக்காட்சி
+    label_thermostat: தெர்மோஸ்டாட்
+    label_vacuum: தூசி உறிஞ்சி
+    label_valve: வால்வு
+    label_washer: துணி துவைப்பான்
+    label_water_heater: நீர் ஹீட்டர்
+    label_water_purifier: நீர் சுத்திகரிப்பான்
+    label_water_softener: நீர் மென்மையாக்கி
+    label_weather_station: வானிலை நிலையம்
     label_window: ஜன்னல்
-    label_yogurt_maker: Yogurt Maker
+    label_yogurt_maker: தயிர் இயந்திரம்
   week_day:
     label_friday: வெள்ளிக்கிழமை
     label_monday: திங்கட்கிழமை
