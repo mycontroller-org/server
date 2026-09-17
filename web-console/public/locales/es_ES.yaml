@@ -5,16 +5,16 @@ active_duration: Duración activa
 add: Añadir
 add_a_field: Añadir un campo
 add_a_firmware: Añadir un firmware
-add_a_forward_payload: Añadir un reenvío de carga útil
-add_a_gateway: Añadir una pasarela
-add_a_handler: Añadir un gestor
+add_a_forward_payload: Añadir un Forward Payload
+add_a_gateway: Añadir un Gateway
+add_a_handler: Añadir un Handler
 add_a_node: Añadir un nodo
 add_a_schedule: Añadir una programación
 add_a_policy: Añadir una política
 add_a_service_account: Añadir una cuenta de servicio
+add_a_user: Añadir un usuario
 add_a_source: Añadir una fuente
 add_a_task: Añadir una tarea
-add_a_user: Añadir un usuario
 add_a_virtual_assistant: Añadir un asistente virtual
 add_a_virtual_device: Añadir un dispositivo virtual
 add_an_item: Añadir un elemento
@@ -26,7 +26,7 @@ alerts_empty_title: No se han encontrado alertas
 alive_check_interval: Intervalo de comprobación de actividad
 all_rights_reserved: Todos los derechos reservados
 allow_overwrite: Permitir sobrescritura
-apache_license_2: Licencia Apache 2.0
+apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: Pedir confirmación
 assigned_firmware: Firmware asignado
@@ -51,8 +51,8 @@ cancel: Cancelar
 chart_configuration: Configuración del gráfico
 chart_type: Tipo de gráfico
 chat_ids: ID de chat
-clear: Vaciar
-clear_all: Vaciar todo
+clear: Borrar
+clear_all: Borrar todo
 color: Color
 color_temperature: Temperatura de color
 column_display: Visualización de columnas
@@ -77,8 +77,8 @@ cursor_tooltip: Información del cursor
 custom_data: Datos personalizados
 custom_mapping: Asignación personalizada
 custom_variables: Variables personalizadas
-dampening: Amortiguación
-dashboard: Panel
+dampening: Atenuación
+dashboard: Dashboard
 data: Datos
 data_repository: Repositorio de datos
 data_repository_add_an_entry: "Repositorio de datos: añadir una entrada"
@@ -96,33 +96,33 @@ details: Detalles
 device_filter: Filtro de dispositivo
 device_type: Tipo de dispositivo
 dialog:
-  clear_sleeping_queue_heading: ¿Desea vaciar la cola?
+  clear_sleeping_queue_heading: "¿Desea vaciar la cola?"
   clear_sleeping_queue_msg: Se descartarán todos los mensajes de la cola de reposo
-  delete_resource_msg: ¿Seguro que desea eliminar los elementos seleccionados?
-  delete_title_backup: ¿Eliminar archivos de copia de seguridad?
-  delete_title_dashboard: ¿Eliminar el panel?
-  delete_title_data_repository: ¿Eliminar repositorios de datos?
-  delete_title_field: ¿Eliminar campos?
-  delete_title_firmware: ¿Eliminar firmware?
-  delete_title_forward_payload: ¿Eliminar reenvíos de carga útil?
-  delete_title_gateway: ¿Eliminar pasarelas?
-  delete_title_handler: ¿Eliminar gestores?
-  delete_title_node: ¿Eliminar nodos?
-  delete_title_schedule: ¿Eliminar programaciones?
-  delete_title_service_account: ¿Eliminar cuenta de servicio?
-  delete_title_user: ¿Eliminar usuario?
-  delete_title_policy: ¿Eliminar política?
-  delete_title_source: ¿Eliminar fuentes?
-  delete_title_task: ¿Eliminar tareas?
-  delete_title_virtual_assistant: ¿Eliminar asistente virtual?
-  delete_title_virtual_device: ¿Eliminar dispositivo virtual?
-  node_reset_heading: ¿Restablecer nodo?
+  delete_resource_msg: "¿Seguro que desea eliminar los elementos seleccionados?"
+  delete_title_backup: "¿Eliminar archivos de copia de seguridad?"
+  delete_title_dashboard: "¿Eliminar el Dashboard?"
+  delete_title_data_repository: "¿Eliminar repositorios de datos?"
+  delete_title_field: "¿Eliminar campos?"
+  delete_title_firmware: "¿Eliminar firmware?"
+  delete_title_forward_payload: "¿Eliminar Forward Payloads?"
+  delete_title_gateway: "¿Eliminar Gateways?"
+  delete_title_handler: "¿Eliminar Handlers?"
+  delete_title_node: "¿Eliminar nodos?"
+  delete_title_schedule: "¿Eliminar programaciones?"
+  delete_title_service_account: "¿Eliminar cuenta de servicio?"
+  delete_title_user: "¿Eliminar usuario?"
+  delete_title_policy: "¿Eliminar política?"
+  delete_title_source: "¿Eliminar fuentes?"
+  delete_title_task: "¿Eliminar tareas?"
+  delete_title_virtual_assistant: "¿Eliminar asistente virtual?"
+  delete_title_virtual_device: "¿Eliminar dispositivo virtual?"
+  node_reset_heading: "¿Restablecer nodo?"
   node_reset_msg: "¿Seguro que desea restablecer los nodos seleccionados?<br/>Tras esta operación:<3><0>La configuración se restaurará a los valores de fábrica.</0><1>¡Puede perder el acceso a los nodos seleccionados desde MyController!</1></3>"
-  reboot_nodes_heading: ¿Reiniciar nodo?
-  reboot_nodes_msg: ¿Seguro que desea reiniciar los nodos seleccionados?
-  reset_msg_jwt_secret: "¿Seguro que desea restablecer el secreto JWT? Tras esta operación, todas las sesiones iniciadas en este servidor dejarán de ser válidas y se cerrará su sesión."
+  reboot_nodes_heading: "¿Reiniciar nodo?"
+  reboot_nodes_msg: "¿Seguro que desea reiniciar los nodos seleccionados?"
+  reset_msg_jwt_secret: ¿Seguro que desea restablecer el secreto JWT? Tras esta operación, todas las sesiones iniciadas en este servidor dejarán de ser válidas y se cerrará su sesión.
   reset_title_jwt_secret: Restablecer secreto JWT
-  restore_heading: ¿Confirmar la restauración?
+  restore_heading: "¿Confirmar la restauración?"
   restore_msg: "¿Seguro que desea restaurar a partir del archivo de copia de seguridad seleccionado?<br/>Tras esta operación:<3><0>Los datos del servidor se restaurarán a <1>{{fileName}}</1></0><1>Esta operación no se puede deshacer</1><2>Haga siempre una copia de seguridad antes de restaurar</2><3>Es posible que deba iniciar el servidor manualmente</3></3>"
 disable: Desactivar
 disable_scrollbar: Desactivar barra de desplazamiento
@@ -142,16 +142,14 @@ download: Descargar
 drop_down_position: Posición del menú desplegable
 duration: Duración
 edit: Editar
-edit_dashboard_settings: Editar ajustes del panel
+edit_dashboard_settings: Editar ajustes del Dashboard
 edit_widget_settings: Editar ajustes del widget
 email: Correo electrónico
-edit_statement: Editar instrucción
-effect: Efecto
 enable: Activar
 enabled: Activado
 encryption_key: Clave de cifrado
-endpoint: Punto de conexión
-endpoints: Puntos de conexión
+endpoint: Endpoint
+endpoints: Endpoints
 entities: Entidades
 error:
   console:
@@ -179,8 +177,8 @@ fields: Campos
 file_details: Detalles del archivo
 file_uploaded_successfully: Archivo cargado correctamente
 filename: Nombre de archivo
-filename_placeholder: Arrastre un archivo aquí o examínelo para cargarlo
-fill_opacity_%: Fill Opacity (%)
+filename_placeholder: Arrastre un archivo aquí o selecciónelo para cargarlo
+fill_opacity_%: Opacidad de relleno (%)
 filter: Filtro
 filter_type: Tipo de filtro
 filters: Filtros
@@ -189,45 +187,45 @@ firmware_file: Archivo de firmware
 firmware_update: Actualización de firmware
 firmwares: Firmwares
 flush_interval: Intervalo de vaciado
-forgot_username_or_password: ¿Ha olvidado el nombre de usuario o la contraseña?
-form_generic_error_message: "Revise los errores y/o los campos obligatorios (*)"
+forgot_username_or_password: "¿Ha olvidado el nombre de usuario o la contraseña?"
+form_generic_error_message: Revise los errores y/o los campos obligatorios (*)
 form_view: Vista de formulario
 forum: Foro
-forward_payload: Reenviar carga útil
-forward_payload_details: Detalles del reenvío de carga útil
+forward_payload: Forward Payload
+forward_payload_details: Detalles de Forward Payload
 frequency: Frecuencia
 from: De
 from_email: Correo del remitente
 full_name: Nombre completo
 function: Función
-gateway: Pasarela
-gateway_details: Detalles de la pasarela
-gateway_id: ID de pasarela
-gateways: Pasarelas
-all_gateways: Todas las pasarelas
+gateway: Gateway
+gateway_details: Detalles del Gateway
+gateway_id: ID de Gateway
+gateways: Gateways
+all_gateways: Todos los Gateways
 all_nodes: Todos los nodos
 show_sources: Mostrar fuentes
 show_fields: Mostrar campos
-select_gateway: Pasarela
+select_gateway: Gateway
 no_topology_nodes: No hay nodos que mostrar
-no_topology_nodes_for_gateway: No se encontraron nodos para esta pasarela
+no_topology_nodes_for_gateway: No se encontraron nodos para este Gateway
 geo_location: Ubicación GEO
 git_commit: Commit de Git
 global_configuration: Configuración global
 golang_version: Versión de GoLang
-handler: Gestor
-handler_details: Detalles del gestor
-handler_parameters: Parámetros del gestor
-handler_type: Tipo de gestor
-handlers: Gestores
+handler: Handler
+handler_details: Detalles del Handler
+handler_parameters: Parámetros del Handler
+handler_type: Tipo de Handler
+handlers: Handlers
 header_name: Nombre de cabecera
 headers: Cabeceras
-heartbeat_request: Solicitud de latido
+heartbeat_request: Solicitud de heartbeat
 height_px: Altura (px)
 helper_text:
   invalid_address_esphome: "Dirección no válida, ejemplo: node1.local:6053"
   invalid_api: API no válida
-  invalid_backup_retention_count: "Número de retenciones no válido, 0 para sin límite"
+  invalid_backup_retention_count: Número de retenciones no válido, 0 para sin límite
   invalid_baud_rate: Velocidad en baudios no válida
   invalid_broker_url: URL del broker no válida
   invalid_current_password: Introduzca su contraseña actual
@@ -238,40 +236,40 @@ helper_text:
   invalid_duration: Duración no válida
   invalid_email: Correo electrónico no válido
   invalid_execution_interval_empty: El intervalo de ejecución no puede estar vacío
-  invalid_field_id: "ID de campo no válido. caracteres, mín.=1, máx.=100"
+  invalid_field_id: ID de campo no válido. caracteres, mín.=1, máx.=100
   invalid_filters: Filtros no válidos
   invalid_height: Altura no válida
   invalid_host: Host no válido
-  invalid_id: "ID no válido. caracteres, mín.=4, máx.=100, sin espacios"
+  invalid_id: ID no válido. caracteres, mín.=4, máx.=100, sin espacios
   invalid_interval: Intervalo no válido
-  invalid_key: "Clave no válida. caracteres, mín.=1 y máx.=100"
+  invalid_key: Clave no válida. caracteres, mín.=1 y máx.=100
   invalid_key_path: La ruta de la clave no puede estar vacía
   invalid_latitude: Latitud no válida
   invalid_limit: Límite no válido
   invalid_location: Ubicación no válida
   invalid_longitude: Longitud no válida
-  invalid_maximum_backup: "Número máximo de copias no válido. entero, mín.=0"
-  invalid_name: "Nombre no válido. caracteres, mín.=2, máx.=100"
-  invalid_node_id: "ID de nodo no válido. caracteres, mín.=1 y máx.=100"
+  invalid_maximum_backup: Número máximo de copias no válido. entero, mín.=0
+  invalid_name: Nombre no válido. caracteres, mín.=2, máx.=100
+  invalid_node_id: ID de nodo no válido. caracteres, mín.=1 y máx.=100
   invalid_offset: Desplazamiento no válido
   invalid_path: Ruta no válida
-  invalid_payload: Carga útil no válida
+  invalid_payload: Payload no válido
   invalid_port: Puerto no válido
   invalid_prefix: Prefijo no válido
   invalid_profile_confirm_password: Confirmación de contraseña no válida
-  invalid_profile_password: "Contraseña no válida. caracteres, mín.=3, máx.=100"
-  invalid_profile_username: "Nombre de usuario no válido. caracteres, mín.=3, máx.=100, sin espacios"
+  invalid_profile_password: Contraseña no válida. caracteres, mín.=3, máx.=100
+  invalid_profile_username: Nombre de usuario no válido. caracteres, mín.=3, máx.=100, sin espacios
   invalid_repeat_count: Número de repeticiones no válido
   invalid_response_code: Introduzca un código de respuesta válido; 0 para ignorar
-  invalid_retry_count: "Número de reintentos no válido. entero, mín.=0"
+  invalid_retry_count: Número de reintentos no válido. entero, mín.=0
   invalid_script_empty: El script no puede estar vacío
   invalid_server_url: URL del servidor no válida
-  invalid_source_id: "ID de fuente no válido. caracteres, mín.=1 y máx.=100"
-  invalid_text: "Texto no válido. caracteres, mín.=1 y máx.=100"
+  invalid_source_id: ID de fuente no válido. caracteres, mín.=1 y máx.=100
+  invalid_text: Texto no válido. caracteres, mín.=1 y máx.=100
   invalid_time: Hora no válida
   invalid_title: Título no válido
   invalid_token: Token no válido
-  invalid_topic: Tema no válido
+  invalid_topic: Topic no válido
   invalid_type: Tipo no válido
   invalid_url: URL no válida
   invalid_username: Nombre de usuario no válido
@@ -285,8 +283,8 @@ hide_header: Ocultar cabecera
 hide_status_column: Ocultar columna de estado
 hide_value_column: Ocultar columna de valor
 host: Host
-host_id: ID de host
-host_ids: ID de host
+host_id: ID de Host
+host_ids: ID de Host
 html: HTML
 hue: Tono
 icon_or_image_location: Ubicación del icono o imagen
@@ -301,17 +299,17 @@ include_global_configuration: Incluir configuración global
 include_insecure_share: Incluir uso compartido inseguro
 include_secure_share: Incluir uso compartido seguro
 insecure: Inseguro
-internal_message_ack: Confirmación de mensaje interno
+internal_message_ack: ACK de mensaje interno
 interpolation: Interpolación
 interval: Intervalo
 interval_0h0m0s: Intervalo (0h0m0s)
 invalid_file: Archivo no válido
-is_sleep_node: Nodo en reposo
-is_static: Estático
+is_sleep_node: Es nodo en reposo
+is_static: Es estático
 javascript: Javascript
 json: JSON
-jwt_secret: JWT Secret
-keep_me_logged_in_30_days: Mantener la sesión 30 días.
+jwt_secret: Secreto JWT
+keep_me_logged_in_30_days: Mantener la sesión iniciada durante 30 días.
 key: Clave
 key_path: Ruta de la clave
 label: Etiqueta
@@ -322,7 +320,7 @@ last_modified: Última modificación
 last_run: Última ejecución
 last_seen: Visto por última vez
 last_status: Último estado
-last_success: Último éxito
+last_success: Último correcto
 latitude: Latitud
 legend_orientation: Orientación de la leyenda
 legend_position: Posición de la leyenda
@@ -348,7 +346,7 @@ match_all: Coincidir con todo
 max_y_axis: Máx. (eje Y)
 maximum: Máximo
 maximum_age: Antigüedad máxima
-maximum_backup: Copias de seguridad máximas
+maximum_backup: Máximo de copias de seguridad
 maximum_size: Tamaño máximo
 maximum_value: Valor máximo
 memory: Memoria
@@ -370,19 +368,19 @@ mixed_resources: Recursos mixtos
 modified_on: Modificado el
 name: Nombre
 name_key: Clave de nombre
-never_expire: No caduca nunca
+never_expire: Nunca caduca
 new: Nuevo
 new_password: Nueva contraseña
 no_change_since: Sin cambios desde
-no_dashboard_message: No hay ningún panel disponible para cargar.
-no_dashboard_title: No hay paneles disponibles
+no_dashboard_message: No hay ningún Dashboard disponible para cargar.
+no_dashboard_title: No hay Dashboards disponibles
 no_data: Sin datos
 no_labels: Sin etiquetas
 no_login_message: No hay mensaje definido para el inicio de sesión
 node: Nodo
 node_configuration: Configuración del nodo
 node_details: Detalles del nodo
-node_endpoints: Puntos de conexión del nodo
+node_endpoints: Endpoints del nodo
 node_id: ID de nodo
 node_state_updater: Actualizador de estado del nodo
 nodes: Nodos
@@ -393,7 +391,7 @@ occurrences: Ocurrencias
 'off': 'OFF'
 off_text: Texto OFF
 offset_0h0m0s: Desplazamiento (0h0m0s)
-offset_y_%: Offset Y (%)
+offset_y_%: Desplazamiento Y (%)
 'on': 'ON'
 on_button: Botón ON
 on_receive: Al recibir
@@ -433,7 +431,7 @@ opts:
     desc_area_chart: Gráfico de áreas
     desc_bar_chart: Gráfico de barras
     desc_line_chart: Gráfico de líneas
-    desc_pie_chart: Pie Chart
+    desc_pie_chart: Gráfico circular
     desc_scatter_chart: Gráfico de dispersión
     label_area_chart: Gráfico de áreas
     label_bar_chart: Gráfico de barras
@@ -458,12 +456,12 @@ opts:
     label_options_tab: Opciones de pestaña
     label_slider: Control deslizante
     label_switch_button: Botón conmutador
-    label_switch_toggle: Toggle Switch
+    label_switch_toggle: Interruptor
   dampening:
     desc_active_duration: Duración activa de la tarea
     desc_consecutive: Número de ocurrencias consecutivas
     desc_evaluation: Número de ocurrencias en N evaluaciones
-    desc_none: Desactivar la función de amortiguación
+    desc_none: Desactivar la atenuación
     label_active_duration: Duración activa
     label_consecutive: Consecutivo
     label_evaluation: Evaluación
@@ -500,7 +498,7 @@ opts:
     desc_generic: Proveedor genérico
     desc_mysensors_v2: MySensors.org versión 2.x
     desc_philips_hue: developers.meethue.com
-    desc_system_monitoring: Captura recursos del sistema e informa
+    desc_system_monitoring: Captura e informa de los recursos del sistema
     desc_tasmota: tasmota.github.io
     label_esphome: ESPHome
     label_generic: Genérico
@@ -511,7 +509,7 @@ opts:
   handler_type:
     desc_backup: Realizar una copia de seguridad del servidor
     desc_email: Envía correo electrónico
-    desc_noop: Gestor sin operación
+    desc_noop: Handler sin operación
     desc_resource: Acciones internas relacionadas con recursos
     desc_telegram: Envía texto a Telegram
     desc_webhook: Llama a una URL de webhook
@@ -534,7 +532,7 @@ opts:
   image_rotation:
     desc_rotate_180: Girar 180°
     desc_rotate_left_90: Girar 90° a la izquierda
-    desc_rotate_none: sin rotación
+    desc_rotate_none: Sin rotación
     desc_rotate_right_90: Girar 90° a la derecha
     label_rotate_180: Girar 180°
     label_rotate_left_90: Girar 90° a la izquierda
@@ -585,7 +583,7 @@ opts:
     desc_rgb: Luz RGB
     desc_rgb_cw: RGB con blanco frío
     desc_rgb_cw_ww: RGB con blanco frío y blanco cálido
-    desc_single: "Único, blanco frío o blanco cálido"
+    desc_single: Único, blanco frío o blanco cálido
     label_cw_ww: CW WW
     label_rgb: RGB
     label_rgb_cw: RGB CW
@@ -599,7 +597,7 @@ opts:
     label_day_090: Últimos 90 días
     label_day_180: Últimos 180 días
     label_day_365: Últimos 365 días
-    label_hour_01: Última 1 hora
+    label_hour_01: Última hora
     label_hour_02: Últimas 2 horas
     label_hour_03: Últimas 3 horas
     label_hour_06: Últimas 6 horas
@@ -642,7 +640,7 @@ opts:
   schedule_type:
     desc_cron: Expresión cron
     desc_repeat: Se repite en un intervalo determinado
-    desc_simple: "Programación diaria, semanal o mensual"
+    desc_simple: Programación diaria, semanal o mensual
     desc_sunrise: Según la hora del amanecer
     desc_sunset: Según la hora del atardecer
     label_cron: Cron
@@ -742,7 +740,7 @@ opts:
     label_freezer: Congelador
     label_fryer: Freidora
     label_garage_door: Puerta de garaje
-    label_gate: Verja
+    label_gate: Cancela
     label_grill: Parrilla
     label_heater: Calefactor
     label_hood: Campana extractora
@@ -818,22 +816,22 @@ padding_left_px: Relleno izquierdo (px)
 padding_right_px: Relleno derecho (px)
 padding_top_px: Relleno superior (px)
 panel_title: Título del panel
-parameters_to_handler: Parámetros para el gestor
+parameters_to_handler: Parámetros para el Handler
 parse_mode: Modo de análisis
 password: Contraseña
 path: Ruta
-payload: Carga útil
+payload: Payload
 send: Enviar
-payload_off: Carga útil OFF
-payload_on: Carga útil ON
-payloads: Cargas útiles
+payload_off: Payload OFF
+payload_on: Payload ON
+payloads: Payloads
 per_cpu_disabled: Por CPU desactivado
 port: Puerto
 port_name: Nombre del puerto
-post_run: Después de la ejecución
+post_run: Post-ejecución
 power: Potencia
 pre_delay: Retardo previo
-pre_run: Antes de la ejecución
+pre_run: Pre-ejecución
 prefix: Prefijo
 previous_value: Valor anterior
 process: Proceso
@@ -857,7 +855,7 @@ refresh_interval: Intervalo de actualización
 refresh_node_info: Actualizar información del nodo
 reload: Recargar
 repeat_count: Número de repeticiones
-request_heartbeat: Solicitar latido
+request_heartbeat: Solicitar heartbeat
 reset: Restablecer
 resetting: Restableciendo...
 resource: Recurso
@@ -895,8 +893,6 @@ service_account_copy_warning_msg: Este token solo se mostrará una vez. No se al
 service_account_barcode_help: Escanee este código para iniciar sesión con el token.
 service_account_details: Detalles de la cuenta de servicio
 service_accounts: Cuentas de servicio
-policies: Políticas
-policy_details: Detalles de la política
 settings: Ajustes
 show_grid_x: Mostrar cuadrícula X
 show_grid_y: Mostrar cuadrícula Y
@@ -915,17 +911,17 @@ spec: Especificación
 stack_charts: Apilar gráficos
 state: Estado
 status: Estado
-status_at: Estado a las
+status_at: Estado el
 status_configuration: Configuración de estado
 step: Paso
 storage_export_type: Tipo de exportación de almacenamiento
-stream_message_ack: Confirmación de mensaje de flujo
+stream_message_ack: ACK de mensaje de flujo
 string: Cadena
 stroke_width_px: Grosor del trazo (px)
 sub_type: Subtipo
 subject: Asunto
 subscribe: Suscribirse
-swap_disabled: Intercambio desactivado
+swap_disabled: Swap desactivado
 sync_interval: Intervalo de sincronización
 system: Sistema
 system_message: Mensaje del sistema
@@ -945,17 +941,17 @@ thickness: Grosor
 threshold_mode: Modo de umbral
 thresholds: Umbrales
 thresholds_color: Color de umbrales
-time_hh_mm_ss: "Hora (hh:mm:ss)"
+time_hh_mm_ss: Hora (hh:mm:ss)
 timeout: Tiempo de espera
 timestamp: Marca de tiempo
 timestamp_key: Clave de marca de tiempo
 title: Título
 to: Para
-to_emails: Correos de destino
+to_emails: Correos de destinatarios
 token: Token
-topic: Tema
-trait: Rasgo
-traits: Rasgos
+topic: Topic
+trait: Trait
+traits: Traits
 transmit_pre_delay: Retardo previo de transmisión
 trigger_on_event: Activar ante un evento
 'true': 'True'
@@ -965,21 +961,21 @@ up: Arriba
 update: Actualizar
 update_body: Actualizar cuerpo
 update_data: Actualizar datos
-update_endpoint: Actualizar punto de conexión
+update_endpoint: Actualizar Endpoint
 update_firmware: Actualizar firmware
 update_node: Actualizar nodo
-update_post_run: Actualizar postejecución
-update_pre_run: Actualizar preejecución
+update_post_run: Actualizar post-ejecución
+update_pre_run: Actualizar pre-ejecución
 update_query_parameters: Actualizar parámetros de consulta
 update_resource: Actualizar recurso
 update_script: Actualizar script
-update_trait: Actualizar rasgo
+update_trait: Actualizar Trait
 update_value: Actualizar valor
 update_y_axis: Actualizar eje Y
 upload: Cargar
 upload_firmware: Cargar firmware
 url: URL
-use_global: Usar global
+use_global: Usar valor global
 use_global_encryption_key: Usar clave de cifrado global
 use_global_password: Usar contraseña global
 use_global_style: Usar estilo global
@@ -1008,10 +1004,14 @@ y_axis: Eje Y
 y_axis_configuration: Configuración del eje Y
 yaml: YAML
 yaml_view: Vista YAML
-statement: Instrucción
-statements: Instrucciones
-user_details: Detalles del usuario
 users: Usuarios
+policies: Políticas
+user_details: Detalles del usuario
+policy_details: Detalles de la política
+statement: Instrucción
+edit_statement: Editar instrucción
+statements: Instrucciones
+effect: Efecto
 layout: Diseño
 layout_tree: Árbol
 layout_force: Fuerza

@@ -5,16 +5,16 @@ active_duration: Durată activă
 add: Adaugă
 add_a_field: Adaugă un câmp
 add_a_firmware: Adaugă un firmware
-add_a_forward_payload: Adaugă o redirecționare de payload
-add_a_gateway: Adaugă un gateway
-add_a_handler: Adaugă un handler
+add_a_forward_payload: Adaugă un Forward Payload
+add_a_gateway: Adaugă un Gateway
+add_a_handler: Adaugă un Handler
 add_a_node: Adaugă un nod
 add_a_schedule: Adaugă o programare
 add_a_policy: Adaugă o politică
 add_a_service_account: Adaugă un cont de serviciu
+add_a_user: Adaugă un utilizator
 add_a_source: Adaugă o sursă
 add_a_task: Adaugă o sarcină
-add_a_user: Adaugă un utilizator
 add_a_virtual_assistant: Adaugă un asistent virtual
 add_a_virtual_device: Adaugă un dispozitiv virtual
 add_an_item: Adaugă un element
@@ -23,10 +23,10 @@ address: Adresă
 agent_user_id: ID utilizator agent
 alerts_empty_message: Momentan nu există alerte.
 alerts_empty_title: Nu s-au găsit alerte
-alive_check_interval: Interval de verificare a stării
+alive_check_interval: Interval de verificare a prezenței
 all_rights_reserved: Toate drepturile rezervate
 allow_overwrite: Permite suprascrierea
-apache_license_2: Licență Apache 2.0
+apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: Solicită confirmare
 assigned_firmware: Firmware atribuit
@@ -36,10 +36,10 @@ auto_update: Actualizare automată
 axis: Axă
 backup: Copie de rezervă
 backup_and_restore: Copie de rezervă și restaurare
-backup_locations: Locații de rezervă
+backup_locations: Locații copie de rezervă
 battery: Baterie
 baud_rate: Rată de baud
-body: Conținut
+body: Corp
 bridge: Punte
 brightness: Luminozitate
 broker: Broker
@@ -69,7 +69,7 @@ copy: Copiază
 corner_smoothing: Rotunjire colțuri
 cpu: CPU
 cpu_disabled: CPU dezactivat
-create_new: Creează nou
+create_new: Creează
 created_on: Creat la
 cron_expression: Expresie cron
 current_password: Parola actuală
@@ -77,15 +77,15 @@ cursor_tooltip: Indiciu cursor
 custom_data: Date personalizate
 custom_mapping: Mapare personalizată
 custom_variables: Variabile personalizate
-dampening: Atenuare
-dashboard: Tablou de bord
+dampening: Amortizare
+dashboard: Dashboard
 data: Date
 data_repository: Depozit de date
 data_repository_add_an_entry: "Depozit de date: adaugă o înregistrare"
 data_repository_modify_an_entry: "Depozit de date: modifică o înregistrare"
 data_retrieved_from_server: Date preluate de pe server
 data_type: Tip de date
-date_yyyy_mm_dd: Dată (aaaa-ll-zz)
+date_yyyy_mm_dd: Dată (yyyy-mm-dd)
 day_of_month: Ziua lunii
 day_of_week: Zilele săptămânii
 delete: Șterge
@@ -96,33 +96,33 @@ details: Detalii
 device_filter: Filtru dispozitive
 device_type: Tip dispozitiv
 dialog:
-  clear_sleeping_queue_heading: Golești coada?
-  clear_sleeping_queue_msg: Toate mesajele din coada de somn vor fi eliminate
-  delete_resource_msg: Sigur doriți să ștergeți elementele selectate?
-  delete_title_backup: Ștergeți fișierele de rezervă?
-  delete_title_dashboard: Ștergeți tabloul de bord?
-  delete_title_data_repository: Ștergeți depozitele de date?
-  delete_title_field: Ștergeți câmpurile?
-  delete_title_firmware: Ștergeți firmware-ul?
-  delete_title_forward_payload: Ștergeți redirecționările de payload?
-  delete_title_gateway: Ștergeți gateway-urile?
-  delete_title_handler: Ștergeți handler-ele?
-  delete_title_node: Ștergeți nodurile?
-  delete_title_schedule: Ștergeți programările?
-  delete_title_service_account: Ștergeți contul de serviciu?
-  delete_title_user: Ștergeți utilizatorul?
-  delete_title_policy: Ștergeți politica?
-  delete_title_source: Ștergeți sursele?
-  delete_title_task: Ștergeți sarcinile?
-  delete_title_virtual_assistant: Ștergeți asistentul virtual?
-  delete_title_virtual_device: Ștergeți dispozitivul virtual?
-  node_reset_heading: Resetați nodul?
+  clear_sleeping_queue_heading: "Doriți să goliți coada?"
+  clear_sleeping_queue_msg: Toate mesajele din coada nodurilor în somn vor fi eliminate
+  delete_resource_msg: "Sigur doriți să ștergeți elementele selectate?"
+  delete_title_backup: "Ștergeți fișierele de rezervă?"
+  delete_title_dashboard: "Ștergeți dashboardul?"
+  delete_title_data_repository: "Ștergeți depozitele de date?"
+  delete_title_field: "Ștergeți câmpurile?"
+  delete_title_firmware: "Ștergeți firmware-ul?"
+  delete_title_forward_payload: "Ștergeți Forward Payload-urile?"
+  delete_title_gateway: "Ștergeți Gateway-urile?"
+  delete_title_handler: "Ștergeți Handler-ele?"
+  delete_title_node: "Ștergeți nodurile?"
+  delete_title_schedule: "Ștergeți programările?"
+  delete_title_service_account: "Ștergeți contul de serviciu?"
+  delete_title_user: "Ștergeți utilizatorul?"
+  delete_title_policy: "Ștergeți politica?"
+  delete_title_source: "Ștergeți sursele?"
+  delete_title_task: "Ștergeți sarcinile?"
+  delete_title_virtual_assistant: "Ștergeți asistentul virtual?"
+  delete_title_virtual_device: "Ștergeți dispozitivul virtual?"
+  node_reset_heading: "Resetați nodul?"
   node_reset_msg: "Sigur doriți să resetați nodurile selectate?<br/>După această operație:<3><0>Configurația va fi readusă la setările din fabrică.</0><1>Este posibil să pierdeți accesul la nodurile selectate din MyController!</1></3>"
-  reboot_nodes_heading: Reporniți nodul?
-  reboot_nodes_msg: Sigur doriți să reporniți nodurile selectate?
-  reset_msg_jwt_secret: "Sigur doriți să resetați secretul JWT? După această operație, toate sesiunile existente pe acest server vor deveni invalide și veți fi deconectat!"
+  reboot_nodes_heading: "Reporniți nodul?"
+  reboot_nodes_msg: "Sigur doriți să reporniți nodurile selectate?"
+  reset_msg_jwt_secret: "Sigur doriți să resetați secretul JWT? După această operație, toate sesiunile existente pe acest server vor deveni invalide și veți fi deconectat."
   reset_title_jwt_secret: Resetează secretul JWT
-  restore_heading: Confirmați restaurarea?
+  restore_heading: "Confirmați operația de restaurare?"
   restore_msg: "Sigur doriți să restaurați din fișierul de rezervă selectat?<br/>După această operație:<3><0>Datele serverului vor fi restaurate la <1>{{fileName}}</1></0><1>Această operație nu poate fi anulată</1><2>Faceți întotdeauna o copie de rezervă înainte de restaurare</2><3>Este posibil să trebuiască să porniți serverul manual</3></3>"
 disable: Dezactivează
 disable_scrollbar: Dezactivează bara de derulare
@@ -142,11 +142,9 @@ download: Descarcă
 drop_down_position: Poziție listă derulantă
 duration: Durată
 edit: Editează
-edit_dashboard_settings: Editează setările tabloului de bord
+edit_dashboard_settings: Editează setările dashboardului
 edit_widget_settings: Editează setările widgetului
 email: E-mail
-edit_statement: Editează instrucțiunea
-effect: Efect
 enable: Activează
 enabled: Activat
 encryption_key: Cheie de criptare
@@ -180,7 +178,7 @@ file_details: Detalii fișier
 file_uploaded_successfully: Fișierul a fost încărcat cu succes
 filename: Nume fișier
 filename_placeholder: Trageți un fișier aici sau răsfoiți pentru încărcare
-fill_opacity_%: Fill Opacity (%)
+fill_opacity_%: Opacitate umplere (%)
 filter: Filtru
 filter_type: Tip filtru
 filters: Filtre
@@ -189,36 +187,36 @@ firmware_file: Fișier firmware
 firmware_update: Actualizare firmware
 firmwares: Firmware-uri
 flush_interval: Interval de golire
-forgot_username_or_password: Ați uitat numele de utilizator sau parola?
+forgot_username_or_password: "Ați uitat numele de utilizator sau parola?"
 form_generic_error_message: "Verificați erorile și/sau câmpurile obligatorii (*)"
 form_view: Vizualizare formular
 forum: Forum
-forward_payload: Redirecționează payload
-forward_payload_details: Detalii redirecționare payload
+forward_payload: Forward Payload
+forward_payload_details: Detalii Forward Payload
 frequency: Frecvență
 from: De la
 from_email: E-mail expeditor
 full_name: Nume complet
 function: Funcție
 gateway: Gateway
-gateway_details: Detalii gateway
-gateway_id: ID gateway
+gateway_details: Detalii Gateway
+gateway_id: ID Gateway
 gateways: Gateway-uri
-all_gateways: Toate gateway-urile
+all_gateways: Toate Gateway-urile
 all_nodes: Toate nodurile
 show_sources: Afișează sursele
 show_fields: Afișează câmpurile
 select_gateway: Gateway
 no_topology_nodes: Nu există noduri de afișat
-no_topology_nodes_for_gateway: Nu s-au găsit noduri pentru acest gateway
+no_topology_nodes_for_gateway: Nu s-au găsit noduri pentru acest Gateway
 geo_location: Locație GEO
 git_commit: Commit Git
 global_configuration: Configurare globală
 golang_version: Versiune GoLang
 handler: Handler
-handler_details: Detalii handler
-handler_parameters: Parametri handler
-handler_type: Tip handler
+handler_details: Detalii Handler
+handler_parameters: Parametri Handler
+handler_type: Tip Handler
 handlers: Handlere
 header_name: Nume antet
 headers: Antete
@@ -250,7 +248,7 @@ helper_text:
   invalid_limit: Limită nevalidă
   invalid_location: Locație nevalidă
   invalid_longitude: Longitudine nevalidă
-  invalid_maximum_backup: "Număr maxim de copii nevalid. întreg, min=0"
+  invalid_maximum_backup: "Număr maxim de copii de rezervă nevalid. întreg, min=0"
   invalid_name: "Nume nevalid. caractere, min=2, max=100"
   invalid_node_id: "ID nod nevalid. caractere, min=1 și max=100"
   invalid_offset: Decalaj nevalid
@@ -271,13 +269,13 @@ helper_text:
   invalid_time: Oră nevalidă
   invalid_title: Titlu nevalid
   invalid_token: Token nevalid
-  invalid_topic: Subiect nevalid
+  invalid_topic: Topic nevalid
   invalid_type: Tip nevalid
   invalid_url: URL nevalid
   invalid_username: Nume de utilizator nevalid
   invalid_password: Parolă nevalidă
   password_leave_empty: Lăsați gol pentru a păstra parola actuală
-  service_account_user: Lăsați gol pentru a crea pentru dvs. Alegeți un utilizator pentru a crea contul în numele lui.
+  service_account_user: Lăsați gol pentru a crea contul pentru dvs. Alegeți un utilizator pentru a-l crea în numele lui.
   invalid_value: Valoare nevalidă
   invalid_width: Lățime nevalidă
 hide_border: Ascunde chenarul
@@ -310,8 +308,8 @@ is_sleep_node: Nod în somn
 is_static: Static
 javascript: Javascript
 json: JSON
-jwt_secret: JWT Secret
-keep_me_logged_in_30_days: Păstrează-mă autentificat 30 de zile.
+jwt_secret: Secret JWT
+keep_me_logged_in_30_days: Păstrați-mă autentificat 30 de zile.
 key: Cheie
 key_path: Cale cheie
 label: Etichetă
@@ -348,7 +346,7 @@ match_all: Potrivește tot
 max_y_axis: Max (axa Y)
 maximum: Maximum
 maximum_age: Vârstă maximă
-maximum_backup: Număr maxim de copii
+maximum_backup: Număr maxim de copii de rezervă
 maximum_size: Dimensiune maximă
 maximum_value: Valoare maximă
 memory: Memorie
@@ -374,8 +372,8 @@ never_expire: Nu expiră niciodată
 new: Nou
 new_password: Parolă nouă
 no_change_since: Nicio modificare de la
-no_dashboard_message: Nu există niciun tablou de bord de încărcat.
-no_dashboard_title: Nu există tablouri de bord
+no_dashboard_message: Nu există niciun dashboard de încărcat.
+no_dashboard_title: Nu există dashboarduri
 no_data: Fără date
 no_labels: Fără etichete
 no_login_message: Niciun mesaj setat pentru autentificare
@@ -391,14 +389,14 @@ notifications: Notificări
 number_of_axis: Număr de axe
 occurrences: Apariții
 'off': 'OFF'
-off_text: Text OPRIT
+off_text: Text OFF
 offset_0h0m0s: Decalaj (0h0m0s)
-offset_y_%: Offset Y (%)
+offset_y_%: Decalaj Y (%)
 'on': 'ON'
-on_button: Buton PORNIT
+on_button: Buton ON
 on_receive: La primire
 on_send: La trimitere
-on_text: Text PORNIT
+on_text: Text ON
 operations: Operații
 operator: Operator
 options: Opțiuni
@@ -426,14 +424,14 @@ opts:
     label_monotone_x: MonotoneX
     label_monotone_y: MonotoneY
     label_natural: Natural
-    label_step: Pas
-    label_step_after: Pas după
-    label_step_before: Pas înainte
+    label_step: Step
+    label_step_after: StepAfter
+    label_step_before: StepBefore
   chart_type:
     desc_area_chart: Diagramă de arie
     desc_bar_chart: Diagramă cu bare
     desc_line_chart: Diagramă liniară
-    desc_pie_chart: Pie Chart
+    desc_pie_chart: Diagramă circulară
     desc_scatter_chart: Diagramă de dispersie
     label_area_chart: Diagramă de arie
     label_bar_chart: Diagramă cu bare
@@ -458,12 +456,12 @@ opts:
     label_options_tab: Opțiuni filă
     label_slider: Glisor
     label_switch_button: Buton comutator
-    label_switch_toggle: Toggle Switch
+    label_switch_toggle: Comutator
   dampening:
     desc_active_duration: Durata activă a sarcinii
     desc_consecutive: Număr de apariții consecutive
     desc_evaluation: Număr de apariții în N evaluări
-    desc_none: Dezactivează funcția de atenuare
+    desc_none: Dezactivează funcția de amortizare
     label_active_duration: Durată activă
     label_consecutive: Consecutive
     label_evaluation: Evaluare
@@ -534,7 +532,7 @@ opts:
   image_rotation:
     desc_rotate_180: Rotește 180°
     desc_rotate_left_90: Rotește la stânga 90°
-    desc_rotate_none: fără rotație
+    desc_rotate_none: Fără rotație
     desc_rotate_right_90: Rotește la dreapta 90°
     label_rotate_180: Rotește 180°
     label_rotate_left_90: Rotește stânga 90°
@@ -599,7 +597,7 @@ opts:
     label_day_090: Ultimele 90 de zile
     label_day_180: Ultimele 180 de zile
     label_day_365: Ultimele 365 de zile
-    label_hour_01: Ultima 1 oră
+    label_hour_01: Ultima oră
     label_hour_02: Ultimele 2 ore
     label_hour_03: Ultimele 3 ore
     label_hour_06: Ultimele 6 ore
@@ -749,7 +747,7 @@ opts:
     label_humidifier: Umidificator
     label_kettle: Fierbător
     label_light: Lumină
-    label_lock: Yală
+    label_lock: Încuietoare
     label_media_remote: Telecomandă media
     label_microwave: Cuptor cu microunde
     label_mop: Mop
@@ -767,7 +765,7 @@ opts:
     label_scene: Scenă
     label_security_system: Sistem de securitate
     label_sensor: Senzor
-    label_set_top_box: Receiver TV
+    label_set_top_box: Set-top box
     label_shower: Duș
     label_shutter: Obloane
     label_smoke_detector: Detector de fum
@@ -776,7 +774,7 @@ opts:
     label_speaker: Difuzor
     label_sprinkler: Aspersor
     label_stand_mixer: Mixer de bucătărie
-    label_streaming_box: Box de streaming
+    label_streaming_box: Receptor de streaming
     label_streaming_soundbar: Soundbar de streaming
     label_streaming_stick: Stick de streaming
     label_switch: Întrerupător
@@ -818,14 +816,14 @@ padding_left_px: Spațiere stânga (px)
 padding_right_px: Spațiere dreapta (px)
 padding_top_px: Spațiere sus (px)
 panel_title: Titlu panou
-parameters_to_handler: Parametri către handler
+parameters_to_handler: Parametri către Handler
 parse_mode: Mod de analiză
 password: Parolă
 path: Cale
 payload: Payload
 send: Trimite
-payload_off: Payload OPRIT
-payload_on: Payload PORNIT
+payload_off: Payload OFF
+payload_on: Payload ON
 payloads: Payload-uri
 per_cpu_disabled: Per CPU dezactivat
 port: Port
@@ -895,8 +893,6 @@ service_account_copy_warning_msg: Acest token va fi afișat o singură dată. Nu
 service_account_barcode_help: Scanați acest cod pentru a vă autentifica cu tokenul.
 service_account_details: Detalii cont de serviciu
 service_accounts: Conturi de serviciu
-policies: Politici
-policy_details: Detalii politică
 settings: Setări
 show_grid_x: Afișează grila X
 show_grid_y: Afișează grila Y
@@ -924,7 +920,7 @@ string: Șir
 stroke_width_px: Grosime linie (px)
 sub_type: Subtip
 subject: Subiect
-subscribe: Abonează-te
+subscribe: Abonare
 swap_disabled: Swap dezactivat
 sync_interval: Interval de sincronizare
 system: Sistem
@@ -953,7 +949,7 @@ title: Titlu
 to: Către
 to_emails: E-mailuri destinatar
 token: Token
-topic: Subiect
+topic: Topic
 trait: Trăsătură
 traits: Trăsături
 transmit_pre_delay: Întârziere înainte de transmisie
@@ -1018,3 +1014,7 @@ layout_force: Forță
 refresh: Reîmprospătează
 include_child_nodes: Include nodurile copil
 child_nodes: Noduri copil
+policies: Politici
+policy_details: Detalii politică
+edit_statement: Editează instrucțiunea
+effect: Efect

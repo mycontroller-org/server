@@ -26,7 +26,7 @@ alerts_empty_title: Nie znaleziono alertów
 alive_check_interval: Interwał sprawdzania aktywności
 all_rights_reserved: Wszelkie prawa zastrzeżone
 allow_overwrite: Zezwól na nadpisanie
-apache_license_2: Licencja Apache 2.0
+apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: Poproś o potwierdzenie
 assigned_firmware: Przypisany firmware
@@ -69,7 +69,7 @@ copy: Kopiuj
 corner_smoothing: Wygładzanie narożników
 cpu: CPU
 cpu_disabled: CPU wyłączone
-create_new: Utwórz nowe
+create_new: Utwórz nowy
 created_on: Utworzono
 cron_expression: Wyrażenie cron
 current_password: Aktualne hasło
@@ -180,7 +180,7 @@ file_details: Szczegóły pliku
 file_uploaded_successfully: Plik został przesłany pomyślnie
 filename: Nazwa pliku
 filename_placeholder: "Przeciągnij plik tutaj lub przeglądaj, aby przesłać"
-fill_opacity_%: Fill Opacity (%)
+fill_opacity_%: Nieprzezroczystość wypełnienia (%)
 filter: Filtr
 filter_type: Typ filtra
 filters: Filtry
@@ -193,7 +193,7 @@ forgot_username_or_password: Nie pamiętasz nazwy użytkownika lub hasła?
 form_generic_error_message: "Sprawdź błędy i/lub pola obowiązkowe (*)"
 form_view: Widok formularza
 forum: Forum
-forward_payload: Przekaż payload
+forward_payload: Przekazywanie payloadu
 forward_payload_details: Szczegóły przekazywania payloadu
 frequency: Częstotliwość
 from: Od
@@ -238,36 +238,36 @@ helper_text:
   invalid_duration: Nieprawidłowy czas trwania
   invalid_email: Nieprawidłowy e-mail
   invalid_execution_interval_empty: Interwał wykonania nie może być pusty
-  invalid_field_id: "Nieprawidłowe ID pola. znaki, min=1, max=100"
+  invalid_field_id: "Nieprawidłowe ID pola. Znaki, min=1, max=100"
   invalid_filters: Nieprawidłowe filtry
   invalid_height: Nieprawidłowa wysokość
   invalid_host: Nieprawidłowy host
-  invalid_id: "Nieprawidłowe ID. znaki, min=4, max=100, spacje niedozwolone"
+  invalid_id: "Nieprawidłowe ID. Znaki, min=4, max=100, spacje niedozwolone"
   invalid_interval: Nieprawidłowy interwał
-  invalid_key: "Nieprawidłowy klucz. znaki, min=1 i max=100"
+  invalid_key: "Nieprawidłowy klucz. Znaki, min=1 i max=100"
   invalid_key_path: Ścieżka klucza nie może być pusta
   invalid_latitude: Nieprawidłowa szerokość geograficzna
   invalid_limit: Nieprawidłowy limit
   invalid_location: Nieprawidłowa lokalizacja
   invalid_longitude: Nieprawidłowa długość geograficzna
-  invalid_maximum_backup: "Nieprawidłowa maksymalna liczba kopii. liczba całkowita, min=0"
-  invalid_name: "Nieprawidłowa nazwa. znaki, min=2, max=100"
-  invalid_node_id: "Nieprawidłowe ID węzła. znaki, min=1 i max=100"
+  invalid_maximum_backup: "Nieprawidłowa maksymalna liczba kopii. Liczba całkowita, min=0"
+  invalid_name: "Nieprawidłowa nazwa. Znaki, min=2, max=100"
+  invalid_node_id: "Nieprawidłowe ID węzła. Znaki, min=1 i max=100"
   invalid_offset: Nieprawidłowe przesunięcie
   invalid_path: Nieprawidłowa ścieżka
   invalid_payload: Nieprawidłowy payload
   invalid_port: Nieprawidłowy port
   invalid_prefix: Nieprawidłowy prefiks
   invalid_profile_confirm_password: Nieprawidłowe potwierdzenie hasła
-  invalid_profile_password: "Nieprawidłowe hasło. znaki, min=3, max=100"
-  invalid_profile_username: "Nieprawidłowa nazwa użytkownika. znaki, min=3, max=100, spacje niedozwolone"
+  invalid_profile_password: "Nieprawidłowe hasło. Znaki, min=3, max=100"
+  invalid_profile_username: "Nieprawidłowa nazwa użytkownika. Znaki, min=3, max=100, spacje niedozwolone"
   invalid_repeat_count: Nieprawidłowa liczba powtórzeń
   invalid_response_code: "Wprowadź prawidłowy kod odpowiedzi, 0 aby zignorować"
-  invalid_retry_count: "Nieprawidłowa liczba ponowień. liczba całkowita, min=0"
+  invalid_retry_count: "Nieprawidłowa liczba ponowień. Liczba całkowita, min=0"
   invalid_script_empty: Skrypt nie może być pusty
   invalid_server_url: Nieprawidłowy URL serwera
-  invalid_source_id: "Nieprawidłowe ID źródła. znaki, min=1 i max=100"
-  invalid_text: "Nieprawidłowy tekst. znaki, min=1 i max=100"
+  invalid_source_id: "Nieprawidłowe ID źródła. Znaki, min=1 i max=100"
+  invalid_text: "Nieprawidłowy tekst. Znaki, min=1 i max=100"
   invalid_time: Nieprawidłowy czas
   invalid_title: Nieprawidłowy tytuł
   invalid_token: Nieprawidłowy token
@@ -391,14 +391,14 @@ notifications: Powiadomienia
 number_of_axis: Liczba osi
 occurrences: Wystąpienia
 'off': 'OFF'
-off_text: Tekst WYŁ.
+off_text: Tekst OFF
 offset_0h0m0s: Przesunięcie (0h0m0s)
-offset_y_%: Offset Y (%)
+offset_y_%: Przesunięcie Y (%)
 'on': 'ON'
-on_button: Przycisk WŁ.
+on_button: Przycisk ON
 on_receive: Przy odbiorze
 on_send: Przy wysyłaniu
-on_text: Tekst WŁ.
+on_text: Tekst ON
 operations: Operacje
 operator: Operator
 options: Opcje
@@ -433,7 +433,7 @@ opts:
     desc_area_chart: Wykres obszarowy
     desc_bar_chart: Wykres słupkowy
     desc_line_chart: Wykres liniowy
-    desc_pie_chart: Pie Chart
+    desc_pie_chart: Wykres kołowy
     desc_scatter_chart: Wykres punktowy
     label_area_chart: Wykres obszarowy
     label_bar_chart: Wykres słupkowy
@@ -458,7 +458,7 @@ opts:
     label_options_tab: Opcje kart
     label_slider: Suwak
     label_switch_button: Przycisk przełącznika
-    label_switch_toggle: Toggle Switch
+    label_switch_toggle: Przełącznik
   dampening:
     desc_active_duration: Czas aktywności zadania
     desc_consecutive: Liczba kolejnych wystąpień
@@ -483,7 +483,7 @@ opts:
     label_updated: Zaktualizowano
   gw_msg_logger:
     desc_file_logger: Komunikaty będą zapisywane w pliku
-    desc_none: Wiadomości nie będą rejestrowane
+    desc_none: Komunikaty nie będą rejestrowane
     label_file_logger: Rejestrator plikowy
     label_none: Brak
   gw_protocol:
@@ -513,7 +513,7 @@ opts:
     desc_email: Wysyła e-mail
     desc_noop: Handler bez operacji
     desc_resource: Wewnętrzne działania związane z zasobami
-    desc_telegram: Wysyła tekst do Telegram
+    desc_telegram: Wysyła tekst do Telegrama
     desc_webhook: Wywołuje URL webhooka
     label_backup: Kopia zapasowa
     label_email: E-mail
@@ -534,7 +534,7 @@ opts:
   image_rotation:
     desc_rotate_180: Obróć o 180°
     desc_rotate_left_90: Obróć w lewo o 90°
-    desc_rotate_none: bez obrotu
+    desc_rotate_none: Bez obrotu
     desc_rotate_right_90: Obróć w prawo o 90°
     label_rotate_180: Obróć o 180°
     label_rotate_left_90: Obróć w lewo o 90°
@@ -624,7 +624,7 @@ opts:
     label_gauge_float: Wskaźnik zmiennoprzecinkowy
     label_geo: GEO
     label_none: Brak
-    label_string: Łańcuch
+    label_string: Ciąg
   rgb_component:
     desc_color_picker: Predefiniowane kolory
     desc_hue_slider: Suwak odcienia
@@ -778,7 +778,7 @@ opts:
     label_stand_mixer: Mikser stojący
     label_streaming_box: Odtwarzacz strumieniowy
     label_streaming_soundbar: Soundbar strumieniowy
-    label_streaming_stick: Pendrive strumieniowy
+    label_streaming_stick: Adapter strumieniowy
     label_switch: Przełącznik
     label_television: Telewizor
     label_thermostat: Termostat
@@ -824,8 +824,8 @@ password: Hasło
 path: Ścieżka
 payload: Payload
 send: Wyślij
-payload_off: Payload WYŁ.
-payload_on: Payload WŁ.
+payload_off: Payload OFF
+payload_on: Payload ON
 payloads: Payloady
 per_cpu_disabled: Na CPU wyłączone
 port: Port
@@ -878,7 +878,7 @@ rotation: Obrót
 round_decimal: Zaokrąglenie dziesiętne
 rule: Reguła
 run_a_backup: Wykonaj kopię zapasową
-run_backup: Wykonaj kopię
+run_backup: Wykonaj kopię zapasową
 s_no: '#'
 saturation: Nasycenie
 save: Zapisz
@@ -920,7 +920,7 @@ status_configuration: Konfiguracja statusu
 step: Krok
 storage_export_type: Typ eksportu magazynu
 stream_message_ack: Potwierdzenie komunikatu strumienia
-string: Łańcuch
+string: Ciąg
 stroke_width_px: Grubość linii (px)
 sub_type: Podtyp
 subject: Temat
@@ -999,7 +999,7 @@ virtual_assistant_details: Szczegóły asystenta wirtualnego
 virtual_assistants: Asystenci wirtualni
 virtual_device_details: Szczegóły urządzenia wirtualnego
 virtual_devices: Urządzenia wirtualne
-web_console: Konsola WWW
+web_console: Konsola internetowa
 webhook: Webhook
 websocket_disconnected: Websocket rozłączony
 welcome_to_mycontroller: Witamy w MyController
@@ -1014,7 +1014,7 @@ user_details: Szczegóły użytkownika
 users: Użytkownicy
 layout: Układ
 layout_tree: Drzewo
-layout_force: Siła
+layout_force: Siłowy
 refresh: Odśwież
 include_child_nodes: Dołącz węzły potomne
 child_nodes: Węzły potomne

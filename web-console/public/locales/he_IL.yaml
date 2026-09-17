@@ -5,9 +5,9 @@ active_duration: משך פעילות
 add: הוסף
 add_a_field: הוסף שדה
 add_a_firmware: הוסף קושחה
-add_a_forward_payload: הוסף העברת מטען
+add_a_forward_payload: הוסף העברת Payload
 add_a_gateway: הוסף שער
-add_a_handler: הוסף מטפל
+add_a_handler: הוסף Handler
 add_a_node: הוסף צומת
 add_a_schedule: הוסף לוח זמנים
 add_a_policy: הוסף מדיניות
@@ -23,10 +23,10 @@ address: כתובת
 agent_user_id: מזהה משתמש סוכן
 alerts_empty_message: אין כרגע התראות.
 alerts_empty_title: לא נמצאו התראות
-alive_check_interval: מרווח בדיקת חיים
+alive_check_interval: מרווח בדיקת פעילות
 all_rights_reserved: כל הזכויות שמורות
 allow_overwrite: אפשר דריסה
-apache_license_2: רישיון Apache 2.0
+apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: בקש אישור
 assigned_firmware: קושחה מוקצית
@@ -104,9 +104,9 @@ dialog:
   delete_title_data_repository: למחוק מאגרי נתונים?
   delete_title_field: למחוק שדות?
   delete_title_firmware: למחוק קושחה?
-  delete_title_forward_payload: למחוק העברות מטען?
+  delete_title_forward_payload: למחוק העברות Payload?
   delete_title_gateway: למחוק שערים?
-  delete_title_handler: למחוק מטפלים?
+  delete_title_handler: למחוק Handlers?
   delete_title_node: למחוק צמתים?
   delete_title_schedule: למחוק לוחות זמנים?
   delete_title_service_account: למחוק חשבון שירות?
@@ -180,7 +180,7 @@ file_details: פרטי קובץ
 file_uploaded_successfully: הקובץ הועלה בהצלחה
 filename: שם קובץ
 filename_placeholder: גרור קובץ לכאן או עיין להעלאה
-fill_opacity_%: Fill Opacity (%)
+fill_opacity_%: אטימות מילוי (%)
 filter: מסנן
 filter_type: סוג מסנן
 filters: מסננים
@@ -193,8 +193,8 @@ forgot_username_or_password: שכחת שם משתמש או סיסמה?
 form_generic_error_message: "בדוק את השגיאות ו/או השדות החובה (*)"
 form_view: תצוגת טופס
 forum: פורום
-forward_payload: העבר מטען
-forward_payload_details: פרטי העברת מטען
+forward_payload: העברת Payload
+forward_payload_details: פרטי העברת Payload
 frequency: תדירות
 from: מאת
 from_email: דוא״ל שולח
@@ -215,14 +215,14 @@ geo_location: מיקום גיאוגרפי
 git_commit: קומיט Git
 global_configuration: תצורה כללית
 golang_version: גרסת GoLang
-handler: מטפל
-handler_details: פרטי מטפל
-handler_parameters: פרמטרי מטפל
-handler_type: סוג מטפל
-handlers: מטפלים
+handler: Handler
+handler_details: פרטי Handler
+handler_parameters: פרמטרי Handler
+handler_type: סוג Handler
+handlers: Handlers
 header_name: שם כותרת
 headers: כותרות
-heartbeat_request: בקשת פעימת לב
+heartbeat_request: בקשת Heartbeat
 height_px: גובה (px)
 helper_text:
   invalid_address_esphome: "כתובת לא תקינה, לדוגמה: node1.local:6053"
@@ -238,36 +238,36 @@ helper_text:
   invalid_duration: משך לא תקין
   invalid_email: דוא״ל לא תקין
   invalid_execution_interval_empty: מרווח הביצוע לא יכול להיות ריק
-  invalid_field_id: "מזהה שדה לא תקין. תווים, מינ=1, מקס=100"
+  invalid_field_id: "מזהה שדה לא תקין. תווים, min=1, max=100"
   invalid_filters: מסננים לא תקינים
   invalid_height: גובה לא תקין
   invalid_host: מארח לא תקין
-  invalid_id: "מזהה לא תקין. תווים, מינ=4, מקס=100, ללא רווחים"
+  invalid_id: "מזהה לא תקין. תווים, min=4, max=100, ללא רווחים"
   invalid_interval: מרווח לא תקין
-  invalid_key: "מפתח לא תקין. תווים, מינ=1 ומקס=100"
+  invalid_key: "מפתח לא תקין. תווים, min=1 ו-max=100"
   invalid_key_path: נתיב המפתח לא יכול להיות ריק
   invalid_latitude: קו רוחב לא תקין
   invalid_limit: מגבלה לא תקינה
   invalid_location: מיקום לא תקין
   invalid_longitude: קו אורך לא תקין
-  invalid_maximum_backup: "מספר גיבויים מקסימלי לא תקין. מספר שלם, מינ=0"
-  invalid_name: "שם לא תקין. תווים, מינ=2, מקס=100"
-  invalid_node_id: "מזהה צומת לא תקין. תווים, מינ=1 ומקס=100"
+  invalid_maximum_backup: "מספר גיבויים מקסימלי לא תקין. מספר שלם, min=0"
+  invalid_name: "שם לא תקין. תווים, min=2, max=100"
+  invalid_node_id: "מזהה צומת לא תקין. תווים, min=1 ו-max=100"
   invalid_offset: היסט לא תקין
   invalid_path: נתיב לא תקין
   invalid_payload: Payload לא תקין
   invalid_port: פורט לא תקין
   invalid_prefix: קידומת לא תקינה
   invalid_profile_confirm_password: אישור סיסמה לא תקין
-  invalid_profile_password: "סיסמה לא תקינה. תווים, מינ=3, מקס=100"
-  invalid_profile_username: "שם משתמש לא תקין. תווים, מינ=3, מקס=100, ללא רווחים"
+  invalid_profile_password: "סיסמה לא תקינה. תווים, min=3, max=100"
+  invalid_profile_username: "שם משתמש לא תקין. תווים, min=3, max=100, ללא רווחים"
   invalid_repeat_count: מספר חזרות לא תקין
   invalid_response_code: "הזן קוד תגובה תקין, 0 להתעלמות"
-  invalid_retry_count: "מספר ניסיונות חוזרים לא תקין. מספר שלם, מינ=0"
+  invalid_retry_count: "מספר ניסיונות חוזרים לא תקין. מספר שלם, min=0"
   invalid_script_empty: הסקריפט לא יכול להיות ריק
   invalid_server_url: כתובת URL של שרת לא תקינה
-  invalid_source_id: "מזהה מקור לא תקין. תווים, מינ=1 ומקס=100"
-  invalid_text: "טקסט לא תקין. תווים, מינ=1 ומקס=100"
+  invalid_source_id: "מזהה מקור לא תקין. תווים, min=1 ו-max=100"
+  invalid_text: "טקסט לא תקין. תווים, min=1 ו-max=100"
   invalid_time: שעה לא תקינה
   invalid_title: כותרת לא תקינה
   invalid_token: אסימון לא תקין
@@ -334,7 +334,7 @@ location: מיקום
 location_name: שם מיקום
 locations: מיקומים
 log_in: התחבר
-log_rotate_interval: מרווח סיבוב יומן
+log_rotate_interval: מרווח רוטציית יומן
 login: התחברות
 login_page: דף התחברות
 login_to_your_account: התחבר לחשבונך
@@ -391,14 +391,14 @@ notifications: התראות
 number_of_axis: מספר צירים
 occurrences: הופעות
 'off': 'OFF'
-off_text: טקסט כבוי
+off_text: טקסט OFF
 offset_0h0m0s: היסט (0h0m0s)
-offset_y_%: Offset Y (%)
+offset_y_%: היסט Y (%)
 'on': 'ON'
-on_button: לחצן הפעלה
+on_button: לחצן ON
 on_receive: בקבלה
 on_send: בשליחה
-on_text: טקסט מופעל
+on_text: טקסט ON
 operations: פעולות
 operator: אופרטור
 options: אפשרויות
@@ -511,7 +511,7 @@ opts:
   handler_type:
     desc_backup: בצע גיבוי של השרת
     desc_email: שולח דוא״ל
-    desc_noop: מטפל ללא פעולה
+    desc_noop: Handler ללא פעולה
     desc_resource: פעולות פנימיות הקשורות למשאבים
     desc_telegram: שולח טקסט ל-Telegram
     desc_webhook: קורא לכתובת webhook
@@ -527,7 +527,7 @@ opts:
     label_post: POST
     label_put: PUT
   image_load_type:
-    desc_custom_mapping: הצג תמונה ממופת מערך השדה
+    desc_custom_mapping: הצג תמונה ממופה מערך השדה
     desc_image: תמונה מקודדת Base64 מערך השדה
     label_custom_mapping: מיפוי מותאם
     label_image: תמונה גולמית
@@ -559,7 +559,7 @@ opts:
     label_minute_10: 10 דקות
     label_minute_15: 15 דקות
     label_minute_30: 30 דקות
-    label_never: אף פעם
+    label_never: לעולם לא
     label_second_01: שנייה 1
     label_second_05: 5 שניות
     label_second_10: 10 שניות
@@ -631,10 +631,10 @@ opts:
     label_color_picker: בחירת צבע מהירה
     label_hue_slider: מחוון גוון
   schedule_frequency:
-    desc_daily: רץ כל יום
-    desc_monthly: רץ פעם בחודש
-    desc_on_date: רץ פעם אחת בתאריך ובשעה שצוינו
-    desc_weekly: רץ פעם בשבוע
+    desc_daily: מופעל מדי יום
+    desc_monthly: מופעל פעם בחודש
+    desc_on_date: מופעל פעם אחת בתאריך ובשעה שצוינו
+    desc_weekly: מופעל פעם בשבוע
     label_daily: יומי
     label_monthly: חודשי
     label_on_date: בתאריך
@@ -695,15 +695,15 @@ opts:
     label_temperature_setting: הגדרת טמפרטורה
     label_timer: טיימר
     label_toggles: מתגים
-    label_transport_control: בקרת תחבורה
+    label_transport_control: בקרת ניגון
     label_volume: עוצמת קול
   utilization_chart:
     label_circle_050: חצי עיגול
     label_circle_075: 3/4 עיגול
     label_circle_100: עיגול מלא
-    label_spark_area: שטח ניצוץ
-    label_spark_bar: עמודת ניצוץ
-    label_spark_line: קו ניצוץ
+    label_spark_area: מיני-שטח
+    label_spark_bar: מיני-עמודה
+    label_spark_line: מיני-קו
     label_table: טבלה
   va_provider:
     desc_alexa: Amazon Alexa
@@ -716,7 +716,7 @@ opts:
     label_air_freshener: מבשם אוויר
     label_air_purifier: מטהר אוויר
     label_audio_video_receiver: מקלט אודיו-וידאו
-    label_awning: סככה
+    label_awning: סוכך
     label_bathtub: אמבטיה
     label_bed: מיטה
     label_blender: בלנדר
@@ -740,7 +740,7 @@ opts:
     label_faucet: ברז
     label_fireplace: אח
     label_freezer: מקפיא
-    label_fryer: טיגון
+    label_fryer: מכשיר טיגון
     label_garage_door: דלת מוסך
     label_gate: שער כניסה
     label_grill: גריל
@@ -778,7 +778,7 @@ opts:
     label_stand_mixer: מיקסר עומד
     label_streaming_box: קופסת סטרימינג
     label_streaming_soundbar: סאונדבר סטרימינג
-    label_streaming_stick: מקל סטרימינג
+    label_streaming_stick: סטיק סטרימינג
     label_switch: מתג
     label_television: טלוויזיה
     label_thermostat: תרמוסטט
@@ -818,14 +818,14 @@ padding_left_px: ריפוד שמאלי (px)
 padding_right_px: ריפוד ימני (px)
 padding_top_px: ריפוד עליון (px)
 panel_title: כותרת לוח
-parameters_to_handler: פרמטרים למטפל
-parse_mode: מצב פענוח
+parameters_to_handler: פרמטרים ל-Handler
+parse_mode: מצב ניתוח
 password: סיסמה
 path: נתיב
 payload: Payload
 send: שלח
-payload_off: Payload כבוי
-payload_on: Payload מופעל
+payload_off: Payload OFF
+payload_on: Payload ON
 payloads: Payloads
 per_cpu_disabled: לכל CPU מושבת
 port: פורט
@@ -847,7 +847,7 @@ qos: QoS
 query_parameters: פרמטרי שאילתה
 queue_failed_messages: תור הודעות שנכשלו
 quick_id: מזהה מהיר
-re_enable: אפשר מחדש
+re_enable: הפעל מחדש
 re_enable_duration: משך הפעלה מחדש
 react_version: גרסת React
 read_only: קריאה בלבד
@@ -857,7 +857,7 @@ refresh_interval: מרווח רענון
 refresh_node_info: רענן מידע צומת
 reload: טען מחדש
 repeat_count: מספר חזרות
-request_heartbeat: בקש פעימת לב
+request_heartbeat: בקש Heartbeat
 reset: איפוס
 resetting: מאפס...
 resource: משאב
@@ -877,8 +877,8 @@ rgb_component: רכיב RGB
 rotation: סיבוב
 round_decimal: עיגול עשרוני
 rule: כלל
-run_a_backup: הרץ גיבוי
-run_backup: הרץ גיבוי
+run_a_backup: בצע גיבוי
+run_backup: בצע גיבוי
 s_no: '#'
 saturation: רוויה
 save: שמור
@@ -891,7 +891,7 @@ select_an_option: בחר אפשרות
 server: שרת
 service_account_not_generated: אסימון חשבון השירות לא נוצר
 service_account_copy_title: העתק אסימון חשבון שירות
-service_account_copy_warning_msg: אסימון זה יוצג פעם אחת בלבד. הוא לא יישמר ולא ניתן לשחזרו. שמור אותו עכשיו.
+service_account_copy_warning_msg: אסימון זה יוצג פעם אחת בלבד. הוא לא יישמר ולא ניתן לאחזר אותו. שמור אותו עכשיו.
 service_account_barcode_help: סרוק ברקוד זה כדי להתחבר עם האסימון.
 service_account_details: פרטי חשבון שירות
 service_accounts: חשבונות שירות
@@ -999,7 +999,7 @@ virtual_assistant_details: פרטי עוזר וירטואלי
 virtual_assistants: עוזרים וירטואליים
 virtual_device_details: פרטי התקן וירטואלי
 virtual_devices: התקנים וירטואליים
-web_console: מסוף אינטרנט
+web_console: קונסולת אינטרנט
 webhook: Webhook
 websocket_disconnected: Websocket מנותק
 welcome_to_mycontroller: ברוכים הבאים ל-MyController
@@ -1014,7 +1014,7 @@ user_details: פרטי משתמש
 users: משתמשים
 layout: פריסה
 layout_tree: עץ
-layout_force: כוח
+layout_force: כוחות
 refresh: רענן
-include_child_nodes: כלול צמתי בנים
-child_nodes: צמתי בנים
+include_child_nodes: כלול צמתי משנה
+child_nodes: צמתי משנה

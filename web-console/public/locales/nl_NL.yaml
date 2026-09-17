@@ -7,7 +7,7 @@ add_a_field: Een veld toevoegen
 add_a_firmware: Een firmware toevoegen
 add_a_forward_payload: Een payload-doorsturing toevoegen
 add_a_gateway: Een gateway toevoegen
-add_a_handler: Een verwerker toevoegen
+add_a_handler: Een Handler toevoegen
 add_a_node: Een knooppunt toevoegen
 add_a_schedule: Een planning toevoegen
 add_a_policy: Een beleid toevoegen
@@ -26,7 +26,7 @@ alerts_empty_title: Geen meldingen gevonden
 alive_check_interval: Interval voor activiteitscontrole
 all_rights_reserved: Alle rechten voorbehouden
 allow_overwrite: Overschrijven toestaan
-apache_license_2: Apache-licentie 2.0
+apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: Bevestiging vragen
 assigned_firmware: Toegewezen firmware
@@ -106,7 +106,7 @@ dialog:
   delete_title_firmware: Firmware verwijderen?
   delete_title_forward_payload: Payload-doorsturingen verwijderen?
   delete_title_gateway: Gateways verwijderen?
-  delete_title_handler: Verwerkers verwijderen?
+  delete_title_handler: Handlers verwijderen?
   delete_title_node: Knooppunten verwijderen?
   delete_title_schedule: Planningen verwijderen?
   delete_title_service_account: Serviceaccount verwijderen?
@@ -193,7 +193,7 @@ forgot_username_or_password: Gebruikersnaam of wachtwoord vergeten?
 form_generic_error_message: "Controleer de fouten en/of verplichte velden (*)"
 form_view: Formulierweergave
 forum: Forum
-forward_payload: Payload doorsturen
+forward_payload: Payload-doorsturing
 forward_payload_details: Details van payload-doorsturing
 frequency: Frequentie
 from: Van
@@ -215,11 +215,11 @@ geo_location: GEO-locatie
 git_commit: Git-commit
 global_configuration: Algemene configuratie
 golang_version: GoLang-versie
-handler: Verwerker
-handler_details: Verwerkerdetails
-handler_parameters: Verwerkerparameters
-handler_type: Verwerkertype
-handlers: Verwerkers
+handler: Handler
+handler_details: Handlerdetails
+handler_parameters: Handlerparameters
+handler_type: Handlertype
+handlers: Handlers
 header_name: Headernaam
 headers: Headers
 heartbeat_request: Heartbeat-aanvraag
@@ -511,7 +511,7 @@ opts:
   handler_type:
     desc_backup: Een back-up van de server maken
     desc_email: Verzendt e-mail
-    desc_noop: Verwerker zonder actie
+    desc_noop: Handler zonder actie
     desc_resource: Interne resourcegerelateerde acties
     desc_telegram: Verzendt tekst naar Telegram
     desc_webhook: Roept een webhook-URL aan
@@ -695,7 +695,7 @@ opts:
     label_temperature_setting: Temperatuurinstelling
     label_timer: Timer
     label_toggles: Schakelaars
-    label_transport_control: Transportbesturing
+    label_transport_control: Afspeelbesturing
     label_volume: Volume
   utilization_chart:
     label_circle_050: Halve cirkel
@@ -818,7 +818,7 @@ padding_left_px: Opvulling links (px)
 padding_right_px: Opvulling rechts (px)
 padding_top_px: Opvulling boven (px)
 panel_title: Paneltitel
-parameters_to_handler: Parameters naar verwerker
+parameters_to_handler: Parameters naar Handler
 parse_mode: Parseermodus
 password: Wachtwoord
 path: Pad

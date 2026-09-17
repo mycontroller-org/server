@@ -23,10 +23,10 @@ address: Adresse
 agent_user_id: Agent-Benutzer-ID
 alerts_empty_message: Derzeit gibt es keine Warnungen.
 alerts_empty_title: Keine Warnungen gefunden
-alive_check_interval: Lebenszeichen-Intervall
+alive_check_interval: Aktivitätsprüfintervall
 all_rights_reserved: Alle Rechte vorbehalten
 allow_overwrite: Überschreiben erlauben
-apache_license_2: Apache-Lizenz 2.0
+apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: Bestätigung anfordern
 assigned_firmware: Zugewiesene Firmware
@@ -193,9 +193,9 @@ forgot_username_or_password: Benutzername oder Passwort vergessen?
 form_generic_error_message: "Prüfen Sie die Fehler und/oder Pflichtfelder (*)"
 form_view: Formularansicht
 forum: Forum
-forward_payload: Payload weiterleiten
+forward_payload: Payload-Weiterleitung
 forward_payload_details: Details zur Payload-Weiterleitung
-frequency: Frequenz
+frequency: Häufigkeit
 from: Von
 from_email: Von-E-Mail
 full_name: Vollständiger Name
@@ -391,14 +391,14 @@ notifications: Benachrichtigungen
 number_of_axis: Anzahl der Achsen
 occurrences: Vorkommen
 'off': 'OFF'
-off_text: AUS-Text
+off_text: OFF-Text
 offset_0h0m0s: Versatz (0h0m0s)
 offset_y_%: Offset Y (%)
 'on': 'ON'
-on_button: EIN-Schaltfläche
+on_button: ON-Schaltfläche
 on_receive: Beim Empfang
 on_send: Beim Senden
-on_text: EIN-Text
+on_text: ON-Text
 operations: Operationen
 operator: Operator
 options: Optionen
@@ -695,7 +695,7 @@ opts:
     label_temperature_setting: Temperatureinstellung
     label_timer: Timer
     label_toggles: Schalter
-    label_transport_control: Transportsteuerung
+    label_transport_control: Wiedergabesteuerung
     label_volume: Lautstärke
   utilization_chart:
     label_circle_050: Halbkreis
@@ -719,7 +719,7 @@ opts:
     label_awning: Markise
     label_bathtub: Badewanne
     label_bed: Bett
-    label_blender: Mixer
+    label_blender: Standmixer
     label_blinds: Jalousien
     label_boiler: Heizkessel
     label_camera: Kamera
@@ -824,8 +824,8 @@ password: Passwort
 path: Pfad
 payload: Payload
 send: Senden
-payload_off: Payload AUS
-payload_on: Payload EIN
+payload_off: Payload OFF
+payload_on: Payload ON
 payloads: Payloads
 per_cpu_disabled: Pro-CPU deaktiviert
 port: Port
@@ -850,7 +850,7 @@ quick_id: Schnell-ID
 re_enable: Wieder aktivieren
 re_enable_duration: Wiederaktivierungsdauer
 react_version: React-Version
-read_only: Nur lesen
+read_only: Schreibgeschützt
 reboot: Neu starten
 reconnect_delay: Wiederverbindungsverzögerung
 refresh_interval: Aktualisierungsintervall

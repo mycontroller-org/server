@@ -1,19 +1,19 @@
 ---
 about: 關於
-actions: 動作
-active_duration: 活動時長
+actions: 操作
+active_duration: 活動持續時間
 add: 新增
 add_a_field: 新增欄位
 add_a_firmware: 新增韌體
-add_a_forward_payload: 新增承載轉送
+add_a_forward_payload: 新增 Forward Payload
 add_a_gateway: 新增閘道
-add_a_handler: 新增處理常式
+add_a_handler: 新增處理器
 add_a_node: 新增節點
 add_a_schedule: 新增排程
 add_a_policy: 新增原則
 add_a_service_account: 新增服務帳戶
 add_a_source: 新增來源
-add_a_task: 新增工作
+add_a_task: 新增任務
 add_a_user: 新增使用者
 add_a_virtual_assistant: 新增虛擬助理
 add_a_virtual_device: 新增虛擬裝置
@@ -26,7 +26,7 @@ alerts_empty_title: 找不到警示
 alive_check_interval: 存活檢查間隔
 all_rights_reserved: 保留所有權利
 allow_overwrite: 允許覆寫
-apache_license_2: Apache 授權 2.0
+apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: 要求確認
 assigned_firmware: 已指定韌體
@@ -55,9 +55,9 @@ clear: 清除
 clear_all: 全部清除
 color: 顏色
 color_temperature: 色溫
-column_display: 欄位顯示
+column_display: 欄顯示
 conditions: 條件
-configuration: 組態
+configuration: 設定
 configure_via: 設定方式
 confirm_password: 確認密碼
 confirmation_message: 確認訊息
@@ -87,7 +87,7 @@ data_retrieved_from_server: 已從伺服器擷取資料
 data_type: 資料類型
 date_yyyy_mm_dd: 日期 (yyyy-mm-dd)
 day_of_month: 每月日期
-day_of_week: 星期
+day_of_week: 星期幾
 delete: 刪除
 description: 描述
 destination_field: 目標欄位
@@ -104,26 +104,26 @@ dialog:
   delete_title_data_repository: 刪除資料儲存庫？
   delete_title_field: 刪除欄位？
   delete_title_firmware: 刪除韌體？
-  delete_title_forward_payload: 刪除承載轉送？
+  delete_title_forward_payload: 刪除 Forward Payload？
   delete_title_gateway: 刪除閘道？
-  delete_title_handler: 刪除處理常式？
+  delete_title_handler: 刪除處理器？
   delete_title_node: 刪除節點？
   delete_title_schedule: 刪除排程？
   delete_title_service_account: 刪除服務帳戶？
   delete_title_user: 刪除使用者？
   delete_title_policy: 刪除原則？
   delete_title_source: 刪除來源？
-  delete_title_task: 刪除工作？
+  delete_title_task: 刪除任務？
   delete_title_virtual_assistant: 刪除虛擬助理？
   delete_title_virtual_device: 刪除虛擬裝置？
   node_reset_heading: 重設節點？
-  node_reset_msg: "確定要重設所選節點嗎？<br/>此作業之後：<3><0>組態將還原為原廠設定。</0><1>您可能會失去從 MyController 存取所選節點的權限！</1></3>"
+  node_reset_msg: "確定要重設所選節點嗎？<br/>此操作之後：<3><0>設定將還原為原廠設定。</0><1>您可能會失去從 MyController 存取所選節點的權限！</1></3>"
   reboot_nodes_heading: 重新啟動節點？
   reboot_nodes_msg: 確定要重新啟動所選節點嗎？
-  reset_msg_jwt_secret: 確定要重設 JWT 密鑰嗎？此作業之後，此伺服器上所有現有登入工作階段都將失效，而且您將被登出！
+  reset_msg_jwt_secret: 確定要重設 JWT 密鑰嗎？此操作之後，此伺服器上的所有登入工作階段都將失效，您將被登出。
   reset_title_jwt_secret: 重設 JWT 密鑰
-  restore_heading: 確認執行還原作業？
-  restore_msg: "確定要從所選備份檔案還原嗎？<br/>此作業之後：<3><0>伺服器資料將還原至 <1>{{fileName}}</1></0><1>此作業無法復原</1><2>執行還原前請務必先備份</2><3>您可能需要手動啟動伺服器</3></3>"
+  restore_heading: 確認執行還原操作？
+  restore_msg: "確定要從所選備份檔案還原嗎？<br/>此操作之後：<3><0>伺服器資料將還原至 <1>{{fileName}}</1></0><1>此操作無法復原</1><2>執行還原前請務必先備份</2><3>您可能需要手動啟動伺服器</3></3>"
 disable: 停用
 disable_scrollbar: 停用捲軸
 disabled: 已停用
@@ -136,7 +136,7 @@ display_percentage: 顯示百分比
 display_text: 顯示文字
 display_value: 顯示值
 do_update: 執行更新
-documentation: 文件
+documentation: 說明文件
 down: 向下
 download: 下載
 drop_down_position: 下拉位置
@@ -180,7 +180,7 @@ file_details: 檔案詳細資料
 file_uploaded_successfully: 檔案上傳成功
 filename: 檔案名稱
 filename_placeholder: 將檔案拖到此處或瀏覽以上傳
-fill_opacity_%: Fill Opacity (%)
+fill_opacity_%: 填滿不透明度 (%)
 filter: 篩選
 filter_type: 篩選類型
 filters: 篩選器
@@ -188,13 +188,13 @@ firmware_details: 韌體詳細資料
 firmware_file: 韌體檔案
 firmware_update: 韌體更新
 firmwares: 韌體
-flush_interval: 刷新間隔
+flush_interval: 寫出間隔
 forgot_username_or_password: 忘記使用者名稱或密碼？
-form_generic_error_message: "請檢查錯誤及／或必填 (*) 欄位"
+form_generic_error_message: 請檢查錯誤項目及必填 (*) 欄位
 form_view: 表單檢視
 forum: 論壇
-forward_payload: 轉送承載
-forward_payload_details: 承載轉送詳細資料
+forward_payload: Forward Payload
+forward_payload_details: Forward Payload 詳細資料
 frequency: 頻率
 from: 寄件者
 from_email: 寄件信箱
@@ -213,13 +213,13 @@ no_topology_nodes: 沒有可顯示的節點
 no_topology_nodes_for_gateway: 此閘道沒有節點
 geo_location: 地理位置
 git_commit: Git 提交
-global_configuration: 全域組態
+global_configuration: 全域設定
 golang_version: GoLang 版本
-handler: 處理常式
-handler_details: 處理常式詳細資料
-handler_parameters: 處理常式參數
-handler_type: 處理常式類型
-handlers: 處理常式
+handler: 處理器
+handler_details: 處理器詳細資料
+handler_parameters: 處理器參數
+handler_type: 處理器類型
+handlers: 處理器
 header_name: 標頭名稱
 headers: 標頭
 heartbeat_request: 心跳要求
@@ -229,7 +229,7 @@ helper_text:
   invalid_api: 無效的 API
   invalid_backup_retention_count: 保留數量無效，0 表示不限制
   invalid_baud_rate: 鮑率無效
-  invalid_broker_url: 代理伺服器 URL 無效
+  invalid_broker_url: 訊息代理 URL 無效
   invalid_current_password: 請輸入目前密碼
   invalid_data: 資料無效
   invalid_date: 日期無效
@@ -238,36 +238,36 @@ helper_text:
   invalid_duration: 持續時間無效
   invalid_email: 電子郵件無效
   invalid_execution_interval_empty: 執行間隔不可為空
-  invalid_field_id: 欄位 ID 無效。字元，最少=1，最多=100
+  invalid_field_id: 欄位 ID 無效。長度須為 1 至 100 個字元
   invalid_filters: 篩選器無效
   invalid_height: 高度無效
   invalid_host: 主機無效
-  invalid_id: ID 無效。字元，最少=4，最多=100，不允許空格
+  invalid_id: ID 無效。長度須為 4 至 100 個字元，且不能包含空格
   invalid_interval: 間隔無效
-  invalid_key: 索引鍵無效。字元，最少=1，最多=100
-  invalid_key_path: 金鑰路徑不可為空
+  invalid_key: 鍵無效。長度須為 1 至 100 個字元
+  invalid_key_path: 鍵路徑不可為空
   invalid_latitude: 緯度無效
   invalid_limit: 限制無效
   invalid_location: 位置無效
   invalid_longitude: 經度無效
-  invalid_maximum_backup: 最大備份數無效。整數，最少=0
-  invalid_name: 名稱無效。字元，最少=2，最多=100
-  invalid_node_id: 節點 ID 無效。字元，最少=1，最多=100
+  invalid_maximum_backup: 最大備份數無效。須為大於或等於 0 的整數
+  invalid_name: 名稱無效。長度須為 2 至 100 個字元
+  invalid_node_id: 節點 ID 無效。長度須為 1 至 100 個字元
   invalid_offset: 偏移無效
   invalid_path: 路徑無效
-  invalid_payload: 承載無效
+  invalid_payload: Payload 無效
   invalid_port: 連接埠無效
-  invalid_prefix: 前置詞無效
+  invalid_prefix: 前置碼無效
   invalid_profile_confirm_password: 確認密碼無效
-  invalid_profile_password: 密碼無效。字元，最少=3，最多=100
-  invalid_profile_username: 使用者名稱無效。字元，最少=3，最多=100，不允許空格
+  invalid_profile_password: 密碼無效。長度須為 3 至 100 個字元
+  invalid_profile_username: 使用者名稱無效。長度須為 3 至 100 個字元，且不能包含空格
   invalid_repeat_count: 重複次數無效
-  invalid_response_code: 請輸入有效回應碼，輸入 0 表示忽略
-  invalid_retry_count: 重試次數無效。整數，最少=0
+  invalid_response_code: 請輸入有效的回應碼，輸入 0 表示忽略
+  invalid_retry_count: 重試次數無效。須為大於或等於 0 的整數
   invalid_script_empty: 指令碼不可為空
   invalid_server_url: 伺服器 URL 無效
-  invalid_source_id: 來源 ID 無效。字元，最少=1，最多=100
-  invalid_text: 文字無效。字元，最少=1，最多=100
+  invalid_source_id: 來源 ID 無效。長度須為 1 至 100 個字元
+  invalid_text: 文字無效。長度須為 1 至 100 個字元
   invalid_time: 時間無效
   invalid_title: 標題無效
   invalid_token: 權杖無效
@@ -276,7 +276,7 @@ helper_text:
   invalid_url: URL 無效
   invalid_username: 使用者名稱無效
   invalid_password: 密碼無效
-  password_leave_empty: 留空以保留目前密碼
+  password_leave_empty: 留空則保留目前密碼
   service_account_user: 留空即為自己建立。選取使用者可為對方建立帳戶。
   invalid_value: 值無效
   invalid_width: 寬度無效
@@ -295,12 +295,12 @@ ignore_duplicate: 忽略重複
 image_source: 圖片來源
 image_type: 圖片類型
 in_progress: 進行中
-inactive_duration: 非活動時長
-include_configuration: 包含組態
-include_global_configuration: 包含全域組態
-include_insecure_share: 包含非安全共用
+inactive_duration: 非活動持續時間
+include_configuration: 包含設定
+include_global_configuration: 包含全域設定
+include_insecure_share: 包含不安全共用
 include_secure_share: 包含安全共用
-insecure: 非安全
+insecure: 不安全
 internal_message_ack: 內部訊息確認
 interpolation: 插值
 interval: 間隔
@@ -312,8 +312,8 @@ javascript: Javascript
 json: JSON
 jwt_secret: JWT Secret
 keep_me_logged_in_30_days: 保持登入 30 天。
-key: 索引鍵
-key_path: 金鑰路徑
+key: 鍵
+key_path: 鍵路徑
 label: 標籤
 labels: 標籤
 language: 語言
@@ -347,7 +347,7 @@ markdown_v2: Markdown v2
 match_all: 全部符合
 max_y_axis: 最大值 (Y 軸)
 maximum: 最大值
-maximum_age: 最長期限
+maximum_age: 最長保留時間
 maximum_backup: 最大備份數
 maximum_size: 最大大小
 maximum_value: 最大值
@@ -356,12 +356,12 @@ memory_disabled: 記憶體已停用
 message: 訊息
 message_logger: 訊息記錄器
 method: 方法
-metric_configuration: 度量設定
-metric_function: 度量函式
-metric_interval: 度量間隔
-metric_type: 度量類型
-metrics: 度量
-metrics_database_disabled: 警告：度量資料庫已停用
+metric_configuration: 指標設定
+metric_function: 指標函式
+metric_interval: 指標間隔
+metric_type: 指標類型
+metrics: 指標
+metrics_database_disabled: 警告：指標資料庫已停用
 min_y_axis: 最小值 (Y 軸)
 minimum: 最小值
 minimum_value: 最小值
@@ -369,18 +369,18 @@ minimum_width: 最小寬度
 mixed_resources: 混合資源
 modified_on: 修改於
 name: 名稱
-name_key: 名稱索引鍵
+name_key: 名稱鍵
 never_expire: 永不過期
 new: 新增
 new_password: 新密碼
-no_change_since: 自此無變更
+no_change_since: 此後無變更
 no_dashboard_message: 沒有可載入的儀表板。
 no_dashboard_title: 沒有可用的儀表板
 no_data: 無資料
 no_labels: 無標籤
 no_login_message: 未設定登入訊息
 node: 節點
-node_configuration: 節點組態
+node_configuration: 節點設定
 node_details: 節點詳細資料
 node_endpoints: 節點端點
 node_id: 節點 ID
@@ -391,15 +391,15 @@ notifications: 通知
 number_of_axis: 座標軸數量
 occurrences: 出現次數
 'off': 'OFF'
-off_text: 關閉文字
+off_text: OFF 文字
 offset_0h0m0s: 偏移 (0h0m0s)
-offset_y_%: Offset Y (%)
+offset_y_%: Y 軸偏移 (%)
 'on': 'ON'
-on_button: 開啟按鈕
+on_button: ON 按鈕
 on_receive: 接收時
 on_send: 傳送時
-on_text: 開啟文字
-operations: 作業
+on_text: ON 文字
+operations: 操作
 operator: 運算子
 options: 選項
 opts:
@@ -414,7 +414,7 @@ opts:
   chart_group_type:
     desc_group_chart: 單軸多資源
     desc_mixed_chart: 多軸多資源
-    desc_pie_chart: 單一片圖
+    desc_pie_chart: 單一圓餅圖
     label_group_chart: 群組圖
     label_mixed_chart: 混合圖
     label_pie_chart: 圓餅圖
@@ -452,19 +452,19 @@ opts:
     label_switch_button: 按鈕開關
     label_switch_toggle: 撥動開關
   control_type_mixed:
-    label_button_push: 按鈕
+    label_button_push: 按壓按鈕
     label_input: 輸入
-    label_options_select: 選取選項
-    label_options_tab: 索引標籤選項
+    label_options_select: 下拉選項
+    label_options_tab: 分頁選項
     label_slider: 滑桿
     label_switch_button: 按鈕開關
     label_switch_toggle: 撥動開關
   dampening:
-    desc_active_duration: 工作的活動時長
+    desc_active_duration: 任務的活動持續時間
     desc_consecutive: 連續出現次數
     desc_evaluation: N 次評估中的出現次數
     desc_none: 停用抑制功能
-    label_active_duration: 活動時長
+    label_active_duration: 活動持續時間
     label_consecutive: 連續
     label_evaluation: 評估
     label_none: 無
@@ -497,13 +497,13 @@ opts:
     label_serial: 序列
   gw_provider:
     desc_esphome: esphome.io
-    desc_generic: 一般提供者
+    desc_generic: 通用提供者
     desc_mysensors_v2: MySensors.org 版本 2.x
     desc_philips_hue: developers.meethue.com
     desc_system_monitoring: 擷取系統資源並回報
     desc_tasmota: tasmota.github.io
     label_esphome: ESPHome
-    label_generic: 一般
+    label_generic: 通用
     label_mysensors_v2: MySensors V2
     label_philips_hue: PhilipsHue
     label_system_monitoring: 系統監控
@@ -511,8 +511,8 @@ opts:
   handler_type:
     desc_backup: 執行伺服器備份
     desc_email: 傳送電子郵件
-    desc_noop: 無作業處理常式
-    desc_resource: 內部資源相關動作
+    desc_noop: 無操作處理器
+    desc_resource: 內部資源相關操作
     desc_telegram: 傳送文字至 Telegram
     desc_webhook: 呼叫 webhook URL
     label_backup: 備份
@@ -537,9 +537,9 @@ opts:
     desc_rotate_none: 不旋轉
     desc_rotate_right_90: 向右旋轉 90°
     label_rotate_180: 旋轉 180°
-    label_rotate_left_90: 向左 90°
+    label_rotate_left_90: 向左旋轉 90°
     label_rotate_none: 無
-    label_rotate_right_90: 向右 90°
+    label_rotate_right_90: 向右旋轉 90°
   image_source:
     desc_disk: 來自本機磁碟路徑的圖片
     desc_field: 來自欄位資源的圖片資料
@@ -618,7 +618,7 @@ opts:
     label_percentile_99: 第 99 百分位
     label_sum: 總和
   metric_type:
-    label_binary: 二進位
+    label_binary: 二值
     label_counter: 計數器
     label_gauge: 儀表
     label_gauge_float: 儀表（浮點）
@@ -628,7 +628,7 @@ opts:
   rgb_component:
     desc_color_picker: 預先定義的顏色
     desc_hue_slider: 色相滑桿
-    label_color_picker: 快速選色
+    label_color_picker: 快速選色器
     label_hue_slider: 色相滑桿
   schedule_frequency:
     desc_daily: 每天執行
@@ -667,11 +667,11 @@ opts:
     label_channel: 頻道
     label_color_setting: 顏色設定
     label_cook: 烹調
-    label_dispense: 分配
+    label_dispense: 出料
     label_dock: 停駐
     label_energy_storage: 儲能
     label_fan_speed: 風扇轉速
-    label_fill: 填充
+    label_fill: 加注
     label_humidity_setting: 濕度設定
     label_input_selector: 輸入選擇器
     label_light_effects: 燈光效果
@@ -695,7 +695,7 @@ opts:
     label_temperature_setting: 溫度設定
     label_timer: 計時器
     label_toggles: 開關
-    label_transport_control: 傳輸控制
+    label_transport_control: 播放控制
     label_volume: 音量
   utilization_chart:
     label_circle_050: 半圓
@@ -744,9 +744,9 @@ opts:
     label_garage_door: 車庫門
     label_gate: 大門
     label_grill: 烤架
-    label_heater: 加熱器
+    label_heater: 電暖器
     label_hood: 排油煙機
-    label_humidifier: 加濕器
+    label_humidifier: 加濕機
     label_kettle: 電水壺
     label_light: 燈
     label_lock: 鎖
@@ -761,7 +761,7 @@ opts:
     label_pergola: 涼棚
     label_pet_feeder: 寵物餵食器
     label_pressure_cooker: 壓力鍋
-    label_radiator: 散熱器
+    label_radiator: 暖氣片
     label_refrigerator: 冰箱
     label_router: 路由器
     label_scene: 場景
@@ -781,7 +781,7 @@ opts:
     label_streaming_stick: 串流棒
     label_switch: 開關
     label_television: 電視
-    label_thermostat: 恆溫器
+    label_thermostat: 溫控器
     label_vacuum: 吸塵器
     label_valve: 閥門
     label_washer: 洗衣機
@@ -801,10 +801,10 @@ opts:
     label_wednesday: 星期三
   widget_type:
     desc_chart_panel: 以圖表顯示資料
-    desc_control_panel: 對資源執行控制動作
+    desc_control_panel: 對資源執行控制操作
     desc_empty_panel: 空白面板
-    desc_image_panel: 從來源顯示圖片
-    desc_light_panel: 控制一盞燈
+    desc_image_panel: 從不同來源顯示圖片
+    desc_light_panel: 控制燈光
     desc_utilization_panel: 顯示使用率狀態
     label_chart_panel: 圖表面板
     label_control_panel: 控制面板
@@ -818,15 +818,15 @@ padding_left_px: 左內距 (px)
 padding_right_px: 右內距 (px)
 padding_top_px: 上內距 (px)
 panel_title: 面板標題
-parameters_to_handler: 傳給處理常式的參數
-parse_mode: 剖析模式
+parameters_to_handler: 傳給處理器的參數
+parse_mode: 解析模式
 password: 密碼
 path: 路徑
-payload: 承載
+payload: Payload
 send: 傳送
-payload_off: 關閉承載
-payload_on: 開啟承載
-payloads: 承載
+payload_off: Payload OFF
+payload_on: Payload ON
+payloads: Payload
 per_cpu_disabled: 每 CPU 已停用
 port: 連接埠
 port_name: 連接埠名稱
@@ -834,7 +834,7 @@ post_run: 執行後
 power: 電源
 pre_delay: 前置延遲
 pre_run: 執行前
-prefix: 前置詞
+prefix: 前置碼
 previous_value: 上一個值
 process: 處理程序
 processes: 處理程序
@@ -848,7 +848,7 @@ query_parameters: 查詢參數
 queue_failed_messages: 將失敗訊息加入佇列
 quick_id: 快速 ID
 re_enable: 重新啟用
-re_enable_duration: 重新啟用時長
+re_enable_duration: 重新啟用持續時間
 react_version: React 版本
 read_only: 唯讀
 reboot: 重新啟動
@@ -861,9 +861,9 @@ request_heartbeat: 要求心跳
 reset: 重設
 resetting: 正在重設...
 resource: 資源
-resource_by_labels: 依標籤的資源
-resource_by_quick_id: 依快速 ID 的資源
-resource_configuration: 資源組態
+resource_by_labels: 依標籤指定資源
+resource_by_quick_id: 依快速 ID 指定資源
+resource_configuration: 資源設定
 resource_filters: 資源篩選
 resource_name: 資源名稱
 resource_type: 資源類型
@@ -887,11 +887,11 @@ schedule_details: 排程詳細資料
 schedule_type: 排程類型
 schedules: 排程
 script: 指令碼
-select_an_option: 選取一個選項
+select_an_option: 請選擇
 server: 伺服器
-service_account_not_generated: 服務帳戶權杖尚未產生
+service_account_not_generated: 尚未產生服務帳戶權杖
 service_account_copy_title: 複製服務帳戶權杖
-service_account_copy_warning_msg: 此權杖只會顯示一次。它不會被儲存，也無法再次擷取。請立即儲存。
+service_account_copy_warning_msg: 此權杖只會顯示一次。系統不會儲存該權杖，之後也無法再次查看。請立即妥善儲存。
 service_account_barcode_help: 掃描此條碼即可使用權杖登入。
 service_account_details: 服務帳戶詳細資料
 service_accounts: 服務帳戶
@@ -933,22 +933,22 @@ table_configuration: 表格設定
 table_view: 表格檢視
 target_directory: 目標目錄
 target_location: 目標位置
-task: 工作
-task_details: 工作詳細資料
-tasks: 工作
+task: 任務
+task_details: 任務詳細資料
+tasks: 任務
 telegram: Telegram
 temperature: 溫度
 text: 文字
 the_open_source_controller: The Open Source Controller
-theme_color: 佈景主題色彩
+theme_color: 主題顏色
 thickness: 厚度
 threshold_mode: 臨界值模式
 thresholds: 臨界值
-thresholds_color: 臨界值色彩
+thresholds_color: 臨界值顏色
 time_hh_mm_ss: "時間 (hh:mm:ss)"
 timeout: 逾時
 timestamp: 時間戳記
-timestamp_key: 時間戳記索引鍵
+timestamp_key: 時間戳記鍵
 title: 標題
 to: 收件者
 to_emails: 收件信箱
@@ -989,7 +989,7 @@ validate_time_everyday: 每天驗證時間
 validity: 有效期限
 value: 值
 value_formatter: 值格式器
-value_key: 值索引鍵
+value_key: 值鍵
 variable: 變數
 variable_name: 變數名稱
 variables: 變數
@@ -1012,7 +1012,7 @@ statement: 陳述式
 statements: 陳述式
 user_details: 使用者詳細資料
 users: 使用者
-layout: 版面
+layout: 配置
 layout_tree: 樹狀
 layout_force: 力導向
 refresh: 重新整理

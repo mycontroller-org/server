@@ -3,419 +3,419 @@ about: ಬಗ್ಗೆ
 actions: ಕ್ರಿಯೆಗಳು
 active_duration: ಸಕ್ರಿಯ ಅವಧಿ
 add: ಸೇರಿಸಿ
-add_a_field: ಒಂದು ಫೀಲ್ಡ್ ಸೇರಿಸಿ
-add_a_firmware: ಒಂದು ಫರ್ಮ್‌ವೇರ್ ಸೇರಿಸಿ
-add_a_forward_payload: ಒಂದು ಫಾರ್ವರ್ಡ್ ಪೇಲೋಡ್ ಸೇರಿಸಿ
-add_a_gateway: ಒಂದು ಗೇಟ್‌ವೇ ಸೇರಿಸಿ
-add_a_handler: ಒಂದು ಹ್ಯಾಂಡ್ಲರ್ ಸೇರಿಸಿ
-add_a_node: ಒಂದು ನೋಡ್ ಸೇರಿಸಿ
-add_a_schedule: ಒಂದು ವೇಳಾಪಟ್ಟಿ ಸೇರಿಸಿ
-add_a_policy: ಒಂದು ನೀತಿ ಸೇರಿಸಿ
-add_a_service_account: ಒಂದು ಸೇವಾ ಖಾತೆ ಸೇರಿಸಿ
-add_a_user: ಒಂದು ಬಳಕೆದಾರರನ್ನು ಸೇರಿಸಿ
-add_a_source: ಒಂದು ಮೂಲ ಸೇರಿಸಿ
-add_a_task: ಒಂದು ಕಾರ್ಯ ಸೇರಿಸಿ
-add_a_virtual_assistant: ಒಂದು ವರ್ಚುವಲ್ ಸಹಾಯಕ ಸೇರಿಸಿ
-add_a_virtual_device: ಒಂದು ವರ್ಚುವಲ್ ಸಾಧನ ಸೇರಿಸಿ
-add_an_item: ಒಂದು ಐಟಂ ಸೇರಿಸಿ
-add_widget: ವಿಜೆಟ್ ಸೇರಿಸಿ
+add_a_field: Field ಸೇರಿಸಿ
+add_a_firmware: Firmware ಸೇರಿಸಿ
+add_a_forward_payload: Forward Payload ಸೇರಿಸಿ
+add_a_gateway: Gateway ಸೇರಿಸಿ
+add_a_handler: Handler ಸೇರಿಸಿ
+add_a_node: Node ಸೇರಿಸಿ
+add_a_schedule: Schedule ಸೇರಿಸಿ
+add_a_policy: Policy ಸೇರಿಸಿ
+add_a_service_account: Service Account ಸೇರಿಸಿ
+add_a_user: ಬಳಕೆದಾರರನ್ನು ಸೇರಿಸಿ
+add_a_source: Source ಸೇರಿಸಿ
+add_a_task: Task ಸೇರಿಸಿ
+add_a_virtual_assistant: Virtual Assistant ಸೇರಿಸಿ
+add_a_virtual_device: Virtual Device ಸೇರಿಸಿ
+add_an_item: Item ಸೇರಿಸಿ
+add_widget: Widget ಸೇರಿಸಿ
 address: ವಿಳಾಸ
-agent_user_id: ಏಜೆಂಟ್ ಬಳಕೆದಾರ ID
+agent_user_id: Agent User ID
 alerts_empty_message: ಪ್ರಸ್ತುತ ಯಾವುದೇ ಎಚ್ಚರಿಕೆಗಳಿಲ್ಲ.
 alerts_empty_title: ಎಚ್ಚರಿಕೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ
-alive_check_interval: ಜೀವಂತ ಪರಿಶೀಲನೆ ಅಂತರ
+alive_check_interval: Alive Check ಅಂತರ
 all_rights_reserved: ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ
-allow_overwrite: ಮರುಬರೆಯಲು ಅನುಮತಿಸಿ
-apache_license_2: Apache ಪರವಾನಗಿ 2.0
+allow_overwrite: Overwrite ಅನುಮತಿಸಿ
+apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: ದೃಢೀಕರಣ ಕೇಳಿ
-assigned_firmware: ನಿಯೋಜಿತ ಫರ್ಮ್‌ವೇರ್
-assigned_nodes: ನಿಯೋಜಿತ ನೋಡ್‌ಗಳು
+assigned_firmware: ನಿಯೋಜಿತ Firmware
+assigned_nodes: ನಿಯೋಜಿತ Nodeಗಳು
 auto_disable: ಸ್ವಯಂ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ
-auto_update: ಸ್ವಯಂ ನವೀಕರಣ
+auto_update: ಸ್ವಯಂ ನವೀಕರಿಸಿ
 axis: ಅಕ್ಷ
-backup: ಬ್ಯಾಕಪ್
-backup_and_restore: ಬ್ಯಾಕಪ್ ಮತ್ತು ಮರುಸ್ಥಾಪನೆ
-backup_locations: ಬ್ಯಾಕಪ್ ಸ್ಥಳಗಳು
+backup: Backup
+backup_and_restore: Backup ಮತ್ತು Restore
+backup_locations: Backup ಸ್ಥಳಗಳು
 battery: ಬ್ಯಾಟರಿ
-baud_rate: ಬಾಡ್ ದರ
-body: ವಿಷಯ
-bridge: ಬ್ರಿಡ್ಜ್
+baud_rate: Baud Rate
+body: Body
+bridge: Bridge
 brightness: ಹೊಳಪು
-broker: ಬ್ರೋಕರ್
-browse: ಬ್ರೌಸ್
-build_date: ನಿರ್ಮಾಣ ದಿನಾಂಕ
-button: ಬಟನ್
-button_text: ಬಟನ್ ಪಠ್ಯ
+broker: Broker
+browse: ಆಯ್ಕೆಮಾಡಿ
+build_date: Build ದಿನಾಂಕ
+button: Button
+button_text: Button ಪಠ್ಯ
 cancel: ರದ್ದುಮಾಡಿ
-chart_configuration: ಚಾರ್ಟ್ ಸಂರಚನೆ
-chart_type: ಚಾರ್ಟ್ ಪ್ರಕಾರ
-chat_ids: ಚಾಟ್ IDಗಳು
+chart_configuration: Chart ಸೆಟ್ಟಿಂಗ್
+chart_type: Chart ಪ್ರಕಾರ
+chat_ids: Chat IDಗಳು
 clear: ತೆರವುಗೊಳಿಸಿ
 clear_all: ಎಲ್ಲವನ್ನೂ ತೆರವುಗೊಳಿಸಿ
 color: ಬಣ್ಣ
 color_temperature: ಬಣ್ಣದ ತಾಪಮಾನ
-column_display: ಕಾಲಮ್ ಪ್ರದರ್ಶನ
+column_display: Column ಪ್ರದರ್ಶನ
 conditions: ಷರತ್ತುಗಳು
-configuration: ಸಂರಚನೆ
-configure_via: ಇದರ ಮೂಲಕ ಸಂರಚಿಸಿ
+configuration: ಸೆಟ್ಟಿಂಗ್
+configure_via: ಇದರ ಮೂಲಕ ಸೆಟ್ ಮಾಡಿ
 confirm_password: ಪಾಸ್‌ವರ್ಡ್ ದೃಢೀಕರಿಸಿ
 confirmation_message: ದೃಢೀಕರಣ ಸಂದೇಶ
-connection_timeout: ಸಂಪರ್ಕ ಟೈಮ್‌ಔಟ್
-control_configuration: ನಿಯಂತ್ರಣ ಸಂರಚನೆ
+connection_timeout: ಸಂಪರ್ಕ Timeout
+control_configuration: ನಿಯಂತ್ರಣ ಸೆಟ್ಟಿಂಗ್
 control_type: ನಿಯಂತ್ರಣ ಪ್ರಕಾರ
 copied: ನಕಲಿಸಲಾಗಿದೆ
 copy: ನಕಲಿಸಿ
-corner_smoothing: ಮೂಲೆ ನಯಗೊಳಿಸುವಿಕೆ
+corner_smoothing: Corner Smoothing
 cpu: CPU
 cpu_disabled: CPU ನಿಷ್ಕ್ರಿಯ
 create_new: ಹೊಸದನ್ನು ರಚಿಸಿ
 created_on: ರಚಿಸಿದ ದಿನಾಂಕ
-cron_expression: ಕ್ರಾನ್ ಅಭಿವ್ಯಕ್ತಿ
+cron_expression: Cron Expression
 current_password: ಪ್ರಸ್ತುತ ಪಾಸ್‌ವರ್ಡ್
-cursor_tooltip: ಕರ್ಸರ್ ಟೂಲ್‌ಟಿಪ್
-custom_data: ಕಸ್ಟಮ್ ಡೇಟಾ
-custom_mapping: ಕಸ್ಟಮ್ ಮ್ಯಾಪಿಂಗ್
-custom_variables: ಕಸ್ಟಮ್ ಚರಾಂಶಗಳು
-dampening: ಡ್ಯಾಂಪನಿಂಗ್
-dashboard: ಡ್ಯಾಶ್‌ಬೋರ್ಡ್
+cursor_tooltip: Cursor Tooltip
+custom_data: Custom ಡೇಟಾ
+custom_mapping: Custom Mapping
+custom_variables: Custom Variableಗಳು
+dampening: Dampening
+dashboard: Dashboard
 data: ಡೇಟಾ
-data_repository: ಡೇಟಾ ರೆಪೊಸಿಟರಿ
-data_repository_add_an_entry: 'ಡೇಟಾ ರೆಪೊಸಿಟರಿ: ಒಂದು ನಮೂದು ಸೇರಿಸಿ'
-data_repository_modify_an_entry: 'ಡೇಟಾ ರೆಪೊಸಿಟರಿ: ಒಂದು ನಮೂದನ್ನು ಮಾರ್ಪಡಿಸಿ'
-data_retrieved_from_server: ಸರ್ವರ್‌ನಿಂದ ಪಡೆದ ಡೇಟಾ
+data_repository: Data Repository
+data_repository_add_an_entry: 'Data Repository: ನಮೂದು ಸೇರಿಸಿ'
+data_repository_modify_an_entry: 'Data Repository: ನಮೂದು ಬದಲಿಸಿ'
+data_retrieved_from_server: Serverನಿಂದ ಡೇಟಾ ಪಡೆಯಲಾಗಿದೆ
 data_type: ಡೇಟಾ ಪ್ರಕಾರ
 date_yyyy_mm_dd: ದಿನಾಂಕ (yyyy-mm-dd)
 day_of_month: ತಿಂಗಳ ದಿನ
 day_of_week: ವಾರದ ದಿನಗಳು
 delete: ಅಳಿಸಿ
 description: ವಿವರಣೆ
-destination_field: ಗಮ್ಯಸ್ಥಾನ ಫೀಲ್ಡ್
-detailed_filter: ವಿವರವಾದ ಫಿಲ್ಟರ್
-details: ವಿವರಗಳು
-device_filter: ಸಾಧನ ಫಿಲ್ಟರ್
+destination_field: ಗಮ್ಯ Field
+detailed_filter: ವಿವರವಾದ Filter
+details: ವಿವರ
+device_filter: ಸಾಧನ Filter
 device_type: ಸಾಧನ ಪ್ರಕಾರ
 dialog:
-  clear_sleeping_queue_heading: "ನೀವು ಕ್ಯೂವನ್ನು ತೆರವುಗೊಳಿಸಲು ಬಯಸುವಿರಾ?"
-  clear_sleeping_queue_msg: ನಿದ್ರಾವಸ್ಥೆಯ ಕ್ಯೂನಲ್ಲಿರುವ ಎಲ್ಲ ಸಂದೇಶಗಳನ್ನು ತ್ಯಜಿಸಲಾಗುತ್ತದೆ
-  delete_resource_msg: "ಆಯ್ಕೆಮಾಡಿದ ಐಟಂಗಳನ್ನು ನೀವು ಖಚಿತವಾಗಿ ಅಳಿಸಲು ಬಯಸುವಿರಾ?"
-  delete_title_backup: "ಬ್ಯಾಕಪ್ ಫೈಲ್‌ಗಳನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಅಳಿಸುವುದೇ?"
-  delete_title_data_repository: "ಡೇಟಾ ರೆಪೊಸಿಟರಿಗಳನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_field: "ಫೀಲ್ಡ್‌ಗಳನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_firmware: "ಫರ್ಮ್‌ವೇರ್ ಅಳಿಸುವುದೇ?"
-  delete_title_forward_payload: "ಫಾರ್ವರ್ಡ್ ಪೇಲೋಡ್‌ಗಳನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_gateway: "ಗೇಟ್‌ವೇಗಳನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_handler: "ಹ್ಯಾಂಡ್ಲರ್‌ಗಳನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_node: "ನೋಡ್‌ಗಳನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_schedule: "ವೇಳಾಪಟ್ಟಿಗಳನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_service_account: "ಸೇವಾ ಖಾತೆಯನ್ನು ಅಳಿಸುವುದೇ?"
+  clear_sleeping_queue_heading: "ಕ್ಯೂವನ್ನು ತೆರವುಗೊಳಿಸುವುದೇ?"
+  clear_sleeping_queue_msg: Sleep Queueನಲ್ಲಿರುವ ಎಲ್ಲ ಸಂದೇಶಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ
+  delete_resource_msg: "ಆಯ್ಕೆಮಾಡಿದ ಐಟಂಗಳನ್ನು ಅಳಿಸುವುದೇ?"
+  delete_title_backup: "Backup ಫೈಲ್‌ಗಳನ್ನು ಅಳಿಸುವುದೇ?"
+  delete_title_dashboard: "Dashboard ಅಳಿಸುವುದೇ?"
+  delete_title_data_repository: "Data Repository ಅಳಿಸುವುದೇ?"
+  delete_title_field: "Fieldಗಳನ್ನು ಅಳಿಸುವುದೇ?"
+  delete_title_firmware: "Firmware ಅಳಿಸುವುದೇ?"
+  delete_title_forward_payload: "Forward Payloadಗಳನ್ನು ಅಳಿಸುವುದೇ?"
+  delete_title_gateway: "Gatewayಗಳನ್ನು ಅಳಿಸುವುದೇ?"
+  delete_title_handler: "Handlerಗಳನ್ನು ಅಳಿಸುವುದೇ?"
+  delete_title_node: "Nodeಗಳನ್ನು ಅಳಿಸುವುದೇ?"
+  delete_title_schedule: "Scheduleಗಳನ್ನು ಅಳಿಸುವುದೇ?"
+  delete_title_service_account: "Service Account ಅಳಿಸುವುದೇ?"
   delete_title_user: "ಬಳಕೆದಾರರನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_policy: "ನೀತಿಯನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_source: "ಮೂಲಗಳನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_task: "ಕಾರ್ಯಗಳನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_virtual_assistant: "ವರ್ಚುವಲ್ ಸಹಾಯಕವನ್ನು ಅಳಿಸುವುದೇ?"
-  delete_title_virtual_device: "ವರ್ಚುವಲ್ ಸಾಧನವನ್ನು ಅಳಿಸುವುದೇ?"
-  node_reset_heading: "ನೋಡ್ ಮರುಹೊಂದಿಸುವುದೇ?"
-  node_reset_msg: "ಆಯ್ಕೆಮಾಡಿದ ನೋಡ್‌ಗಳನ್ನು ನೀವು ಖಚಿತವಾಗಿ ಮರುಹೊಂದಿಸಲು ಬಯಸುವಿರಾ?<br/>ಈ ಕಾರ್ಯಾಚರಣೆಯ ನಂತರ:<3><0>ಸಂರಚನೆಯನ್ನು ಫ್ಯಾಕ್ಟರಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.</0><1>ಆಯ್ಕೆಮಾಡಿದ ನೋಡ್(ಗಳ)ಗೆ MyController ನಿಂದ ನಿಮ್ಮ ಪ್ರವೇಶ ಕಳೆದುಹೋಗಬಹುದು!</1></3>"
-  reboot_nodes_heading: "ನೋಡ್ ಮರುಪ್ರಾರಂಭಿಸುವುದೇ?"
-  reboot_nodes_msg: "ಆಯ್ಕೆಮಾಡಿದ ನೋಡ್‌ಗಳನ್ನು ನೀವು ಖಚಿತವಾಗಿ ಮರುಪ್ರಾರಂಭಿಸಲು ಬಯಸುವಿರಾ?"
-  reset_msg_jwt_secret: "JWT ಸೀಕ್ರೆಟ್ ಅನ್ನು ನೀವು ಖಚಿತವಾಗಿ ಮರುಹೊಂದಿಸಲು ಬಯಸುವಿರಾ? ಈ ಕಾರ್ಯಾಚರಣೆಯ ನಂತರ, ಈ ಸರ್ವರ್‌ನಲ್ಲಿನ ಎಲ್ಲ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಲಾಗ್-ಇನ್ ಸೆಷನ್‌ಗಳು ಅಮಾನ್ಯವಾಗುತ್ತವೆ ಮತ್ತು ನೀವು ಲಾಗ್ ಔಟ್ ಆಗುತ್ತೀರಿ."
-  reset_title_jwt_secret: JWT ಸೀಕ್ರೆಟ್ ಮರುಹೊಂದಿಸಿ
-  restore_heading: "ಮರುಸ್ಥಾಪನೆ ಕಾರ್ಯಾಚರಣೆಯನ್ನು ದೃಢೀಕರಿಸುವುದೇ?"
-  restore_msg: "ಆಯ್ಕೆಮಾಡಿದ ಬ್ಯಾಕಪ್ ಫೈಲ್‌ನಿಂದ ನೀವು ಖಚಿತವಾಗಿ ಮರುಸ್ಥಾಪಿಸಲು ಬಯಸುವಿರಾ?<br/>ಈ ಕಾರ್ಯಾಚರಣೆಯ ನಂತರ:<3><0>ಸರ್ವರ್ ಡೇಟಾವನ್ನು <1>{{fileName}}</1> ಗೆ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ</0><1>ನೀವು ಈ ಕಾರ್ಯಾಚರಣೆಯನ್ನು ಹಿಂತಿರುಗಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</1><2>ಮರುಸ್ಥಾಪನೆ ಮಾಡುವ ಮೊದಲು ಯಾವಾಗಲೂ ಬ್ಯಾಕಪ್ ತೆಗೆದುಕೊಳ್ಳಿ</2><3>ನೀವು ಸರ್ವರ್ ಅನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಬೇಕಾಗಬಹುದು</3></3>"
+  delete_title_policy: "Policy ಅಳಿಸುವುದೇ?"
+  delete_title_source: "Sourceಗಳನ್ನು ಅಳಿಸುವುದೇ?"
+  delete_title_task: "Taskಗಳನ್ನು ಅಳಿಸುವುದೇ?"
+  delete_title_virtual_assistant: "Virtual Assistant ಅಳಿಸುವುದೇ?"
+  delete_title_virtual_device: "Virtual Device ಅಳಿಸುವುದೇ?"
+  node_reset_heading: "Node Reset ಮಾಡುವುದೇ?"
+  node_reset_msg: "ಆಯ್ಕೆಮಾಡಿದ Nodeಗಳನ್ನು Reset ಮಾಡುವುದೇ?<br/>ಈ ಕಾರ್ಯಾಚರಣೆಯ ನಂತರ:<3><0>ಸೆಟ್ಟಿಂಗ್ Factory Settingsಗೆ ಹಿಂತಿರುಗುತ್ತದೆ.</0><1>ಆಯ್ಕೆಮಾಡಿದ Nodeಗಳಿಗೆ MyControllerನಿಂದ ಪ್ರವೇಶ ಕಳೆದುಹೋಗಬಹುದು!</1></3>"
+  reboot_nodes_heading: "Node Reboot ಮಾಡುವುದೇ?"
+  reboot_nodes_msg: "ಆಯ್ಕೆಮಾಡಿದ Nodeಗಳನ್ನು Reboot ಮಾಡುವುದೇ?"
+  reset_msg_jwt_secret: "JWT Secret ಅನ್ನು Reset ಮಾಡುವುದೇ? ಈ ಕಾರ್ಯಾಚರಣೆಯ ನಂತರ ಈ Serverನಲ್ಲಿನ ಎಲ್ಲ Login ಅಧಿವೇಶನಗಳು ಅಮಾನ್ಯವಾಗುತ್ತವೆ ಮತ್ತು ನೀವು ಲಾಗ್ ಔಟ್ ಆಗುತ್ತೀರಿ."
+  reset_title_jwt_secret: JWT Secret Reset
+  restore_heading: "Restore ಮಾಡುವುದೇ?"
+  restore_msg: "ಆಯ್ಕೆಮಾಡಿದ Backup ಫೈಲ್‌ನಿಂದ Restore ಮಾಡುವುದೇ?<br/>ಈ ಕಾರ್ಯಾಚರಣೆಯ ನಂತರ:<3><0>Server ಡೇಟಾ <1>{{fileName}}</1> ಸ್ಥಿತಿಗೆ Restore ಆಗುತ್ತದೆ</0><1>ಈ ಕಾರ್ಯಾಚರಣೆಯನ್ನು ಹಿಂತಿರುಗಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</1><2>Restore ಮಾಡುವ ಮೊದಲು Backup ತೆಗೆದುಕೊಳ್ಳಿ</2><3>Server ಅನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಬೇಕಾಗಬಹುದು</3></3>"
 disable: ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ
-disable_scrollbar: ಸ್ಕ್ರಾಲ್‌ಬಾರ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ
+disable_scrollbar: Scrollbar ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ
 disabled: ನಿಷ್ಕ್ರಿಯ
 disabled_all: ಎಲ್ಲವನ್ನೂ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ
-discover_nodes: ನೋಡ್‌ಗಳನ್ನು ಕಂಡುಹಿಡಿಯಿರಿ
-disk: ಡಿಸ್ಕ್
-disks: ಡಿಸ್ಕ್‌ಗಳು
+discover_nodes: Nodeಗಳನ್ನು ಕಂಡುಹಿಡಿಯಿರಿ
+disk: Disk
+disks: Diskಗಳು
 display_name: ಪ್ರದರ್ಶನ ಹೆಸರು
 display_percentage: ಶೇಕಡಾವಾರು ತೋರಿಸಿ
 display_text: ಪ್ರದರ್ಶನ ಪಠ್ಯ
 display_value: ಪ್ರದರ್ಶನ ಮೌಲ್ಯ
 do_update: ನವೀಕರಿಸಿ
-documentation: ದಾಖಲೀಕರಣ
+documentation: Documentation
 down: ಕೆಳಗೆ
 download: ಡೌನ್‌ಲೋಡ್
-drop_down_position: ಡ್ರಾಪ್ ಡೌನ್ ಸ್ಥಾನ
+drop_down_position: Dropdown ಸ್ಥಾನ
 duration: ಅವಧಿ
 edit: ಸಂಪಾದಿಸಿ
-edit_dashboard_settings: ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಂಪಾದಿಸಿ
-edit_widget_settings: ವಿಜೆಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಂಪಾದಿಸಿ
-email: ಇಮೇಲ್
+edit_dashboard_settings: Dashboard ಸೆಟ್ಟಿಂಗ್ ಸಂಪಾದಿಸಿ
+edit_widget_settings: Widget ಸೆಟ್ಟಿಂಗ್ ಸಂಪಾದಿಸಿ
+email: Email
 enable: ಸಕ್ರಿಯಗೊಳಿಸಿ
 enabled: ಸಕ್ರಿಯ
-encryption_key: ಎನ್‌ಕ್ರಿಪ್ಷನ್ ಕೀ
-endpoint: ಎಂಡ್‌ಪಾಯಿಂಟ್
-endpoints: ಎಂಡ್‌ಪಾಯಿಂಟ್‌ಗಳು
-entities: ಘಟಕಗಳು
+encryption_key: Encryption Key
+endpoint: Endpoint
+endpoints: Endpointಗಳು
+entities: Entities
 error:
   console:
-    invalid_login_credentials: ಅಮಾನ್ಯ ಲಾಗಿನ್ ರುಜುವಾತುಗಳು.
-    login_msg_loading_failed: ಲಾಗಿನ್ ಸಂದೇಶವನ್ನು ಪಡೆಯುವಲ್ಲಿ ದೋಷ
-evaluation: ಮೌಲ್ಯಮಾಪನ
-evaluations: ಮೌಲ್ಯಮಾಪನಗಳು
-event_filters: ಈವೆಂಟ್ ಫಿಲ್ಟರ್‌ಗಳು
-events: ಈವೆಂಟ್‌ಗಳು
+    invalid_login_credentials: Login ವಿವರಗಳು ಅಮಾನ್ಯವಾಗಿವೆ.
+    login_msg_loading_failed: Login ಸಂದೇಶವನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ
+evaluation: Evaluation
+evaluations: Evaluationಗಳು
+event_filters: Event Filterಗಳು
+events: Events
 executed_count: ಕಾರ್ಯಗತಗೊಳಿಸಿದ ಎಣಿಕೆ
 execution_interval: ಕಾರ್ಯಗತಗೊಳಿಸುವ ಅಂತರ
 execution_interval_0h0m0s: ಕಾರ್ಯಗತಗೊಳಿಸುವ ಅಂತರ (0h0m0s)
 execution_mode: ಕಾರ್ಯಗತಗೊಳಿಸುವ ವಿಧಾನ
-experimental: ಪ್ರಾಯೋಗಿಕ
+experimental: Experimental
 expires_on: ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ
-export_type: ರಫ್ತು ಪ್ರಕಾರ
-'false': 'ಸುಳ್ಳು'
-favorite: ಮೆಚ್ಚಿನ
+export_type: Export ಪ್ರಕಾರ
+'false': 'False'
+favorite: ಮೆಚ್ಚಿನವು
 fetch_info: ಮಾಹಿತಿ ಪಡೆಯಿರಿ
 fetching: ಪಡೆಯಲಾಗುತ್ತಿದೆ
-field: ಫೀಲ್ಡ್
-field_details: ಫೀಲ್ಡ್ ವಿವರಗಳು
-field_id: ಫೀಲ್ಡ್ ID
-fields: ಫೀಲ್ಡ್‌ಗಳು
-file_details: ಫೈಲ್ ವಿವರಗಳು
-file_uploaded_successfully: ಫೈಲ್ ಯಶಸ್ವಿಯಾಗಿ ಅಪ್‌ಲೋಡ್ ಆಯಿತು
+field: Field
+field_details: Field ವಿವರ
+field_id: Field ID
+fields: Fieldಗಳು
+file_details: ಫೈಲ್ ವಿವರ
+file_uploaded_successfully: ಫೈಲ್ Upload ಆಗಿದೆ
 filename: ಫೈಲ್ ಹೆಸರು
-filename_placeholder: ಫೈಲ್ ಅನ್ನು ಇಲ್ಲಿ ಎಳೆಯಿರಿ ಅಥವಾ ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಬ್ರೌಸ್ ಮಾಡಿ
-fill_opacity_%: ತುಂಬುವ ಅಪಾರದರ್ಶಕತೆ (%)
-filter: ಫಿಲ್ಟರ್
-filter_type: ಫಿಲ್ಟರ್ ಪ್ರಕಾರ
-filters: ಫಿಲ್ಟರ್‌ಗಳು
-firmware_details: ಫರ್ಮ್‌ವೇರ್ ವಿವರಗಳು
-firmware_file: ಫರ್ಮ್‌ವೇರ್ ಫೈಲ್
-firmware_update: ಫರ್ಮ್‌ವೇರ್ ನವೀಕರಣ
-firmwares: ಫರ್ಮ್‌ವೇರ್‌ಗಳು
-flush_interval: ಫ್ಲಷ್ ಅಂತರ
+filename_placeholder: ಫೈಲ್ ಅನ್ನು ಇಲ್ಲಿ ಎಳೆಯಿರಿ ಅಥವಾ ಆಯ್ಕೆಮಾಡಿ
+fill_opacity_%: Fill Opacity (%)
+filter: Filter
+filter_type: Filter ಪ್ರಕಾರ
+filters: Filterಗಳು
+firmware_details: Firmware ವಿವರ
+firmware_file: Firmware ಫೈಲ್
+firmware_update: Firmware ನವೀಕರಣ
+firmwares: Firmwareಗಳು
+flush_interval: Flush ಅಂತರ
 forgot_username_or_password: "ಬಳಕೆದಾರ ಹೆಸರು ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಮರೆತಿರಾ?"
-form_generic_error_message: ದೋಷ ಮತ್ತು/ಅಥವಾ ಕಡ್ಡಾಯ(*) ಕ್ಷೇತ್ರಗಳನ್ನು ಪರಿಶೀಲಿಸಿ
-form_view: ಫಾರ್ಮ್ ನೋಟ
-forum: ಫೋರಮ್
-forward_payload: ಫಾರ್ವರ್ಡ್ ಪೇಲೋಡ್
-forward_payload_details: ಫಾರ್ವರ್ಡ್ ಪೇಲೋಡ್ ವಿವರಗಳು
-frequency: ಆವರ್ತನ
-from: ಇಂದ
-from_email: ಕಳುಹಿಸುವವರ ಇಮೇಲ್
+form_generic_error_message: ದೋಷ ಅಥವಾ ಕಡ್ಡಾಯ(*) Fieldಗಳನ್ನು ಪರಿಶೀಲಿಸಿ
+form_view: Form ನೋಟ
+forum: Forum
+forward_payload: Forward Payload
+forward_payload_details: Forward Payload ವಿವರ
+frequency: Frequency
+from: ಕಳುಹಿಸುವವರು
+from_email: ಕಳುಹಿಸುವವರ Email
 full_name: ಪೂರ್ಣ ಹೆಸರು
-function: ಫಂಕ್ಷನ್
-gateway: ಗೇಟ್‌ವೇ
-gateway_details: ಗೇಟ್‌ವೇ ವಿವರಗಳು
-gateway_id: ಗೇಟ್‌ವೇ ID
-gateways: ಗೇಟ್‌ವೇಗಳು
-all_gateways: ಎಲ್ಲ ಗೇಟ್‌ವೇಗಳು
-all_nodes: ಎಲ್ಲ ನೋಡ್‌ಗಳು
-show_sources: ಮೂಲಗಳನ್ನು ತೋರಿಸಿ
-show_fields: ಫೀಲ್ಡ್‌ಗಳನ್ನು ತೋರಿಸಿ
-select_gateway: ಗೇಟ್‌ವೇ
-no_topology_nodes: ಪ್ರದರ್ಶಿಸಲು ನೋಡ್‌ಗಳಿಲ್ಲ
-no_topology_nodes_for_gateway: ಈ ಗೇಟ್‌ವೇಗೆ ನೋಡ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ
+function: Function
+gateway: Gateway
+gateway_details: Gateway ವಿವರ
+gateway_id: Gateway ID
+gateways: Gatewayಗಳು
+all_gateways: ಎಲ್ಲ Gatewayಗಳು
+all_nodes: ಎಲ್ಲ Nodeಗಳು
+show_sources: Sourceಗಳನ್ನು ತೋರಿಸಿ
+show_fields: Fieldಗಳನ್ನು ತೋರಿಸಿ
+select_gateway: Gateway
+no_topology_nodes: ಪ್ರದರ್ಶಿಸಲು Node ಇಲ್ಲ
+no_topology_nodes_for_gateway: ಈ Gatewayನಲ್ಲಿ Node ಇಲ್ಲ
 geo_location: GEO ಸ್ಥಳ
-git_commit: Git ಕಮಿಟ್
-global_configuration: ಜಾಗತಿಕ ಸಂರಚನೆ
-golang_version: GoLang ಆವೃತ್ತಿ
-handler: ಹ್ಯಾಂಡ್ಲರ್
-handler_details: ಹ್ಯಾಂಡ್ಲರ್ ವಿವರಗಳು
-handler_parameters: ಹ್ಯಾಂಡ್ಲರ್ ನಿಯತಾಂಕಗಳು
-handler_type: ಹ್ಯಾಂಡ್ಲರ್ ಪ್ರಕಾರ
-handlers: ಹ್ಯಾಂಡ್ಲರ್‌ಗಳು
-header_name: ಹೆಡರ್ ಹೆಸರು
-headers: ಹೆಡರ್‌ಗಳು
-heartbeat_request: ಹೃದಯಬಡಿತ ವಿನಂತಿ
+git_commit: Git Commit
+global_configuration: Global ಸೆಟ್ಟಿಂಗ್
+golang_version: GoLang Version
+handler: Handler
+handler_details: Handler ವಿವರ
+handler_parameters: Handler Parameters
+handler_type: Handler ಪ್ರಕಾರ
+handlers: Handlerಗಳು
+header_name: Header ಹೆಸರು
+headers: Headerಗಳು
+heartbeat_request: Heartbeat ವಿನಂತಿ
 height_px: ಎತ್ತರ (px)
 helper_text:
-  invalid_address_esphome: 'ಅಮಾನ್ಯ ವಿಳಾಸ, ಉದಾಹರಣೆ: node1.local:6053'
+  invalid_address_esphome: 'ಅಮಾನ್ಯ ವಿಳಾಸ. ಉದಾಹರಣೆ: node1.local:6053'
   invalid_api: ಅಮಾನ್ಯ API
-  invalid_backup_retention_count: "ಅಮಾನ್ಯ ಧಾರಣ ಎಣಿಕೆ, ಮಿತಿ ಇಲ್ಲದಿರಲು 0"
-  invalid_baud_rate: ಅಮಾನ್ಯ ಬಾಡ್ ದರ
-  invalid_broker_url: ಅಮಾನ್ಯ ಬ್ರೋಕರ್ URL
-  invalid_current_password: ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ
+  invalid_backup_retention_count: "ಅಮಾನ್ಯ Retention ಎಣಿಕೆ. ಮಿತಿ ಇಲ್ಲದಿರಲು 0"
+  invalid_baud_rate: ಅಮಾನ್ಯ Baud Rate
+  invalid_broker_url: ಅಮಾನ್ಯ Broker URL
+  invalid_current_password: ಪ್ರಸ್ತುತ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ
   invalid_data: ಅಮಾನ್ಯ ಡೇಟಾ
   invalid_date: ಅಮಾನ್ಯ ದಿನಾಂಕ
-  invalid_day_of_month: ಅಮಾನ್ಯ ತಿಂಗಳ ದಿನ
-  invalid_directory: ಅಮಾನ್ಯ ಡೈರೆಕ್ಟರಿ
+  invalid_day_of_month: ಅಮಾನ್ಯ ದಿನ
+  invalid_directory: ಅಮಾನ್ಯ ಫೋಲ್ಡರ್
   invalid_duration: ಅಮಾನ್ಯ ಅವಧಿ
-  invalid_email: ಅಮಾನ್ಯ ಇಮೇಲ್
+  invalid_email: ಅಮಾನ್ಯ Email
   invalid_execution_interval_empty: ಕಾರ್ಯಗತಗೊಳಿಸುವ ಅಂತರ ಖಾಲಿ ಇರಬಾರದು
-  invalid_field_id: "ಅಮಾನ್ಯ ಫೀಲ್ಡ್ id. ಅಕ್ಷರಗಳು, ಕನಿಷ್ಠ=1, ಗರಿಷ್ಠ=100"
-  invalid_filters: ಅಮಾನ್ಯ ಫಿಲ್ಟರ್‌ಗಳು
+  invalid_field_id: "ಅಮಾನ್ಯ Field ID. ಅಕ್ಷರ, ಕನಿಷ್ಠ=1, ಗರಿಷ್ಠ=100"
+  invalid_filters: ಅಮಾನ್ಯ Filter
   invalid_height: ಅಮಾನ್ಯ ಎತ್ತರ
-  invalid_host: ಅಮಾನ್ಯ ಹೋಸ್ಟ್
-  invalid_id: "ಅಮಾನ್ಯ id. ಅಕ್ಷರಗಳು, ಕನಿಷ್ಠ=4, ಗರಿಷ್ಠ=100, ಸ್ಪೇಸ್ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ"
+  invalid_host: ಅಮಾನ್ಯ Host
+  invalid_id: "ಅಮಾನ್ಯ ID. ಅಕ್ಷರ, ಕನಿಷ್ಠ=4, ಗರಿಷ್ಠ=100, ಸ್ಪೇಸ್ ಇರಬಾರದು"
   invalid_interval: ಅಮಾನ್ಯ ಅಂತರ
-  invalid_key: "ಅಮಾನ್ಯ ಕೀ. ಅಕ್ಷರಗಳು, ಕನಿಷ್ಠ=1 ಮತ್ತು ಗರಿಷ್ಠ=100"
-  invalid_key_path: ಕೀ ಮಾರ್ಗ ಖಾಲಿ ಇರಬಾರದು
-  invalid_latitude: ಅಮಾನ್ಯ ಅಕ್ಷಾಂಶ
+  invalid_key: "ಅಮಾನ್ಯ Key. ಅಕ್ಷರ, ಕನಿಷ್ಠ=1, ಗರಿಷ್ಠ=100"
+  invalid_key_path: Key ಮಾರ್ಗ ಖಾಲಿ ಇರಬಾರದು
+  invalid_latitude: ಅಮಾನ್ಯ Latitude
   invalid_limit: ಅಮಾನ್ಯ ಮಿತಿ
   invalid_location: ಅಮಾನ್ಯ ಸ್ಥಳ
-  invalid_longitude: ಅಮಾನ್ಯ ರೇಖಾಂಶ
-  invalid_maximum_backup: "ಅಮಾನ್ಯ ಗರಿಷ್ಠ ಬ್ಯಾಕಪ್ ಎಣಿಕೆ. int, ಕನಿಷ್ಠ=0"
-  invalid_name: "ಅಮಾನ್ಯ ಹೆಸರು. ಅಕ್ಷರಗಳು, ಕನಿಷ್ಠ=2, ಗರಿಷ್ಠ=100"
-  invalid_node_id: "ಅಮಾನ್ಯ ನೋಡ್ ID. ಅಕ್ಷರಗಳು, ಕನಿಷ್ಠ=1 ಮತ್ತು ಗರಿಷ್ಠ=100"
-  invalid_offset: ಅಮಾನ್ಯ ಆಫ್‌ಸೆಟ್
+  invalid_longitude: ಅಮಾನ್ಯ Longitude
+  invalid_maximum_backup: "ಅಮಾನ್ಯ Backup ಎಣಿಕೆ. ಪೂರ್ಣಾಂಕ, ಕನಿಷ್ಠ=0"
+  invalid_name: "ಅಮಾನ್ಯ ಹೆಸರು. ಅಕ್ಷರ, ಕನಿಷ್ಠ=2, ಗರಿಷ್ಠ=100"
+  invalid_node_id: "ಅಮಾನ್ಯ Node ID. ಅಕ್ಷರ, ಕನಿಷ್ಠ=1, ಗರಿಷ್ಠ=100"
+  invalid_offset: ಅಮಾನ್ಯ Offset
   invalid_path: ಅಮಾನ್ಯ ಮಾರ್ಗ
-  invalid_payload: ಅಮಾನ್ಯ ಪೇಲೋಡ್
-  invalid_port: ಅಮಾನ್ಯ ಪೋರ್ಟ್
-  invalid_prefix: ಅಮಾನ್ಯ ಪೂರ್ವಪ್ರತ್ಯಯ
-  invalid_profile_confirm_password: ಅಮಾನ್ಯ ದೃಢೀಕರಣ ಪಾಸ್‌ವರ್ಡ್
-  invalid_profile_password: "ಅಮಾನ್ಯ ಪಾಸ್‌ವರ್ಡ್. ಅಕ್ಷರಗಳು, ಕನಿಷ್ಠ=3, ಗರಿಷ್ಠ=100"
-  invalid_profile_username: "ಅಮಾನ್ಯ ಬಳಕೆದಾರ ಹೆಸರು. ಅಕ್ಷರಗಳು, ಕನಿಷ್ಠ=3, ಗರಿಷ್ಠ=100, ಮತ್ತು ಸ್ಥಳಾವಕಾಶ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ"
+  invalid_payload: ಅಮಾನ್ಯ Payload
+  invalid_port: ಅಮಾನ್ಯ Port
+  invalid_prefix: ಅಮಾನ್ಯ Prefix
+  invalid_profile_confirm_password: ದೃಢೀಕರಣ ಪಾಸ್‌ವರ್ಡ್ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ
+  invalid_profile_password: "ಅಮಾನ್ಯ ಪಾಸ್‌ವರ್ಡ್. ಅಕ್ಷರ, ಕನಿಷ್ಠ=3, ಗರಿಷ್ಠ=100"
+  invalid_profile_username: "ಅಮಾನ್ಯ ಬಳಕೆದಾರ ಹೆಸರು. ಅಕ್ಷರ, ಕನಿಷ್ಠ=3, ಗರಿಷ್ಠ=100, ಸ್ಪೇಸ್ ಇರಬಾರದು"
   invalid_repeat_count: ಅಮಾನ್ಯ ಪುನರಾವರ್ತನೆ ಎಣಿಕೆ
-  invalid_response_code: "ಮಾನ್ಯ ಪ್ರತಿಕ್ರಿಯೆ ಕೋಡ್ ನಮೂದಿಸಿ, ನಿರ್ಲಕ್ಷಿಸಲು 0 ನಮೂದಿಸಿ"
-  invalid_retry_count: "ಅಮಾನ್ಯ ಮರುಪ್ರಯತ್ನ ಎಣಿಕೆ. int, ಕನಿಷ್ಠ=0"
-  invalid_script_empty: ಸ್ಕ್ರಿಪ್ಟ್ ಖಾಲಿ ಇರಬಾರದು
-  invalid_server_url: ಅಮಾನ್ಯ ಸರ್ವರ್ URL
-  invalid_source_id: "ಅಮಾನ್ಯ ಮೂಲ ID. ಅಕ್ಷರಗಳು, ಕನಿಷ್ಠ=1 ಮತ್ತು ಗರಿಷ್ಠ=100"
-  invalid_text: "ಅಮಾನ್ಯ ಪಠ್ಯ. ಅಕ್ಷರಗಳು, ಕನಿಷ್ಠ=1 ಮತ್ತು ಗರಿಷ್ಠ=100"
+  invalid_response_code: "ಮಾನ್ಯ ಪ್ರತಿಕ್ರಿಯೆ ಕೋಡ್ ನಮೂದಿಸಿ. ನಿರ್ಲಕ್ಷಿಸಲು 0 ನಮೂದಿಸಿ"
+  invalid_retry_count: "ಅಮಾನ್ಯ ಮರುಪ್ರಯತ್ನ ಎಣಿಕೆ. ಪೂರ್ಣಾಂಕ, ಕನಿಷ್ಠ=0"
+  invalid_script_empty: Script ಖಾಲಿ ಇರಬಾರದು
+  invalid_server_url: ಅಮಾನ್ಯ Server URL
+  invalid_source_id: "ಅಮಾನ್ಯ Source ID. ಅಕ್ಷರ, ಕನಿಷ್ಠ=1, ಗರಿಷ್ಠ=100"
+  invalid_text: "ಅಮಾನ್ಯ ಪಠ್ಯ. ಅಕ್ಷರ, ಕನಿಷ್ಠ=1, ಗರಿಷ್ಠ=100"
   invalid_time: ಅಮಾನ್ಯ ಸಮಯ
   invalid_title: ಅಮಾನ್ಯ ಶೀರ್ಷಿಕೆ
-  invalid_token: ಅಮಾನ್ಯ ಟೋಕನ್
-  invalid_topic: ಅಮಾನ್ಯ ವಿಷಯ
+  invalid_token: ಅಮಾನ್ಯ Token
+  invalid_topic: ಅಮಾನ್ಯ Topic
   invalid_type: ಅಮಾನ್ಯ ಪ್ರಕಾರ
   invalid_url: ಅಮಾನ್ಯ URL
   invalid_username: ಅಮಾನ್ಯ ಬಳಕೆದಾರ ಹೆಸರು
   invalid_password: ಅಮಾನ್ಯ ಪಾಸ್‌ವರ್ಡ್
   password_leave_empty: ಪ್ರಸ್ತುತ ಪಾಸ್‌ವರ್ಡ್ ಇರಿಸಲು ಖಾಲಿ ಬಿಡಿ
-  service_account_user: ನಿಮಗಾಗಿ ರಚಿಸಲು ಖಾಲಿ ಬಿಡಿ. ಅವರಿಗಾಗಿ ಖಾತೆ ರಚಿಸಲು ಬಳಕೆದಾರರನ್ನು ಆಯ್ಕೆಮಾಡಿ.
+  service_account_user: ನಿಮಗಾಗಿ ರಚಿಸಲು ಖಾಲಿ ಬಿಡಿ. ಬೇರೆ ಬಳಕೆದಾರರಿಗೆ ರಚಿಸಲು ಅವರನ್ನು ಆಯ್ಕೆಮಾಡಿ.
   invalid_value: ಅಮಾನ್ಯ ಮೌಲ್ಯ
   invalid_width: ಅಮಾನ್ಯ ಅಗಲ
-hide_border: ಗಡಿ ಮರೆಮಾಡಿ
-hide_header: ಹೆಡರ್ ಮರೆಮಾಡಿ
-hide_status_column: ಸ್ಥಿತಿ ಕಾಲಮ್ ಮರೆಮಾಡಿ
-hide_value_column: ಮೌಲ್ಯ ಕಾಲಮ್ ಮರೆಮಾಡಿ
-host: ಹೋಸ್ಟ್
-host_id: ಹೋಸ್ಟ್ ID
-host_ids: ಹೋಸ್ಟ್ IDಗಳು
+hide_border: Border ಮರೆಮಾಡಿ
+hide_header: Header ಮರೆಮಾಡಿ
+hide_status_column: Status Column ಮರೆಮಾಡಿ
+hide_value_column: Value Column ಮರೆಮಾಡಿ
+host: Host
+host_id: Host ID
+host_ids: Host IDಗಳು
 html: HTML
-hue: ಹ್ಯೂ
-icon_or_image_location: ಐಕಾನ್ ಅಥವಾ ಚಿತ್ರದ ಸ್ಥಳ
+hue: Hue
+icon_or_image_location: Icon ಅಥವಾ ಚಿತ್ರದ ಸ್ಥಳ
 id: ID
 ignore_duplicate: ನಕಲನ್ನು ನಿರ್ಲಕ್ಷಿಸಿ
-image_source: ಚಿತ್ರದ ಮೂಲ
-image_type: ಚಿತ್ರದ ಪ್ರಕಾರ
+image_source: ಚಿತ್ರ Source
+image_type: ಚಿತ್ರ ಪ್ರಕಾರ
 in_progress: ಪ್ರಗತಿಯಲ್ಲಿದೆ
 inactive_duration: ನಿಷ್ಕ್ರಿಯ ಅವಧಿ
-include_configuration: ಸಂರಚನೆಯನ್ನು ಸೇರಿಸಿ
-include_global_configuration: ಜಾಗತಿಕ ಸಂರಚನೆಯನ್ನು ಸೇರಿಸಿ
-include_insecure_share: ಅಸುರಕ್ಷಿತ ಹಂಚಿಕೆಯನ್ನು ಸೇರಿಸಿ
-include_secure_share: ಸುರಕ್ಷಿತ ಹಂಚಿಕೆಯನ್ನು ಸೇರಿಸಿ
+include_configuration: ಸೆಟ್ಟಿಂಗ್ ಸೇರಿಸಿ
+include_global_configuration: Global ಸೆಟ್ಟಿಂಗ್ ಸೇರಿಸಿ
+include_insecure_share: ಅಸುರಕ್ಷಿತ Share ಸೇರಿಸಿ
+include_secure_share: ಸುರಕ್ಷಿತ Share ಸೇರಿಸಿ
 insecure: ಅಸುರಕ್ಷಿತ
-internal_message_ack: ಆಂತರಿಕ ಸಂದೇಶ Ack
-interpolation: ಇಂಟರ್‌ಪೋಲೇಷನ್
+internal_message_ack: Internal Message Ack
+interpolation: Interpolation
 interval: ಅಂತರ
 interval_0h0m0s: ಅಂತರ (0h0m0s)
 invalid_file: ಅಮಾನ್ಯ ಫೈಲ್
-is_sleep_node: ನಿದ್ರಾ ನೋಡ್ ಆಗಿದೆಯೇ
-is_static: ಸ್ಥಿರವಾಗಿದೆಯೇ
+is_sleep_node: Sleep Node
+is_static: Static
 javascript: Javascript
 json: JSON
-jwt_secret: JWT ಸೀಕ್ರೆಟ್
-keep_me_logged_in_30_days: 30 ದಿನಗಳವರೆಗೆ ನನ್ನನ್ನು ಲಾಗ್ ಇನ್ ಇರಿಸಿ.
-key: ಕೀ
-key_path: ಕೀ ಮಾರ್ಗ
-label: ಲೇಬಲ್
-labels: ಲೇಬಲ್‌ಗಳು
+jwt_secret: JWT Secret
+keep_me_logged_in_30_days: 30 ದಿನಗಳವರೆಗೆ ಲಾಗ್ ಇನ್ ಇರಿಸಿ.
+key: Key
+key_path: Key ಮಾರ್ಗ
+label: Label
+labels: Labelಗಳು
 language: ಭಾಷೆ
-last_evaluation: ಕೊನೆಯ ಮೌಲ್ಯಮಾಪನ
-last_modified: ಕೊನೆಯ ಬಾರಿ ಮಾರ್ಪಡಿಸಲಾಗಿದೆ
-last_run: ಕೊನೆಯ ರನ್
+last_evaluation: ಕೊನೆಯ Evaluation
+last_modified: ಕೊನೆಯ ಬಾರಿ ಮಾರ್ಪಡಿಸಿದ್ದು
+last_run: ಕೊನೆಯ Run
 last_seen: ಕೊನೆಯ ಬಾರಿ ಕಂಡಿದ್ದು
 last_status: ಕೊನೆಯ ಸ್ಥಿತಿ
 last_success: ಕೊನೆಯ ಯಶಸ್ಸು
-latitude: ಅಕ್ಷಾಂಶ
-legend_orientation: ಲೆಜೆಂಡ್ ದೃಷ್ಟಿಕೋನ
-legend_position: ಲೆಜೆಂಡ್ ಸ್ಥಾನ
-library_version: ಲೈಬ್ರರಿ ಆವೃತ್ತಿ
-light: ಬೆಳಕು
+latitude: Latitude
+legend_orientation: Legend ದಿಕ್ಕು
+legend_position: Legend ಸ್ಥಾನ
+library_version: Library Version
+light: ದೀಪ
 limit: ಮಿತಿ
 loading: ಲೋಡ್ ಆಗುತ್ತಿದೆ
 location: ಸ್ಥಳ
 location_name: ಸ್ಥಳದ ಹೆಸರು
 locations: ಸ್ಥಳಗಳು
 log_in: ಲಾಗ್ ಇನ್
-log_rotate_interval: ಲಾಗ್ ತಿರುಗುವಿಕೆ ಅಂತರ
-login: ಲಾಗಿನ್
-login_page: ಲಾಗಿನ್ ಪುಟ
-login_to_your_account: ನಿಮ್ಮ ಖಾತೆಗೆ ಲಾಗಿನ್ ಮಾಡಿ
+log_rotate_interval: Log ತಿರುಗುವಿಕೆ ಅಂತರ
+login: Login
+login_page: Login ಪುಟ
+login_to_your_account: ನಿಮ್ಮ ಖಾತೆಗೆ ಲಾಗ್ ಇನ್ ಮಾಡಿ
 logout: ಲಾಗ್ ಔಟ್
-longitude: ರೇಖಾಂಶ
-mapping: ಮ್ಯಾಪಿಂಗ್
+longitude: Longitude
+mapping: Mapping
 mark_all_read: ಎಲ್ಲವನ್ನೂ ಓದಿದೆ ಎಂದು ಗುರುತಿಸಿ
 markdown: Markdown
 markdown_v2: Markdown v2
-match_all: ಎಲ್ಲವನ್ನೂ ಹೊಂದಿಸಿ
+match_all: ಎಲ್ಲವೂ ಹೊಂದಿಕೆಯಾಗಬೇಕು
 max_y_axis: ಗರಿಷ್ಠ (Y ಅಕ್ಷ)
 maximum: ಗರಿಷ್ಠ
 maximum_age: ಗರಿಷ್ಠ ವಯಸ್ಸು
-maximum_backup: ಗರಿಷ್ಠ ಬ್ಯಾಕಪ್
+maximum_backup: ಗರಿಷ್ಠ Backup
 maximum_size: ಗರಿಷ್ಠ ಗಾತ್ರ
 maximum_value: ಗರಿಷ್ಠ ಮೌಲ್ಯ
-memory: ಮೆಮೊರಿ
-memory_disabled: ಮೆಮೊರಿ ನಿಷ್ಕ್ರಿಯ
+memory: Memory
+memory_disabled: Memory ನಿಷ್ಕ್ರಿಯ
 message: ಸಂದೇಶ
-message_logger: ಸಂದೇಶ ಲಾಗರ್
-method: ವಿಧಾನ
-metric_configuration: ಮೆಟ್ರಿಕ್ ಸಂರಚನೆ
-metric_function: ಮೆಟ್ರಿಕ್ ಕಾರ್ಯ
-metric_interval: ಮೆಟ್ರಿಕ್ ಅಂತರ
-metric_type: ಮೆಟ್ರಿಕ್ ಪ್ರಕಾರ
-metrics: ಮೆಟ್ರಿಕ್‌ಗಳು
-metrics_database_disabled: 'ಎಚ್ಚರಿಕೆ: ಮೆಟ್ರಿಕ್ ಡೇಟಾಬೇಸ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ'
+message_logger: Message Logger
+method: Method
+metric_configuration: Metric ಸೆಟ್ಟಿಂಗ್
+metric_function: Metric Function
+metric_interval: Metric ಅಂತರ
+metric_type: Metric ಪ್ರಕಾರ
+metrics: Metrics
+metrics_database_disabled: 'ಎಚ್ಚರಿಕೆ: Metrics Database ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ'
 min_y_axis: ಕನಿಷ್ಠ (Y ಅಕ್ಷ)
 minimum: ಕನಿಷ್ಠ
 minimum_value: ಕನಿಷ್ಠ ಮೌಲ್ಯ
 minimum_width: ಕನಿಷ್ಠ ಅಗಲ
-mixed_resources: ಮಿಶ್ರ ಸಂಪನ್ಮೂಲಗಳು
+mixed_resources: ಮಿಶ್ರ Resourceಗಳು
 modified_on: ಮಾರ್ಪಡಿಸಿದ ದಿನಾಂಕ
 name: ಹೆಸರು
-name_key: ಹೆಸರು ಕೀ
-never_expire: ಎಂದಿಗೂ ಅವಧಿ ಮುಗಿಯುವುದಿಲ್ಲ
+name_key: ಹೆಸರು Key
+never_expire: ಅವಧಿ ಮುಗಿಯುವುದಿಲ್ಲ
 new: ಹೊಸ
 new_password: ಹೊಸ ಪಾಸ್‌ವರ್ಡ್
-no_change_since: ಆಗಿನಿಂದ ಬದಲಾವಣೆ ಇಲ್ಲ
-no_dashboard_message: ಲೋಡ್ ಮಾಡಲು ಯಾವುದೇ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಲಭ್ಯವಿಲ್ಲ.
-no_dashboard_title: ಯಾವುದೇ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ
+no_change_since: ಬದಲಾವಣೆ ಇಲ್ಲದ ಅವಧಿ
+no_dashboard_message: ಲೋಡ್ ಮಾಡಲು Dashboard ಇಲ್ಲ.
+no_dashboard_title: Dashboard ಇಲ್ಲ
 no_data: ಡೇಟಾ ಇಲ್ಲ
-no_labels: ಲೇಬಲ್‌ಗಳಿಲ್ಲ
-no_login_message: ಲಾಗಿನ್‌ಗಾಗಿ ಯಾವುದೇ ಸಂದೇಶ ಹೊಂದಿಸಲಾಗಿಲ್ಲ
-node: ನೋಡ್
-node_configuration: ನೋಡ್ ಸಂರಚನೆ
-node_details: ನೋಡ್ ವಿವರಗಳು
-node_endpoints: ನೋಡ್ ಎಂಡ್‌ಪಾಯಿಂಟ್‌ಗಳು
-node_id: ನೋಡ್ ID
-node_state_updater: ನೋಡ್ ಸ್ಥಿತಿ ನವೀಕರಣಕಾರ
-nodes: ನೋಡ್‌ಗಳು
+no_labels: Label ಇಲ್ಲ
+no_login_message: Login ಸಂದೇಶ ಹೊಂದಿಸಲಾಗಿಲ್ಲ
+node: Node
+node_configuration: Node ಸೆಟ್ಟಿಂಗ್
+node_details: Node ವಿವರ
+node_endpoints: Node Endpointಗಳು
+node_id: Node ID
+node_state_updater: Node State Updater
+nodes: Nodeಗಳು
 none: ಯಾವುದೂ ಇಲ್ಲ
 notifications: ಅಧಿಸೂಚನೆಗಳು
 number_of_axis: ಅಕ್ಷಗಳ ಸಂಖ್ಯೆ
 occurrences: ಸಂಭವನೆಗಳು
 'off': 'OFF'
 off_text: OFF ಪಠ್ಯ
-offset_0h0m0s: ಆಫ್‌ಸೆಟ್ (0h0m0s)
-offset_y_%: ಆಫ್‌ಸೆಟ್ Y (%)
+offset_0h0m0s: Offset (0h0m0s)
+offset_y_%: Offset Y (%)
 'on': 'ON'
-on_button: ON ಬಟನ್
+on_button: ON Button
 on_receive: ಸ್ವೀಕರಿಸಿದಾಗ
 on_send: ಕಳುಹಿಸಿದಾಗ
 on_text: ON ಪಠ್ಯ
 operations: ಕಾರ್ಯಾಚರಣೆಗಳು
-operator: ಆಪರೇಟರ್
+operator: Operator
 options: ಆಯ್ಕೆಗಳು
 opts:
   backup_provider:
-    desc_disk: ಡೇಟಾವನ್ನು ಡಿಸ್ಕ್‌ಗೆ ಬ್ಯಾಕಪ್ ಮಾಡಿ
-    label_disk: ಡಿಸ್ಕ್
+    desc_disk: ಡೇಟಾವನ್ನು Diskನಲ್ಲಿ Backup ಮಾಡುತ್ತದೆ
+    label_disk: Disk
   button_type:
     label_danger: ಅಪಾಯ (ಕೆಂಪು)
     label_primary: ಪ್ರಾಥಮಿಕ (ನೀಲಿ)
     label_secondary: ದ್ವಿತೀಯ (ನೀಲಿ)
     label_warning: ಎಚ್ಚರಿಕೆ (ಹಳದಿ)
   chart_group_type:
-    desc_group_chart: ಬಹು ಸಂಪನ್ಮೂಲಗಳೊಂದಿಗೆ ಏಕ ಅಕ್ಷ
-    desc_mixed_chart: ಬಹು ಸಂಪನ್ಮೂಲಗಳೊಂದಿಗೆ ಬಹು ಅಕ್ಷ
-    desc_pie_chart: ಏಕ ಪೈ ಚಾರ್ಟ್
-    label_group_chart: ಗುಂಪು ಚಾರ್ಟ್
-    label_mixed_chart: ಮಿಶ್ರ ಚಾರ್ಟ್
-    label_pie_chart: ಪೈ ಚಾರ್ಟ್
+    desc_group_chart: ಬಹು Resourceಗಳಿಗೆ ಒಂದೇ ಅಕ್ಷ
+    desc_mixed_chart: ಬಹು Resourceಗಳಿಗೆ ಬಹು ಅಕ್ಷಗಳು
+    desc_pie_chart: ಒಂದು Pie Chart
+    label_group_chart: Group Chart
+    label_mixed_chart: Mixed Chart
+    label_pie_chart: Pie Chart
   chart_interpolation:
     label_basis: Basis
     label_cardinal: Cardinal
@@ -428,16 +428,16 @@ opts:
     label_step_after: StepAfter
     label_step_before: StepBefore
   chart_type:
-    desc_area_chart: ಏರಿಯಾ ಚಾರ್ಟ್
-    desc_bar_chart: ಬಾರ್ ಚಾರ್ಟ್
-    desc_line_chart: ರೇಖಾ ಚಾರ್ಟ್
-    desc_pie_chart: ಪೈ ಚಾರ್ಟ್
-    desc_scatter_chart: ಸ್ಕ್ಯಾಟರ್ ಚಾರ್ಟ್
-    label_area_chart: ಏರಿಯಾ ಚಾರ್ಟ್
-    label_bar_chart: ಬಾರ್ ಚಾರ್ಟ್
-    label_line_chart: ರೇಖಾ ಚಾರ್ಟ್
-    label_pie_chart: ಪೈ ಚಾರ್ಟ್
-    label_scatter_chart: ಸ್ಕ್ಯಾಟರ್ ಚಾರ್ಟ್
+    desc_area_chart: Area Chart
+    desc_bar_chart: Bar Chart
+    desc_line_chart: Line Chart
+    desc_pie_chart: Pie Chart
+    desc_scatter_chart: Scatter Chart
+    label_area_chart: Area Chart
+    label_bar_chart: Bar Chart
+    label_line_chart: Line Chart
+    label_pie_chart: Pie Chart
+    label_scatter_chart: Scatter Chart
   code_editor_language:
     label_html: HTML
     label_javascript: Javascript
@@ -446,107 +446,107 @@ opts:
     label_xml: XML
     label_yaml: YAML
   control_type:
-    label_mixed_control: ಮಿಶ್ರ ನಿಯಂತ್ರಣ
-    label_switch_button: ಬಟನ್ ಸ್ವಿಚ್
-    label_switch_toggle: ಸ್ವಿಚ್ ಟಾಗಲ್
+    label_mixed_control: Mixed Control
+    label_switch_button: Button Switch
+    label_switch_toggle: Switch Toggle
   control_type_mixed:
-    label_button_push: ಪುಶ್ ಬಟನ್
-    label_input: ಇನ್‌ಪುಟ್
+    label_button_push: Push Button
+    label_input: Input
     label_options_select: ಆಯ್ಕೆಗಳನ್ನು ಆರಿಸಿ
-    label_options_tab: ಟ್ಯಾಬ್ ಆಯ್ಕೆಗಳು
-    label_slider: ಸ್ಲೈಡರ್
-    label_switch_button: ಬಟನ್ ಸ್ವಿಚ್
-    label_switch_toggle: ಟಾಗಲ್ ಸ್ವಿಚ್
+    label_options_tab: Tab ಆಯ್ಕೆಗಳು
+    label_slider: Slider
+    label_switch_button: Button Switch
+    label_switch_toggle: Toggle Switch
   dampening:
-    desc_active_duration: ಕಾರ್ಯದ ಸಕ್ರಿಯ ಅವಧಿ
+    desc_active_duration: Task ಸಕ್ರಿಯವಾಗಿರುವ ಅವಧಿ
     desc_consecutive: ಸತತ ಸಂಭವನೆಗಳ ಸಂಖ್ಯೆ
-    desc_evaluation: N ಮೌಲ್ಯಮಾಪನದಲ್ಲಿನ ಸಂಭವನೆಗಳ ಸಂಖ್ಯೆ
-    desc_none: ಡ್ಯಾಂಪನಿಂಗ್ ವೈಶಿಷ್ಟ್ಯವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ
+    desc_evaluation: N Evaluationನಲ್ಲಿ ಸಂಭವನೆಗಳ ಸಂಖ್ಯೆ
+    desc_none: Dampening ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ
     label_active_duration: ಸಕ್ರಿಯ ಅವಧಿ
     label_consecutive: ಸತತ
-    label_evaluation: ಮೌಲ್ಯಮಾಪನ
+    label_evaluation: Evaluation
     label_none: ಯಾವುದೂ ಇಲ್ಲ
   data_unit:
-    label_bytes: ಬೈಟ್‌ಗಳು
-    label_eib: ಎಕ್ಸ್‌ಬಿ ಬೈಟ್‌ಗಳು (EiB)
-    label_gib: ಗಿಬಿ ಬೈಟ್‌ಗಳು (GiB)
-    label_kib: ಕಿಬಿ ಬೈಟ್‌ಗಳು (KiB)
-    label_mib: ಮಿಬಿ ಬೈಟ್‌ಗಳು (MiB)
-    label_pib: ಪೆಬಿ ಬೈಟ್‌ಗಳು (PiB)
-    label_tib: ಟೆಬಿ ಬೈಟ್‌ಗಳು (TiB)
+    label_bytes: Bytes
+    label_eib: Exbi Bytes (EiB)
+    label_gib: Gibi Bytes (GiB)
+    label_kib: Kibi Bytes (KiB)
+    label_mib: Mibi Bytes (MiB)
+    label_pib: Pebi Bytes (PiB)
+    label_tib: Tebi Bytes (TiB)
   event_type:
     label_created: ರಚಿಸಲಾಗಿದೆ
     label_deleted: ಅಳಿಸಲಾಗಿದೆ
     label_requested: ವಿನಂತಿಸಲಾಗಿದೆ
     label_updated: ನವೀಕರಿಸಲಾಗಿದೆ
   gw_msg_logger:
-    desc_file_logger: ಸಂದೇಶಗಳನ್ನು ಫೈಲ್‌ನಲ್ಲಿ ಲಾಗ್ ಮಾಡಲಾಗುತ್ತದೆ
-    desc_none: ಸಂದೇಶಗಳನ್ನು ಲಾಗ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ
-    label_file_logger: ಫೈಲ್ ಲಾಗರ್
+    desc_file_logger: ಸಂದೇಶಗಳನ್ನು ಒಂದು ಫೈಲ್‌ನಲ್ಲಿ Log ಮಾಡಲಾಗುತ್ತದೆ
+    desc_none: ಸಂದೇಶಗಳನ್ನು Log ಮಾಡಲಾಗುವುದಿಲ್ಲ
+    label_file_logger: File Logger
     label_none: ಯಾವುದೂ ಇಲ್ಲ
   gw_protocol:
-    desc_ethernet: ಈಥರ್ನೆಟ್ ಪ್ರೋಟೋಕಾಲ್
-    desc_http: HTTP ಪ್ರೋಟೋಕಾಲ್
-    desc_mqtt: MQTT ಪ್ರೋಟೋಕಾಲ್
-    desc_serial: ಸೀರಿಯಲ್ ಪ್ರೋಟೋಕಾಲ್
-    label_ethernet: ಈಥರ್ನೆಟ್
+    desc_ethernet: Ethernet Protocol
+    desc_http: HTTP Protocol
+    desc_mqtt: MQTT Protocol
+    desc_serial: Serial Protocol
+    label_ethernet: Ethernet
     label_http: HTTP
     label_mqtt: MQTT
-    label_serial: ಸೀರಿಯಲ್
+    label_serial: Serial
   gw_provider:
     desc_esphome: esphome.io
-    desc_generic: ಸಾಮಾನ್ಯ ಪೂರೈಕೆದಾರ
-    desc_mysensors_v2: MySensors.org ಆವೃತ್ತಿ 2.x
+    desc_generic: Generic Provider
+    desc_mysensors_v2: MySensors.org version 2.x
     desc_philips_hue: developers.meethue.com
-    desc_system_monitoring: ಸಿಸ್ಟಮ್ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಸೆರೆಹಿಡಿದು ವರದಿ ಮಾಡುತ್ತದೆ
+    desc_system_monitoring: System Resourceಗಳನ್ನು ಸಂಗ್ರಹಿಸಿ Report ಮಾಡುತ್ತದೆ
     desc_tasmota: tasmota.github.io
     label_esphome: ESPHome
-    label_generic: ಸಾಮಾನ್ಯ
+    label_generic: Generic
     label_mysensors_v2: MySensors V2
     label_philips_hue: PhilipsHue
-    label_system_monitoring: ಸಿಸ್ಟಮ್ ಮಾನಿಟರಿಂಗ್
+    label_system_monitoring: System Monitoring
     label_tasmota: Tasmota
   handler_type:
-    desc_backup: ಸರ್ವರ್‌ನ ಬ್ಯಾಕಪ್ ನಿರ್ವಹಿಸಿ
-    desc_email: ಇಮೇಲ್ ಕಳುಹಿಸುತ್ತದೆ
-    desc_noop: ಯಾವುದೇ ಕಾರ್ಯಾಚರಣೆ ಇಲ್ಲದ ಹ್ಯಾಂಡ್ಲರ್
-    desc_resource: ಆಂತರಿಕ ಸಂಪನ್ಮೂಲ ಸಂಬಂಧಿತ ಕ್ರಿಯೆಗಳು
-    desc_telegram: ಟೆಲಿಗ್ರಾಮ್‌ಗೆ ಪಠ್ಯ ಕಳುಹಿಸುತ್ತದೆ
-    desc_webhook: ವೆಬ್‌ಹುಕ್ url ಅನ್ನು ಕರೆ ಮಾಡುತ್ತದೆ
-    label_backup: ಬ್ಯಾಕಪ್
-    label_email: ಇಮೇಲ್
+    desc_backup: Server ಅನ್ನು Backup ಮಾಡುತ್ತದೆ
+    desc_email: Email ಕಳುಹಿಸುತ್ತದೆ
+    desc_noop: ಯಾವುದೇ ಕಾರ್ಯ ಮಾಡದ Handler
+    desc_resource: ಆಂತರಿಕ Resource ಕ್ರಿಯೆಗಳು
+    desc_telegram: Telegramಗೆ ಪಠ್ಯ ಕಳುಹಿಸುತ್ತದೆ
+    desc_webhook: ಒಂದು Webhook URL ಅನ್ನು ಕರೆ ಮಾಡುತ್ತದೆ
+    label_backup: Backup
+    label_email: Email
     label_noop: Noop
-    label_resource: ಸಂಪನ್ಮೂಲ
+    label_resource: Resource
     label_telegram: Telegram
-    label_webhook: ವೆಬ್‌ಹುಕ್
+    label_webhook: Webhook
   http_method:
     label_delete: DELETE
     label_get: GET
     label_post: POST
     label_put: PUT
   image_load_type:
-    desc_custom_mapping: ಫೀಲ್ಡ್ ಮೌಲ್ಯದಿಂದ ಮ್ಯಾಪ್ ಮಾಡಿದ ಚಿತ್ರವನ್ನು ಪ್ರದರ್ಶಿಸಿ
-    desc_image: ಫೀಲ್ಡ್ ಮೌಲ್ಯದಿಂದ Base64 ಎನ್‌ಕೋಡ್ ಮಾಡಿದ ಚಿತ್ರ
-    label_custom_mapping: ಕಸ್ಟಮ್ ಮ್ಯಾಪಿಂಗ್
-    label_image: ಕಚ್ಚಾ ಚಿತ್ರ
+    desc_custom_mapping: Field ಮೌಲ್ಯದಿಂದ Map ಮಾಡಿದ ಚಿತ್ರ
+    desc_image: Field ಮೌಲ್ಯದಿಂದ Base64 ಚಿತ್ರ
+    label_custom_mapping: Custom Mapping
+    label_image: Raw Image
   image_rotation:
     desc_rotate_180: 180° ತಿರುಗಿಸಿ
-    desc_rotate_left_90: ಎಡಭಾಗಕ್ಕೆ 90° ತಿರುಗಿಸಿ
+    desc_rotate_left_90: ಎಡಕ್ಕೆ 90° ತಿರುಗಿಸಿ
     desc_rotate_none: ತಿರುಗುವಿಕೆ ಇಲ್ಲ
-    desc_rotate_right_90: ಬಲಭಾಗಕ್ಕೆ 90° ತಿರುಗಿಸಿ
+    desc_rotate_right_90: ಬಲಕ್ಕೆ 90° ತಿರುಗಿಸಿ
     label_rotate_180: 180° ತಿರುಗಿಸಿ
-    label_rotate_left_90: ಎಡಕ್ಕೆ 90° ತಿರುಗಿಸಿ
+    label_rotate_left_90: ಎಡ 90°
     label_rotate_none: ಯಾವುದೂ ಇಲ್ಲ
-    label_rotate_right_90: ಬಲಕ್ಕೆ 90° ತಿರುಗಿಸಿ
+    label_rotate_right_90: ಬಲ 90°
   image_source:
-    desc_disk: ಸ್ಥಳೀಯ ಡಿಸ್ಕ್ ಸ್ಥಳದಿಂದ ಚಿತ್ರ
-    desc_field: ಫೀಲ್ಡ್ ಸಂಪನ್ಮೂಲದಿಂದ ಚಿತ್ರ ಡೇಟಾ
-    desc_url: url ನಿಂದ ಚಿತ್ರ
-    label_disk: ಡಿಸ್ಕ್
-    label_field: ಫೀಲ್ಡ್
+    desc_disk: ಸ್ಥಳೀಯ Disk ಮಾರ್ಗದಿಂದ ಚಿತ್ರ
+    desc_field: Field Resourceನಿಂದ ಚಿತ್ರ ಡೇಟಾ
+    desc_url: URLನಿಂದ ಚಿತ್ರ
+    label_disk: Disk
+    label_field: Field
     label_url: URL
   interval:
-    label_day_01: 1 ದಿನಗಳು
+    label_day_01: 1 ದಿನ
     label_hour_01: 1 ಗಂಟೆ
     label_hour_03: 3 ಗಂಟೆಗಳು
     label_hour_06: 6 ಗಂಟೆಗಳು
@@ -565,25 +565,25 @@ opts:
     label_second_30: 30 ಸೆಕೆಂಡುಗಳು
     label_second_45: 45 ಸೆಕೆಂಡುಗಳು
   legend_orientation:
-    desc_horizontal: ಸಮತಲ ಸ್ಥಾನದಲ್ಲಿ ಇರಿಸುತ್ತದೆ
-    desc_vertical: ಲಂಬ ಸ್ಥಾನದಲ್ಲಿ ಇರಿಸುತ್ತದೆ
+    desc_horizontal: ಸಮತಲವಾಗಿ ಇರಿಸುತ್ತದೆ
+    desc_vertical: ಲಂಬವಾಗಿ ಇರಿಸುತ್ತದೆ
     label_horizontal: ಸಮತಲ
     label_vertical: ಲಂಬ
   legend_position:
-    desc_bottom_center: ಕೆಳಭಾಗದ ಮಧ್ಯ
-    desc_bottom_left: ಕೆಳಭಾಗದ ಎಡಭಾಗ
+    desc_bottom_center: ಕೆಳಗೆ ಮಧ್ಯದಲ್ಲಿ
+    desc_bottom_left: ಕೆಳಗೆ ಎಡಭಾಗದಲ್ಲಿ
     desc_right: ಬಲಭಾಗ
-    desc_top_left: ಮೇಲ್ಭಾಗದ ಎಡಭಾಗ
+    desc_top_left: ಮೇಲೆ ಎಡಭಾಗದಲ್ಲಿ
     label_bottom_center: ಕೆಳ ಮಧ್ಯ
     label_bottom_left: ಕೆಳ ಎಡ
     label_right: ಬಲ
     label_top_left: ಮೇಲೆ ಎಡ
   light_type:
-    desc_cw_ww: ತಣ್ಣನೆಯ ಬಿಳಿ ಮತ್ತು ಬೆಚ್ಚಗಿನ ಬಿಳಿ
-    desc_rgb: RGB ಬೆಳಕು
-    desc_rgb_cw: ತಣ್ಣನೆಯ ಬಿಳಿಯೊಂದಿಗೆ RGB
-    desc_rgb_cw_ww: ತಣ್ಣನೆಯ ಬಿಳಿ ಮತ್ತು ಬೆಚ್ಚಗಿನ ಬಿಳಿಯೊಂದಿಗೆ RGB
-    desc_single: "ಏಕ, ತಣ್ಣನೆಯ ಬಿಳಿ ಅಥವಾ ಬೆಚ್ಚಗಿನ ಬಿಳಿ"
+    desc_cw_ww: Cold White ಮತ್ತು Warm White
+    desc_rgb: RGB ದೀಪ
+    desc_rgb_cw: RGB ಜೊತೆ Cold White
+    desc_rgb_cw_ww: RGB ಜೊತೆ Cold White ಮತ್ತು Warm White
+    desc_single: "ಏಕ, Cold White ಅಥವಾ Warm White"
     label_cw_ww: CW WW
     label_rgb: RGB
     label_rgb_cw: RGB CW
@@ -607,27 +607,27 @@ opts:
   metric_function:
     label_count: ಎಣಿಕೆ
     label_maximum: ಗರಿಷ್ಠ
-    label_mean: ಸರಾಸರಿ
-    label_median: ಮಧ್ಯಮ
+    label_mean: Mean
+    label_median: Median
     label_minimum: ಕನಿಷ್ಠ
-    label_percentile_50: 50ನೇ ಶೇಕಡಾಂಕ
-    label_percentile_75: 75ನೇ ಶೇಕಡಾಂಕ
-    label_percentile_95: 95ನೇ ಶೇಕಡಾಂಕ
-    label_percentile_99: 99ನೇ ಶೇಕಡಾಂಕ
+    label_percentile_50: 50ನೇ Percentile
+    label_percentile_75: 75ನೇ Percentile
+    label_percentile_95: 95ನೇ Percentile
+    label_percentile_99: 99ನೇ Percentile
     label_sum: ಮೊತ್ತ
   metric_type:
-    label_binary: ಬೈನರಿ
-    label_counter: ಕೌಂಟರ್
-    label_gauge: ಗೇಜ್
-    label_gauge_float: ಗೇಜ್ ಫ್ಲೋಟ್
+    label_binary: Binary
+    label_counter: Counter
+    label_gauge: Gauge
+    label_gauge_float: Gauge Float
     label_geo: GEO
     label_none: ಯಾವುದೂ ಇಲ್ಲ
-    label_string: ಸ್ಟ್ರಿಂಗ್
+    label_string: String
   rgb_component:
     desc_color_picker: ಪೂರ್ವನಿರ್ಧರಿತ ಬಣ್ಣಗಳು
-    desc_hue_slider: ಹ್ಯೂ ಬಣ್ಣ ಸ್ಲೈಡರ್
+    desc_hue_slider: Hue Slider
     label_color_picker: ತ್ವರಿತ ಬಣ್ಣ ಆಯ್ಕೆ
-    label_hue_slider: ಹ್ಯೂ ಸ್ಲೈಡರ್
+    label_hue_slider: Hue Slider
   schedule_frequency:
     desc_daily: ಪ್ರತಿದಿನ ಚಾಲನೆಯಾಗುತ್ತದೆ
     desc_monthly: ತಿಂಗಳಿಗೊಮ್ಮೆ ಚಾಲನೆಯಾಗುತ್ತದೆ
@@ -638,157 +638,157 @@ opts:
     label_on_date: ದಿನಾಂಕದಂದು
     label_weekly: ಸಾಪ್ತಾಹಿಕ
   schedule_type:
-    desc_cron: ಕ್ರಾನ್ ಅಭಿವ್ಯಕ್ತಿ
+    desc_cron: Cron Expression
     desc_repeat: ನಿರ್ದಿಷ್ಟ ಅಂತರದಲ್ಲಿ ಪುನರಾವರ್ತಿಸುತ್ತದೆ
-    desc_simple: "ದೈನಂದಿನ, ಸಾಪ್ತಾಹಿಕ, ಮಾಸಿಕ ವೇಳಾಪಟ್ಟಿ"
-    desc_sunrise: ಸೂರ್ಯೋದಯ ಸಮಯದ ಆಧಾರದ ಮೇಲೆ
-    desc_sunset: ಸೂರ್ಯಾಸ್ತ ಸಮಯದ ಆಧಾರದ ಮೇಲೆ
-    label_cron: ಕ್ರಾನ್
+    desc_simple: "ದೈನಂದಿನ, ಸಾಪ್ತಾಹಿಕ, ಮಾಸಿಕ Schedule"
+    desc_sunrise: ಸೂರ್ಯೋದಯ ಸಮಯವನ್ನು ಆಧರಿಸಿದೆ
+    desc_sunset: ಸೂರ್ಯಾಸ್ತ ಸಮಯವನ್ನು ಆಧರಿಸಿದೆ
+    label_cron: Cron
     label_repeat: ಪುನರಾವರ್ತಿಸಿ
     label_simple: ಸರಳ
     label_sunrise: ಸೂರ್ಯೋದಯ
     label_sunset: ಸೂರ್ಯಾಸ್ತ
   theme_color:
     label_blue: ನೀಲಿ
-    label_cyan: ಸಿಯಾನ್
-    label_gold: ಚಿನ್ನ
+    label_cyan: Cyan
+    label_gold: ಚಿನ್ನದ ಬಣ್ಣ
     label_green: ಹಸಿರು
-    label_multiple_ordered: ಬಹು ಕ್ರಮಬದ್ಧ
-    label_multiple_unordered: ಬಹು ಕ್ರಮರಹಿತ
+    label_multiple_ordered: ಕ್ರಮಬದ್ಧ ಬಹು
+    label_multiple_unordered: ಕ್ರಮರಹಿತ ಬಹು
     label_orange: ಕಿತ್ತಳೆ
     label_purple: ನೇರಳೆ
   trait_type:
-    label_app_selector: ಆಪ್ ಆಯ್ಕೆಕಾರ
-    label_arm_disarm: ಆರ್ಮ್ ಡಿಸಾರ್ಮ್
+    label_app_selector: App Selector
+    label_arm_disarm: Arm Disarm
     label_brightness: ಹೊಳಪು
-    label_camera_stream: ಕ್ಯಾಮೆರಾ ಸ್ಟ್ರೀಮ್
-    label_channel: ಚಾನಲ್
+    label_camera_stream: Camera Stream
+    label_channel: Channel
     label_color_setting: ಬಣ್ಣ ಸೆಟ್ಟಿಂಗ್
-    label_cook: ಬೇಯಿಸಿ
-    label_dispense: ವಿತರಿಸಿ
-    label_dock: ಡಾಕ್
-    label_energy_storage: ಶಕ್ತಿ ಸಂಗ್ರಹ
+    label_cook: Cook
+    label_dispense: Dispense
+    label_dock: Dock
+    label_energy_storage: Energy Storage
     label_fan_speed: ಫ್ಯಾನ್ ವೇಗ
     label_fill: ತುಂಬಿಸಿ
     label_humidity_setting: ಆರ್ದ್ರತೆ ಸೆಟ್ಟಿಂಗ್
-    label_input_selector: ಇನ್‌ಪುಟ್ ಆಯ್ಕೆಕಾರ
-    label_light_effects: ಬೆಳಕಿನ ಪರಿಣಾಮಗಳು
-    label_locator: ಲೊಕೇಟರ್
-    label_lock_unlock: ಲಾಕ್ ಅನ್‌ಲಾಕ್
-    label_media_state: ಮೀಡಿಯಾ ಸ್ಥಿತಿ
-    label_modes: ಮೋಡ್‌ಗಳು
-    label_network_control: ನೆಟ್‌ವರ್ಕ್ ನಿಯಂತ್ರಣ
-    label_object_detection: ವಸ್ತು ಪತ್ತೆ
-    label_on_off: ಆನ್ ಆಫ್
-    label_open_close: ತೆರೆಯಿರಿ ಮುಚ್ಚಿ
-    label_reboot: ಮರುಪ್ರಾರಂಭ
+    label_input_selector: Input Selector
+    label_light_effects: ದೀಪ Effectಗಳು
+    label_locator: Locator
+    label_lock_unlock: ಲಾಕ್ / ತೆರೆಯಿರಿ
+    label_media_state: Media State
+    label_modes: Modes
+    label_network_control: Network Control
+    label_object_detection: Object Detection
+    label_on_off: On Off
+    label_open_close: ತೆರೆಯಿರಿ / ಮುಚ್ಚಿ
+    label_reboot: Reboot
     label_rotation: ತಿರುಗುವಿಕೆ
-    label_run_cycle: ರನ್ ಸೈಕಲ್
-    label_scene: ದೃಶ್ಯ
-    label_sensor_state: ಸೆನ್ಸರ್ ಸ್ಥಿತಿ
-    label_software_update: ಸಾಫ್ಟ್‌ವೇರ್ ನವೀಕರಣ
-    label_start_stop: ಪ್ರಾರಂಭ ನಿಲ್ಲಿಸಿ
-    label_status_report: ಸ್ಥಿತಿ ವರದಿ
+    label_run_cycle: Run Cycle
+    label_scene: Scene
+    label_sensor_state: Sensor State
+    label_software_update: Software Update
+    label_start_stop: ಪ್ರಾರಂಭಿಸಿ / ನಿಲ್ಲಿಸಿ
+    label_status_report: Status Report
     label_temperature_control: ತಾಪಮಾನ ನಿಯಂತ್ರಣ
     label_temperature_setting: ತಾಪಮಾನ ಸೆಟ್ಟಿಂಗ್
-    label_timer: ಟೈಮರ್
-    label_toggles: ಟಾಗಲ್‌ಗಳು
-    label_transport_control: ಸಾರಿಗೆ ನಿಯಂತ್ರಣ
+    label_timer: Timer
+    label_toggles: Toggles
+    label_transport_control: Transport Control
     label_volume: ಧ್ವನಿ ಪ್ರಮಾಣ
   utilization_chart:
     label_circle_050: ಅರ್ಧ ವೃತ್ತ
     label_circle_075: 3/4 ವೃತ್ತ
     label_circle_100: ಪೂರ್ಣ ವೃತ್ತ
-    label_spark_area: ಸ್ಪಾರ್ಕ್ ಏರಿಯಾ
-    label_spark_bar: ಸ್ಪಾರ್ಕ್ ಬಾರ್
-    label_spark_line: ಸ್ಪಾರ್ಕ್ ಲೈನ್
-    label_table: ಕೋಷ್ಟಕ
+    label_spark_area: Spark Area
+    label_spark_bar: Spark Bar
+    label_spark_line: Spark Line
+    label_table: Table
   va_provider:
     desc_alexa: Amazon Alexa
     desc_google_assistant: Google Assistant
     label_alexa: Alexa
     label_google_assistant: Google Assistant
   vd_type:
-    label_air_conditioner: ಏರ್ ಕಂಡೀಷನರ್
-    label_air_cooler: ಏರ್ ಕೂಲರ್
-    label_air_freshener: ಏರ್ ಫ್ರೆಶನರ್
-    label_air_purifier: ಏರ್ ಪ್ಯೂರಿಫಯರ್
-    label_audio_video_receiver: ಆಡಿಯೋ ವೀಡಿಯೋ ರಿಸೀವರ್
-    label_awning: ಛಾಯೆಪಟ
+    label_air_conditioner: Air Conditioner
+    label_air_cooler: Air Cooler
+    label_air_freshener: Air Freshener
+    label_air_purifier: Air Purifier
+    label_audio_video_receiver: Audio Video Receiver
+    label_awning: Awning
     label_bathtub: ಸ್ನಾನದ ತೊಟ್ಟಿ
     label_bed: ಹಾಸಿಗೆ
-    label_blender: ಬ್ಲೆಂಡರ್
-    label_blinds: ಬ್ಲೈಂಡ್‌ಗಳು
-    label_boiler: ಬಾಯ್ಲರ್
-    label_camera: ಕ್ಯಾಮೆರಾ
-    label_carbon_monoxide_detector: ಕಾರ್ಬನ್ ಮಾನಾಕ್ಸೈಡ್ ಪತ್ತೆಕಾರಕ
-    label_charger: ಚಾರ್ಜರ್
-    label_closet: ಕ್ಲೋಸೆಟ್
-    label_coffee_maker: ಕಾಫಿ ತಯಾರಕ
-    label_cooktop: ಕುಕ್‌ಟಾಪ್
+    label_blender: Blender
+    label_blinds: Blinds
+    label_boiler: Boiler
+    label_camera: Camera
+    label_carbon_monoxide_detector: Carbon Monoxide Detector
+    label_charger: Charger
+    label_closet: ಅಲಮಾರು
+    label_coffee_maker: Coffee Maker
+    label_cooktop: Cooktop
     label_curtain: ಪರದೆ
-    label_dehumidifier: ಆರ್ದ್ರತೆ ನಿವಾರಕ
-    label_dehydrator: ನಿರ್ಜಲೀಕರಣಕಾರ
-    label_dishwasher: ಭಕ್ಷ್ಯ ತೊಳೆಯುವ ಯಂತ್ರ
+    label_dehumidifier: Dehumidifier
+    label_dehydrator: Dehydrator
+    label_dishwasher: Dishwasher
     label_door: ಬಾಗಿಲು
-    label_door_bell: ಡೋರ್ ಬೆಲ್
+    label_door_bell: ಬಾಗಿಲ ಗಂಟೆ
     label_drawer: ಡ್ರಾಯರ್
-    label_dryer: ಒಣಗಿಸುವ ಯಂತ್ರ
+    label_dryer: Dryer
     label_fan: ಫ್ಯಾನ್
     label_faucet: ನಲ್ಲಿ
-    label_fireplace: ಒಲೆ
-    label_freezer: ಫ್ರೀಜರ್
-    label_fryer: ಫ್ರೈಯರ್
-    label_garage_door: ಗ್ಯಾರೇಜ್ ಬಾಗಿಲು
+    label_fireplace: Fireplace
+    label_freezer: Freezer
+    label_fryer: Fryer
+    label_garage_door: Garage Door
     label_gate: ಗೇಟ್
-    label_grill: ಗ್ರಿಲ್
-    label_heater: ಹೀಟರ್
-    label_hood: ಹುಡ್
-    label_humidifier: ಆರ್ದ್ರಕ
-    label_kettle: ಕೆಟಲ್
-    label_light: ಬೆಳಕು
+    label_grill: Grill
+    label_heater: Heater
+    label_hood: Hood
+    label_humidifier: Humidifier
+    label_kettle: Kettle
+    label_light: ದೀಪ
     label_lock: ಲಾಕ್
-    label_media_remote: ಮೀಡಿಯಾ ರಿಮೋಟ್
-    label_microwave: ಮೈಕ್ರೋವೇವ್
-    label_mop: ಮಾಪ್
-    label_mower: ಹುಲ್ಲುಕೊಯ್ಲು ಯಂತ್ರ
-    label_multicooker: ಮಲ್ಟಿಕುಕರ್
-    label_network: ನೆಟ್‌ವರ್ಕ್
-    label_outlet: ಔಟ್‌ಲೆಟ್
-    label_oven: ಓವನ್
-    label_pergola: ಪರ್ಗೋಲಾ
-    label_pet_feeder: ಸಾಕುಪ್ರಾಣಿ ಆಹಾರಕ
-    label_pressure_cooker: ಪ್ರೆಷರ್ ಕುಕರ್
-    label_radiator: ರೇಡಿಯೇಟರ್
+    label_media_remote: Media Remote
+    label_microwave: Microwave
+    label_mop: Mop
+    label_mower: Mower
+    label_multicooker: Multicooker
+    label_network: Network
+    label_outlet: Outlet
+    label_oven: Oven
+    label_pergola: Pergola
+    label_pet_feeder: Pet Feeder
+    label_pressure_cooker: Pressure Cooker
+    label_radiator: Radiator
     label_refrigerator: ರೆಫ್ರಿಜರೇಟರ್
-    label_router: ರೂಟರ್
-    label_scene: ದೃಶ್ಯ
-    label_security_system: ಭದ್ರತಾ ವ್ಯವಸ್ಥೆ
-    label_sensor: ಸೆನ್ಸರ್
-    label_set_top_box: ಸೆಟ್ ಟಾಪ್ ಬಾಕ್ಸ್
-    label_shower: ಶವರ್
-    label_shutter: ಶಟರ್
-    label_smoke_detector: ಹೊಗೆ ಪತ್ತೆಕಾರಕ
-    label_soundbar: ಸೌಂಡ್‌ಬಾರ್
+    label_router: Router
+    label_scene: Scene
+    label_security_system: Security System
+    label_sensor: Sensor
+    label_set_top_box: Set Top Box
+    label_shower: Shower
+    label_shutter: Shutter
+    label_smoke_detector: Smoke Detector
+    label_soundbar: Soundbar
     label_sous_vide: Sous Vide
-    label_speaker: ಸ್ಪೀಕರ್
-    label_sprinkler: ಸ್ಪ್ರಿಂಕ್ಲರ್
-    label_stand_mixer: ಸ್ಟ್ಯಾಂಡ್ ಮಿಕ್ಸರ್
-    label_streaming_box: ಸ್ಟ್ರೀಮಿಂಗ್ ಬಾಕ್ಸ್
-    label_streaming_soundbar: ಸ್ಟ್ರೀಮಿಂಗ್ ಸೌಂಡ್‌ಬಾರ್
-    label_streaming_stick: ಸ್ಟ್ರೀಮಿಂಗ್ ಸ್ಟಿಕ್
-    label_switch: ಸ್ವಿಚ್
-    label_television: ದೂರದರ್ಶನ
-    label_thermostat: ಥರ್ಮೋಸ್ಟಾಟ್
-    label_vacuum: ವ್ಯಾಕ್ಯೂಮ್
-    label_valve: ಕವಾಟ
-    label_washer: ವಾಷರ್
-    label_water_heater: ನೀರು ಬಿಸಿಮಾಡುವ ಯಂತ್ರ
-    label_water_purifier: ನೀರು ಶುದ್ಧೀಕಾರಕ
-    label_water_softener: ನೀರು ಮೃದುಗೊಳಿಸುವ ಯಂತ್ರ
-    label_weather_station: ಹವಾಮಾನ ಕೇಂದ್ರ
+    label_speaker: Speaker
+    label_sprinkler: Sprinkler
+    label_stand_mixer: Stand Mixer
+    label_streaming_box: Streaming Box
+    label_streaming_soundbar: Streaming Soundbar
+    label_streaming_stick: Streaming Stick
+    label_switch: Switch
+    label_television: Television
+    label_thermostat: Thermostat
+    label_vacuum: Vacuum
+    label_valve: Valve
+    label_washer: Washer
+    label_water_heater: Water Heater
+    label_water_purifier: Water Purifier
+    label_water_softener: Water Softener
+    label_weather_station: Weather Station
     label_window: ಕಿಟಕಿ
-    label_yogurt_maker: ಮೊಸರು ತಯಾರಕ
+    label_yogurt_maker: Yogurt Maker
   week_day:
     label_friday: ಶುಕ್ರವಾರ
     label_monday: ಸೋಮವಾರ
@@ -798,223 +798,223 @@ opts:
     label_tuesday: ಮಂಗಳವಾರ
     label_wednesday: ಬುಧವಾರ
   widget_type:
-    desc_chart_panel: ಚಾರ್ಟ್‌ಗಳಲ್ಲಿ ಡೇಟಾ ಪ್ರದರ್ಶಿಸಿ
-    desc_control_panel: ಸಂಪನ್ಮೂಲಗಳ ಮೇಲೆ ನಿಯಂತ್ರಣ ಕ್ರಿಯೆ ನಿರ್ವಹಿಸುತ್ತದೆ
-    desc_empty_panel: ಖಾಲಿ ಪ್ಯಾನಲ್
-    desc_image_panel: ವಿವಿಧ ಮೂಲಗಳಿಂದ ಚಿತ್ರ ಪ್ರದರ್ಶಿಸಿ
-    desc_light_panel: ಬೆಳಕನ್ನು ನಿಯಂತ್ರಿಸುತ್ತದೆ
-    desc_utilization_panel: ಬಳಕೆಯ ಸ್ಥಿತಿಯನ್ನು ಪ್ರದರ್ಶಿಸಿ
-    label_chart_panel: ಚಾರ್ಟ್‌ಗಳ ಪ್ಯಾನಲ್
-    label_control_panel: ನಿಯಂತ್ರಣ ಪ್ಯಾನಲ್
-    label_empty_panel: ಖಾಲಿ ಪ್ಯಾನಲ್
-    label_image_panel: ಚಿತ್ರ ಪ್ಯಾನಲ್
-    label_light_panel: ಬೆಳಕು ಪ್ಯಾನಲ್
-    label_utilization_panel: ಬಳಕೆ ಪ್ಯಾನಲ್
+    desc_chart_panel: Chartಗಳಲ್ಲಿ ಡೇಟಾ ತೋರಿಸಿ
+    desc_control_panel: Resourceಗಳಲ್ಲಿ ನಿಯಂತ್ರಣ ಕ್ರಿಯೆ ಮಾಡುತ್ತದೆ
+    desc_empty_panel: ಖಾಲಿ Panel
+    desc_image_panel: ವಿವಿಧ Sourceನಿಂದ ಚಿತ್ರ ತೋರಿಸಿ
+    desc_light_panel: ಒಂದು ದೀಪವನ್ನು ನಿಯಂತ್ರಿಸುತ್ತದೆ
+    desc_utilization_panel: ಬಳಕೆಯ ಸ್ಥಿತಿ ತೋರಿಸಿ
+    label_chart_panel: Chart Panel
+    label_control_panel: Control Panel
+    label_empty_panel: Empty Panel
+    label_image_panel: Image Panel
+    label_light_panel: Light Panel
+    label_utilization_panel: Utilization Panel
 others: ಇತರೆ
-padding_bottom_px: ಕೆಳಗಿನ ಪ್ಯಾಡಿಂಗ್ (px)
-padding_left_px: ಎಡ ಪ್ಯಾಡಿಂಗ್ (px)
-padding_right_px: ಬಲ ಪ್ಯಾಡಿಂಗ್ (px)
-padding_top_px: ಮೇಲಿನ ಪ್ಯಾಡಿಂಗ್ (px)
-panel_title: ಪ್ಯಾನಲ್ ಶೀರ್ಷಿಕೆ
-parameters_to_handler: ಹ್ಯಾಂಡ್ಲರ್‌ಗೆ ನಿಯತಾಂಕಗಳು
-parse_mode: ಪಾರ್ಸ್ ವಿಧಾನ
+padding_bottom_px: ಕೆಳಗಿನ Padding (px)
+padding_left_px: ಎಡ Padding (px)
+padding_right_px: ಬಲ Padding (px)
+padding_top_px: ಮೇಲಿನ Padding (px)
+panel_title: Panel ಶೀರ್ಷಿಕೆ
+parameters_to_handler: Handlerಗೆ Parameters
+parse_mode: Parse Mode
 password: ಪಾಸ್‌ವರ್ಡ್
 path: ಮಾರ್ಗ
-payload: ಪೇಲೋಡ್
+payload: Payload
 send: ಕಳುಹಿಸಿ
-payload_off: ಪೇಲೋಡ್ OFF
-payload_on: ಪೇಲೋಡ್ ON
-payloads: ಪೇಲೋಡ್‌ಗಳು
+payload_off: Payload OFF
+payload_on: Payload ON
+payloads: Payloadಗಳು
 per_cpu_disabled: ಪ್ರತಿ CPU ನಿಷ್ಕ್ರಿಯ
-port: ಪೋರ್ಟ್
-port_name: ಪೋರ್ಟ್ ಹೆಸರು
-post_run: ಪೋಸ್ಟ್ ರನ್
-power: ಪವರ್
-pre_delay: ಪೂರ್ವ ವಿಳಂಬ
-pre_run: ಪ್ರಿ ರನ್
-prefix: ಪೂರ್ವಪ್ರತ್ಯಯ
+port: Port
+port_name: Port ಹೆಸರು
+post_run: Post Run
+power: Power
+pre_delay: ಮುಂಚಿನ ವಿಳಂಬ
+pre_run: Pre Run
+prefix: Prefix
 previous_value: ಹಿಂದಿನ ಮೌಲ್ಯ
-process: ಪ್ರಕ್ರಿಯೆ
-processes: ಪ್ರಕ್ರಿಯೆಗಳು
-profile: ಪ್ರೊಫೈಲ್
-protocol: ಪ್ರೋಟೋಕಾಲ್
-provider: ಪೂರೈಕೆದಾರ
-provider_type: ಪೂರೈಕೆದಾರ ಪ್ರಕಾರ
-publish: ಪ್ರಕಟಿಸಿ
+process: Process
+processes: Processಗಳು
+profile: Profile
+protocol: Protocol
+provider: Provider
+provider_type: Provider ಪ್ರಕಾರ
+publish: Publish
 qos: QoS
-query_parameters: ಕ್ವೆರಿ ನಿಯತಾಂಕಗಳು
-queue_failed_messages: ವಿಫಲ ಸಂದೇಶಗಳನ್ನು ಕ್ಯೂ ಮಾಡಿ
-quick_id: ತ್ವರಿತ ID
-re_enable: ಮರು-ಸಕ್ರಿಯಗೊಳಿಸಿ
-re_enable_duration: ಮರು-ಸಕ್ರಿಯಗೊಳಿಸುವ ಅವಧಿ
-react_version: React ಆವೃತ್ತಿ
+query_parameters: Query Parameters
+queue_failed_messages: ವಿಫಲ ಸಂದೇಶಗಳನ್ನು Queueನಲ್ಲಿ ಇರಿಸಿ
+quick_id: Quick ID
+re_enable: ಮತ್ತೆ ಸಕ್ರಿಯಗೊಳಿಸಿ
+re_enable_duration: ಮತ್ತೆ ಸಕ್ರಿಯಗೊಳಿಸುವ ಅವಧಿ
+react_version: React Version
 read_only: ಓದಲು ಮಾತ್ರ
-reboot: ಮರುಪ್ರಾರಂಭ
+reboot: Reboot
 reconnect_delay: ಮರುಸಂಪರ್ಕ ವಿಳಂಬ
-refresh_interval: ರಿಫ್ರೆಶ್ ಅಂತರ
-refresh_node_info: ನೋಡ್ ಮಾಹಿತಿ ರಿಫ್ರೆಶ್ ಮಾಡಿ
-reload: ಮರುಲೋಡ್
+refresh_interval: ನವೀಕರಣ ಅಂತರ
+refresh_node_info: Node ಮಾಹಿತಿ ನವೀಕರಿಸಿ
+reload: ಮತ್ತೆ ಲೋಡ್ ಮಾಡಿ
 repeat_count: ಪುನರಾವರ್ತನೆ ಎಣಿಕೆ
-request_heartbeat: ಹೃದಯಬಡಿತ ವಿನಂತಿಸಿ
-reset: ಮರುಹೊಂದಿಸಿ
-resetting: ಮರುಹೊಂದಿಸಲಾಗುತ್ತಿದೆ...
-resource: ಸಂಪನ್ಮೂಲ
-resource_by_labels: ಲೇಬಲ್‌ಗಳ ಮೂಲಕ ಸಂಪನ್ಮೂಲ
-resource_by_quick_id: ತ್ವರಿತ ID ಮೂಲಕ ಸಂಪನ್ಮೂಲ
-resource_configuration: ಸಂಪನ್ಮೂಲ ಸಂರಚನೆ
-resource_filters: ಸಂಪನ್ಮೂಲ ಫಿಲ್ಟರ್‌ಗಳು
-resource_name: ಸಂಪನ್ಮೂಲ ಹೆಸರು
-resource_type: ಸಂಪನ್ಮೂಲ ಪ್ರಕಾರ
-resources: ಸಂಪನ್ಮೂಲಗಳು
+request_heartbeat: Heartbeat ವಿನಂತಿಸಿ
+reset: Reset
+resetting: Reset ಆಗುತ್ತಿದೆ...
+resource: Resource
+resource_by_labels: Label ಮೂಲಕ Resource
+resource_by_quick_id: Quick ID ಮೂಲಕ Resource
+resource_configuration: Resource ಸೆಟ್ಟಿಂಗ್
+resource_filters: Resource Filterಗಳು
+resource_name: Resource ಹೆಸರು
+resource_type: Resource ಪ್ರಕಾರ
+resources: Resourceಗಳು
 response_code: ಪ್ರತಿಕ್ರಿಯೆ ಕೋಡ್
-restore: ಮರುಸ್ಥಾಪಿಸಿ
-retention_count: ಧಾರಣ ಎಣಿಕೆ
+restore: Restore
+retention_count: Retention ಎಣಿಕೆ
 retry_count: ಮರುಪ್ರಯತ್ನ ಎಣಿಕೆ
 rgb: RGB
-rgb_component: RGB ಘಟಕ
+rgb_component: RGB Component
 rotation: ತಿರುಗುವಿಕೆ
 round_decimal: ದಶಮಾಂಶ ಸುತ್ತು
-rule: ನಿಯಮ
-run_a_backup: ಬ್ಯಾಕಪ್ ಚಾಲನೆ ಮಾಡಿ
-run_backup: ಬ್ಯಾಕಪ್ ಚಾಲನೆ
+rule: Rule
+run_a_backup: Backup ಚಾಲನೆ ಮಾಡಿ
+run_backup: Backup ಚಾಲನೆ ಮಾಡಿ
 s_no: '#'
-saturation: ಸ್ಯಾಚುರೇಷನ್
+saturation: Saturation
 save: ಉಳಿಸಿ
-schedule: ವೇಳಾಪಟ್ಟಿ
-schedule_details: ವೇಳಾಪಟ್ಟಿ ವಿವರಗಳು
-schedule_type: ವೇಳಾಪಟ್ಟಿ ಪ್ರಕಾರ
-schedules: ವೇಳಾಪಟ್ಟಿಗಳು
-script: ಸ್ಕ್ರಿಪ್ಟ್
+schedule: Schedule
+schedule_details: Schedule ವಿವರ
+schedule_type: Schedule ಪ್ರಕಾರ
+schedules: Scheduleಗಳು
+script: Script
 select_an_option: ಒಂದು ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ
-server: ಸರ್ವರ್
-service_account_not_generated: ಸೇವಾ ಖಾತೆ ಟೋಕನ್ ರಚಿಸಲಾಗಿಲ್ಲ
-service_account_copy_title: ಸೇವಾ ಖಾತೆ ಟೋಕನ್ ನಕಲಿಸಿ
-service_account_copy_warning_msg: ಈ ಟೋಕನ್ ಒಮ್ಮೆ ಮಾತ್ರ ಪ್ರದರ್ಶಿಸಲಾಗುತ್ತದೆ. ಇದನ್ನು ಸಂಗ್ರಹಿಸಲಾಗುವುದಿಲ್ಲ ಮತ್ತು ಮರುಪಡೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ಇದೀಗ ಉಳಿಸಿ.
-service_account_barcode_help: ಟೋಕನ್‌ನೊಂದಿಗೆ ಲಾಗ್ ಇನ್ ಮಾಡಲು ಈ ಬಾರ್‌ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.
-service_account_details: ಸೇವಾ ಖಾತೆ ವಿವರಗಳು
-service_accounts: ಸೇವಾ ಖಾತೆಗಳು
+server: Server
+service_account_not_generated: Service Account Token ರಚಿಸಲಾಗಿಲ್ಲ
+service_account_copy_title: Service Account Token ನಕಲಿಸಿ
+service_account_copy_warning_msg: ಈ Token ಒಮ್ಮೆ ಮಾತ್ರ ತೋರಿಸಲಾಗುತ್ತದೆ. ಮತ್ತೆ ನೋಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಈಗಲೇ ಉಳಿಸಿ.
+service_account_barcode_help: Token ಮೂಲಕ Login ಮಾಡಲು ಈ Barcode ಅನ್ನು Scan ಮಾಡಿ.
+service_account_details: Service Account ವಿವರ
+service_accounts: Service Accountಗಳು
 settings: ಸೆಟ್ಟಿಂಗ್‌ಗಳು
-show_grid_x: ಗ್ರಿಡ್ X ತೋರಿಸಿ
-show_grid_y: ಗ್ರಿಡ್ Y ತೋರಿಸಿ
+show_grid_x: X ಗ್ರಿಡ್ ತೋರಿಸಿ
+show_grid_y: Y ಗ್ರಿಡ್ ತೋರಿಸಿ
 show_title: ಶೀರ್ಷಿಕೆ ತೋರಿಸಿ
-since: ಆಗಿನಿಂದ
+since: ಇಂದ
 size: ಗಾತ್ರ
-sleeping_queue: ನಿದ್ರಾವಸ್ಥೆಯ ಕ್ಯೂ
+sleeping_queue: Sleep Queue
 sort_order_priority: ವಿಂಗಡಣೆ ಆದ್ಯತೆ
-source: ಮೂಲ
-source_code: ಮೂಲ ಕೋಡ್
-source_details: ಮೂಲ ವಿವರಗಳು
-source_field: ಮೂಲ ಫೀಲ್ಡ್
-source_id: ಮೂಲ ID
-sources: ಮೂಲಗಳು
-spec: ಸ್ಪೆಕ್
-stack_charts: ಚಾರ್ಟ್‌ಗಳನ್ನು ಜೋಡಿಸಿ
+source: Source
+source_code: Source Code
+source_details: Source ವಿವರ
+source_field: Source Field
+source_id: Source ID
+sources: Sourceಗಳು
+spec: Spec
+stack_charts: Chartಗಳನ್ನು ಜೋಡಿಸಿ
 state: ಸ್ಥಿತಿ
 status: ಸ್ಥಿತಿ
 status_at: ಸ್ಥಿತಿ ಸಮಯ
-status_configuration: ಸ್ಥಿತಿ ಸಂರಚನೆ
+status_configuration: ಸ್ಥಿತಿ ಸೆಟ್ಟಿಂಗ್
 step: ಹಂತ
-storage_export_type: ಸಂಗ್ರಹ ರಫ್ತು ಪ್ರಕಾರ
-stream_message_ack: ಸ್ಟ್ರೀಮ್ ಸಂದೇಶ Ack
-string: ಸ್ಟ್ರಿಂಗ್
-stroke_width_px: ಸ್ಟ್ರೋಕ್ ಅಗಲ (px)
+storage_export_type: Storage Export ಪ್ರಕಾರ
+stream_message_ack: Stream Message Ack
+string: String
+stroke_width_px: Stroke ಅಗಲ (px)
 sub_type: ಉಪ ಪ್ರಕಾರ
-subject: ವಿಷಯ
-subscribe: ಚಂದಾದಾರರಾಗಿ
-swap_disabled: ಸ್ವಾಪ್ ನಿಷ್ಕ್ರಿಯ
-sync_interval: ಸಿಂಕ್ ಅಂತರ
-system: ಸಿಸ್ಟಮ್
-system_message: ಸಿಸ್ಟಮ್ ಸಂದೇಶ
-table_configuration: ಕೋಷ್ಟಕ ಸಂರಚನೆ
-table_view: ಕೋಷ್ಟಕ ನೋಟ
-target_directory: ಗುರಿ ಡೈರೆಕ್ಟರಿ
-target_location: ಗುರಿ ಸ್ಥಳ
-task: ಕಾರ್ಯ
-task_details: ಕಾರ್ಯ ವಿವರಗಳು
-tasks: ಕಾರ್ಯಗಳು
+subject: Subject
+subscribe: Subscribe
+swap_disabled: Swap ನಿಷ್ಕ್ರಿಯ
+sync_interval: Sync ಅಂತರ
+system: System
+system_message: System ಸಂದೇಶ
+table_configuration: Table ಸೆಟ್ಟಿಂಗ್
+table_view: Table ನೋಟ
+target_directory: Target ಫೋಲ್ಡರ್
+target_location: Target ಸ್ಥಳ
+task: Task
+task_details: Task ವಿವರ
+tasks: Taskಗಳು
 telegram: Telegram
 temperature: ತಾಪಮಾನ
 text: ಪಠ್ಯ
 the_open_source_controller: The Open Source Controller
-theme_color: ಥೀಮ್ ಬಣ್ಣ
+theme_color: Theme ಬಣ್ಣ
 thickness: ದಪ್ಪ
-threshold_mode: ಥ್ರೆಶೋಲ್ಡ್ ವಿಧಾನ
-thresholds: ಥ್ರೆಶೋಲ್ಡ್‌ಗಳು
-thresholds_color: ಥ್ರೆಶೋಲ್ಡ್ ಬಣ್ಣ
+threshold_mode: Threshold ವಿಧಾನ
+thresholds: Thresholdಗಳು
+thresholds_color: Threshold ಬಣ್ಣ
 time_hh_mm_ss: "ಸಮಯ (hh:mm:ss)"
-timeout: ಟೈಮ್‌ಔಟ್
-timestamp: ಟೈಮ್‌ಸ್ಟ್ಯಾಂಪ್
-timestamp_key: ಟೈಮ್‌ಸ್ಟ್ಯಾಂಪ್ ಕೀ
+timeout: Timeout
+timestamp: Timestamp
+timestamp_key: Timestamp Key
 title: ಶೀರ್ಷಿಕೆ
-to: ಗೆ
-to_emails: ಸ್ವೀಕರಿಸುವವರ ಇಮೇಲ್‌ಗಳು
-token: ಟೋಕನ್
-topic: ವಿಷಯ
-trait: ಟ್ರೇಟ್
-traits: ಟ್ರೇಟ್‌ಗಳು
-transmit_pre_delay: ಪ್ರಸಾರ ಪೂರ್ವ ವಿಳಂಬ
-trigger_on_event: ಈವೆಂಟ್‌ನಲ್ಲಿ ಟ್ರಿಗರ್
-'true': 'ಸತ್ಯ'
+to: ಸ್ವೀಕೃತದಾರ
+to_emails: ಸ್ವೀಕೃತದಾರ Emailಗಳು
+token: Token
+topic: Topic
+trait: Trait
+traits: Traitಗಳು
+transmit_pre_delay: ಕಳುಹಿಸುವ ಮುಂಚಿನ ವಿಳಂಬ
+trigger_on_event: Event ಸಂಭವಿಸಿದಾಗ ಚಾಲನೆ
+'true': 'True'
 type: ಪ್ರಕಾರ
 unit: ಘಟಕ
 up: ಮೇಲೆ
 update: ನವೀಕರಿಸಿ
-update_body: ವಿಷಯ ನವೀಕರಿಸಿ
+update_body: Body ನವೀಕರಿಸಿ
 update_data: ಡೇಟಾ ನವೀಕರಿಸಿ
-update_endpoint: ಎಂಡ್‌ಪಾಯಿಂಟ್ ನವೀಕರಿಸಿ
-update_firmware: ಫರ್ಮ್‌ವೇರ್ ನವೀಕರಿಸಿ
-update_node: ನೋಡ್ ನವೀಕರಿಸಿ
-update_post_run: ಪೋಸ್ಟ್ ರನ್ ನವೀಕರಿಸಿ
-update_pre_run: ಪ್ರಿ ರನ್ ನವೀಕರಿಸಿ
-update_query_parameters: ಕ್ವೆರಿ ನಿಯತಾಂಕಗಳನ್ನು ನವೀಕರಿಸಿ
-update_resource: ಸಂಪನ್ಮೂಲ ನವೀಕರಿಸಿ
-update_script: ಸ್ಕ್ರಿಪ್ಟ್ ನವೀಕರಿಸಿ
-update_trait: ಟ್ರೇಟ್ ನವೀಕರಿಸಿ
+update_endpoint: Endpoint ನವೀಕರಿಸಿ
+update_firmware: Firmware ನವೀಕರಿಸಿ
+update_node: Node ನವೀಕರಿಸಿ
+update_post_run: Post Run ನವೀಕರಿಸಿ
+update_pre_run: Pre Run ನವೀಕರಿಸಿ
+update_query_parameters: Query Parameters ನವೀಕರಿಸಿ
+update_resource: Resource ನವೀಕರಿಸಿ
+update_script: Script ನವೀಕರಿಸಿ
+update_trait: Trait ನವೀಕರಿಸಿ
 update_value: ಮೌಲ್ಯ ನವೀಕರಿಸಿ
 update_y_axis: Y ಅಕ್ಷ ನವೀಕರಿಸಿ
-upload: ಅಪ್‌ಲೋಡ್
-upload_firmware: ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ
+upload: Upload
+upload_firmware: Firmware Upload
 url: URL
-use_global: ಜಾಗತಿಕ ಬಳಸಿ
-use_global_encryption_key: ಜಾಗತಿಕ ಎನ್‌ಕ್ರಿಪ್ಷನ್ ಕೀ ಬಳಸಿ
-use_global_password: ಜಾಗತಿಕ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ
-use_global_style: ಜಾಗತಿಕ ಶೈಲಿ ಬಳಸಿ
-user_id: ಬಳಕೆದಾರ ID
+use_global: Global ಬಳಸಿ
+use_global_encryption_key: Global Encryption Key ಬಳಸಿ
+use_global_password: Global ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ
+use_global_style: Global Style ಬಳಸಿ
+user_id: User ID
 username: ಬಳಕೆದಾರ ಹೆಸರು
 validate_time_everyday: ಪ್ರತಿದಿನ ಸಮಯವನ್ನು ಪರಿಶೀಲಿಸಿ
 validity: ಮಾನ್ಯತೆ
 value: ಮೌಲ್ಯ
-value_formatter: ಮೌಲ್ಯ ಫಾರ್ಮ್ಯಾಟರ್
-value_key: ಮೌಲ್ಯ ಕೀ
-variable: ಚರಾಂಶ
-variable_name: ಚರಾಂಶದ ಹೆಸರು
-variables: ಚರಾಂಶಗಳು
-version: ಆವೃತ್ತಿ
-virtual_assistant: ವರ್ಚುವಲ್ ಸಹಾಯಕ
-virtual_assistant_details: ವರ್ಚುವಲ್ ಸಹಾಯಕ ವಿವರಗಳು
-virtual_assistants: ವರ್ಚುವಲ್ ಸಹಾಯಕರು
-virtual_device_details: ವರ್ಚುವಲ್ ಸಾಧನ ವಿವರಗಳು
-virtual_devices: ವರ್ಚುವಲ್ ಸಾಧನಗಳು
-web_console: ವೆಬ್ ಕನ್ಸೋಲ್
-webhook: ವೆಬ್‌ಹುಕ್
+value_formatter: Value Formatter
+value_key: Value Key
+variable: Variable
+variable_name: Variable ಹೆಸರು
+variables: Variableಗಳು
+version: Version
+virtual_assistant: Virtual Assistant
+virtual_assistant_details: Virtual Assistant ವಿವರ
+virtual_assistants: Virtual Assistantಗಳು
+virtual_device_details: Virtual Device ವಿವರ
+virtual_devices: Virtual Deviceಗಳು
+web_console: Web Console
+webhook: Webhook
 websocket_disconnected: Websocket ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡಿದೆ
-welcome_to_mycontroller: MyController ಗೆ ಸುಸ್ವಾಗತ
+welcome_to_mycontroller: MyControllerಗೆ ಸುಸ್ವಾಗತ
 width_px: ಅಗಲ (px)
 y_axis: Y ಅಕ್ಷ
-y_axis_configuration: Y ಅಕ್ಷ ಸಂರಚನೆ
+y_axis_configuration: Y ಅಕ್ಷ ಸೆಟ್ಟಿಂಗ್
 yaml: YAML
 yaml_view: YAML ನೋಟ
 users: ಬಳಕೆದಾರರು
-policies: ನೀತಿಗಳು
-user_details: ಬಳಕೆದಾರ ವಿವರಗಳು
-policy_details: ನೀತಿ ವಿವರಗಳು
-statement: ಹೇಳಿಕೆ
-edit_statement: ಹೇಳಿಕೆ ಸಂಪಾದಿಸಿ
-statements: ಹೇಳಿಕೆಗಳು
-effect: ಪರಿಣಾಮ
+policies: Policyಗಳು
+user_details: ಬಳಕೆದಾರ ವಿವರ
+policy_details: Policy ವಿವರ
+statement: Statement
+edit_statement: Statement ಸಂಪಾದಿಸಿ
+statements: Statementಗಳು
+effect: Effect
 layout: ಲೇಔಟ್
-layout_tree: ವೃಕ್ಷ
-layout_force: ಬಲ
-refresh: ರಿಫ್ರೆಶ್
-include_child_nodes: ಉಪ ನೋಡ್‌ಗಳನ್ನು ಸೇರಿಸಿ
-child_nodes: ಉಪ ನೋಡ್‌ಗಳು
+layout_tree: Tree
+layout_force: Force
+refresh: ನವೀಕರಿಸಿ
+include_child_nodes: Child Nodeಗಳನ್ನು ಸೇರಿಸಿ
+child_nodes: Child Nodeಗಳು

@@ -5,7 +5,7 @@ active_duration: 活动时长
 add: 添加
 add_a_field: 添加字段
 add_a_firmware: 添加固件
-add_a_forward_payload: 添加载荷转发
+add_a_forward_payload: 添加转发载荷
 add_a_gateway: 添加网关
 add_a_handler: 添加处理器
 add_a_node: 添加节点
@@ -26,7 +26,7 @@ alerts_empty_title: 未找到告警
 alive_check_interval: 存活检查间隔
 all_rights_reserved: 保留所有权利
 allow_overwrite: 允许覆盖
-apache_license_2: Apache 许可证 2.0
+apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: 请求确认
 assigned_firmware: 已分配固件
@@ -80,14 +80,14 @@ custom_variables: 自定义变量
 dampening: 抑制
 dashboard: 仪表盘
 data: 数据
-data_repository: 数据仓库
-data_repository_add_an_entry: 数据仓库：添加条目
-data_repository_modify_an_entry: 数据仓库：修改条目
+data_repository: 数据存储库
+data_repository_add_an_entry: 数据存储库：添加条目
+data_repository_modify_an_entry: 数据存储库：修改条目
 data_retrieved_from_server: 已从服务器获取数据
 data_type: 数据类型
 date_yyyy_mm_dd: 日期 (yyyy-mm-dd)
 day_of_month: 每月日期
-day_of_week: 星期
+day_of_week: 星期几
 delete: 删除
 description: 描述
 destination_field: 目标字段
@@ -101,10 +101,10 @@ dialog:
   delete_resource_msg: 确定要删除所选项目吗？
   delete_title_backup: 删除备份文件？
   delete_title_dashboard: 删除仪表盘？
-  delete_title_data_repository: 删除数据仓库？
+  delete_title_data_repository: 删除数据存储库？
   delete_title_field: 删除字段？
   delete_title_firmware: 删除固件？
-  delete_title_forward_payload: 删除载荷转发？
+  delete_title_forward_payload: 删除转发载荷？
   delete_title_gateway: 删除网关？
   delete_title_handler: 删除处理器？
   delete_title_node: 删除节点？
@@ -120,7 +120,7 @@ dialog:
   node_reset_msg: "确定要重置所选节点吗？<br/>此操作之后：<3><0>配置将恢复为出厂设置。</0><1>您可能会失去从 MyController 访问所选节点的权限！</1></3>"
   reboot_nodes_heading: 重启节点？
   reboot_nodes_msg: 确定要重启所选节点吗？
-  reset_msg_jwt_secret: 确定要重置 JWT 密钥吗？此操作之后，该服务器上所有现有登录会话都将失效，并且您将被退出！
+  reset_msg_jwt_secret: 确定要重置 JWT 密钥吗？此操作之后，该服务器上的所有登录会话都将失效，您将被退出登录。
   reset_title_jwt_secret: 重置 JWT 密钥
   restore_heading: 确认执行恢复操作？
   restore_msg: "确定要从所选备份文件恢复吗？<br/>此操作之后：<3><0>服务器数据将恢复到 <1>{{fileName}}</1></0><1>此操作无法回滚</1><2>执行恢复前请务必先备份</2><3>您可能需要手动启动服务器</3></3>"
@@ -180,7 +180,7 @@ file_details: 文件详情
 file_uploaded_successfully: 文件上传成功
 filename: 文件名
 filename_placeholder: 将文件拖到此处或浏览以上传
-fill_opacity_%: Fill Opacity (%)
+fill_opacity_%: 填充不透明度 (%)
 filter: 筛选
 filter_type: 筛选类型
 filters: 筛选器
@@ -188,13 +188,13 @@ firmware_details: 固件详情
 firmware_file: 固件文件
 firmware_update: 固件更新
 firmwares: 固件
-flush_interval: 刷新间隔
+flush_interval: 刷写间隔
 forgot_username_or_password: 忘记用户名或密码？
-form_generic_error_message: "请检查错误和/或必填 (*) 字段"
+form_generic_error_message: 请检查错误项和必填 (*) 字段
 form_view: 表单视图
 forum: 论坛
 forward_payload: 转发载荷
-forward_payload_details: 载荷转发详情
+forward_payload_details: 转发载荷详情
 frequency: 频率
 from: 发件人
 from_email: 发件邮箱
@@ -229,7 +229,7 @@ helper_text:
   invalid_api: 无效的 API
   invalid_backup_retention_count: 保留数量无效，0 表示不限制
   invalid_baud_rate: 波特率无效
-  invalid_broker_url: 代理服务器 URL 无效
+  invalid_broker_url: 消息代理 URL 无效
   invalid_current_password: 请输入当前密码
   invalid_data: 数据无效
   invalid_date: 日期无效
@@ -238,36 +238,36 @@ helper_text:
   invalid_duration: 时长无效
   invalid_email: 电子邮件无效
   invalid_execution_interval_empty: 执行间隔不能为空
-  invalid_field_id: 字段 ID 无效。字符，最少=1，最多=100
+  invalid_field_id: 字段 ID 无效。长度须为 1 至 100 个字符
   invalid_filters: 筛选器无效
   invalid_height: 高度无效
   invalid_host: 主机无效
-  invalid_id: ID 无效。字符，最少=4，最多=100，不允许空格
+  invalid_id: ID 无效。长度须为 4 至 100 个字符，且不能包含空格
   invalid_interval: 间隔无效
-  invalid_key: 键无效。字符，最少=1，最多=100
-  invalid_key_path: 密钥路径不能为空
+  invalid_key: 键无效。长度须为 1 至 100 个字符
+  invalid_key_path: 键路径不能为空
   invalid_latitude: 纬度无效
   invalid_limit: 限制无效
   invalid_location: 位置无效
   invalid_longitude: 经度无效
-  invalid_maximum_backup: 最大备份数无效。整数，最少=0
-  invalid_name: 名称无效。字符，最少=2，最多=100
-  invalid_node_id: 节点 ID 无效。字符，最少=1，最多=100
+  invalid_maximum_backup: 最大备份数无效。须为大于或等于 0 的整数
+  invalid_name: 名称无效。长度须为 2 至 100 个字符
+  invalid_node_id: 节点 ID 无效。长度须为 1 至 100 个字符
   invalid_offset: 偏移无效
   invalid_path: 路径无效
   invalid_payload: 载荷无效
   invalid_port: 端口无效
   invalid_prefix: 前缀无效
   invalid_profile_confirm_password: 确认密码无效
-  invalid_profile_password: 密码无效。字符，最少=3，最多=100
-  invalid_profile_username: 用户名无效。字符，最少=3，最多=100，不允许空格
+  invalid_profile_password: 密码无效。长度须为 3 至 100 个字符
+  invalid_profile_username: 用户名无效。长度须为 3 至 100 个字符，且不能包含空格
   invalid_repeat_count: 重复次数无效
-  invalid_response_code: 请输入有效响应码，输入 0 表示忽略
-  invalid_retry_count: 重试次数无效。整数，最少=0
+  invalid_response_code: 请输入有效的响应码，输入 0 表示忽略
+  invalid_retry_count: 重试次数无效。须为大于或等于 0 的整数
   invalid_script_empty: 脚本不能为空
   invalid_server_url: 服务器 URL 无效
-  invalid_source_id: 来源 ID 无效。字符，最少=1，最多=100
-  invalid_text: 文本无效。字符，最少=1，最多=100
+  invalid_source_id: 来源 ID 无效。长度须为 1 至 100 个字符
+  invalid_text: 文本无效。长度须为 1 至 100 个字符
   invalid_time: 时间无效
   invalid_title: 标题无效
   invalid_token: 令牌无效
@@ -276,7 +276,7 @@ helper_text:
   invalid_url: URL 无效
   invalid_username: 用户名无效
   invalid_password: 密码无效
-  password_leave_empty: 留空以保留当前密码
+  password_leave_empty: 留空则保留当前密码
   service_account_user: 留空即为自己创建。选择用户可为对方创建账号。
   invalid_value: 值无效
   invalid_width: 宽度无效
@@ -298,9 +298,9 @@ in_progress: 进行中
 inactive_duration: 非活动时长
 include_configuration: 包含配置
 include_global_configuration: 包含全局配置
-include_insecure_share: 包含非安全共享
+include_insecure_share: 包含不安全共享
 include_secure_share: 包含安全共享
-insecure: 非安全
+insecure: 不安全
 internal_message_ack: 内部消息确认
 interpolation: 插值
 interval: 间隔
@@ -313,7 +313,7 @@ json: JSON
 jwt_secret: JWT Secret
 keep_me_logged_in_30_days: 保持登录 30 天。
 key: 键
-key_path: 密钥路径
+key_path: 键路径
 label: 标签
 labels: 标签
 language: 语言
@@ -347,7 +347,7 @@ markdown_v2: Markdown v2
 match_all: 全部匹配
 max_y_axis: 最大值 (Y 轴)
 maximum: 最大值
-maximum_age: 最大期限
+maximum_age: 最长保留时间
 maximum_backup: 最大备份数
 maximum_size: 最大大小
 maximum_value: 最大值
@@ -373,7 +373,7 @@ name_key: 名称键
 never_expire: 永不过期
 new: 新建
 new_password: 新密码
-no_change_since: 自此无变化
+no_change_since: 此后无变化
 no_dashboard_message: 没有可加载的仪表盘。
 no_dashboard_title: 没有可用的仪表盘
 no_data: 无数据
@@ -391,14 +391,14 @@ notifications: 通知
 number_of_axis: 坐标轴数量
 occurrences: 出现次数
 'off': 'OFF'
-off_text: 关闭文本
+off_text: OFF 文本
 offset_0h0m0s: 偏移 (0h0m0s)
-offset_y_%: Offset Y (%)
+offset_y_%: Y 轴偏移 (%)
 'on': 'ON'
-on_button: 开启按钮
+on_button: ON 按钮
 on_receive: 接收时
 on_send: 发送时
-on_text: 开启文本
+on_text: ON 文本
 operations: 操作
 operator: 运算符
 options: 选项
@@ -452,10 +452,10 @@ opts:
     label_switch_button: 按钮开关
     label_switch_toggle: 拨动开关
   control_type_mixed:
-    label_button_push: 按钮
+    label_button_push: 轻触按钮
     label_input: 输入
-    label_options_select: 选择选项
-    label_options_tab: 选项卡选项
+    label_options_select: 下拉选项
+    label_options_tab: 选项卡
     label_slider: 滑块
     label_switch_button: 按钮开关
     label_switch_toggle: 拨动开关
@@ -537,9 +537,9 @@ opts:
     desc_rotate_none: 不旋转
     desc_rotate_right_90: 向右旋转 90°
     label_rotate_180: 旋转 180°
-    label_rotate_left_90: 向左 90°
+    label_rotate_left_90: 向左旋转 90°
     label_rotate_none: 无
-    label_rotate_right_90: 向右 90°
+    label_rotate_right_90: 向右旋转 90°
   image_source:
     desc_disk: 来自本地磁盘路径的图片
     desc_field: 来自字段资源的图片数据
@@ -618,7 +618,7 @@ opts:
     label_percentile_99: 第 99 百分位
     label_sum: 总和
   metric_type:
-    label_binary: 二进制
+    label_binary: 二值
     label_counter: 计数器
     label_gauge: 仪表
     label_gauge_float: 仪表（浮点）
@@ -628,7 +628,7 @@ opts:
   rgb_component:
     desc_color_picker: 预定义颜色
     desc_hue_slider: 色相滑块
-    label_color_picker: 快速取色
+    label_color_picker: 快速取色器
     label_hue_slider: 色相滑块
   schedule_frequency:
     desc_daily: 每天运行
@@ -663,15 +663,15 @@ opts:
     label_app_selector: 应用选择器
     label_arm_disarm: 布防/撤防
     label_brightness: 亮度
-    label_camera_stream: 摄像头流
+    label_camera_stream: 摄像头串流
     label_channel: 频道
     label_color_setting: 颜色设置
     label_cook: 烹饪
-    label_dispense: 分配
+    label_dispense: 出料
     label_dock: 停靠
     label_energy_storage: 储能
     label_fan_speed: 风扇转速
-    label_fill: 填充
+    label_fill: 加注
     label_humidity_setting: 湿度设置
     label_input_selector: 输入选择器
     label_light_effects: 灯光效果
@@ -695,7 +695,7 @@ opts:
     label_temperature_setting: 温度设置
     label_timer: 定时器
     label_toggles: 开关
-    label_transport_control: 传输控制
+    label_transport_control: 播放控制
     label_volume: 音量
   utilization_chart:
     label_circle_050: 半圆
@@ -730,7 +730,7 @@ opts:
     label_cooktop: 灶台
     label_curtain: 窗帘
     label_dehumidifier: 除湿机
-    label_dehydrator: 食物烘干机
+    label_dehydrator: 食物干燥机
     label_dishwasher: 洗碗机
     label_door: 门
     label_door_bell: 门铃
@@ -744,7 +744,7 @@ opts:
     label_garage_door: 车库门
     label_gate: 大门
     label_grill: 烤架
-    label_heater: 加热器
+    label_heater: 取暖器
     label_hood: 油烟机
     label_humidifier: 加湿器
     label_kettle: 电水壶
@@ -761,7 +761,7 @@ opts:
     label_pergola: 凉棚
     label_pet_feeder: 宠物喂食器
     label_pressure_cooker: 高压锅
-    label_radiator: 散热器
+    label_radiator: 暖气片
     label_refrigerator: 冰箱
     label_router: 路由器
     label_scene: 场景
@@ -781,7 +781,7 @@ opts:
     label_streaming_stick: 流媒体棒
     label_switch: 开关
     label_television: 电视
-    label_thermostat: 恒温器
+    label_thermostat: 温控器
     label_vacuum: 吸尘器
     label_valve: 阀门
     label_washer: 洗衣机
@@ -803,8 +803,8 @@ opts:
     desc_chart_panel: 以图表显示数据
     desc_control_panel: 对资源执行控制操作
     desc_empty_panel: 空白面板
-    desc_image_panel: 从来源显示图片
-    desc_light_panel: 控制一盏灯
+    desc_image_panel: 从不同来源显示图片
+    desc_light_panel: 控制灯光
     desc_utilization_panel: 显示利用率状态
     label_chart_panel: 图表面板
     label_control_panel: 控制面板
@@ -824,8 +824,8 @@ password: 密码
 path: 路径
 payload: 载荷
 send: 发送
-payload_off: 关闭载荷
-payload_on: 开启载荷
+payload_off: 载荷 OFF
+payload_on: 载荷 ON
 payloads: 载荷
 per_cpu_disabled: 每 CPU 已禁用
 port: 端口
@@ -861,8 +861,8 @@ request_heartbeat: 请求心跳
 reset: 重置
 resetting: 正在重置...
 resource: 资源
-resource_by_labels: 按标签的资源
-resource_by_quick_id: 按快捷 ID 的资源
+resource_by_labels: 按标签指定资源
+resource_by_quick_id: 按快捷 ID 指定资源
 resource_configuration: 资源配置
 resource_filters: 资源筛选
 resource_name: 资源名称
@@ -887,11 +887,11 @@ schedule_details: 计划详情
 schedule_type: 计划类型
 schedules: 计划
 script: 脚本
-select_an_option: 选择一项
+select_an_option: 请选择
 server: 服务器
-service_account_not_generated: 服务账号令牌尚未生成
+service_account_not_generated: 尚未生成服务账号令牌
 service_account_copy_title: 复制服务账号令牌
-service_account_copy_warning_msg: 此令牌仅显示一次。它不会被存储，也无法再次获取。请立即保存。
+service_account_copy_warning_msg: 此令牌仅显示一次。系统不会保存该令牌，之后也无法再次查看。请立即妥善保存。
 service_account_barcode_help: 扫描此条码即可使用令牌登录。
 service_account_details: 服务账号详情
 service_accounts: 服务账号
@@ -908,7 +908,7 @@ sort_order_priority: 排序优先级
 source: 来源
 source_code: 源代码
 source_details: 来源详情
-source_field: 源字段
+source_field: 来源字段
 source_id: 来源 ID
 sources: 来源
 spec: 规格
@@ -1013,7 +1013,7 @@ statements: 语句
 user_details: 用户详情
 users: 用户
 layout: 布局
-layout_tree: 树
+layout_tree: 树状
 layout_force: 力导向
 refresh: 刷新
 include_child_nodes: 包含子节点

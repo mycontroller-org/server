@@ -43,5 +43,7 @@ For a packed server binary, leave `web.web_directory` empty so the UI is extract
 ## Locales
 Edit translation files in `public/locales/<lang>.yaml` and commit them here. The UI loads those files at runtime (`/locales/{{lng}}.yaml`).
 
+Style, key meaning, and the review checklist for translators and AI sessions: [`docs/locales.md`](../docs/locales.md).
+
 ## Release
 The console is released with the server. CI packs `web-console/build` into the server binary. The process extracts it to `{data}/internal/web_console` on first start so the UI is not kept in RAM.

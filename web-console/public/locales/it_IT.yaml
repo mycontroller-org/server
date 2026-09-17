@@ -5,12 +5,12 @@ active_duration: Durata attiva
 add: Aggiungi
 add_a_field: Aggiungi un campo
 add_a_firmware: Aggiungi un firmware
-add_a_forward_payload: Aggiungi un inoltro payload
-add_a_gateway: Aggiungi un gateway
-add_a_handler: Aggiungi un gestore
+add_a_forward_payload: Aggiungi un Forward Payload
+add_a_gateway: Aggiungi un Gateway
+add_a_handler: Aggiungi un Handler
 add_a_node: Aggiungi un nodo
 add_a_schedule: Aggiungi una pianificazione
-add_a_policy: Aggiungi un criterio
+add_a_policy: Aggiungi una Policy
 add_a_service_account: Aggiungi un account di servizio
 add_a_user: Aggiungi un utente
 add_a_source: Aggiungi una sorgente
@@ -26,7 +26,7 @@ alerts_empty_title: Nessun avviso trovato
 alive_check_interval: Intervallo di controllo attività
 all_rights_reserved: Tutti i diritti riservati
 allow_overwrite: Consenti sovrascrittura
-apache_license_2: Licenza Apache 2.0
+apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: Chiedi conferma
 assigned_firmware: Firmware assegnato
@@ -77,12 +77,12 @@ cursor_tooltip: Suggerimento del cursore
 custom_data: Dati personalizzati
 custom_mapping: Mappatura personalizzata
 custom_variables: Variabili personalizzate
-dampening: Smorzamento
+dampening: Attenuazione
 dashboard: Dashboard
 data: Dati
 data_repository: Repository dati
-data_repository_add_an_entry: 'Repository dati: Aggiungi una voce'
-data_repository_modify_an_entry: 'Repository dati: Modifica una voce'
+data_repository_add_an_entry: "Repository dati: Aggiungi una voce"
+data_repository_modify_an_entry: "Repository dati: Modifica una voce"
 data_retrieved_from_server: Dati recuperati dal server
 data_type: Tipo di dati
 date_yyyy_mm_dd: Data (aaaa-mm-gg)
@@ -96,39 +96,39 @@ details: Dettagli
 device_filter: Filtro dispositivo
 device_type: Tipo di dispositivo
 dialog:
-  clear_sleeping_queue_heading: "Vuoi svuotare la coda?"
+  clear_sleeping_queue_heading: "Si desidera svuotare la coda?"
   clear_sleeping_queue_msg: Tutti i messaggi in coda in sospensione verranno scartati
-  delete_resource_msg: "Sei sicuro di voler eliminare gli elementi selezionati?"
+  delete_resource_msg: "Si desidera eliminare gli elementi selezionati?"
   delete_title_backup: "Eliminare i file di backup?"
   delete_title_dashboard: "Eliminare la dashboard?"
   delete_title_data_repository: "Eliminare i repository dati?"
   delete_title_field: "Eliminare i campi?"
   delete_title_firmware: "Eliminare il firmware?"
-  delete_title_forward_payload: "Eliminare gli inoltri payload?"
-  delete_title_gateway: "Eliminare i gateway?"
-  delete_title_handler: "Eliminare i gestori?"
+  delete_title_forward_payload: "Eliminare i Forward Payload?"
+  delete_title_gateway: "Eliminare i Gateway?"
+  delete_title_handler: "Eliminare i Handler?"
   delete_title_node: "Eliminare i nodi?"
   delete_title_schedule: "Eliminare le pianificazioni?"
   delete_title_service_account: "Eliminare l'account di servizio?"
   delete_title_user: "Eliminare l'utente?"
-  delete_title_policy: "Eliminare il criterio?"
+  delete_title_policy: "Eliminare la Policy?"
   delete_title_source: "Eliminare le sorgenti?"
   delete_title_task: "Eliminare le attività?"
   delete_title_virtual_assistant: "Eliminare l'assistente virtuale?"
   delete_title_virtual_device: "Eliminare il dispositivo virtuale?"
   node_reset_heading: "Reimpostare il nodo?"
-  node_reset_msg: "Sei sicuro di voler reimpostare i nodi selezionati?<br/>Dopo questa operazione:<3><0>La configurazione verrà ripristinata alle impostazioni di fabbrica.</0><1>Potresti perdere l'accesso ai nodi selezionati da MyController!</1></3>"
+  node_reset_msg: "Si desidera reimpostare i nodi selezionati?<br/>Dopo questa operazione:<3><0>La configurazione verrà ripristinata alle impostazioni di fabbrica.</0><1>Si potrebbe perdere l'accesso ai nodi selezionati da MyController!</1></3>"
   reboot_nodes_heading: "Riavviare il nodo?"
-  reboot_nodes_msg: "Sei sicuro di voler riavviare i nodi selezionati?"
-  reset_msg_jwt_secret: "Sei sicuro di voler reimpostare il segreto JWT? Dopo questa operazione, tutte le sessioni attive su questo server non saranno più valide e verrai disconnesso."
+  reboot_nodes_msg: "Si desidera riavviare i nodi selezionati?"
+  reset_msg_jwt_secret: Si desidera reimpostare il segreto JWT? Dopo questa operazione, tutte le sessioni attive su questo server non saranno più valide e si verrà disconnessi.
   reset_title_jwt_secret: Reimposta segreto JWT
   restore_heading: "Confermare l'operazione di ripristino?"
-  restore_msg: "Sei sicuro di voler ripristinare dal file di backup selezionato?<br/>Dopo questa operazione:<3><0>I dati del server verranno ripristinati a <1>{{fileName}}</1></0><1>Non è possibile annullare questa operazione</1><2>Esegui sempre un backup prima di un ripristino</2><3>Potrebbe essere necessario avviare il server manualmente</3></3>"
+  restore_msg: "Si desidera ripristinare dal file di backup selezionato?<br/>Dopo questa operazione:<3><0>I dati del server verranno ripristinati a <1>{{fileName}}</1></0><1>Non è possibile annullare questa operazione</1><2>Eseguire sempre un backup prima di un ripristino</2><3>Potrebbe essere necessario avviare il server manualmente</3></3>"
 disable: Disabilita
 disable_scrollbar: Disabilita barra di scorrimento
 disabled: Disabilitato
 disabled_all: Tutti disabilitati
-discover_nodes: Scopri nodi
+discover_nodes: Rileva nodi
 disk: Disco
 disks: Dischi
 display_name: Nome visualizzato
@@ -142,7 +142,7 @@ download: Scarica
 drop_down_position: Posizione del menu a discesa
 duration: Durata
 edit: Modifica
-edit_dashboard_settings: Modifica impostazioni dashboard
+edit_dashboard_settings: Modifica impostazioni Dashboard
 edit_widget_settings: Modifica impostazioni widget
 email: Email
 enable: Abilita
@@ -166,7 +166,7 @@ execution_mode: Modalità di esecuzione
 experimental: Sperimentale
 expires_on: Scade il
 export_type: Tipo di esportazione
-'false': 'Falso'
+'false': 'False'
 favorite: Preferito
 fetch_info: Recupera info
 fetching: Recupero in corso
@@ -177,7 +177,7 @@ fields: Campi
 file_details: Dettagli del file
 file_uploaded_successfully: File caricato correttamente
 filename: Nome file
-filename_placeholder: Trascina un file qui o sfoglia per caricarlo
+filename_placeholder: Trascinare un file qui o sfogliare per caricarlo
 fill_opacity_%: Opacità di riempimento (%)
 filter: Filtro
 filter_type: Tipo di filtro
@@ -188,47 +188,47 @@ firmware_update: Aggiornamento firmware
 firmwares: Firmware
 flush_interval: Intervallo di svuotamento
 forgot_username_or_password: "Nome utente o password dimenticati?"
-form_generic_error_message: Controlla gli errori e/o i campi obbligatori(*)
+form_generic_error_message: Controllare gli errori e/o i campi obbligatori (*)
 form_view: Vista modulo
 forum: Forum
-forward_payload: Inoltro payload
-forward_payload_details: Dettagli inoltro payload
+forward_payload: Forward Payload
+forward_payload_details: Dettagli Forward Payload
 frequency: Frequenza
 from: Da
 from_email: Email mittente
 full_name: Nome completo
 function: Funzione
 gateway: Gateway
-gateway_details: Dettagli del gateway
-gateway_id: ID gateway
+gateway_details: Dettagli del Gateway
+gateway_id: ID Gateway
 gateways: Gateway
-all_gateways: Tutti i gateway
+all_gateways: Tutti i Gateway
 all_nodes: Tutti i nodi
 show_sources: Mostra sorgenti
 show_fields: Mostra campi
 select_gateway: Gateway
 no_topology_nodes: Nessun nodo da visualizzare
-no_topology_nodes_for_gateway: Nessun nodo trovato per questo gateway
+no_topology_nodes_for_gateway: Nessun nodo trovato per questo Gateway
 geo_location: Posizione GEO
 git_commit: Commit Git
 global_configuration: Configurazione globale
 golang_version: Versione GoLang
-handler: Gestore
-handler_details: Dettagli del gestore
-handler_parameters: Parametri del gestore
-handler_type: Tipo di gestore
-handlers: Gestori
+handler: Handler
+handler_details: Dettagli del Handler
+handler_parameters: Parametri del Handler
+handler_type: Tipo di Handler
+handlers: Handler
 header_name: Nome intestazione
 headers: Intestazioni
 heartbeat_request: Richiesta heartbeat
 height_px: Altezza (px)
 helper_text:
-  invalid_address_esphome: 'Indirizzo non valido, esempio: node1.local:6053'
+  invalid_address_esphome: "Indirizzo non valido, esempio: node1.local:6053"
   invalid_api: API non valida
-  invalid_backup_retention_count: "Conteggio di conservazione non valido, 0 per nessun limite"
+  invalid_backup_retention_count: Conteggio di conservazione non valido, 0 per nessun limite
   invalid_baud_rate: Velocità di trasmissione non valida
   invalid_broker_url: URL del broker non valido
-  invalid_current_password: Inserisci la password attuale
+  invalid_current_password: Immettere la password attuale
   invalid_data: Dati non validi
   invalid_date: Data non valida
   invalid_day_of_month: Giorno del mese non valido
@@ -236,36 +236,36 @@ helper_text:
   invalid_duration: Durata non valida
   invalid_email: Email non valida
   invalid_execution_interval_empty: "L'intervallo di esecuzione non può essere vuoto"
-  invalid_field_id: "ID campo non valido. caratteri, min=1, max=100"
+  invalid_field_id: ID campo non valido. caratteri, min=1, max=100
   invalid_filters: Filtri non validi
   invalid_height: Altezza non valida
   invalid_host: Host non valido
-  invalid_id: "ID non valido. caratteri, min=4, max=100, spazi non consentiti"
+  invalid_id: ID non valido. caratteri, min=4, max=100, spazi non consentiti
   invalid_interval: Intervallo non valido
-  invalid_key: "Chiave non valida. caratteri, min=1 e max=100"
+  invalid_key: Chiave non valida. caratteri, min=1 e max=100
   invalid_key_path: Il percorso della chiave non può essere vuoto
   invalid_latitude: Latitudine non valida
   invalid_limit: Limite non valido
   invalid_location: Posizione non valida
   invalid_longitude: Longitudine non valida
-  invalid_maximum_backup: "Conteggio massimo di backup non valido. int, min=0"
-  invalid_name: "Nome non valido. caratteri, min=2, max=100"
-  invalid_node_id: "ID nodo non valido. caratteri, min=1 e max=100"
+  invalid_maximum_backup: Conteggio massimo di backup non valido. int, min=0
+  invalid_name: Nome non valido. caratteri, min=2, max=100
+  invalid_node_id: ID nodo non valido. caratteri, min=1 e max=100
   invalid_offset: Offset non valido
   invalid_path: Percorso non valido
   invalid_payload: Payload non valido
   invalid_port: Porta non valida
   invalid_prefix: Prefisso non valido
   invalid_profile_confirm_password: Conferma password non valida
-  invalid_profile_password: "Password non valida. caratteri, min=3, max=100"
-  invalid_profile_username: "Nome utente non valido. caratteri, min=3, max=100, spazi non consentiti"
+  invalid_profile_password: Password non valida. caratteri, min=3, max=100
+  invalid_profile_username: Nome utente non valido. caratteri, min=3, max=100, spazi non consentiti
   invalid_repeat_count: Conteggio ripetizioni non valido
-  invalid_response_code: "Inserisci un codice di risposta valido, inserisci 0 per ignorare"
-  invalid_retry_count: "Conteggio tentativi non valido. int, min=0"
+  invalid_response_code: Immettere un codice di risposta valido; immettere 0 per ignorare
+  invalid_retry_count: Conteggio tentativi non valido. int, min=0
   invalid_script_empty: Lo script non può essere vuoto
   invalid_server_url: URL del server non valido
-  invalid_source_id: "ID sorgente non valido. caratteri, min=1 e max=100"
-  invalid_text: "Testo non valido. caratteri, min=1 e max=100"
+  invalid_source_id: ID sorgente non valido. caratteri, min=1 e max=100
+  invalid_text: Testo non valido. caratteri, min=1 e max=100
   invalid_time: Ora non valida
   invalid_title: Titolo non valido
   invalid_token: Token non valido
@@ -274,8 +274,8 @@ helper_text:
   invalid_url: URL non valido
   invalid_username: Nome utente non valido
   invalid_password: Password non valida
-  password_leave_empty: Lascia vuoto per mantenere la password attuale
-  service_account_user: Lascia vuoto per crearlo per te. Seleziona un utente per creare l'account per lui.
+  password_leave_empty: Lasciare vuoto per mantenere la password attuale
+  service_account_user: "Lasciare vuoto per crearlo per sé. Selezionare un utente per creare l'account per lui."
   invalid_value: Valore non valido
   invalid_width: Larghezza non valida
 hide_border: Nascondi bordo
@@ -309,7 +309,7 @@ is_static: È statico
 javascript: Javascript
 json: JSON
 jwt_secret: Segreto JWT
-keep_me_logged_in_30_days: Resta connesso per 30 giorni.
+keep_me_logged_in_30_days: Rimanere connessi per 30 giorni.
 key: Chiave
 key_path: Percorso chiave
 label: Etichetta
@@ -318,7 +318,7 @@ language: Lingua
 last_evaluation: Ultima valutazione
 last_modified: Ultima modifica
 last_run: Ultima esecuzione
-last_seen: Ultimo contatto
+last_seen: "Visto l'ultima volta"
 last_status: Ultimo stato
 last_success: Ultimo successo
 latitude: Latitudine
@@ -342,7 +342,7 @@ mapping: Mappatura
 mark_all_read: Segna tutti come letti
 markdown: Markdown
 markdown_v2: Markdown v2
-match_all: Corrispondi tutti
+match_all: Confronta tutti
 max_y_axis: Max (asse Y)
 maximum: Massimo
 maximum_age: Età massima
@@ -352,14 +352,14 @@ maximum_value: Valore massimo
 memory: Memoria
 memory_disabled: Memoria disabilitata
 message: Messaggio
-message_logger: Registratore messaggi
+message_logger: Registro messaggi
 method: Metodo
 metric_configuration: Configurazione delle metriche
 metric_function: Funzione metrica
 metric_interval: Intervallo metriche
 metric_type: Tipo di metrica
 metrics: Metriche
-metrics_database_disabled: 'ATTENZIONE: Database delle metriche disabilitato'
+metrics_database_disabled: "ATTENZIONE: Database delle metriche disabilitato"
 min_y_axis: Min (asse Y)
 minimum: Minimo
 minimum_value: Valore minimo
@@ -376,7 +376,7 @@ no_dashboard_message: Non è disponibile alcuna dashboard da caricare.
 no_dashboard_title: Nessuna dashboard disponibile
 no_data: Nessun dato
 no_labels: Nessuna etichetta
-no_login_message: Nessun messaggio impostato per l'accesso
+no_login_message: "Nessun messaggio impostato per l'accesso"
 node: Nodo
 node_configuration: Configurazione del nodo
 node_details: Dettagli del nodo
@@ -461,7 +461,7 @@ opts:
     desc_active_duration: "Durata attiva dell'attività"
     desc_consecutive: Numero di occorrenze consecutive
     desc_evaluation: Numero di occorrenze in N valutazioni
-    desc_none: Disabilita la funzione di smorzamento
+    desc_none: Disabilita la funzione di attenuazione
     label_active_duration: Durata attiva
     label_consecutive: Consecutive
     label_evaluation: Valutazione
@@ -509,7 +509,7 @@ opts:
   handler_type:
     desc_backup: Esegue il backup del server
     desc_email: Invia email
-    desc_noop: Gestore senza operazione
+    desc_noop: Handler senza operazione
     desc_resource: Azioni relative alle risorse interne
     desc_telegram: Invia testo a Telegram
     desc_webhook: Chiama un URL webhook
@@ -525,7 +525,7 @@ opts:
     label_post: POST
     label_put: PUT
   image_load_type:
-    desc_custom_mapping: Mostra l'immagine mappata dal valore del campo
+    desc_custom_mapping: "Mostra l'immagine mappata dal valore del campo"
     desc_image: Immagine in Base64 dal valore del campo
     label_custom_mapping: Mappatura personalizzata
     label_image: Immagine raw
@@ -583,7 +583,7 @@ opts:
     desc_rgb: Luce RGB
     desc_rgb_cw: RGB con bianco freddo
     desc_rgb_cw_ww: RGB con bianco freddo e bianco caldo
-    desc_single: "Singolo, bianco freddo o bianco caldo"
+    desc_single: Singolo, bianco freddo o bianco caldo
     label_cw_ww: CW WW
     label_rgb: RGB
     label_rgb_cw: RGB CW
@@ -618,8 +618,8 @@ opts:
   metric_type:
     label_binary: Binario
     label_counter: Contatore
-    label_gauge: Gauge
-    label_gauge_float: Gauge float
+    label_gauge: Indicatore
+    label_gauge_float: Indicatore (virgola mobile)
     label_geo: GEO
     label_none: Nessuno
     label_string: Stringa
@@ -631,7 +631,7 @@ opts:
   schedule_frequency:
     desc_daily: Viene eseguito ogni giorno
     desc_monthly: Viene eseguito una volta al mese
-    desc_on_date: "Viene eseguito una sola volta alla data e ora specificate"
+    desc_on_date: Viene eseguito una sola volta alla data e ora specificate
     desc_weekly: Viene eseguito una volta a settimana
     label_daily: Giornaliero
     label_monthly: Mensile
@@ -640,7 +640,7 @@ opts:
   schedule_type:
     desc_cron: Espressione cron
     desc_repeat: Si ripete a un intervallo specificato
-    desc_simple: "Pianificazione giornaliera, settimanale, mensile"
+    desc_simple: Pianificazione giornaliera, settimanale, mensile
     desc_sunrise: "In base all'ora dell'alba"
     desc_sunset: "In base all'ora del tramonto"
     label_cron: Cron
@@ -679,7 +679,7 @@ opts:
     label_modes: Modalità
     label_network_control: Controllo rete
     label_object_detection: Rilevamento oggetti
-    label_on_off: On Off
+    label_on_off: On/Off
     label_open_close: Apri Chiudi
     label_reboot: Riavvia
     label_rotation: Rotazione
@@ -711,7 +711,7 @@ opts:
   vd_type:
     label_air_conditioner: Condizionatore
     label_air_cooler: Raffrescatore
-    label_air_freshener: Deodorante
+    label_air_freshener: Deodorante per ambienti
     label_air_purifier: "Purificatore d'aria"
     label_audio_video_receiver: Ricevitore audio video
     label_awning: Tenda da sole
@@ -750,7 +750,7 @@ opts:
     label_lock: Serratura
     label_media_remote: Telecomando media
     label_microwave: Microonde
-    label_mop: Mocio
+    label_mop: Lavapavimenti
     label_mower: Tosaerba
     label_multicooker: Multicooker
     label_network: Rete
@@ -811,12 +811,12 @@ opts:
     label_light_panel: Pannello luce
     label_utilization_panel: Pannello di utilizzo
 others: Altri
-padding_bottom_px: Padding inferiore (px)
-padding_left_px: Padding sinistro (px)
-padding_right_px: Padding destro (px)
-padding_top_px: Padding superiore (px)
+padding_bottom_px: Spaziatura inferiore (px)
+padding_left_px: Spaziatura sinistra (px)
+padding_right_px: Spaziatura destra (px)
+padding_top_px: Spaziatura superiore (px)
 panel_title: Titolo del pannello
-parameters_to_handler: Parametri per il gestore
+parameters_to_handler: Parametri per l'Handler
 parse_mode: Modalità di analisi
 password: Password
 path: Percorso
@@ -885,12 +885,12 @@ schedule_details: Dettagli della pianificazione
 schedule_type: Tipo di pianificazione
 schedules: Pianificazioni
 script: Script
-select_an_option: "Seleziona un'opzione"
+select_an_option: "Selezionare un'opzione"
 server: Server
-service_account_not_generated: Token dell'account di servizio non generato
+service_account_not_generated: "Token dell'account di servizio non generato"
 service_account_copy_title: Copia token account di servizio
-service_account_copy_warning_msg: Questo token verrà mostrato una sola volta. Non verrà memorizzato e non potrà essere recuperato. Assicurati di salvarlo ora.
-service_account_barcode_help: Scansiona questo codice a barre per accedere con il token.
+service_account_copy_warning_msg: Questo token verrà mostrato una sola volta. Non verrà memorizzato e non potrà essere recuperato. Salvarlo ora.
+service_account_barcode_help: Acquisire questo codice a barre per accedere con il token.
 service_account_details: Dettagli account di servizio
 service_accounts: Account di servizio
 settings: Impostazioni
@@ -941,7 +941,7 @@ thickness: Spessore
 threshold_mode: Modalità soglia
 thresholds: Soglie
 thresholds_color: Colore delle soglie
-time_hh_mm_ss: "Ora (hh:mm:ss)"
+time_hh_mm_ss: Ora (hh:mm:ss)
 timeout: Timeout
 timestamp: Timestamp
 timestamp_key: Chiave timestamp
@@ -954,14 +954,14 @@ trait: Trait
 traits: Trait
 transmit_pre_delay: Pre-ritardo di trasmissione
 trigger_on_event: Attiva su evento
-'true': 'Vero'
+'true': 'True'
 type: Tipo
 unit: Unità
-up: SU
+up: Su
 update: Aggiorna
 update_body: Aggiorna corpo
 update_data: Aggiorna dati
-update_endpoint: Aggiorna endpoint
+update_endpoint: Aggiorna Endpoint
 update_firmware: Aggiorna firmware
 update_node: Aggiorna nodo
 update_post_run: Aggiorna post-esecuzione
@@ -969,13 +969,13 @@ update_pre_run: Aggiorna pre-esecuzione
 update_query_parameters: Aggiorna parametri di query
 update_resource: Aggiorna risorsa
 update_script: Aggiorna script
-update_trait: Aggiorna trait
+update_trait: Aggiorna Trait
 update_value: Aggiorna valore
 update_y_axis: Aggiorna asse Y
 upload: Carica
 upload_firmware: Carica firmware
 url: URL
-use_global: Usa globale
+use_global: Usa valore globale
 use_global_encryption_key: Usa chiave di crittografia globale
 use_global_password: Usa password globale
 use_global_style: Usa stile globale
@@ -1005,9 +1005,9 @@ y_axis_configuration: Configurazione asse Y
 yaml: YAML
 yaml_view: Vista YAML
 users: Utenti
-policies: Criteri
+policies: Policies
 user_details: Dettagli utente
-policy_details: Dettagli del criterio
+policy_details: Dettagli della Policy
 statement: Istruzione
 edit_statement: Modifica istruzione
 statements: Istruzioni

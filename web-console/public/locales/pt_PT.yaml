@@ -5,16 +5,16 @@ active_duration: Duração ativa
 add: Adicionar
 add_a_field: Adicionar um campo
 add_a_firmware: Adicionar um firmware
-add_a_forward_payload: Adicionar um reencaminhamento de carga útil
-add_a_gateway: Adicionar um gateway
-add_a_handler: Adicionar um gestor
+add_a_forward_payload: Adicionar um Forward Payload
+add_a_gateway: Adicionar um Gateway
+add_a_handler: Adicionar um Handler
 add_a_node: Adicionar um nó
 add_a_schedule: Adicionar um agendamento
 add_a_policy: Adicionar uma política
 add_a_service_account: Adicionar uma conta de serviço
+add_a_user: Adicionar um utilizador
 add_a_source: Adicionar uma fonte
 add_a_task: Adicionar uma tarefa
-add_a_user: Adicionar um utilizador
 add_a_virtual_assistant: Adicionar um assistente virtual
 add_a_virtual_device: Adicionar um dispositivo virtual
 add_an_item: Adicionar um item
@@ -26,7 +26,7 @@ alerts_empty_title: Nenhum alerta encontrado
 alive_check_interval: Intervalo de verificação de atividade
 all_rights_reserved: Todos os direitos reservados
 allow_overwrite: Permitir substituição
-apache_license_2: Licença Apache 2.0
+apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: Pedir confirmação
 assigned_firmware: Firmware atribuído
@@ -50,7 +50,7 @@ button_text: Texto do botão
 cancel: Cancelar
 chart_configuration: Configuração do gráfico
 chart_type: Tipo de gráfico
-chat_ids: ID de conversa
+chat_ids: ID de chat
 clear: Limpar
 clear_all: Limpar tudo
 color: Cor
@@ -73,12 +73,12 @@ create_new: Criar novo
 created_on: Criado em
 cron_expression: Expressão cron
 current_password: Palavra-passe atual
-cursor_tooltip: Sugestão do cursor
+cursor_tooltip: Descrição do cursor
 custom_data: Dados personalizados
 custom_mapping: Mapeamento personalizado
 custom_variables: Variáveis personalizadas
-dampening: Amortecimento
-dashboard: Painel
+dampening: Atenuação
+dashboard: Dashboard
 data: Dados
 data_repository: Repositório de dados
 data_repository_add_an_entry: "Repositório de dados: adicionar uma entrada"
@@ -96,33 +96,33 @@ details: Detalhes
 device_filter: Filtro de dispositivo
 device_type: Tipo de dispositivo
 dialog:
-  clear_sleeping_queue_heading: Pretende limpar a fila?
+  clear_sleeping_queue_heading: "Pretende limpar a fila?"
   clear_sleeping_queue_msg: Todas as mensagens da fila de repouso serão descartadas
-  delete_resource_msg: Tem a certeza de que pretende eliminar os itens selecionados?
-  delete_title_backup: Eliminar ficheiros de cópia de segurança?
-  delete_title_dashboard: Eliminar o painel?
-  delete_title_data_repository: Eliminar repositórios de dados?
-  delete_title_field: Eliminar campos?
-  delete_title_firmware: Eliminar firmware?
-  delete_title_forward_payload: Eliminar reencaminhamentos de carga útil?
-  delete_title_gateway: Eliminar gateways?
-  delete_title_handler: Eliminar gestores?
-  delete_title_node: Eliminar nós?
-  delete_title_schedule: Eliminar agendamentos?
-  delete_title_service_account: Eliminar conta de serviço?
-  delete_title_user: Eliminar utilizador?
-  delete_title_policy: Eliminar política?
-  delete_title_source: Eliminar fontes?
-  delete_title_task: Eliminar tarefas?
-  delete_title_virtual_assistant: Eliminar assistente virtual?
-  delete_title_virtual_device: Eliminar dispositivo virtual?
-  node_reset_heading: Repor o nó?
+  delete_resource_msg: "Tem a certeza de que pretende eliminar os itens selecionados?"
+  delete_title_backup: "Eliminar ficheiros de cópia de segurança?"
+  delete_title_dashboard: "Eliminar o Dashboard?"
+  delete_title_data_repository: "Eliminar repositórios de dados?"
+  delete_title_field: "Eliminar campos?"
+  delete_title_firmware: "Eliminar firmware?"
+  delete_title_forward_payload: "Eliminar Forward Payloads?"
+  delete_title_gateway: "Eliminar Gateways?"
+  delete_title_handler: "Eliminar Handlers?"
+  delete_title_node: "Eliminar nós?"
+  delete_title_schedule: "Eliminar agendamentos?"
+  delete_title_service_account: "Eliminar conta de serviço?"
+  delete_title_user: "Eliminar utilizador?"
+  delete_title_policy: "Eliminar política?"
+  delete_title_source: "Eliminar fontes?"
+  delete_title_task: "Eliminar tarefas?"
+  delete_title_virtual_assistant: "Eliminar assistente virtual?"
+  delete_title_virtual_device: "Eliminar dispositivo virtual?"
+  node_reset_heading: "Repor o nó?"
   node_reset_msg: "Tem a certeza de que pretende repor os nós selecionados?<br/>Após esta operação:<3><0>A configuração será restaurada para as predefinições de fábrica.</0><1>Pode perder o acesso aos nós selecionados a partir do MyController!</1></3>"
-  reboot_nodes_heading: Reiniciar o nó?
-  reboot_nodes_msg: Tem a certeza de que pretende reiniciar os nós selecionados?
-  reset_msg_jwt_secret: "Tem a certeza de que pretende repor o segredo JWT? Após esta operação, todas as sessões iniciadas neste servidor deixarão de ser válidas e a sua sessão será terminada!"
+  reboot_nodes_heading: "Reiniciar o nó?"
+  reboot_nodes_msg: "Tem a certeza de que pretende reiniciar os nós selecionados?"
+  reset_msg_jwt_secret: Tem a certeza de que pretende repor o segredo JWT? Após esta operação, todas as sessões iniciadas neste servidor deixarão de ser válidas e a sua sessão será terminada!
   reset_title_jwt_secret: Repor o segredo JWT
-  restore_heading: Confirmar o restauro?
+  restore_heading: "Confirmar o restauro?"
   restore_msg: "Tem a certeza de que pretende restaurar a partir do ficheiro de cópia de segurança selecionado?<br/>Após esta operação:<3><0>Os dados do servidor serão restaurados para <1>{{fileName}}</1></0><1>Esta operação não pode ser anulada</1><2>Faça sempre uma cópia de segurança antes de restaurar</2><3>Poderá ter de iniciar o servidor manualmente</3></3>"
 disable: Desativar
 disable_scrollbar: Desativar barra de deslocamento
@@ -137,21 +137,19 @@ display_text: Texto apresentado
 display_value: Apresentar valor
 do_update: Atualizar
 documentation: Documentação
-down: Para baixo
+down: Baixo
 download: Transferir
 drop_down_position: Posição da lista pendente
 duration: Duração
 edit: Editar
-edit_dashboard_settings: Editar definições do painel
+edit_dashboard_settings: Editar definições do Dashboard
 edit_widget_settings: Editar definições do widget
-email: Correio eletrónico
-edit_statement: Editar instrução
-effect: Efeito
+email: E-mail
 enable: Ativar
 enabled: Ativado
 encryption_key: Chave de encriptação
-endpoint: Ponto de extremidade
-endpoints: Pontos de extremidade
+endpoint: Endpoint
+endpoints: Endpoints
 entities: Entidades
 error:
   console:
@@ -180,7 +178,7 @@ file_details: Detalhes do ficheiro
 file_uploaded_successfully: Ficheiro carregado com êxito
 filename: Nome do ficheiro
 filename_placeholder: Arraste um ficheiro para aqui ou procure para carregar
-fill_opacity_%: Fill Opacity (%)
+fill_opacity_%: Opacidade de preenchimento (%)
 filter: Filtro
 filter_type: Tipo de filtro
 filters: Filtros
@@ -189,37 +187,37 @@ firmware_file: Ficheiro de firmware
 firmware_update: Atualização de firmware
 firmwares: Firmwares
 flush_interval: Intervalo de descarga
-forgot_username_or_password: Esqueceu-se do nome de utilizador ou da palavra-passe?
-form_generic_error_message: "Verifique os erros e/ou os campos obrigatórios (*)"
+forgot_username_or_password: "Esqueceu-se do nome de utilizador ou da palavra-passe?"
+form_generic_error_message: Verifique os erros e/ou os campos obrigatórios (*)
 form_view: Vista de formulário
 forum: Fórum
-forward_payload: Reencaminhar carga útil
-forward_payload_details: Detalhes do reencaminhamento de carga útil
+forward_payload: Forward Payload
+forward_payload_details: Detalhes de Forward Payload
 frequency: Frequência
 from: De
-from_email: Correio do remetente
+from_email: E-mail do remetente
 full_name: Nome completo
 function: Função
 gateway: Gateway
-gateway_details: Detalhes do gateway
-gateway_id: ID do gateway
+gateway_details: Detalhes do Gateway
+gateway_id: ID do Gateway
 gateways: Gateways
-all_gateways: Todos os gateways
+all_gateways: Todos os Gateways
 all_nodes: Todos os nós
 show_sources: Mostrar fontes
 show_fields: Mostrar campos
 select_gateway: Gateway
 no_topology_nodes: Sem nós para mostrar
-no_topology_nodes_for_gateway: Nenhum nó encontrado para este gateway
+no_topology_nodes_for_gateway: Nenhum nó encontrado para este Gateway
 geo_location: Localização GEO
 git_commit: Commit do Git
 global_configuration: Configuração global
 golang_version: Versão do GoLang
-handler: Gestor
-handler_details: Detalhes do gestor
-handler_parameters: Parâmetros do gestor
-handler_type: Tipo de gestor
-handlers: Gestores
+handler: Handler
+handler_details: Detalhes do Handler
+handler_parameters: Parâmetros do Handler
+handler_type: Tipo de Handler
+handlers: Handlers
 header_name: Nome do cabeçalho
 headers: Cabeçalhos
 heartbeat_request: Pedido de heartbeat
@@ -227,7 +225,7 @@ height_px: Altura (px)
 helper_text:
   invalid_address_esphome: "Endereço inválido, exemplo: node1.local:6053"
   invalid_api: API inválida
-  invalid_backup_retention_count: "Número de retenções inválido, 0 para sem limite"
+  invalid_backup_retention_count: Número de retenções inválido, 0 para sem limite
   invalid_baud_rate: Velocidade em baud inválida
   invalid_broker_url: URL do broker inválido
   invalid_current_password: Introduza a palavra-passe atual
@@ -236,42 +234,42 @@ helper_text:
   invalid_day_of_month: Dia do mês inválido
   invalid_directory: Diretório inválido
   invalid_duration: Duração inválida
-  invalid_email: Correio eletrónico inválido
+  invalid_email: E-mail inválido
   invalid_execution_interval_empty: O intervalo de execução não pode estar vazio
-  invalid_field_id: "ID de campo inválido. caracteres, mín.=1, máx.=100"
+  invalid_field_id: ID de campo inválido. caracteres, mín.=1, máx.=100
   invalid_filters: Filtros inválidos
   invalid_height: Altura inválida
-  invalid_host: Anfitrião inválido
-  invalid_id: "ID inválido. caracteres, mín.=4, máx.=100, sem espaços"
+  invalid_host: Host inválido
+  invalid_id: ID inválido. caracteres, mín.=4, máx.=100, sem espaços
   invalid_interval: Intervalo inválido
-  invalid_key: "Chave inválida. caracteres, mín.=1 e máx.=100"
+  invalid_key: Chave inválida. caracteres, mín.=1 e máx.=100
   invalid_key_path: O caminho da chave não pode estar vazio
   invalid_latitude: Latitude inválida
   invalid_limit: Limite inválido
   invalid_location: Localização inválida
   invalid_longitude: Longitude inválida
-  invalid_maximum_backup: "Número máximo de cópias inválido. inteiro, mín.=0"
-  invalid_name: "Nome inválido. caracteres, mín.=2, máx.=100"
-  invalid_node_id: "ID de nó inválido. caracteres, mín.=1 e máx.=100"
+  invalid_maximum_backup: Número máximo de cópias inválido. inteiro, mín.=0
+  invalid_name: Nome inválido. caracteres, mín.=2, máx.=100
+  invalid_node_id: ID de nó inválido. caracteres, mín.=1 e máx.=100
   invalid_offset: Deslocamento inválido
   invalid_path: Caminho inválido
-  invalid_payload: Carga útil inválida
+  invalid_payload: Payload inválido
   invalid_port: Porta inválida
   invalid_prefix: Prefixo inválido
   invalid_profile_confirm_password: Confirmação de palavra-passe inválida
-  invalid_profile_password: "Palavra-passe inválida. caracteres, mín.=3, máx.=100"
-  invalid_profile_username: "Nome de utilizador inválido. caracteres, mín.=3, máx.=100, sem espaços"
+  invalid_profile_password: Palavra-passe inválida. caracteres, mín.=3, máx.=100
+  invalid_profile_username: Nome de utilizador inválido. caracteres, mín.=3, máx.=100, sem espaços
   invalid_repeat_count: Número de repetições inválido
   invalid_response_code: Introduza um código de resposta válido; 0 para ignorar
-  invalid_retry_count: "Número de novas tentativas inválido. inteiro, mín.=0"
+  invalid_retry_count: Número de novas tentativas inválido. inteiro, mín.=0
   invalid_script_empty: O script não pode estar vazio
   invalid_server_url: URL do servidor inválido
-  invalid_source_id: "ID de fonte inválido. caracteres, mín.=1 e máx.=100"
-  invalid_text: "Texto inválido. caracteres, mín.=1 e máx.=100"
+  invalid_source_id: ID de fonte inválido. caracteres, mín.=1 e máx.=100
+  invalid_text: Texto inválido. caracteres, mín.=1 e máx.=100
   invalid_time: Hora inválida
   invalid_title: Título inválido
   invalid_token: Token inválido
-  invalid_topic: Tópico inválido
+  invalid_topic: Topic inválido
   invalid_type: Tipo inválido
   invalid_url: URL inválido
   invalid_username: Nome de utilizador inválido
@@ -280,13 +278,13 @@ helper_text:
   service_account_user: Deixe em branco para criar para si. Escolha um utilizador para criar a conta em nome dele.
   invalid_value: Valor inválido
   invalid_width: Largura inválida
-hide_border: Ocultar limite
+hide_border: Ocultar bordo
 hide_header: Ocultar cabeçalho
 hide_status_column: Ocultar coluna de estado
 hide_value_column: Ocultar coluna de valor
-host: Anfitrião
-host_id: ID do anfitrião
-host_ids: ID dos anfitriões
+host: Host
+host_id: ID do Host
+host_ids: ID dos Hosts
 html: HTML
 hue: Matiz
 icon_or_image_location: Localização do ícone ou da imagem
@@ -306,11 +304,11 @@ interpolation: Interpolação
 interval: Intervalo
 interval_0h0m0s: Intervalo (0h0m0s)
 invalid_file: Ficheiro inválido
-is_sleep_node: Nó em repouso
-is_static: Estático
+is_sleep_node: É nó em repouso
+is_static: É estático
 javascript: Javascript
 json: JSON
-jwt_secret: JWT Secret
+jwt_secret: Segredo JWT
 keep_me_logged_in_30_days: Manter a sessão iniciada durante 30 dias.
 key: Chave
 key_path: Caminho da chave
@@ -374,15 +372,15 @@ never_expire: Nunca expira
 new: Novo
 new_password: Nova palavra-passe
 no_change_since: Sem alterações desde
-no_dashboard_message: Não existe nenhum painel disponível para carregar.
-no_dashboard_title: Nenhum painel disponível
+no_dashboard_message: Não existe nenhum Dashboard disponível para carregar.
+no_dashboard_title: Nenhum Dashboard disponível
 no_data: Sem dados
 no_labels: Sem etiquetas
 no_login_message: Nenhuma mensagem definida para o início de sessão
 node: Nó
 node_configuration: Configuração do nó
 node_details: Detalhes do nó
-node_endpoints: Pontos de extremidade do nó
+node_endpoints: Endpoints do nó
 node_id: ID do nó
 node_state_updater: Atualizador de estado do nó
 nodes: Nós
@@ -393,7 +391,7 @@ occurrences: Ocorrências
 'off': 'OFF'
 off_text: Texto OFF
 offset_0h0m0s: Deslocamento (0h0m0s)
-offset_y_%: Offset Y (%)
+offset_y_%: Deslocamento Y (%)
 'on': 'ON'
 on_button: Botão ON
 on_receive: Ao receber
@@ -433,7 +431,7 @@ opts:
     desc_area_chart: Gráfico de áreas
     desc_bar_chart: Gráfico de barras
     desc_line_chart: Gráfico de linhas
-    desc_pie_chart: Pie Chart
+    desc_pie_chart: Gráfico circular
     desc_scatter_chart: Gráfico de dispersão
     label_area_chart: Gráfico de áreas
     label_bar_chart: Gráfico de barras
@@ -458,12 +456,12 @@ opts:
     label_options_tab: Opções de separador
     label_slider: Controlo de deslize
     label_switch_button: Botão comutador
-    label_switch_toggle: Toggle Switch
+    label_switch_toggle: Interruptor
   dampening:
     desc_active_duration: Duração ativa da tarefa
     desc_consecutive: Número de ocorrências consecutivas
     desc_evaluation: Número de ocorrências em N avaliações
-    desc_none: Desativar a funcionalidade de amortecimento
+    desc_none: Desativar a funcionalidade de atenuação
     label_active_duration: Duração ativa
     label_consecutive: Consecutivo
     label_evaluation: Avaliação
@@ -510,13 +508,13 @@ opts:
     label_tasmota: Tasmota
   handler_type:
     desc_backup: Efetuar uma cópia de segurança do servidor
-    desc_email: Envia correio eletrónico
-    desc_noop: Gestor sem operação
+    desc_email: Envia e-mail
+    desc_noop: Handler sem operação
     desc_resource: Ações internas relacionadas com recursos
     desc_telegram: Envia texto para o Telegram
     desc_webhook: Chama um URL de webhook
     label_backup: Cópia de segurança
-    label_email: Correio eletrónico
+    label_email: E-mail
     label_noop: Noop
     label_resource: Recurso
     label_telegram: Telegram
@@ -585,7 +583,7 @@ opts:
     desc_rgb: Luz RGB
     desc_rgb_cw: RGB com branco frio
     desc_rgb_cw_ww: RGB com branco frio e branco quente
-    desc_single: "Único, branco frio ou branco quente"
+    desc_single: Único, branco frio ou branco quente
     label_cw_ww: CW WW
     label_rgb: RGB
     label_rgb_cw: RGB CW
@@ -642,7 +640,7 @@ opts:
   schedule_type:
     desc_cron: Expressão cron
     desc_repeat: Repete num intervalo especificado
-    desc_simple: "Agendamento diário, semanal ou mensal"
+    desc_simple: Agendamento diário, semanal ou mensal
     desc_sunrise: Com base na hora do nascer do sol
     desc_sunset: Com base na hora do pôr do sol
     label_cron: Cron
@@ -670,7 +668,7 @@ opts:
     label_dispense: Dispensar
     label_dock: Acoplar
     label_energy_storage: Armazenamento de energia
-    label_fan_speed: Velocidade da ventoinha
+    label_fan_speed: Velocidade do ventilador
     label_fill: Encher
     label_humidity_setting: Definição de humidade
     label_input_selector: Seletor de entrada
@@ -735,8 +733,8 @@ opts:
     label_door: Porta
     label_door_bell: Campainha
     label_drawer: Gaveta
-    label_dryer: Máquina de secar
-    label_fan: Ventoinha
+    label_dryer: Máquina de secar roupa
+    label_fan: Ventilador
     label_faucet: Torneira
     label_fireplace: Lareira
     label_freezer: Congelador
@@ -784,7 +782,7 @@ opts:
     label_thermostat: Termóstato
     label_vacuum: Aspirador
     label_valve: Válvula
-    label_washer: Máquina de lavar
+    label_washer: Máquina de lavar roupa
     label_water_heater: Esquentador
     label_water_purifier: Purificador de água
     label_water_softener: Descalcificador
@@ -818,15 +816,15 @@ padding_left_px: Preenchimento esquerdo (px)
 padding_right_px: Preenchimento direito (px)
 padding_top_px: Preenchimento superior (px)
 panel_title: Título do painel
-parameters_to_handler: Parâmetros para o gestor
+parameters_to_handler: Parâmetros para o Handler
 parse_mode: Modo de análise
 password: Palavra-passe
 path: Caminho
-payload: Carga útil
+payload: Payload
 send: Enviar
-payload_off: Carga útil OFF
-payload_on: Carga útil ON
-payloads: Cargas úteis
+payload_off: Payload OFF
+payload_on: Payload ON
+payloads: Payloads
 per_cpu_disabled: Por CPU desativado
 port: Porta
 port_name: Nome da porta
@@ -895,8 +893,6 @@ service_account_copy_warning_msg: Este token só será apresentado uma vez. Não
 service_account_barcode_help: Leia este código para iniciar sessão com o token.
 service_account_details: Detalhes da conta de serviço
 service_accounts: Contas de serviço
-policies: Políticas
-policy_details: Detalhes da política
 settings: Definições
 show_grid_x: Mostrar grelha X
 show_grid_y: Mostrar grelha Y
@@ -945,27 +941,27 @@ thickness: Espessura
 threshold_mode: Modo de limiar
 thresholds: Limiares
 thresholds_color: Cor dos limiares
-time_hh_mm_ss: "Hora (hh:mm:ss)"
+time_hh_mm_ss: Hora (hh:mm:ss)
 timeout: Tempo limite
 timestamp: Marca temporal
 timestamp_key: Chave da marca temporal
 title: Título
 to: Para
-to_emails: Correios de destino
+to_emails: E-mails de destinatários
 token: Token
-topic: Tópico
-trait: Característica
-traits: Características
+topic: Topic
+trait: Trait
+traits: Traits
 transmit_pre_delay: Atraso prévio de transmissão
 trigger_on_event: Acionar num evento
 'true': 'True'
 type: Tipo
 unit: Unidade
-up: Para cima
+up: Cima
 update: Atualizar
 update_body: Atualizar corpo
 update_data: Atualizar dados
-update_endpoint: Atualizar ponto de extremidade
+update_endpoint: Atualizar Endpoint
 update_firmware: Atualizar firmware
 update_node: Atualizar nó
 update_post_run: Atualizar pós-execução
@@ -973,13 +969,13 @@ update_pre_run: Atualizar pré-execução
 update_query_parameters: Atualizar parâmetros de consulta
 update_resource: Atualizar recurso
 update_script: Atualizar script
-update_trait: Atualizar característica
+update_trait: Atualizar Trait
 update_value: Atualizar valor
 update_y_axis: Atualizar eixo Y
 upload: Carregar
 upload_firmware: Carregar firmware
 url: URL
-use_global: Utilizar global
+use_global: Utilizar valor global
 use_global_encryption_key: Utilizar chave de encriptação global
 use_global_password: Utilizar palavra-passe global
 use_global_style: Utilizar estilo global
@@ -1001,18 +997,22 @@ virtual_device_details: Detalhes do dispositivo virtual
 virtual_devices: Dispositivos virtuais
 web_console: Consola Web
 webhook: Webhook
-websocket_disconnected: Websocket desligado
+websocket_disconnected: Websocket desconectado
 welcome_to_mycontroller: Bem-vindo ao MyController
 width_px: Largura (px)
 y_axis: Eixo Y
 y_axis_configuration: Configuração do eixo Y
 yaml: YAML
 yaml_view: Vista YAML
-statement: Instrução
-statements: Instruções
-user_details: Detalhes do utilizador
 users: Utilizadores
-layout: Esquema
+policies: Políticas
+user_details: Detalhes do utilizador
+policy_details: Detalhes da política
+statement: Instrução
+edit_statement: Editar instrução
+statements: Instruções
+effect: Efeito
+layout: Disposição
 layout_tree: Árvore
 layout_force: Força
 refresh: Atualizar

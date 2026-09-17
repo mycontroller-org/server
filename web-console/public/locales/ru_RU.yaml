@@ -21,12 +21,12 @@ add_an_item: Добавить элемент
 add_widget: Добавить виджет
 address: Адрес
 agent_user_id: ID пользователя агента
-alerts_empty_message: Сейчас нет оповещений.
+alerts_empty_message: В настоящее время нет оповещений.
 alerts_empty_title: Оповещения не найдены
 alive_check_interval: Интервал проверки активности
 all_rights_reserved: Все права защищены
 allow_overwrite: Разрешить перезапись
-apache_license_2: Лицензия Apache 2.0
+apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: Запрашивать подтверждение
 assigned_firmware: Назначенная прошивка
@@ -78,7 +78,7 @@ custom_data: Пользовательские данные
 custom_mapping: Пользовательское сопоставление
 custom_variables: Пользовательские переменные
 dampening: Демпфирование
-dashboard: Панель
+dashboard: Дашборд
 data: Данные
 data_repository: Хранилище данных
 data_repository_add_an_entry: "Хранилище данных: добавить запись"
@@ -100,7 +100,7 @@ dialog:
   clear_sleeping_queue_msg: Все сообщения в очереди сна будут отброшены
   delete_resource_msg: Вы действительно хотите удалить выбранные элементы?
   delete_title_backup: Удалить файлы резервных копий?
-  delete_title_dashboard: Удалить панель?
+  delete_title_dashboard: Удалить дашборд?
   delete_title_data_repository: Удалить хранилища данных?
   delete_title_field: Удалить поля?
   delete_title_firmware: Удалить прошивку?
@@ -142,7 +142,7 @@ download: Скачать
 drop_down_position: Положение раскрывающегося списка
 duration: Длительность
 edit: Изменить
-edit_dashboard_settings: Изменить настройки панели
+edit_dashboard_settings: Изменить настройки дашборда
 edit_widget_settings: Изменить настройки виджета
 email: Эл. почта
 edit_statement: Изменить инструкцию
@@ -171,7 +171,7 @@ export_type: Тип экспорта
 'false': 'False'
 favorite: Избранное
 fetch_info: Получить сведения
-fetching: Загрузка
+fetching: Получение
 field: Поле
 field_details: Сведения о поле
 field_id: ID поля
@@ -180,7 +180,7 @@ file_details: Сведения о файле
 file_uploaded_successfully: Файл успешно загружен
 filename: Имя файла
 filename_placeholder: Перетащите файл сюда или выберите для загрузки
-fill_opacity_%: Fill Opacity (%)
+fill_opacity_%: Непрозрачность заливки (%)
 filter: Фильтр
 filter_type: Тип фильтра
 filters: Фильтры
@@ -193,7 +193,7 @@ forgot_username_or_password: Забыли имя пользователя или
 form_generic_error_message: "Проверьте ошибки и/или обязательные поля (*)"
 form_view: Вид формы
 forum: Форум
-forward_payload: Переслать payload
+forward_payload: Пересылка payload
 forward_payload_details: Сведения о пересылке payload
 frequency: Частота
 from: От
@@ -238,40 +238,40 @@ helper_text:
   invalid_duration: Недопустимая длительность
   invalid_email: Недопустимый адрес эл. почты
   invalid_execution_interval_empty: Интервал выполнения не должен быть пустым
-  invalid_field_id: "Недопустимый ID поля. символы, min=1, max=100"
+  invalid_field_id: "Недопустимый ID поля. Символы, min=1, max=100"
   invalid_filters: Недопустимые фильтры
   invalid_height: Недопустимая высота
   invalid_host: Недопустимый хост
-  invalid_id: "Недопустимый ID. символы, min=4, max=100, пробелы запрещены"
+  invalid_id: "Недопустимый ID. Символы, min=4, max=100, пробелы запрещены"
   invalid_interval: Недопустимый интервал
-  invalid_key: "Недопустимый ключ. символы, min=1 и max=100"
+  invalid_key: "Недопустимый ключ. Символы, min=1 и max=100"
   invalid_key_path: Путь к ключу не может быть пустым
   invalid_latitude: Недопустимая широта
   invalid_limit: Недопустимый лимит
   invalid_location: Недопустимое расположение
   invalid_longitude: Недопустимая долгота
-  invalid_maximum_backup: "Недопустимое максимальное число копий. целое, min=0"
-  invalid_name: "Недопустимое имя. символы, min=2, max=100"
-  invalid_node_id: "Недопустимый ID узла. символы, min=1 и max=100"
+  invalid_maximum_backup: "Недопустимое максимальное число копий. Целое, min=0"
+  invalid_name: "Недопустимое имя. Символы, min=2, max=100"
+  invalid_node_id: "Недопустимый ID узла. Символы, min=1 и max=100"
   invalid_offset: Недопустимое смещение
   invalid_path: Недопустимый путь
   invalid_payload: Недопустимый payload
   invalid_port: Недопустимый порт
   invalid_prefix: Недопустимый префикс
   invalid_profile_confirm_password: Недопустимое подтверждение пароля
-  invalid_profile_password: "Недопустимый пароль. символы, min=3, max=100"
-  invalid_profile_username: "Недопустимое имя пользователя. символы, min=3, max=100, пробелы запрещены"
+  invalid_profile_password: "Недопустимый пароль. Символы, min=3, max=100"
+  invalid_profile_username: "Недопустимое имя пользователя. Символы, min=3, max=100, пробелы запрещены"
   invalid_repeat_count: Недопустимое число повторов
   invalid_response_code: "Введите допустимый код ответа, 0 чтобы игнорировать"
-  invalid_retry_count: "Недопустимое число повторов. целое, min=0"
+  invalid_retry_count: "Недопустимое число повторов. Целое, min=0"
   invalid_script_empty: Скрипт не должен быть пустым
   invalid_server_url: Недопустимый URL сервера
-  invalid_source_id: "Недопустимый ID источника. символы, min=1 и max=100"
-  invalid_text: "Недопустимый текст. символы, min=1 и max=100"
+  invalid_source_id: "Недопустимый ID источника. Символы, min=1 и max=100"
+  invalid_text: "Недопустимый текст. Символы, min=1 и max=100"
   invalid_time: Недопустимое время
   invalid_title: Недопустимый заголовок
   invalid_token: Недопустимый токен
-  invalid_topic: Недопустимая тема
+  invalid_topic: Недопустимый топик
   invalid_type: Недопустимый тип
   invalid_url: Недопустимый URL
   invalid_username: Недопустимое имя пользователя
@@ -374,8 +374,8 @@ never_expire: Никогда не истекает
 new: Новый
 new_password: Новый пароль
 no_change_since: Без изменений с
-no_dashboard_message: Нет панели для загрузки.
-no_dashboard_title: Нет доступных панелей
+no_dashboard_message: Нет дашборда для загрузки.
+no_dashboard_title: Нет доступных дашбордов
 no_data: Нет данных
 no_labels: Нет меток
 no_login_message: Сообщение для входа не задано
@@ -391,14 +391,14 @@ notifications: Уведомления
 number_of_axis: Число осей
 occurrences: Вхождения
 'off': 'OFF'
-off_text: Текст ВЫКЛ
+off_text: Текст OFF
 offset_0h0m0s: Смещение (0h0m0s)
-offset_y_%: Offset Y (%)
+offset_y_%: Смещение Y (%)
 'on': 'ON'
-on_button: Кнопка ВКЛ
+on_button: Кнопка ON
 on_receive: При получении
 on_send: При отправке
-on_text: Текст ВКЛ
+on_text: Текст ON
 operations: Операции
 operator: Оператор
 options: Параметры
@@ -433,7 +433,7 @@ opts:
     desc_area_chart: Диаграмма с областями
     desc_bar_chart: Столбчатая диаграмма
     desc_line_chart: Линейная диаграмма
-    desc_pie_chart: Pie Chart
+    desc_pie_chart: Круговая диаграмма
     desc_scatter_chart: Точечная диаграмма
     label_area_chart: Диаграмма с областями
     label_bar_chart: Столбчатая диаграмма
@@ -458,7 +458,7 @@ opts:
     label_options_tab: Варианты вкладок
     label_slider: Ползунок
     label_switch_button: Кнопка-переключатель
-    label_switch_toggle: Toggle Switch
+    label_switch_toggle: Переключатель
   dampening:
     desc_active_duration: Длительность активности задачи
     desc_consecutive: Число последовательных вхождений
@@ -534,7 +534,7 @@ opts:
   image_rotation:
     desc_rotate_180: Повернуть на 180°
     desc_rotate_left_90: Повернуть влево на 90°
-    desc_rotate_none: без поворота
+    desc_rotate_none: Без поворота
     desc_rotate_right_90: Повернуть вправо на 90°
     label_rotate_180: Поворот 180°
     label_rotate_left_90: Поворот влево 90°
@@ -620,8 +620,8 @@ opts:
   metric_type:
     label_binary: Двоичный
     label_counter: Счётчик
-    label_gauge: Датчик
-    label_gauge_float: Датчик (с плавающей точкой)
+    label_gauge: Измеритель
+    label_gauge_float: Измеритель (с плавающей точкой)
     label_geo: GEO
     label_none: Нет
     label_string: Строка
@@ -751,13 +751,13 @@ opts:
     label_light: Свет
     label_lock: Замок
     label_media_remote: Пульт медиа
-    label_microwave: Микроволновка
+    label_microwave: Микроволновая печь
     label_mop: Швабра
     label_mower: Газонокосилка
     label_multicooker: Мультиварка
     label_network: Сеть
     label_outlet: Розетка
-    label_oven: Духовка
+    label_oven: Духовой шкаф
     label_pergola: Пергола
     label_pet_feeder: Кормушка для животных
     label_pressure_cooker: Скороварка
@@ -769,7 +769,7 @@ opts:
     label_sensor: Датчик
     label_set_top_box: ТВ-приставка
     label_shower: Душ
-    label_shutter: Ставни
+    label_shutter: Рольставни
     label_smoke_detector: Датчик дыма
     label_soundbar: Саундбар
     label_sous_vide: Су-вид
@@ -824,9 +824,9 @@ password: Пароль
 path: Путь
 payload: Payload
 send: Отправить
-payload_off: Payload ВЫКЛ
-payload_on: Payload ВКЛ
-payloads: Payload
+payload_off: Payload OFF
+payload_on: Payload ON
+payloads: Payloads
 per_cpu_disabled: По CPU отключено
 port: Порт
 port_name: Имя порта
@@ -878,7 +878,7 @@ rotation: Поворот
 round_decimal: Округление десятичных
 rule: Правило
 run_a_backup: Создать резервную копию
-run_backup: Создать копию
+run_backup: Создать резервную копию
 s_no: '#'
 saturation: Насыщенность
 save: Сохранить
@@ -953,7 +953,7 @@ title: Заголовок
 to: Кому
 to_emails: Эл. почта получателей
 token: Токен
-topic: Тема
+topic: Топик
 trait: Свойство
 traits: Свойства
 transmit_pre_delay: Задержка перед передачей
@@ -1014,7 +1014,7 @@ user_details: Сведения о пользователе
 users: Пользователи
 layout: Макет
 layout_tree: Дерево
-layout_force: Сила
+layout_force: Силовой
 refresh: Обновить
 include_child_nodes: Включить дочерние узлы
 child_nodes: Дочерние узлы
