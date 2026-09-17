@@ -60,6 +60,22 @@ jobs:
             builds/build_timestamp.txt
             builds/SHA256SUMS.txt
 
+      - name: Point development tag at this commit
+        if: startsWith(github.ref, 'refs/heads/main')
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          # GitHub will not move an existing tag via target_commitish.
+          if gh api "/repos/${GITHUB_REPOSITORY}/git/refs/tags/development" >/dev/null 2>&1; then
+            gh api --method PATCH "/repos/${GITHUB_REPOSITORY}/git/refs/tags/development" \
+              -f sha="${GITHUB_SHA}" \
+              -F force=true
+          else
+            gh api --method POST "/repos/${GITHUB_REPOSITORY}/git/refs" \
+              -f ref="refs/tags/development" \
+              -f sha="${GITHUB_SHA}"
+          fi
+
       - name: Update executables from main branch changes
         if: startsWith(github.ref, 'refs/heads/main') # executes only for changes in main
         uses: softprops/action-gh-release@v3
