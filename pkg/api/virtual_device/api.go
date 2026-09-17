@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
@@ -74,6 +75,14 @@ func (vd *VirtualDeviceAPI) Save(device *vdTY.VirtualDevice) error {
 		resources = append(resources, fmt.Sprintf("%s:%s", resource.ResourceType, resource.QuickID))
 	}
 	device.Resources = resources
+	existing, lookupErr := vd.GetByID(device.ID)
+	existingOn := time.Time{}
+	if lookupErr == nil {
+		existingOn = existing.CreatedOn
+	}
+	if err := utils.StampCreatedOnLookup(&device.CreatedOn, existingOn, lookupErr, false); err != nil {
+		return err
+	}
 
 	err := vd.storage.Upsert(types.EntityVirtualDevice, device, filters)
 	if err != nil {

@@ -1,11 +1,13 @@
 import React from "react"
 import TabDetailsBase from "../../../Components/BasePage/TabDetailsBase"
 import { RouteLink } from "../../../Components/Buttons/Buttons"
+import CopyableQuickId from "../../../Components/Buttons/CopyableQuickId"
 import { KeyValueMap, Labels } from "../../../Components/DataDisplay/Label"
 import { getStatus } from "../../../Components/Icons/Icons"
 import { LastSeen } from "../../../Components/Time/Time"
 import { api } from "../../../Service/Api"
 import { routeMap as rMap } from "../../../Service/Routes"
+import { resourceQuickId } from "../../../Util/ResourceId"
 import { getValue } from "../../../Util/Util"
 
 const tabDetails = ({ resourceId, history }) => {
@@ -33,8 +35,10 @@ const getDetailsFuncImpl = (data) => {
   const fieldsList1 = []
   const fieldsList2 = []
 
+  fieldsList1.push({ key: "quick_id", value: <CopyableQuickId value={resourceQuickId("gateway", data)} /> })
   fieldsList1.push({ key: "id", value: data.id })
   fieldsList1.push({ key: "description", value: data.description })
+  fieldsList1.push({ key: "created_on", value: <LastSeen date={data.createdOn} tooltipPosition="top" /> })
   fieldsList1.push({ key: "enabled", value: data.enabled ? "true" : "false" })
   fieldsList1.push({ key: "status", value: getStatus(data.state ? data.state.status : "unavailable") })
   fieldsList1.push({ key: "labels", value: <Labels data={data.labels} /> })

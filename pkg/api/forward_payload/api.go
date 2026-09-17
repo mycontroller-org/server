@@ -48,9 +48,18 @@ func (fpl *ForwardPayloadAPI) Get(filters []storageTY.Filter) (*fwdPayloadTY.Con
 // Save a item details
 func (fpl *ForwardPayloadAPI) Save(fp *fwdPayloadTY.Config) error {
 	eventType := eventTY.TypeUpdated
-	if fp.ID == "" {
+	isNew := fp.ID == ""
+	if isNew {
 		fp.ID = utils.RandUUID()
 		eventType = eventTY.TypeCreated
+	}
+	existing := &fwdPayloadTY.Config{}
+	var lookupErr error
+	if !isNew {
+		lookupErr = fpl.storage.FindOne(types.EntityForwardPayload, existing, []storageTY.Filter{{Key: types.KeyID, Value: fp.ID}})
+	}
+	if err := utils.StampCreatedOnLookup(&fp.CreatedOn, existing.CreatedOn, lookupErr, isNew); err != nil {
+		return err
 	}
 	filters := []storageTY.Filter{
 		{Key: types.KeyID, Value: fp.ID},

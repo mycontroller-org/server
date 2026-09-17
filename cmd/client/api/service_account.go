@@ -129,3 +129,47 @@ func (c *Client) ResolveServiceAccountIDs(selectors []string, userRef string) ([
 	}
 	return ids, nil
 }
+
+func (c *Client) DisableServiceAccount(selectors []string, userRef string) error {
+	return c.setServiceAccountsDisabled(selectors, userRef, true)
+}
+
+func (c *Client) EnableServiceAccount(selectors []string, userRef string) error {
+	return c.setServiceAccountsDisabled(selectors, userRef, false)
+}
+
+func (c *Client) setServiceAccountsDisabled(selectors []string, userRef string, disabled bool) error {
+	var firstErr error
+	updated := 0
+	for _, selector := range selectors {
+		account, err := c.FindServiceAccount(selector, selector, userRef)
+		if err != nil {
+			if firstErr == nil {
+				firstErr = err
+			}
+			continue
+		}
+		if account == nil {
+			err = fmt.Errorf("service-account %s is not present", selector)
+			if firstErr == nil {
+				firstErr = err
+			} else {
+				firstErr = fmt.Errorf("%w; %s", firstErr, err)
+			}
+			continue
+		}
+		account.Disabled = disabled
+		account.Token.Token = ""
+		if err := c.UpdateServiceAccount(account); err != nil {
+			if firstErr == nil {
+				firstErr = err
+			}
+			continue
+		}
+		updated++
+	}
+	if updated == 0 && firstErr != nil {
+		return firstErr
+	}
+	return firstErr
+}

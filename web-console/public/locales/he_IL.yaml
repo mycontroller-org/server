@@ -780,6 +780,7 @@ opts:
     label_streaming_soundbar: סאונדבר סטרימינג
     label_streaming_stick: סטיק סטרימינג
     label_switch: מתג
+    label_tank: מיכל
     label_television: טלוויזיה
     label_thermostat: תרמוסטט
     label_vacuum: שואב אבק
@@ -953,6 +954,7 @@ title: כותרת
 to: אל
 to_emails: אל דוא״ל
 token: אסימון
+topology: Topology
 topic: נושא
 trait: תכונה
 traits: תכונות

@@ -780,6 +780,7 @@ opts:
     label_streaming_soundbar: 流媒体回音壁
     label_streaming_stick: 流媒体棒
     label_switch: 开关
+    label_tank: 水箱
     label_television: 电视
     label_thermostat: 温控器
     label_vacuum: 吸尘器
@@ -953,6 +954,7 @@ title: 标题
 to: 收件人
 to_emails: 收件邮箱
 token: 令牌
+topology: 拓扑
 topic: 主题
 trait: 特性
 traits: 特性

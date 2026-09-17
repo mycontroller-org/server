@@ -13,6 +13,7 @@ func init() {
 	enableCmd.AddCommand(scheduleEnableCmd)
 	enableCmd.AddCommand(handlerEnableCmd)
 	enableCmd.AddCommand(userEnableCmd)
+	enableCmd.AddCommand(serviceAccountEnableCmd)
 }
 
 var gatewayEnableCmd = &cobra.Command{
@@ -119,4 +120,26 @@ var userEnableCmd = &cobra.Command{
 		client, selectors := rootCmd.TakeAlias(args)
 		printStatus(client.EnableUser(selectors...))
 	},
+}
+
+var saEnableUser string
+
+var serviceAccountEnableCmd = &cobra.Command{
+	Use:     "service-account <alias> <name-or-id> [<name-or-id>...]",
+	Aliases: []string{"service-accounts", "sa"},
+	Short:   "Enables the given service accounts",
+	Example: `  myc enable service-account <alias> ci-bot
+  myc enable sa <alias> ci-bot --user alice`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		rootCmd.UpdateStreams(cmd)
+	},
+	Args: cobra.MinimumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		client, selectors := rootCmd.TakeAlias(args)
+		printStatus(client.EnableServiceAccount(selectors, saEnableUser))
+	},
+}
+
+func init() {
+	serviceAccountEnableCmd.Flags().StringVarP(&saEnableUser, "user", "u", "", "username or user id when the account name is not unique")
 }

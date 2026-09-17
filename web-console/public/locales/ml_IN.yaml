@@ -709,86 +709,87 @@ opts:
     label_alexa: Alexa
     label_google_assistant: Google Assistant
   vd_type:
-    label_air_conditioner: Air Conditioner
-    label_air_cooler: Air Cooler
-    label_air_freshener: Air Freshener
-    label_air_purifier: Air Purifier
-    label_audio_video_receiver: Audio Video Receiver
-    label_awning: Awning
+    label_air_conditioner: എയർ കണ്ടീഷണർ
+    label_air_cooler: എയർ കൂളർ
+    label_air_freshener: എയർ ഫ്രഷനർ
+    label_air_purifier: വായു ശുദ്ധീകരണി
+    label_audio_video_receiver: ഓഡിയോ വീഡിയോ റിസീവർ
+    label_awning: മേൽക്കൂര വിരി
     label_bathtub: കുളി തൊട്ടി
     label_bed: കിടക്ക
-    label_blender: Blender
-    label_blinds: Blinds
-    label_boiler: Boiler
-    label_camera: Camera
-    label_carbon_monoxide_detector: Carbon Monoxide Detector
-    label_charger: Charger
+    label_blender: ബ്ലെൻഡർ
+    label_blinds: ബ്ലൈൻഡ്സ്
+    label_boiler: ബോയിലർ
+    label_camera: ക്യാമറ
+    label_carbon_monoxide_detector: കാർബൺ മോണോക്സൈഡ് ഡിറ്റക്ടർ
+    label_charger: ചാർജർ
     label_closet: അലമാര
-    label_coffee_maker: Coffee Maker
-    label_cooktop: Cooktop
+    label_coffee_maker: കാപ്പി യന്ത്രം
+    label_cooktop: കുക്ക്‌ടോപ്പ്
     label_curtain: കർട്ടൻ
-    label_dehumidifier: Dehumidifier
-    label_dehydrator: Dehydrator
-    label_dishwasher: Dishwasher
+    label_dehumidifier: ഈർപ്പം നീക്കുന്ന യന്ത്രം
+    label_dehydrator: ഉണക്കുന്ന യന്ത്രം
+    label_dishwasher: പാത്രം കഴുകുന്ന യന്ത്രം
     label_door: വാതിൽ
     label_door_bell: വാതിൽ മണി
     label_drawer: ഡ്രോയർ
-    label_dryer: Dryer
+    label_dryer: ഡ്രയർ
     label_fan: ഫാൻ
     label_faucet: ടാപ്പ്
-    label_fireplace: Fireplace
-    label_freezer: Freezer
-    label_fryer: Fryer
-    label_garage_door: Garage Door
+    label_fireplace: ഫയർപ്ലേസ്
+    label_freezer: ഫ്രീസർ
+    label_fryer: ഫ്രയർ
+    label_garage_door: ഗാരേജ് വാതിൽ
     label_gate: ഗേറ്റ്
-    label_grill: Grill
-    label_heater: Heater
-    label_hood: Hood
-    label_humidifier: Humidifier
-    label_kettle: Kettle
+    label_grill: ഗ്രിൽ
+    label_heater: ഹീറ്റർ
+    label_hood: ഹുഡ്
+    label_humidifier: ഈർപ്പം ചേർക്കുന്ന യന്ത്രം
+    label_kettle: കെറ്റിൽ
     label_light: വിളക്ക്
     label_lock: പൂട്ട്
-    label_media_remote: Media Remote
-    label_microwave: Microwave
-    label_mop: Mop
-    label_mower: Mower
-    label_multicooker: Multicooker
-    label_network: Network
-    label_outlet: Outlet
-    label_oven: Oven
-    label_pergola: Pergola
-    label_pet_feeder: Pet Feeder
-    label_pressure_cooker: Pressure Cooker
-    label_radiator: Radiator
+    label_media_remote: മീഡിയ റിമോട്ട്
+    label_microwave: മൈക്രോവേവ്
+    label_mop: മോപ്പ്
+    label_mower: പുല്ല് മുറിക്കുന്ന യന്ത്രം
+    label_multicooker: മൾട്ടികുക്കർ
+    label_network: നെറ്റ്‌വർക്ക്
+    label_outlet: പ്ലഗ്
+    label_oven: ഓവൻ
+    label_pergola: പെർഗോള
+    label_pet_feeder: വളർത്തുമൃഗ ഭക്ഷണ യന്ത്രം
+    label_pressure_cooker: പ്രഷർ കുക്കർ
+    label_radiator: റേഡിയേറ്റർ
     label_refrigerator: റഫ്രിജറേറ്റർ
-    label_router: Router
-    label_scene: Scene
-    label_security_system: Security System
-    label_sensor: Sensor
-    label_set_top_box: Set Top Box
-    label_shower: Shower
-    label_shutter: Shutter
-    label_smoke_detector: Smoke Detector
-    label_soundbar: Soundbar
-    label_sous_vide: Sous Vide
-    label_speaker: Speaker
-    label_sprinkler: Sprinkler
-    label_stand_mixer: Stand Mixer
-    label_streaming_box: Streaming Box
-    label_streaming_soundbar: Streaming Soundbar
-    label_streaming_stick: Streaming Stick
-    label_switch: Switch
-    label_television: Television
-    label_thermostat: Thermostat
-    label_vacuum: Vacuum
-    label_valve: Valve
-    label_washer: Washer
-    label_water_heater: Water Heater
-    label_water_purifier: Water Purifier
-    label_water_softener: Water Softener
-    label_weather_station: Weather Station
+    label_router: റൂട്ടർ
+    label_scene: രംഗം
+    label_security_system: സുരക്ഷാ സംവിധാനം
+    label_sensor: സെൻസർ
+    label_set_top_box: സെറ്റ് ടോപ്പ് ബോക്സ്
+    label_shower: ഷവർ
+    label_shutter: ഷട്ടർ
+    label_smoke_detector: പുക ഡിറ്റക്ടർ
+    label_soundbar: സൗണ്ട്ബാർ
+    label_sous_vide: സൂ വീഡ്
+    label_speaker: സ്പീക്കർ
+    label_sprinkler: സ്പ്രിങ്ക്ലർ
+    label_stand_mixer: സ്റ്റാൻഡ് മിക്സർ
+    label_streaming_box: സ്ട്രീമിംഗ് ബോക്സ്
+    label_streaming_soundbar: സ്ട്രീമിംഗ് സൗണ്ട്ബാർ
+    label_streaming_stick: സ്ട്രീമിംഗ് സ്റ്റിക്
+    label_switch: സ്വിച്ച്
+    label_tank: ടാങ്ക്
+    label_television: ടെലിവിഷൻ
+    label_thermostat: തെർമോസ്റ്റാറ്റ്
+    label_vacuum: വാക്വം ക്ലീനർ
+    label_valve: വാൽവ്
+    label_washer: വാഷിംഗ് മെഷീൻ
+    label_water_heater: വാട്ടർ ഹീറ്റർ
+    label_water_purifier: വാട്ടർ പ്യൂരിഫയർ
+    label_water_softener: വാട്ടർ സോഫ്റ്റനർ
+    label_weather_station: കാലാവസ്ഥാ കേന്ദ്രം
     label_window: ജനൽ
-    label_yogurt_maker: Yogurt Maker
+    label_yogurt_maker: തൈര് ഉണ്ടാക്കുന്ന യന്ത്രം
   week_day:
     label_friday: വെള്ളിയാഴ്ച
     label_monday: തിങ്കളാഴ്ച
@@ -949,6 +950,7 @@ title: ശീർഷകം
 to: സ്വീകർത്താവ്
 to_emails: സ്വീകർത്താവിന്റെ Emailകൾ
 token: Token
+topology: Topology
 topic: Topic
 trait: Trait
 traits: Traitകൾ

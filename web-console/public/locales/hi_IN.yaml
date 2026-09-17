@@ -709,86 +709,87 @@ opts:
     label_alexa: Alexa
     label_google_assistant: Google Assistant
   vd_type:
-    label_air_conditioner: Air Conditioner
-    label_air_cooler: Air Cooler
-    label_air_freshener: Air Freshener
-    label_air_purifier: Air Purifier
-    label_audio_video_receiver: Audio Video Receiver
-    label_awning: Awning
+    label_air_conditioner: एयर कंडीशनर
+    label_air_cooler: एयर कूलर
+    label_air_freshener: एयर फ्रेशनर
+    label_air_purifier: एयर प्यूरिफायर
+    label_audio_video_receiver: ऑडियो वीडियो रिसीवर
+    label_awning: शामियाना
     label_bathtub: बाथटब
     label_bed: बिस्तर
-    label_blender: Blender
-    label_blinds: Blinds
-    label_boiler: Boiler
-    label_camera: Camera
-    label_carbon_monoxide_detector: Carbon Monoxide Detector
-    label_charger: Charger
+    label_blender: ब्लेंडर
+    label_blinds: ब्लाइंड्स
+    label_boiler: बॉयलर
+    label_camera: कैमरा
+    label_carbon_monoxide_detector: कार्बन मोनोऑक्साइड डिटेक्टर
+    label_charger: चार्जर
     label_closet: अलमारी
-    label_coffee_maker: Coffee Maker
-    label_cooktop: Cooktop
+    label_coffee_maker: कॉफी मेकर
+    label_cooktop: कुकटॉप
     label_curtain: पर्दा
-    label_dehumidifier: Dehumidifier
-    label_dehydrator: Dehydrator
-    label_dishwasher: Dishwasher
+    label_dehumidifier: नमी हटाने वाला यंत्र
+    label_dehydrator: सुखाने वाला यंत्र
+    label_dishwasher: डिशवॉशर
     label_door: दरवाज़ा
     label_door_bell: दरवाज़े की घंटी
     label_drawer: दराज
-    label_dryer: Dryer
+    label_dryer: ड्रायर
     label_fan: पंखा
     label_faucet: नल
-    label_fireplace: Fireplace
-    label_freezer: Freezer
-    label_fryer: Fryer
-    label_garage_door: Garage Door
+    label_fireplace: फायरप्लेस
+    label_freezer: फ्रीजर
+    label_fryer: फ्रायर
+    label_garage_door: गैरेज दरवाजा
     label_gate: गेट
-    label_grill: Grill
-    label_heater: Heater
-    label_hood: Hood
-    label_humidifier: Humidifier
-    label_kettle: Kettle
+    label_grill: ग्रिल
+    label_heater: हीटर
+    label_hood: हुड
+    label_humidifier: ह्यूमिडिफायर
+    label_kettle: केतली
     label_light: लाइट
     label_lock: ताला
-    label_media_remote: Media Remote
-    label_microwave: Microwave
-    label_mop: Mop
-    label_mower: Mower
-    label_multicooker: Multicooker
-    label_network: Network
-    label_outlet: Outlet
-    label_oven: Oven
-    label_pergola: Pergola
-    label_pet_feeder: Pet Feeder
-    label_pressure_cooker: Pressure Cooker
-    label_radiator: Radiator
+    label_media_remote: मीडिया रिमोट
+    label_microwave: माइक्रोवेव
+    label_mop: पोछा
+    label_mower: घास काटने की मशीन
+    label_multicooker: मल्टीकुकर
+    label_network: नेटवर्क
+    label_outlet: प्लग
+    label_oven: ओवन
+    label_pergola: पेर्गोला
+    label_pet_feeder: पालतू फीडर
+    label_pressure_cooker: प्रेशर कुकर
+    label_radiator: रेडिएटर
     label_refrigerator: रेफ्रिजरेटर
-    label_router: Router
-    label_scene: Scene
-    label_security_system: Security System
-    label_sensor: Sensor
-    label_set_top_box: Set Top Box
-    label_shower: Shower
-    label_shutter: Shutter
-    label_smoke_detector: Smoke Detector
-    label_soundbar: Soundbar
-    label_sous_vide: Sous Vide
-    label_speaker: Speaker
-    label_sprinkler: Sprinkler
-    label_stand_mixer: Stand Mixer
-    label_streaming_box: Streaming Box
-    label_streaming_soundbar: Streaming Soundbar
-    label_streaming_stick: Streaming Stick
-    label_switch: Switch
-    label_television: Television
-    label_thermostat: Thermostat
-    label_vacuum: Vacuum
-    label_valve: Valve
-    label_washer: Washer
-    label_water_heater: Water Heater
-    label_water_purifier: Water Purifier
-    label_water_softener: Water Softener
-    label_weather_station: Weather Station
+    label_router: राउटर
+    label_scene: दृश्य
+    label_security_system: सुरक्षा प्रणाली
+    label_sensor: सेंसर
+    label_set_top_box: सेट टॉप बॉक्स
+    label_shower: शावर
+    label_shutter: शटर
+    label_smoke_detector: धुआँ डिटेक्टर
+    label_soundbar: साउंडबार
+    label_sous_vide: सू वीड
+    label_speaker: स्पीकर
+    label_sprinkler: स्प्रिंकलर
+    label_stand_mixer: स्टैंड मिक्सर
+    label_streaming_box: स्ट्रीमिंग बॉक्स
+    label_streaming_soundbar: स्ट्रीमिंग साउंडबार
+    label_streaming_stick: स्ट्रीमिंग स्टिक
+    label_switch: स्विच
+    label_tank: टंकी
+    label_television: टेलीविज़न
+    label_thermostat: थर्मोस्टैट
+    label_vacuum: वैक्यूम
+    label_valve: वाल्व
+    label_washer: वाशिंग मशीन
+    label_water_heater: वॉटर हीटर
+    label_water_purifier: वॉटर प्यूरिफायर
+    label_water_softener: वॉटर सॉफ्टनर
+    label_weather_station: मौसम स्टेशन
     label_window: खिड़की
-    label_yogurt_maker: Yogurt Maker
+    label_yogurt_maker: दही बनाने की मशीन
   week_day:
     label_friday: शुक्रवार
     label_monday: सोमवार
@@ -949,6 +950,7 @@ title: शीर्षक
 to: प्राप्तकर्ता
 to_emails: प्राप्तकर्ता Email
 token: Token
+topology: Topology
 topic: Topic
 trait: Trait
 traits: Trait

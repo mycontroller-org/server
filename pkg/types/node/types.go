@@ -27,6 +27,7 @@ type Node struct {
 	Others     cmap.CustomMap       `json:"others" yaml:"others"`
 	State      types.State          `json:"state" yaml:"state"`
 	LastSeen   time.Time            `json:"lastSeen" yaml:"lastSeen"`
+	CreatedOn  time.Time            `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }
 

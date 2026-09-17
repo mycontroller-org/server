@@ -136,6 +136,7 @@ const tableColumns = [
   { title: "battery", fieldKey: "others.battery_level", sortable: true },
   { title: "status", fieldKey: "state.status", sortable: true },
   { title: "last_seen", fieldKey: "lastSeen", sortable: true },
+  { title: "created_on", fieldKey: "createdOn", sortable: true },
 ]
 
 const toRowFuncImpl = (rawData, history) => {
@@ -185,6 +186,7 @@ const toRowFuncImpl = (rawData, history) => {
       { title: getValue(rawData, "others.battery_level", "") },
       { title: getStatus(rawData.state.status) },
       { title: <LastSeen date={rawData.lastSeen} /> },
+      { title: <LastSeen date={rawData.createdOn} /> },
     ],
     rid: rawData.id,
   }

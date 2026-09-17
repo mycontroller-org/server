@@ -25,6 +25,7 @@ import { updateLocale } from "../store/entities/locale"
 import { getValue } from "../Util/Util"
 import "./Login.scss"
 import { notificationClearAll } from "../store/entities/notification"
+import { toasterClearAll } from "../store/entities/toaster"
 
 class SimpleLoginPage extends React.Component {
   state = {
@@ -89,9 +90,8 @@ class SimpleLoginPage extends React.Component {
       .login(loginData)
       .then((res) => {
         const user = { ...res.data }
-        // when login success, clears all the existing notifications
         this.props.clearAllNotifications()
-        // and moves into index page
+        this.props.clearAllToasters()
         this.props.updateSuccessLogin(user)
       })
       .catch((e) => {
@@ -186,6 +186,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   clearAllNotifications: () => dispatch(notificationClearAll()),
+  clearAllToasters: () => dispatch(toasterClearAll()),
   updateSuccessLogin: (data) => dispatch(authSuccess(data)),
   updateDocUrl: (data) => dispatch(updateDocumentationUrl(data)),
   updateMetricsDB: (data) => dispatch(updateMetricsDBStatus(data)),

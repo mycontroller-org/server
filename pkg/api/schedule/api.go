@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
@@ -48,9 +49,22 @@ func (sh *ScheduleAPI) Get(filters []storageTY.Filter) (*schedulerTY.Config, err
 // Save a scheduler details
 func (sh *ScheduleAPI) Save(schedule *schedulerTY.Config) error {
 	eventType := eventTY.TypeUpdated
-	if schedule.ID == "" {
+	isNew := schedule.ID == ""
+	if isNew {
 		schedule.ID = utils.RandUUID()
 		eventType = eventTY.TypeCreated
+	}
+	var existingOn time.Time
+	var lookupErr error
+	if !isNew {
+		if existing, err := sh.GetByID(schedule.ID); err == nil {
+			existingOn = existing.CreatedOn
+		} else {
+			lookupErr = err
+		}
+	}
+	if err := utils.StampCreatedOnLookup(&schedule.CreatedOn, existingOn, lookupErr, isNew); err != nil {
+		return err
 	}
 
 	filters := []storageTY.Filter{

@@ -26,6 +26,7 @@ type VirtualDevice struct {
 	Traits      []Resource           `json:"traits" yaml:"traits"`
 	Location    string               `json:"location" yaml:"location"`
 	Labels      cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	CreatedOn   time.Time            `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn  time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 	Resources   []string             `json:"resources" yaml:"resources"`
 }

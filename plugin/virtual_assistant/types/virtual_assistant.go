@@ -18,6 +18,7 @@ type Config struct {
 	ProviderType string               `json:"providerType" yaml:"providerType"`
 	Config       cmap.CustomMap       `json:"config" yaml:"config"`
 	State        *types.State         `json:"state" yaml:"state"`
+	CreatedOn    time.Time            `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn   time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	encryptionAPI "github.com/mycontroller-org/server/v2/pkg/encryption"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
@@ -61,9 +62,22 @@ func (h *HandlerAPI) SaveAndReload(cfg *handlerTY.Config) error {
 // Save config
 func (h *HandlerAPI) Save(cfg *handlerTY.Config) error {
 	eventType := eventTY.TypeUpdated
-	if cfg.ID == "" {
+	isNew := cfg.ID == ""
+	if isNew {
 		cfg.ID = utils.RandUUID()
 		eventType = eventTY.TypeCreated
+	}
+	var existingOn time.Time
+	var lookupErr error
+	if !isNew {
+		if existing, err := h.GetByID(cfg.ID); err == nil {
+			existingOn = existing.CreatedOn
+		} else {
+			lookupErr = err
+		}
+	}
+	if err := utils.StampCreatedOnLookup(&cfg.CreatedOn, existingOn, lookupErr, isNew); err != nil {
+		return err
 	}
 
 	// encrypt passwords

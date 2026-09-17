@@ -9,11 +9,11 @@ import (
 	types "github.com/mycontroller-org/server/v2/pkg/types"
 	eventTY "github.com/mycontroller-org/server/v2/pkg/types/event"
 	"github.com/mycontroller-org/server/v2/pkg/types/topic"
-	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 	"github.com/mycontroller-org/server/v2/pkg/utils"
 	busUtils "github.com/mycontroller-org/server/v2/pkg/utils/bus_utils"
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	storageTY "github.com/mycontroller-org/server/v2/plugin/database/storage/types"
+	vaTY "github.com/mycontroller-org/server/v2/plugin/virtual_assistant/types"
 	"go.uber.org/zap"
 )
 
@@ -49,7 +49,8 @@ func (va *VirtualAssistantAPI) Get(filters []storageTY.Filter) (*vaTY.Config, er
 // Save a virtual assistant details
 func (va *VirtualAssistantAPI) Save(cfg *vaTY.Config) error {
 	eventType := eventTY.TypeUpdated
-	if cfg.ID == "" {
+	isNew := cfg.ID == ""
+	if isNew {
 		cfg.ID = utils.RandUUID()
 		eventType = eventTY.TypeCreated
 	}
@@ -59,6 +60,18 @@ func (va *VirtualAssistantAPI) Save(cfg *vaTY.Config) error {
 	}
 
 	cfg.ModifiedOn = time.Now()
+	existingOn := time.Time{}
+	var lookupErr error
+	if !isNew {
+		if existing, err := va.GetByID(cfg.ID); err == nil {
+			existingOn = existing.CreatedOn
+		} else {
+			lookupErr = err
+		}
+	}
+	if err := utils.StampCreatedOnLookup(&cfg.CreatedOn, existingOn, lookupErr, isNew); err != nil {
+		return err
+	}
 
 	err := va.storage.Upsert(types.EntityVirtualAssistant, cfg, filters)
 	if err != nil {

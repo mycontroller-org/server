@@ -23,6 +23,7 @@ type Field struct {
 	Others        cmap.CustomMap       `json:"others" yaml:"others"`
 	NoChangeSince time.Time            `json:"noChangeSince" yaml:"noChangeSince"`
 	LastSeen      time.Time            `json:"lastSeen" yaml:"lastSeen"`
+	CreatedOn     time.Time            `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn    time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }
 
@@ -53,5 +54,7 @@ func (f *Field) Clone() *Field {
 		Previous:   f.Previous,
 		Labels:     f.Labels.Clone(),
 		Others:     f.Others.Clone(),
+		CreatedOn:  f.CreatedOn,
+		ModifiedOn: f.ModifiedOn,
 	}
 }

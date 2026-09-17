@@ -35,6 +35,21 @@ func tokenScopeAPI(t *testing.T, p policyTY.Policy, tokenResources []string) *AP
 	return &API{cache: c}
 }
 
+func TestEnsureServiceAccountActiveRejectsDisabled(t *testing.T) {
+	a := tokenScopeAPI(t, policyTY.Policy{ID: "p1", Statements: []policyTY.Statement{{
+		Effect: policyTY.EffectAllow, Actions: []string{"*"}, Resources: []string{"*"},
+	}}}, []string{"*"})
+	tok, err := a.cache.GetToken("t1")
+	if err != nil {
+		t.Fatalf("token: %v", err)
+	}
+	tok.Disabled = true
+	a.cache.PutToken(tok)
+	if err := a.EnsureServiceAccountActive("u1", "t1"); err != ErrTokenDisabled {
+		t.Fatalf("got %v, want %v", err, ErrTokenDisabled)
+	}
+}
+
 // A service account must only be able to narrow the user's scope, never widen it.
 func TestResourceNamesForList_TokenCanOnlyNarrow(t *testing.T) {
 	userPolicy := policyTY.Policy{

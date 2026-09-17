@@ -709,86 +709,87 @@ opts:
     label_alexa: Alexa
     label_google_assistant: Google Assistant
   vd_type:
-    label_air_conditioner: Air Conditioner
-    label_air_cooler: Air Cooler
-    label_air_freshener: Air Freshener
-    label_air_purifier: Air Purifier
-    label_audio_video_receiver: Audio Video Receiver
-    label_awning: Awning
+    label_air_conditioner: ఎయిర్ కండిషనర్
+    label_air_cooler: ఎయిర్ కూలర్
+    label_air_freshener: ఎయిర్ ఫ్రెషనర్
+    label_air_purifier: గాలి శుద్ధి యంత్రం
+    label_audio_video_receiver: ఆడియో వీడియో రిసీవర్
+    label_awning: ఆవ్నింగ్
     label_bathtub: స్నానపు తొట్టి
     label_bed: మంచం
-    label_blender: Blender
-    label_blinds: Blinds
-    label_boiler: Boiler
-    label_camera: Camera
-    label_carbon_monoxide_detector: Carbon Monoxide Detector
-    label_charger: Charger
+    label_blender: బ్లెండర్
+    label_blinds: బ్లైండ్స్
+    label_boiler: బాయిలర్
+    label_camera: కెమెరా
+    label_carbon_monoxide_detector: కార్బన్ మోనాక్సైడ్ డిటెక్టర్
+    label_charger: చార్జర్
     label_closet: అల్మారా
-    label_coffee_maker: Coffee Maker
-    label_cooktop: Cooktop
+    label_coffee_maker: కాఫీ మేకర్
+    label_cooktop: కుక్‌టాప్
     label_curtain: తెర
-    label_dehumidifier: Dehumidifier
-    label_dehydrator: Dehydrator
-    label_dishwasher: Dishwasher
+    label_dehumidifier: తేమ తొలగించే యంత్రం
+    label_dehydrator: ఎండబెట్టే యంత్రం
+    label_dishwasher: పాత్రలు కడిగే యంత్రం
     label_door: తలుపు
     label_door_bell: తలుపు గంట
     label_drawer: డ్రాయర్
-    label_dryer: Dryer
+    label_dryer: డ్రయర్
     label_fan: ఫ్యాన్
     label_faucet: కుళాయి
-    label_fireplace: Fireplace
-    label_freezer: Freezer
-    label_fryer: Fryer
-    label_garage_door: Garage Door
+    label_fireplace: ఫైర్‌ప్లేస్
+    label_freezer: ఫ్రీజర్
+    label_fryer: ఫ్రైయర్
+    label_garage_door: గ్యారేజ్ తలుపు
     label_gate: గేట్
-    label_grill: Grill
-    label_heater: Heater
-    label_hood: Hood
-    label_humidifier: Humidifier
-    label_kettle: Kettle
+    label_grill: గ్రిల్
+    label_heater: హీటర్
+    label_hood: హుడ్
+    label_humidifier: తేమ చేర్చే యంత్రం
+    label_kettle: కెటిల్
     label_light: లైట్
     label_lock: తాళం
-    label_media_remote: Media Remote
-    label_microwave: Microwave
-    label_mop: Mop
-    label_mower: Mower
-    label_multicooker: Multicooker
-    label_network: Network
-    label_outlet: Outlet
-    label_oven: Oven
-    label_pergola: Pergola
-    label_pet_feeder: Pet Feeder
-    label_pressure_cooker: Pressure Cooker
-    label_radiator: Radiator
+    label_media_remote: మీడియా రిమోట్
+    label_microwave: మైక్రోవేవ్
+    label_mop: మాప్
+    label_mower: గడ్డి కోసే యంత్రం
+    label_multicooker: మల్టీకుకర్
+    label_network: నెట్‌వర్క్
+    label_outlet: ప్లగ్
+    label_oven: ఓవెన్
+    label_pergola: పెర్గోలా
+    label_pet_feeder: పెంపుడు జంతు ఆహార యంత్రం
+    label_pressure_cooker: ప్రెషర్ కుకర్
+    label_radiator: రేడియేటర్
     label_refrigerator: రిఫ్రిజిరేటర్
-    label_router: Router
-    label_scene: Scene
-    label_security_system: Security System
-    label_sensor: Sensor
-    label_set_top_box: Set Top Box
-    label_shower: Shower
-    label_shutter: Shutter
-    label_smoke_detector: Smoke Detector
-    label_soundbar: Soundbar
-    label_sous_vide: Sous Vide
-    label_speaker: Speaker
-    label_sprinkler: Sprinkler
-    label_stand_mixer: Stand Mixer
-    label_streaming_box: Streaming Box
-    label_streaming_soundbar: Streaming Soundbar
-    label_streaming_stick: Streaming Stick
-    label_switch: Switch
-    label_television: Television
-    label_thermostat: Thermostat
-    label_vacuum: Vacuum
-    label_valve: Valve
-    label_washer: Washer
-    label_water_heater: Water Heater
-    label_water_purifier: Water Purifier
-    label_water_softener: Water Softener
-    label_weather_station: Weather Station
+    label_router: రూటర్
+    label_scene: దృశ్యం
+    label_security_system: భద్రతా వ్యవస్థ
+    label_sensor: సెన్సార్
+    label_set_top_box: సెట్ టాప్ బాక్స్
+    label_shower: షవర్
+    label_shutter: షట్టర్
+    label_smoke_detector: పొగ డిటెక్టర్
+    label_soundbar: సౌండ్‌బార్
+    label_sous_vide: సూ వీడ్
+    label_speaker: స్పీకర్
+    label_sprinkler: స్ప్రింక్లర్
+    label_stand_mixer: స్టాండ్ మిక్సర్
+    label_streaming_box: స్ట్రీమింగ్ బాక్స్
+    label_streaming_soundbar: స్ట్రీమింగ్ సౌండ్‌బార్
+    label_streaming_stick: స్ట్రీమింగ్ స్టిక్
+    label_switch: స్విచ్
+    label_tank: ట్యాంకు
+    label_television: టెలివిజన్
+    label_thermostat: థర్మోస్టాట్
+    label_vacuum: వాక్యూమ్
+    label_valve: వాల్వ్
+    label_washer: వాషింగ్ మెషీన్
+    label_water_heater: వాటర్ హీటర్
+    label_water_purifier: వాటర్ ప్యూరిఫయర్
+    label_water_softener: వాటర్ సాఫ్టనర్
+    label_weather_station: వాతావరణ కేంద్రం
     label_window: కిటికీ
-    label_yogurt_maker: Yogurt Maker
+    label_yogurt_maker: పెరుగు చేసే యంత్రం
   week_day:
     label_friday: శుక్రవారం
     label_monday: సోమవారం
@@ -949,6 +950,7 @@ title: శీర్షిక
 to: స్వీకర్త
 to_emails: స్వీకర్త Emailలు
 token: Token
+topology: Topology
 topic: Topic
 trait: Trait
 traits: Traitలు

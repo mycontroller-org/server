@@ -12,12 +12,12 @@ class Select extends React.Component {
   }
 
   onSelect = (_event, selectionLabel, _isPlaceholder) => {
-    const { onChange, isMulti, isArrayData, options, selected } = this.props
+    const { onChange, isMulti, isArrayData, options, selected, variant } = this.props
+    const checkboxMulti = isCheckboxMulti(isMulti, variant)
     const isOpen = isMulti ? true : false
     this.setState({ isOpen: isOpen }, () => {
       if (onChange) {
-        // get value with label
-        const selectionValue = getValueByLabel(options, selectionLabel)
+        const selectionValue = checkboxMulti ? selectionLabel : getValueByLabel(options, selectionLabel)
         let finalValue = selectionValue
         if (isMulti) {
           let itemsSelected = isArrayData
@@ -37,7 +37,8 @@ class Select extends React.Component {
   }
 
   onFilter = (_event, text) => {
-    const { options, hideDescription } = this.props
+    const { options, hideDescription, isMulti, variant } = this.props
+    const checkboxMulti = isCheckboxMulti(isMulti, variant)
     const query = String(text || "").toLowerCase()
     return options
       .filter((option) => {
@@ -53,10 +54,12 @@ class Select extends React.Component {
       .map((option, index) => (
         <SelectOption
           isDisabled={option.disabled}
-          key={index}
-          value={option.label}
+          key={option.value != null ? String(option.value) : index}
+          value={checkboxMulti ? option.value : option.label}
           {...(!hideDescription && option.description && { description: option.description })}
-        />
+        >
+          {checkboxMulti ? option.label : undefined}
+        </SelectOption>
       ))
   }
 
@@ -83,55 +86,77 @@ class Select extends React.Component {
       disableClear,
       hideDescription,
       isArrayData,
+      isMulti,
       direction = "",
       maxHeight = "300px",
     } = this.props
     const { isOpen } = this.state
+    const checkboxMulti = isCheckboxMulti(isMulti, variant)
 
     // get label with value
     let selections = []
 
-    if (isArrayData) {
+    if (checkboxMulti) {
+      selections = isArrayData
+        ? Array.isArray(selected)
+          ? selected
+          : []
+        : String(selected || "")
+            .split(",")
+            .filter((v) => v !== "")
+    } else if (isArrayData) {
       const selectedArr = Array.isArray(selected) ? selected : []
-      selections = selectedArr.map((s) => {
-        return getLabelByValue(options, s)
-      })
-    } else {
-      if (selected !== undefined && selected !== "") {
-        selections = selected.split(",").map((s) => {
-          return getLabelByValue(options, s)
-        })
-      }
+      selections = selectedArr.map((s) => getLabelByValue(options, s))
+    } else if (selected !== undefined && selected !== "") {
+      selections = selected.split(",").map((s) => getLabelByValue(options, s))
     }
 
     const selectOptions = options.map((option, index) => (
       <SelectOption
         isDisabled={option.disabled}
-        key={index}
-        value={option.label}
+        key={option.value != null ? String(option.value) : index}
+        value={checkboxMulti ? option.value : option.label}
         {...(!hideDescription && option.description && { description: option.description })}
-      />
+      >
+        {checkboxMulti ? option.label : undefined}
+      </SelectOption>
     ))
 
-    // console.log("selections:", selections)
+    let placeholder = label
+    if (checkboxMulti && selections.length) {
+      const selectedLabels = selections.map((value) => {
+        const option = options.find((item) => String(item.value) === String(value))
+        if (!option) {
+          return String(value)
+        }
+        return option.toggleLabel || option.label || String(value)
+      })
+      placeholder = selectedLabels.join(", ")
+    }
 
     return (
       <PfSelect
-        variant={isSearchable ? SelectVariant.typeahead : variant || SelectVariant.single}
-        onFilter={isSearchable ? this.onFilter : undefined}
-        //typeAheadAriaLabel="Select a state"
+        variant={
+          variant ||
+          (checkboxMulti
+            ? SelectVariant.checkbox
+            : isSearchable
+              ? SelectVariant.typeahead
+              : SelectVariant.single)
+        }
+        onFilter={isSearchable && !checkboxMulti ? this.onFilter : undefined}
+        hasInlineFilter={!!(checkboxMulti && isSearchable)}
+        isCheckboxSelectionBadgeHidden={!!checkboxMulti}
         onToggle={this.onToggle}
         onSelect={this.onSelect}
         onClear={disableClear ? undefined : this.clearSelection}
         selections={selections}
         isOpen={isOpen}
         maxHeight={maxHeight}
-        //aria-labelledby={titleId}
-        placeholderText={label}
+        placeholderText={placeholder}
         isDisabled={isDisabled}
         isCreatable={isCreatable}
         direction={direction}
-        //onCreateOption={(hasOnCreateOption && this.onCreateOption) || undefined}
       >
         {selectOptions}
       </PfSelect>
@@ -151,6 +176,9 @@ Select.propTypes = {
 }
 
 export default Select
+
+const isCheckboxMulti = (isMulti, variant) =>
+  !!isMulti && (!variant || variant === SelectVariant.checkbox)
 
 // helper functions
 

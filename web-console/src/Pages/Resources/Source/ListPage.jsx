@@ -64,6 +64,7 @@ const tableColumns = [
   { title: "source_id", fieldKey: "sourceId", sortable: true },
   { title: "name", fieldKey: "name", sortable: true },
   { title: "last_seen", fieldKey: "lastSeen", sortable: true },
+  { title: "created_on", fieldKey: "createdOn", sortable: true },
 ]
 
 const toRowFuncImpl = (rawData, history) => {
@@ -110,6 +111,7 @@ const toRowFuncImpl = (rawData, history) => {
         ),
       },
       { title: <LastSeen date={rawData.lastSeen} /> },
+      { title: <LastSeen date={rawData.createdOn} /> },
     ],
     rid: rawData.id,
   }

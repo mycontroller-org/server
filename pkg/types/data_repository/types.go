@@ -13,5 +13,6 @@ type Config struct {
 	Description string               `json:"description" yaml:"description"`
 	Labels      cmap.CustomStringMap `json:"labels" yaml:"labels"`
 	Data        cmap.CustomMap       `json:"data" yaml:"data"`
+	CreatedOn   time.Time            `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn  time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }

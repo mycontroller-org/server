@@ -1,0 +1,17 @@
+.copyable-quick-id {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.copyable-quick-id .pf-c-clipboard-copy {
+  min-width: 0;
+}
+
+.copyable-quick-id .pf-c-clipboard-copy__text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

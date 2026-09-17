@@ -16,5 +16,6 @@ type Source struct {
 	Labels     cmap.CustomStringMap `json:"labels" yaml:"labels"`
 	Others     cmap.CustomMap       `json:"others" yaml:"others"`
 	LastSeen   time.Time            `json:"lastSeen" yaml:"lastSeen"`
+	CreatedOn  time.Time            `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }

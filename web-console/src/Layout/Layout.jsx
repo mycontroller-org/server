@@ -171,12 +171,10 @@ class PageLayoutExpandableNav extends React.Component {
   }
 
   onMenuSelect = (data) => {
-    //console.log(data);
-    //console.log(item, key, keyPath, domEvent)
-    //this.setState({
-    //selectedMenuKey: data.key
-    //});
     const { history } = this.props
+    if (!data || !data.to || history.location.pathname === data.to) {
+      return
+    }
     history.push(data.to)
   }
 

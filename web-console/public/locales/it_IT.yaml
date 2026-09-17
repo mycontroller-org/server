@@ -778,6 +778,7 @@ opts:
     label_streaming_soundbar: Soundbar streaming
     label_streaming_stick: Chiavetta streaming
     label_switch: Interruttore
+    label_tank: Serbatoio
     label_television: Televisore
     label_thermostat: Termostato
     label_vacuum: Aspirapolvere
@@ -949,6 +950,7 @@ title: Titolo
 to: A
 to_emails: Email destinatari
 token: Token
+topology: Topologia
 topic: Topic
 trait: Trait
 traits: Trait

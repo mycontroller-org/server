@@ -96,6 +96,18 @@ func (u *UserAPI) Save(user *userTY.User) error {
 		{Key: types.KeyID, Value: user.ID},
 	}
 	user.ModifiedOn = time.Now()
+	existing, lookupErr := u.GetByID(user.ID)
+	existingOn := time.Time{}
+	isNew := false
+	if lookupErr == nil {
+		existingOn = existing.CreatedOn
+	} else if errors.Is(lookupErr, storageTY.ErrNoDocuments) {
+		isNew = true
+		lookupErr = nil
+	}
+	if err := utils.StampCreatedOnLookup(&user.CreatedOn, existingOn, lookupErr, isNew); err != nil {
+		return err
+	}
 
 	if err := u.storage.Upsert(types.EntityUser, user, filters); err != nil {
 		return err

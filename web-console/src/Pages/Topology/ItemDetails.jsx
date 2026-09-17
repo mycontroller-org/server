@@ -11,12 +11,14 @@ import {
   TextInput,
   Title,
   TitleSizes,
+  Tooltip,
 } from "@patternfly/react-core"
 import { TopologySideBar } from "@patternfly/react-topology"
 import React from "react"
 import { useTranslation } from "react-i18next"
 import { useSelector } from "react-redux"
 import { RouteLink } from "../../Components/Buttons/Buttons"
+import CopyableQuickId from "../../Components/Buttons/CopyableQuickId"
 import { KeyValueMap, Labels } from "../../Components/DataDisplay/Label"
 import { getStatus, getStatusBool } from "../../Components/Icons/Icons"
 import { LastSeen } from "../../Components/Time/Time"
@@ -25,6 +27,7 @@ import { getQuickId, ResourceType } from "../../Constants/ResourcePicker"
 import { routeMap as rMap } from "../../Service/Routes"
 import { api } from "../../Service/Api"
 import FieldSidebarGraph from "./FieldSidebarGraph"
+import { resourceQuickId } from "../../Util/ResourceId"
 import { getFieldValue, getItem, getValue } from "../../Util/Util"
 
 export const TOPOLOGY_WS_KEY = "topology_fields"
@@ -56,10 +59,10 @@ const Row = ({ label, children }) => {
   )
 }
 
-const SidebarBlock = ({ title, ruled = false, children }) => {
+const SidebarBlock = ({ title, children }) => {
   const { t } = useTranslation()
   return (
-    <div className={`topology-sidebar-block${ruled ? " topology-sidebar-block-ruled" : ""}`}>
+    <div className="topology-sidebar-block">
       <div className="topology-sidebar-block-title">{t(title)}</div>
       <div className="topology-sidebar-block-body">{children}</div>
     </div>
@@ -252,7 +255,9 @@ const FieldPayload = ({ field, which }) => {
   const display = value === "" ? "-" : `${value}${unit}`
   return (
     <span className="topology-sidebar-payload">
-      <span>{display}</span>
+      <Tooltip content={display} position="top">
+        <span className="topology-sidebar-payload-value">{display}</span>
+      </Tooltip>
       {timestamp ? (
         <span className="topology-sidebar-payload-time">
           <LastSeen date={timestamp} tooltipPosition="top" />
@@ -271,6 +276,9 @@ const DetailsList = ({ children }) => (
 const GatewayDetails = ({ resource, history }) => (
   <>
   <DetailsList>
+    <Row label="quick_id">
+      <CopyableQuickId value={resourceQuickId("gateway", resource)} />
+    </Row>
     <Row label="id">
       <IdLink history={history} path={rMap.resources.gateway.detail} id={resource.id} text={resource.id} />
     </Row>
@@ -284,9 +292,12 @@ const GatewayDetails = ({ resource, history }) => (
     <Row label="message">{getValue(resource, "state.message", "") || "-"}</Row>
   </DetailsList>
     {hasEntries(resource.labels) ? (
-      <SidebarBlock title="labels" ruled>
-        <Labels data={resource.labels} />
-      </SidebarBlock>
+      <>
+        <Divider className="topology-sidebar-rule" />
+        <SidebarBlock title="labels">
+          <Labels data={resource.labels} />
+        </SidebarBlock>
+      </>
     ) : null}
   </>
 )
@@ -294,6 +305,9 @@ const GatewayDetails = ({ resource, history }) => (
 const NodeDetails = ({ resource, history }) => (
   <>
   <DetailsList>
+    <Row label="quick_id">
+      <CopyableQuickId value={resourceQuickId("node", resource)} />
+    </Row>
     <Row label="gateway_id">
       <IdLink
         history={history}
@@ -317,9 +331,12 @@ const NodeDetails = ({ resource, history }) => (
       </Row>
   </DetailsList>
       {hasEntries(resource.labels) ? (
-        <SidebarBlock title="labels" ruled>
-          <Labels data={resource.labels} />
-        </SidebarBlock>
+        <>
+          <Divider className="topology-sidebar-rule" />
+          <SidebarBlock title="labels">
+            <Labels data={resource.labels} />
+          </SidebarBlock>
+        </>
       ) : null}
       {hasEntries(resource.others) ? (
         <SidebarBlock title="others">
@@ -334,6 +351,9 @@ const SourceDetails = ({ resource, history, nodes }) => {
   return (
     <>
     <DetailsList>
+      <Row label="quick_id">
+        <CopyableQuickId value={resourceQuickId("source", resource)} />
+      </Row>
       <Row label="gateway_id">
         <IdLink
           history={history}
@@ -367,9 +387,12 @@ const SourceDetails = ({ resource, history, nodes }) => {
         </Row>
     </DetailsList>
         {hasEntries(resource.labels) ? (
-          <SidebarBlock title="labels" ruled>
-            <Labels data={resource.labels} />
-          </SidebarBlock>
+          <>
+            <Divider className="topology-sidebar-rule" />
+            <SidebarBlock title="labels">
+              <Labels data={resource.labels} />
+            </SidebarBlock>
+          </>
         ) : null}
         {hasEntries(resource.others) ? (
           <SidebarBlock title="others">
@@ -393,6 +416,9 @@ const FieldDetails = ({ resource, history, nodes, sources }) => {
   return (
     <>
     <DetailsList>
+      <Row label="quick_id">
+        <CopyableQuickId value={resourceQuickId("field", resource)} />
+      </Row>
       <Row label="gateway_id">
         <IdLink
           history={history}
@@ -457,9 +483,12 @@ const FieldDetails = ({ resource, history, nodes, sources }) => {
       ) : null}
       <FieldSidebarGraph field={resource} />
       {hasEntries(resource.labels) ? (
-        <SidebarBlock title="labels" ruled>
-          <Labels data={resource.labels} />
-        </SidebarBlock>
+        <>
+          <Divider className="topology-sidebar-rule" />
+          <SidebarBlock title="labels">
+            <Labels data={resource.labels} />
+          </SidebarBlock>
+        </>
       ) : null}
       {hasEntries(resource.others) ? (
         <SidebarBlock title="others">
@@ -491,6 +520,21 @@ const sidebarTitle = (kind, resource) => {
 
 const ItemDetails = ({ show, onClose, kind, resource, history, nodes, sources }) => {
   const { t } = useTranslation()
+  React.useEffect(() => {
+    if (!show) {
+      return undefined
+    }
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.stopPropagation()
+        if (onClose) {
+          onClose()
+        }
+      }
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [show, onClose])
   const quickId = kind === "field" && resource ? getQuickId(ResourceType.Field, resource) : ""
   const liveField = useSelector((state) => {
     if (!quickId) {

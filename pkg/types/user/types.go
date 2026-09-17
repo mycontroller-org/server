@@ -17,6 +17,7 @@ type User struct {
 	Disabled   bool                 `json:"disabled" yaml:"disabled"` // when true, JWT and login are rejected
 	Policies   []string             `json:"policies" yaml:"policies"` // attached policy ids
 	Labels     cmap.CustomStringMap `json:"labels" yaml:"labels"`
+	CreatedOn  time.Time            `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 }
 

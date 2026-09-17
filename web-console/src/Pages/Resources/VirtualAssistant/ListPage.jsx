@@ -90,6 +90,7 @@ const tableColumns = [
   { title: "status", fieldKey: "state.status", sortable: true },
   { title: "since", fieldKey: "state.since", sortable: true },
   { title: "message", fieldKey: "state.message", sortable: true },
+  { title: "created_on", fieldKey: "createdOn", sortable: true },
   { title: "modified_on", fieldKey: "modifiedOn", sortable: true },
 ]
 
@@ -115,6 +116,7 @@ const toRowFuncImpl = (rawData, history) => {
       { title: getStatus(getValue(rawData, "state.status", "")) },
       { title: <LastSeen date={getValue(rawData, "state.since", "")} /> },
       getValue(rawData, "state.message", ""),
+      { title: <LastSeen date={rawData.createdOn} /> },
       { title: <LastSeen date={rawData.modifiedOn} /> },
     ],
     rid: rawData.id,

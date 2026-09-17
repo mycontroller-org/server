@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	encryptionAPI "github.com/mycontroller-org/server/v2/pkg/encryption"
 	types "github.com/mycontroller-org/server/v2/pkg/types"
@@ -82,9 +83,22 @@ func (gw *GatewayAPI) SaveAndReload(gwCfg *gwTY.Config) error {
 // Save gateway config
 func (gw *GatewayAPI) Save(gwCfg *gwTY.Config) error {
 	eventType := eventTY.TypeUpdated
-	if gwCfg.ID == "" {
+	isNew := gwCfg.ID == ""
+	if isNew {
 		gwCfg.ID = utils.RandID()
 		eventType = eventTY.TypeCreated
+	}
+	var existingOn time.Time
+	var lookupErr error
+	if !isNew {
+		if existing, err := gw.GetByID(gwCfg.ID); err == nil {
+			existingOn = existing.CreatedOn
+		} else {
+			lookupErr = err
+		}
+	}
+	if err := utils.StampCreatedOnLookup(&gwCfg.CreatedOn, existingOn, lookupErr, isNew); err != nil {
+		return err
 	}
 
 	// encrypt passwords, tokens

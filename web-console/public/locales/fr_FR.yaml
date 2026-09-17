@@ -778,6 +778,7 @@ opts:
     label_streaming_soundbar: Barre de son streaming
     label_streaming_stick: Clé de streaming
     label_switch: Interrupteur
+    label_tank: Réservoir
     label_television: Téléviseur
     label_thermostat: Thermostat
     label_vacuum: Aspirateur
@@ -949,6 +950,7 @@ title: Titre
 to: À
 to_emails: E-mails destinataires
 token: Jeton
+topology: Topologie
 topic: Topic
 trait: Caractéristique
 traits: Caractéristiques

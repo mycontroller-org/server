@@ -811,9 +811,11 @@ myc enable gateway <alias> <id>
 myc disable task <alias> <id>
 myc enable user <alias> alice
 myc disable user <alias> alice bob
+myc disable service-account <alias> ci-bot
+myc enable sa <alias> ci-bot --user alice
 ```
 
-Supported: `gateway`, `virtual-device`, `virtual-assistant`, `task`, `schedule`, `handler`, `user`. User enable/disable accept username or id. A disabled user cannot log in. You cannot disable the user you are logged in as.
+Supported: `gateway`, `virtual-device`, `virtual-assistant`, `task`, `schedule`, `handler`, `user`, `service-account`. User enable/disable accept username or id. A disabled user cannot log in. You cannot disable the user you are logged in as. A disabled service account cannot authenticate.
 
 ### Reload
 

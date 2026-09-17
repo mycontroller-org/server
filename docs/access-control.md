@@ -376,7 +376,8 @@ create new ones, which is what keeps `user:<own-id>` from being a path to `admin
 A service account acts as its owner. Callers without user-admin rights only see and manage their
 own accounts. A principal with kind-wide `user` update (for example built-in `admin`) can create,
 list, update, and delete service accounts for any user. The owner (`userId`) cannot be changed
-after create. To revoke someone else's access, disable the user.
+after create. To revoke a token without deleting it, disable the service account. To revoke all of
+someone else's access, disable the user.
 
 ### 6.2 List queries
 

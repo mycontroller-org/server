@@ -24,6 +24,7 @@ type Config struct {
 	Labels             cmap.CustomStringMap `json:"labels" yaml:"labels"`
 	Others             cmap.CustomMap       `json:"others" yaml:"others"`
 	State              *types.State         `json:"state" yaml:"state"`
+	CreatedOn          time.Time            `json:"createdOn" yaml:"createdOn"`
 	ModifiedOn         time.Time            `json:"modifiedOn" yaml:"modifiedOn"`
 	LastTransaction    time.Time            `json:"lastTransaction" yaml:"lastTransaction"`
 }

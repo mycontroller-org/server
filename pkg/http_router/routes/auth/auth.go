@@ -66,6 +66,10 @@ func (a *AuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// verify validity
+		if actualToken.Disabled {
+			handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)
+			return
+		}
 		if !actualToken.NeverExpire {
 			if actualToken.ExpiresOn.Before(time.Now()) {
 				handlerUtils.PostErrorResponse(w, "invalid token", http.StatusUnauthorized)

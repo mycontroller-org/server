@@ -709,86 +709,87 @@ opts:
     label_alexa: Alexa
     label_google_assistant: Google Assistant
   vd_type:
-    label_air_conditioner: Air Conditioner
-    label_air_cooler: Air Cooler
-    label_air_freshener: Air Freshener
-    label_air_purifier: Air Purifier
-    label_audio_video_receiver: Audio Video Receiver
-    label_awning: Awning
+    label_air_conditioner: ಏರ್ ಕಂಡೀಷನರ್
+    label_air_cooler: ಏರ್ ಕೂಲರ್
+    label_air_freshener: ಏರ್ ಫ್ರೆಶನರ್
+    label_air_purifier: ಗಾಳಿ ಶುದ್ಧೀಕಾರಕ
+    label_audio_video_receiver: ಆಡಿಯೋ ವೀಡಿಯೋ ರಿಸೀವರ್
+    label_awning: ಛಾವಣಿ ಹಾಸು
     label_bathtub: ಸ್ನಾನದ ತೊಟ್ಟಿ
     label_bed: ಹಾಸಿಗೆ
-    label_blender: Blender
-    label_blinds: Blinds
-    label_boiler: Boiler
-    label_camera: Camera
-    label_carbon_monoxide_detector: Carbon Monoxide Detector
-    label_charger: Charger
+    label_blender: ಬ್ಲೆಂಡರ್
+    label_blinds: ಬ್ಲೈಂಡ್ಸ್
+    label_boiler: ಬಾಯ್ಲರ್
+    label_camera: ಕ್ಯಾಮೆರಾ
+    label_carbon_monoxide_detector: ಕಾರ್ಬನ್ ಮಾನಾಕ್ಸೈಡ್ ಪತ್ತೆಕಾರಕ
+    label_charger: ಚಾರ್ಜರ್
     label_closet: ಅಲಮಾರು
-    label_coffee_maker: Coffee Maker
-    label_cooktop: Cooktop
+    label_coffee_maker: ಕಾಫಿ ಯಂತ್ರ
+    label_cooktop: ಕುಕ್‌ಟಾಪ್
     label_curtain: ಪರದೆ
-    label_dehumidifier: Dehumidifier
-    label_dehydrator: Dehydrator
-    label_dishwasher: Dishwasher
+    label_dehumidifier: ತೇವ ತೆಗೆಯುವ ಯಂತ್ರ
+    label_dehydrator: ಆಹಾರ ಒಣಗಿಸುವ ಯಂತ್ರ
+    label_dishwasher: ಪಾತ್ರೆ ತೊಳೆಯುವ ಯಂತ್ರ
     label_door: ಬಾಗಿಲು
     label_door_bell: ಬಾಗಿಲ ಗಂಟೆ
     label_drawer: ಡ್ರಾಯರ್
-    label_dryer: Dryer
+    label_dryer: ಬಟ್ಟೆ ಒಣಗಿಸುವ ಯಂತ್ರ
     label_fan: ಫ್ಯಾನ್
     label_faucet: ನಲ್ಲಿ
-    label_fireplace: Fireplace
-    label_freezer: Freezer
-    label_fryer: Fryer
-    label_garage_door: Garage Door
+    label_fireplace: ಬೆಂಕಿಯ ಸ್ಥಳ
+    label_freezer: ಫ್ರೀಜರ್
+    label_fryer: ಫ್ರೈಯರ್
+    label_garage_door: ಗ್ಯಾರೇಜ್ ಬಾಗಿಲು
     label_gate: ಗೇಟ್
-    label_grill: Grill
-    label_heater: Heater
-    label_hood: Hood
-    label_humidifier: Humidifier
-    label_kettle: Kettle
+    label_grill: ಗ್ರಿಲ್
+    label_heater: ಹೀಟರ್
+    label_hood: ಹುಡ್
+    label_humidifier: ತೇವ ಸೇರಿಸುವ ಯಂತ್ರ
+    label_kettle: ಕೆಟಲ್
     label_light: ದೀಪ
     label_lock: ಲಾಕ್
-    label_media_remote: Media Remote
-    label_microwave: Microwave
-    label_mop: Mop
-    label_mower: Mower
-    label_multicooker: Multicooker
-    label_network: Network
-    label_outlet: Outlet
-    label_oven: Oven
-    label_pergola: Pergola
-    label_pet_feeder: Pet Feeder
-    label_pressure_cooker: Pressure Cooker
-    label_radiator: Radiator
+    label_media_remote: ಮೀಡಿಯಾ ರಿಮೋಟ್
+    label_microwave: ಮೈಕ್ರೋವೇವ್
+    label_mop: ಮಾಪ್
+    label_mower: ಹುಲ್ಲು ಕತ್ತರಿಸುವ ಯಂತ್ರ
+    label_multicooker: ಮಲ್ಟಿಕುಕರ್
+    label_network: ನೆಟ್‌ವರ್ಕ್
+    label_outlet: ಪ್ಲಗ್
+    label_oven: ಓವನ್
+    label_pergola: ಪರ್ಗೋಲಾ
+    label_pet_feeder: ಸಾಕುಪ್ರಾಣಿ ಆಹಾರ ಯಂತ್ರ
+    label_pressure_cooker: ಪ್ರೆಷರ್ ಕುಕರ್
+    label_radiator: ರೇಡಿಯೇಟರ್
     label_refrigerator: ರೆಫ್ರಿಜರೇಟರ್
-    label_router: Router
-    label_scene: Scene
-    label_security_system: Security System
-    label_sensor: Sensor
-    label_set_top_box: Set Top Box
-    label_shower: Shower
-    label_shutter: Shutter
-    label_smoke_detector: Smoke Detector
-    label_soundbar: Soundbar
-    label_sous_vide: Sous Vide
-    label_speaker: Speaker
-    label_sprinkler: Sprinkler
-    label_stand_mixer: Stand Mixer
-    label_streaming_box: Streaming Box
-    label_streaming_soundbar: Streaming Soundbar
-    label_streaming_stick: Streaming Stick
-    label_switch: Switch
-    label_television: Television
-    label_thermostat: Thermostat
-    label_vacuum: Vacuum
-    label_valve: Valve
-    label_washer: Washer
-    label_water_heater: Water Heater
-    label_water_purifier: Water Purifier
-    label_water_softener: Water Softener
-    label_weather_station: Weather Station
+    label_router: ರೌಟರ್
+    label_scene: ದೃಶ್ಯ
+    label_security_system: ಭದ್ರತಾ ವ್ಯವಸ್ಥೆ
+    label_sensor: ಸೆನ್ಸರ್
+    label_set_top_box: ಸೆಟ್ ಟಾಪ್ ಬಾಕ್ಸ್
+    label_shower: ಶವರ್
+    label_shutter: ಶಟರ್
+    label_smoke_detector: ಹೊಗೆ ಪತ್ತೆಕಾರಕ
+    label_soundbar: ಸೌಂಡ್‌ಬಾರ್
+    label_sous_vide: ಸೂ ವೀಡ್
+    label_speaker: ಸ್ಪೀಕರ್
+    label_sprinkler: ಚಿಮುಕಿಸುವ ಯಂತ್ರ
+    label_stand_mixer: ಸ್ಟ್ಯಾಂಡ್ ಮಿಕ್ಸರ್
+    label_streaming_box: ಸ್ಟ್ರೀಮಿಂಗ್ ಬಾಕ್ಸ್
+    label_streaming_soundbar: ಸ್ಟ್ರೀಮಿಂಗ್ ಸೌಂಡ್‌ಬಾರ್
+    label_streaming_stick: ಸ್ಟ್ರೀಮಿಂಗ್ ಸ್ಟಿಕ್
+    label_switch: ಸ್ವಿಚ್
+    label_tank: ಟ್ಯಾಂಕ್
+    label_television: ದೂರದರ್ಶನ
+    label_thermostat: ಥರ್ಮೋಸ್ಟಾಟ್
+    label_vacuum: ನಿರ್ವಾತ ಶುಚಿಗೊಳಿಸುವ ಯಂತ್ರ
+    label_valve: ವಾಲ್ವ್
+    label_washer: ಬಟ್ಟೆ ಒಗೆಯುವ ಯಂತ್ರ
+    label_water_heater: ನೀರು ಬಿಸಿಮಾಡುವ ಯಂತ್ರ
+    label_water_purifier: ನೀರು ಶುದ್ಧೀಕಾರಕ
+    label_water_softener: ನೀರು ಮೆದುಗೊಳಿಸುವ ಯಂತ್ರ
+    label_weather_station: ಹವಾಮಾನ ಕೇಂದ್ರ
     label_window: ಕಿಟಕಿ
-    label_yogurt_maker: Yogurt Maker
+    label_yogurt_maker: ಮೊಸರು ಮಾಡುವ ಯಂತ್ರ
   week_day:
     label_friday: ಶುಕ್ರವಾರ
     label_monday: ಸೋಮವಾರ
@@ -949,6 +950,7 @@ title: ಶೀರ್ಷಿಕೆ
 to: ಸ್ವೀಕೃತದಾರ
 to_emails: ಸ್ವೀಕೃತದಾರ Emailಗಳು
 token: Token
+topology: Topology
 topic: Topic
 trait: Trait
 traits: Traitಗಳು

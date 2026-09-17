@@ -19,6 +19,7 @@ type ServiceAccount struct {
 	Name        string                `json:"name" yaml:"name"`
 	Description string                `json:"description" yaml:"description"`
 	Token       Token                 `json:"token" yaml:"token"` // keeps hashed token, not the actual token
+	Disabled    bool                  `json:"disabled" yaml:"disabled"`
 	NeverExpire bool                  `json:"neverExpire" yaml:"neverExpire"`
 	ExpiresOn   dateTimeTY.CustomDate `json:"expiresOn" yaml:"expiresOn"`
 	// Optional restrictions - empty means same access as the owning user.

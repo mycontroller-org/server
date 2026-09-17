@@ -40,6 +40,7 @@ const getDetailsFuncImpl = (data, t) => {
     key: "policies",
     value: Array.isArray(data.policies) ? data.policies.join(", ") : "",
   })
+  fieldsList2.push({ key: "created_on", value: <LastSeen date={data.createdOn} tooltipPosition="top" /> })
   fieldsList2.push({ key: "modified_on", value: <LastSeen date={data.modifiedOn} tooltipPosition="top" /> })
   fieldsList2.push({ key: "labels", value: <Labels data={data.labels} /> })
 

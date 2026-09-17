@@ -23,7 +23,7 @@ const updateTraits = (resourceId, filter = { offset: 0, limit: 10 }) =>
           end = traits.length
         }
         const response = traits.slice(start, end).map((k) => {
-          return { trait: k, resource: traitsObj[k] }
+          return { id: k, trait: k, resource: traitsObj[k] }
         })
         resolve({ data: { count: traits.length, limit: traits.length, offset: 0, data: response } })
       })
@@ -63,6 +63,7 @@ const getDetailsFuncImpl = (data) => {
   fieldsList1.push({ key: "enabled", value: getStatusBool(data.enabled) })
   fieldsList2.push({ key: "type", value: data.deviceType })
   fieldsList2.push({ key: "labels", value: <Labels data={data.labels} /> })
+  fieldsList1.push({ key: "created_on", value: <LastSeen date={data.createdOn} tooltipPosition="top" /> })
   fieldsList1.push({ key: "modified_on", value: <LastSeen date={data.modifiedOn} tooltipPosition="top" /> })
 
   return {
