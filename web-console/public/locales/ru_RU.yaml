@@ -1,524 +1,524 @@
 ---
-about: About
-actions: Actions
-active_duration: Active Duration
-add: Add
-add_a_field: Add a Field
-add_a_firmware: Add a Firmware
-add_a_forward_payload: Add a Forward payload
-add_a_gateway: Add a Gateway
-add_a_handler: Add a Handler
-add_a_node: Add a Node
-add_a_schedule: Add a Schedule
-add_a_policy: Add a Policy
-add_a_service_account: Add a Service Account
-add_a_source: Add a Source
-add_a_task: Add a Task
-add_a_user: Add a User
-add_a_virtual_assistant: Add a Virtual Assistant
-add_a_virtual_device: Add a Virtual Device
-add_an_item: Add an item
-add_widget: Add Widget
-address: Address
-agent_user_id: Agent User ID
-alerts_empty_message: There are currently no alerts.
-alerts_empty_title: No alerts found
-alive_check_interval: Alive Check Interval
-all_rights_reserved: All Rights Reserved
-allow_overwrite: Allow Overwrite
-apache_license_2: Apache License 2.0
+about: О программе
+actions: Действия
+active_duration: Длительность активности
+add: Добавить
+add_a_field: Добавить поле
+add_a_firmware: Добавить прошивку
+add_a_forward_payload: Добавить пересылку payload
+add_a_gateway: Добавить шлюз
+add_a_handler: Добавить обработчик
+add_a_node: Добавить узел
+add_a_schedule: Добавить расписание
+add_a_policy: Добавить политику
+add_a_service_account: Добавить служебную учётную запись
+add_a_source: Добавить источник
+add_a_task: Добавить задачу
+add_a_user: Добавить пользователя
+add_a_virtual_assistant: Добавить виртуального помощника
+add_a_virtual_device: Добавить виртуальное устройство
+add_an_item: Добавить элемент
+add_widget: Добавить виджет
+address: Адрес
+agent_user_id: ID пользователя агента
+alerts_empty_message: Сейчас нет оповещений.
+alerts_empty_title: Оповещения не найдены
+alive_check_interval: Интервал проверки активности
+all_rights_reserved: Все права защищены
+allow_overwrite: Разрешить перезапись
+apache_license_2: Лицензия Apache 2.0
 api: API
-ask_confirmation: Ask Confirmation
-assigned_firmware: Assigned Firmware
-assigned_nodes: Assigned Nodes
-auto_disable: Auto Disable
-auto_update: Auto Update
-axis: Axis
-backup: Backup
-backup_and_restore: Backup and Restore
-backup_locations: Backup Locations
-battery: Battery
-baud_rate: Baud Rate
-body: Body
-bridge: Bridge
-brightness: Brightness
-broker: Broker
-browse: Browse
-build_date: Build Date
-button: Button
-button_text: Button Text
-cancel: Cancel
-chart_configuration: Chart Configuration
-chart_type: Chart Type
-chat_ids: Chat IDs
-clear: Clear
-clear_all: Clear All
-color: Color
-color_temperature: Color Temperature
-column_display: Column Display
-conditions: Conditions
-configuration: Configuration
-configure_via: Configure via
-confirm_password: Confirm Password
-confirmation_message: Confirmation Message
-connection_timeout: Connection Timeout
-control_configuration: Control Configuration
-control_type: Control Type
-copied: Copied
-copy: Copy
-corner_smoothing: Corner Smoothing
+ask_confirmation: Запрашивать подтверждение
+assigned_firmware: Назначенная прошивка
+assigned_nodes: Назначенные узлы
+auto_disable: Автоотключение
+auto_update: Автообновление
+axis: Ось
+backup: Резервная копия
+backup_and_restore: Резервное копирование и восстановление
+backup_locations: Расположения резервных копий
+battery: Батарея
+baud_rate: Скорость передачи
+body: Содержимое
+bridge: Мост
+brightness: Яркость
+broker: Брокер
+browse: Обзор
+build_date: Дата сборки
+button: Кнопка
+button_text: Текст кнопки
+cancel: Отмена
+chart_configuration: Настройка диаграммы
+chart_type: Тип диаграммы
+chat_ids: ID чатов
+clear: Очистить
+clear_all: Очистить всё
+color: Цвет
+color_temperature: Цветовая температура
+column_display: Отображение столбцов
+conditions: Условия
+configuration: Конфигурация
+configure_via: Настроить через
+confirm_password: Подтвердите пароль
+confirmation_message: Сообщение подтверждения
+connection_timeout: Тайм-аут соединения
+control_configuration: Настройка управления
+control_type: Тип управления
+copied: Скопировано
+copy: Копировать
+corner_smoothing: Сглаживание углов
 cpu: CPU
-cpu_disabled: CPU Disabled
-create_new: Create New
-created_on: Created On
-cron_expression: Cron Expression
-current_password: Current Password
-cursor_tooltip: Cursor Tooltip
-custom_data: Custom Data
-custom_mapping: Custom Mapping
-custom_variables: Custom Variables
-dampening: Dampening
-dashboard: Dashboard
-data: Data
-data_repository: Data Repository
-data_repository_add_an_entry: 'Data Repository: Add an entry'
-data_repository_modify_an_entry: 'Data Repository: Modify an entry'
-data_retrieved_from_server: Data retrieved from server
-data_type: Data Type
-date_yyyy_mm_dd: Date (yyyy-mm-dd)
-day_of_month: Date of Month
-day_of_week: Days of Week
-delete: Delete
-description: Description
-destination_field: Destination Field
-detailed_filter: Detailed Filter
-details: Details
-device_filter: Device Filter
-device_type: Device Type
+cpu_disabled: CPU отключён
+create_new: Создать новый
+created_on: Создано
+cron_expression: Выражение cron
+current_password: Текущий пароль
+cursor_tooltip: Подсказка курсора
+custom_data: Пользовательские данные
+custom_mapping: Пользовательское сопоставление
+custom_variables: Пользовательские переменные
+dampening: Демпфирование
+dashboard: Панель
+data: Данные
+data_repository: Хранилище данных
+data_repository_add_an_entry: "Хранилище данных: добавить запись"
+data_repository_modify_an_entry: "Хранилище данных: изменить запись"
+data_retrieved_from_server: Данные получены с сервера
+data_type: Тип данных
+date_yyyy_mm_dd: Дата (гггг-мм-дд)
+day_of_month: День месяца
+day_of_week: Дни недели
+delete: Удалить
+description: Описание
+destination_field: Целевое поле
+detailed_filter: Подробный фильтр
+details: Сведения
+device_filter: Фильтр устройств
+device_type: Тип устройства
 dialog:
-  clear_sleeping_queue_heading: "Would you like to clear the queue?"
-  clear_sleeping_queue_msg: All the sleeping queued messages will be dropped
-  delete_resource_msg: "Are you sure want to delete the selected items?"
-  delete_title_backup: "Delete backup files?"
-  delete_title_dashboard: "Delete dashboard?"
-  delete_title_data_repository: "Delete data repositories?"
-  delete_title_field: "Delete fields?"
-  delete_title_firmware: "Delete firmware?"
-  delete_title_forward_payload: "Delete forward payloads?"
-  delete_title_gateway: "Delete gateways?"
-  delete_title_handler: "Delete handlers?"
-  delete_title_node: "Delete nodes?"
-  delete_title_schedule: "Delete schedules?"
-  delete_title_service_account: "Delete service account?"
-  delete_title_user: "Delete user?"
-  delete_title_policy: "Delete policy?"
-  delete_title_source: "Delete sources?"
-  delete_title_task: "Delete tasks?"
-  delete_title_virtual_assistant: "Delete virtual assistant?"
-  delete_title_virtual_device: "Delete virtual device?"
-  node_reset_heading: "Reset Node?"
-  node_reset_msg: "Are you sure want to reset the selected nodes?<br/>After this operation:<3><0>Configuration will be restored to factory settings.</0><1>you may lose access to the selected node(s) from MyController!</1></3>"
-  reboot_nodes_heading: "Reboot Node?"
-  reboot_nodes_msg: "Are you sure want to reboot the selected nodes?"
-  reset_msg_jwt_secret: "Are you sure want to reset the JWT secret? After this operation, all the existing logged in sessions to this server will be invalid also you will be logged out!"
-  reset_title_jwt_secret: Reset JWT secret
-  restore_heading: "Confirm to perform a restore operation?"
-  restore_msg: "Are you sure want to restore to selected backup file?<br/>After this operation:<3><0>Server data will be restored to <1>{{fileName}}</1></0><1>You cannot rollback this operation</1><2>Always take a backup before performing a restore operation</2><3>You may need to start the server manually</3></3>"
-disable: Disable
-disable_scrollbar: Disable Scrollbar
-disabled: Disabled
-disabled_all: Disabled All
-discover_nodes: Discover Nodes
-disk: Disk
-disks: Disks
-display_name: Display Name
-display_percentage: Display Percentage
-display_text: Display Text
-display_value: Display Value
-do_update: Do Update
-documentation: Documentation
-down: Down
-download: Download
-drop_down_position: Drop Down Position
-duration: Duration
-edit: Edit
-edit_dashboard_settings: Edit Dashboard Settings
-edit_widget_settings: Edit Widget Settings
-email: Email
-edit_statement: Edit Statement
-effect: Effect
-enable: Enable
-enabled: Enabled
-encryption_key: Encryption Key
-endpoint: Endpoint
-endpoints: Endpoints
-entities: Entities
+  clear_sleeping_queue_heading: Очистить очередь?
+  clear_sleeping_queue_msg: Все сообщения в очереди сна будут отброшены
+  delete_resource_msg: Вы действительно хотите удалить выбранные элементы?
+  delete_title_backup: Удалить файлы резервных копий?
+  delete_title_dashboard: Удалить панель?
+  delete_title_data_repository: Удалить хранилища данных?
+  delete_title_field: Удалить поля?
+  delete_title_firmware: Удалить прошивку?
+  delete_title_forward_payload: Удалить пересылки payload?
+  delete_title_gateway: Удалить шлюзы?
+  delete_title_handler: Удалить обработчики?
+  delete_title_node: Удалить узлы?
+  delete_title_schedule: Удалить расписания?
+  delete_title_service_account: Удалить служебную учётную запись?
+  delete_title_user: Удалить пользователя?
+  delete_title_policy: Удалить политику?
+  delete_title_source: Удалить источники?
+  delete_title_task: Удалить задачи?
+  delete_title_virtual_assistant: Удалить виртуального помощника?
+  delete_title_virtual_device: Удалить виртуальное устройство?
+  node_reset_heading: Сбросить узел?
+  node_reset_msg: "Вы действительно хотите сбросить выбранные узлы?<br/>После этой операции:<3><0>Конфигурация будет восстановлена до заводских настроек.</0><1>Вы можете потерять доступ к выбранным узлам из MyController!</1></3>"
+  reboot_nodes_heading: Перезагрузить узел?
+  reboot_nodes_msg: Вы действительно хотите перезагрузить выбранные узлы?
+  reset_msg_jwt_secret: "Вы действительно хотите сбросить секрет JWT? После этой операции все существующие сеансы на этом сервере станут недействительными, и вы будете выведены из системы!"
+  reset_title_jwt_secret: Сбросить секрет JWT
+  restore_heading: Подтвердить восстановление?
+  restore_msg: "Вы действительно хотите восстановить данные из выбранного файла резервной копии?<br/>После этой операции:<3><0>Данные сервера будут восстановлены до <1>{{fileName}}</1></0><1>Эту операцию нельзя отменить</1><2>Всегда создавайте резервную копию перед восстановлением</2><3>Возможно, сервер потребуется запустить вручную</3></3>"
+disable: Отключить
+disable_scrollbar: Отключить полосу прокрутки
+disabled: Отключено
+disabled_all: Все отключено
+discover_nodes: Обнаружить узлы
+disk: Диск
+disks: Диски
+display_name: Отображаемое имя
+display_percentage: Показывать процент
+display_text: Отображаемый текст
+display_value: Показывать значение
+do_update: Обновить
+documentation: Документация
+down: Вниз
+download: Скачать
+drop_down_position: Положение раскрывающегося списка
+duration: Длительность
+edit: Изменить
+edit_dashboard_settings: Изменить настройки панели
+edit_widget_settings: Изменить настройки виджета
+email: Эл. почта
+edit_statement: Изменить инструкцию
+effect: Эффект
+enable: Включить
+enabled: Включено
+encryption_key: Ключ шифрования
+endpoint: Конечная точка
+endpoints: Конечные точки
+entities: Сущности
 error:
   console:
-    invalid_login_credentials: Invalid login credentials.
-    login_msg_loading_failed: Error on fetching login message
-evaluation: Evaluation
-evaluations: Evaluations
-event_filters: Event Filters
-events: Events
-executed_count: Executed Count
-execution_interval: Execution Interval
-execution_interval_0h0m0s: Execution Interval (0h0m0s)
-execution_mode: Execution Mode
-experimental: Experimental
-expires_on: Expires On
-export_type: Export Type
+    invalid_login_credentials: Неверные учётные данные.
+    login_msg_loading_failed: Ошибка при получении сообщения входа
+evaluation: Оценка
+evaluations: Оценки
+event_filters: Фильтры событий
+events: События
+executed_count: Число выполнений
+execution_interval: Интервал выполнения
+execution_interval_0h0m0s: Интервал выполнения (0h0m0s)
+execution_mode: Режим выполнения
+experimental: Экспериментально
+expires_on: Истекает
+export_type: Тип экспорта
 'false': 'False'
-favorite: Favorite
-fetch_info: Fetch Info
-fetching: Fetching
-field: Field
-field_details: Field Details
-field_id: Field ID
-fields: Fields
-file_details: File Details
-file_uploaded_successfully: File uploaded successfully
-filename: File Name
-filename_placeholder: Drag a file here or browse to upload
+favorite: Избранное
+fetch_info: Получить сведения
+fetching: Загрузка
+field: Поле
+field_details: Сведения о поле
+field_id: ID поля
+fields: Поля
+file_details: Сведения о файле
+file_uploaded_successfully: Файл успешно загружен
+filename: Имя файла
+filename_placeholder: Перетащите файл сюда или выберите для загрузки
 fill_opacity_%: Fill Opacity (%)
-filter: Filter
-filter_type: Filter Type
-filters: Filters
-firmware_details: Firmware Details
-firmware_file: Firmware File
-firmware_update: Firmware Update
-firmwares: Firmwares
-flush_interval: Flush Interval
-forgot_username_or_password: "Forgot username or password?"
-form_generic_error_message: Check the error and/or mandatory(*) fields
-form_view: Form View
-forum: Forum
-forward_payload: Forward Payload
-forward_payload_details: Forward Payload Details
-frequency: Frequency
-from: From
-from_email: From Email
-full_name: Full Name
-function: Function
-gateway: Gateway
-gateway_details: Gateway Details
-gateway_id: Gateway ID
-gateways: Gateways
-all_gateways: All gateways
-all_nodes: All nodes
-show_sources: Show sources
-show_fields: Show fields
-select_gateway: Gateway
-no_topology_nodes: No nodes to display
-no_topology_nodes_for_gateway: No nodes found for this gateway
-geo_location: GEO Location
-git_commit: Git Commit
-global_configuration: Global Configuration
-golang_version: GoLang Version
-handler: Handler
-handler_details: Handler Details
-handler_parameters: Handler Parameters
-handler_type: Handler Type
-handlers: Handlers
-header_name: Header Name
-headers: Headers
-heartbeat_request: Heartbeat Request
-height_px: Height (px)
+filter: Фильтр
+filter_type: Тип фильтра
+filters: Фильтры
+firmware_details: Сведения о прошивке
+firmware_file: Файл прошивки
+firmware_update: Обновление прошивки
+firmwares: Прошивки
+flush_interval: Интервал сброса
+forgot_username_or_password: Забыли имя пользователя или пароль?
+form_generic_error_message: "Проверьте ошибки и/или обязательные поля (*)"
+form_view: Вид формы
+forum: Форум
+forward_payload: Переслать payload
+forward_payload_details: Сведения о пересылке payload
+frequency: Частота
+from: От
+from_email: Эл. почта отправителя
+full_name: Полное имя
+function: Функция
+gateway: Шлюз
+gateway_details: Сведения о шлюзе
+gateway_id: ID шлюза
+gateways: Шлюзы
+all_gateways: Все шлюзы
+all_nodes: Все узлы
+show_sources: Показать источники
+show_fields: Показать поля
+select_gateway: Шлюз
+no_topology_nodes: Нет узлов для отображения
+no_topology_nodes_for_gateway: Узлы для этого шлюза не найдены
+geo_location: GEO-местоположение
+git_commit: Коммит Git
+global_configuration: Глобальная конфигурация
+golang_version: Версия GoLang
+handler: Обработчик
+handler_details: Сведения об обработчике
+handler_parameters: Параметры обработчика
+handler_type: Тип обработчика
+handlers: Обработчики
+header_name: Имя заголовка
+headers: Заголовки
+heartbeat_request: Запрос heartbeat
+height_px: Высота (px)
 helper_text:
-  invalid_address_esphome: 'Invalid address, example: node1.local:6053'
-  invalid_api: Invalid API
-  invalid_backup_retention_count: "Invalid retention count, 0 for no limit"
-  invalid_baud_rate: Invalid baud rate
-  invalid_broker_url: Invalid Broker URL
-  invalid_current_password: Enter your current password
-  invalid_data: Invalid data
-  invalid_date: Invalid date
-  invalid_day_of_month: Invalid day of month
-  invalid_directory: Invalid directory
-  invalid_duration: Invalid Duration
-  invalid_email: Invalid email
-  invalid_execution_interval_empty: Execution interval should not be empty
-  invalid_field_id: "Invalid field id. chars, min=1, max=100"
-  invalid_filters: Invalid filters
-  invalid_height: Invalid Height
-  invalid_host: Invalid Host
-  invalid_id: "Invalid id. chars, min=4, max=100, and space not allowed"
-  invalid_interval: Invalid interval
-  invalid_key: "Invalid key. chars, min=1 and max=100"
-  invalid_key_path: Key path can not be empty
-  invalid_latitude: Invalid latitude
-  invalid_limit: Invalid limit
-  invalid_location: Invalid location
-  invalid_longitude: Invalid longitude
-  invalid_maximum_backup: "Invalid maximum backup count. int, min=0"
-  invalid_name: "Invalid name. chars, min=2, max=100"
-  invalid_node_id: "Invalid node ID. chars, min=1 and max=100"
-  invalid_offset: Invalid offset
-  invalid_path: Invalid path
-  invalid_payload: Invalid payload
-  invalid_port: Invalid port
-  invalid_prefix: Invalid prefix
-  invalid_profile_confirm_password: Invalid confirm password
-  invalid_profile_password: "Invalid password. chars, min=3, max=100"
-  invalid_profile_username: "Invalid username. chars, min=3, max=100, and space not allowed"
-  invalid_repeat_count: Invalid repeat count
-  invalid_response_code: "Enter a valid response code, enter 0 to ignore"
-  invalid_retry_count: "Invalid retry count. int, min=0"
-  invalid_script_empty: Script should not be empty
-  invalid_server_url: Invalid server URL
-  invalid_source_id: "Invalid source ID. chars, min=1 and max=100"
-  invalid_text: "Invalid text. chars, min=1 and max=100"
-  invalid_time: Invalid time
-  invalid_title: Invalid title
-  invalid_token: Invalid token
-  invalid_topic: Invalid topic
-  invalid_type: Invalid type
-  invalid_url: Invalid URL
-  invalid_username: Invalid username
-  invalid_password: Invalid password
-  password_leave_empty: Leave empty to keep the current password
-  service_account_user: Leave empty to create for yourself. Pick a user to create the account for them.
-  invalid_value: Invalid value
-  invalid_width: Invalid width
-hide_border: Hide Border
-hide_header: Hide Header
-hide_status_column: Hide Status Column
-hide_value_column: Hide Value Column
-host: Host
-host_id: Host ID
-host_ids: Host IDs
+  invalid_address_esphome: "Недопустимый адрес, пример: node1.local:6053"
+  invalid_api: Недопустимый API
+  invalid_backup_retention_count: "Недопустимое число хранимых копий, 0 — без ограничения"
+  invalid_baud_rate: Недопустимая скорость передачи
+  invalid_broker_url: Недопустимый URL брокера
+  invalid_current_password: Введите текущий пароль
+  invalid_data: Недопустимые данные
+  invalid_date: Недопустимая дата
+  invalid_day_of_month: Недопустимый день месяца
+  invalid_directory: Недопустимый каталог
+  invalid_duration: Недопустимая длительность
+  invalid_email: Недопустимый адрес эл. почты
+  invalid_execution_interval_empty: Интервал выполнения не должен быть пустым
+  invalid_field_id: "Недопустимый ID поля. символы, min=1, max=100"
+  invalid_filters: Недопустимые фильтры
+  invalid_height: Недопустимая высота
+  invalid_host: Недопустимый хост
+  invalid_id: "Недопустимый ID. символы, min=4, max=100, пробелы запрещены"
+  invalid_interval: Недопустимый интервал
+  invalid_key: "Недопустимый ключ. символы, min=1 и max=100"
+  invalid_key_path: Путь к ключу не может быть пустым
+  invalid_latitude: Недопустимая широта
+  invalid_limit: Недопустимый лимит
+  invalid_location: Недопустимое расположение
+  invalid_longitude: Недопустимая долгота
+  invalid_maximum_backup: "Недопустимое максимальное число копий. целое, min=0"
+  invalid_name: "Недопустимое имя. символы, min=2, max=100"
+  invalid_node_id: "Недопустимый ID узла. символы, min=1 и max=100"
+  invalid_offset: Недопустимое смещение
+  invalid_path: Недопустимый путь
+  invalid_payload: Недопустимый payload
+  invalid_port: Недопустимый порт
+  invalid_prefix: Недопустимый префикс
+  invalid_profile_confirm_password: Недопустимое подтверждение пароля
+  invalid_profile_password: "Недопустимый пароль. символы, min=3, max=100"
+  invalid_profile_username: "Недопустимое имя пользователя. символы, min=3, max=100, пробелы запрещены"
+  invalid_repeat_count: Недопустимое число повторов
+  invalid_response_code: "Введите допустимый код ответа, 0 чтобы игнорировать"
+  invalid_retry_count: "Недопустимое число повторов. целое, min=0"
+  invalid_script_empty: Скрипт не должен быть пустым
+  invalid_server_url: Недопустимый URL сервера
+  invalid_source_id: "Недопустимый ID источника. символы, min=1 и max=100"
+  invalid_text: "Недопустимый текст. символы, min=1 и max=100"
+  invalid_time: Недопустимое время
+  invalid_title: Недопустимый заголовок
+  invalid_token: Недопустимый токен
+  invalid_topic: Недопустимая тема
+  invalid_type: Недопустимый тип
+  invalid_url: Недопустимый URL
+  invalid_username: Недопустимое имя пользователя
+  invalid_password: Недопустимый пароль
+  password_leave_empty: "Оставьте пустым, чтобы сохранить текущий пароль"
+  service_account_user: "Оставьте пустым, чтобы создать для себя. Выберите пользователя, чтобы создать учётную запись для него."
+  invalid_value: Недопустимое значение
+  invalid_width: Недопустимая ширина
+hide_border: Скрыть рамку
+hide_header: Скрыть заголовок
+hide_status_column: Скрыть столбец статуса
+hide_value_column: Скрыть столбец значения
+host: Хост
+host_id: ID хоста
+host_ids: ID хостов
 html: HTML
-hue: Hue
-icon_or_image_location: Icon or Image Location
+hue: Оттенок
+icon_or_image_location: Расположение значка или изображения
 id: ID
-ignore_duplicate: Ignore Duplicate
-image_source: Image Source
-image_type: Image Type
-in_progress: In Progress
-inactive_duration: Inactive Duration
-include_configuration: Include Configuration
-include_global_configuration: Include Global Configuration
-include_insecure_share: Include Insecure Share
-include_secure_share: Include Secure Share
-insecure: Insecure
-internal_message_ack: Internal Message Ack
-interpolation: Interpolation
-interval: Interval
-interval_0h0m0s: Interval (0h0m0s)
-invalid_file: Invalid file
-is_sleep_node: Is Sleep Node
-is_static: Is Static
+ignore_duplicate: Игнорировать дубликаты
+image_source: Источник изображения
+image_type: Тип изображения
+in_progress: Выполняется
+inactive_duration: Длительность простоя
+include_configuration: Включить конфигурацию
+include_global_configuration: Включить глобальную конфигурацию
+include_insecure_share: Включить незащищённый доступ
+include_secure_share: Включить защищённый доступ
+insecure: Незащищённый
+internal_message_ack: Подтверждение внутреннего сообщения
+interpolation: Интерполяция
+interval: Интервал
+interval_0h0m0s: Интервал (0h0m0s)
+invalid_file: Недопустимый файл
+is_sleep_node: Спящий узел
+is_static: Статический
 javascript: Javascript
 json: JSON
 jwt_secret: JWT Secret
-keep_me_logged_in_30_days: Keep me logged in for 30 days.
-key: Key
-key_path: Key Path
-label: Label
-labels: Labels
-language: Language
-last_evaluation: Last Evaluation
-last_modified: Last Modified
-last_run: Last Run
-last_seen: Last Seen
-last_status: Last Status
-last_success: Last Success
-latitude: Latitude
-legend_orientation: Legend Orientation
-legend_position: Legend Position
-library_version: Library Version
-light: Light
-limit: Limit
-loading: Loading
-location: Location
-location_name: Location Name
-locations: Locations
-log_in: Log In
-log_rotate_interval: Log Rotate Interval
-login: Login
-login_page: Login Page
-login_to_your_account: Login to your account
-logout: Logout
-longitude: Longitude
-mapping: Mapping
-mark_all_read: Mark all read
+keep_me_logged_in_30_days: Оставить меня в системе на 30 дней.
+key: Ключ
+key_path: Путь к ключу
+label: Метка
+labels: Метки
+language: Язык
+last_evaluation: Последняя оценка
+last_modified: Последнее изменение
+last_run: Последний запуск
+last_seen: Последняя активность
+last_status: Последний статус
+last_success: Последний успех
+latitude: Широта
+legend_orientation: Ориентация легенды
+legend_position: Положение легенды
+library_version: Версия библиотеки
+light: Свет
+limit: Лимит
+loading: Загрузка
+location: Расположение
+location_name: Название расположения
+locations: Расположения
+log_in: Войти
+log_rotate_interval: Интервал ротации журнала
+login: Вход
+login_page: Страница входа
+login_to_your_account: Войдите в свою учётную запись
+logout: Выйти
+longitude: Долгота
+mapping: Сопоставление
+mark_all_read: Отметить все как прочитанные
 markdown: Markdown
 markdown_v2: Markdown v2
-match_all: Match All
-max_y_axis: Max (Y Axis)
-maximum: Maximum
-maximum_age: Maximum Age
-maximum_backup: Maximum Backup
-maximum_size: Maximum Size
-maximum_value: Maximum Value
-memory: Memory
-memory_disabled: Memory Disabled
-message: Message
-message_logger: Message Logger
-method: Method
-metric_configuration: Metric Configuration
-metric_function: Metric Function
-metric_interval: Metric Interval
-metric_type: Metric Type
-metrics: Metrics
-metrics_database_disabled: 'WARNING: Metrics database disabled'
-min_y_axis: Min (Y Axis)
-minimum: Minimum
-minimum_value: Minimum Value
-minimum_width: Minimum Width
-mixed_resources: Mixed Resources
-modified_on: Modified On
-name: Name
-name_key: Name Key
-never_expire: Never Expire
-new: New
-new_password: New Password
-no_change_since: No Change Since
-no_dashboard_message: There is no dashboard available to load.
-no_dashboard_title: No dashboards available
-no_data: No data
-no_labels: No labels
-no_login_message: No message set for login
-node: Node
-node_configuration: Node Configuration
-node_details: Node Details
-node_endpoints: Node Endpoints
-node_id: Node ID
-node_state_updater: Node State Updater
-nodes: Nodes
-none: None
-notifications: Notifications
-number_of_axis: Number of Axis
-occurrences: Occurrences
+match_all: Совпадение всех
+max_y_axis: Макс. (ось Y)
+maximum: Максимум
+maximum_age: Максимальный возраст
+maximum_backup: Максимум копий
+maximum_size: Максимальный размер
+maximum_value: Максимальное значение
+memory: Память
+memory_disabled: Память отключена
+message: Сообщение
+message_logger: Журнал сообщений
+method: Метод
+metric_configuration: Настройка метрик
+metric_function: Функция метрики
+metric_interval: Интервал метрики
+metric_type: Тип метрики
+metrics: Метрики
+metrics_database_disabled: "ПРЕДУПРЕЖДЕНИЕ: база метрик отключена"
+min_y_axis: Мин. (ось Y)
+minimum: Минимум
+minimum_value: Минимальное значение
+minimum_width: Минимальная ширина
+mixed_resources: Смешанные ресурсы
+modified_on: Изменено
+name: Имя
+name_key: Ключ имени
+never_expire: Никогда не истекает
+new: Новый
+new_password: Новый пароль
+no_change_since: Без изменений с
+no_dashboard_message: Нет панели для загрузки.
+no_dashboard_title: Нет доступных панелей
+no_data: Нет данных
+no_labels: Нет меток
+no_login_message: Сообщение для входа не задано
+node: Узел
+node_configuration: Конфигурация узла
+node_details: Сведения об узле
+node_endpoints: Конечные точки узла
+node_id: ID узла
+node_state_updater: Обновление состояния узла
+nodes: Узлы
+none: Нет
+notifications: Уведомления
+number_of_axis: Число осей
+occurrences: Вхождения
 'off': 'OFF'
-off_text: OFF Text
-offset_0h0m0s: Offset (0h0m0s)
+off_text: Текст ВЫКЛ
+offset_0h0m0s: Смещение (0h0m0s)
 offset_y_%: Offset Y (%)
 'on': 'ON'
-on_button: ON Button
-on_receive: On Receive
-on_send: On Send
-on_text: ON Text
-operations: Operations
-operator: Operator
-options: Options
+on_button: Кнопка ВКЛ
+on_receive: При получении
+on_send: При отправке
+on_text: Текст ВКЛ
+operations: Операции
+operator: Оператор
+options: Параметры
 opts:
   backup_provider:
-    desc_disk: Backup data in to disk
-    label_disk: Disk
+    desc_disk: Сохранить резервную копию на диск
+    label_disk: Диск
   button_type:
-    label_danger: Danger (red)
-    label_primary: Primary (blue)
-    label_secondary: Secondary (blue)
-    label_warning: Warning (yellow)
+    label_danger: Опасность (красный)
+    label_primary: Основной (синий)
+    label_secondary: Дополнительный (синий)
+    label_warning: Предупреждение (жёлтый)
   chart_group_type:
-    desc_group_chart: Single axis with multiple resources
-    desc_mixed_chart: Multiple axis with multiple resources
-    desc_pie_chart: Single pie chart
-    label_group_chart: Group Chart
-    label_mixed_chart: Mixed Chart
-    label_pie_chart: Pie Chart
+    desc_group_chart: Одна ось с несколькими ресурсами
+    desc_mixed_chart: Несколько осей с несколькими ресурсами
+    desc_pie_chart: Одна круговая диаграмма
+    label_group_chart: Групповая диаграмма
+    label_mixed_chart: Смешанная диаграмма
+    label_pie_chart: Круговая диаграмма
   chart_interpolation:
     label_basis: Basis
     label_cardinal: Cardinal
     label_catmull_rom: CatmullRom
-    label_linear: Linear
+    label_linear: Линейная
     label_monotone_x: MonotoneX
     label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_natural: Натуральная
+    label_step: Шаг
+    label_step_after: Шаг после
+    label_step_before: Шаг до
   chart_type:
-    desc_area_chart: Area Chart
-    desc_bar_chart: Bar Chart
-    desc_line_chart: Line Chart
+    desc_area_chart: Диаграмма с областями
+    desc_bar_chart: Столбчатая диаграмма
+    desc_line_chart: Линейная диаграмма
     desc_pie_chart: Pie Chart
-    desc_scatter_chart: Scatter Chart
-    label_area_chart: Area Chart
-    label_bar_chart: Bar Chart
-    label_line_chart: Line Chart
-    label_pie_chart: Pie Chart
-    label_scatter_chart: Scatter Chart
+    desc_scatter_chart: Точечная диаграмма
+    label_area_chart: Диаграмма с областями
+    label_bar_chart: Столбчатая диаграмма
+    label_line_chart: Линейная диаграмма
+    label_pie_chart: Круговая диаграмма
+    label_scatter_chart: Точечная диаграмма
   code_editor_language:
     label_html: HTML
     label_javascript: Javascript
     label_json: JSON
-    label_plaintext: Plan Text
+    label_plaintext: Простой текст
     label_xml: XML
     label_yaml: YAML
   control_type:
-    label_mixed_control: Mixed Control
-    label_switch_button: Button Switch
-    label_switch_toggle: Switch Toggle
+    label_mixed_control: Смешанное управление
+    label_switch_button: Кнопка-переключатель
+    label_switch_toggle: Переключатель
   control_type_mixed:
-    label_button_push: Push Button
-    label_input: Input
-    label_options_select: Select Options
-    label_options_tab: Tab Options
-    label_slider: Slider
-    label_switch_button: Button Switch
+    label_button_push: Кнопка нажатия
+    label_input: Ввод
+    label_options_select: Выбор вариантов
+    label_options_tab: Варианты вкладок
+    label_slider: Ползунок
+    label_switch_button: Кнопка-переключатель
     label_switch_toggle: Toggle Switch
   dampening:
-    desc_active_duration: Active duration of the task
-    desc_consecutive: Number of consecutive occurrences
-    desc_evaluation: Number of occurrences in N evaluation
-    desc_none: Disable dampening feature
-    label_active_duration: Active Duration
-    label_consecutive: Consecutive
-    label_evaluation: Evaluation
-    label_none: None
+    desc_active_duration: Длительность активности задачи
+    desc_consecutive: Число последовательных вхождений
+    desc_evaluation: Число вхождений в N оценках
+    desc_none: Отключить функцию демпфирования
+    label_active_duration: Длительность активности
+    label_consecutive: Последовательные
+    label_evaluation: Оценка
+    label_none: Нет
   data_unit:
-    label_bytes: Bytes
-    label_eib: Exbi Bytes (EiB)
-    label_gib: Gibi Bytes (GiB)
-    label_kib: Kibi Bytes (KiB)
-    label_mib: Mibi Bytes (MiB)
-    label_pib: Pebi Bytes (PiB)
-    label_tib: Tebi Bytes (TiB)
+    label_bytes: Байты
+    label_eib: Эксбибайты (EiB)
+    label_gib: Гибибайты (GiB)
+    label_kib: Кибибайты (KiB)
+    label_mib: Мебибайты (MiB)
+    label_pib: Пебибайты (PiB)
+    label_tib: Тебибайты (TiB)
   event_type:
-    label_created: Created
-    label_deleted: Deleted
-    label_requested: Requested
-    label_updated: Updated
+    label_created: Создано
+    label_deleted: Удалено
+    label_requested: Запрошено
+    label_updated: Обновлено
   gw_msg_logger:
-    desc_file_logger: Messages will be logged in a file
-    desc_none: Messages will not be logged
-    label_file_logger: File Logger
-    label_none: None
+    desc_file_logger: Сообщения будут записываться в файл
+    desc_none: Сообщения не будут записываться
+    label_file_logger: Файловый журнал
+    label_none: Нет
   gw_protocol:
-    desc_ethernet: Ethernet Protocol
-    desc_http: HTTP Protocol
-    desc_mqtt: MQTT Protocol
-    desc_serial: Serial Protocol
+    desc_ethernet: Протокол Ethernet
+    desc_http: Протокол HTTP
+    desc_mqtt: Протокол MQTT
+    desc_serial: Последовательный протокол
     label_ethernet: Ethernet
     label_http: HTTP
     label_mqtt: MQTT
-    label_serial: Serial
+    label_serial: Последовательный
   gw_provider:
     desc_esphome: esphome.io
-    desc_generic: Generic Provider
-    desc_mysensors_v2: MySensors.org version 2.x
+    desc_generic: Универсальный поставщик
+    desc_mysensors_v2: MySensors.org версии 2.x
     desc_philips_hue: developers.meethue.com
-    desc_system_monitoring: Capture system resources and reports
+    desc_system_monitoring: Сбор системных ресурсов и отчётов
     desc_tasmota: tasmota.github.io
     label_esphome: ESPHome
-    label_generic: Generic
+    label_generic: Универсальный
     label_mysensors_v2: MySensors V2
     label_philips_hue: PhilipsHue
-    label_system_monitoring: System Monitoring
+    label_system_monitoring: Мониторинг системы
     label_tasmota: Tasmota
   handler_type:
-    desc_backup: Perform backup of the server
-    desc_email: Sends email
-    desc_noop: No Operation Handler
-    desc_resource: Internal resource related actions
-    desc_telegram: Sends text to telegram
-    desc_webhook: Calls a webhook url
-    label_backup: Backup
-    label_email: Email
+    desc_backup: Создать резервную копию сервера
+    desc_email: Отправляет эл. письмо
+    desc_noop: Обработчик без операции
+    desc_resource: Внутренние действия с ресурсами
+    desc_telegram: Отправляет текст в Telegram
+    desc_webhook: Вызывает URL webhook
+    label_backup: Резервная копия
+    label_email: Эл. почта
     label_noop: Noop
-    label_resource: Resource
+    label_resource: Ресурс
     label_telegram: Telegram
     label_webhook: Webhook
   http_method:
@@ -527,494 +527,494 @@ opts:
     label_post: POST
     label_put: PUT
   image_load_type:
-    desc_custom_mapping: Display mapped image from field value
-    desc_image: Base64 encoded image from field value
-    label_custom_mapping: Custom Mapping
-    label_image: Raw Image
+    desc_custom_mapping: Показать сопоставленное изображение из значения поля
+    desc_image: Изображение в кодировке Base64 из значения поля
+    label_custom_mapping: Пользовательское сопоставление
+    label_image: Исходное изображение
   image_rotation:
-    desc_rotate_180: Rotate 180°
-    desc_rotate_left_90: Rotate left side 90°
-    desc_rotate_none: no rotation
-    desc_rotate_right_90: Rotate right side 90°
-    label_rotate_180: Rotate 180°
-    label_rotate_left_90: Rotate left 90°
-    label_rotate_none: None
-    label_rotate_right_90: Rotate right 90°
+    desc_rotate_180: Повернуть на 180°
+    desc_rotate_left_90: Повернуть влево на 90°
+    desc_rotate_none: без поворота
+    desc_rotate_right_90: Повернуть вправо на 90°
+    label_rotate_180: Поворот 180°
+    label_rotate_left_90: Поворот влево 90°
+    label_rotate_none: Нет
+    label_rotate_right_90: Поворот вправо 90°
   image_source:
-    desc_disk: Image from a local disk location
-    desc_field: Image data from a field resource
-    desc_url: Image from a url
-    label_disk: Disk
-    label_field: Field
+    desc_disk: Изображение с локального диска
+    desc_field: Данные изображения из ресурса поля
+    desc_url: Изображение по URL
+    label_disk: Диск
+    label_field: Поле
     label_url: URL
   interval:
-    label_day_01: 1 days
-    label_hour_01: 1 hour
-    label_hour_03: 3 hours
-    label_hour_06: 6 hours
-    label_minute_01: 1 minute
-    label_minute_02: 2 minutes
-    label_minute_03: 3 minutes
-    label_minute_05: 5 minutes
-    label_minute_10: 10 minutes
-    label_minute_15: 15 minutes
-    label_minute_30: 30 minutes
-    label_never: Never
-    label_second_01: 1 second
-    label_second_05: 5 seconds
-    label_second_10: 10 seconds
-    label_second_15: 15 seconds
-    label_second_30: 30 seconds
-    label_second_45: 45 seconds
+    label_day_01: 1 день
+    label_hour_01: 1 час
+    label_hour_03: 3 часа
+    label_hour_06: 6 часов
+    label_minute_01: 1 минута
+    label_minute_02: 2 минуты
+    label_minute_03: 3 минуты
+    label_minute_05: 5 минут
+    label_minute_10: 10 минут
+    label_minute_15: 15 минут
+    label_minute_30: 30 минут
+    label_never: Никогда
+    label_second_01: 1 секунда
+    label_second_05: 5 секунд
+    label_second_10: 10 секунд
+    label_second_15: 15 секунд
+    label_second_30: 30 секунд
+    label_second_45: 45 секунд
   legend_orientation:
-    desc_horizontal: Places in a horizontal position
-    desc_vertical: Places in a vertical position
-    label_horizontal: Horizontal
-    label_vertical: Vertical
+    desc_horizontal: Размещает горизонтально
+    desc_vertical: Размещает вертикально
+    label_horizontal: Горизонтально
+    label_vertical: Вертикально
   legend_position:
-    desc_bottom_center: Center of bottom
-    desc_bottom_left: Left side of bottom
-    desc_right: Right side
-    desc_top_left: Left side of top
-    label_bottom_center: Bottom Center
-    label_bottom_left: Bottom Left
-    label_right: Right
-    label_top_left: Top Left
+    desc_bottom_center: Внизу по центру
+    desc_bottom_left: Внизу слева
+    desc_right: Справа
+    desc_top_left: Вверху слева
+    label_bottom_center: Внизу по центру
+    label_bottom_left: Внизу слева
+    label_right: Справа
+    label_top_left: Вверху слева
   light_type:
-    desc_cw_ww: Cold White and Warm White
-    desc_rgb: RGB light
-    desc_rgb_cw: RGB with Cold White
-    desc_rgb_cw_ww: RGB with Cold White and Warm White
-    desc_single: "Single, Cold White or Warm White"
+    desc_cw_ww: Холодный белый и тёплый белый
+    desc_rgb: Свет RGB
+    desc_rgb_cw: RGB с холодным белым
+    desc_rgb_cw_ww: RGB с холодным и тёплым белым
+    desc_single: "Одиночный, холодный белый или тёплый белый"
     label_cw_ww: CW WW
     label_rgb: RGB
     label_rgb_cw: RGB CW
     label_rgb_cw_ww: RGB CW WW
-    label_single: Single
+    label_single: Одиночный
   metric_duration:
-    label_day_002: Last 2 days
-    label_day_007: Last 7 days
-    label_day_030: Last 30 days
-    label_day_060: Last 60 days
-    label_day_090: Last 90 days
-    label_day_180: Last 180 days
-    label_day_365: Last 365 days
-    label_hour_01: Last 1 hour
-    label_hour_02: Last 2 hours
-    label_hour_03: Last 3 hours
-    label_hour_06: Last 6 hours
-    label_hour_12: Last 12 hours
-    label_hour_24: Last 24 hours
-    label_minute_30: Last 30 minutes
+    label_day_002: Последние 2 дня
+    label_day_007: Последние 7 дней
+    label_day_030: Последние 30 дней
+    label_day_060: Последние 60 дней
+    label_day_090: Последние 90 дней
+    label_day_180: Последние 180 дней
+    label_day_365: Последние 365 дней
+    label_hour_01: Последний 1 час
+    label_hour_02: Последние 2 часа
+    label_hour_03: Последние 3 часа
+    label_hour_06: Последние 6 часов
+    label_hour_12: Последние 12 часов
+    label_hour_24: Последние 24 часа
+    label_minute_30: Последние 30 минут
   metric_function:
-    label_count: Count
-    label_maximum: Maximum
-    label_mean: Mean
-    label_median: Median
-    label_minimum: Minimum
-    label_percentile_50: 50th Percentile
-    label_percentile_75: 75th Percentile
-    label_percentile_95: 95th Percentile
-    label_percentile_99: 99th Percentile
-    label_sum: Sum
+    label_count: Количество
+    label_maximum: Максимум
+    label_mean: Среднее
+    label_median: Медиана
+    label_minimum: Минимум
+    label_percentile_50: 50-й процентиль
+    label_percentile_75: 75-й процентиль
+    label_percentile_95: 95-й процентиль
+    label_percentile_99: 99-й процентиль
+    label_sum: Сумма
   metric_type:
-    label_binary: Binary
-    label_counter: Counter
-    label_gauge: Gauge
-    label_gauge_float: Gauge Float
+    label_binary: Двоичный
+    label_counter: Счётчик
+    label_gauge: Датчик
+    label_gauge_float: Датчик (с плавающей точкой)
     label_geo: GEO
-    label_none: None
-    label_string: String
+    label_none: Нет
+    label_string: Строка
   rgb_component:
-    desc_color_picker: Predefined colors
-    desc_hue_slider: Hue color slider
-    label_color_picker: Quick Color Picker
-    label_hue_slider: Hue Slider
+    desc_color_picker: Предустановленные цвета
+    desc_hue_slider: Ползунок оттенка
+    label_color_picker: Быстрый выбор цвета
+    label_hue_slider: Ползунок оттенка
   schedule_frequency:
-    desc_daily: Runs every day
-    desc_monthly: Runs monthly once
-    desc_on_date: "Runs only once at the specified date, time"
-    desc_weekly: Runs weekly once
-    label_daily: Daily
-    label_monthly: Monthly
-    label_on_date: On Date
-    label_weekly: Weekly
+    desc_daily: Запускается каждый день
+    desc_monthly: Запускается раз в месяц
+    desc_on_date: Запускается один раз в указанную дату и время
+    desc_weekly: Запускается раз в неделю
+    label_daily: Ежедневно
+    label_monthly: Ежемесячно
+    label_on_date: В дату
+    label_weekly: Еженедельно
   schedule_type:
-    desc_cron: Cron expression
-    desc_repeat: Repeats on a specified interval
-    desc_simple: "Daily, weekly, monthly schedule"
-    desc_sunrise: Based on the sunrise time
-    desc_sunset: Based on the sunset time
+    desc_cron: Выражение cron
+    desc_repeat: Повторяется с заданным интервалом
+    desc_simple: "Ежедневное, еженедельное, ежемесячное расписание"
+    desc_sunrise: На основе времени восхода
+    desc_sunset: На основе времени заката
     label_cron: Cron
-    label_repeat: Repeat
-    label_simple: Simple
-    label_sunrise: Sunrise
-    label_sunset: Sunset
+    label_repeat: Повтор
+    label_simple: Простой
+    label_sunrise: Восход
+    label_sunset: Закат
   theme_color:
-    label_blue: Blue
-    label_cyan: Cyan
-    label_gold: Gold
-    label_green: Green
-    label_multiple_ordered: Multiple Ordered
-    label_multiple_unordered: Multiple Unordered
-    label_orange: Orange
-    label_purple: Purple
+    label_blue: Синий
+    label_cyan: Голубой
+    label_gold: Золотой
+    label_green: Зелёный
+    label_multiple_ordered: Несколько упорядоченных
+    label_multiple_unordered: Несколько неупорядоченных
+    label_orange: Оранжевый
+    label_purple: Фиолетовый
   trait_type:
-    label_app_selector: App Selector
-    label_arm_disarm: Arm Disarm
-    label_brightness: Brightness
-    label_camera_stream: Camera Stream
-    label_channel: Channel
-    label_color_setting: Color Setting
-    label_cook: Cook
-    label_dispense: Dispense
-    label_dock: Dock
-    label_energy_storage: Energy Storage
-    label_fan_speed: Fan Speed
-    label_fill: Fill
-    label_humidity_setting: Humidity Setting
-    label_input_selector: Input Selector
-    label_light_effects: Light Effects
-    label_locator: Locator
-    label_lock_unlock: Lock Unlock
-    label_media_state: Media State
-    label_modes: Modes
-    label_network_control: Network Control
-    label_object_detection: Object Detection
-    label_on_off: On Off
-    label_open_close: Open Close
-    label_reboot: Reboot
-    label_rotation: Rotation
-    label_run_cycle: Run Cycle
-    label_scene: Scene
-    label_sensor_state: Sensor State
-    label_software_update: Software Update
-    label_start_stop: Start Stop
-    label_status_report: Status Report
-    label_temperature_control: Temperature Control
-    label_temperature_setting: Temperature Setting
-    label_timer: Timer
-    label_toggles: Toggles
-    label_transport_control: Transport Control
-    label_volume: Volume
+    label_app_selector: Выбор приложения
+    label_arm_disarm: Постановка / снятие
+    label_brightness: Яркость
+    label_camera_stream: Поток камеры
+    label_channel: Канал
+    label_color_setting: Настройка цвета
+    label_cook: Приготовление
+    label_dispense: Выдача
+    label_dock: Стыковка
+    label_energy_storage: Накопитель энергии
+    label_fan_speed: Скорость вентилятора
+    label_fill: Наполнение
+    label_humidity_setting: Настройка влажности
+    label_input_selector: Выбор входа
+    label_light_effects: Световые эффекты
+    label_locator: Локатор
+    label_lock_unlock: Блокировка / разблокировка
+    label_media_state: Состояние медиа
+    label_modes: Режимы
+    label_network_control: Управление сетью
+    label_object_detection: Обнаружение объектов
+    label_on_off: Вкл / выкл
+    label_open_close: Открыть / закрыть
+    label_reboot: Перезагрузка
+    label_rotation: Поворот
+    label_run_cycle: Цикл работы
+    label_scene: Сцена
+    label_sensor_state: Состояние датчика
+    label_software_update: Обновление ПО
+    label_start_stop: Старт / стоп
+    label_status_report: Отчёт о состоянии
+    label_temperature_control: Регулировка температуры
+    label_temperature_setting: Настройка температуры
+    label_timer: Таймер
+    label_toggles: Переключатели
+    label_transport_control: Управление воспроизведением
+    label_volume: Громкость
   utilization_chart:
-    label_circle_050: Half Circle
-    label_circle_075: 3/4 Circle
-    label_circle_100: Full Circle
-    label_spark_area: Spark Area
-    label_spark_bar: Spark Bar
-    label_spark_line: Spark Line
-    label_table: Table
+    label_circle_050: Полукруг
+    label_circle_075: 3/4 круга
+    label_circle_100: Полный круг
+    label_spark_area: Мини-область
+    label_spark_bar: Мини-столбец
+    label_spark_line: Мини-линия
+    label_table: Таблица
   va_provider:
     desc_alexa: Amazon Alexa
     desc_google_assistant: Google Assistant
     label_alexa: Alexa
     label_google_assistant: Google Assistant
   vd_type:
-    label_air_conditioner: Air Conditioner
-    label_air_cooler: Air Cooler
-    label_air_freshener: Air Freshener
-    label_air_purifier: Air Purifier
-    label_audio_video_receiver: Audio Video Receiver
-    label_awning: Awning
-    label_bathtub: Bathtub
-    label_bed: Bed
-    label_blender: Blender
-    label_blinds: Blinds
-    label_boiler: Boiler
-    label_camera: Camera
-    label_carbon_monoxide_detector: Carbon Monoxide Detector
-    label_charger: Charger
-    label_closet: Closet
-    label_coffee_maker: Coffee Maker
-    label_cooktop: Cooktop
-    label_curtain: Curtain
-    label_dehumidifier: Dehumidifier
-    label_dehydrator: Dehydrator
-    label_dishwasher: Dishwasher
-    label_door: Door
-    label_door_bell: Door Bell
-    label_drawer: Drawer
-    label_dryer: Dryer
-    label_fan: Fan
-    label_faucet: Faucet
-    label_fireplace: Fireplace
-    label_freezer: Freezer
-    label_fryer: Fryer
-    label_garage_door: Garage Door
-    label_gate: Gate
-    label_grill: Grill
-    label_heater: Heater
-    label_hood: Hood
-    label_humidifier: Humidifier
-    label_kettle: Kettle
-    label_light: Light
-    label_lock: Lock
-    label_media_remote: Media Remote
-    label_microwave: Microwave
-    label_mop: Mop
-    label_mower: Mower
-    label_multicooker: Multicooker
-    label_network: Network
-    label_outlet: Outlet
-    label_oven: Oven
-    label_pergola: Pergola
-    label_pet_feeder: Pet Feeder
-    label_pressure_cooker: Pressure Cooker
-    label_radiator: Radiator
-    label_refrigerator: Refrigerator
-    label_router: Router
-    label_scene: Scene
-    label_security_system: Security System
-    label_sensor: Sensor
-    label_set_top_box: Set Top Box
-    label_shower: Shower
-    label_shutter: Shutter
-    label_smoke_detector: Smoke Detector
-    label_soundbar: Soundbar
-    label_sous_vide: Sous Vide
-    label_speaker: Speaker
-    label_sprinkler: Sprinkler
-    label_stand_mixer: Stand Mixer
-    label_streaming_box: Streaming Box
-    label_streaming_soundbar: Streaming Soundbar
-    label_streaming_stick: Streaming Stick
-    label_switch: Switch
-    label_television: Television
-    label_thermostat: Thermostat
-    label_vacuum: Vacuum
-    label_valve: Valve
-    label_washer: Washer
-    label_water_heater: Water Heater
-    label_water_purifier: Water Purifier
-    label_water_softener: Water Softener
-    label_weather_station: Weather Station
-    label_window: Window
-    label_yogurt_maker: Yogurt Maker
+    label_air_conditioner: Кондиционер
+    label_air_cooler: Охладитель воздуха
+    label_air_freshener: Освежитель воздуха
+    label_air_purifier: Очиститель воздуха
+    label_audio_video_receiver: AV-ресивер
+    label_awning: Маркиза
+    label_bathtub: Ванна
+    label_bed: Кровать
+    label_blender: Блендер
+    label_blinds: Жалюзи
+    label_boiler: Котёл
+    label_camera: Камера
+    label_carbon_monoxide_detector: Датчик угарного газа
+    label_charger: Зарядное устройство
+    label_closet: Шкаф
+    label_coffee_maker: Кофеварка
+    label_cooktop: Варочная панель
+    label_curtain: Штора
+    label_dehumidifier: Осушитель
+    label_dehydrator: Сушилка для продуктов
+    label_dishwasher: Посудомоечная машина
+    label_door: Дверь
+    label_door_bell: Дверной звонок
+    label_drawer: Ящик
+    label_dryer: Сушилка
+    label_fan: Вентилятор
+    label_faucet: Кран
+    label_fireplace: Камин
+    label_freezer: Морозильник
+    label_fryer: Фритюрница
+    label_garage_door: Гаражные ворота
+    label_gate: Ворота
+    label_grill: Гриль
+    label_heater: Обогреватель
+    label_hood: Вытяжка
+    label_humidifier: Увлажнитель
+    label_kettle: Чайник
+    label_light: Свет
+    label_lock: Замок
+    label_media_remote: Пульт медиа
+    label_microwave: Микроволновка
+    label_mop: Швабра
+    label_mower: Газонокосилка
+    label_multicooker: Мультиварка
+    label_network: Сеть
+    label_outlet: Розетка
+    label_oven: Духовка
+    label_pergola: Пергола
+    label_pet_feeder: Кормушка для животных
+    label_pressure_cooker: Скороварка
+    label_radiator: Радиатор
+    label_refrigerator: Холодильник
+    label_router: Маршрутизатор
+    label_scene: Сцена
+    label_security_system: Система безопасности
+    label_sensor: Датчик
+    label_set_top_box: ТВ-приставка
+    label_shower: Душ
+    label_shutter: Ставни
+    label_smoke_detector: Датчик дыма
+    label_soundbar: Саундбар
+    label_sous_vide: Су-вид
+    label_speaker: Колонка
+    label_sprinkler: Ороситель
+    label_stand_mixer: Стационарный миксер
+    label_streaming_box: Стриминговая приставка
+    label_streaming_soundbar: Стриминговый саундбар
+    label_streaming_stick: Стриминговый адаптер
+    label_switch: Выключатель
+    label_television: Телевизор
+    label_thermostat: Термостат
+    label_vacuum: Пылесос
+    label_valve: Клапан
+    label_washer: Стиральная машина
+    label_water_heater: Водонагреватель
+    label_water_purifier: Фильтр для воды
+    label_water_softener: Умягчитель воды
+    label_weather_station: Метеостанция
+    label_window: Окно
+    label_yogurt_maker: Йогуртница
   week_day:
-    label_friday: Friday
-    label_monday: Monday
-    label_saturday: Saturday
-    label_sunday: Sunday
-    label_thursday: Thursday
-    label_tuesday: Tuesday
-    label_wednesday: Wednesday
+    label_friday: Пятница
+    label_monday: Понедельник
+    label_saturday: Суббота
+    label_sunday: Воскресенье
+    label_thursday: Четверг
+    label_tuesday: Вторник
+    label_wednesday: Среда
   widget_type:
-    desc_chart_panel: Display data in charts
-    desc_control_panel: Performs control action on resources
-    desc_empty_panel: Empty Panel
-    desc_image_panel: Display image from different sources
-    desc_light_panel: Controls a light
-    desc_utilization_panel: Display utilization status
-    label_chart_panel: Charts Panel
-    label_control_panel: Control Panel
-    label_empty_panel: Empty Panel
-    label_image_panel: Image Panel
-    label_light_panel: Light Panel
-    label_utilization_panel: Utilization Panel
-others: Others
-padding_bottom_px: Padding Bottom (px)
-padding_left_px: Padding Left (px)
-padding_right_px: Padding Right (px)
-padding_top_px: Padding Top (px)
-panel_title: Panel Title
-parameters_to_handler: Parameters to Handler
-parse_mode: Parse Mode
-password: Password
-path: Path
+    desc_chart_panel: Отображение данных на диаграммах
+    desc_control_panel: Выполняет управляющие действия над ресурсами
+    desc_empty_panel: Пустая панель
+    desc_image_panel: Отображение изображения из разных источников
+    desc_light_panel: Управляет светом
+    desc_utilization_panel: Отображение состояния использования
+    label_chart_panel: Панель диаграмм
+    label_control_panel: Панель управления
+    label_empty_panel: Пустая панель
+    label_image_panel: Панель изображения
+    label_light_panel: Панель света
+    label_utilization_panel: Панель использования
+others: Прочее
+padding_bottom_px: Отступ снизу (px)
+padding_left_px: Отступ слева (px)
+padding_right_px: Отступ справа (px)
+padding_top_px: Отступ сверху (px)
+panel_title: Заголовок панели
+parameters_to_handler: Параметры обработчику
+parse_mode: Режим разбора
+password: Пароль
+path: Путь
 payload: Payload
 send: Отправить
-payload_off: Payload OFF
-payload_on: Payload ON
-payloads: Payloads
-per_cpu_disabled: Per CPU Disabled
-port: Port
-port_name: Port Name
-post_run: Post Run
-power: Power
-pre_delay: Pre Delay
-pre_run: Pre Run
-prefix: Prefix
-previous_value: Previous Value
-process: Process
-processes: Processes
-profile: Profile
-protocol: Protocol
-provider: Provider
-provider_type: Provider Type
-publish: Publish
+payload_off: Payload ВЫКЛ
+payload_on: Payload ВКЛ
+payloads: Payload
+per_cpu_disabled: По CPU отключено
+port: Порт
+port_name: Имя порта
+post_run: После выполнения
+power: Мощность
+pre_delay: Предварительная задержка
+pre_run: Перед выполнением
+prefix: Префикс
+previous_value: Предыдущее значение
+process: Процесс
+processes: Процессы
+profile: Профиль
+protocol: Протокол
+provider: Поставщик
+provider_type: Тип поставщика
+publish: Опубликовать
 qos: QoS
-query_parameters: Query Parameters
-queue_failed_messages: Queue Failed Messages
-quick_id: Quick ID
-re_enable: Re-enable
-re_enable_duration: Re-enable Duration
-react_version: React Version
-read_only: Read Only
-reboot: Reboot
-reconnect_delay: Reconnect Delay
-refresh_interval: Refresh Interval
-refresh_node_info: Refresh Node Info
-reload: Reload
-repeat_count: Repeat Count
-request_heartbeat: Request Heartbeat
-reset: Reset
-resetting: Resetting...
-resource: Resource
-resource_by_labels: Resource By Labels
-resource_by_quick_id: Resource By Quick ID
-resource_configuration: Resource Configuration
-resource_filters: Resource Filters
-resource_name: Resource name
-resource_type: Resource Type
-resources: Resources
-response_code: Response Code
-restore: Restore
-retention_count: Retention Count
-retry_count: Retry Count
+query_parameters: Параметры запроса
+queue_failed_messages: Ставить в очередь неудачные сообщения
+quick_id: Быстрый ID
+re_enable: Включить снова
+re_enable_duration: Длительность повторного включения
+react_version: Версия React
+read_only: Только чтение
+reboot: Перезагрузить
+reconnect_delay: Задержка переподключения
+refresh_interval: Интервал обновления
+refresh_node_info: Обновить сведения об узле
+reload: Обновить
+repeat_count: Число повторов
+request_heartbeat: Запросить heartbeat
+reset: Сбросить
+resetting: Сброс...
+resource: Ресурс
+resource_by_labels: Ресурс по меткам
+resource_by_quick_id: Ресурс по быстрому ID
+resource_configuration: Конфигурация ресурса
+resource_filters: Фильтры ресурсов
+resource_name: Имя ресурса
+resource_type: Тип ресурса
+resources: Ресурсы
+response_code: Код ответа
+restore: Восстановить
+retention_count: Число хранимых копий
+retry_count: Число повторных попыток
 rgb: RGB
-rgb_component: RGB Component
-rotation: Rotation
-round_decimal: Round Decimal
-rule: Rule
-run_a_backup: Run a Backup
-run_backup: Run Backup
+rgb_component: Компонент RGB
+rotation: Поворот
+round_decimal: Округление десятичных
+rule: Правило
+run_a_backup: Создать резервную копию
+run_backup: Создать копию
 s_no: '#'
-saturation: Saturation
-save: Save
-schedule: Schedule
-schedule_details: Schedule Details
-schedule_type: Schedule Type
-schedules: Schedules
-script: Script
-select_an_option: Select an option
-server: Server
-service_account_not_generated: Service account token not generated
-service_account_copy_title: Copy Service Account Token
-service_account_copy_warning_msg: This token will only be displayed once. It will not be stored and cannot be retrieved. Please be sure to save it now.
-service_account_barcode_help: Scan this barcode to log in with the token.
-service_account_details: Service Account Details
-service_accounts: Service Accounts
-policies: Policies
-policy_details: Policy Details
-settings: Settings
-show_grid_x: Show Grid X
-show_grid_y: Show Grid Y
-show_title: Show Title
-since: Since
-size: Size
-sleeping_queue: Sleeping Queue
-sort_order_priority: Sort Order Priority
-source: Source
-source_code: Source Code
-source_details: Source Details
-source_field: Source Filed
-source_id: Source ID
-sources: Sources
-spec: Spec
-stack_charts: Stack Charts
-state: State
-status: Status
-status_at: Status At
-status_configuration: Status Configuration
-step: Step
-storage_export_type: Storage Export Type
-stream_message_ack: Stream Message Ack
-string: String
-stroke_width_px: Stroke Width (px)
-sub_type: Sub Type
-subject: Subject
-subscribe: Subscribe
-swap_disabled: Swap Disabled
-sync_interval: Sync Interval
-system: System
-system_message: System Message
-table_configuration: Table Configuration
-table_view: Table View
-target_directory: Target Directory
-target_location: Target Location
-task: Task
-task_details: Task Details
-tasks: Tasks
+saturation: Насыщенность
+save: Сохранить
+schedule: Расписание
+schedule_details: Сведения о расписании
+schedule_type: Тип расписания
+schedules: Расписания
+script: Скрипт
+select_an_option: Выберите вариант
+server: Сервер
+service_account_not_generated: Токен служебной учётной записи не создан
+service_account_copy_title: Копировать токен служебной учётной записи
+service_account_copy_warning_msg: Этот токен будет показан только один раз. Он не сохраняется и не может быть получен повторно. Сохраните его сейчас.
+service_account_barcode_help: "Отсканируйте этот код, чтобы войти с токеном."
+service_account_details: Сведения о служебной учётной записи
+service_accounts: Служебные учётные записи
+policies: Политики
+policy_details: Сведения о политике
+settings: Настройки
+show_grid_x: Показать сетку X
+show_grid_y: Показать сетку Y
+show_title: Показать заголовок
+since: С
+size: Размер
+sleeping_queue: Очередь сна
+sort_order_priority: Приоритет сортировки
+source: Источник
+source_code: Исходный код
+source_details: Сведения об источнике
+source_field: Исходное поле
+source_id: ID источника
+sources: Источники
+spec: Спецификация
+stack_charts: Накладывать диаграммы
+state: Состояние
+status: Статус
+status_at: Статус на
+status_configuration: Настройка статуса
+step: Шаг
+storage_export_type: Тип экспорта хранилища
+stream_message_ack: Подтверждение сообщения потока
+string: Строка
+stroke_width_px: Толщина линии (px)
+sub_type: Подтип
+subject: Тема
+subscribe: Подписаться
+swap_disabled: Swap отключён
+sync_interval: Интервал синхронизации
+system: Система
+system_message: Системное сообщение
+table_configuration: Настройка таблицы
+table_view: Табличный вид
+target_directory: Целевой каталог
+target_location: Целевое расположение
+task: Задача
+task_details: Сведения о задаче
+tasks: Задачи
 telegram: Telegram
-temperature: Temperature
-text: Text
+temperature: Температура
+text: Текст
 the_open_source_controller: The Open Source Controller
-theme_color: Theme Color
-thickness: Thickness
-threshold_mode: Threshold Mode
-thresholds: Thresholds
-thresholds_color: Thresholds Color
-time_hh_mm_ss: "Time (hh:mm:ss)"
-timeout: Timeout
-timestamp: Timestamp
-timestamp_key: Timestamp Key
-title: Title
-to: To
-to_emails: To Emails
-token: Token
-topic: Topic
-trait: Trait
-traits: Traits
-transmit_pre_delay: Transmit Pre Delay
-trigger_on_event: Trigger On Event
+theme_color: Цвет темы
+thickness: Толщина
+threshold_mode: Режим порога
+thresholds: Пороги
+thresholds_color: Цвет порогов
+time_hh_mm_ss: "Время (чч:мм:сс)"
+timeout: Тайм-аут
+timestamp: Метка времени
+timestamp_key: Ключ метки времени
+title: Заголовок
+to: Кому
+to_emails: Эл. почта получателей
+token: Токен
+topic: Тема
+trait: Свойство
+traits: Свойства
+transmit_pre_delay: Задержка перед передачей
+trigger_on_event: Запускать по событию
 'true': 'True'
-type: Type
-unit: Unit
-up: UP
-update: Update
-update_body: Update Body
-update_data: Update Data
-update_endpoint: Update Endpoint
-update_firmware: Update Firmware
-update_node: Update Node
-update_post_run: Update Post Run
-update_pre_run: Update Pre Run
-update_query_parameters: Update Query Parameters
-update_resource: Update Resource
-update_script: Update Script
-update_trait: Update trait
-update_value: Update Value
-update_y_axis: Update Y Axis
-upload: Upload
-upload_firmware: Upload Firmware
+type: Тип
+unit: Единица
+up: Вверх
+update: Обновить
+update_body: Обновить содержимое
+update_data: Обновить данные
+update_endpoint: Обновить конечную точку
+update_firmware: Обновить прошивку
+update_node: Обновить узел
+update_post_run: Обновить после выполнения
+update_pre_run: Обновить перед выполнением
+update_query_parameters: Обновить параметры запроса
+update_resource: Обновить ресурс
+update_script: Обновить скрипт
+update_trait: Обновить свойство
+update_value: Обновить значение
+update_y_axis: Обновить ось Y
+upload: Загрузить
+upload_firmware: Загрузить прошивку
 url: URL
-use_global: Use Global
-use_global_encryption_key: Use Global Encryption Key
-use_global_password: Use Global Password
-use_global_style: Use Global Style
-user_id: User ID
-username: Username
-validate_time_everyday: Validate Time Everyday
-validity: Validity
-value: Value
-value_formatter: Value Formatter
-value_key: Value Key
-variable: Variable
-variable_name: Variable Name
-variables: Variables
-version: Version
-virtual_assistant: Virtual Assistant
-virtual_assistant_details: Virtual Assistant Details
-virtual_assistants: Virtual Assistants
-virtual_device_details: Virtual Device Details
-virtual_devices: Virtual Devices
-web_console: Web Console
+use_global: Использовать глобальные
+use_global_encryption_key: Использовать глобальный ключ шифрования
+use_global_password: Использовать глобальный пароль
+use_global_style: Использовать глобальный стиль
+user_id: ID пользователя
+username: Имя пользователя
+validate_time_everyday: Проверять время ежедневно
+validity: Срок действия
+value: Значение
+value_formatter: Формат значения
+value_key: Ключ значения
+variable: Переменная
+variable_name: Имя переменной
+variables: Переменные
+version: Версия
+virtual_assistant: Виртуальный помощник
+virtual_assistant_details: Сведения о виртуальном помощнике
+virtual_assistants: Виртуальные помощники
+virtual_device_details: Сведения о виртуальном устройстве
+virtual_devices: Виртуальные устройства
+web_console: Веб-консоль
 webhook: Webhook
-websocket_disconnected: Websocket disconnected
-welcome_to_mycontroller: Welcome to MyController
-width_px: Width (px)
-y_axis: Y Axis
-y_axis_configuration: Y Axis Configuration
+websocket_disconnected: Websocket отключён
+welcome_to_mycontroller: Добро пожаловать в MyController
+width_px: Ширина (px)
+y_axis: Ось Y
+y_axis_configuration: Настройка оси Y
 yaml: YAML
-yaml_view: YAML View
-statement: Statement
-statements: Statements
-user_details: User Details
-users: Users
-layout: Layout
-layout_tree: Tree
-layout_force: Force
-refresh: Refresh
-include_child_nodes: Include child nodes
-child_nodes: Child Nodes
+yaml_view: Вид YAML
+statement: Инструкция
+statements: Инструкции
+user_details: Сведения о пользователе
+users: Пользователи
+layout: Макет
+layout_tree: Дерево
+layout_force: Сила
+refresh: Обновить
+include_child_nodes: Включить дочерние узлы
+child_nodes: Дочерние узлы

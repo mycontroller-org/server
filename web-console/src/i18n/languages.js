@@ -39,10 +39,28 @@ export const languages = [
     flag: "🇮🇱",
   },
   {
+    lng: "hi_IN",
+    country_code: "IN",
+    title: "हिन्दी",
+    flag: "🇮🇳",
+  },
+  {
     lng: "it_IT",
     country_code: "IT",
-    title: "italiano",
+    title: "Italiano",
     flag: "🇮🇹",
+  },
+  {
+    lng: "kn_IN",
+    country_code: "IN",
+    title: "ಕನ್ನಡ",
+    flag: "🇮🇳",
+  },
+  {
+    lng: "ml_IN",
+    country_code: "IN",
+    title: "മലയാളം",
+    flag: "🇮🇳",
   },
   {
     lng: "nl_NL",
@@ -78,6 +96,12 @@ export const languages = [
     lng: "ta_IN",
     country_code: "IN",
     title: "தமிழ்",
+    flag: "🇮🇳",
+  },
+  {
+    lng: "te_IN",
+    country_code: "IN",
+    title: "తెలుగు",
     flag: "🇮🇳",
   },
   {

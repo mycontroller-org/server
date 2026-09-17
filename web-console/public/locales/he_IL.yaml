@@ -1,524 +1,524 @@
 ---
-about: About
-actions: Actions
-active_duration: Active Duration
-add: Add
-add_a_field: Add a Field
-add_a_firmware: Add a Firmware
-add_a_forward_payload: Add a Forward payload
-add_a_gateway: Add a Gateway
-add_a_handler: Add a Handler
-add_a_node: Add a Node
-add_a_schedule: Add a Schedule
-add_a_policy: Add a Policy
-add_a_service_account: Add a Service Account
-add_a_source: Add a Source
-add_a_task: Add a Task
-add_a_user: Add a User
-add_a_virtual_assistant: Add a Virtual Assistant
-add_a_virtual_device: Add a Virtual Device
-add_an_item: Add an item
-add_widget: Add Widget
-address: Address
-agent_user_id: Agent User ID
-alerts_empty_message: There are currently no alerts.
-alerts_empty_title: No alerts found
-alive_check_interval: Alive Check Interval
-all_rights_reserved: All Rights Reserved
-allow_overwrite: Allow Overwrite
-apache_license_2: Apache License 2.0
+about: אודות
+actions: פעולות
+active_duration: משך פעילות
+add: הוסף
+add_a_field: הוסף שדה
+add_a_firmware: הוסף קושחה
+add_a_forward_payload: הוסף העברת מטען
+add_a_gateway: הוסף שער
+add_a_handler: הוסף מטפל
+add_a_node: הוסף צומת
+add_a_schedule: הוסף לוח זמנים
+add_a_policy: הוסף מדיניות
+add_a_service_account: הוסף חשבון שירות
+add_a_source: הוסף מקור
+add_a_task: הוסף משימה
+add_a_user: הוסף משתמש
+add_a_virtual_assistant: הוסף עוזר וירטואלי
+add_a_virtual_device: הוסף התקן וירטואלי
+add_an_item: הוסף פריט
+add_widget: "הוסף ווידג'ט"
+address: כתובת
+agent_user_id: מזהה משתמש סוכן
+alerts_empty_message: אין כרגע התראות.
+alerts_empty_title: לא נמצאו התראות
+alive_check_interval: מרווח בדיקת חיים
+all_rights_reserved: כל הזכויות שמורות
+allow_overwrite: אפשר דריסה
+apache_license_2: רישיון Apache 2.0
 api: API
-ask_confirmation: Ask Confirmation
-assigned_firmware: Assigned Firmware
-assigned_nodes: Assigned Nodes
-auto_disable: Auto Disable
-auto_update: Auto Update
-axis: Axis
-backup: Backup
-backup_and_restore: Backup and Restore
-backup_locations: Backup Locations
-battery: Battery
-baud_rate: Baud Rate
-body: Body
-bridge: Bridge
-brightness: Brightness
-broker: Broker
-browse: Browse
-build_date: Build Date
-button: Button
-button_text: Button Text
-cancel: Cancel
-chart_configuration: Chart Configuration
-chart_type: Chart Type
-chat_ids: Chat IDs
-clear: Clear
-clear_all: Clear All
-color: Color
-color_temperature: Color Temperature
-column_display: Column Display
-conditions: Conditions
-configuration: Configuration
-configure_via: Configure via
-confirm_password: Confirm Password
-confirmation_message: Confirmation Message
-connection_timeout: Connection Timeout
-control_configuration: Control Configuration
-control_type: Control Type
-copied: Copied
-copy: Copy
-corner_smoothing: Corner Smoothing
+ask_confirmation: בקש אישור
+assigned_firmware: קושחה מוקצית
+assigned_nodes: צמתים מוקצים
+auto_disable: השבתה אוטומטית
+auto_update: עדכון אוטומטי
+axis: ציר
+backup: גיבוי
+backup_and_restore: גיבוי ושחזור
+backup_locations: מיקומי גיבוי
+battery: סוללה
+baud_rate: קצב באוד
+body: גוף
+bridge: גשר
+brightness: בהירות
+broker: ברוקר
+browse: עיון
+build_date: תאריך בנייה
+button: לחצן
+button_text: טקסט לחצן
+cancel: ביטול
+chart_configuration: הגדרות תרשים
+chart_type: סוג תרשים
+chat_ids: "מזהי צ'אט"
+clear: נקה
+clear_all: נקה הכל
+color: צבע
+color_temperature: טמפרטורת צבע
+column_display: תצוגת עמודות
+conditions: תנאים
+configuration: תצורה
+configure_via: הגדר באמצעות
+confirm_password: אישור סיסמה
+confirmation_message: הודעת אישור
+connection_timeout: זמן קצוב לחיבור
+control_configuration: הגדרות בקרה
+control_type: סוג בקרה
+copied: הועתק
+copy: העתק
+corner_smoothing: החלקת פינות
 cpu: CPU
-cpu_disabled: CPU Disabled
-create_new: Create New
-created_on: Created On
-cron_expression: Cron Expression
-current_password: Current Password
-cursor_tooltip: Cursor Tooltip
-custom_data: Custom Data
-custom_mapping: Custom Mapping
-custom_variables: Custom Variables
-dampening: Dampening
-dashboard: Dashboard
-data: Data
-data_repository: Data Repository
-data_repository_add_an_entry: 'Data Repository: Add an entry'
-data_repository_modify_an_entry: 'Data Repository: Modify an entry'
-data_retrieved_from_server: Data retrieved from server
-data_type: Data Type
-date_yyyy_mm_dd: Date (yyyy-mm-dd)
-day_of_month: Date of Month
-day_of_week: Days of Week
-delete: Delete
-description: Description
-destination_field: Destination Field
-detailed_filter: Detailed Filter
-details: Details
-device_filter: Device Filter
-device_type: Device Type
+cpu_disabled: CPU מושבת
+create_new: צור חדש
+created_on: נוצר ב
+cron_expression: ביטוי Cron
+current_password: סיסמה נוכחית
+cursor_tooltip: תיאור סמן
+custom_data: נתונים מותאמים
+custom_mapping: מיפוי מותאם
+custom_variables: משתנים מותאמים
+dampening: ריסון
+dashboard: לוח מחוונים
+data: נתונים
+data_repository: מאגר נתונים
+data_repository_add_an_entry: "מאגר נתונים: הוסף רשומה"
+data_repository_modify_an_entry: "מאגר נתונים: ערוך רשומה"
+data_retrieved_from_server: הנתונים נשלפו מהשרת
+data_type: סוג נתונים
+date_yyyy_mm_dd: תאריך (yyyy-mm-dd)
+day_of_month: יום בחודש
+day_of_week: ימי השבוע
+delete: מחק
+description: תיאור
+destination_field: שדה יעד
+detailed_filter: מסנן מפורט
+details: פרטים
+device_filter: מסנן התקנים
+device_type: סוג התקן
 dialog:
-  clear_sleeping_queue_heading: "Would you like to clear the queue?"
-  clear_sleeping_queue_msg: All the sleeping queued messages will be dropped
-  delete_resource_msg: "Are you sure want to delete the selected items?"
-  delete_title_backup: "Delete backup files?"
-  delete_title_dashboard: "Delete dashboard?"
-  delete_title_data_repository: "Delete data repositories?"
-  delete_title_field: "Delete fields?"
-  delete_title_firmware: "Delete firmware?"
-  delete_title_forward_payload: "Delete forward payloads?"
-  delete_title_gateway: "Delete gateways?"
-  delete_title_handler: "Delete handlers?"
-  delete_title_node: "Delete nodes?"
-  delete_title_schedule: "Delete schedules?"
-  delete_title_service_account: "Delete service account?"
-  delete_title_user: "Delete user?"
-  delete_title_policy: "Delete policy?"
-  delete_title_source: "Delete sources?"
-  delete_title_task: "Delete tasks?"
-  delete_title_virtual_assistant: "Delete virtual assistant?"
-  delete_title_virtual_device: "Delete virtual device?"
-  node_reset_heading: "Reset Node?"
-  node_reset_msg: "Are you sure want to reset the selected nodes?<br/>After this operation:<3><0>Configuration will be restored to factory settings.</0><1>you may lose access to the selected node(s) from MyController!</1></3>"
-  reboot_nodes_heading: "Reboot Node?"
-  reboot_nodes_msg: "Are you sure want to reboot the selected nodes?"
-  reset_msg_jwt_secret: "Are you sure want to reset the JWT secret? After this operation, all the existing logged in sessions to this server will be invalid also you will be logged out!"
-  reset_title_jwt_secret: Reset JWT secret
-  restore_heading: "Confirm to perform a restore operation?"
-  restore_msg: "Are you sure want to restore to selected backup file?<br/>After this operation:<3><0>Server data will be restored to <1>{{fileName}}</1></0><1>You cannot rollback this operation</1><2>Always take a backup before performing a restore operation</2><3>You may need to start the server manually</3></3>"
-disable: Disable
-disable_scrollbar: Disable Scrollbar
-disabled: Disabled
-disabled_all: Disabled All
-discover_nodes: Discover Nodes
-disk: Disk
-disks: Disks
-display_name: Display Name
-display_percentage: Display Percentage
-display_text: Display Text
-display_value: Display Value
-do_update: Do Update
-documentation: Documentation
-down: Down
-download: Download
-drop_down_position: Drop Down Position
-duration: Duration
-edit: Edit
-edit_dashboard_settings: Edit Dashboard Settings
-edit_widget_settings: Edit Widget Settings
-email: Email
-edit_statement: Edit Statement
-effect: Effect
-enable: Enable
-enabled: Enabled
-encryption_key: Encryption Key
-endpoint: Endpoint
-endpoints: Endpoints
-entities: Entities
+  clear_sleeping_queue_heading: לנקות את התור?
+  clear_sleeping_queue_msg: כל ההודעות בתור השינה יימחקו
+  delete_resource_msg: האם למחוק את הפריטים שנבחרו?
+  delete_title_backup: למחוק קובצי גיבוי?
+  delete_title_dashboard: למחוק לוח מחוונים?
+  delete_title_data_repository: למחוק מאגרי נתונים?
+  delete_title_field: למחוק שדות?
+  delete_title_firmware: למחוק קושחה?
+  delete_title_forward_payload: למחוק העברות מטען?
+  delete_title_gateway: למחוק שערים?
+  delete_title_handler: למחוק מטפלים?
+  delete_title_node: למחוק צמתים?
+  delete_title_schedule: למחוק לוחות זמנים?
+  delete_title_service_account: למחוק חשבון שירות?
+  delete_title_user: למחוק משתמש?
+  delete_title_policy: למחוק מדיניות?
+  delete_title_source: למחוק מקורות?
+  delete_title_task: למחוק משימות?
+  delete_title_virtual_assistant: למחוק עוזר וירטואלי?
+  delete_title_virtual_device: למחוק התקן וירטואלי?
+  node_reset_heading: לאפס צומת?
+  node_reset_msg: "האם לאפס את הצמתים שנבחרו?<br/>לאחר פעולה זו:<3><0>התצורה תשוחזר להגדרות היצרן.</0><1>ייתכן שתאבד גישה לצמתים שנבחרו מ-MyController!</1></3>"
+  reboot_nodes_heading: להפעיל מחדש צומת?
+  reboot_nodes_msg: האם להפעיל מחדש את הצמתים שנבחרו?
+  reset_msg_jwt_secret: "האם לאפס את סוד ה-JWT? לאחר פעולה זו כל ההפעלות הקיימות בשרת זה יתבטלו וגם אתה תנותק!"
+  reset_title_jwt_secret: איפוס סוד JWT
+  restore_heading: לאשר פעולת שחזור?
+  restore_msg: "האם לשחזר מקובץ הגיבוי שנבחר?<br/>לאחר פעולה זו:<3><0>נתוני השרת ישוחזרו אל <1>{{fileName}}</1></0><1>לא ניתן לבטל פעולה זו</1><2>יש תמיד לגבות לפני שחזור</2><3>ייתכן שיהיה צורך להפעיל את השרת ידנית</3></3>"
+disable: השבת
+disable_scrollbar: השבת פס גלילה
+disabled: מושבת
+disabled_all: הכל מושבת
+discover_nodes: גלה צמתים
+disk: דיסק
+disks: דיסקים
+display_name: שם תצוגה
+display_percentage: הצג אחוזים
+display_text: טקסט תצוגה
+display_value: הצג ערך
+do_update: בצע עדכון
+documentation: תיעוד
+down: למטה
+download: הורד
+drop_down_position: מיקום תפריט נפתח
+duration: משך
+edit: ערוך
+edit_dashboard_settings: ערוך הגדרות לוח מחוונים
+edit_widget_settings: "ערוך הגדרות ווידג'ט"
+email: דוא״ל
+edit_statement: ערוך הצהרה
+effect: אפקט
+enable: הפעל
+enabled: מופעל
+encryption_key: מפתח הצפנה
+endpoint: נקודת קצה
+endpoints: נקודות קצה
+entities: ישויות
 error:
   console:
-    invalid_login_credentials: Invalid login credentials.
-    login_msg_loading_failed: Error on fetching login message
-evaluation: Evaluation
-evaluations: Evaluations
-event_filters: Event Filters
-events: Events
-executed_count: Executed Count
-execution_interval: Execution Interval
-execution_interval_0h0m0s: Execution Interval (0h0m0s)
-execution_mode: Execution Mode
-experimental: Experimental
-expires_on: Expires On
-export_type: Export Type
+    invalid_login_credentials: פרטי התחברות שגויים.
+    login_msg_loading_failed: שגיאה בטעינת הודעת ההתחברות
+evaluation: הערכה
+evaluations: הערכות
+event_filters: מסנני אירועים
+events: אירועים
+executed_count: מספר ביצועים
+execution_interval: מרווח ביצוע
+execution_interval_0h0m0s: מרווח ביצוע (0h0m0s)
+execution_mode: מצב ביצוע
+experimental: ניסיוני
+expires_on: פג ב
+export_type: סוג ייצוא
 'false': 'False'
-favorite: Favorite
-fetch_info: Fetch Info
-fetching: Fetching
-field: Field
-field_details: Field Details
-field_id: Field ID
-fields: Fields
-file_details: File Details
-file_uploaded_successfully: File uploaded successfully
-filename: File Name
-filename_placeholder: Drag a file here or browse to upload
+favorite: מועדף
+fetch_info: שלוף מידע
+fetching: טוען
+field: שדה
+field_details: פרטי שדה
+field_id: מזהה שדה
+fields: שדות
+file_details: פרטי קובץ
+file_uploaded_successfully: הקובץ הועלה בהצלחה
+filename: שם קובץ
+filename_placeholder: גרור קובץ לכאן או עיין להעלאה
 fill_opacity_%: Fill Opacity (%)
-filter: Filter
-filter_type: Filter Type
-filters: Filters
-firmware_details: Firmware Details
-firmware_file: Firmware File
-firmware_update: Firmware Update
-firmwares: Firmwares
-flush_interval: Flush Interval
-forgot_username_or_password: "Forgot username or password?"
-form_generic_error_message: Check the error and/or mandatory(*) fields
-form_view: Form View
-forum: Forum
-forward_payload: Forward Payload
-forward_payload_details: Forward Payload Details
-frequency: Frequency
-from: From
-from_email: From Email
-full_name: Full Name
-function: Function
-gateway: Gateway
-gateway_details: Gateway Details
-gateway_id: Gateway ID
-gateways: Gateways
-all_gateways: All gateways
-all_nodes: All nodes
-show_sources: Show sources
-show_fields: Show fields
-select_gateway: Gateway
-no_topology_nodes: No nodes to display
-no_topology_nodes_for_gateway: No nodes found for this gateway
-geo_location: GEO Location
-git_commit: Git Commit
-global_configuration: Global Configuration
-golang_version: GoLang Version
-handler: Handler
-handler_details: Handler Details
-handler_parameters: Handler Parameters
-handler_type: Handler Type
-handlers: Handlers
-header_name: Header Name
-headers: Headers
-heartbeat_request: Heartbeat Request
-height_px: Height (px)
+filter: מסנן
+filter_type: סוג מסנן
+filters: מסננים
+firmware_details: פרטי קושחה
+firmware_file: קובץ קושחה
+firmware_update: עדכון קושחה
+firmwares: קושחות
+flush_interval: מרווח ריקון
+forgot_username_or_password: שכחת שם משתמש או סיסמה?
+form_generic_error_message: "בדוק את השגיאות ו/או השדות החובה (*)"
+form_view: תצוגת טופס
+forum: פורום
+forward_payload: העבר מטען
+forward_payload_details: פרטי העברת מטען
+frequency: תדירות
+from: מאת
+from_email: דוא״ל שולח
+full_name: שם מלא
+function: פונקציה
+gateway: שער
+gateway_details: פרטי שער
+gateway_id: מזהה שער
+gateways: שערים
+all_gateways: כל השערים
+all_nodes: כל הצמתים
+show_sources: הצג מקורות
+show_fields: הצג שדות
+select_gateway: שער
+no_topology_nodes: אין צמתים להצגה
+no_topology_nodes_for_gateway: לא נמצאו צמתים לשער זה
+geo_location: מיקום גיאוגרפי
+git_commit: קומיט Git
+global_configuration: תצורה כללית
+golang_version: גרסת GoLang
+handler: מטפל
+handler_details: פרטי מטפל
+handler_parameters: פרמטרי מטפל
+handler_type: סוג מטפל
+handlers: מטפלים
+header_name: שם כותרת
+headers: כותרות
+heartbeat_request: בקשת פעימת לב
+height_px: גובה (px)
 helper_text:
-  invalid_address_esphome: 'Invalid address, example: node1.local:6053'
-  invalid_api: Invalid API
-  invalid_backup_retention_count: "Invalid retention count, 0 for no limit"
-  invalid_baud_rate: Invalid baud rate
-  invalid_broker_url: Invalid Broker URL
-  invalid_current_password: Enter your current password
-  invalid_data: Invalid data
-  invalid_date: Invalid date
-  invalid_day_of_month: Invalid day of month
-  invalid_directory: Invalid directory
-  invalid_duration: Invalid Duration
-  invalid_email: Invalid email
-  invalid_execution_interval_empty: Execution interval should not be empty
-  invalid_field_id: "Invalid field id. chars, min=1, max=100"
-  invalid_filters: Invalid filters
-  invalid_height: Invalid Height
-  invalid_host: Invalid Host
-  invalid_id: "Invalid id. chars, min=4, max=100, and space not allowed"
-  invalid_interval: Invalid interval
-  invalid_key: "Invalid key. chars, min=1 and max=100"
-  invalid_key_path: Key path can not be empty
-  invalid_latitude: Invalid latitude
-  invalid_limit: Invalid limit
-  invalid_location: Invalid location
-  invalid_longitude: Invalid longitude
-  invalid_maximum_backup: "Invalid maximum backup count. int, min=0"
-  invalid_name: "Invalid name. chars, min=2, max=100"
-  invalid_node_id: "Invalid node ID. chars, min=1 and max=100"
-  invalid_offset: Invalid offset
-  invalid_path: Invalid path
-  invalid_payload: Invalid payload
-  invalid_port: Invalid port
-  invalid_prefix: Invalid prefix
-  invalid_profile_confirm_password: Invalid confirm password
-  invalid_profile_password: "Invalid password. chars, min=3, max=100"
-  invalid_profile_username: "Invalid username. chars, min=3, max=100, and space not allowed"
-  invalid_repeat_count: Invalid repeat count
-  invalid_response_code: "Enter a valid response code, enter 0 to ignore"
-  invalid_retry_count: "Invalid retry count. int, min=0"
-  invalid_script_empty: Script should not be empty
-  invalid_server_url: Invalid server URL
-  invalid_source_id: "Invalid source ID. chars, min=1 and max=100"
-  invalid_text: "Invalid text. chars, min=1 and max=100"
-  invalid_time: Invalid time
-  invalid_title: Invalid title
-  invalid_token: Invalid token
-  invalid_topic: Invalid topic
-  invalid_type: Invalid type
-  invalid_url: Invalid URL
-  invalid_username: Invalid username
-  invalid_password: Invalid password
-  password_leave_empty: Leave empty to keep the current password
-  service_account_user: Leave empty to create for yourself. Pick a user to create the account for them.
-  invalid_value: Invalid value
-  invalid_width: Invalid width
-hide_border: Hide Border
-hide_header: Hide Header
-hide_status_column: Hide Status Column
-hide_value_column: Hide Value Column
-host: Host
-host_id: Host ID
-host_ids: Host IDs
+  invalid_address_esphome: "כתובת לא תקינה, לדוגמה: node1.local:6053"
+  invalid_api: API לא תקין
+  invalid_backup_retention_count: "מספר שמירה לא תקין, 0 ללא הגבלה"
+  invalid_baud_rate: קצב באוד לא תקין
+  invalid_broker_url: כתובת URL של ברוקר לא תקינה
+  invalid_current_password: הזן את הסיסמה הנוכחית
+  invalid_data: נתונים לא תקינים
+  invalid_date: תאריך לא תקין
+  invalid_day_of_month: יום בחודש לא תקין
+  invalid_directory: תיקייה לא תקינה
+  invalid_duration: משך לא תקין
+  invalid_email: דוא״ל לא תקין
+  invalid_execution_interval_empty: מרווח הביצוע לא יכול להיות ריק
+  invalid_field_id: "מזהה שדה לא תקין. תווים, מינ=1, מקס=100"
+  invalid_filters: מסננים לא תקינים
+  invalid_height: גובה לא תקין
+  invalid_host: מארח לא תקין
+  invalid_id: "מזהה לא תקין. תווים, מינ=4, מקס=100, ללא רווחים"
+  invalid_interval: מרווח לא תקין
+  invalid_key: "מפתח לא תקין. תווים, מינ=1 ומקס=100"
+  invalid_key_path: נתיב המפתח לא יכול להיות ריק
+  invalid_latitude: קו רוחב לא תקין
+  invalid_limit: מגבלה לא תקינה
+  invalid_location: מיקום לא תקין
+  invalid_longitude: קו אורך לא תקין
+  invalid_maximum_backup: "מספר גיבויים מקסימלי לא תקין. מספר שלם, מינ=0"
+  invalid_name: "שם לא תקין. תווים, מינ=2, מקס=100"
+  invalid_node_id: "מזהה צומת לא תקין. תווים, מינ=1 ומקס=100"
+  invalid_offset: היסט לא תקין
+  invalid_path: נתיב לא תקין
+  invalid_payload: Payload לא תקין
+  invalid_port: פורט לא תקין
+  invalid_prefix: קידומת לא תקינה
+  invalid_profile_confirm_password: אישור סיסמה לא תקין
+  invalid_profile_password: "סיסמה לא תקינה. תווים, מינ=3, מקס=100"
+  invalid_profile_username: "שם משתמש לא תקין. תווים, מינ=3, מקס=100, ללא רווחים"
+  invalid_repeat_count: מספר חזרות לא תקין
+  invalid_response_code: "הזן קוד תגובה תקין, 0 להתעלמות"
+  invalid_retry_count: "מספר ניסיונות חוזרים לא תקין. מספר שלם, מינ=0"
+  invalid_script_empty: הסקריפט לא יכול להיות ריק
+  invalid_server_url: כתובת URL של שרת לא תקינה
+  invalid_source_id: "מזהה מקור לא תקין. תווים, מינ=1 ומקס=100"
+  invalid_text: "טקסט לא תקין. תווים, מינ=1 ומקס=100"
+  invalid_time: שעה לא תקינה
+  invalid_title: כותרת לא תקינה
+  invalid_token: אסימון לא תקין
+  invalid_topic: נושא לא תקין
+  invalid_type: סוג לא תקין
+  invalid_url: כתובת URL לא תקינה
+  invalid_username: שם משתמש לא תקין
+  invalid_password: סיסמה לא תקינה
+  password_leave_empty: השאר ריק כדי לשמור את הסיסמה הנוכחית
+  service_account_user: השאר ריק כדי ליצור עבור עצמך. בחר משתמש כדי ליצור את החשבון עבורו.
+  invalid_value: ערך לא תקין
+  invalid_width: רוחב לא תקין
+hide_border: הסתר מסגרת
+hide_header: הסתר כותרת
+hide_status_column: הסתר עמודת מצב
+hide_value_column: הסתר עמודת ערך
+host: מארח
+host_id: מזהה מארח
+host_ids: מזהי מארח
 html: HTML
-hue: Hue
-icon_or_image_location: Icon or Image Location
+hue: גוון
+icon_or_image_location: מיקום סמל או תמונה
 id: ID
-ignore_duplicate: Ignore Duplicate
-image_source: Image Source
-image_type: Image Type
-in_progress: In Progress
-inactive_duration: Inactive Duration
-include_configuration: Include Configuration
-include_global_configuration: Include Global Configuration
-include_insecure_share: Include Insecure Share
-include_secure_share: Include Secure Share
-insecure: Insecure
-internal_message_ack: Internal Message Ack
-interpolation: Interpolation
-interval: Interval
-interval_0h0m0s: Interval (0h0m0s)
-invalid_file: Invalid file
-is_sleep_node: Is Sleep Node
-is_static: Is Static
+ignore_duplicate: התעלם מכפילויות
+image_source: מקור תמונה
+image_type: סוג תמונה
+in_progress: בתהליך
+inactive_duration: משך חוסר פעילות
+include_configuration: כלול תצורה
+include_global_configuration: כלול תצורה כללית
+include_insecure_share: כלול שיתוף לא מאובטח
+include_secure_share: כלול שיתוף מאובטח
+insecure: לא מאובטח
+internal_message_ack: אישור הודעה פנימית
+interpolation: אינטרפולציה
+interval: מרווח
+interval_0h0m0s: מרווח (0h0m0s)
+invalid_file: קובץ לא תקין
+is_sleep_node: צומת שינה
+is_static: סטטי
 javascript: Javascript
 json: JSON
 jwt_secret: JWT Secret
-keep_me_logged_in_30_days: Keep me logged in for 30 days.
-key: Key
-key_path: Key Path
-label: Label
-labels: Labels
-language: Language
-last_evaluation: Last Evaluation
-last_modified: Last Modified
-last_run: Last Run
-last_seen: Last Seen
-last_status: Last Status
-last_success: Last Success
-latitude: Latitude
-legend_orientation: Legend Orientation
-legend_position: Legend Position
-library_version: Library Version
-light: Light
-limit: Limit
-loading: Loading
-location: Location
-location_name: Location Name
-locations: Locations
-log_in: Log In
-log_rotate_interval: Log Rotate Interval
-login: Login
-login_page: Login Page
-login_to_your_account: Login to your account
-logout: Logout
-longitude: Longitude
-mapping: Mapping
-mark_all_read: Mark all read
+keep_me_logged_in_30_days: השאר אותי מחובר ל-30 יום.
+key: מפתח
+key_path: נתיב מפתח
+label: תווית
+labels: תוויות
+language: שפה
+last_evaluation: הערכה אחרונה
+last_modified: שונה לאחרונה
+last_run: הרצה אחרונה
+last_seen: נראה לאחרונה
+last_status: מצב אחרון
+last_success: הצלחה אחרונה
+latitude: קו רוחב
+legend_orientation: כיוון מקרא
+legend_position: מיקום מקרא
+library_version: גרסת ספרייה
+light: תאורה
+limit: מגבלה
+loading: טוען
+location: מיקום
+location_name: שם מיקום
+locations: מיקומים
+log_in: התחבר
+log_rotate_interval: מרווח סיבוב יומן
+login: התחברות
+login_page: דף התחברות
+login_to_your_account: התחבר לחשבונך
+logout: התנתק
+longitude: קו אורך
+mapping: מיפוי
+mark_all_read: סמן הכל כנקרא
 markdown: Markdown
 markdown_v2: Markdown v2
-match_all: Match All
-max_y_axis: Max (Y Axis)
-maximum: Maximum
-maximum_age: Maximum Age
-maximum_backup: Maximum Backup
-maximum_size: Maximum Size
-maximum_value: Maximum Value
-memory: Memory
-memory_disabled: Memory Disabled
-message: Message
-message_logger: Message Logger
-method: Method
-metric_configuration: Metric Configuration
-metric_function: Metric Function
-metric_interval: Metric Interval
-metric_type: Metric Type
-metrics: Metrics
-metrics_database_disabled: 'WARNING: Metrics database disabled'
-min_y_axis: Min (Y Axis)
-minimum: Minimum
-minimum_value: Minimum Value
-minimum_width: Minimum Width
-mixed_resources: Mixed Resources
-modified_on: Modified On
-name: Name
-name_key: Name Key
-never_expire: Never Expire
-new: New
-new_password: New Password
-no_change_since: No Change Since
-no_dashboard_message: There is no dashboard available to load.
-no_dashboard_title: No dashboards available
-no_data: No data
-no_labels: No labels
-no_login_message: No message set for login
-node: Node
-node_configuration: Node Configuration
-node_details: Node Details
-node_endpoints: Node Endpoints
-node_id: Node ID
-node_state_updater: Node State Updater
-nodes: Nodes
-none: None
-notifications: Notifications
-number_of_axis: Number of Axis
-occurrences: Occurrences
+match_all: התאם הכל
+max_y_axis: מקסימום (ציר Y)
+maximum: מקסימום
+maximum_age: גיל מקסימלי
+maximum_backup: מספר גיבויים מקסימלי
+maximum_size: גודל מקסימלי
+maximum_value: ערך מקסימלי
+memory: זיכרון
+memory_disabled: זיכרון מושבת
+message: הודעה
+message_logger: יומן הודעות
+method: שיטה
+metric_configuration: הגדרות מדד
+metric_function: פונקציית מדד
+metric_interval: מרווח מדד
+metric_type: סוג מדד
+metrics: מדדים
+metrics_database_disabled: "אזהרה: מסד נתוני המדדים מושבת"
+min_y_axis: מינימום (ציר Y)
+minimum: מינימום
+minimum_value: ערך מינימלי
+minimum_width: רוחב מינימלי
+mixed_resources: משאבים מעורבים
+modified_on: שונה ב
+name: שם
+name_key: מפתח שם
+never_expire: ללא תפוגה
+new: חדש
+new_password: סיסמה חדשה
+no_change_since: ללא שינוי מאז
+no_dashboard_message: אין לוח מחוונים לטעינה.
+no_dashboard_title: אין לוחות מחוונים זמינים
+no_data: אין נתונים
+no_labels: אין תוויות
+no_login_message: לא הוגדרה הודעת התחברות
+node: צומת
+node_configuration: תצורת צומת
+node_details: פרטי צומת
+node_endpoints: נקודות קצה של צומת
+node_id: מזהה צומת
+node_state_updater: מעדכן מצב צומת
+nodes: צמתים
+none: ללא
+notifications: התראות
+number_of_axis: מספר צירים
+occurrences: הופעות
 'off': 'OFF'
-off_text: OFF Text
-offset_0h0m0s: Offset (0h0m0s)
+off_text: טקסט כבוי
+offset_0h0m0s: היסט (0h0m0s)
 offset_y_%: Offset Y (%)
 'on': 'ON'
-on_button: ON Button
-on_receive: On Receive
-on_send: On Send
-on_text: ON Text
-operations: Operations
-operator: Operator
-options: Options
+on_button: לחצן הפעלה
+on_receive: בקבלה
+on_send: בשליחה
+on_text: טקסט מופעל
+operations: פעולות
+operator: אופרטור
+options: אפשרויות
 opts:
   backup_provider:
-    desc_disk: Backup data in to disk
-    label_disk: Disk
+    desc_disk: גבה נתונים לדיסק
+    label_disk: דיסק
   button_type:
-    label_danger: Danger (red)
-    label_primary: Primary (blue)
-    label_secondary: Secondary (blue)
-    label_warning: Warning (yellow)
+    label_danger: סכנה (אדום)
+    label_primary: ראשי (כחול)
+    label_secondary: משני (כחול)
+    label_warning: אזהרה (צהוב)
   chart_group_type:
-    desc_group_chart: Single axis with multiple resources
-    desc_mixed_chart: Multiple axis with multiple resources
-    desc_pie_chart: Single pie chart
-    label_group_chart: Group Chart
-    label_mixed_chart: Mixed Chart
-    label_pie_chart: Pie Chart
+    desc_group_chart: ציר יחיד עם מספר משאבים
+    desc_mixed_chart: מספר צירים עם מספר משאבים
+    desc_pie_chart: תרשים עוגה יחיד
+    label_group_chart: תרשים קבוצתי
+    label_mixed_chart: תרשים מעורב
+    label_pie_chart: תרשים עוגה
   chart_interpolation:
     label_basis: Basis
     label_cardinal: Cardinal
     label_catmull_rom: CatmullRom
-    label_linear: Linear
+    label_linear: ליניארי
     label_monotone_x: MonotoneX
     label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_natural: טבעי
+    label_step: צעד
+    label_step_after: צעד אחרי
+    label_step_before: צעד לפני
   chart_type:
-    desc_area_chart: Area Chart
-    desc_bar_chart: Bar Chart
-    desc_line_chart: Line Chart
-    desc_pie_chart: Pie Chart
-    desc_scatter_chart: Scatter Chart
-    label_area_chart: Area Chart
-    label_bar_chart: Bar Chart
-    label_line_chart: Line Chart
-    label_pie_chart: Pie Chart
-    label_scatter_chart: Scatter Chart
+    desc_area_chart: תרשים שטח
+    desc_bar_chart: תרשים עמודות
+    desc_line_chart: תרשים קו
+    desc_pie_chart: תרשים עוגה
+    desc_scatter_chart: תרשים פיזור
+    label_area_chart: תרשים שטח
+    label_bar_chart: תרשים עמודות
+    label_line_chart: תרשים קו
+    label_pie_chart: תרשים עוגה
+    label_scatter_chart: תרשים פיזור
   code_editor_language:
     label_html: HTML
     label_javascript: Javascript
     label_json: JSON
-    label_plaintext: Plan Text
+    label_plaintext: טקסט רגיל
     label_xml: XML
     label_yaml: YAML
   control_type:
-    label_mixed_control: Mixed Control
-    label_switch_button: Button Switch
-    label_switch_toggle: Switch Toggle
+    label_mixed_control: בקרה מעורבת
+    label_switch_button: לחצן מתג
+    label_switch_toggle: מתג החלפה
   control_type_mixed:
-    label_button_push: Push Button
-    label_input: Input
-    label_options_select: Select Options
-    label_options_tab: Tab Options
-    label_slider: Slider
-    label_switch_button: Button Switch
-    label_switch_toggle: Toggle Switch
+    label_button_push: לחצן לחיצה
+    label_input: קלט
+    label_options_select: אפשרויות בחירה
+    label_options_tab: אפשרויות לשונית
+    label_slider: מחוון
+    label_switch_button: לחצן מתג
+    label_switch_toggle: מתג החלפה
   dampening:
-    desc_active_duration: Active duration of the task
-    desc_consecutive: Number of consecutive occurrences
-    desc_evaluation: Number of occurrences in N evaluation
-    desc_none: Disable dampening feature
-    label_active_duration: Active Duration
-    label_consecutive: Consecutive
-    label_evaluation: Evaluation
-    label_none: None
+    desc_active_duration: משך הפעילות של המשימה
+    desc_consecutive: מספר הופעות רצופות
+    desc_evaluation: מספר הופעות ב-N הערכות
+    desc_none: השבת תכונת ריסון
+    label_active_duration: משך פעילות
+    label_consecutive: רצוף
+    label_evaluation: הערכה
+    label_none: ללא
   data_unit:
-    label_bytes: Bytes
-    label_eib: Exbi Bytes (EiB)
-    label_gib: Gibi Bytes (GiB)
-    label_kib: Kibi Bytes (KiB)
-    label_mib: Mibi Bytes (MiB)
-    label_pib: Pebi Bytes (PiB)
-    label_tib: Tebi Bytes (TiB)
+    label_bytes: בתים
+    label_eib: אקסביבתים (EiB)
+    label_gib: גיביבתים (GiB)
+    label_kib: קיביבתים (KiB)
+    label_mib: מביבתים (MiB)
+    label_pib: פביבתים (PiB)
+    label_tib: טביבתים (TiB)
   event_type:
-    label_created: Created
-    label_deleted: Deleted
-    label_requested: Requested
-    label_updated: Updated
+    label_created: נוצר
+    label_deleted: נמחק
+    label_requested: מבוקש
+    label_updated: עודכן
   gw_msg_logger:
-    desc_file_logger: Messages will be logged in a file
-    desc_none: Messages will not be logged
-    label_file_logger: File Logger
-    label_none: None
+    desc_file_logger: ההודעות ייכתבו לקובץ
+    desc_none: ההודעות לא יירשמו ביומן
+    label_file_logger: יומן קבצים
+    label_none: ללא
   gw_protocol:
-    desc_ethernet: Ethernet Protocol
-    desc_http: HTTP Protocol
-    desc_mqtt: MQTT Protocol
-    desc_serial: Serial Protocol
+    desc_ethernet: פרוטוקול Ethernet
+    desc_http: פרוטוקול HTTP
+    desc_mqtt: פרוטוקול MQTT
+    desc_serial: פרוטוקול טורי
     label_ethernet: Ethernet
     label_http: HTTP
     label_mqtt: MQTT
-    label_serial: Serial
+    label_serial: טורי
   gw_provider:
     desc_esphome: esphome.io
-    desc_generic: Generic Provider
-    desc_mysensors_v2: MySensors.org version 2.x
+    desc_generic: ספק כללי
+    desc_mysensors_v2: MySensors.org גרסה 2.x
     desc_philips_hue: developers.meethue.com
-    desc_system_monitoring: Capture system resources and reports
+    desc_system_monitoring: אוסף משאבי מערכת ומדווח
     desc_tasmota: tasmota.github.io
     label_esphome: ESPHome
-    label_generic: Generic
+    label_generic: כללי
     label_mysensors_v2: MySensors V2
     label_philips_hue: PhilipsHue
-    label_system_monitoring: System Monitoring
+    label_system_monitoring: ניטור מערכת
     label_tasmota: Tasmota
   handler_type:
-    desc_backup: Perform backup of the server
-    desc_email: Sends email
-    desc_noop: No Operation Handler
-    desc_resource: Internal resource related actions
-    desc_telegram: Sends text to telegram
-    desc_webhook: Calls a webhook url
-    label_backup: Backup
-    label_email: Email
+    desc_backup: בצע גיבוי של השרת
+    desc_email: שולח דוא״ל
+    desc_noop: מטפל ללא פעולה
+    desc_resource: פעולות פנימיות הקשורות למשאבים
+    desc_telegram: שולח טקסט ל-Telegram
+    desc_webhook: קורא לכתובת webhook
+    label_backup: גיבוי
+    label_email: דוא״ל
     label_noop: Noop
-    label_resource: Resource
+    label_resource: משאב
     label_telegram: Telegram
     label_webhook: Webhook
   http_method:
@@ -527,494 +527,494 @@ opts:
     label_post: POST
     label_put: PUT
   image_load_type:
-    desc_custom_mapping: Display mapped image from field value
-    desc_image: Base64 encoded image from field value
-    label_custom_mapping: Custom Mapping
-    label_image: Raw Image
+    desc_custom_mapping: הצג תמונה ממופת מערך השדה
+    desc_image: תמונה מקודדת Base64 מערך השדה
+    label_custom_mapping: מיפוי מותאם
+    label_image: תמונה גולמית
   image_rotation:
-    desc_rotate_180: Rotate 180°
-    desc_rotate_left_90: Rotate left side 90°
-    desc_rotate_none: no rotation
-    desc_rotate_right_90: Rotate right side 90°
-    label_rotate_180: Rotate 180°
-    label_rotate_left_90: Rotate left 90°
-    label_rotate_none: None
-    label_rotate_right_90: Rotate right 90°
+    desc_rotate_180: סובב 180°
+    desc_rotate_left_90: סובב שמאלה 90°
+    desc_rotate_none: ללא סיבוב
+    desc_rotate_right_90: סובב ימינה 90°
+    label_rotate_180: סובב 180°
+    label_rotate_left_90: סובב שמאלה 90°
+    label_rotate_none: ללא
+    label_rotate_right_90: סובב ימינה 90°
   image_source:
-    desc_disk: Image from a local disk location
-    desc_field: Image data from a field resource
-    desc_url: Image from a url
-    label_disk: Disk
-    label_field: Field
+    desc_disk: תמונה מנתיב דיסק מקומי
+    desc_field: נתוני תמונה ממשאב שדה
+    desc_url: תמונה מכתובת URL
+    label_disk: דיסק
+    label_field: שדה
     label_url: URL
   interval:
-    label_day_01: 1 days
-    label_hour_01: 1 hour
-    label_hour_03: 3 hours
-    label_hour_06: 6 hours
-    label_minute_01: 1 minute
-    label_minute_02: 2 minutes
-    label_minute_03: 3 minutes
-    label_minute_05: 5 minutes
-    label_minute_10: 10 minutes
-    label_minute_15: 15 minutes
-    label_minute_30: 30 minutes
-    label_never: Never
-    label_second_01: 1 second
-    label_second_05: 5 seconds
-    label_second_10: 10 seconds
-    label_second_15: 15 seconds
-    label_second_30: 30 seconds
-    label_second_45: 45 seconds
+    label_day_01: יום 1
+    label_hour_01: שעה 1
+    label_hour_03: 3 שעות
+    label_hour_06: 6 שעות
+    label_minute_01: דקה 1
+    label_minute_02: 2 דקות
+    label_minute_03: 3 דקות
+    label_minute_05: 5 דקות
+    label_minute_10: 10 דקות
+    label_minute_15: 15 דקות
+    label_minute_30: 30 דקות
+    label_never: אף פעם
+    label_second_01: שנייה 1
+    label_second_05: 5 שניות
+    label_second_10: 10 שניות
+    label_second_15: 15 שניות
+    label_second_30: 30 שניות
+    label_second_45: 45 שניות
   legend_orientation:
-    desc_horizontal: Places in a horizontal position
-    desc_vertical: Places in a vertical position
-    label_horizontal: Horizontal
-    label_vertical: Vertical
+    desc_horizontal: מציב במצב אופקי
+    desc_vertical: מציב במצב אנכי
+    label_horizontal: אופקי
+    label_vertical: אנכי
   legend_position:
-    desc_bottom_center: Center of bottom
-    desc_bottom_left: Left side of bottom
-    desc_right: Right side
-    desc_top_left: Left side of top
-    label_bottom_center: Bottom Center
-    label_bottom_left: Bottom Left
-    label_right: Right
-    label_top_left: Top Left
+    desc_bottom_center: מרכז תחתון
+    desc_bottom_left: שמאל תחתון
+    desc_right: צד ימין
+    desc_top_left: שמאל עליון
+    label_bottom_center: מרכז תחתון
+    label_bottom_left: שמאל תחתון
+    label_right: ימין
+    label_top_left: שמאל עליון
   light_type:
-    desc_cw_ww: Cold White and Warm White
-    desc_rgb: RGB light
-    desc_rgb_cw: RGB with Cold White
-    desc_rgb_cw_ww: RGB with Cold White and Warm White
-    desc_single: "Single, Cold White or Warm White"
+    desc_cw_ww: לבן קר ולבן חם
+    desc_rgb: תאורת RGB
+    desc_rgb_cw: RGB עם לבן קר
+    desc_rgb_cw_ww: RGB עם לבן קר ולבן חם
+    desc_single: "יחיד, לבן קר או לבן חם"
     label_cw_ww: CW WW
     label_rgb: RGB
     label_rgb_cw: RGB CW
     label_rgb_cw_ww: RGB CW WW
-    label_single: Single
+    label_single: יחיד
   metric_duration:
-    label_day_002: Last 2 days
-    label_day_007: Last 7 days
-    label_day_030: Last 30 days
-    label_day_060: Last 60 days
-    label_day_090: Last 90 days
-    label_day_180: Last 180 days
-    label_day_365: Last 365 days
-    label_hour_01: Last 1 hour
-    label_hour_02: Last 2 hours
-    label_hour_03: Last 3 hours
-    label_hour_06: Last 6 hours
-    label_hour_12: Last 12 hours
-    label_hour_24: Last 24 hours
-    label_minute_30: Last 30 minutes
+    label_day_002: יומיים אחרונים
+    label_day_007: 7 ימים אחרונים
+    label_day_030: 30 ימים אחרונים
+    label_day_060: 60 ימים אחרונים
+    label_day_090: 90 ימים אחרונים
+    label_day_180: 180 ימים אחרונים
+    label_day_365: 365 ימים אחרונים
+    label_hour_01: שעה אחרונה
+    label_hour_02: שעתיים אחרונות
+    label_hour_03: 3 שעות אחרונות
+    label_hour_06: 6 שעות אחרונות
+    label_hour_12: 12 שעות אחרונות
+    label_hour_24: 24 שעות אחרונות
+    label_minute_30: 30 דקות אחרונות
   metric_function:
-    label_count: Count
-    label_maximum: Maximum
-    label_mean: Mean
-    label_median: Median
-    label_minimum: Minimum
-    label_percentile_50: 50th Percentile
-    label_percentile_75: 75th Percentile
-    label_percentile_95: 95th Percentile
-    label_percentile_99: 99th Percentile
-    label_sum: Sum
+    label_count: ספירה
+    label_maximum: מקסימום
+    label_mean: ממוצע
+    label_median: חציון
+    label_minimum: מינימום
+    label_percentile_50: אחוזון 50
+    label_percentile_75: אחוזון 75
+    label_percentile_95: אחוזון 95
+    label_percentile_99: אחוזון 99
+    label_sum: סכום
   metric_type:
-    label_binary: Binary
-    label_counter: Counter
-    label_gauge: Gauge
-    label_gauge_float: Gauge Float
+    label_binary: בינארי
+    label_counter: מונה
+    label_gauge: מד
+    label_gauge_float: מד (נקודה צפה)
     label_geo: GEO
-    label_none: None
-    label_string: String
+    label_none: ללא
+    label_string: מחרוזת
   rgb_component:
-    desc_color_picker: Predefined colors
-    desc_hue_slider: Hue color slider
-    label_color_picker: Quick Color Picker
-    label_hue_slider: Hue Slider
+    desc_color_picker: צבעים מוגדרים מראש
+    desc_hue_slider: מחוון גוון
+    label_color_picker: בחירת צבע מהירה
+    label_hue_slider: מחוון גוון
   schedule_frequency:
-    desc_daily: Runs every day
-    desc_monthly: Runs monthly once
-    desc_on_date: "Runs only once at the specified date, time"
-    desc_weekly: Runs weekly once
-    label_daily: Daily
-    label_monthly: Monthly
-    label_on_date: On Date
-    label_weekly: Weekly
+    desc_daily: רץ כל יום
+    desc_monthly: רץ פעם בחודש
+    desc_on_date: רץ פעם אחת בתאריך ובשעה שצוינו
+    desc_weekly: רץ פעם בשבוע
+    label_daily: יומי
+    label_monthly: חודשי
+    label_on_date: בתאריך
+    label_weekly: שבועי
   schedule_type:
-    desc_cron: Cron expression
-    desc_repeat: Repeats on a specified interval
-    desc_simple: "Daily, weekly, monthly schedule"
-    desc_sunrise: Based on the sunrise time
-    desc_sunset: Based on the sunset time
+    desc_cron: ביטוי Cron
+    desc_repeat: חוזר במרווח שנקבע
+    desc_simple: "לוח זמנים יומי, שבועי, חודשי"
+    desc_sunrise: לפי שעת הזריחה
+    desc_sunset: לפי שעת השקיעה
     label_cron: Cron
-    label_repeat: Repeat
-    label_simple: Simple
-    label_sunrise: Sunrise
-    label_sunset: Sunset
+    label_repeat: חזרה
+    label_simple: פשוט
+    label_sunrise: זריחה
+    label_sunset: שקיעה
   theme_color:
-    label_blue: Blue
-    label_cyan: Cyan
-    label_gold: Gold
-    label_green: Green
-    label_multiple_ordered: Multiple Ordered
-    label_multiple_unordered: Multiple Unordered
-    label_orange: Orange
-    label_purple: Purple
+    label_blue: כחול
+    label_cyan: ציאן
+    label_gold: זהב
+    label_green: ירוק
+    label_multiple_ordered: מרובה מסודר
+    label_multiple_unordered: מרובה לא מסודר
+    label_orange: כתום
+    label_purple: סגול
   trait_type:
-    label_app_selector: App Selector
-    label_arm_disarm: Arm Disarm
-    label_brightness: Brightness
-    label_camera_stream: Camera Stream
-    label_channel: Channel
-    label_color_setting: Color Setting
-    label_cook: Cook
-    label_dispense: Dispense
-    label_dock: Dock
-    label_energy_storage: Energy Storage
-    label_fan_speed: Fan Speed
-    label_fill: Fill
-    label_humidity_setting: Humidity Setting
-    label_input_selector: Input Selector
-    label_light_effects: Light Effects
-    label_locator: Locator
-    label_lock_unlock: Lock Unlock
-    label_media_state: Media State
-    label_modes: Modes
-    label_network_control: Network Control
-    label_object_detection: Object Detection
-    label_on_off: On Off
-    label_open_close: Open Close
-    label_reboot: Reboot
-    label_rotation: Rotation
-    label_run_cycle: Run Cycle
-    label_scene: Scene
-    label_sensor_state: Sensor State
-    label_software_update: Software Update
-    label_start_stop: Start Stop
-    label_status_report: Status Report
-    label_temperature_control: Temperature Control
-    label_temperature_setting: Temperature Setting
-    label_timer: Timer
-    label_toggles: Toggles
-    label_transport_control: Transport Control
-    label_volume: Volume
+    label_app_selector: בורר יישומים
+    label_arm_disarm: דריכה/נטרול
+    label_brightness: בהירות
+    label_camera_stream: זרם מצלמה
+    label_channel: ערוץ
+    label_color_setting: הגדרת צבע
+    label_cook: בישול
+    label_dispense: חלוקה
+    label_dock: עגינה
+    label_energy_storage: אחסון אנרגיה
+    label_fan_speed: מהירות מאוורר
+    label_fill: מילוי
+    label_humidity_setting: הגדרת לחות
+    label_input_selector: בורר קלט
+    label_light_effects: אפקטי תאורה
+    label_locator: איתור
+    label_lock_unlock: נעילה/פתיחה
+    label_media_state: מצב מדיה
+    label_modes: מצבים
+    label_network_control: בקרת רשת
+    label_object_detection: זיהוי עצמים
+    label_on_off: הפעלה/כיבוי
+    label_open_close: פתיחה/סגירה
+    label_reboot: הפעלה מחדש
+    label_rotation: סיבוב
+    label_run_cycle: מחזור הרצה
+    label_scene: סצנה
+    label_sensor_state: מצב חיישן
+    label_software_update: עדכון תוכנה
+    label_start_stop: התחלה/עצירה
+    label_status_report: דוח מצב
+    label_temperature_control: בקרת טמפרטורה
+    label_temperature_setting: הגדרת טמפרטורה
+    label_timer: טיימר
+    label_toggles: מתגים
+    label_transport_control: בקרת תחבורה
+    label_volume: עוצמת קול
   utilization_chart:
-    label_circle_050: Half Circle
-    label_circle_075: 3/4 Circle
-    label_circle_100: Full Circle
-    label_spark_area: Spark Area
-    label_spark_bar: Spark Bar
-    label_spark_line: Spark Line
-    label_table: Table
+    label_circle_050: חצי עיגול
+    label_circle_075: 3/4 עיגול
+    label_circle_100: עיגול מלא
+    label_spark_area: שטח ניצוץ
+    label_spark_bar: עמודת ניצוץ
+    label_spark_line: קו ניצוץ
+    label_table: טבלה
   va_provider:
     desc_alexa: Amazon Alexa
     desc_google_assistant: Google Assistant
     label_alexa: Alexa
     label_google_assistant: Google Assistant
   vd_type:
-    label_air_conditioner: Air Conditioner
-    label_air_cooler: Air Cooler
-    label_air_freshener: Air Freshener
-    label_air_purifier: Air Purifier
-    label_audio_video_receiver: Audio Video Receiver
-    label_awning: Awning
-    label_bathtub: Bathtub
-    label_bed: Bed
-    label_blender: Blender
-    label_blinds: Blinds
-    label_boiler: Boiler
-    label_camera: Camera
-    label_carbon_monoxide_detector: Carbon Monoxide Detector
-    label_charger: Charger
-    label_closet: Closet
-    label_coffee_maker: Coffee Maker
-    label_cooktop: Cooktop
-    label_curtain: Curtain
-    label_dehumidifier: Dehumidifier
-    label_dehydrator: Dehydrator
-    label_dishwasher: Dishwasher
-    label_door: Door
-    label_door_bell: Door Bell
-    label_drawer: Drawer
-    label_dryer: Dryer
-    label_fan: Fan
-    label_faucet: Faucet
-    label_fireplace: Fireplace
-    label_freezer: Freezer
-    label_fryer: Fryer
-    label_garage_door: Garage Door
-    label_gate: Gate
-    label_grill: Grill
-    label_heater: Heater
-    label_hood: Hood
-    label_humidifier: Humidifier
-    label_kettle: Kettle
-    label_light: Light
-    label_lock: Lock
-    label_media_remote: Media Remote
-    label_microwave: Microwave
-    label_mop: Mop
-    label_mower: Mower
-    label_multicooker: Multicooker
-    label_network: Network
-    label_outlet: Outlet
-    label_oven: Oven
-    label_pergola: Pergola
-    label_pet_feeder: Pet Feeder
-    label_pressure_cooker: Pressure Cooker
-    label_radiator: Radiator
-    label_refrigerator: Refrigerator
-    label_router: Router
-    label_scene: Scene
-    label_security_system: Security System
-    label_sensor: Sensor
-    label_set_top_box: Set Top Box
-    label_shower: Shower
-    label_shutter: Shutter
-    label_smoke_detector: Smoke Detector
-    label_soundbar: Soundbar
-    label_sous_vide: Sous Vide
-    label_speaker: Speaker
-    label_sprinkler: Sprinkler
-    label_stand_mixer: Stand Mixer
-    label_streaming_box: Streaming Box
-    label_streaming_soundbar: Streaming Soundbar
-    label_streaming_stick: Streaming Stick
-    label_switch: Switch
-    label_television: Television
-    label_thermostat: Thermostat
-    label_vacuum: Vacuum
-    label_valve: Valve
-    label_washer: Washer
-    label_water_heater: Water Heater
-    label_water_purifier: Water Purifier
-    label_water_softener: Water Softener
-    label_weather_station: Weather Station
-    label_window: Window
-    label_yogurt_maker: Yogurt Maker
+    label_air_conditioner: מזגן
+    label_air_cooler: מצנן אוויר
+    label_air_freshener: מבשם אוויר
+    label_air_purifier: מטהר אוויר
+    label_audio_video_receiver: מקלט אודיו-וידאו
+    label_awning: סככה
+    label_bathtub: אמבטיה
+    label_bed: מיטה
+    label_blender: בלנדר
+    label_blinds: תריסים
+    label_boiler: דוד
+    label_camera: מצלמה
+    label_carbon_monoxide_detector: גלאי פחמן חד-חמצני
+    label_charger: מטען
+    label_closet: ארון
+    label_coffee_maker: מכונת קפה
+    label_cooktop: כיריים
+    label_curtain: וילון
+    label_dehumidifier: מסיר לחות
+    label_dehydrator: מייבש מזון
+    label_dishwasher: מדיח כלים
+    label_door: דלת
+    label_door_bell: פעמון דלת
+    label_drawer: מגירה
+    label_dryer: מייבש כביסה
+    label_fan: מאוורר
+    label_faucet: ברז
+    label_fireplace: אח
+    label_freezer: מקפיא
+    label_fryer: טיגון
+    label_garage_door: דלת מוסך
+    label_gate: שער כניסה
+    label_grill: גריל
+    label_heater: תנור חימום
+    label_hood: קולט אדים
+    label_humidifier: מכשיר אדים
+    label_kettle: קומקום
+    label_light: תאורה
+    label_lock: מנעול
+    label_media_remote: שלט מדיה
+    label_microwave: מיקרוגל
+    label_mop: מגב
+    label_mower: מכסחת
+    label_multicooker: סיר רב-תכליתי
+    label_network: רשת
+    label_outlet: שקע
+    label_oven: תנור
+    label_pergola: פרגולה
+    label_pet_feeder: מזין חיות מחמד
+    label_pressure_cooker: סיר לחץ
+    label_radiator: רדיאטור
+    label_refrigerator: מקרר
+    label_router: נתב
+    label_scene: סצנה
+    label_security_system: מערכת אבטחה
+    label_sensor: חיישן
+    label_set_top_box: ממיר
+    label_shower: מקלחת
+    label_shutter: תריס
+    label_smoke_detector: גלאי עשן
+    label_soundbar: סאונדבר
+    label_sous_vide: סו-ויד
+    label_speaker: רמקול
+    label_sprinkler: ממטרה
+    label_stand_mixer: מיקסר עומד
+    label_streaming_box: קופסת סטרימינג
+    label_streaming_soundbar: סאונדבר סטרימינג
+    label_streaming_stick: מקל סטרימינג
+    label_switch: מתג
+    label_television: טלוויזיה
+    label_thermostat: תרמוסטט
+    label_vacuum: שואב אבק
+    label_valve: שסתום
+    label_washer: מכונת כביסה
+    label_water_heater: דוד מים
+    label_water_purifier: מטהר מים
+    label_water_softener: מרכך מים
+    label_weather_station: תחנת מזג אוויר
+    label_window: חלון
+    label_yogurt_maker: מכשיר יוגורט
   week_day:
-    label_friday: Friday
-    label_monday: Monday
-    label_saturday: Saturday
-    label_sunday: Sunday
-    label_thursday: Thursday
-    label_tuesday: Tuesday
-    label_wednesday: Wednesday
+    label_friday: שישי
+    label_monday: שני
+    label_saturday: שבת
+    label_sunday: ראשון
+    label_thursday: חמישי
+    label_tuesday: שלישי
+    label_wednesday: רביעי
   widget_type:
-    desc_chart_panel: Display data in charts
-    desc_control_panel: Performs control action on resources
-    desc_empty_panel: Empty Panel
-    desc_image_panel: Display image from different sources
-    desc_light_panel: Controls a light
-    desc_utilization_panel: Display utilization status
-    label_chart_panel: Charts Panel
-    label_control_panel: Control Panel
-    label_empty_panel: Empty Panel
-    label_image_panel: Image Panel
-    label_light_panel: Light Panel
-    label_utilization_panel: Utilization Panel
-others: Others
-padding_bottom_px: Padding Bottom (px)
-padding_left_px: Padding Left (px)
-padding_right_px: Padding Right (px)
-padding_top_px: Padding Top (px)
-panel_title: Panel Title
-parameters_to_handler: Parameters to Handler
-parse_mode: Parse Mode
-password: Password
-path: Path
+    desc_chart_panel: הצג נתונים בתרשימים
+    desc_control_panel: בצע פעולות בקרה על משאבים
+    desc_empty_panel: לוח ריק
+    desc_image_panel: הצג תמונה ממקורות שונים
+    desc_light_panel: שולט בתאורה
+    desc_utilization_panel: הצג מצב ניצול
+    label_chart_panel: לוח תרשימים
+    label_control_panel: לוח בקרה
+    label_empty_panel: לוח ריק
+    label_image_panel: לוח תמונה
+    label_light_panel: לוח תאורה
+    label_utilization_panel: לוח ניצול
+others: אחרים
+padding_bottom_px: ריפוד תחתון (px)
+padding_left_px: ריפוד שמאלי (px)
+padding_right_px: ריפוד ימני (px)
+padding_top_px: ריפוד עליון (px)
+panel_title: כותרת לוח
+parameters_to_handler: פרמטרים למטפל
+parse_mode: מצב פענוח
+password: סיסמה
+path: נתיב
 payload: Payload
 send: שלח
-payload_off: Payload OFF
-payload_on: Payload ON
+payload_off: Payload כבוי
+payload_on: Payload מופעל
 payloads: Payloads
-per_cpu_disabled: Per CPU Disabled
-port: Port
-port_name: Port Name
-post_run: Post Run
-power: Power
-pre_delay: Pre Delay
-pre_run: Pre Run
-prefix: Prefix
-previous_value: Previous Value
-process: Process
-processes: Processes
-profile: Profile
-protocol: Protocol
-provider: Provider
-provider_type: Provider Type
-publish: Publish
+per_cpu_disabled: לכל CPU מושבת
+port: פורט
+port_name: שם פורט
+post_run: לאחר הרצה
+power: הספק
+pre_delay: השהיה מקדימה
+pre_run: לפני הרצה
+prefix: קידומת
+previous_value: ערך קודם
+process: תהליך
+processes: תהליכים
+profile: פרופיל
+protocol: פרוטוקול
+provider: ספק
+provider_type: סוג ספק
+publish: פרסם
 qos: QoS
-query_parameters: Query Parameters
-queue_failed_messages: Queue Failed Messages
-quick_id: Quick ID
-re_enable: Re-enable
-re_enable_duration: Re-enable Duration
-react_version: React Version
-read_only: Read Only
-reboot: Reboot
-reconnect_delay: Reconnect Delay
-refresh_interval: Refresh Interval
-refresh_node_info: Refresh Node Info
-reload: Reload
-repeat_count: Repeat Count
-request_heartbeat: Request Heartbeat
-reset: Reset
-resetting: Resetting...
-resource: Resource
-resource_by_labels: Resource By Labels
-resource_by_quick_id: Resource By Quick ID
-resource_configuration: Resource Configuration
-resource_filters: Resource Filters
-resource_name: Resource name
-resource_type: Resource Type
-resources: Resources
-response_code: Response Code
-restore: Restore
-retention_count: Retention Count
-retry_count: Retry Count
+query_parameters: פרמטרי שאילתה
+queue_failed_messages: תור הודעות שנכשלו
+quick_id: מזהה מהיר
+re_enable: אפשר מחדש
+re_enable_duration: משך הפעלה מחדש
+react_version: גרסת React
+read_only: קריאה בלבד
+reboot: הפעלה מחדש
+reconnect_delay: השהיית חיבור מחדש
+refresh_interval: מרווח רענון
+refresh_node_info: רענן מידע צומת
+reload: טען מחדש
+repeat_count: מספר חזרות
+request_heartbeat: בקש פעימת לב
+reset: איפוס
+resetting: מאפס...
+resource: משאב
+resource_by_labels: משאב לפי תוויות
+resource_by_quick_id: משאב לפי מזהה מהיר
+resource_configuration: תצורת משאב
+resource_filters: מסנני משאבים
+resource_name: שם משאב
+resource_type: סוג משאב
+resources: משאבים
+response_code: קוד תגובה
+restore: שחזר
+retention_count: מספר שמירה
+retry_count: מספר ניסיונות חוזרים
 rgb: RGB
-rgb_component: RGB Component
-rotation: Rotation
-round_decimal: Round Decimal
-rule: Rule
-run_a_backup: Run a Backup
-run_backup: Run Backup
+rgb_component: רכיב RGB
+rotation: סיבוב
+round_decimal: עיגול עשרוני
+rule: כלל
+run_a_backup: הרץ גיבוי
+run_backup: הרץ גיבוי
 s_no: '#'
-saturation: Saturation
-save: Save
-schedule: Schedule
-schedule_details: Schedule Details
-schedule_type: Schedule Type
-schedules: Schedules
-script: Script
-select_an_option: Select an option
-server: Server
-service_account_not_generated: Service account token not generated
-service_account_copy_title: Copy Service Account Token
-service_account_copy_warning_msg: This token will only be displayed once. It will not be stored and cannot be retrieved. Please be sure to save it now.
-service_account_barcode_help: Scan this barcode to log in with the token.
-service_account_details: Service Account Details
-service_accounts: Service Accounts
-policies: Policies
-policy_details: Policy Details
-settings: Settings
-show_grid_x: Show Grid X
-show_grid_y: Show Grid Y
-show_title: Show Title
-since: Since
-size: Size
-sleeping_queue: Sleeping Queue
-sort_order_priority: Sort Order Priority
-source: Source
-source_code: Source Code
-source_details: Source Details
-source_field: Source Filed
-source_id: Source ID
-sources: Sources
-spec: Spec
-stack_charts: Stack Charts
-state: State
-status: Status
-status_at: Status At
-status_configuration: Status Configuration
-step: Step
-storage_export_type: Storage Export Type
-stream_message_ack: Stream Message Ack
-string: String
-stroke_width_px: Stroke Width (px)
-sub_type: Sub Type
-subject: Subject
-subscribe: Subscribe
-swap_disabled: Swap Disabled
-sync_interval: Sync Interval
-system: System
-system_message: System Message
-table_configuration: Table Configuration
-table_view: Table View
-target_directory: Target Directory
-target_location: Target Location
-task: Task
-task_details: Task Details
-tasks: Tasks
+saturation: רוויה
+save: שמור
+schedule: לוח זמנים
+schedule_details: פרטי לוח זמנים
+schedule_type: סוג לוח זמנים
+schedules: לוחות זמנים
+script: סקריפט
+select_an_option: בחר אפשרות
+server: שרת
+service_account_not_generated: אסימון חשבון השירות לא נוצר
+service_account_copy_title: העתק אסימון חשבון שירות
+service_account_copy_warning_msg: אסימון זה יוצג פעם אחת בלבד. הוא לא יישמר ולא ניתן לשחזרו. שמור אותו עכשיו.
+service_account_barcode_help: סרוק ברקוד זה כדי להתחבר עם האסימון.
+service_account_details: פרטי חשבון שירות
+service_accounts: חשבונות שירות
+policies: מדיניות
+policy_details: פרטי מדיניות
+settings: הגדרות
+show_grid_x: הצג רשת X
+show_grid_y: הצג רשת Y
+show_title: הצג כותרת
+since: מאז
+size: גודל
+sleeping_queue: תור שינה
+sort_order_priority: עדיפות מיון
+source: מקור
+source_code: קוד מקור
+source_details: פרטי מקור
+source_field: שדה מקור
+source_id: מזהה מקור
+sources: מקורות
+spec: מפרט
+stack_charts: ערם תרשימים
+state: מצב
+status: סטטוס
+status_at: סטטוס ב
+status_configuration: הגדרות סטטוס
+step: צעד
+storage_export_type: סוג ייצוא אחסון
+stream_message_ack: אישור הודעת זרם
+string: מחרוזת
+stroke_width_px: עובי קו (px)
+sub_type: תת-סוג
+subject: נושא
+subscribe: הירשם
+swap_disabled: Swap מושבת
+sync_interval: מרווח סנכרון
+system: מערכת
+system_message: הודעת מערכת
+table_configuration: הגדרות טבלה
+table_view: תצוגת טבלה
+target_directory: תיקיית יעד
+target_location: מיקום יעד
+task: משימה
+task_details: פרטי משימה
+tasks: משימות
 telegram: Telegram
-temperature: Temperature
-text: Text
+temperature: טמפרטורה
+text: טקסט
 the_open_source_controller: The Open Source Controller
-theme_color: Theme Color
-thickness: Thickness
-threshold_mode: Threshold Mode
-thresholds: Thresholds
-thresholds_color: Thresholds Color
-time_hh_mm_ss: "Time (hh:mm:ss)"
-timeout: Timeout
-timestamp: Timestamp
-timestamp_key: Timestamp Key
-title: Title
-to: To
-to_emails: To Emails
-token: Token
-topic: Topic
-trait: Trait
-traits: Traits
-transmit_pre_delay: Transmit Pre Delay
-trigger_on_event: Trigger On Event
+theme_color: צבע ערכת נושא
+thickness: עובי
+threshold_mode: מצב סף
+thresholds: ספים
+thresholds_color: צבע ספים
+time_hh_mm_ss: "שעה (hh:mm:ss)"
+timeout: זמן קצוב
+timestamp: חותמת זמן
+timestamp_key: מפתח חותמת זמן
+title: כותרת
+to: אל
+to_emails: אל דוא״ל
+token: אסימון
+topic: נושא
+trait: תכונה
+traits: תכונות
+transmit_pre_delay: השהיה לפני שידור
+trigger_on_event: הפעל באירוע
 'true': 'True'
-type: Type
-unit: Unit
-up: UP
-update: Update
-update_body: Update Body
-update_data: Update Data
-update_endpoint: Update Endpoint
-update_firmware: Update Firmware
-update_node: Update Node
-update_post_run: Update Post Run
-update_pre_run: Update Pre Run
-update_query_parameters: Update Query Parameters
-update_resource: Update Resource
-update_script: Update Script
-update_trait: Update trait
-update_value: Update Value
-update_y_axis: Update Y Axis
-upload: Upload
-upload_firmware: Upload Firmware
+type: סוג
+unit: יחידה
+up: למעלה
+update: עדכן
+update_body: עדכן גוף
+update_data: עדכן נתונים
+update_endpoint: עדכן נקודת קצה
+update_firmware: עדכן קושחה
+update_node: עדכן צומת
+update_post_run: עדכן לאחר הרצה
+update_pre_run: עדכן לפני הרצה
+update_query_parameters: עדכן פרמטרי שאילתה
+update_resource: עדכן משאב
+update_script: עדכן סקריפט
+update_trait: עדכן תכונה
+update_value: עדכן ערך
+update_y_axis: עדכן ציר Y
+upload: העלה
+upload_firmware: העלה קושחה
 url: URL
-use_global: Use Global
-use_global_encryption_key: Use Global Encryption Key
-use_global_password: Use Global Password
-use_global_style: Use Global Style
-user_id: User ID
-username: Username
-validate_time_everyday: Validate Time Everyday
-validity: Validity
-value: Value
-value_formatter: Value Formatter
-value_key: Value Key
-variable: Variable
-variable_name: Variable Name
-variables: Variables
-version: Version
-virtual_assistant: Virtual Assistant
-virtual_assistant_details: Virtual Assistant Details
-virtual_assistants: Virtual Assistants
-virtual_device_details: Virtual Device Details
-virtual_devices: Virtual Devices
-web_console: Web Console
+use_global: השתמש בכללי
+use_global_encryption_key: השתמש במפתח הצפנה כללי
+use_global_password: השתמש בסיסמה כללית
+use_global_style: השתמש בסגנון כללי
+user_id: מזהה משתמש
+username: שם משתמש
+validate_time_everyday: אמת שעה מדי יום
+validity: תוקף
+value: ערך
+value_formatter: מעצב ערך
+value_key: מפתח ערך
+variable: משתנה
+variable_name: שם משתנה
+variables: משתנים
+version: גרסה
+virtual_assistant: עוזר וירטואלי
+virtual_assistant_details: פרטי עוזר וירטואלי
+virtual_assistants: עוזרים וירטואליים
+virtual_device_details: פרטי התקן וירטואלי
+virtual_devices: התקנים וירטואליים
+web_console: מסוף אינטרנט
 webhook: Webhook
-websocket_disconnected: Websocket disconnected
-welcome_to_mycontroller: Welcome to MyController
-width_px: Width (px)
-y_axis: Y Axis
-y_axis_configuration: Y Axis Configuration
+websocket_disconnected: Websocket מנותק
+welcome_to_mycontroller: ברוכים הבאים ל-MyController
+width_px: רוחב (px)
+y_axis: ציר Y
+y_axis_configuration: הגדרות ציר Y
 yaml: YAML
-yaml_view: YAML View
-statement: Statement
-statements: Statements
-user_details: User Details
-users: Users
-layout: Layout
-layout_tree: Tree
-layout_force: Force
-refresh: Refresh
-include_child_nodes: Include child nodes
-child_nodes: Child Nodes
+yaml_view: תצוגת YAML
+statement: הצהרה
+statements: הצהרות
+user_details: פרטי משתמש
+users: משתמשים
+layout: פריסה
+layout_tree: עץ
+layout_force: כוח
+refresh: רענן
+include_child_nodes: כלול צמתי בנים
+child_nodes: צמתי בנים

@@ -1,423 +1,423 @@
 ---
-about: About
-actions: Actions
-active_duration: Active Duration
-add: Add
-add_a_field: Add a Field
-add_a_firmware: Add a Firmware
-add_a_forward_payload: Add a Forward payload
-add_a_gateway: Add a Gateway
-add_a_handler: Add a Handler
-add_a_node: Add a Node
-add_a_schedule: Add a Schedule
-add_a_policy: Add a Policy
-add_a_service_account: Add a Service Account
-add_a_source: Add a Source
-add_a_task: Add a Task
-add_a_user: Add a User
-add_a_virtual_assistant: Add a Virtual Assistant
-add_a_virtual_device: Add a Virtual Device
-add_an_item: Add an item
-add_widget: Add Widget
-address: Address
-agent_user_id: Agent User ID
-alerts_empty_message: There are currently no alerts.
-alerts_empty_title: No alerts found
-alive_check_interval: Alive Check Interval
-all_rights_reserved: All Rights Reserved
-allow_overwrite: Allow Overwrite
-apache_license_2: Apache License 2.0
+about: Over
+actions: Acties
+active_duration: Actieve duur
+add: Toevoegen
+add_a_field: Een veld toevoegen
+add_a_firmware: Een firmware toevoegen
+add_a_forward_payload: Een payload-doorsturing toevoegen
+add_a_gateway: Een gateway toevoegen
+add_a_handler: Een verwerker toevoegen
+add_a_node: Een knooppunt toevoegen
+add_a_schedule: Een planning toevoegen
+add_a_policy: Een beleid toevoegen
+add_a_service_account: Een serviceaccount toevoegen
+add_a_source: Een bron toevoegen
+add_a_task: Een taak toevoegen
+add_a_user: Een gebruiker toevoegen
+add_a_virtual_assistant: Een virtuele assistent toevoegen
+add_a_virtual_device: Een virtueel apparaat toevoegen
+add_an_item: Een item toevoegen
+add_widget: Widget toevoegen
+address: Adres
+agent_user_id: Gebruikers-ID van de agent
+alerts_empty_message: Er zijn momenteel geen meldingen.
+alerts_empty_title: Geen meldingen gevonden
+alive_check_interval: Interval voor activiteitscontrole
+all_rights_reserved: Alle rechten voorbehouden
+allow_overwrite: Overschrijven toestaan
+apache_license_2: Apache-licentie 2.0
 api: API
-ask_confirmation: Ask Confirmation
-assigned_firmware: Assigned Firmware
-assigned_nodes: Assigned Nodes
-auto_disable: Auto Disable
-auto_update: Auto Update
-axis: Axis
-backup: Backup
-backup_and_restore: Backup and Restore
-backup_locations: Backup Locations
-battery: Battery
-baud_rate: Baud Rate
-body: Body
-bridge: Bridge
-brightness: Brightness
+ask_confirmation: Bevestiging vragen
+assigned_firmware: Toegewezen firmware
+assigned_nodes: Toegewezen knooppunten
+auto_disable: Automatisch uitschakelen
+auto_update: Automatisch bijwerken
+axis: As
+backup: Back-up
+backup_and_restore: Back-up en herstel
+backup_locations: Back-uplocaties
+battery: Batterij
+baud_rate: Baudrate
+body: Inhoud
+bridge: Brug
+brightness: Helderheid
 broker: Broker
-browse: Browse
-build_date: Build Date
-button: Button
-button_text: Button Text
-cancel: Cancel
-chart_configuration: Chart Configuration
-chart_type: Chart Type
-chat_ids: Chat IDs
-clear: Clear
-clear_all: Clear All
-color: Color
-color_temperature: Color Temperature
-column_display: Column Display
-conditions: Conditions
-configuration: Configuration
-configure_via: Configure via
-confirm_password: Confirm Password
-confirmation_message: Confirmation Message
-connection_timeout: Connection Timeout
-control_configuration: Control Configuration
-control_type: Control Type
-copied: Copied
-copy: Copy
-corner_smoothing: Corner Smoothing
+browse: Bladeren
+build_date: Builddatum
+button: Knop
+button_text: Knoptekst
+cancel: Annuleren
+chart_configuration: Grafiekconfiguratie
+chart_type: Grafiektype
+chat_ids: "Chat-ID's"
+clear: Wissen
+clear_all: Alles wissen
+color: Kleur
+color_temperature: Kleurtemperatuur
+column_display: Kolomweergave
+conditions: Voorwaarden
+configuration: Configuratie
+configure_via: Configureren via
+confirm_password: Wachtwoord bevestigen
+confirmation_message: Bevestigingsbericht
+connection_timeout: Verbindingstime-out
+control_configuration: Besturingsconfiguratie
+control_type: Besturingstype
+copied: Gekopieerd
+copy: Kopiëren
+corner_smoothing: Hoekafronding
 cpu: CPU
-cpu_disabled: CPU Disabled
-create_new: Create New
-created_on: Created On
-cron_expression: Cron Expression
-current_password: Current Password
-cursor_tooltip: Cursor Tooltip
-custom_data: Custom Data
-custom_mapping: Custom Mapping
-custom_variables: Custom Variables
-dampening: Dampening
+cpu_disabled: CPU uitgeschakeld
+create_new: Nieuw maken
+created_on: Gemaakt op
+cron_expression: Cron-expressie
+current_password: Huidig wachtwoord
+cursor_tooltip: Cursortooltip
+custom_data: Aangepaste gegevens
+custom_mapping: Aangepaste toewijzing
+custom_variables: Aangepaste variabelen
+dampening: Demping
 dashboard: Dashboard
-data: Data
-data_repository: Data Repository
-data_repository_add_an_entry: 'Data Repository: Add an entry'
-data_repository_modify_an_entry: 'Data Repository: Modify an entry'
-data_retrieved_from_server: Data retrieved from server
-data_type: Data Type
-date_yyyy_mm_dd: Date (yyyy-mm-dd)
-day_of_month: Date of Month
-day_of_week: Days of Week
-delete: Delete
-description: Description
-destination_field: Destination Field
-detailed_filter: Detailed Filter
+data: Gegevens
+data_repository: Gegevensrepository
+data_repository_add_an_entry: "Gegevensrepository: een item toevoegen"
+data_repository_modify_an_entry: "Gegevensrepository: een item wijzigen"
+data_retrieved_from_server: Gegevens opgehaald van de server
+data_type: Gegevenstype
+date_yyyy_mm_dd: Datum (jjjj-mm-dd)
+day_of_month: Dag van de maand
+day_of_week: Dagen van de week
+delete: Verwijderen
+description: Beschrijving
+destination_field: Doelveld
+detailed_filter: Gedetailleerd filter
 details: Details
-device_filter: Device Filter
-device_type: Device Type
+device_filter: Apparaatfilter
+device_type: Apparaattype
 dialog:
-  clear_sleeping_queue_heading: "Would you like to clear the queue?"
-  clear_sleeping_queue_msg: All the sleeping queued messages will be dropped
-  delete_resource_msg: "Are you sure want to delete the selected items?"
-  delete_title_backup: "Delete backup files?"
-  delete_title_dashboard: "Delete dashboard?"
-  delete_title_data_repository: "Delete data repositories?"
-  delete_title_field: "Delete fields?"
-  delete_title_firmware: "Delete firmware?"
-  delete_title_forward_payload: "Delete forward payloads?"
-  delete_title_gateway: "Delete gateways?"
-  delete_title_handler: "Delete handlers?"
-  delete_title_node: "Delete nodes?"
-  delete_title_schedule: "Delete schedules?"
-  delete_title_service_account: "Delete service account?"
-  delete_title_user: "Delete user?"
-  delete_title_policy: "Delete policy?"
-  delete_title_source: "Delete sources?"
-  delete_title_task: "Delete tasks?"
-  delete_title_virtual_assistant: "Delete virtual assistant?"
-  delete_title_virtual_device: "Delete virtual device?"
-  node_reset_heading: "Reset Node?"
-  node_reset_msg: "Are you sure want to reset the selected nodes?<br/>After this operation:<3><0>Configuration will be restored to factory settings.</0><1>you may lose access to the selected node(s) from MyController!</1></3>"
-  reboot_nodes_heading: "Reboot Node?"
-  reboot_nodes_msg: "Are you sure want to reboot the selected nodes?"
-  reset_msg_jwt_secret: "Are you sure want to reset the JWT secret? After this operation, all the existing logged in sessions to this server will be invalid also you will be logged out!"
-  reset_title_jwt_secret: Reset JWT secret
-  restore_heading: "Confirm to perform a restore operation?"
-  restore_msg: "Are you sure want to restore to selected backup file?<br/>After this operation:<3><0>Server data will be restored to <1>{{fileName}}</1></0><1>You cannot rollback this operation</1><2>Always take a backup before performing a restore operation</2><3>You may need to start the server manually</3></3>"
-disable: Disable
-disable_scrollbar: Disable Scrollbar
-disabled: Disabled
-disabled_all: Disabled All
-discover_nodes: Discover Nodes
-disk: Disk
-disks: Disks
-display_name: Display Name
-display_percentage: Display Percentage
-display_text: Display Text
-display_value: Display Value
-do_update: Do Update
-documentation: Documentation
-down: Down
-download: Download
-drop_down_position: Drop Down Position
-duration: Duration
-edit: Edit
-edit_dashboard_settings: Edit Dashboard Settings
-edit_widget_settings: Edit Widget Settings
-email: Email
-edit_statement: Edit Statement
+  clear_sleeping_queue_heading: Wilt u de wachtrij wissen?
+  clear_sleeping_queue_msg: Alle berichten in de slaapwachtrij worden verworpen
+  delete_resource_msg: Weet u zeker dat u de geselecteerde items wilt verwijderen?
+  delete_title_backup: Back-upbestanden verwijderen?
+  delete_title_dashboard: Dashboard verwijderen?
+  delete_title_data_repository: Gegevensrepositories verwijderen?
+  delete_title_field: Velden verwijderen?
+  delete_title_firmware: Firmware verwijderen?
+  delete_title_forward_payload: Payload-doorsturingen verwijderen?
+  delete_title_gateway: Gateways verwijderen?
+  delete_title_handler: Verwerkers verwijderen?
+  delete_title_node: Knooppunten verwijderen?
+  delete_title_schedule: Planningen verwijderen?
+  delete_title_service_account: Serviceaccount verwijderen?
+  delete_title_user: Gebruiker verwijderen?
+  delete_title_policy: Beleid verwijderen?
+  delete_title_source: Bronnen verwijderen?
+  delete_title_task: Taken verwijderen?
+  delete_title_virtual_assistant: Virtuele assistent verwijderen?
+  delete_title_virtual_device: Virtueel apparaat verwijderen?
+  node_reset_heading: Knooppunt resetten?
+  node_reset_msg: "Weet u zeker dat u de geselecteerde knooppunten wilt resetten?<br/>Na deze bewerking:<3><0>De configuratie wordt naar de fabrieksinstellingen hersteld.</0><1>U kunt de toegang tot de geselecteerde knooppunten vanuit MyController verliezen!</1></3>"
+  reboot_nodes_heading: Knooppunt herstarten?
+  reboot_nodes_msg: Weet u zeker dat u de geselecteerde knooppunten wilt herstarten?
+  reset_msg_jwt_secret: "Weet u zeker dat u het JWT-geheim wilt resetten? Na deze bewerking worden alle bestaande sessies op deze server ongeldig en wordt u afgemeld!"
+  reset_title_jwt_secret: JWT-geheim resetten
+  restore_heading: Herstel bevestigen?
+  restore_msg: "Weet u zeker dat u wilt herstellen vanuit het geselecteerde back-upbestand?<br/>Na deze bewerking:<3><0>Servergegevens worden hersteld naar <1>{{fileName}}</1></0><1>Deze bewerking kan niet ongedaan worden gemaakt</1><2>Maak altijd een back-up voordat u herstelt</2><3>Mogelijk moet u de server handmatig starten</3></3>"
+disable: Uitschakelen
+disable_scrollbar: Schuifbalk uitschakelen
+disabled: Uitgeschakeld
+disabled_all: Alles uitgeschakeld
+discover_nodes: Knooppunten ontdekken
+disk: Schijf
+disks: Schijven
+display_name: Weergavenaam
+display_percentage: Percentage weergeven
+display_text: Weergavetekst
+display_value: Waarde weergeven
+do_update: Bijwerken
+documentation: Documentatie
+down: Omlaag
+download: Downloaden
+drop_down_position: Positie van de keuzelijst
+duration: Duur
+edit: Bewerken
+edit_dashboard_settings: Dashboardinstellingen bewerken
+edit_widget_settings: Widgetinstellingen bewerken
+email: E-mail
+edit_statement: Instructie bewerken
 effect: Effect
-enable: Enable
-enabled: Enabled
-encryption_key: Encryption Key
-endpoint: Endpoint
-endpoints: Endpoints
-entities: Entities
+enable: Inschakelen
+enabled: Ingeschakeld
+encryption_key: Versleutelingsleutel
+endpoint: Eindpunt
+endpoints: Eindpunten
+entities: Entiteiten
 error:
   console:
-    invalid_login_credentials: Invalid login credentials.
-    login_msg_loading_failed: Error on fetching login message
-evaluation: Evaluation
-evaluations: Evaluations
-event_filters: Event Filters
-events: Events
-executed_count: Executed Count
-execution_interval: Execution Interval
-execution_interval_0h0m0s: Execution Interval (0h0m0s)
-execution_mode: Execution Mode
-experimental: Experimental
-expires_on: Expires On
-export_type: Export Type
+    invalid_login_credentials: Ongeldige aanmeldgegevens.
+    login_msg_loading_failed: Fout bij het ophalen van het aanmeldbericht
+evaluation: Evaluatie
+evaluations: Evaluaties
+event_filters: Gebeurtenisfilters
+events: Gebeurtenissen
+executed_count: Aantal uitvoeringen
+execution_interval: Uitvoeringsinterval
+execution_interval_0h0m0s: Uitvoeringsinterval (0h0m0s)
+execution_mode: Uitvoeringsmodus
+experimental: Experimenteel
+expires_on: Verloopt op
+export_type: Exporttype
 'false': 'False'
-favorite: Favorite
-fetch_info: Fetch Info
-fetching: Fetching
-field: Field
-field_details: Field Details
-field_id: Field ID
-fields: Fields
-file_details: File Details
-file_uploaded_successfully: File uploaded successfully
-filename: File Name
-filename_placeholder: Drag a file here or browse to upload
+favorite: Favoriet
+fetch_info: Info ophalen
+fetching: Bezig met ophalen
+field: Veld
+field_details: Velddetails
+field_id: Veld-ID
+fields: Velden
+file_details: Bestandsdetails
+file_uploaded_successfully: Bestand succesvol geüpload
+filename: Bestandsnaam
+filename_placeholder: Sleep een bestand hierheen of blader om te uploaden
 fill_opacity_%: Fill Opacity (%)
 filter: Filter
-filter_type: Filter Type
+filter_type: Filtertype
 filters: Filters
-firmware_details: Firmware Details
-firmware_file: Firmware File
-firmware_update: Firmware Update
+firmware_details: Firmwaredetails
+firmware_file: Firmwarebestand
+firmware_update: Firmware-update
 firmwares: Firmwares
-flush_interval: Flush Interval
-forgot_username_or_password: "Forgot username or password?"
-form_generic_error_message: Check the error and/or mandatory(*) fields
-form_view: Form View
+flush_interval: Flush-interval
+forgot_username_or_password: Gebruikersnaam of wachtwoord vergeten?
+form_generic_error_message: "Controleer de fouten en/of verplichte velden (*)"
+form_view: Formulierweergave
 forum: Forum
-forward_payload: Forward Payload
-forward_payload_details: Forward Payload Details
-frequency: Frequency
-from: From
-from_email: From Email
-full_name: Full Name
-function: Function
+forward_payload: Payload doorsturen
+forward_payload_details: Details van payload-doorsturing
+frequency: Frequentie
+from: Van
+from_email: Van-e-mail
+full_name: Volledige naam
+function: Functie
 gateway: Gateway
-gateway_details: Gateway Details
-gateway_id: Gateway ID
+gateway_details: Gatewaydetails
+gateway_id: Gateway-ID
 gateways: Gateways
-all_gateways: All gateways
-all_nodes: All nodes
-show_sources: Show sources
-show_fields: Show fields
+all_gateways: Alle gateways
+all_nodes: Alle knooppunten
+show_sources: Bronnen tonen
+show_fields: Velden tonen
 select_gateway: Gateway
-no_topology_nodes: No nodes to display
-no_topology_nodes_for_gateway: No nodes found for this gateway
-geo_location: GEO Location
-git_commit: Git Commit
-global_configuration: Global Configuration
-golang_version: GoLang Version
-handler: Handler
-handler_details: Handler Details
-handler_parameters: Handler Parameters
-handler_type: Handler Type
-handlers: Handlers
-header_name: Header Name
+no_topology_nodes: Geen knooppunten om weer te geven
+no_topology_nodes_for_gateway: Geen knooppunten gevonden voor deze gateway
+geo_location: GEO-locatie
+git_commit: Git-commit
+global_configuration: Algemene configuratie
+golang_version: GoLang-versie
+handler: Verwerker
+handler_details: Verwerkerdetails
+handler_parameters: Verwerkerparameters
+handler_type: Verwerkertype
+handlers: Verwerkers
+header_name: Headernaam
 headers: Headers
-heartbeat_request: Heartbeat Request
-height_px: Height (px)
+heartbeat_request: Heartbeat-aanvraag
+height_px: Hoogte (px)
 helper_text:
-  invalid_address_esphome: 'Invalid address, example: node1.local:6053'
-  invalid_api: Invalid API
-  invalid_backup_retention_count: "Invalid retention count, 0 for no limit"
-  invalid_baud_rate: Invalid baud rate
-  invalid_broker_url: Invalid Broker URL
-  invalid_current_password: Enter your current password
-  invalid_data: Invalid data
-  invalid_date: Invalid date
-  invalid_day_of_month: Invalid day of month
-  invalid_directory: Invalid directory
-  invalid_duration: Invalid Duration
-  invalid_email: Invalid email
-  invalid_execution_interval_empty: Execution interval should not be empty
-  invalid_field_id: "Invalid field id. chars, min=1, max=100"
-  invalid_filters: Invalid filters
-  invalid_height: Invalid Height
-  invalid_host: Invalid Host
-  invalid_id: "Invalid id. chars, min=4, max=100, and space not allowed"
-  invalid_interval: Invalid interval
-  invalid_key: "Invalid key. chars, min=1 and max=100"
-  invalid_key_path: Key path can not be empty
-  invalid_latitude: Invalid latitude
-  invalid_limit: Invalid limit
-  invalid_location: Invalid location
-  invalid_longitude: Invalid longitude
-  invalid_maximum_backup: "Invalid maximum backup count. int, min=0"
-  invalid_name: "Invalid name. chars, min=2, max=100"
-  invalid_node_id: "Invalid node ID. chars, min=1 and max=100"
-  invalid_offset: Invalid offset
-  invalid_path: Invalid path
-  invalid_payload: Invalid payload
-  invalid_port: Invalid port
-  invalid_prefix: Invalid prefix
-  invalid_profile_confirm_password: Invalid confirm password
-  invalid_profile_password: "Invalid password. chars, min=3, max=100"
-  invalid_profile_username: "Invalid username. chars, min=3, max=100, and space not allowed"
-  invalid_repeat_count: Invalid repeat count
-  invalid_response_code: "Enter a valid response code, enter 0 to ignore"
-  invalid_retry_count: "Invalid retry count. int, min=0"
-  invalid_script_empty: Script should not be empty
-  invalid_server_url: Invalid server URL
-  invalid_source_id: "Invalid source ID. chars, min=1 and max=100"
-  invalid_text: "Invalid text. chars, min=1 and max=100"
-  invalid_time: Invalid time
-  invalid_title: Invalid title
-  invalid_token: Invalid token
-  invalid_topic: Invalid topic
-  invalid_type: Invalid type
-  invalid_url: Invalid URL
-  invalid_username: Invalid username
-  invalid_password: Invalid password
-  password_leave_empty: Leave empty to keep the current password
-  service_account_user: Leave empty to create for yourself. Pick a user to create the account for them.
-  invalid_value: Invalid value
-  invalid_width: Invalid width
-hide_border: Hide Border
-hide_header: Hide Header
-hide_status_column: Hide Status Column
-hide_value_column: Hide Value Column
+  invalid_address_esphome: "Ongeldig adres, voorbeeld: node1.local:6053"
+  invalid_api: Ongeldige API
+  invalid_backup_retention_count: "Ongeldig retentieaantal, 0 voor geen limiet"
+  invalid_baud_rate: Ongeldige baudrate
+  invalid_broker_url: Ongeldige broker-URL
+  invalid_current_password: Voer uw huidige wachtwoord in
+  invalid_data: Ongeldige gegevens
+  invalid_date: Ongeldige datum
+  invalid_day_of_month: Ongeldige dag van de maand
+  invalid_directory: Ongeldige map
+  invalid_duration: Ongeldige duur
+  invalid_email: Ongeldig e-mailadres
+  invalid_execution_interval_empty: Het uitvoeringsinterval mag niet leeg zijn
+  invalid_field_id: "Ongeldige veld-ID. tekens, min=1, max=100"
+  invalid_filters: Ongeldige filters
+  invalid_height: Ongeldige hoogte
+  invalid_host: Ongeldige host
+  invalid_id: "Ongeldige ID. tekens, min=4, max=100, spaties niet toegestaan"
+  invalid_interval: Ongeldig interval
+  invalid_key: "Ongeldige sleutel. tekens, min=1 en max=100"
+  invalid_key_path: Sleutelpad mag niet leeg zijn
+  invalid_latitude: Ongeldige breedtegraad
+  invalid_limit: Ongeldige limiet
+  invalid_location: Ongeldige locatie
+  invalid_longitude: Ongeldige lengtegraad
+  invalid_maximum_backup: "Ongeldig maximum aantal back-ups. geheel getal, min=0"
+  invalid_name: "Ongeldige naam. tekens, min=2, max=100"
+  invalid_node_id: "Ongeldige knooppunt-ID. tekens, min=1 en max=100"
+  invalid_offset: Ongeldige offset
+  invalid_path: Ongeldig pad
+  invalid_payload: Ongeldige payload
+  invalid_port: Ongeldige poort
+  invalid_prefix: Ongeldig voorvoegsel
+  invalid_profile_confirm_password: Ongeldige wachtwoordbevestiging
+  invalid_profile_password: "Ongeldig wachtwoord. tekens, min=3, max=100"
+  invalid_profile_username: "Ongeldige gebruikersnaam. tekens, min=3, max=100, spaties niet toegestaan"
+  invalid_repeat_count: Ongeldig aantal herhalingen
+  invalid_response_code: "Voer een geldige antwoordcode in, 0 om te negeren"
+  invalid_retry_count: "Ongeldig aantal nieuwe pogingen. geheel getal, min=0"
+  invalid_script_empty: Script mag niet leeg zijn
+  invalid_server_url: Ongeldige server-URL
+  invalid_source_id: "Ongeldige bron-ID. tekens, min=1 en max=100"
+  invalid_text: "Ongeldige tekst. tekens, min=1 en max=100"
+  invalid_time: Ongeldige tijd
+  invalid_title: Ongeldige titel
+  invalid_token: Ongeldig token
+  invalid_topic: Ongeldig onderwerp
+  invalid_type: Ongeldig type
+  invalid_url: Ongeldige URL
+  invalid_username: Ongeldige gebruikersnaam
+  invalid_password: Ongeldig wachtwoord
+  password_leave_empty: Laat leeg om het huidige wachtwoord te behouden
+  service_account_user: Laat leeg om voor uzelf aan te maken. Kies een gebruiker om het account voor die persoon aan te maken.
+  invalid_value: Ongeldige waarde
+  invalid_width: Ongeldige breedte
+hide_border: Rand verbergen
+hide_header: Koptekst verbergen
+hide_status_column: Statuskolom verbergen
+hide_value_column: Waardekolom verbergen
 host: Host
-host_id: Host ID
-host_ids: Host IDs
+host_id: Host-ID
+host_ids: "Host-ID's"
 html: HTML
-hue: Hue
-icon_or_image_location: Icon or Image Location
+hue: Tint
+icon_or_image_location: Locatie van pictogram of afbeelding
 id: ID
-ignore_duplicate: Ignore Duplicate
-image_source: Image Source
-image_type: Image Type
-in_progress: In Progress
-inactive_duration: Inactive Duration
-include_configuration: Include Configuration
-include_global_configuration: Include Global Configuration
-include_insecure_share: Include Insecure Share
-include_secure_share: Include Secure Share
-insecure: Insecure
-internal_message_ack: Internal Message Ack
-interpolation: Interpolation
+ignore_duplicate: Duplicaten negeren
+image_source: Afbeeldingsbron
+image_type: Afbeeldingstype
+in_progress: Bezig
+inactive_duration: Inactieve duur
+include_configuration: Configuratie opnemen
+include_global_configuration: Algemene configuratie opnemen
+include_insecure_share: Onbeveiligde share opnemen
+include_secure_share: Beveiligde share opnemen
+insecure: Onbeveiligd
+internal_message_ack: Interne berichtbevestiging
+interpolation: Interpolatie
 interval: Interval
 interval_0h0m0s: Interval (0h0m0s)
-invalid_file: Invalid file
-is_sleep_node: Is Sleep Node
-is_static: Is Static
+invalid_file: Ongeldig bestand
+is_sleep_node: Slaapknooppunt
+is_static: Statisch
 javascript: Javascript
 json: JSON
 jwt_secret: JWT Secret
-keep_me_logged_in_30_days: Keep me logged in for 30 days.
-key: Key
-key_path: Key Path
+keep_me_logged_in_30_days: 30 dagen aangemeld blijven.
+key: Sleutel
+key_path: Sleutelpad
 label: Label
 labels: Labels
-language: Language
-last_evaluation: Last Evaluation
-last_modified: Last Modified
-last_run: Last Run
-last_seen: Last Seen
-last_status: Last Status
-last_success: Last Success
-latitude: Latitude
-legend_orientation: Legend Orientation
-legend_position: Legend Position
-library_version: Library Version
-light: Light
-limit: Limit
-loading: Loading
-location: Location
-location_name: Location Name
-locations: Locations
-log_in: Log In
-log_rotate_interval: Log Rotate Interval
-login: Login
-login_page: Login Page
-login_to_your_account: Login to your account
-logout: Logout
-longitude: Longitude
-mapping: Mapping
-mark_all_read: Mark all read
+language: Taal
+last_evaluation: Laatste evaluatie
+last_modified: Laatst gewijzigd
+last_run: Laatste uitvoering
+last_seen: Laatst gezien
+last_status: Laatste status
+last_success: Laatste succes
+latitude: Breedtegraad
+legend_orientation: Legendestand
+legend_position: Legendepositie
+library_version: Bibliotheekversie
+light: Licht
+limit: Limiet
+loading: Laden
+location: Locatie
+location_name: Locatienaam
+locations: Locaties
+log_in: Aanmelden
+log_rotate_interval: Logrotatie-interval
+login: Aanmelding
+login_page: Aanmeldpagina
+login_to_your_account: Meld u aan bij uw account
+logout: Afmelden
+longitude: Lengtegraad
+mapping: Toewijzing
+mark_all_read: Alles als gelezen markeren
 markdown: Markdown
 markdown_v2: Markdown v2
-match_all: Match All
-max_y_axis: Max (Y Axis)
+match_all: Aan alles voldoen
+max_y_axis: Max. (Y-as)
 maximum: Maximum
-maximum_age: Maximum Age
-maximum_backup: Maximum Backup
-maximum_size: Maximum Size
-maximum_value: Maximum Value
-memory: Memory
-memory_disabled: Memory Disabled
-message: Message
-message_logger: Message Logger
-method: Method
-metric_configuration: Metric Configuration
-metric_function: Metric Function
-metric_interval: Metric Interval
-metric_type: Metric Type
-metrics: Metrics
-metrics_database_disabled: 'WARNING: Metrics database disabled'
-min_y_axis: Min (Y Axis)
+maximum_age: Maximale leeftijd
+maximum_backup: Maximum aantal back-ups
+maximum_size: Maximumgrootte
+maximum_value: Maximumwaarde
+memory: Geheugen
+memory_disabled: Geheugen uitgeschakeld
+message: Bericht
+message_logger: Berichtlogboek
+method: Methode
+metric_configuration: Metriekconfiguratie
+metric_function: Metriekfunctie
+metric_interval: Metriekinterval
+metric_type: Metriektype
+metrics: Metrieken
+metrics_database_disabled: "WAARSCHUWING: metriekendatabase uitgeschakeld"
+min_y_axis: Min. (Y-as)
 minimum: Minimum
-minimum_value: Minimum Value
-minimum_width: Minimum Width
-mixed_resources: Mixed Resources
-modified_on: Modified On
-name: Name
-name_key: Name Key
-never_expire: Never Expire
-new: New
-new_password: New Password
-no_change_since: No Change Since
-no_dashboard_message: There is no dashboard available to load.
-no_dashboard_title: No dashboards available
-no_data: No data
-no_labels: No labels
-no_login_message: No message set for login
-node: Node
-node_configuration: Node Configuration
-node_details: Node Details
-node_endpoints: Node Endpoints
-node_id: Node ID
-node_state_updater: Node State Updater
-nodes: Nodes
-none: None
-notifications: Notifications
-number_of_axis: Number of Axis
-occurrences: Occurrences
+minimum_value: Minimumwaarde
+minimum_width: Minimumbreedte
+mixed_resources: Gemengde resources
+modified_on: Gewijzigd op
+name: Naam
+name_key: Naamsleutel
+never_expire: Verloopt nooit
+new: Nieuw
+new_password: Nieuw wachtwoord
+no_change_since: Ongewijzigd sinds
+no_dashboard_message: Er is geen dashboard beschikbaar om te laden.
+no_dashboard_title: Geen dashboards beschikbaar
+no_data: Geen gegevens
+no_labels: Geen labels
+no_login_message: Geen bericht ingesteld voor aanmelding
+node: Knooppunt
+node_configuration: Knooppuntconfiguratie
+node_details: Knooppuntdetails
+node_endpoints: Knooppunteindpunten
+node_id: Knooppunt-ID
+node_state_updater: Statusbijwerker van knooppunt
+nodes: Knooppunten
+none: Geen
+notifications: Meldingen
+number_of_axis: Aantal assen
+occurrences: Voorkomens
 'off': 'OFF'
-off_text: OFF Text
+off_text: OFF-tekst
 offset_0h0m0s: Offset (0h0m0s)
 offset_y_%: Offset Y (%)
 'on': 'ON'
-on_button: ON Button
-on_receive: On Receive
-on_send: On Send
-on_text: ON Text
-operations: Operations
+on_button: ON-knop
+on_receive: Bij ontvangst
+on_send: Bij verzenden
+on_text: ON-tekst
+operations: Bewerkingen
 operator: Operator
-options: Options
+options: Opties
 opts:
   backup_provider:
-    desc_disk: Backup data in to disk
-    label_disk: Disk
+    desc_disk: Gegevens naar schijf back-uppen
+    label_disk: Schijf
   button_type:
-    label_danger: Danger (red)
-    label_primary: Primary (blue)
-    label_secondary: Secondary (blue)
-    label_warning: Warning (yellow)
+    label_danger: Gevaar (rood)
+    label_primary: Primair (blauw)
+    label_secondary: Secundair (blauw)
+    label_warning: Waarschuwing (geel)
   chart_group_type:
-    desc_group_chart: Single axis with multiple resources
-    desc_mixed_chart: Multiple axis with multiple resources
-    desc_pie_chart: Single pie chart
-    label_group_chart: Group Chart
-    label_mixed_chart: Mixed Chart
-    label_pie_chart: Pie Chart
+    desc_group_chart: Eén as met meerdere resources
+    desc_mixed_chart: Meerdere assen met meerdere resources
+    desc_pie_chart: Enkel cirkeldiagram
+    label_group_chart: Groepsgrafiek
+    label_mixed_chart: Gemengde grafiek
+    label_pie_chart: Cirkeldiagram
   chart_interpolation:
     label_basis: Basis
     label_cardinal: Cardinal
@@ -430,93 +430,93 @@ opts:
     label_step_after: StepAfter
     label_step_before: StepBefore
   chart_type:
-    desc_area_chart: Area Chart
-    desc_bar_chart: Bar Chart
-    desc_line_chart: Line Chart
+    desc_area_chart: Vlakdiagram
+    desc_bar_chart: Staafdiagram
+    desc_line_chart: Lijndiagram
     desc_pie_chart: Pie Chart
-    desc_scatter_chart: Scatter Chart
-    label_area_chart: Area Chart
-    label_bar_chart: Bar Chart
-    label_line_chart: Line Chart
-    label_pie_chart: Pie Chart
-    label_scatter_chart: Scatter Chart
+    desc_scatter_chart: Spreidingsdiagram
+    label_area_chart: Vlakdiagram
+    label_bar_chart: Staafdiagram
+    label_line_chart: Lijndiagram
+    label_pie_chart: Cirkeldiagram
+    label_scatter_chart: Spreidingsdiagram
   code_editor_language:
     label_html: HTML
     label_javascript: Javascript
     label_json: JSON
-    label_plaintext: Plan Text
+    label_plaintext: Platte tekst
     label_xml: XML
     label_yaml: YAML
   control_type:
-    label_mixed_control: Mixed Control
-    label_switch_button: Button Switch
-    label_switch_toggle: Switch Toggle
+    label_mixed_control: Gemengde besturing
+    label_switch_button: Drukschakelaar
+    label_switch_toggle: Schakelaar
   control_type_mixed:
-    label_button_push: Push Button
-    label_input: Input
-    label_options_select: Select Options
-    label_options_tab: Tab Options
-    label_slider: Slider
-    label_switch_button: Button Switch
+    label_button_push: Drukknop
+    label_input: Invoer
+    label_options_select: Selectieopties
+    label_options_tab: Tabopties
+    label_slider: Schuifregelaar
+    label_switch_button: Drukschakelaar
     label_switch_toggle: Toggle Switch
   dampening:
-    desc_active_duration: Active duration of the task
-    desc_consecutive: Number of consecutive occurrences
-    desc_evaluation: Number of occurrences in N evaluation
-    desc_none: Disable dampening feature
-    label_active_duration: Active Duration
-    label_consecutive: Consecutive
-    label_evaluation: Evaluation
-    label_none: None
+    desc_active_duration: Actieve duur van de taak
+    desc_consecutive: Aantal opeenvolgende voorkomens
+    desc_evaluation: Aantal voorkomens in N evaluaties
+    desc_none: Demping uitschakelen
+    label_active_duration: Actieve duur
+    label_consecutive: Opeenvolgend
+    label_evaluation: Evaluatie
+    label_none: Geen
   data_unit:
     label_bytes: Bytes
-    label_eib: Exbi Bytes (EiB)
-    label_gib: Gibi Bytes (GiB)
-    label_kib: Kibi Bytes (KiB)
-    label_mib: Mibi Bytes (MiB)
-    label_pib: Pebi Bytes (PiB)
-    label_tib: Tebi Bytes (TiB)
+    label_eib: Exbibytes (EiB)
+    label_gib: Gibibytes (GiB)
+    label_kib: Kibibytes (KiB)
+    label_mib: Mebibytes (MiB)
+    label_pib: Pebibytes (PiB)
+    label_tib: Tebibytes (TiB)
   event_type:
-    label_created: Created
-    label_deleted: Deleted
-    label_requested: Requested
-    label_updated: Updated
+    label_created: Gemaakt
+    label_deleted: Verwijderd
+    label_requested: Aangevraagd
+    label_updated: Bijgewerkt
   gw_msg_logger:
-    desc_file_logger: Messages will be logged in a file
-    desc_none: Messages will not be logged
-    label_file_logger: File Logger
-    label_none: None
+    desc_file_logger: Berichten worden in een bestand gelogd
+    desc_none: Berichten worden niet gelogd
+    label_file_logger: Bestandslogboek
+    label_none: Geen
   gw_protocol:
-    desc_ethernet: Ethernet Protocol
-    desc_http: HTTP Protocol
-    desc_mqtt: MQTT Protocol
-    desc_serial: Serial Protocol
+    desc_ethernet: Ethernet-protocol
+    desc_http: HTTP-protocol
+    desc_mqtt: MQTT-protocol
+    desc_serial: Serieel protocol
     label_ethernet: Ethernet
     label_http: HTTP
     label_mqtt: MQTT
-    label_serial: Serial
+    label_serial: Serieel
   gw_provider:
     desc_esphome: esphome.io
-    desc_generic: Generic Provider
-    desc_mysensors_v2: MySensors.org version 2.x
+    desc_generic: Algemene aanbieder
+    desc_mysensors_v2: MySensors.org versie 2.x
     desc_philips_hue: developers.meethue.com
-    desc_system_monitoring: Capture system resources and reports
+    desc_system_monitoring: Registreert systeembronnen en rapporteert
     desc_tasmota: tasmota.github.io
     label_esphome: ESPHome
-    label_generic: Generic
+    label_generic: Algemeen
     label_mysensors_v2: MySensors V2
     label_philips_hue: PhilipsHue
-    label_system_monitoring: System Monitoring
+    label_system_monitoring: Systeembewaking
     label_tasmota: Tasmota
   handler_type:
-    desc_backup: Perform backup of the server
-    desc_email: Sends email
-    desc_noop: No Operation Handler
-    desc_resource: Internal resource related actions
-    desc_telegram: Sends text to telegram
-    desc_webhook: Calls a webhook url
-    label_backup: Backup
-    label_email: Email
+    desc_backup: Een back-up van de server maken
+    desc_email: Verzendt e-mail
+    desc_noop: Verwerker zonder actie
+    desc_resource: Interne resourcegerelateerde acties
+    desc_telegram: Verzendt tekst naar Telegram
+    desc_webhook: Roept een webhook-URL aan
+    label_backup: Back-up
+    label_email: E-mail
     label_noop: Noop
     label_resource: Resource
     label_telegram: Telegram
@@ -527,494 +527,494 @@ opts:
     label_post: POST
     label_put: PUT
   image_load_type:
-    desc_custom_mapping: Display mapped image from field value
-    desc_image: Base64 encoded image from field value
-    label_custom_mapping: Custom Mapping
-    label_image: Raw Image
+    desc_custom_mapping: Toegewezen afbeelding tonen op basis van de veldwaarde
+    desc_image: Base64-gecodeerde afbeelding uit de veldwaarde
+    label_custom_mapping: Aangepaste toewijzing
+    label_image: Ruwe afbeelding
   image_rotation:
-    desc_rotate_180: Rotate 180°
-    desc_rotate_left_90: Rotate left side 90°
-    desc_rotate_none: no rotation
-    desc_rotate_right_90: Rotate right side 90°
-    label_rotate_180: Rotate 180°
-    label_rotate_left_90: Rotate left 90°
-    label_rotate_none: None
-    label_rotate_right_90: Rotate right 90°
+    desc_rotate_180: 180° draaien
+    desc_rotate_left_90: 90° naar links draaien
+    desc_rotate_none: geen rotatie
+    desc_rotate_right_90: 90° naar rechts draaien
+    label_rotate_180: 180° draaien
+    label_rotate_left_90: 90° links
+    label_rotate_none: Geen
+    label_rotate_right_90: 90° rechts
   image_source:
-    desc_disk: Image from a local disk location
-    desc_field: Image data from a field resource
-    desc_url: Image from a url
-    label_disk: Disk
-    label_field: Field
+    desc_disk: Afbeelding van een lokaal schijfpad
+    desc_field: Afbeeldingsgegevens uit een veldresource
+    desc_url: Afbeelding van een URL
+    label_disk: Schijf
+    label_field: Veld
     label_url: URL
   interval:
-    label_day_01: 1 days
-    label_hour_01: 1 hour
-    label_hour_03: 3 hours
-    label_hour_06: 6 hours
-    label_minute_01: 1 minute
-    label_minute_02: 2 minutes
-    label_minute_03: 3 minutes
-    label_minute_05: 5 minutes
-    label_minute_10: 10 minutes
-    label_minute_15: 15 minutes
-    label_minute_30: 30 minutes
-    label_never: Never
-    label_second_01: 1 second
-    label_second_05: 5 seconds
-    label_second_10: 10 seconds
-    label_second_15: 15 seconds
-    label_second_30: 30 seconds
-    label_second_45: 45 seconds
+    label_day_01: 1 dag
+    label_hour_01: 1 uur
+    label_hour_03: 3 uur
+    label_hour_06: 6 uur
+    label_minute_01: 1 minuut
+    label_minute_02: 2 minuten
+    label_minute_03: 3 minuten
+    label_minute_05: 5 minuten
+    label_minute_10: 10 minuten
+    label_minute_15: 15 minuten
+    label_minute_30: 30 minuten
+    label_never: Nooit
+    label_second_01: 1 seconde
+    label_second_05: 5 seconden
+    label_second_10: 10 seconden
+    label_second_15: 15 seconden
+    label_second_30: 30 seconden
+    label_second_45: 45 seconden
   legend_orientation:
-    desc_horizontal: Places in a horizontal position
-    desc_vertical: Places in a vertical position
-    label_horizontal: Horizontal
-    label_vertical: Vertical
+    desc_horizontal: Horizontaal plaatsen
+    desc_vertical: Verticaal plaatsen
+    label_horizontal: Horizontaal
+    label_vertical: Verticaal
   legend_position:
-    desc_bottom_center: Center of bottom
-    desc_bottom_left: Left side of bottom
-    desc_right: Right side
-    desc_top_left: Left side of top
-    label_bottom_center: Bottom Center
-    label_bottom_left: Bottom Left
-    label_right: Right
-    label_top_left: Top Left
+    desc_bottom_center: Onder in het midden
+    desc_bottom_left: Onder links
+    desc_right: Rechterkant
+    desc_top_left: Boven links
+    label_bottom_center: Onder midden
+    label_bottom_left: Onder links
+    label_right: Rechts
+    label_top_left: Boven links
   light_type:
-    desc_cw_ww: Cold White and Warm White
-    desc_rgb: RGB light
-    desc_rgb_cw: RGB with Cold White
-    desc_rgb_cw_ww: RGB with Cold White and Warm White
-    desc_single: "Single, Cold White or Warm White"
+    desc_cw_ww: Koud wit en warm wit
+    desc_rgb: RGB-licht
+    desc_rgb_cw: RGB met koud wit
+    desc_rgb_cw_ww: RGB met koud wit en warm wit
+    desc_single: "Enkel, koud wit of warm wit"
     label_cw_ww: CW WW
     label_rgb: RGB
     label_rgb_cw: RGB CW
     label_rgb_cw_ww: RGB CW WW
-    label_single: Single
+    label_single: Enkel
   metric_duration:
-    label_day_002: Last 2 days
-    label_day_007: Last 7 days
-    label_day_030: Last 30 days
-    label_day_060: Last 60 days
-    label_day_090: Last 90 days
-    label_day_180: Last 180 days
-    label_day_365: Last 365 days
-    label_hour_01: Last 1 hour
-    label_hour_02: Last 2 hours
-    label_hour_03: Last 3 hours
-    label_hour_06: Last 6 hours
-    label_hour_12: Last 12 hours
-    label_hour_24: Last 24 hours
-    label_minute_30: Last 30 minutes
+    label_day_002: Laatste 2 dagen
+    label_day_007: Laatste 7 dagen
+    label_day_030: Laatste 30 dagen
+    label_day_060: Laatste 60 dagen
+    label_day_090: Laatste 90 dagen
+    label_day_180: Laatste 180 dagen
+    label_day_365: Laatste 365 dagen
+    label_hour_01: Laatste 1 uur
+    label_hour_02: Laatste 2 uur
+    label_hour_03: Laatste 3 uur
+    label_hour_06: Laatste 6 uur
+    label_hour_12: Laatste 12 uur
+    label_hour_24: Laatste 24 uur
+    label_minute_30: Laatste 30 minuten
   metric_function:
-    label_count: Count
+    label_count: Aantal
     label_maximum: Maximum
-    label_mean: Mean
-    label_median: Median
+    label_mean: Gemiddelde
+    label_median: Mediaan
     label_minimum: Minimum
-    label_percentile_50: 50th Percentile
-    label_percentile_75: 75th Percentile
-    label_percentile_95: 95th Percentile
-    label_percentile_99: 99th Percentile
-    label_sum: Sum
+    label_percentile_50: 50e percentiel
+    label_percentile_75: 75e percentiel
+    label_percentile_95: 95e percentiel
+    label_percentile_99: 99e percentiel
+    label_sum: Som
   metric_type:
-    label_binary: Binary
-    label_counter: Counter
-    label_gauge: Gauge
-    label_gauge_float: Gauge Float
+    label_binary: Binair
+    label_counter: Teller
+    label_gauge: Meter
+    label_gauge_float: Meter (drijvende komma)
     label_geo: GEO
-    label_none: None
-    label_string: String
+    label_none: Geen
+    label_string: Tekenreeks
   rgb_component:
-    desc_color_picker: Predefined colors
-    desc_hue_slider: Hue color slider
-    label_color_picker: Quick Color Picker
-    label_hue_slider: Hue Slider
+    desc_color_picker: Vooraf gedefinieerde kleuren
+    desc_hue_slider: Schuifregelaar voor tint
+    label_color_picker: Snelle kleurkiezer
+    label_hue_slider: Tintregelaar
   schedule_frequency:
-    desc_daily: Runs every day
-    desc_monthly: Runs monthly once
-    desc_on_date: "Runs only once at the specified date, time"
-    desc_weekly: Runs weekly once
-    label_daily: Daily
-    label_monthly: Monthly
-    label_on_date: On Date
-    label_weekly: Weekly
+    desc_daily: Wordt elke dag uitgevoerd
+    desc_monthly: Wordt eenmaal per maand uitgevoerd
+    desc_on_date: Wordt slechts eenmaal uitgevoerd op de opgegeven datum en tijd
+    desc_weekly: Wordt eenmaal per week uitgevoerd
+    label_daily: Dagelijks
+    label_monthly: Maandelijks
+    label_on_date: Op datum
+    label_weekly: Wekelijks
   schedule_type:
-    desc_cron: Cron expression
-    desc_repeat: Repeats on a specified interval
-    desc_simple: "Daily, weekly, monthly schedule"
-    desc_sunrise: Based on the sunrise time
-    desc_sunset: Based on the sunset time
+    desc_cron: Cron-expressie
+    desc_repeat: Herhaalt met een opgegeven interval
+    desc_simple: "Dagelijkse, wekelijkse of maandelijkse planning"
+    desc_sunrise: Op basis van de zonsopkomst
+    desc_sunset: Op basis van de zonsondergang
     label_cron: Cron
-    label_repeat: Repeat
-    label_simple: Simple
-    label_sunrise: Sunrise
-    label_sunset: Sunset
+    label_repeat: Herhalen
+    label_simple: Eenvoudig
+    label_sunrise: Zonsopkomst
+    label_sunset: Zonsondergang
   theme_color:
-    label_blue: Blue
-    label_cyan: Cyan
-    label_gold: Gold
-    label_green: Green
-    label_multiple_ordered: Multiple Ordered
-    label_multiple_unordered: Multiple Unordered
-    label_orange: Orange
-    label_purple: Purple
+    label_blue: Blauw
+    label_cyan: Cyaan
+    label_gold: Goud
+    label_green: Groen
+    label_multiple_ordered: Meerdere geordend
+    label_multiple_unordered: Meerdere ongeordend
+    label_orange: Oranje
+    label_purple: Paars
   trait_type:
-    label_app_selector: App Selector
-    label_arm_disarm: Arm Disarm
-    label_brightness: Brightness
-    label_camera_stream: Camera Stream
-    label_channel: Channel
-    label_color_setting: Color Setting
-    label_cook: Cook
-    label_dispense: Dispense
-    label_dock: Dock
-    label_energy_storage: Energy Storage
-    label_fan_speed: Fan Speed
-    label_fill: Fill
-    label_humidity_setting: Humidity Setting
-    label_input_selector: Input Selector
-    label_light_effects: Light Effects
-    label_locator: Locator
-    label_lock_unlock: Lock Unlock
-    label_media_state: Media State
-    label_modes: Modes
-    label_network_control: Network Control
-    label_object_detection: Object Detection
-    label_on_off: On Off
-    label_open_close: Open Close
-    label_reboot: Reboot
-    label_rotation: Rotation
-    label_run_cycle: Run Cycle
-    label_scene: Scene
-    label_sensor_state: Sensor State
-    label_software_update: Software Update
-    label_start_stop: Start Stop
-    label_status_report: Status Report
-    label_temperature_control: Temperature Control
-    label_temperature_setting: Temperature Setting
+    label_app_selector: Appkiezer
+    label_arm_disarm: In-/uitschakelen
+    label_brightness: Helderheid
+    label_camera_stream: Camerastream
+    label_channel: Kanaal
+    label_color_setting: Kleurinstelling
+    label_cook: Koken
+    label_dispense: Uitgeven
+    label_dock: Aanmeren
+    label_energy_storage: Energieopslag
+    label_fan_speed: Ventilatorsnelheid
+    label_fill: Vullen
+    label_humidity_setting: Vochtigheidsinstelling
+    label_input_selector: Invoerkiezer
+    label_light_effects: Lichteffecten
+    label_locator: Zoeker
+    label_lock_unlock: Vergrendelen/ontgrendelen
+    label_media_state: Mediastatus
+    label_modes: Modi
+    label_network_control: Netwerkbesturing
+    label_object_detection: Objectdetectie
+    label_on_off: Aan/uit
+    label_open_close: Openen/sluiten
+    label_reboot: Herstarten
+    label_rotation: Rotatie
+    label_run_cycle: Uitvoeringscyclus
+    label_scene: Scène
+    label_sensor_state: Sensorstatus
+    label_software_update: Software-update
+    label_start_stop: Start/stop
+    label_status_report: Statusrapport
+    label_temperature_control: Temperatuurregeling
+    label_temperature_setting: Temperatuurinstelling
     label_timer: Timer
-    label_toggles: Toggles
-    label_transport_control: Transport Control
+    label_toggles: Schakelaars
+    label_transport_control: Transportbesturing
     label_volume: Volume
   utilization_chart:
-    label_circle_050: Half Circle
-    label_circle_075: 3/4 Circle
-    label_circle_100: Full Circle
-    label_spark_area: Spark Area
-    label_spark_bar: Spark Bar
-    label_spark_line: Spark Line
-    label_table: Table
+    label_circle_050: Halve cirkel
+    label_circle_075: 3/4 cirkel
+    label_circle_100: Volledige cirkel
+    label_spark_area: Spark-vlak
+    label_spark_bar: Spark-staaf
+    label_spark_line: Spark-lijn
+    label_table: Tabel
   va_provider:
     desc_alexa: Amazon Alexa
     desc_google_assistant: Google Assistant
     label_alexa: Alexa
     label_google_assistant: Google Assistant
   vd_type:
-    label_air_conditioner: Air Conditioner
-    label_air_cooler: Air Cooler
-    label_air_freshener: Air Freshener
-    label_air_purifier: Air Purifier
-    label_audio_video_receiver: Audio Video Receiver
-    label_awning: Awning
-    label_bathtub: Bathtub
+    label_air_conditioner: Airconditioner
+    label_air_cooler: Luchtkoeler
+    label_air_freshener: Luchtverfrisser
+    label_air_purifier: Luchtreiniger
+    label_audio_video_receiver: Audio-videoreceiver
+    label_awning: Zonneluifel
+    label_bathtub: Badkuip
     label_bed: Bed
     label_blender: Blender
-    label_blinds: Blinds
-    label_boiler: Boiler
+    label_blinds: Jaloezieën
+    label_boiler: Ketel
     label_camera: Camera
-    label_carbon_monoxide_detector: Carbon Monoxide Detector
-    label_charger: Charger
-    label_closet: Closet
-    label_coffee_maker: Coffee Maker
-    label_cooktop: Cooktop
-    label_curtain: Curtain
-    label_dehumidifier: Dehumidifier
-    label_dehydrator: Dehydrator
-    label_dishwasher: Dishwasher
-    label_door: Door
-    label_door_bell: Door Bell
-    label_drawer: Drawer
-    label_dryer: Dryer
-    label_fan: Fan
-    label_faucet: Faucet
-    label_fireplace: Fireplace
-    label_freezer: Freezer
-    label_fryer: Fryer
-    label_garage_door: Garage Door
-    label_gate: Gate
+    label_carbon_monoxide_detector: Koolmonoxidemelder
+    label_charger: Oplader
+    label_closet: Kast
+    label_coffee_maker: Koffiezetapparaat
+    label_cooktop: Kookplaat
+    label_curtain: Gordijn
+    label_dehumidifier: Ontvochtiger
+    label_dehydrator: Droogapparaat
+    label_dishwasher: Vaatwasser
+    label_door: Deur
+    label_door_bell: Deurbel
+    label_drawer: Lade
+    label_dryer: Droger
+    label_fan: Ventilator
+    label_faucet: Kraan
+    label_fireplace: Open haard
+    label_freezer: Vriezer
+    label_fryer: Frituurpan
+    label_garage_door: Garagedeur
+    label_gate: Poort
     label_grill: Grill
-    label_heater: Heater
-    label_hood: Hood
-    label_humidifier: Humidifier
-    label_kettle: Kettle
-    label_light: Light
-    label_lock: Lock
-    label_media_remote: Media Remote
-    label_microwave: Microwave
-    label_mop: Mop
-    label_mower: Mower
+    label_heater: Verwarming
+    label_hood: Afzuigkap
+    label_humidifier: Luchtbevochtiger
+    label_kettle: Waterkoker
+    label_light: Licht
+    label_lock: Slot
+    label_media_remote: Media-afstandsbediening
+    label_microwave: Magnetron
+    label_mop: Dweil
+    label_mower: Grasmaaier
     label_multicooker: Multicooker
-    label_network: Network
-    label_outlet: Outlet
+    label_network: Netwerk
+    label_outlet: Stopcontact
     label_oven: Oven
     label_pergola: Pergola
-    label_pet_feeder: Pet Feeder
-    label_pressure_cooker: Pressure Cooker
+    label_pet_feeder: Voederautomaat
+    label_pressure_cooker: Snelkookpan
     label_radiator: Radiator
-    label_refrigerator: Refrigerator
+    label_refrigerator: Koelkast
     label_router: Router
-    label_scene: Scene
-    label_security_system: Security System
+    label_scene: Scène
+    label_security_system: Beveiligingssysteem
     label_sensor: Sensor
-    label_set_top_box: Set Top Box
-    label_shower: Shower
-    label_shutter: Shutter
-    label_smoke_detector: Smoke Detector
+    label_set_top_box: Decoder
+    label_shower: Douche
+    label_shutter: Rolluik
+    label_smoke_detector: Rookmelder
     label_soundbar: Soundbar
-    label_sous_vide: Sous Vide
-    label_speaker: Speaker
+    label_sous_vide: Sous-vide
+    label_speaker: Luidspreker
     label_sprinkler: Sprinkler
-    label_stand_mixer: Stand Mixer
-    label_streaming_box: Streaming Box
-    label_streaming_soundbar: Streaming Soundbar
-    label_streaming_stick: Streaming Stick
-    label_switch: Switch
-    label_television: Television
-    label_thermostat: Thermostat
-    label_vacuum: Vacuum
-    label_valve: Valve
-    label_washer: Washer
-    label_water_heater: Water Heater
-    label_water_purifier: Water Purifier
-    label_water_softener: Water Softener
-    label_weather_station: Weather Station
-    label_window: Window
-    label_yogurt_maker: Yogurt Maker
+    label_stand_mixer: Keukenmachine
+    label_streaming_box: Streamingbox
+    label_streaming_soundbar: Streaming-soundbar
+    label_streaming_stick: Streamingstick
+    label_switch: Schakelaar
+    label_television: Televisie
+    label_thermostat: Thermostaat
+    label_vacuum: Stofzuiger
+    label_valve: Klep
+    label_washer: Wasmachine
+    label_water_heater: Boiler
+    label_water_purifier: Waterzuiveraar
+    label_water_softener: Waterontharder
+    label_weather_station: Weerstation
+    label_window: Raam
+    label_yogurt_maker: Yoghurtmaker
   week_day:
-    label_friday: Friday
-    label_monday: Monday
-    label_saturday: Saturday
-    label_sunday: Sunday
-    label_thursday: Thursday
-    label_tuesday: Tuesday
-    label_wednesday: Wednesday
+    label_friday: Vrijdag
+    label_monday: Maandag
+    label_saturday: Zaterdag
+    label_sunday: Zondag
+    label_thursday: Donderdag
+    label_tuesday: Dinsdag
+    label_wednesday: Woensdag
   widget_type:
-    desc_chart_panel: Display data in charts
-    desc_control_panel: Performs control action on resources
-    desc_empty_panel: Empty Panel
-    desc_image_panel: Display image from different sources
-    desc_light_panel: Controls a light
-    desc_utilization_panel: Display utilization status
-    label_chart_panel: Charts Panel
-    label_control_panel: Control Panel
-    label_empty_panel: Empty Panel
-    label_image_panel: Image Panel
-    label_light_panel: Light Panel
-    label_utilization_panel: Utilization Panel
-others: Others
-padding_bottom_px: Padding Bottom (px)
-padding_left_px: Padding Left (px)
-padding_right_px: Padding Right (px)
-padding_top_px: Padding Top (px)
-panel_title: Panel Title
-parameters_to_handler: Parameters to Handler
-parse_mode: Parse Mode
-password: Password
-path: Path
+    desc_chart_panel: Gegevens in grafieken weergeven
+    desc_control_panel: Besturingsacties op resources uitvoeren
+    desc_empty_panel: Leeg paneel
+    desc_image_panel: Afbeelding uit verschillende bronnen weergeven
+    desc_light_panel: Bestuurt een licht
+    desc_utilization_panel: Benuttingsstatus weergeven
+    label_chart_panel: Grafiekpaneel
+    label_control_panel: Bedieningspaneel
+    label_empty_panel: Leeg paneel
+    label_image_panel: Afbeeldingspaneel
+    label_light_panel: Lichtpaneel
+    label_utilization_panel: Benuttingspaneel
+others: Overige
+padding_bottom_px: Opvulling onder (px)
+padding_left_px: Opvulling links (px)
+padding_right_px: Opvulling rechts (px)
+padding_top_px: Opvulling boven (px)
+panel_title: Paneltitel
+parameters_to_handler: Parameters naar verwerker
+parse_mode: Parseermodus
+password: Wachtwoord
+path: Pad
 payload: Payload
 send: Verzenden
 payload_off: Payload OFF
 payload_on: Payload ON
 payloads: Payloads
-per_cpu_disabled: Per CPU Disabled
-port: Port
-port_name: Port Name
-post_run: Post Run
-power: Power
-pre_delay: Pre Delay
-pre_run: Pre Run
-prefix: Prefix
-previous_value: Previous Value
-process: Process
-processes: Processes
-profile: Profile
+per_cpu_disabled: Per CPU uitgeschakeld
+port: Poort
+port_name: Poortnaam
+post_run: Na uitvoering
+power: Vermogen
+pre_delay: Voorvertraging
+pre_run: Voor uitvoering
+prefix: Voorvoegsel
+previous_value: Vorige waarde
+process: Proces
+processes: Processen
+profile: Profiel
 protocol: Protocol
-provider: Provider
-provider_type: Provider Type
-publish: Publish
+provider: Aanbieder
+provider_type: Aanbiedertype
+publish: Publiceren
 qos: QoS
-query_parameters: Query Parameters
-queue_failed_messages: Queue Failed Messages
-quick_id: Quick ID
-re_enable: Re-enable
-re_enable_duration: Re-enable Duration
-react_version: React Version
-read_only: Read Only
-reboot: Reboot
-reconnect_delay: Reconnect Delay
-refresh_interval: Refresh Interval
-refresh_node_info: Refresh Node Info
-reload: Reload
-repeat_count: Repeat Count
-request_heartbeat: Request Heartbeat
-reset: Reset
-resetting: Resetting...
+query_parameters: Queryparameters
+queue_failed_messages: Mislukte berichten in de wachtrij plaatsen
+quick_id: Snelle ID
+re_enable: Opnieuw inschakelen
+re_enable_duration: Duur van opnieuw inschakelen
+react_version: React-versie
+read_only: Alleen-lezen
+reboot: Herstarten
+reconnect_delay: Herverbindvertraging
+refresh_interval: Vernieuwingsinterval
+refresh_node_info: Knooppuntinfo vernieuwen
+reload: Opnieuw laden
+repeat_count: Aantal herhalingen
+request_heartbeat: Heartbeat aanvragen
+reset: Resetten
+resetting: Bezig met resetten...
 resource: Resource
-resource_by_labels: Resource By Labels
-resource_by_quick_id: Resource By Quick ID
-resource_configuration: Resource Configuration
-resource_filters: Resource Filters
-resource_name: Resource name
-resource_type: Resource Type
+resource_by_labels: Resource op labels
+resource_by_quick_id: Resource op snelle ID
+resource_configuration: Resourceconfiguratie
+resource_filters: Resourcefilters
+resource_name: Resourcenaam
+resource_type: Resourcetype
 resources: Resources
-response_code: Response Code
-restore: Restore
-retention_count: Retention Count
-retry_count: Retry Count
+response_code: Antwoordcode
+restore: Herstellen
+retention_count: Retentieaantal
+retry_count: Aantal nieuwe pogingen
 rgb: RGB
-rgb_component: RGB Component
-rotation: Rotation
-round_decimal: Round Decimal
-rule: Rule
-run_a_backup: Run a Backup
-run_backup: Run Backup
+rgb_component: RGB-component
+rotation: Rotatie
+round_decimal: Decimalen afronden
+rule: Regel
+run_a_backup: Een back-up uitvoeren
+run_backup: Back-up uitvoeren
 s_no: '#'
-saturation: Saturation
-save: Save
-schedule: Schedule
-schedule_details: Schedule Details
-schedule_type: Schedule Type
-schedules: Schedules
+saturation: Verzadiging
+save: Opslaan
+schedule: Planning
+schedule_details: Planningsdetails
+schedule_type: Planningstype
+schedules: Planningen
 script: Script
-select_an_option: Select an option
+select_an_option: Selecteer een optie
 server: Server
-service_account_not_generated: Service account token not generated
-service_account_copy_title: Copy Service Account Token
-service_account_copy_warning_msg: This token will only be displayed once. It will not be stored and cannot be retrieved. Please be sure to save it now.
-service_account_barcode_help: Scan this barcode to log in with the token.
-service_account_details: Service Account Details
-service_accounts: Service Accounts
-policies: Policies
-policy_details: Policy Details
-settings: Settings
-show_grid_x: Show Grid X
-show_grid_y: Show Grid Y
-show_title: Show Title
-since: Since
-size: Size
-sleeping_queue: Sleeping Queue
-sort_order_priority: Sort Order Priority
-source: Source
-source_code: Source Code
-source_details: Source Details
-source_field: Source Filed
-source_id: Source ID
-sources: Sources
-spec: Spec
-stack_charts: Stack Charts
-state: State
+service_account_not_generated: Token van serviceaccount niet gegenereerd
+service_account_copy_title: Token van serviceaccount kopiëren
+service_account_copy_warning_msg: Dit token wordt slechts één keer getoond. Het wordt niet opgeslagen en kan niet opnieuw worden opgehaald. Sla het nu op.
+service_account_barcode_help: Scan deze code om u aan te melden met het token.
+service_account_details: Details van serviceaccount
+service_accounts: Serviceaccounts
+policies: Beleid
+policy_details: Beleidsdetails
+settings: Instellingen
+show_grid_x: X-raster tonen
+show_grid_y: Y-raster tonen
+show_title: Titel tonen
+since: Sinds
+size: Grootte
+sleeping_queue: Slaapwachtrij
+sort_order_priority: Sorteerprioriteit
+source: Bron
+source_code: Broncode
+source_details: Brondetails
+source_field: Bronveld
+source_id: Bron-ID
+sources: Bronnen
+spec: Specificatie
+stack_charts: Grafieken stapelen
+state: Toestand
 status: Status
-status_at: Status At
-status_configuration: Status Configuration
-step: Step
-storage_export_type: Storage Export Type
-stream_message_ack: Stream Message Ack
-string: String
-stroke_width_px: Stroke Width (px)
-sub_type: Sub Type
-subject: Subject
-subscribe: Subscribe
-swap_disabled: Swap Disabled
-sync_interval: Sync Interval
-system: System
-system_message: System Message
-table_configuration: Table Configuration
-table_view: Table View
-target_directory: Target Directory
-target_location: Target Location
-task: Task
-task_details: Task Details
-tasks: Tasks
+status_at: Status om
+status_configuration: Statusconfiguratie
+step: Stap
+storage_export_type: Exporttype van opslag
+stream_message_ack: Streamberichtbevestiging
+string: Tekenreeks
+stroke_width_px: Lijndikte (px)
+sub_type: Subtype
+subject: Onderwerp
+subscribe: Abonneren
+swap_disabled: Swap uitgeschakeld
+sync_interval: Synchronisatie-interval
+system: Systeem
+system_message: Systeembericht
+table_configuration: Tabelconfiguratie
+table_view: Tabelweergave
+target_directory: Doelmap
+target_location: Doellocatie
+task: Taak
+task_details: Taakdetails
+tasks: Taken
 telegram: Telegram
-temperature: Temperature
-text: Text
+temperature: Temperatuur
+text: Tekst
 the_open_source_controller: The Open Source Controller
-theme_color: Theme Color
-thickness: Thickness
-threshold_mode: Threshold Mode
-thresholds: Thresholds
-thresholds_color: Thresholds Color
-time_hh_mm_ss: "Time (hh:mm:ss)"
-timeout: Timeout
-timestamp: Timestamp
-timestamp_key: Timestamp Key
-title: Title
-to: To
-to_emails: To Emails
+theme_color: Themakleur
+thickness: Dikte
+threshold_mode: Drempelmodus
+thresholds: Drempels
+thresholds_color: Drempelkleur
+time_hh_mm_ss: "Tijd (uu:mm:ss)"
+timeout: Time-out
+timestamp: Tijdstempel
+timestamp_key: Tijdstempelsleutel
+title: Titel
+to: Aan
+to_emails: Aan-e-mails
 token: Token
-topic: Topic
-trait: Trait
-traits: Traits
-transmit_pre_delay: Transmit Pre Delay
-trigger_on_event: Trigger On Event
+topic: Onderwerp
+trait: Eigenschap
+traits: Eigenschappen
+transmit_pre_delay: Voorvertraging van verzending
+trigger_on_event: Activeren bij gebeurtenis
 'true': 'True'
 type: Type
-unit: Unit
-up: UP
-update: Update
-update_body: Update Body
-update_data: Update Data
-update_endpoint: Update Endpoint
-update_firmware: Update Firmware
-update_node: Update Node
-update_post_run: Update Post Run
-update_pre_run: Update Pre Run
-update_query_parameters: Update Query Parameters
-update_resource: Update Resource
-update_script: Update Script
-update_trait: Update trait
-update_value: Update Value
-update_y_axis: Update Y Axis
-upload: Upload
-upload_firmware: Upload Firmware
+unit: Eenheid
+up: Omhoog
+update: Bijwerken
+update_body: Inhoud bijwerken
+update_data: Gegevens bijwerken
+update_endpoint: Eindpunt bijwerken
+update_firmware: Firmware bijwerken
+update_node: Knooppunt bijwerken
+update_post_run: Na uitvoering bijwerken
+update_pre_run: Voor uitvoering bijwerken
+update_query_parameters: Queryparameters bijwerken
+update_resource: Resource bijwerken
+update_script: Script bijwerken
+update_trait: Eigenschap bijwerken
+update_value: Waarde bijwerken
+update_y_axis: Y-as bijwerken
+upload: Uploaden
+upload_firmware: Firmware uploaden
 url: URL
-use_global: Use Global
-use_global_encryption_key: Use Global Encryption Key
-use_global_password: Use Global Password
-use_global_style: Use Global Style
-user_id: User ID
-username: Username
-validate_time_everyday: Validate Time Everyday
-validity: Validity
-value: Value
-value_formatter: Value Formatter
-value_key: Value Key
-variable: Variable
-variable_name: Variable Name
-variables: Variables
-version: Version
-virtual_assistant: Virtual Assistant
-virtual_assistant_details: Virtual Assistant Details
-virtual_assistants: Virtual Assistants
-virtual_device_details: Virtual Device Details
-virtual_devices: Virtual Devices
-web_console: Web Console
+use_global: Globaal gebruiken
+use_global_encryption_key: Algemene versleutelingsleutel gebruiken
+use_global_password: Algemeen wachtwoord gebruiken
+use_global_style: Algemene stijl gebruiken
+user_id: Gebruikers-ID
+username: Gebruikersnaam
+validate_time_everyday: Tijd dagelijks valideren
+validity: Geldigheid
+value: Waarde
+value_formatter: Waardeopmaak
+value_key: Waardesleutel
+variable: Variabele
+variable_name: Variabelenaam
+variables: Variabelen
+version: Versie
+virtual_assistant: Virtuele assistent
+virtual_assistant_details: Details van virtuele assistent
+virtual_assistants: Virtuele assistenten
+virtual_device_details: Details van virtueel apparaat
+virtual_devices: Virtuele apparaten
+web_console: Webconsole
 webhook: Webhook
-websocket_disconnected: Websocket disconnected
-welcome_to_mycontroller: Welcome to MyController
-width_px: Width (px)
-y_axis: Y Axis
-y_axis_configuration: Y Axis Configuration
+websocket_disconnected: Websocket verbroken
+welcome_to_mycontroller: Welkom bij MyController
+width_px: Breedte (px)
+y_axis: Y-as
+y_axis_configuration: Configuratie van de Y-as
 yaml: YAML
-yaml_view: YAML View
-statement: Statement
-statements: Statements
-user_details: User Details
-users: Users
-layout: Layout
-layout_tree: Tree
-layout_force: Force
-refresh: Refresh
-include_child_nodes: Include child nodes
-child_nodes: Child Nodes
+yaml_view: YAML-weergave
+statement: Instructie
+statements: Instructies
+user_details: Gebruikersdetails
+users: Gebruikers
+layout: Indeling
+layout_tree: Boom
+layout_force: Kracht
+refresh: Vernieuwen
+include_child_nodes: Onderliggende knooppunten opnemen
+child_nodes: Onderliggende knooppunten

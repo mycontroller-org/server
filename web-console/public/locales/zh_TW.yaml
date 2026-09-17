@@ -1,524 +1,524 @@
 ---
-about: About
-actions: Actions
-active_duration: Active Duration
-add: Add
-add_a_field: Add a Field
-add_a_firmware: Add a Firmware
-add_a_forward_payload: Add a Forward payload
-add_a_gateway: Add a Gateway
-add_a_handler: Add a Handler
-add_a_node: Add a Node
-add_a_schedule: Add a Schedule
-add_a_policy: Add a Policy
-add_a_service_account: Add a Service Account
-add_a_source: Add a Source
-add_a_task: Add a Task
-add_a_user: Add a User
-add_a_virtual_assistant: Add a Virtual Assistant
-add_a_virtual_device: Add a Virtual Device
-add_an_item: Add an item
-add_widget: Add Widget
-address: Address
-agent_user_id: Agent User ID
-alerts_empty_message: There are currently no alerts.
-alerts_empty_title: No alerts found
-alive_check_interval: Alive Check Interval
-all_rights_reserved: All Rights Reserved
-allow_overwrite: Allow Overwrite
-apache_license_2: Apache License 2.0
+about: 關於
+actions: 動作
+active_duration: 活動時長
+add: 新增
+add_a_field: 新增欄位
+add_a_firmware: 新增韌體
+add_a_forward_payload: 新增承載轉送
+add_a_gateway: 新增閘道
+add_a_handler: 新增處理常式
+add_a_node: 新增節點
+add_a_schedule: 新增排程
+add_a_policy: 新增原則
+add_a_service_account: 新增服務帳戶
+add_a_source: 新增來源
+add_a_task: 新增工作
+add_a_user: 新增使用者
+add_a_virtual_assistant: 新增虛擬助理
+add_a_virtual_device: 新增虛擬裝置
+add_an_item: 新增項目
+add_widget: 新增小工具
+address: 位址
+agent_user_id: 代理使用者 ID
+alerts_empty_message: 目前沒有警示。
+alerts_empty_title: 找不到警示
+alive_check_interval: 存活檢查間隔
+all_rights_reserved: 保留所有權利
+allow_overwrite: 允許覆寫
+apache_license_2: Apache 授權 2.0
 api: API
-ask_confirmation: Ask Confirmation
-assigned_firmware: Assigned Firmware
-assigned_nodes: Assigned Nodes
-auto_disable: Auto Disable
-auto_update: Auto Update
-axis: Axis
-backup: Backup
-backup_and_restore: Backup and Restore
-backup_locations: Backup Locations
-battery: Battery
-baud_rate: Baud Rate
-body: Body
-bridge: Bridge
-brightness: Brightness
-broker: Broker
-browse: Browse
-build_date: Build Date
-button: Button
-button_text: Button Text
-cancel: Cancel
-chart_configuration: Chart Configuration
-chart_type: Chart Type
-chat_ids: Chat IDs
-clear: Clear
-clear_all: Clear All
-color: Color
-color_temperature: Color Temperature
-column_display: Column Display
-conditions: Conditions
-configuration: Configuration
-configure_via: Configure via
-confirm_password: Confirm Password
-confirmation_message: Confirmation Message
-connection_timeout: Connection Timeout
-control_configuration: Control Configuration
-control_type: Control Type
-copied: Copied
-copy: Copy
-corner_smoothing: Corner Smoothing
+ask_confirmation: 要求確認
+assigned_firmware: 已指定韌體
+assigned_nodes: 已指定節點
+auto_disable: 自動停用
+auto_update: 自動更新
+axis: 座標軸
+backup: 備份
+backup_and_restore: 備份與還原
+backup_locations: 備份位置
+battery: 電池
+baud_rate: 鮑率
+body: 內文
+bridge: 橋接
+brightness: 亮度
+broker: 訊息代理
+browse: 瀏覽
+build_date: 建置日期
+button: 按鈕
+button_text: 按鈕文字
+cancel: 取消
+chart_configuration: 圖表設定
+chart_type: 圖表類型
+chat_ids: 聊天 ID
+clear: 清除
+clear_all: 全部清除
+color: 顏色
+color_temperature: 色溫
+column_display: 欄位顯示
+conditions: 條件
+configuration: 組態
+configure_via: 設定方式
+confirm_password: 確認密碼
+confirmation_message: 確認訊息
+connection_timeout: 連線逾時
+control_configuration: 控制設定
+control_type: 控制類型
+copied: 已複製
+copy: 複製
+corner_smoothing: 圓角平滑
 cpu: CPU
-cpu_disabled: CPU Disabled
-create_new: Create New
-created_on: Created On
-cron_expression: Cron Expression
-current_password: Current Password
-cursor_tooltip: Cursor Tooltip
-custom_data: Custom Data
-custom_mapping: Custom Mapping
-custom_variables: Custom Variables
-dampening: Dampening
-dashboard: Dashboard
-data: Data
-data_repository: Data Repository
-data_repository_add_an_entry: 'Data Repository: Add an entry'
-data_repository_modify_an_entry: 'Data Repository: Modify an entry'
-data_retrieved_from_server: Data retrieved from server
-data_type: Data Type
-date_yyyy_mm_dd: Date (yyyy-mm-dd)
-day_of_month: Date of Month
-day_of_week: Days of Week
-delete: Delete
-description: Description
-destination_field: Destination Field
-detailed_filter: Detailed Filter
-details: Details
-device_filter: Device Filter
-device_type: Device Type
+cpu_disabled: CPU 已停用
+create_new: 新建
+created_on: 建立於
+cron_expression: Cron 運算式
+current_password: 目前密碼
+cursor_tooltip: 游標提示
+custom_data: 自訂資料
+custom_mapping: 自訂對應
+custom_variables: 自訂變數
+dampening: 抑制
+dashboard: 儀表板
+data: 資料
+data_repository: 資料儲存庫
+data_repository_add_an_entry: 資料儲存庫：新增項目
+data_repository_modify_an_entry: 資料儲存庫：修改項目
+data_retrieved_from_server: 已從伺服器擷取資料
+data_type: 資料類型
+date_yyyy_mm_dd: 日期 (yyyy-mm-dd)
+day_of_month: 每月日期
+day_of_week: 星期
+delete: 刪除
+description: 描述
+destination_field: 目標欄位
+detailed_filter: 詳細篩選
+details: 詳細資料
+device_filter: 裝置篩選
+device_type: 裝置類型
 dialog:
-  clear_sleeping_queue_heading: "Would you like to clear the queue?"
-  clear_sleeping_queue_msg: All the sleeping queued messages will be dropped
-  delete_resource_msg: "Are you sure want to delete the selected items?"
-  delete_title_backup: "Delete backup files?"
-  delete_title_dashboard: "Delete dashboard?"
-  delete_title_data_repository: "Delete data repositories?"
-  delete_title_field: "Delete fields?"
-  delete_title_firmware: "Delete firmware?"
-  delete_title_forward_payload: "Delete forward payloads?"
-  delete_title_gateway: "Delete gateways?"
-  delete_title_handler: "Delete handlers?"
-  delete_title_node: "Delete nodes?"
-  delete_title_schedule: "Delete schedules?"
-  delete_title_service_account: "Delete service account?"
-  delete_title_user: "Delete user?"
-  delete_title_policy: "Delete policy?"
-  delete_title_source: "Delete sources?"
-  delete_title_task: "Delete tasks?"
-  delete_title_virtual_assistant: "Delete virtual assistant?"
-  delete_title_virtual_device: "Delete virtual device?"
-  node_reset_heading: "Reset Node?"
-  node_reset_msg: "Are you sure want to reset the selected nodes?<br/>After this operation:<3><0>Configuration will be restored to factory settings.</0><1>you may lose access to the selected node(s) from MyController!</1></3>"
-  reboot_nodes_heading: "Reboot Node?"
-  reboot_nodes_msg: "Are you sure want to reboot the selected nodes?"
-  reset_msg_jwt_secret: "Are you sure want to reset the JWT secret? After this operation, all the existing logged in sessions to this server will be invalid also you will be logged out!"
-  reset_title_jwt_secret: Reset JWT secret
-  restore_heading: "Confirm to perform a restore operation?"
-  restore_msg: "Are you sure want to restore to selected backup file?<br/>After this operation:<3><0>Server data will be restored to <1>{{fileName}}</1></0><1>You cannot rollback this operation</1><2>Always take a backup before performing a restore operation</2><3>You may need to start the server manually</3></3>"
-disable: Disable
-disable_scrollbar: Disable Scrollbar
-disabled: Disabled
-disabled_all: Disabled All
-discover_nodes: Discover Nodes
-disk: Disk
-disks: Disks
-display_name: Display Name
-display_percentage: Display Percentage
-display_text: Display Text
-display_value: Display Value
-do_update: Do Update
-documentation: Documentation
-down: Down
-download: Download
-drop_down_position: Drop Down Position
-duration: Duration
-edit: Edit
-edit_dashboard_settings: Edit Dashboard Settings
-edit_widget_settings: Edit Widget Settings
-email: Email
-edit_statement: Edit Statement
-effect: Effect
-enable: Enable
-enabled: Enabled
-encryption_key: Encryption Key
-endpoint: Endpoint
-endpoints: Endpoints
-entities: Entities
+  clear_sleeping_queue_heading: 要清除佇列嗎？
+  clear_sleeping_queue_msg: 休眠佇列中的所有訊息都將被捨棄
+  delete_resource_msg: 確定要刪除所選項目嗎？
+  delete_title_backup: 刪除備份檔案？
+  delete_title_dashboard: 刪除儀表板？
+  delete_title_data_repository: 刪除資料儲存庫？
+  delete_title_field: 刪除欄位？
+  delete_title_firmware: 刪除韌體？
+  delete_title_forward_payload: 刪除承載轉送？
+  delete_title_gateway: 刪除閘道？
+  delete_title_handler: 刪除處理常式？
+  delete_title_node: 刪除節點？
+  delete_title_schedule: 刪除排程？
+  delete_title_service_account: 刪除服務帳戶？
+  delete_title_user: 刪除使用者？
+  delete_title_policy: 刪除原則？
+  delete_title_source: 刪除來源？
+  delete_title_task: 刪除工作？
+  delete_title_virtual_assistant: 刪除虛擬助理？
+  delete_title_virtual_device: 刪除虛擬裝置？
+  node_reset_heading: 重設節點？
+  node_reset_msg: "確定要重設所選節點嗎？<br/>此作業之後：<3><0>組態將還原為原廠設定。</0><1>您可能會失去從 MyController 存取所選節點的權限！</1></3>"
+  reboot_nodes_heading: 重新啟動節點？
+  reboot_nodes_msg: 確定要重新啟動所選節點嗎？
+  reset_msg_jwt_secret: 確定要重設 JWT 密鑰嗎？此作業之後，此伺服器上所有現有登入工作階段都將失效，而且您將被登出！
+  reset_title_jwt_secret: 重設 JWT 密鑰
+  restore_heading: 確認執行還原作業？
+  restore_msg: "確定要從所選備份檔案還原嗎？<br/>此作業之後：<3><0>伺服器資料將還原至 <1>{{fileName}}</1></0><1>此作業無法復原</1><2>執行還原前請務必先備份</2><3>您可能需要手動啟動伺服器</3></3>"
+disable: 停用
+disable_scrollbar: 停用捲軸
+disabled: 已停用
+disabled_all: 全部停用
+discover_nodes: 探索節點
+disk: 磁碟
+disks: 磁碟
+display_name: 顯示名稱
+display_percentage: 顯示百分比
+display_text: 顯示文字
+display_value: 顯示值
+do_update: 執行更新
+documentation: 文件
+down: 向下
+download: 下載
+drop_down_position: 下拉位置
+duration: 持續時間
+edit: 編輯
+edit_dashboard_settings: 編輯儀表板設定
+edit_widget_settings: 編輯小工具設定
+email: 電子郵件
+edit_statement: 編輯陳述式
+effect: 效果
+enable: 啟用
+enabled: 已啟用
+encryption_key: 加密金鑰
+endpoint: 端點
+endpoints: 端點
+entities: 實體
 error:
   console:
-    invalid_login_credentials: Invalid login credentials.
-    login_msg_loading_failed: Error on fetching login message
-evaluation: Evaluation
-evaluations: Evaluations
-event_filters: Event Filters
-events: Events
-executed_count: Executed Count
-execution_interval: Execution Interval
-execution_interval_0h0m0s: Execution Interval (0h0m0s)
-execution_mode: Execution Mode
-experimental: Experimental
-expires_on: Expires On
-export_type: Export Type
+    invalid_login_credentials: 登入憑證無效。
+    login_msg_loading_failed: 擷取登入訊息時發生錯誤
+evaluation: 評估
+evaluations: 評估
+event_filters: 事件篩選
+events: 事件
+executed_count: 執行次數
+execution_interval: 執行間隔
+execution_interval_0h0m0s: 執行間隔 (0h0m0s)
+execution_mode: 執行模式
+experimental: 實驗性
+expires_on: 到期於
+export_type: 匯出類型
 'false': 'False'
-favorite: Favorite
-fetch_info: Fetch Info
-fetching: Fetching
-field: Field
-field_details: Field Details
-field_id: Field ID
-fields: Fields
-file_details: File Details
-file_uploaded_successfully: File uploaded successfully
-filename: File Name
-filename_placeholder: Drag a file here or browse to upload
+favorite: 我的最愛
+fetch_info: 擷取資訊
+fetching: 正在擷取
+field: 欄位
+field_details: 欄位詳細資料
+field_id: 欄位 ID
+fields: 欄位
+file_details: 檔案詳細資料
+file_uploaded_successfully: 檔案上傳成功
+filename: 檔案名稱
+filename_placeholder: 將檔案拖到此處或瀏覽以上傳
 fill_opacity_%: Fill Opacity (%)
-filter: Filter
-filter_type: Filter Type
-filters: Filters
-firmware_details: Firmware Details
-firmware_file: Firmware File
-firmware_update: Firmware Update
-firmwares: Firmwares
-flush_interval: Flush Interval
-forgot_username_or_password: "Forgot username or password?"
-form_generic_error_message: Check the error and/or mandatory(*) fields
-form_view: Form View
-forum: Forum
-forward_payload: Forward Payload
-forward_payload_details: Forward Payload Details
-frequency: Frequency
-from: From
-from_email: From Email
-full_name: Full Name
-function: Function
-gateway: Gateway
-gateway_details: Gateway Details
-gateway_id: Gateway ID
-gateways: Gateways
-all_gateways: All gateways
-all_nodes: All nodes
-show_sources: Show sources
-show_fields: Show fields
-select_gateway: Gateway
-no_topology_nodes: No nodes to display
-no_topology_nodes_for_gateway: No nodes found for this gateway
-geo_location: GEO Location
-git_commit: Git Commit
-global_configuration: Global Configuration
-golang_version: GoLang Version
-handler: Handler
-handler_details: Handler Details
-handler_parameters: Handler Parameters
-handler_type: Handler Type
-handlers: Handlers
-header_name: Header Name
-headers: Headers
-heartbeat_request: Heartbeat Request
-height_px: Height (px)
+filter: 篩選
+filter_type: 篩選類型
+filters: 篩選器
+firmware_details: 韌體詳細資料
+firmware_file: 韌體檔案
+firmware_update: 韌體更新
+firmwares: 韌體
+flush_interval: 刷新間隔
+forgot_username_or_password: 忘記使用者名稱或密碼？
+form_generic_error_message: "請檢查錯誤及／或必填 (*) 欄位"
+form_view: 表單檢視
+forum: 論壇
+forward_payload: 轉送承載
+forward_payload_details: 承載轉送詳細資料
+frequency: 頻率
+from: 寄件者
+from_email: 寄件信箱
+full_name: 全名
+function: 函式
+gateway: 閘道
+gateway_details: 閘道詳細資料
+gateway_id: 閘道 ID
+gateways: 閘道
+all_gateways: 全部閘道
+all_nodes: 全部節點
+show_sources: 顯示來源
+show_fields: 顯示欄位
+select_gateway: 閘道
+no_topology_nodes: 沒有可顯示的節點
+no_topology_nodes_for_gateway: 此閘道沒有節點
+geo_location: 地理位置
+git_commit: Git 提交
+global_configuration: 全域組態
+golang_version: GoLang 版本
+handler: 處理常式
+handler_details: 處理常式詳細資料
+handler_parameters: 處理常式參數
+handler_type: 處理常式類型
+handlers: 處理常式
+header_name: 標頭名稱
+headers: 標頭
+heartbeat_request: 心跳要求
+height_px: 高度 (px)
 helper_text:
-  invalid_address_esphome: 'Invalid address, example: node1.local:6053'
-  invalid_api: Invalid API
-  invalid_backup_retention_count: "Invalid retention count, 0 for no limit"
-  invalid_baud_rate: Invalid baud rate
-  invalid_broker_url: Invalid Broker URL
-  invalid_current_password: Enter your current password
-  invalid_data: Invalid data
-  invalid_date: Invalid date
-  invalid_day_of_month: Invalid day of month
-  invalid_directory: Invalid directory
-  invalid_duration: Invalid Duration
-  invalid_email: Invalid email
-  invalid_execution_interval_empty: Execution interval should not be empty
-  invalid_field_id: "Invalid field id. chars, min=1, max=100"
-  invalid_filters: Invalid filters
-  invalid_height: Invalid Height
-  invalid_host: Invalid Host
-  invalid_id: "Invalid id. chars, min=4, max=100, and space not allowed"
-  invalid_interval: Invalid interval
-  invalid_key: "Invalid key. chars, min=1 and max=100"
-  invalid_key_path: Key path can not be empty
-  invalid_latitude: Invalid latitude
-  invalid_limit: Invalid limit
-  invalid_location: Invalid location
-  invalid_longitude: Invalid longitude
-  invalid_maximum_backup: "Invalid maximum backup count. int, min=0"
-  invalid_name: "Invalid name. chars, min=2, max=100"
-  invalid_node_id: "Invalid node ID. chars, min=1 and max=100"
-  invalid_offset: Invalid offset
-  invalid_path: Invalid path
-  invalid_payload: Invalid payload
-  invalid_port: Invalid port
-  invalid_prefix: Invalid prefix
-  invalid_profile_confirm_password: Invalid confirm password
-  invalid_profile_password: "Invalid password. chars, min=3, max=100"
-  invalid_profile_username: "Invalid username. chars, min=3, max=100, and space not allowed"
-  invalid_repeat_count: Invalid repeat count
-  invalid_response_code: "Enter a valid response code, enter 0 to ignore"
-  invalid_retry_count: "Invalid retry count. int, min=0"
-  invalid_script_empty: Script should not be empty
-  invalid_server_url: Invalid server URL
-  invalid_source_id: "Invalid source ID. chars, min=1 and max=100"
-  invalid_text: "Invalid text. chars, min=1 and max=100"
-  invalid_time: Invalid time
-  invalid_title: Invalid title
-  invalid_token: Invalid token
-  invalid_topic: Invalid topic
-  invalid_type: Invalid type
-  invalid_url: Invalid URL
-  invalid_username: Invalid username
-  invalid_password: Invalid password
-  password_leave_empty: Leave empty to keep the current password
-  service_account_user: Leave empty to create for yourself. Pick a user to create the account for them.
-  invalid_value: Invalid value
-  invalid_width: Invalid width
-hide_border: Hide Border
-hide_header: Hide Header
-hide_status_column: Hide Status Column
-hide_value_column: Hide Value Column
-host: Host
-host_id: Host ID
-host_ids: Host IDs
+  invalid_address_esphome: "位址無效，例如：node1.local:6053"
+  invalid_api: 無效的 API
+  invalid_backup_retention_count: 保留數量無效，0 表示不限制
+  invalid_baud_rate: 鮑率無效
+  invalid_broker_url: 代理伺服器 URL 無效
+  invalid_current_password: 請輸入目前密碼
+  invalid_data: 資料無效
+  invalid_date: 日期無效
+  invalid_day_of_month: 每月日期無效
+  invalid_directory: 目錄無效
+  invalid_duration: 持續時間無效
+  invalid_email: 電子郵件無效
+  invalid_execution_interval_empty: 執行間隔不可為空
+  invalid_field_id: 欄位 ID 無效。字元，最少=1，最多=100
+  invalid_filters: 篩選器無效
+  invalid_height: 高度無效
+  invalid_host: 主機無效
+  invalid_id: ID 無效。字元，最少=4，最多=100，不允許空格
+  invalid_interval: 間隔無效
+  invalid_key: 索引鍵無效。字元，最少=1，最多=100
+  invalid_key_path: 金鑰路徑不可為空
+  invalid_latitude: 緯度無效
+  invalid_limit: 限制無效
+  invalid_location: 位置無效
+  invalid_longitude: 經度無效
+  invalid_maximum_backup: 最大備份數無效。整數，最少=0
+  invalid_name: 名稱無效。字元，最少=2，最多=100
+  invalid_node_id: 節點 ID 無效。字元，最少=1，最多=100
+  invalid_offset: 偏移無效
+  invalid_path: 路徑無效
+  invalid_payload: 承載無效
+  invalid_port: 連接埠無效
+  invalid_prefix: 前置詞無效
+  invalid_profile_confirm_password: 確認密碼無效
+  invalid_profile_password: 密碼無效。字元，最少=3，最多=100
+  invalid_profile_username: 使用者名稱無效。字元，最少=3，最多=100，不允許空格
+  invalid_repeat_count: 重複次數無效
+  invalid_response_code: 請輸入有效回應碼，輸入 0 表示忽略
+  invalid_retry_count: 重試次數無效。整數，最少=0
+  invalid_script_empty: 指令碼不可為空
+  invalid_server_url: 伺服器 URL 無效
+  invalid_source_id: 來源 ID 無效。字元，最少=1，最多=100
+  invalid_text: 文字無效。字元，最少=1，最多=100
+  invalid_time: 時間無效
+  invalid_title: 標題無效
+  invalid_token: 權杖無效
+  invalid_topic: 主題無效
+  invalid_type: 類型無效
+  invalid_url: URL 無效
+  invalid_username: 使用者名稱無效
+  invalid_password: 密碼無效
+  password_leave_empty: 留空以保留目前密碼
+  service_account_user: 留空即為自己建立。選取使用者可為對方建立帳戶。
+  invalid_value: 值無效
+  invalid_width: 寬度無效
+hide_border: 隱藏邊框
+hide_header: 隱藏標題
+hide_status_column: 隱藏狀態欄
+hide_value_column: 隱藏值欄
+host: 主機
+host_id: 主機 ID
+host_ids: 主機 ID
 html: HTML
-hue: Hue
-icon_or_image_location: Icon or Image Location
+hue: 色相
+icon_or_image_location: 圖示或圖片位置
 id: ID
-ignore_duplicate: Ignore Duplicate
-image_source: Image Source
-image_type: Image Type
-in_progress: In Progress
-inactive_duration: Inactive Duration
-include_configuration: Include Configuration
-include_global_configuration: Include Global Configuration
-include_insecure_share: Include Insecure Share
-include_secure_share: Include Secure Share
-insecure: Insecure
-internal_message_ack: Internal Message Ack
-interpolation: Interpolation
-interval: Interval
-interval_0h0m0s: Interval (0h0m0s)
-invalid_file: Invalid file
-is_sleep_node: Is Sleep Node
-is_static: Is Static
+ignore_duplicate: 忽略重複
+image_source: 圖片來源
+image_type: 圖片類型
+in_progress: 進行中
+inactive_duration: 非活動時長
+include_configuration: 包含組態
+include_global_configuration: 包含全域組態
+include_insecure_share: 包含非安全共用
+include_secure_share: 包含安全共用
+insecure: 非安全
+internal_message_ack: 內部訊息確認
+interpolation: 插值
+interval: 間隔
+interval_0h0m0s: 間隔 (0h0m0s)
+invalid_file: 無效檔案
+is_sleep_node: 休眠節點
+is_static: 靜態
 javascript: Javascript
 json: JSON
 jwt_secret: JWT Secret
-keep_me_logged_in_30_days: Keep me logged in for 30 days.
-key: Key
-key_path: Key Path
-label: Label
-labels: Labels
-language: Language
-last_evaluation: Last Evaluation
-last_modified: Last Modified
-last_run: Last Run
-last_seen: Last Seen
-last_status: Last Status
-last_success: Last Success
-latitude: Latitude
-legend_orientation: Legend Orientation
-legend_position: Legend Position
-library_version: Library Version
-light: Light
-limit: Limit
-loading: Loading
-location: Location
-location_name: Location Name
-locations: Locations
-log_in: Log In
-log_rotate_interval: Log Rotate Interval
-login: Login
-login_page: Login Page
-login_to_your_account: Login to your account
-logout: Logout
-longitude: Longitude
-mapping: Mapping
-mark_all_read: Mark all read
+keep_me_logged_in_30_days: 保持登入 30 天。
+key: 索引鍵
+key_path: 金鑰路徑
+label: 標籤
+labels: 標籤
+language: 語言
+last_evaluation: 上次評估
+last_modified: 上次修改
+last_run: 上次執行
+last_seen: 上次上線
+last_status: 上次狀態
+last_success: 上次成功
+latitude: 緯度
+legend_orientation: 圖例方向
+legend_position: 圖例位置
+library_version: 程式庫版本
+light: 燈光
+limit: 限制
+loading: 正在載入
+location: 位置
+location_name: 位置名稱
+locations: 位置
+log_in: 登入
+log_rotate_interval: 記錄輪替間隔
+login: 登入
+login_page: 登入頁
+login_to_your_account: 登入您的帳戶
+logout: 登出
+longitude: 經度
+mapping: 對應
+mark_all_read: 全部標為已讀
 markdown: Markdown
 markdown_v2: Markdown v2
-match_all: Match All
-max_y_axis: Max (Y Axis)
-maximum: Maximum
-maximum_age: Maximum Age
-maximum_backup: Maximum Backup
-maximum_size: Maximum Size
-maximum_value: Maximum Value
-memory: Memory
-memory_disabled: Memory Disabled
-message: Message
-message_logger: Message Logger
-method: Method
-metric_configuration: Metric Configuration
-metric_function: Metric Function
-metric_interval: Metric Interval
-metric_type: Metric Type
-metrics: Metrics
-metrics_database_disabled: 'WARNING: Metrics database disabled'
-min_y_axis: Min (Y Axis)
-minimum: Minimum
-minimum_value: Minimum Value
-minimum_width: Minimum Width
-mixed_resources: Mixed Resources
-modified_on: Modified On
-name: Name
-name_key: Name Key
-never_expire: Never Expire
-new: New
-new_password: New Password
-no_change_since: No Change Since
-no_dashboard_message: There is no dashboard available to load.
-no_dashboard_title: No dashboards available
-no_data: No data
-no_labels: No labels
-no_login_message: No message set for login
-node: Node
-node_configuration: Node Configuration
-node_details: Node Details
-node_endpoints: Node Endpoints
-node_id: Node ID
-node_state_updater: Node State Updater
-nodes: Nodes
-none: None
-notifications: Notifications
-number_of_axis: Number of Axis
-occurrences: Occurrences
+match_all: 全部符合
+max_y_axis: 最大值 (Y 軸)
+maximum: 最大值
+maximum_age: 最長期限
+maximum_backup: 最大備份數
+maximum_size: 最大大小
+maximum_value: 最大值
+memory: 記憶體
+memory_disabled: 記憶體已停用
+message: 訊息
+message_logger: 訊息記錄器
+method: 方法
+metric_configuration: 度量設定
+metric_function: 度量函式
+metric_interval: 度量間隔
+metric_type: 度量類型
+metrics: 度量
+metrics_database_disabled: 警告：度量資料庫已停用
+min_y_axis: 最小值 (Y 軸)
+minimum: 最小值
+minimum_value: 最小值
+minimum_width: 最小寬度
+mixed_resources: 混合資源
+modified_on: 修改於
+name: 名稱
+name_key: 名稱索引鍵
+never_expire: 永不過期
+new: 新增
+new_password: 新密碼
+no_change_since: 自此無變更
+no_dashboard_message: 沒有可載入的儀表板。
+no_dashboard_title: 沒有可用的儀表板
+no_data: 無資料
+no_labels: 無標籤
+no_login_message: 未設定登入訊息
+node: 節點
+node_configuration: 節點組態
+node_details: 節點詳細資料
+node_endpoints: 節點端點
+node_id: 節點 ID
+node_state_updater: 節點狀態更新器
+nodes: 節點
+none: 無
+notifications: 通知
+number_of_axis: 座標軸數量
+occurrences: 出現次數
 'off': 'OFF'
-off_text: OFF Text
-offset_0h0m0s: Offset (0h0m0s)
+off_text: 關閉文字
+offset_0h0m0s: 偏移 (0h0m0s)
 offset_y_%: Offset Y (%)
 'on': 'ON'
-on_button: ON Button
-on_receive: On Receive
-on_send: On Send
-on_text: ON Text
-operations: Operations
-operator: Operator
-options: Options
+on_button: 開啟按鈕
+on_receive: 接收時
+on_send: 傳送時
+on_text: 開啟文字
+operations: 作業
+operator: 運算子
+options: 選項
 opts:
   backup_provider:
-    desc_disk: Backup data in to disk
-    label_disk: Disk
+    desc_disk: 將資料備份到磁碟
+    label_disk: 磁碟
   button_type:
-    label_danger: Danger (red)
-    label_primary: Primary (blue)
-    label_secondary: Secondary (blue)
-    label_warning: Warning (yellow)
+    label_danger: 危險（紅）
+    label_primary: 主要（藍）
+    label_secondary: 次要（藍）
+    label_warning: 警告（黃）
   chart_group_type:
-    desc_group_chart: Single axis with multiple resources
-    desc_mixed_chart: Multiple axis with multiple resources
-    desc_pie_chart: Single pie chart
-    label_group_chart: Group Chart
-    label_mixed_chart: Mixed Chart
-    label_pie_chart: Pie Chart
+    desc_group_chart: 單軸多資源
+    desc_mixed_chart: 多軸多資源
+    desc_pie_chart: 單一片圖
+    label_group_chart: 群組圖
+    label_mixed_chart: 混合圖
+    label_pie_chart: 圓餅圖
   chart_interpolation:
     label_basis: Basis
     label_cardinal: Cardinal
     label_catmull_rom: CatmullRom
-    label_linear: Linear
+    label_linear: 線性
     label_monotone_x: MonotoneX
     label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_natural: 自然
+    label_step: 階梯
+    label_step_after: 後階梯
+    label_step_before: 前階梯
   chart_type:
-    desc_area_chart: Area Chart
-    desc_bar_chart: Bar Chart
-    desc_line_chart: Line Chart
-    desc_pie_chart: Pie Chart
-    desc_scatter_chart: Scatter Chart
-    label_area_chart: Area Chart
-    label_bar_chart: Bar Chart
-    label_line_chart: Line Chart
-    label_pie_chart: Pie Chart
-    label_scatter_chart: Scatter Chart
+    desc_area_chart: 面積圖
+    desc_bar_chart: 長條圖
+    desc_line_chart: 折線圖
+    desc_pie_chart: 圓餅圖
+    desc_scatter_chart: 散佈圖
+    label_area_chart: 面積圖
+    label_bar_chart: 長條圖
+    label_line_chart: 折線圖
+    label_pie_chart: 圓餅圖
+    label_scatter_chart: 散佈圖
   code_editor_language:
     label_html: HTML
     label_javascript: Javascript
     label_json: JSON
-    label_plaintext: Plan Text
+    label_plaintext: 純文字
     label_xml: XML
     label_yaml: YAML
   control_type:
-    label_mixed_control: Mixed Control
-    label_switch_button: Button Switch
-    label_switch_toggle: Switch Toggle
+    label_mixed_control: 混合控制
+    label_switch_button: 按鈕開關
+    label_switch_toggle: 撥動開關
   control_type_mixed:
-    label_button_push: Push Button
-    label_input: Input
-    label_options_select: Select Options
-    label_options_tab: Tab Options
-    label_slider: Slider
-    label_switch_button: Button Switch
-    label_switch_toggle: Toggle Switch
+    label_button_push: 按鈕
+    label_input: 輸入
+    label_options_select: 選取選項
+    label_options_tab: 索引標籤選項
+    label_slider: 滑桿
+    label_switch_button: 按鈕開關
+    label_switch_toggle: 撥動開關
   dampening:
-    desc_active_duration: Active duration of the task
-    desc_consecutive: Number of consecutive occurrences
-    desc_evaluation: Number of occurrences in N evaluation
-    desc_none: Disable dampening feature
-    label_active_duration: Active Duration
-    label_consecutive: Consecutive
-    label_evaluation: Evaluation
-    label_none: None
+    desc_active_duration: 工作的活動時長
+    desc_consecutive: 連續出現次數
+    desc_evaluation: N 次評估中的出現次數
+    desc_none: 停用抑制功能
+    label_active_duration: 活動時長
+    label_consecutive: 連續
+    label_evaluation: 評估
+    label_none: 無
   data_unit:
-    label_bytes: Bytes
-    label_eib: Exbi Bytes (EiB)
-    label_gib: Gibi Bytes (GiB)
-    label_kib: Kibi Bytes (KiB)
-    label_mib: Mibi Bytes (MiB)
-    label_pib: Pebi Bytes (PiB)
-    label_tib: Tebi Bytes (TiB)
+    label_bytes: 位元組
+    label_eib: 艾位元組 (EiB)
+    label_gib: 吉位元組 (GiB)
+    label_kib: 千位元組 (KiB)
+    label_mib: 百萬位元組 (MiB)
+    label_pib: 拍位元組 (PiB)
+    label_tib: 兆位元組 (TiB)
   event_type:
-    label_created: Created
-    label_deleted: Deleted
-    label_requested: Requested
-    label_updated: Updated
+    label_created: 已建立
+    label_deleted: 已刪除
+    label_requested: 已要求
+    label_updated: 已更新
   gw_msg_logger:
-    desc_file_logger: Messages will be logged in a file
-    desc_none: Messages will not be logged
-    label_file_logger: File Logger
-    label_none: None
+    desc_file_logger: 訊息將記錄到檔案中
+    desc_none: 訊息將不會被記錄
+    label_file_logger: 檔案記錄器
+    label_none: 無
   gw_protocol:
-    desc_ethernet: Ethernet Protocol
-    desc_http: HTTP Protocol
-    desc_mqtt: MQTT Protocol
-    desc_serial: Serial Protocol
+    desc_ethernet: Ethernet 通訊協定
+    desc_http: HTTP 通訊協定
+    desc_mqtt: MQTT 通訊協定
+    desc_serial: 序列通訊協定
     label_ethernet: Ethernet
     label_http: HTTP
     label_mqtt: MQTT
-    label_serial: Serial
+    label_serial: 序列
   gw_provider:
     desc_esphome: esphome.io
-    desc_generic: Generic Provider
-    desc_mysensors_v2: MySensors.org version 2.x
+    desc_generic: 一般提供者
+    desc_mysensors_v2: MySensors.org 版本 2.x
     desc_philips_hue: developers.meethue.com
-    desc_system_monitoring: Capture system resources and reports
+    desc_system_monitoring: 擷取系統資源並回報
     desc_tasmota: tasmota.github.io
     label_esphome: ESPHome
-    label_generic: Generic
+    label_generic: 一般
     label_mysensors_v2: MySensors V2
     label_philips_hue: PhilipsHue
-    label_system_monitoring: System Monitoring
+    label_system_monitoring: 系統監控
     label_tasmota: Tasmota
   handler_type:
-    desc_backup: Perform backup of the server
-    desc_email: Sends email
-    desc_noop: No Operation Handler
-    desc_resource: Internal resource related actions
-    desc_telegram: Sends text to telegram
-    desc_webhook: Calls a webhook url
-    label_backup: Backup
-    label_email: Email
+    desc_backup: 執行伺服器備份
+    desc_email: 傳送電子郵件
+    desc_noop: 無作業處理常式
+    desc_resource: 內部資源相關動作
+    desc_telegram: 傳送文字至 Telegram
+    desc_webhook: 呼叫 webhook URL
+    label_backup: 備份
+    label_email: 電子郵件
     label_noop: Noop
-    label_resource: Resource
+    label_resource: 資源
     label_telegram: Telegram
     label_webhook: Webhook
   http_method:
@@ -527,494 +527,494 @@ opts:
     label_post: POST
     label_put: PUT
   image_load_type:
-    desc_custom_mapping: Display mapped image from field value
-    desc_image: Base64 encoded image from field value
-    label_custom_mapping: Custom Mapping
-    label_image: Raw Image
+    desc_custom_mapping: 依欄位值顯示對應圖片
+    desc_image: 來自欄位值的 Base64 編碼圖片
+    label_custom_mapping: 自訂對應
+    label_image: 原始圖片
   image_rotation:
-    desc_rotate_180: Rotate 180°
-    desc_rotate_left_90: Rotate left side 90°
-    desc_rotate_none: no rotation
-    desc_rotate_right_90: Rotate right side 90°
-    label_rotate_180: Rotate 180°
-    label_rotate_left_90: Rotate left 90°
-    label_rotate_none: None
-    label_rotate_right_90: Rotate right 90°
+    desc_rotate_180: 旋轉 180°
+    desc_rotate_left_90: 向左旋轉 90°
+    desc_rotate_none: 不旋轉
+    desc_rotate_right_90: 向右旋轉 90°
+    label_rotate_180: 旋轉 180°
+    label_rotate_left_90: 向左 90°
+    label_rotate_none: 無
+    label_rotate_right_90: 向右 90°
   image_source:
-    desc_disk: Image from a local disk location
-    desc_field: Image data from a field resource
-    desc_url: Image from a url
-    label_disk: Disk
-    label_field: Field
+    desc_disk: 來自本機磁碟路徑的圖片
+    desc_field: 來自欄位資源的圖片資料
+    desc_url: 來自 URL 的圖片
+    label_disk: 磁碟
+    label_field: 欄位
     label_url: URL
   interval:
-    label_day_01: 1 days
-    label_hour_01: 1 hour
-    label_hour_03: 3 hours
-    label_hour_06: 6 hours
-    label_minute_01: 1 minute
-    label_minute_02: 2 minutes
-    label_minute_03: 3 minutes
-    label_minute_05: 5 minutes
-    label_minute_10: 10 minutes
-    label_minute_15: 15 minutes
-    label_minute_30: 30 minutes
-    label_never: Never
-    label_second_01: 1 second
-    label_second_05: 5 seconds
-    label_second_10: 10 seconds
-    label_second_15: 15 seconds
-    label_second_30: 30 seconds
-    label_second_45: 45 seconds
+    label_day_01: 1 天
+    label_hour_01: 1 小時
+    label_hour_03: 3 小時
+    label_hour_06: 6 小時
+    label_minute_01: 1 分鐘
+    label_minute_02: 2 分鐘
+    label_minute_03: 3 分鐘
+    label_minute_05: 5 分鐘
+    label_minute_10: 10 分鐘
+    label_minute_15: 15 分鐘
+    label_minute_30: 30 分鐘
+    label_never: 永不
+    label_second_01: 1 秒
+    label_second_05: 5 秒
+    label_second_10: 10 秒
+    label_second_15: 15 秒
+    label_second_30: 30 秒
+    label_second_45: 45 秒
   legend_orientation:
-    desc_horizontal: Places in a horizontal position
-    desc_vertical: Places in a vertical position
-    label_horizontal: Horizontal
-    label_vertical: Vertical
+    desc_horizontal: 水平排列
+    desc_vertical: 垂直排列
+    label_horizontal: 水平
+    label_vertical: 垂直
   legend_position:
-    desc_bottom_center: Center of bottom
-    desc_bottom_left: Left side of bottom
-    desc_right: Right side
-    desc_top_left: Left side of top
-    label_bottom_center: Bottom Center
-    label_bottom_left: Bottom Left
-    label_right: Right
-    label_top_left: Top Left
+    desc_bottom_center: 底部置中
+    desc_bottom_left: 左下
+    desc_right: 右側
+    desc_top_left: 左上
+    label_bottom_center: 底部置中
+    label_bottom_left: 左下
+    label_right: 右
+    label_top_left: 左上
   light_type:
-    desc_cw_ww: Cold White and Warm White
-    desc_rgb: RGB light
-    desc_rgb_cw: RGB with Cold White
-    desc_rgb_cw_ww: RGB with Cold White and Warm White
-    desc_single: "Single, Cold White or Warm White"
+    desc_cw_ww: 冷白與暖白
+    desc_rgb: RGB 燈光
+    desc_rgb_cw: RGB 加冷白
+    desc_rgb_cw_ww: RGB 加冷白與暖白
+    desc_single: 單色，冷白或暖白
     label_cw_ww: CW WW
     label_rgb: RGB
     label_rgb_cw: RGB CW
     label_rgb_cw_ww: RGB CW WW
-    label_single: Single
+    label_single: 單色
   metric_duration:
-    label_day_002: Last 2 days
-    label_day_007: Last 7 days
-    label_day_030: Last 30 days
-    label_day_060: Last 60 days
-    label_day_090: Last 90 days
-    label_day_180: Last 180 days
-    label_day_365: Last 365 days
-    label_hour_01: Last 1 hour
-    label_hour_02: Last 2 hours
-    label_hour_03: Last 3 hours
-    label_hour_06: Last 6 hours
-    label_hour_12: Last 12 hours
-    label_hour_24: Last 24 hours
-    label_minute_30: Last 30 minutes
+    label_day_002: 最近 2 天
+    label_day_007: 最近 7 天
+    label_day_030: 最近 30 天
+    label_day_060: 最近 60 天
+    label_day_090: 最近 90 天
+    label_day_180: 最近 180 天
+    label_day_365: 最近 365 天
+    label_hour_01: 最近 1 小時
+    label_hour_02: 最近 2 小時
+    label_hour_03: 最近 3 小時
+    label_hour_06: 最近 6 小時
+    label_hour_12: 最近 12 小時
+    label_hour_24: 最近 24 小時
+    label_minute_30: 最近 30 分鐘
   metric_function:
-    label_count: Count
-    label_maximum: Maximum
-    label_mean: Mean
-    label_median: Median
-    label_minimum: Minimum
-    label_percentile_50: 50th Percentile
-    label_percentile_75: 75th Percentile
-    label_percentile_95: 95th Percentile
-    label_percentile_99: 99th Percentile
-    label_sum: Sum
+    label_count: 計數
+    label_maximum: 最大值
+    label_mean: 平均值
+    label_median: 中位數
+    label_minimum: 最小值
+    label_percentile_50: 第 50 百分位
+    label_percentile_75: 第 75 百分位
+    label_percentile_95: 第 95 百分位
+    label_percentile_99: 第 99 百分位
+    label_sum: 總和
   metric_type:
-    label_binary: Binary
-    label_counter: Counter
-    label_gauge: Gauge
-    label_gauge_float: Gauge Float
+    label_binary: 二進位
+    label_counter: 計數器
+    label_gauge: 儀表
+    label_gauge_float: 儀表（浮點）
     label_geo: GEO
-    label_none: None
-    label_string: String
+    label_none: 無
+    label_string: 字串
   rgb_component:
-    desc_color_picker: Predefined colors
-    desc_hue_slider: Hue color slider
-    label_color_picker: Quick Color Picker
-    label_hue_slider: Hue Slider
+    desc_color_picker: 預先定義的顏色
+    desc_hue_slider: 色相滑桿
+    label_color_picker: 快速選色
+    label_hue_slider: 色相滑桿
   schedule_frequency:
-    desc_daily: Runs every day
-    desc_monthly: Runs monthly once
-    desc_on_date: "Runs only once at the specified date, time"
-    desc_weekly: Runs weekly once
-    label_daily: Daily
-    label_monthly: Monthly
-    label_on_date: On Date
-    label_weekly: Weekly
+    desc_daily: 每天執行
+    desc_monthly: 每月執行一次
+    desc_on_date: 僅在指定日期和時間執行一次
+    desc_weekly: 每週執行一次
+    label_daily: 每天
+    label_monthly: 每月
+    label_on_date: 指定日期
+    label_weekly: 每週
   schedule_type:
-    desc_cron: Cron expression
-    desc_repeat: Repeats on a specified interval
-    desc_simple: "Daily, weekly, monthly schedule"
-    desc_sunrise: Based on the sunrise time
-    desc_sunset: Based on the sunset time
+    desc_cron: Cron 運算式
+    desc_repeat: 依指定間隔重複
+    desc_simple: 每日、每週、每月排程
+    desc_sunrise: 依據日出時間
+    desc_sunset: 依據日落時間
     label_cron: Cron
-    label_repeat: Repeat
-    label_simple: Simple
-    label_sunrise: Sunrise
-    label_sunset: Sunset
+    label_repeat: 重複
+    label_simple: 簡易
+    label_sunrise: 日出
+    label_sunset: 日落
   theme_color:
-    label_blue: Blue
-    label_cyan: Cyan
-    label_gold: Gold
-    label_green: Green
-    label_multiple_ordered: Multiple Ordered
-    label_multiple_unordered: Multiple Unordered
-    label_orange: Orange
-    label_purple: Purple
+    label_blue: 藍色
+    label_cyan: 青色
+    label_gold: 金色
+    label_green: 綠色
+    label_multiple_ordered: 有序多項
+    label_multiple_unordered: 無序多項
+    label_orange: 橙色
+    label_purple: 紫色
   trait_type:
-    label_app_selector: App Selector
-    label_arm_disarm: Arm Disarm
-    label_brightness: Brightness
-    label_camera_stream: Camera Stream
-    label_channel: Channel
-    label_color_setting: Color Setting
-    label_cook: Cook
-    label_dispense: Dispense
-    label_dock: Dock
-    label_energy_storage: Energy Storage
-    label_fan_speed: Fan Speed
-    label_fill: Fill
-    label_humidity_setting: Humidity Setting
-    label_input_selector: Input Selector
-    label_light_effects: Light Effects
-    label_locator: Locator
-    label_lock_unlock: Lock Unlock
-    label_media_state: Media State
-    label_modes: Modes
-    label_network_control: Network Control
-    label_object_detection: Object Detection
-    label_on_off: On Off
-    label_open_close: Open Close
-    label_reboot: Reboot
-    label_rotation: Rotation
-    label_run_cycle: Run Cycle
-    label_scene: Scene
-    label_sensor_state: Sensor State
-    label_software_update: Software Update
-    label_start_stop: Start Stop
-    label_status_report: Status Report
-    label_temperature_control: Temperature Control
-    label_temperature_setting: Temperature Setting
-    label_timer: Timer
-    label_toggles: Toggles
-    label_transport_control: Transport Control
-    label_volume: Volume
+    label_app_selector: 應用程式選擇器
+    label_arm_disarm: 布防／撤防
+    label_brightness: 亮度
+    label_camera_stream: 攝影機串流
+    label_channel: 頻道
+    label_color_setting: 顏色設定
+    label_cook: 烹調
+    label_dispense: 分配
+    label_dock: 停駐
+    label_energy_storage: 儲能
+    label_fan_speed: 風扇轉速
+    label_fill: 填充
+    label_humidity_setting: 濕度設定
+    label_input_selector: 輸入選擇器
+    label_light_effects: 燈光效果
+    label_locator: 定位器
+    label_lock_unlock: 鎖定／解鎖
+    label_media_state: 媒體狀態
+    label_modes: 模式
+    label_network_control: 網路控制
+    label_object_detection: 物件偵測
+    label_on_off: 開／關
+    label_open_close: 開啟／關閉
+    label_reboot: 重新啟動
+    label_rotation: 旋轉
+    label_run_cycle: 執行週期
+    label_scene: 場景
+    label_sensor_state: 感測器狀態
+    label_software_update: 軟體更新
+    label_start_stop: 開始／停止
+    label_status_report: 狀態報告
+    label_temperature_control: 溫度控制
+    label_temperature_setting: 溫度設定
+    label_timer: 計時器
+    label_toggles: 開關
+    label_transport_control: 傳輸控制
+    label_volume: 音量
   utilization_chart:
-    label_circle_050: Half Circle
-    label_circle_075: 3/4 Circle
-    label_circle_100: Full Circle
-    label_spark_area: Spark Area
-    label_spark_bar: Spark Bar
-    label_spark_line: Spark Line
-    label_table: Table
+    label_circle_050: 半圓
+    label_circle_075: 3/4 圓
+    label_circle_100: 整圓
+    label_spark_area: 迷你面積圖
+    label_spark_bar: 迷你長條圖
+    label_spark_line: 迷你折線圖
+    label_table: 表格
   va_provider:
     desc_alexa: Amazon Alexa
     desc_google_assistant: Google Assistant
     label_alexa: Alexa
     label_google_assistant: Google Assistant
   vd_type:
-    label_air_conditioner: Air Conditioner
-    label_air_cooler: Air Cooler
-    label_air_freshener: Air Freshener
-    label_air_purifier: Air Purifier
-    label_audio_video_receiver: Audio Video Receiver
-    label_awning: Awning
-    label_bathtub: Bathtub
-    label_bed: Bed
-    label_blender: Blender
-    label_blinds: Blinds
-    label_boiler: Boiler
-    label_camera: Camera
-    label_carbon_monoxide_detector: Carbon Monoxide Detector
-    label_charger: Charger
-    label_closet: Closet
-    label_coffee_maker: Coffee Maker
-    label_cooktop: Cooktop
-    label_curtain: Curtain
-    label_dehumidifier: Dehumidifier
-    label_dehydrator: Dehydrator
-    label_dishwasher: Dishwasher
-    label_door: Door
-    label_door_bell: Door Bell
-    label_drawer: Drawer
-    label_dryer: Dryer
-    label_fan: Fan
-    label_faucet: Faucet
-    label_fireplace: Fireplace
-    label_freezer: Freezer
-    label_fryer: Fryer
-    label_garage_door: Garage Door
-    label_gate: Gate
-    label_grill: Grill
-    label_heater: Heater
-    label_hood: Hood
-    label_humidifier: Humidifier
-    label_kettle: Kettle
-    label_light: Light
-    label_lock: Lock
-    label_media_remote: Media Remote
-    label_microwave: Microwave
-    label_mop: Mop
-    label_mower: Mower
-    label_multicooker: Multicooker
-    label_network: Network
-    label_outlet: Outlet
-    label_oven: Oven
-    label_pergola: Pergola
-    label_pet_feeder: Pet Feeder
-    label_pressure_cooker: Pressure Cooker
-    label_radiator: Radiator
-    label_refrigerator: Refrigerator
-    label_router: Router
-    label_scene: Scene
-    label_security_system: Security System
-    label_sensor: Sensor
-    label_set_top_box: Set Top Box
-    label_shower: Shower
-    label_shutter: Shutter
-    label_smoke_detector: Smoke Detector
-    label_soundbar: Soundbar
-    label_sous_vide: Sous Vide
-    label_speaker: Speaker
-    label_sprinkler: Sprinkler
-    label_stand_mixer: Stand Mixer
-    label_streaming_box: Streaming Box
-    label_streaming_soundbar: Streaming Soundbar
-    label_streaming_stick: Streaming Stick
-    label_switch: Switch
-    label_television: Television
-    label_thermostat: Thermostat
-    label_vacuum: Vacuum
-    label_valve: Valve
-    label_washer: Washer
-    label_water_heater: Water Heater
-    label_water_purifier: Water Purifier
-    label_water_softener: Water Softener
-    label_weather_station: Weather Station
-    label_window: Window
-    label_yogurt_maker: Yogurt Maker
+    label_air_conditioner: 冷氣機
+    label_air_cooler: 涼風機
+    label_air_freshener: 空氣清新機
+    label_air_purifier: 空氣清淨機
+    label_audio_video_receiver: AV 擴大機
+    label_awning: 遮陽篷
+    label_bathtub: 浴缸
+    label_bed: 床
+    label_blender: 攪拌機
+    label_blinds: 百葉窗
+    label_boiler: 鍋爐
+    label_camera: 攝影機
+    label_carbon_monoxide_detector: 一氧化碳偵測器
+    label_charger: 充電器
+    label_closet: 衣櫃
+    label_coffee_maker: 咖啡機
+    label_cooktop: 爐台
+    label_curtain: 窗簾
+    label_dehumidifier: 除濕機
+    label_dehydrator: 食物乾燥機
+    label_dishwasher: 洗碗機
+    label_door: 門
+    label_door_bell: 門鈴
+    label_drawer: 抽屜
+    label_dryer: 烘衣機
+    label_fan: 風扇
+    label_faucet: 水龍頭
+    label_fireplace: 壁爐
+    label_freezer: 冷凍櫃
+    label_fryer: 油炸鍋
+    label_garage_door: 車庫門
+    label_gate: 大門
+    label_grill: 烤架
+    label_heater: 加熱器
+    label_hood: 排油煙機
+    label_humidifier: 加濕器
+    label_kettle: 電水壺
+    label_light: 燈
+    label_lock: 鎖
+    label_media_remote: 媒體遙控器
+    label_microwave: 微波爐
+    label_mop: 拖把
+    label_mower: 割草機
+    label_multicooker: 萬用鍋
+    label_network: 網路
+    label_outlet: 插座
+    label_oven: 烤箱
+    label_pergola: 涼棚
+    label_pet_feeder: 寵物餵食器
+    label_pressure_cooker: 壓力鍋
+    label_radiator: 散熱器
+    label_refrigerator: 冰箱
+    label_router: 路由器
+    label_scene: 場景
+    label_security_system: 保全系統
+    label_sensor: 感測器
+    label_set_top_box: 機上盒
+    label_shower: 淋浴
+    label_shutter: 捲簾
+    label_smoke_detector: 煙霧偵測器
+    label_soundbar: 聲霸
+    label_sous_vide: 低溫烹調
+    label_speaker: 喇叭
+    label_sprinkler: 灑水器
+    label_stand_mixer: 桌上型攪拌機
+    label_streaming_box: 串流盒子
+    label_streaming_soundbar: 串流聲霸
+    label_streaming_stick: 串流棒
+    label_switch: 開關
+    label_television: 電視
+    label_thermostat: 恆溫器
+    label_vacuum: 吸塵器
+    label_valve: 閥門
+    label_washer: 洗衣機
+    label_water_heater: 熱水器
+    label_water_purifier: 淨水器
+    label_water_softener: 軟水機
+    label_weather_station: 氣象站
+    label_window: 窗戶
+    label_yogurt_maker: 優格機
   week_day:
-    label_friday: Friday
-    label_monday: Monday
-    label_saturday: Saturday
-    label_sunday: Sunday
-    label_thursday: Thursday
-    label_tuesday: Tuesday
-    label_wednesday: Wednesday
+    label_friday: 星期五
+    label_monday: 星期一
+    label_saturday: 星期六
+    label_sunday: 星期日
+    label_thursday: 星期四
+    label_tuesday: 星期二
+    label_wednesday: 星期三
   widget_type:
-    desc_chart_panel: Display data in charts
-    desc_control_panel: Performs control action on resources
-    desc_empty_panel: Empty Panel
-    desc_image_panel: Display image from different sources
-    desc_light_panel: Controls a light
-    desc_utilization_panel: Display utilization status
-    label_chart_panel: Charts Panel
-    label_control_panel: Control Panel
-    label_empty_panel: Empty Panel
-    label_image_panel: Image Panel
-    label_light_panel: Light Panel
-    label_utilization_panel: Utilization Panel
-others: Others
-padding_bottom_px: Padding Bottom (px)
-padding_left_px: Padding Left (px)
-padding_right_px: Padding Right (px)
-padding_top_px: Padding Top (px)
-panel_title: Panel Title
-parameters_to_handler: Parameters to Handler
-parse_mode: Parse Mode
-password: Password
-path: Path
-payload: Payload
+    desc_chart_panel: 以圖表顯示資料
+    desc_control_panel: 對資源執行控制動作
+    desc_empty_panel: 空白面板
+    desc_image_panel: 從來源顯示圖片
+    desc_light_panel: 控制一盞燈
+    desc_utilization_panel: 顯示使用率狀態
+    label_chart_panel: 圖表面板
+    label_control_panel: 控制面板
+    label_empty_panel: 空白面板
+    label_image_panel: 圖片面板
+    label_light_panel: 燈控面板
+    label_utilization_panel: 使用率面板
+others: 其他
+padding_bottom_px: 下內距 (px)
+padding_left_px: 左內距 (px)
+padding_right_px: 右內距 (px)
+padding_top_px: 上內距 (px)
+panel_title: 面板標題
+parameters_to_handler: 傳給處理常式的參數
+parse_mode: 剖析模式
+password: 密碼
+path: 路徑
+payload: 承載
 send: 傳送
-payload_off: Payload OFF
-payload_on: Payload ON
-payloads: Payloads
-per_cpu_disabled: Per CPU Disabled
-port: Port
-port_name: Port Name
-post_run: Post Run
-power: Power
-pre_delay: Pre Delay
-pre_run: Pre Run
-prefix: Prefix
-previous_value: Previous Value
-process: Process
-processes: Processes
-profile: Profile
-protocol: Protocol
-provider: Provider
-provider_type: Provider Type
-publish: Publish
+payload_off: 關閉承載
+payload_on: 開啟承載
+payloads: 承載
+per_cpu_disabled: 每 CPU 已停用
+port: 連接埠
+port_name: 連接埠名稱
+post_run: 執行後
+power: 電源
+pre_delay: 前置延遲
+pre_run: 執行前
+prefix: 前置詞
+previous_value: 上一個值
+process: 處理程序
+processes: 處理程序
+profile: 個人資料
+protocol: 通訊協定
+provider: 提供者
+provider_type: 提供者類型
+publish: 發佈
 qos: QoS
-query_parameters: Query Parameters
-queue_failed_messages: Queue Failed Messages
-quick_id: Quick ID
-re_enable: Re-enable
-re_enable_duration: Re-enable Duration
-react_version: React Version
-read_only: Read Only
-reboot: Reboot
-reconnect_delay: Reconnect Delay
-refresh_interval: Refresh Interval
-refresh_node_info: Refresh Node Info
-reload: Reload
-repeat_count: Repeat Count
-request_heartbeat: Request Heartbeat
-reset: Reset
-resetting: Resetting...
-resource: Resource
-resource_by_labels: Resource By Labels
-resource_by_quick_id: Resource By Quick ID
-resource_configuration: Resource Configuration
-resource_filters: Resource Filters
-resource_name: Resource name
-resource_type: Resource Type
-resources: Resources
-response_code: Response Code
-restore: Restore
-retention_count: Retention Count
-retry_count: Retry Count
+query_parameters: 查詢參數
+queue_failed_messages: 將失敗訊息加入佇列
+quick_id: 快速 ID
+re_enable: 重新啟用
+re_enable_duration: 重新啟用時長
+react_version: React 版本
+read_only: 唯讀
+reboot: 重新啟動
+reconnect_delay: 重新連線延遲
+refresh_interval: 重新整理間隔
+refresh_node_info: 重新整理節點資訊
+reload: 重新載入
+repeat_count: 重複次數
+request_heartbeat: 要求心跳
+reset: 重設
+resetting: 正在重設...
+resource: 資源
+resource_by_labels: 依標籤的資源
+resource_by_quick_id: 依快速 ID 的資源
+resource_configuration: 資源組態
+resource_filters: 資源篩選
+resource_name: 資源名稱
+resource_type: 資源類型
+resources: 資源
+response_code: 回應碼
+restore: 還原
+retention_count: 保留數量
+retry_count: 重試次數
 rgb: RGB
-rgb_component: RGB Component
-rotation: Rotation
-round_decimal: Round Decimal
-rule: Rule
-run_a_backup: Run a Backup
-run_backup: Run Backup
+rgb_component: RGB 分量
+rotation: 旋轉
+round_decimal: 小數位數
+rule: 規則
+run_a_backup: 執行備份
+run_backup: 執行備份
 s_no: '#'
-saturation: Saturation
-save: Save
-schedule: Schedule
-schedule_details: Schedule Details
-schedule_type: Schedule Type
-schedules: Schedules
-script: Script
-select_an_option: Select an option
-server: Server
-service_account_not_generated: Service account token not generated
-service_account_copy_title: Copy Service Account Token
-service_account_copy_warning_msg: This token will only be displayed once. It will not be stored and cannot be retrieved. Please be sure to save it now.
-service_account_barcode_help: Scan this barcode to log in with the token.
-service_account_details: Service Account Details
-service_accounts: Service Accounts
-policies: Policies
-policy_details: Policy Details
-settings: Settings
-show_grid_x: Show Grid X
-show_grid_y: Show Grid Y
-show_title: Show Title
-since: Since
-size: Size
-sleeping_queue: Sleeping Queue
-sort_order_priority: Sort Order Priority
-source: Source
-source_code: Source Code
-source_details: Source Details
-source_field: Source Filed
-source_id: Source ID
-sources: Sources
-spec: Spec
-stack_charts: Stack Charts
-state: State
-status: Status
-status_at: Status At
-status_configuration: Status Configuration
-step: Step
-storage_export_type: Storage Export Type
-stream_message_ack: Stream Message Ack
-string: String
-stroke_width_px: Stroke Width (px)
-sub_type: Sub Type
-subject: Subject
-subscribe: Subscribe
-swap_disabled: Swap Disabled
-sync_interval: Sync Interval
-system: System
-system_message: System Message
-table_configuration: Table Configuration
-table_view: Table View
-target_directory: Target Directory
-target_location: Target Location
-task: Task
-task_details: Task Details
-tasks: Tasks
+saturation: 飽和度
+save: 儲存
+schedule: 排程
+schedule_details: 排程詳細資料
+schedule_type: 排程類型
+schedules: 排程
+script: 指令碼
+select_an_option: 選取一個選項
+server: 伺服器
+service_account_not_generated: 服務帳戶權杖尚未產生
+service_account_copy_title: 複製服務帳戶權杖
+service_account_copy_warning_msg: 此權杖只會顯示一次。它不會被儲存，也無法再次擷取。請立即儲存。
+service_account_barcode_help: 掃描此條碼即可使用權杖登入。
+service_account_details: 服務帳戶詳細資料
+service_accounts: 服務帳戶
+policies: 原則
+policy_details: 原則詳細資料
+settings: 設定
+show_grid_x: 顯示 X 格線
+show_grid_y: 顯示 Y 格線
+show_title: 顯示標題
+since: 自
+size: 大小
+sleeping_queue: 休眠佇列
+sort_order_priority: 排序優先順序
+source: 來源
+source_code: 原始碼
+source_details: 來源詳細資料
+source_field: 來源欄位
+source_id: 來源 ID
+sources: 來源
+spec: 規格
+stack_charts: 堆疊圖表
+state: 狀態
+status: 狀態
+status_at: 狀態時間
+status_configuration: 狀態設定
+step: 步進
+storage_export_type: 儲存匯出類型
+stream_message_ack: 串流訊息確認
+string: 字串
+stroke_width_px: 筆畫寬度 (px)
+sub_type: 子類型
+subject: 主旨
+subscribe: 訂閱
+swap_disabled: 交換空間已停用
+sync_interval: 同步間隔
+system: 系統
+system_message: 系統訊息
+table_configuration: 表格設定
+table_view: 表格檢視
+target_directory: 目標目錄
+target_location: 目標位置
+task: 工作
+task_details: 工作詳細資料
+tasks: 工作
 telegram: Telegram
-temperature: Temperature
-text: Text
+temperature: 溫度
+text: 文字
 the_open_source_controller: The Open Source Controller
-theme_color: Theme Color
-thickness: Thickness
-threshold_mode: Threshold Mode
-thresholds: Thresholds
-thresholds_color: Thresholds Color
-time_hh_mm_ss: "Time (hh:mm:ss)"
-timeout: Timeout
-timestamp: Timestamp
-timestamp_key: Timestamp Key
-title: Title
-to: To
-to_emails: To Emails
-token: Token
-topic: Topic
-trait: Trait
-traits: Traits
-transmit_pre_delay: Transmit Pre Delay
-trigger_on_event: Trigger On Event
+theme_color: 佈景主題色彩
+thickness: 厚度
+threshold_mode: 臨界值模式
+thresholds: 臨界值
+thresholds_color: 臨界值色彩
+time_hh_mm_ss: "時間 (hh:mm:ss)"
+timeout: 逾時
+timestamp: 時間戳記
+timestamp_key: 時間戳記索引鍵
+title: 標題
+to: 收件者
+to_emails: 收件信箱
+token: 權杖
+topic: 主題
+trait: 特性
+traits: 特性
+transmit_pre_delay: 傳送前置延遲
+trigger_on_event: 依事件觸發
 'true': 'True'
-type: Type
-unit: Unit
-up: UP
-update: Update
-update_body: Update Body
-update_data: Update Data
-update_endpoint: Update Endpoint
-update_firmware: Update Firmware
-update_node: Update Node
-update_post_run: Update Post Run
-update_pre_run: Update Pre Run
-update_query_parameters: Update Query Parameters
-update_resource: Update Resource
-update_script: Update Script
-update_trait: Update trait
-update_value: Update Value
-update_y_axis: Update Y Axis
-upload: Upload
-upload_firmware: Upload Firmware
+type: 類型
+unit: 單位
+up: 向上
+update: 更新
+update_body: 更新內文
+update_data: 更新資料
+update_endpoint: 更新端點
+update_firmware: 更新韌體
+update_node: 更新節點
+update_post_run: 更新執行後
+update_pre_run: 更新執行前
+update_query_parameters: 更新查詢參數
+update_resource: 更新資源
+update_script: 更新指令碼
+update_trait: 更新特性
+update_value: 更新值
+update_y_axis: 更新 Y 軸
+upload: 上傳
+upload_firmware: 上傳韌體
 url: URL
-use_global: Use Global
-use_global_encryption_key: Use Global Encryption Key
-use_global_password: Use Global Password
-use_global_style: Use Global Style
-user_id: User ID
-username: Username
-validate_time_everyday: Validate Time Everyday
-validity: Validity
-value: Value
-value_formatter: Value Formatter
-value_key: Value Key
-variable: Variable
-variable_name: Variable Name
-variables: Variables
-version: Version
-virtual_assistant: Virtual Assistant
-virtual_assistant_details: Virtual Assistant Details
-virtual_assistants: Virtual Assistants
-virtual_device_details: Virtual Device Details
-virtual_devices: Virtual Devices
-web_console: Web Console
+use_global: 使用全域
+use_global_encryption_key: 使用全域加密金鑰
+use_global_password: 使用全域密碼
+use_global_style: 使用全域樣式
+user_id: 使用者 ID
+username: 使用者名稱
+validate_time_everyday: 每天驗證時間
+validity: 有效期限
+value: 值
+value_formatter: 值格式器
+value_key: 值索引鍵
+variable: 變數
+variable_name: 變數名稱
+variables: 變數
+version: 版本
+virtual_assistant: 虛擬助理
+virtual_assistant_details: 虛擬助理詳細資料
+virtual_assistants: 虛擬助理
+virtual_device_details: 虛擬裝置詳細資料
+virtual_devices: 虛擬裝置
+web_console: Web 主控台
 webhook: Webhook
-websocket_disconnected: Websocket disconnected
-welcome_to_mycontroller: Welcome to MyController
-width_px: Width (px)
-y_axis: Y Axis
-y_axis_configuration: Y Axis Configuration
+websocket_disconnected: Websocket 已中斷連線
+welcome_to_mycontroller: 歡迎使用 MyController
+width_px: 寬度 (px)
+y_axis: Y 軸
+y_axis_configuration: Y 軸設定
 yaml: YAML
-yaml_view: YAML View
-statement: Statement
-statements: Statements
-user_details: User Details
-users: Users
-layout: Layout
-layout_tree: Tree
-layout_force: Force
-refresh: Refresh
-include_child_nodes: Include child nodes
-child_nodes: Child Nodes
+yaml_view: YAML 檢視
+statement: 陳述式
+statements: 陳述式
+user_details: 使用者詳細資料
+users: 使用者
+layout: 版面
+layout_tree: 樹狀
+layout_force: 力導向
+refresh: 重新整理
+include_child_nodes: 包含子節點
+child_nodes: 子節點
