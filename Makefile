@@ -25,7 +25,7 @@ help:
 	@echo "  make web-console    production UI + pack zip for embedui builds"
 	@echo "  make test           go test ./..."
 	@echo "  make clean          remove $(BIN_DIR)/"
-	@echo "  make setup-release VERSION=x.y.z   sync main, commit changes, open release PR"
+	@echo "  make setup-release VERSION=x.y.z NEXT_VERSION=x.y.z   sync main, set next versions.txt, open release PR"
 
 all build: server gateway handler client
 
@@ -60,5 +60,6 @@ clean:
 	rm -rf $(BIN_DIR)
 
 setup-release:
-	@if [ "$(origin VERSION)" != "command line" ]; then echo "usage: make setup-release VERSION=x.y.z"; exit 1; fi
-	./scripts/setup_release.sh "$(VERSION)"
+	@if [ "$(origin VERSION)" != "command line" ] || [ "$(origin NEXT_VERSION)" != "command line" ]; then \
+		echo "usage: make setup-release VERSION=x.y.z NEXT_VERSION=x.y.z" >&2; exit 1; fi
+	./scripts/setup_release.sh "$(VERSION)" "$(NEXT_VERSION)"

@@ -6,18 +6,24 @@ set -euo pipefail
 #   1. Fetch and fast-forward local main to upstream/main
 #   2. Create release-<version> from that main
 #   3. Bring in all current commits and uncommitted work
-#   4. Set versions.txt to the release version
+#   4. Set versions.txt to NEXT_VERSION (the following devel release)
 #   5. Commit and open a pull request
 #
-# Usage: make setup-release VERSION=x.y.z
+# Usage: make setup-release VERSION=x.y.z NEXT_VERSION=x.y.z
 
 VERSION="${1:-}"
+NEXT_VERSION="${2:-}"
 MAIN_BRANCH="${SETUP_RELEASE_BASE:-main}"
 UPSTREAM_REMOTE="${SETUP_RELEASE_UPSTREAM:-upstream}"
 ORIGIN_REMOTE="${SETUP_RELEASE_ORIGIN:-origin}"
 
-if [[ ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  echo "usage: make setup-release VERSION=x.y.z" >&2
+if [[ ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || [[ ! "${NEXT_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "usage: make setup-release VERSION=x.y.z NEXT_VERSION=x.y.z" >&2
+  exit 1
+fi
+
+if [ "${VERSION}" = "${NEXT_VERSION}" ]; then
+  echo "NEXT_VERSION must differ from VERSION" >&2
   exit 1
 fi
 
@@ -95,8 +101,8 @@ UPSTREAM_REPO="$(github_repo "${UPSTREAM_URL}")"
 ORIGIN_OWNER="${ORIGIN_REPO%%/*}"
 
 echo "fetching ${UPSTREAM_REMOTE} and ${ORIGIN_REMOTE}"
-git fetch "${UPSTREAM_REMOTE}"
-git fetch "${ORIGIN_REMOTE}"
+git fetch --prune "${UPSTREAM_REMOTE}"
+git fetch --prune "${ORIGIN_REMOTE}"
 
 if git show-ref --verify --quiet "refs/remotes/${ORIGIN_REMOTE}/${RELEASE_BRANCH}"; then
   echo "remote branch ${ORIGIN_REMOTE}/${RELEASE_BRANCH} already exists" >&2
@@ -140,7 +146,7 @@ fi
 
 cat > versions.txt <<EOF
 # keep the next release version
-server=${VERSION}
+server=${NEXT_VERSION}
 EOF
 
 git add -A
@@ -155,7 +161,7 @@ fi
 
 COMMIT_MSG="Release ${VERSION}
 
-Set versions.txt to ${VERSION} and include the pending changes for this release.
+Bump versions.txt to ${NEXT_VERSION} (next devel release) and include the pending changes.
 
 After this pull request is merged, tag v${VERSION} so CI publishes with that version."
 
@@ -169,7 +175,7 @@ PR_BODY="$(cat <<EOF
 
 This pull request is for **release ${VERSION}**.
 
-\`versions.txt\` is set to \`${VERSION}\`. Untagged builds report \`${VERSION}-devel\`. After merge, the release version comes from the git tag \`v${VERSION}\` (\`scripts/version.sh\`).
+\`versions.txt\` is bumped to \`${NEXT_VERSION}\` so untagged builds report \`${NEXT_VERSION}-devel\`. The release version comes from the git tag \`v${VERSION}\` (\`scripts/version.sh\`).
 
 ### Changes
 \`\`\`
