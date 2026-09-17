@@ -95,8 +95,8 @@ UPSTREAM_REPO="$(github_repo "${UPSTREAM_URL}")"
 ORIGIN_OWNER="${ORIGIN_REPO%%/*}"
 
 echo "fetching ${UPSTREAM_REMOTE} and ${ORIGIN_REMOTE}"
-git fetch "${UPSTREAM_REMOTE}"
-git fetch "${ORIGIN_REMOTE}"
+git fetch --prune "${UPSTREAM_REMOTE}"
+git fetch --prune "${ORIGIN_REMOTE}"
 
 if git show-ref --verify --quiet "refs/remotes/${ORIGIN_REMOTE}/${RELEASE_BRANCH}"; then
   echo "remote branch ${ORIGIN_REMOTE}/${RELEASE_BRANCH} already exists" >&2
