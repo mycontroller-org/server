@@ -327,7 +327,7 @@ class Metrics extends React.Component {
                       unit={m.unit}
                       data={m.data}
                       interpolation={m.interpolation}
-                      type={m.type}
+                      type={m.type || "area"}
                       height={180}
                       width={contentRect.offset.width ? contentRect.offset.width : 1500}
                       tickCountX={getTickCountX(contentRect.offset.width)}

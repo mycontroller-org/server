@@ -204,6 +204,13 @@ gateway: Passerelle
 gateway_details: Détails de la passerelle
 gateway_id: Identifiant de la passerelle
 gateways: Passerelles
+all_gateways: Toutes les passerelles
+all_nodes: Tous les nœuds
+show_sources: Afficher les sources
+show_fields: Afficher les champs
+select_gateway: Passerelle
+no_topology_nodes: Aucun nœud à afficher
+no_topology_nodes_for_gateway: Aucun nœud sur cette passerelle
 geo_location: Localisation GEO
 git_commit: Enregistrer les changements dans le référentiel
 global_configuration: Global Configuration
@@ -816,6 +823,7 @@ parse_mode: Mode d'analyse
 password: Mot de passe
 path: Chemin d'accès
 payload: donnée
+send: Envoyer
 payload_off: Valeur ON
 payload_on: Valeur OFF
 payloads: Valeurs
@@ -1004,3 +1012,9 @@ statement: Statement
 statements: Statements
 user_details: User Details
 users: Users
+layout: Disposition
+layout_tree: Arbre
+layout_force: Force
+refresh: Actualiser
+include_child_nodes: Inclure les nœuds enfants
+child_nodes: Nœuds enfants

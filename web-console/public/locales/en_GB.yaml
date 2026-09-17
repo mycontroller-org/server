@@ -202,6 +202,13 @@ gateway: Gateway
 gateway_details: Gateway Details
 gateway_id: Gateway ID
 gateways: Gateways
+all_gateways: All gateways
+all_nodes: All nodes
+show_sources: Show sources
+show_fields: Show fields
+select_gateway: Gateway
+no_topology_nodes: No nodes to display
+no_topology_nodes_for_gateway: No nodes found for this gateway
 geo_location: GEO Location
 git_commit: Git Commit
 global_configuration: Global Configuration
@@ -814,6 +821,7 @@ parse_mode: Parse Mode
 password: Password
 path: Path
 payload: Payload
+send: Send
 payload_off: Payload OFF
 payload_on: Payload ON
 payloads: Payloads
@@ -1004,3 +1012,9 @@ statement: Statement
 edit_statement: Edit Statement
 statements: Statements
 effect: Effect
+layout: Layout
+layout_tree: Tree
+layout_force: Force
+refresh: Refresh
+include_child_nodes: Include child nodes
+child_nodes: Child Nodes
