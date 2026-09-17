@@ -150,10 +150,10 @@ func (s *Server) Start(ctx context.Context, configFilePath string) error {
 
 	// setup initial system settings
 	s.updateInitialSystemSettings()
-	s.setupInitialUser()
 
-	// start upgrade, if any
+	// convert imported rows before any API lists them as the current types
 	s.startUpgrade()
+	s.setupInitialUser()
 
 	// engines needed in task and schedules service
 	// get variables engine
