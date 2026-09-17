@@ -62,12 +62,16 @@ jobs:
 
       - name: Update executables from main branch changes
         if: startsWith(github.ref, 'refs/heads/main') # executes only for changes in main
-        uses: "marvinpinto/action-automatic-releases@latest"
+        uses: softprops/action-gh-release@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
-          repo_token: "${{ secrets.GH_TOKEN }}"
-          automatic_release_tag: development
+          tag_name: development
+          target_commitish: ${{ github.sha }}
+          name: Development Build - Pre Release
           prerelease: true
-          title: "Development Build - Pre Release"
+          make_latest: false
+          overwrite_files: true
           files: |
             builds/*.tar.gz
             builds/*.zip
