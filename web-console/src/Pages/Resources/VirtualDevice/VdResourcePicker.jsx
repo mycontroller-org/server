@@ -32,9 +32,10 @@ class VdResourcePicker extends React.Component {
   render() {
     const { isOpen } = this.state
     const { id, value, onChange, t } = this.props
+    const idStr = id == null ? "" : String(id)
     return (
       <>
-        <Button key={"edit-btn-" + id} variant="control" onClick={this.onOpen}>
+        <Button key={"edit-btn-" + idStr} variant="control" onClick={this.onOpen}>
           <EditIcon />
         </Button>
         <Modal
@@ -71,7 +72,7 @@ class VdResourcePicker extends React.Component {
 }
 
 VdResourcePicker.propTypes = {
-  id: PropTypes.string,
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   value: PropTypes.object,
   onChange: PropTypes.func,
 }

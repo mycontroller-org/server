@@ -780,6 +780,7 @@ opts:
     label_streaming_soundbar: Streaming-Soundbar
     label_streaming_stick: Streaming-Stick
     label_switch: Schalter
+    label_tank: Tank
     label_television: Fernseher
     label_thermostat: Thermostat
     label_vacuum: Staubsauger

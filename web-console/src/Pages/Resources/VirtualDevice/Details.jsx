@@ -23,7 +23,7 @@ const updateTraits = (resourceId, filter = { offset: 0, limit: 10 }) =>
           end = traits.length
         }
         const response = traits.slice(start, end).map((k) => {
-          return { trait: k, resource: traitsObj[k] }
+          return { id: k, trait: k, resource: traitsObj[k] }
         })
         resolve({ data: { count: traits.length, limit: traits.length, offset: 0, data: response } })
       })
