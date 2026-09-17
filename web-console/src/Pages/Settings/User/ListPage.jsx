@@ -62,7 +62,7 @@ const tableColumns = [
   { title: "username", fieldKey: "username", sortable: true },
   { title: "full_name", fieldKey: "fullName", sortable: true },
   { title: "email", fieldKey: "email", sortable: true },
-  { title: "enabled", fieldKey: "disabled", sortable: true },
+  { title: "enabled", fieldKey: "enabled", sortable: true },
   { title: "policies", fieldKey: "policies", sortable: false },
   { title: "created_on", fieldKey: "createdOn", sortable: true },
   { title: "modified_on", fieldKey: "modifiedOn", sortable: true },
@@ -87,7 +87,7 @@ const toRowFuncImpl = (rawData, history) => {
       },
       { title: rawData.fullName },
       { title: rawData.email },
-      { title: <div className="align-center">{getStatusBool(!rawData.disabled)}</div> },
+      { title: <div className="align-center">{getStatusBool(!!rawData.enabled)}</div> },
       { title: policies },
       { title: <LastSeen date={rawData.createdOn} /> },
       { title: <LastSeen date={rawData.modifiedOn} /> },
@@ -100,7 +100,7 @@ const filtersDefinition = [
   { category: "username", categoryName: "username", fieldType: "input", dataType: "string" },
   { category: "fullName", categoryName: "full_name", fieldType: "input", dataType: "string" },
   { category: "email", categoryName: "email", fieldType: "input", dataType: "string" },
-  { category: "disabled", categoryName: "disabled", fieldType: "enabled", dataType: "boolean" },
+  { category: "enabled", categoryName: "enabled", fieldType: "enabled", dataType: "boolean" },
 ]
 
 List.defaultProps = {

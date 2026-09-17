@@ -70,21 +70,21 @@ func (h *Routes) updateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if entity.ID != "" && entity.Disabled != nil && *entity.Disabled && entity.ID == middleware.GetUserID(r) {
+	if entity.ID != "" && entity.Enabled != nil && !*entity.Enabled && entity.ID == middleware.GetUserID(r) {
 		http.Error(w, "cannot disable the current user", http.StatusBadRequest)
 		return
 	}
 	if entity.ID == "" {
 		// create new user from admin update payload
-		disabled := false
-		if entity.Disabled != nil {
-			disabled = *entity.Disabled
+		enabled := true
+		if entity.Enabled != nil {
+			enabled = *entity.Enabled
 		}
 		user := &userTY.User{
 			Username: entity.Username,
 			Email:    entity.Email,
 			FullName: entity.FullName,
-			Disabled: disabled,
+			Enabled:  enabled,
 			Policies: entity.Policies,
 			Labels:   entity.Labels,
 		}

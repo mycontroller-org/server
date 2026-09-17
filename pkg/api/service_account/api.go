@@ -193,17 +193,17 @@ func (st *ServiceAccountAPI) GetEntityInterface() interface{} {
 	return svcAccountTY.ServiceAccount{}
 }
 
-// Enable clears Disabled on the given accounts.
+// Enable sets Enabled on the given accounts.
 func (st *ServiceAccountAPI) Enable(ids []string) error {
-	return st.setDisabled(ids, false)
+	return st.setEnabled(ids, true)
 }
 
-// Disable sets Disabled on the given accounts.
+// Disable clears Enabled on the given accounts.
 func (st *ServiceAccountAPI) Disable(ids []string) error {
-	return st.setDisabled(ids, true)
+	return st.setEnabled(ids, false)
 }
 
-func (st *ServiceAccountAPI) setDisabled(ids []string, disabled bool) error {
+func (st *ServiceAccountAPI) setEnabled(ids []string, enabled bool) error {
 	for _, id := range ids {
 		if id == "" {
 			continue
@@ -212,10 +212,10 @@ func (st *ServiceAccountAPI) setDisabled(ids []string, disabled bool) error {
 		if err != nil {
 			return err
 		}
-		if account.Disabled == disabled {
+		if account.Enabled == enabled {
 			continue
 		}
-		account.Disabled = disabled
+		account.Enabled = enabled
 		if err := st.Save(&account); err != nil {
 			return err
 		}

@@ -150,7 +150,7 @@ func (u *UserAPI) Create(user *userTY.User, plainPassword string) error {
 	return u.Save(user)
 }
 
-// SaveAdmin updates user including disabled flag and policies (admin path).
+// SaveAdmin updates user including enabled flag and policies (admin path).
 func (u *UserAPI) SaveAdmin(update *userTY.UserAdminUpdate) error {
 	if update.ID == "" {
 		return errors.New("user id can not be empty")
@@ -166,8 +166,8 @@ func (u *UserAPI) SaveAdmin(update *userTY.UserAdminUpdate) error {
 		user.Email = update.Email
 	}
 	user.FullName = update.FullName
-	if update.Disabled != nil {
-		user.Disabled = *update.Disabled
+	if update.Enabled != nil {
+		user.Enabled = *update.Enabled
 	}
 	if update.Policies != nil {
 		user.Policies = update.Policies
@@ -224,7 +224,7 @@ func (u *UserAPI) UpdateProfile(userData *userTY.UserProfileUpdate) error {
 
 	user.FullName = userData.FullName
 	user.Labels = userData.Labels
-	// profile update does not change Disabled or Policies
+	// profile update does not change Enabled or Policies
 
 	return u.Save(&user)
 }

@@ -24,7 +24,7 @@ var (
 	isRestoreRunning = concurrency.SafeBool{}
 )
 
-type updateRestoreApiMap func(storage storageTY.Plugin, backupVersion string, apiMap map[string]Backup) (map[string]Backup, error)
+type updateRestoreApiMap func(storage storageTY.Plugin, backupVersion, lastUpgrade string, apiMap map[string]Backup) (map[string]Backup, error)
 
 func (br *BackupRestore) ExecuteRestore(storage storageTY.Plugin, apiMap map[string]Backup, extractedDir string, updateRestoreApiMapFn updateRestoreApiMap) error {
 	start := time.Now()
@@ -58,7 +58,7 @@ func (br *BackupRestore) ExecuteRestore(storage storageTY.Plugin, apiMap map[str
 	}
 
 	// update restore api with actual backed up server version
-	_updateApiMap, err := updateRestoreApiMapFn(storage, exportDetails.Version.Version, apiMap)
+	_updateApiMap, err := updateRestoreApiMapFn(storage, exportDetails.Version.Version, "", apiMap)
 	if err != nil {
 		return err
 	}

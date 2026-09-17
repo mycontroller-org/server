@@ -62,7 +62,7 @@ const getFormItems = (rootObject, id) => {
   objectPath.set(rootObject, "username", "", true)
   objectPath.set(rootObject, "email", "", true)
   objectPath.set(rootObject, "fullName", "", true)
-  objectPath.set(rootObject, "disabled", false, true)
+  objectPath.set(rootObject, "enabled", true, true)
   objectPath.set(rootObject, "policies", [], true)
   objectPath.set(rootObject, "password", "", true)
   objectPath.set(rootObject, "labels", {}, true)
@@ -123,11 +123,11 @@ const getFormItems = (rootObject, id) => {
       validator: isNew ? { isLength: { min: 4, max: 100 }, isNotEmpty: {} } : {},
     },
     {
-      label: "disabled",
-      fieldId: "disabled",
+      label: "enabled",
+      fieldId: "enabled",
       fieldType: FieldType.Switch,
       dataType: DataType.Boolean,
-      value: false,
+      value: true,
     },
     {
       label: "policies",

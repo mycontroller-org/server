@@ -173,14 +173,14 @@ func (h *Routes) createServiceAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Routes) enableServiceAccount(w http.ResponseWriter, r *http.Request) {
-	h.setServiceAccountsDisabled(w, r, false)
+	h.setServiceAccountsEnabled(w, r, true)
 }
 
 func (h *Routes) disableServiceAccount(w http.ResponseWriter, r *http.Request) {
-	h.setServiceAccountsDisabled(w, r, true)
+	h.setServiceAccountsEnabled(w, r, false)
 }
 
-func (h *Routes) setServiceAccountsDisabled(w http.ResponseWriter, r *http.Request, disabled bool) {
+func (h *Routes) setServiceAccountsEnabled(w http.ResponseWriter, r *http.Request, enabled bool) {
 	IDs := []string{}
 	updateFn := func(f []storageTY.Filter, p *storageTY.Pagination, d []byte) (interface{}, error) {
 		if len(IDs) == 0 {
@@ -192,18 +192,18 @@ func (h *Routes) setServiceAccountsDisabled(w http.ResponseWriter, r *http.Reque
 			}
 		}
 		var err error
-		if disabled {
-			err = h.api.ServiceAccount().Disable(IDs)
-		} else {
+		if enabled {
 			err = h.api.ServiceAccount().Enable(IDs)
+		} else {
+			err = h.api.ServiceAccount().Disable(IDs)
 		}
 		if err != nil {
 			return nil, err
 		}
-		if disabled {
-			return "Disabled", nil
+		if enabled {
+			return "Enabled", nil
 		}
-		return "Enabled", nil
+		return "Disabled", nil
 	}
 	handlerUtils.UpdateData(w, r, &IDs, updateFn)
 }

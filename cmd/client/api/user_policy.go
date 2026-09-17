@@ -64,16 +64,16 @@ func (c *Client) FindPolicy(id string) (*policyTY.Policy, error) {
 }
 
 func (c *Client) EnableUser(selectors ...string) error {
-	return c.setUsersDisabled(selectors, false)
+	return c.setUsersEnabled(selectors, true)
 }
 
 func (c *Client) DisableUser(selectors ...string) error {
-	return c.setUsersDisabled(selectors, true)
+	return c.setUsersEnabled(selectors, false)
 }
 
-func (c *Client) setUsersDisabled(selectors []string, disabled bool) error {
+func (c *Client) setUsersEnabled(selectors []string, enabled bool) error {
 	var current *userTY.User
-	if disabled {
+	if !enabled {
 		profile, err := c.GetProfile()
 		if err != nil {
 			return err
@@ -98,7 +98,7 @@ func (c *Client) setUsersDisabled(selectors []string, disabled bool) error {
 			}
 			continue
 		}
-		if disabled && current != nil && (user.ID == current.ID || strings.EqualFold(user.Username, current.Username)) {
+		if !enabled && current != nil && (user.ID == current.ID || strings.EqualFold(user.Username, current.Username)) {
 			err := fmt.Errorf("cannot disable the current user %s", user.Username)
 			if firstErr == nil {
 				firstErr = err
@@ -107,13 +107,13 @@ func (c *Client) setUsersDisabled(selectors []string, disabled bool) error {
 			}
 			continue
 		}
-		flag := disabled
+		flag := enabled
 		if err := c.SaveUser(&userTY.UserAdminUpdate{
 			ID:       user.ID,
 			Username: user.Username,
 			Email:    user.Email,
 			FullName: user.FullName,
-			Disabled: &flag,
+			Enabled:  &flag,
 			Policies: user.Policies,
 			Labels:   user.Labels,
 		}); err != nil {

@@ -125,7 +125,7 @@ func (s *Server) triggerSystemRestore(cfg *config.StartupRestore) {
 // this will allow to restore from any lower version
 // if there is a schema changed on a version, old schema can be handled with this
 // data will be migrated on startup via upgrade
-func (s *Server) updateRestoreApiMap(storage storageTY.Plugin, backupVersion string, apiMap map[string]backupAPI.Backup) (map[string]backupAPI.Backup, error) {
-	s.logger.Info("backup file", zap.String("serverVersion", backupVersion))
-	return upgrade.UpdateStorageRestoreApiMap(context.Background(), s.logger, storage, backupVersion, apiMap)
+func (s *Server) updateRestoreApiMap(storage storageTY.Plugin, backupVersion, lastUpgrade string, apiMap map[string]backupAPI.Backup) (map[string]backupAPI.Backup, error) {
+	s.logger.Info("backup file", zap.String("serverVersion", backupVersion), zap.String("lastUpgrade", lastUpgrade))
+	return upgrade.UpdateStorageRestoreApiMap(context.Background(), s.logger, storage, backupVersion, lastUpgrade, apiMap)
 }

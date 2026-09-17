@@ -35,7 +35,7 @@ const getDetailsFuncImpl = (data, t) => {
   fieldsList1.push({ key: "username", value: data.username })
   fieldsList1.push({ key: "full_name", value: data.fullName })
   fieldsList1.push({ key: "email", value: data.email })
-  fieldsList2.push({ key: "disabled", value: data.disabled ? t("true") : t("false") })
+  fieldsList2.push({ key: "enabled", value: data.enabled ? t("true") : t("false") })
   fieldsList2.push({
     key: "policies",
     value: Array.isArray(data.policies) ? data.policies.join(", ") : "",

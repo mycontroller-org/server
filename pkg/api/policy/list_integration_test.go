@@ -15,7 +15,7 @@ import (
 func mockAPIWithPolicy(t *testing.T, userID string, p policyTY.Policy) *API {
 	t.Helper()
 	c := newCache()
-	u := &userTY.User{ID: userID, Username: "u", Policies: []string{p.ID}}
+	u := &userTY.User{ID: userID, Username: "u", Enabled: true, Policies: []string{p.ID}}
 	cp := p
 	c.PutUser(u)
 	c.PutPolicy(&cp)

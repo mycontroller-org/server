@@ -52,7 +52,7 @@ func TestAuthorizeQuickIDRequest_DeniesNode1Field(t *testing.T) {
 		},
 	}
 	c := newCache()
-	c.PutUser(&userTY.User{ID: "u1", Policies: []string{"test"}})
+	c.PutUser(&userTY.User{ID: "u1", Enabled: true, Policies: []string{"test"}})
 	cp := p
 	c.PutPolicy(&cp)
 	c.setLoaders(

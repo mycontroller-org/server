@@ -30,7 +30,7 @@ var userGetCmd = &cobra.Command{
 				{Title: "username"},
 				{Title: "email"},
 				{Title: "full name", ValuePath: "fullName"},
-				{Title: "disabled"},
+				{Title: "enabled"},
 				{Title: "policies", ValueFunc: formatUserPolicies},
 			}
 			executeGetCmd(headers, client.ListUser, userTY.User{})
@@ -58,7 +58,7 @@ var userGetCmd = &cobra.Command{
 			{Title: "username"},
 			{Title: "email"},
 			{Title: "full name", ValuePath: "fullName"},
-			{Title: "disabled"},
+			{Title: "enabled"},
 			{Title: "policies", ValueFunc: formatUserPolicies},
 		}
 		printOne(headers, user)

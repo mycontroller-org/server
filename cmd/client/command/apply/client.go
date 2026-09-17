@@ -135,13 +135,13 @@ func (c *apiResourceClient) SaveUser(resource Resource) error {
 		return nil
 	}
 	user := resource.User
-	disabled := user.Disabled
+	enabled := user.Enabled
 	return c.client.SaveUser(&userTY.UserAdminUpdate{
 		ID:       user.ID,
 		Username: user.Username,
 		Email:    user.Email,
 		FullName: user.FullName,
-		Disabled: &disabled,
+		Enabled:  &enabled,
 		Policies: user.Policies,
 		Password: user.Password,
 		Labels:   user.Labels,

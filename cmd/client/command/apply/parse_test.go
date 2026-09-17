@@ -86,6 +86,7 @@ statements:
 	assert.Equal(t, "alice", resources[0].User.Username)
 	assert.Equal(t, "secret", resources[0].User.Password)
 	assert.Equal(t, []string{"admin"}, resources[0].User.Policies)
+	assert.True(t, resources[0].User.Enabled)
 	assert.Equal(t, KindPolicy, resources[1].Kind)
 	assert.Equal(t, "sensors-read", resources[1].Policy.ID)
 	require.Len(t, resources[1].Policy.Statements, 1)
@@ -112,6 +113,7 @@ statements:
 	assert.Equal(t, "ci-bot", resources[0].ServiceAccount.Name)
 	assert.Equal(t, "CI automation", resources[0].ServiceAccount.Description)
 	assert.True(t, resources[0].ServiceAccount.NeverExpire)
+	assert.True(t, resources[0].ServiceAccount.Enabled)
 	require.Len(t, resources[0].ServiceAccount.Statements, 1)
 	assert.Equal(t, "Allow", resources[0].ServiceAccount.Statements[0].Effect)
 	assert.Equal(t, []string{"get", "list"}, resources[0].ServiceAccount.Statements[0].Actions)
@@ -132,7 +134,22 @@ neverExpire: true
 	require.Len(t, resources, 1)
 	assert.Equal(t, "alice", resources[0].ServiceAccount.Username)
 	assert.Equal(t, "mobile", resources[0].ServiceAccount.Name)
+	assert.True(t, resources[0].ServiceAccount.Enabled)
 	assert.Equal(t, "service-account: alice.mobile", resources[0].TableResource())
+}
+
+func TestParseResourcesUserEnabledFalse(t *testing.T) {
+	data := []byte(`
+kind: user
+operation: add
+username: bob
+password: secret
+enabled: false
+`)
+	resources, err := ParseResources(data, "user.yaml")
+	require.NoError(t, err)
+	require.Len(t, resources, 1)
+	assert.False(t, resources[0].User.Enabled)
 }
 
 func TestParseResourcesYAMLSingle(t *testing.T) {

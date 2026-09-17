@@ -20,7 +20,7 @@ func apiWithPolicies(t *testing.T, policies ...policyTY.Policy) *API {
 		c.PutPolicy(&cp)
 		ids = append(ids, cp.ID)
 	}
-	c.PutUser(&userTY.User{ID: "u1", Username: "u", Policies: ids})
+	c.PutUser(&userTY.User{ID: "u1", Username: "u", Enabled: true, Policies: ids})
 	c.setLoaders(
 		func(id string) (*userTY.User, error) { return nil, ErrUserNotFound },
 		func(id string) (*policyTY.Policy, error) { return nil, ErrNotFound },
@@ -236,7 +236,7 @@ func TestAuthorizeBodyTargets_UserEscalation(t *testing.T) {
 
 	for _, body := range []string{
 		`{"id":"u1","policies":["admin"]}`,
-		`{"id":"u1","disabled":true}`,
+		`{"id":"u1","enabled":false}`,
 	} {
 		r := writeRequest(t, http.MethodPost, "/api/user", body)
 		access := MapRequest(r)
