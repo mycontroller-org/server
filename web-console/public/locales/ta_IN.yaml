@@ -204,6 +204,13 @@ gateway: கேட்வே
 gateway_details: கேட்வேவின் விவரங்கள்
 gateway_id: கேட்வே ஐடி
 gateways: கேட்வேக்கள்
+all_gateways: அனைத்து கேட்வேக்கள்
+all_nodes: அனைத்து நோடுகள்
+show_sources: மூலங்களைக் காட்டு
+show_fields: புலங்களைக் காட்டு
+select_gateway: கேட்வே
+no_topology_nodes: காட்ட நோடுகள் இல்லை
+no_topology_nodes_for_gateway: இந்த கேட்வேயில் நோடுகள் இல்லை
 geo_location: GEO Location
 git_commit: ஜிட் கமிட்
 global_configuration: Global Configuration
@@ -816,6 +823,7 @@ parse_mode: Parse Mode
 password: கடவுச்சொல்
 path: பாதை
 payload: பேலோட்
+send: அனுப்பு
 payload_off: பேலோட் ஆஃப்
 payload_on: பேலோட் ஆன்
 payloads: Payloads
@@ -827,7 +835,7 @@ power: ஆற்றல்
 pre_delay: Pre Delay
 pre_run: Pre Run
 prefix: Prefix
-previous_value: Previous Value
+previous_value: முந்தைய மதிப்பு
 process: Process
 processes: Processes
 profile: சுயவிவரம்
@@ -1004,3 +1012,9 @@ statement: Statement
 statements: Statements
 user_details: User Details
 users: Users
+layout: அமைப்பு
+layout_tree: மரம்
+layout_force: விசை
+refresh: புதுப்பி
+include_child_nodes: குழந்தை நோடுகளைச் சேர்
+child_nodes: குழந்தை நோடுகள்

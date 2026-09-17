@@ -1,6 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { Select as PfSelect, SelectOption } from "@patternfly/react-core"
+import { Select as PfSelect, SelectOption, SelectVariant } from "@patternfly/react-core"
 
 class Select extends React.Component {
   state = {
@@ -8,9 +8,7 @@ class Select extends React.Component {
   }
 
   onToggle = (isOpen) => {
-    this.setState({
-      isOpen,
-    })
+    this.setState({ isOpen })
   }
 
   onSelect = (_event, selectionLabel, _isPlaceholder) => {
@@ -38,17 +36,37 @@ class Select extends React.Component {
     })
   }
 
+  onFilter = (_event, text) => {
+    const { options, hideDescription } = this.props
+    const query = String(text || "").toLowerCase()
+    return options
+      .filter((option) => {
+        if (!query) {
+          return true
+        }
+        const haystack = [option.label, option.value, option.name, option.description, option.searchText]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+        return haystack.includes(query)
+      })
+      .map((option, index) => (
+        <SelectOption
+          isDisabled={option.disabled}
+          key={index}
+          value={option.label}
+          {...(!hideDescription && option.description && { description: option.description })}
+        />
+      ))
+  }
+
   onCreateOption = (_newValue) => {}
 
   clearSelection = () => {
     const { onChange, isArrayData } = this.props
     this.setState({ isOpen: false }, () => {
       if (onChange) {
-        if (isArrayData) {
-          onChange([])
-        } else {
-          onChange("")
-        }
+        onChange(isArrayData ? [] : "")
       }
     })
   }
@@ -61,10 +79,12 @@ class Select extends React.Component {
       isDisabled,
       isCreatable,
       variant,
+      isSearchable,
       disableClear,
       hideDescription,
       isArrayData,
       direction = "",
+      maxHeight = "300px",
     } = this.props
     const { isOpen } = this.state
 
@@ -97,13 +117,15 @@ class Select extends React.Component {
 
     return (
       <PfSelect
-        variant={variant}
+        variant={isSearchable ? SelectVariant.typeahead : variant || SelectVariant.single}
+        onFilter={isSearchable ? this.onFilter : undefined}
         //typeAheadAriaLabel="Select a state"
         onToggle={this.onToggle}
         onSelect={this.onSelect}
         onClear={disableClear ? undefined : this.clearSelection}
         selections={selections}
         isOpen={isOpen}
+        maxHeight={maxHeight}
         //aria-labelledby={titleId}
         placeholderText={label}
         isDisabled={isDisabled}

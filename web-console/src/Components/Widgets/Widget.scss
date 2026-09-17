@@ -1,3 +1,17 @@
+.dashboard-widget.pf-c-card,
+.dashboard-widget.pf-c-card.pf-m-compact {
+  --pf-c-card--first-child--PaddingTop: 0;
+  --pf-c-card--child--PaddingRight: 0;
+  --pf-c-card--child--PaddingBottom: 0;
+  --pf-c-card--child--PaddingLeft: 0;
+  --pf-c-card--m-compact--first-child--PaddingTop: 0;
+  --pf-c-card--m-compact--child--PaddingRight: 0;
+  --pf-c-card--m-compact--child--PaddingBottom: 0;
+  --pf-c-card--m-compact--child--PaddingLeft: 0;
+  --pf-c-card__title--not--last-child--PaddingBottom: 0;
+  --pf-c-card--m-compact__title--not--last-child--PaddingBottom: 0;
+}
+
 .dashboard-widget {
   height: 100%;
   width: 100%;
@@ -6,7 +20,7 @@
   position: relative;
   overflow: auto;
   .dashboard-widget-body {
-    padding: 0px 0px;
+    padding: 0;
     position: relative;
     .dashboard-widget-title-stick-top {
       position: absolute;

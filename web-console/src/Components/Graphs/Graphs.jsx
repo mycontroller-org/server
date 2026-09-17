@@ -3,6 +3,7 @@ import {
   ChartArea,
   ChartAxis,
   ChartGroup,
+  ChartLine,
   ChartThemeColor,
   ChartThemeVariant,
   ChartTooltip,
@@ -25,7 +26,9 @@ export const LineChart = ({
   height = 200,
   width = 600,
   minDomainY = 0,
+  type = "area",
 }) => {
+  const Series = type === "line" ? ChartLine : ChartArea
   return (
     <div>
       <h5 className="graph-title">{title}</h5>
@@ -60,7 +63,7 @@ export const LineChart = ({
           showGrid
           fixLabelOverlap
           tickFormat={(tick) => {
-            if (tick) {
+            if (tick || tick === 0) {
               if (tick % 1 !== 0) {
                 return `${tick.toFixed(2)} ${unit}`
               }
@@ -70,7 +73,7 @@ export const LineChart = ({
           }}
         />
         <ChartGroup>
-          <ChartArea interpolation={interpolation} data={data} />
+          <Series interpolation={interpolation} data={data} />
         </ChartGroup>
       </Chart>
     </div>
