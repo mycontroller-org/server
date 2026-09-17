@@ -1,2 +1,2 @@
 # keep the next release version
-server=2.2.1
+server=2.3.0

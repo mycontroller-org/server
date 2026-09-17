@@ -13,17 +13,7 @@ GIT_COMMIT  ?= $(shell git rev-parse HEAD 2>/dev/null || echo unknown)
 BUILD_DATE  ?= $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 LDFLAGS     := -s -w -X $(VERSION_PKG).version=$(VERSION) -X $(VERSION_PKG).buildDate=$(BUILD_DATE) -X $(VERSION_PKG).gitCommit=$(GIT_COMMIT)
 
-# versions.txt is the next release to cut (x.y.z). Do not reuse VERSION:
-# that is the build string from version.sh (often x.y.z-devel).
-RELEASE_VERSION ?= $(shell awk -F= '/^server=/{print $$2}' versions.txt)
-ifeq ($(origin VERSION),command line)
-NEXT_FROM := $(VERSION)
-else
-NEXT_FROM := $(RELEASE_VERSION)
-endif
-NEXT_VERSION := $(shell printf '%s\n' '$(NEXT_FROM)' | awk -F. '{if (NF==3 && $$1~/^[0-9]+$$/ && $$2~/^[0-9]+$$/ && $$3~/^[0-9]+$$/) printf "%d.%d.%d", $$1, $$2, $$3+1}')
-
-.PHONY: help all build server gateway handler client web-console test clean setup-release next-version
+.PHONY: help all build server gateway handler client web-console test clean setup-release
 
 help:
 	@echo "Targets:"
@@ -35,8 +25,7 @@ help:
 	@echo "  make web-console    production UI + pack zip for embedui builds"
 	@echo "  make test           go test ./..."
 	@echo "  make clean          remove $(BIN_DIR)/"
-	@echo "  make next-version   print the next patch after versions.txt (or VERSION=x.y.z)"
-	@echo "  make setup-release [VERSION=x.y.z]   sync main, bump versions.txt, open release PR"
+	@echo "  make setup-release VERSION=x.y.z NEXT_VERSION=x.y.z   sync main, set next versions.txt, open release PR"
 
 all build: server gateway handler client
 
@@ -70,13 +59,7 @@ test:
 clean:
 	rm -rf $(BIN_DIR)
 
-next-version:
-	@if [ -z "$(NEXT_VERSION)" ]; then echo "could not compute next version from '$(NEXT_FROM)'" >&2; exit 1; fi
-	@echo $(NEXT_VERSION)
-
 setup-release:
-ifeq ($(origin VERSION),command line)
-	./scripts/setup_release.sh "$(VERSION)"
-else
-	./scripts/setup_release.sh "$(RELEASE_VERSION)"
-endif
+	@if [ "$(origin VERSION)" != "command line" ] || [ "$(origin NEXT_VERSION)" != "command line" ]; then \
+		echo "usage: make setup-release VERSION=x.y.z NEXT_VERSION=x.y.z" >&2; exit 1; fi
+	./scripts/setup_release.sh "$(VERSION)" "$(NEXT_VERSION)"

@@ -6,19 +6,24 @@ set -euo pipefail
 #   1. Fetch and fast-forward local main to upstream/main
 #   2. Create release-<version> from that main
 #   3. Bring in all current commits and uncommitted work
-#   4. Bump versions.txt to the next patch via `make next-version`
+#   4. Set versions.txt to NEXT_VERSION (the following devel release)
 #   5. Commit and open a pull request
 #
-# Usage: make setup-release
-#        make setup-release VERSION=x.y.z   # optional; default is versions.txt
+# Usage: make setup-release VERSION=x.y.z NEXT_VERSION=x.y.z
 
 VERSION="${1:-}"
+NEXT_VERSION="${2:-}"
 MAIN_BRANCH="${SETUP_RELEASE_BASE:-main}"
 UPSTREAM_REMOTE="${SETUP_RELEASE_UPSTREAM:-upstream}"
 ORIGIN_REMOTE="${SETUP_RELEASE_ORIGIN:-origin}"
 
-if [[ ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  echo "usage: make setup-release VERSION=x.y.z" >&2
+if [[ ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || [[ ! "${NEXT_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "usage: make setup-release VERSION=x.y.z NEXT_VERSION=x.y.z" >&2
+  exit 1
+fi
+
+if [ "${VERSION}" = "${NEXT_VERSION}" ]; then
+  echo "NEXT_VERSION must differ from VERSION" >&2
   exit 1
 fi
 
@@ -137,12 +142,6 @@ if [ "${STASHED}" = "1" ]; then
     exit 1
   fi
   STASHED=0
-fi
-
-NEXT_VERSION="$(make -s next-version VERSION="${VERSION}")"
-if [[ ! "${NEXT_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  echo "make next-version did not return x.y.z (got '${NEXT_VERSION}')" >&2
-  exit 1
 fi
 
 cat > versions.txt <<EOF
