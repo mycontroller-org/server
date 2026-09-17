@@ -6,10 +6,11 @@ set -euo pipefail
 #   1. Fetch and fast-forward local main to upstream/main
 #   2. Create release-<version> from that main
 #   3. Bring in all current commits and uncommitted work
-#   4. Bump versions.txt to the next patch (the following devel release)
+#   4. Bump versions.txt to the next patch via `make next-version`
 #   5. Commit and open a pull request
 #
-# Usage: make setup-release VERSION=x.y.z
+# Usage: make setup-release
+#        make setup-release VERSION=x.y.z   # optional; default is versions.txt
 
 VERSION="${1:-}"
 MAIN_BRANCH="${SETUP_RELEASE_BASE:-main}"
@@ -138,8 +139,11 @@ if [ "${STASHED}" = "1" ]; then
   STASHED=0
 fi
 
-IFS=. read -r major minor patch <<< "${VERSION}"
-NEXT_VERSION="${major}.${minor}.$((patch + 1))"
+NEXT_VERSION="$(make -s next-version VERSION="${VERSION}")"
+if [[ ! "${NEXT_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "make next-version did not return x.y.z (got '${NEXT_VERSION}')" >&2
+  exit 1
+fi
 
 cat > versions.txt <<EOF
 # keep the next release version
