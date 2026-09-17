@@ -1,0 +1,1020 @@
+---
+about: Informazioni
+actions: Azioni
+active_duration: Durata attiva
+add: Aggiungi
+add_a_field: Aggiungi un campo
+add_a_firmware: Aggiungi un firmware
+add_a_forward_payload: Aggiungi un Forward Payload
+add_a_gateway: Aggiungi un Gateway
+add_a_handler: Aggiungi un Handler
+add_a_node: Aggiungi un nodo
+add_a_schedule: Aggiungi una pianificazione
+add_a_policy: Aggiungi una Policy
+add_a_service_account: Aggiungi un account di servizio
+add_a_user: Aggiungi un utente
+add_a_source: Aggiungi una sorgente
+add_a_task: "Aggiungi un'attività"
+add_a_virtual_assistant: Aggiungi un assistente virtuale
+add_a_virtual_device: Aggiungi un dispositivo virtuale
+add_an_item: Aggiungi un elemento
+add_widget: Aggiungi widget
+address: Indirizzo
+agent_user_id: ID utente agente
+alerts_empty_message: Al momento non ci sono avvisi.
+alerts_empty_title: Nessun avviso trovato
+alive_check_interval: Intervallo di controllo attività
+all_rights_reserved: Tutti i diritti riservati
+allow_overwrite: Consenti sovrascrittura
+apache_license_2: Apache License 2.0
+api: API
+ask_confirmation: Chiedi conferma
+assigned_firmware: Firmware assegnato
+assigned_nodes: Nodi assegnati
+auto_disable: Disattivazione automatica
+auto_update: Aggiornamento automatico
+axis: Asse
+backup: Backup
+backup_and_restore: Backup e ripristino
+backup_locations: Percorsi di backup
+battery: Batteria
+baud_rate: Velocità di trasmissione
+body: Corpo
+bridge: Bridge
+brightness: Luminosità
+broker: Broker
+browse: Sfoglia
+build_date: Data di compilazione
+button: Pulsante
+button_text: Testo del pulsante
+cancel: Annulla
+chart_configuration: Configurazione del grafico
+chart_type: Tipo di grafico
+chat_ids: ID chat
+clear: Cancella
+clear_all: Cancella tutto
+color: Colore
+color_temperature: Temperatura del colore
+column_display: Visualizzazione colonne
+conditions: Condizioni
+configuration: Configurazione
+configure_via: Configura tramite
+confirm_password: Conferma password
+confirmation_message: Messaggio di conferma
+connection_timeout: Timeout di connessione
+control_configuration: Configurazione del controllo
+control_type: Tipo di controllo
+copied: Copiato
+copy: Copia
+corner_smoothing: Smussatura degli angoli
+cpu: CPU
+cpu_disabled: CPU disabilitata
+create_new: Crea nuovo
+created_on: Creato il
+cron_expression: Espressione cron
+current_password: Password attuale
+cursor_tooltip: Suggerimento del cursore
+custom_data: Dati personalizzati
+custom_mapping: Mappatura personalizzata
+custom_variables: Variabili personalizzate
+dampening: Attenuazione
+dashboard: Dashboard
+data: Dati
+data_repository: Repository dati
+data_repository_add_an_entry: "Repository dati: Aggiungi una voce"
+data_repository_modify_an_entry: "Repository dati: Modifica una voce"
+data_retrieved_from_server: Dati recuperati dal server
+data_type: Tipo di dati
+date_yyyy_mm_dd: Data (aaaa-mm-gg)
+day_of_month: Giorno del mese
+day_of_week: Giorni della settimana
+delete: Elimina
+description: Descrizione
+destination_field: Campo di destinazione
+detailed_filter: Filtro dettagliato
+details: Dettagli
+device_filter: Filtro dispositivo
+device_type: Tipo di dispositivo
+dialog:
+  clear_sleeping_queue_heading: "Si desidera svuotare la coda?"
+  clear_sleeping_queue_msg: Tutti i messaggi in coda in sospensione verranno scartati
+  delete_resource_msg: "Si desidera eliminare gli elementi selezionati?"
+  delete_title_backup: "Eliminare i file di backup?"
+  delete_title_dashboard: "Eliminare la dashboard?"
+  delete_title_data_repository: "Eliminare i repository dati?"
+  delete_title_field: "Eliminare i campi?"
+  delete_title_firmware: "Eliminare il firmware?"
+  delete_title_forward_payload: "Eliminare i Forward Payload?"
+  delete_title_gateway: "Eliminare i Gateway?"
+  delete_title_handler: "Eliminare i Handler?"
+  delete_title_node: "Eliminare i nodi?"
+  delete_title_schedule: "Eliminare le pianificazioni?"
+  delete_title_service_account: "Eliminare l'account di servizio?"
+  delete_title_user: "Eliminare l'utente?"
+  delete_title_policy: "Eliminare la Policy?"
+  delete_title_source: "Eliminare le sorgenti?"
+  delete_title_task: "Eliminare le attività?"
+  delete_title_virtual_assistant: "Eliminare l'assistente virtuale?"
+  delete_title_virtual_device: "Eliminare il dispositivo virtuale?"
+  node_reset_heading: "Reimpostare il nodo?"
+  node_reset_msg: "Si desidera reimpostare i nodi selezionati?<br/>Dopo questa operazione:<3><0>La configurazione verrà ripristinata alle impostazioni di fabbrica.</0><1>Si potrebbe perdere l'accesso ai nodi selezionati da MyController!</1></3>"
+  reboot_nodes_heading: "Riavviare il nodo?"
+  reboot_nodes_msg: "Si desidera riavviare i nodi selezionati?"
+  reset_msg_jwt_secret: Si desidera reimpostare il segreto JWT? Dopo questa operazione, tutte le sessioni attive su questo server non saranno più valide e si verrà disconnessi.
+  reset_title_jwt_secret: Reimposta segreto JWT
+  restore_heading: "Confermare l'operazione di ripristino?"
+  restore_msg: "Si desidera ripristinare dal file di backup selezionato?<br/>Dopo questa operazione:<3><0>I dati del server verranno ripristinati a <1>{{fileName}}</1></0><1>Non è possibile annullare questa operazione</1><2>Eseguire sempre un backup prima di un ripristino</2><3>Potrebbe essere necessario avviare il server manualmente</3></3>"
+disable: Disabilita
+disable_scrollbar: Disabilita barra di scorrimento
+disabled: Disabilitato
+disabled_all: Tutti disabilitati
+discover_nodes: Rileva nodi
+disk: Disco
+disks: Dischi
+display_name: Nome visualizzato
+display_percentage: Mostra percentuale
+display_text: Testo visualizzato
+display_value: Mostra valore
+do_update: Aggiorna
+documentation: Documentazione
+down: Giù
+download: Scarica
+drop_down_position: Posizione del menu a discesa
+duration: Durata
+edit: Modifica
+edit_dashboard_settings: Modifica impostazioni Dashboard
+edit_widget_settings: Modifica impostazioni widget
+email: Email
+enable: Abilita
+enabled: Abilitato
+encryption_key: Chiave di crittografia
+endpoint: Endpoint
+endpoints: Endpoint
+entities: Entità
+error:
+  console:
+    invalid_login_credentials: Credenziali di accesso non valide.
+    login_msg_loading_failed: Errore nel recupero del messaggio di accesso
+evaluation: Valutazione
+evaluations: Valutazioni
+event_filters: Filtri eventi
+events: Eventi
+executed_count: Conteggio esecuzioni
+execution_interval: Intervallo di esecuzione
+execution_interval_0h0m0s: Intervallo di esecuzione (0h0m0s)
+execution_mode: Modalità di esecuzione
+experimental: Sperimentale
+expires_on: Scade il
+export_type: Tipo di esportazione
+'false': 'False'
+favorite: Preferito
+fetch_info: Recupera info
+fetching: Recupero in corso
+field: Campo
+field_details: Dettagli del campo
+field_id: ID campo
+fields: Campi
+file_details: Dettagli del file
+file_uploaded_successfully: File caricato correttamente
+filename: Nome file
+filename_placeholder: Trascinare un file qui o sfogliare per caricarlo
+fill_opacity_%: Opacità di riempimento (%)
+filter: Filtro
+filter_type: Tipo di filtro
+filters: Filtri
+firmware_details: Dettagli del firmware
+firmware_file: File firmware
+firmware_update: Aggiornamento firmware
+firmwares: Firmware
+flush_interval: Intervallo di svuotamento
+forgot_username_or_password: "Nome utente o password dimenticati?"
+form_generic_error_message: Controllare gli errori e/o i campi obbligatori (*)
+form_view: Vista modulo
+forum: Forum
+forward_payload: Forward Payload
+forward_payload_details: Dettagli Forward Payload
+frequency: Frequenza
+from: Da
+from_email: Email mittente
+full_name: Nome completo
+function: Funzione
+gateway: Gateway
+gateway_details: Dettagli del Gateway
+gateway_id: ID Gateway
+gateways: Gateway
+all_gateways: Tutti i Gateway
+all_nodes: Tutti i nodi
+show_sources: Mostra sorgenti
+show_fields: Mostra campi
+select_gateway: Gateway
+no_topology_nodes: Nessun nodo da visualizzare
+no_topology_nodes_for_gateway: Nessun nodo trovato per questo Gateway
+geo_location: Posizione GEO
+git_commit: Commit Git
+global_configuration: Configurazione globale
+golang_version: Versione GoLang
+handler: Handler
+handler_details: Dettagli del Handler
+handler_parameters: Parametri del Handler
+handler_type: Tipo di Handler
+handlers: Handler
+header_name: Nome intestazione
+headers: Intestazioni
+heartbeat_request: Richiesta heartbeat
+height_px: Altezza (px)
+helper_text:
+  invalid_address_esphome: "Indirizzo non valido, esempio: node1.local:6053"
+  invalid_api: API non valida
+  invalid_backup_retention_count: Conteggio di conservazione non valido, 0 per nessun limite
+  invalid_baud_rate: Velocità di trasmissione non valida
+  invalid_broker_url: URL del broker non valido
+  invalid_current_password: Immettere la password attuale
+  invalid_data: Dati non validi
+  invalid_date: Data non valida
+  invalid_day_of_month: Giorno del mese non valido
+  invalid_directory: Directory non valida
+  invalid_duration: Durata non valida
+  invalid_email: Email non valida
+  invalid_execution_interval_empty: "L'intervallo di esecuzione non può essere vuoto"
+  invalid_field_id: ID campo non valido. caratteri, min=1, max=100
+  invalid_filters: Filtri non validi
+  invalid_height: Altezza non valida
+  invalid_host: Host non valido
+  invalid_id: ID non valido. caratteri, min=4, max=100, spazi non consentiti
+  invalid_interval: Intervallo non valido
+  invalid_key: Chiave non valida. caratteri, min=1 e max=100
+  invalid_key_path: Il percorso della chiave non può essere vuoto
+  invalid_latitude: Latitudine non valida
+  invalid_limit: Limite non valido
+  invalid_location: Posizione non valida
+  invalid_longitude: Longitudine non valida
+  invalid_maximum_backup: Conteggio massimo di backup non valido. int, min=0
+  invalid_name: Nome non valido. caratteri, min=2, max=100
+  invalid_node_id: ID nodo non valido. caratteri, min=1 e max=100
+  invalid_offset: Offset non valido
+  invalid_path: Percorso non valido
+  invalid_payload: Payload non valido
+  invalid_port: Porta non valida
+  invalid_prefix: Prefisso non valido
+  invalid_profile_confirm_password: Conferma password non valida
+  invalid_profile_password: Password non valida. caratteri, min=3, max=100
+  invalid_profile_username: Nome utente non valido. caratteri, min=3, max=100, spazi non consentiti
+  invalid_repeat_count: Conteggio ripetizioni non valido
+  invalid_response_code: Immettere un codice di risposta valido; immettere 0 per ignorare
+  invalid_retry_count: Conteggio tentativi non valido. int, min=0
+  invalid_script_empty: Lo script non può essere vuoto
+  invalid_server_url: URL del server non valido
+  invalid_source_id: ID sorgente non valido. caratteri, min=1 e max=100
+  invalid_text: Testo non valido. caratteri, min=1 e max=100
+  invalid_time: Ora non valida
+  invalid_title: Titolo non valido
+  invalid_token: Token non valido
+  invalid_topic: Topic non valido
+  invalid_type: Tipo non valido
+  invalid_url: URL non valido
+  invalid_username: Nome utente non valido
+  invalid_password: Password non valida
+  password_leave_empty: Lasciare vuoto per mantenere la password attuale
+  service_account_user: "Lasciare vuoto per crearlo per sé. Selezionare un utente per creare l'account per lui."
+  invalid_value: Valore non valido
+  invalid_width: Larghezza non valida
+hide_border: Nascondi bordo
+hide_header: Nascondi intestazione
+hide_status_column: Nascondi colonna stato
+hide_value_column: Nascondi colonna valore
+host: Host
+host_id: ID host
+host_ids: ID host
+html: HTML
+hue: Tonalità
+icon_or_image_location: Percorso icona o immagine
+id: ID
+ignore_duplicate: Ignora duplicati
+image_source: Sorgente immagine
+image_type: Tipo di immagine
+in_progress: In corso
+inactive_duration: Durata di inattività
+include_configuration: Includi configurazione
+include_global_configuration: Includi configurazione globale
+include_insecure_share: Includi condivisione non sicura
+include_secure_share: Includi condivisione sicura
+insecure: Non sicuro
+internal_message_ack: Ack messaggi interni
+interpolation: Interpolazione
+interval: Intervallo
+interval_0h0m0s: Intervallo (0h0m0s)
+invalid_file: File non valido
+is_sleep_node: È un nodo in sleep
+is_static: È statico
+javascript: Javascript
+json: JSON
+jwt_secret: Segreto JWT
+keep_me_logged_in_30_days: Rimanere connessi per 30 giorni.
+key: Chiave
+key_path: Percorso chiave
+label: Etichetta
+labels: Etichette
+language: Lingua
+last_evaluation: Ultima valutazione
+last_modified: Ultima modifica
+last_run: Ultima esecuzione
+last_seen: "Visto l'ultima volta"
+last_status: Ultimo stato
+last_success: Ultimo successo
+latitude: Latitudine
+legend_orientation: Orientamento della legenda
+legend_position: Posizione della legenda
+library_version: Versione della libreria
+light: Luce
+limit: Limite
+loading: Caricamento
+location: Posizione
+location_name: Nome posizione
+locations: Posizioni
+log_in: Accedi
+log_rotate_interval: Intervallo di rotazione dei log
+login: Accesso
+login_page: Pagina di accesso
+login_to_your_account: Accedi al tuo account
+logout: Esci
+longitude: Longitudine
+mapping: Mappatura
+mark_all_read: Segna tutti come letti
+markdown: Markdown
+markdown_v2: Markdown v2
+match_all: Confronta tutti
+max_y_axis: Max (asse Y)
+maximum: Massimo
+maximum_age: Età massima
+maximum_backup: Backup massimo
+maximum_size: Dimensione massima
+maximum_value: Valore massimo
+memory: Memoria
+memory_disabled: Memoria disabilitata
+message: Messaggio
+message_logger: Registro messaggi
+method: Metodo
+metric_configuration: Configurazione delle metriche
+metric_function: Funzione metrica
+metric_interval: Intervallo metriche
+metric_type: Tipo di metrica
+metrics: Metriche
+metrics_database_disabled: "ATTENZIONE: Database delle metriche disabilitato"
+min_y_axis: Min (asse Y)
+minimum: Minimo
+minimum_value: Valore minimo
+minimum_width: Larghezza minima
+mixed_resources: Risorse miste
+modified_on: Modificato il
+name: Nome
+name_key: Chiave nome
+never_expire: Non scade mai
+new: Nuovo
+new_password: Nuova password
+no_change_since: Nessuna modifica da
+no_dashboard_message: Non è disponibile alcuna dashboard da caricare.
+no_dashboard_title: Nessuna dashboard disponibile
+no_data: Nessun dato
+no_labels: Nessuna etichetta
+no_login_message: "Nessun messaggio impostato per l'accesso"
+node: Nodo
+node_configuration: Configurazione del nodo
+node_details: Dettagli del nodo
+node_endpoints: Endpoint del nodo
+node_id: ID nodo
+node_state_updater: Aggiornamento stato nodo
+nodes: Nodi
+none: Nessuno
+notifications: Notifiche
+number_of_axis: Numero di assi
+occurrences: Occorrenze
+'off': 'OFF'
+off_text: Testo OFF
+offset_0h0m0s: Offset (0h0m0s)
+offset_y_%: Offset Y (%)
+'on': 'ON'
+on_button: Pulsante ON
+on_receive: In ricezione
+on_send: In invio
+on_text: Testo ON
+operations: Operazioni
+operator: Operatore
+options: Opzioni
+opts:
+  backup_provider:
+    desc_disk: Salva i dati di backup su disco
+    label_disk: Disco
+  button_type:
+    label_danger: Pericolo (rosso)
+    label_primary: Primario (blu)
+    label_secondary: Secondario (blu)
+    label_warning: Avviso (giallo)
+  chart_group_type:
+    desc_group_chart: Asse singolo con più risorse
+    desc_mixed_chart: Più assi con più risorse
+    desc_pie_chart: Singolo grafico a torta
+    label_group_chart: Grafico di gruppo
+    label_mixed_chart: Grafico misto
+    label_pie_chart: Grafico a torta
+  chart_interpolation:
+    label_basis: Basis
+    label_cardinal: Cardinal
+    label_catmull_rom: CatmullRom
+    label_linear: Linear
+    label_monotone_x: MonotoneX
+    label_monotone_y: MonotoneY
+    label_natural: Natural
+    label_step: Step
+    label_step_after: StepAfter
+    label_step_before: StepBefore
+  chart_type:
+    desc_area_chart: Grafico ad area
+    desc_bar_chart: Grafico a barre
+    desc_line_chart: Grafico a linee
+    desc_pie_chart: Grafico a torta
+    desc_scatter_chart: Grafico a dispersione
+    label_area_chart: Grafico ad area
+    label_bar_chart: Grafico a barre
+    label_line_chart: Grafico a linee
+    label_pie_chart: Grafico a torta
+    label_scatter_chart: Grafico a dispersione
+  code_editor_language:
+    label_html: HTML
+    label_javascript: Javascript
+    label_json: JSON
+    label_plaintext: Testo semplice
+    label_xml: XML
+    label_yaml: YAML
+  control_type:
+    label_mixed_control: Controllo misto
+    label_switch_button: Interruttore a pulsante
+    label_switch_toggle: Interruttore a levetta
+  control_type_mixed:
+    label_button_push: Pulsante
+    label_input: Input
+    label_options_select: Opzioni di selezione
+    label_options_tab: Opzioni a schede
+    label_slider: Cursore
+    label_switch_button: Interruttore a pulsante
+    label_switch_toggle: Interruttore a levetta
+  dampening:
+    desc_active_duration: "Durata attiva dell'attività"
+    desc_consecutive: Numero di occorrenze consecutive
+    desc_evaluation: Numero di occorrenze in N valutazioni
+    desc_none: Disabilita la funzione di attenuazione
+    label_active_duration: Durata attiva
+    label_consecutive: Consecutive
+    label_evaluation: Valutazione
+    label_none: Nessuno
+  data_unit:
+    label_bytes: Byte
+    label_eib: Exbibyte (EiB)
+    label_gib: Gibibyte (GiB)
+    label_kib: Kibibyte (KiB)
+    label_mib: Mebibyte (MiB)
+    label_pib: Pebibyte (PiB)
+    label_tib: Tebibyte (TiB)
+  event_type:
+    label_created: Creato
+    label_deleted: Eliminato
+    label_requested: Richiesto
+    label_updated: Aggiornato
+  gw_msg_logger:
+    desc_file_logger: I messaggi verranno registrati in un file
+    desc_none: I messaggi non verranno registrati
+    label_file_logger: Registratore su file
+    label_none: Nessuno
+  gw_protocol:
+    desc_ethernet: Protocollo Ethernet
+    desc_http: Protocollo HTTP
+    desc_mqtt: Protocollo MQTT
+    desc_serial: Protocollo seriale
+    label_ethernet: Ethernet
+    label_http: HTTP
+    label_mqtt: MQTT
+    label_serial: Seriale
+  gw_provider:
+    desc_esphome: esphome.io
+    desc_generic: Provider generico
+    desc_mysensors_v2: MySensors.org versione 2.x
+    desc_philips_hue: developers.meethue.com
+    desc_system_monitoring: Acquisisce le risorse di sistema e i report
+    desc_tasmota: tasmota.github.io
+    label_esphome: ESPHome
+    label_generic: Generico
+    label_mysensors_v2: MySensors V2
+    label_philips_hue: PhilipsHue
+    label_system_monitoring: Monitoraggio di sistema
+    label_tasmota: Tasmota
+  handler_type:
+    desc_backup: Esegue il backup del server
+    desc_email: Invia email
+    desc_noop: Handler senza operazione
+    desc_resource: Azioni relative alle risorse interne
+    desc_telegram: Invia testo a Telegram
+    desc_webhook: Chiama un URL webhook
+    label_backup: Backup
+    label_email: Email
+    label_noop: Noop
+    label_resource: Risorsa
+    label_telegram: Telegram
+    label_webhook: Webhook
+  http_method:
+    label_delete: DELETE
+    label_get: GET
+    label_post: POST
+    label_put: PUT
+  image_load_type:
+    desc_custom_mapping: "Mostra l'immagine mappata dal valore del campo"
+    desc_image: Immagine in Base64 dal valore del campo
+    label_custom_mapping: Mappatura personalizzata
+    label_image: Immagine raw
+  image_rotation:
+    desc_rotate_180: Ruota di 180°
+    desc_rotate_left_90: Ruota a sinistra di 90°
+    desc_rotate_none: nessuna rotazione
+    desc_rotate_right_90: Ruota a destra di 90°
+    label_rotate_180: Ruota 180°
+    label_rotate_left_90: Ruota a sinistra 90°
+    label_rotate_none: Nessuna
+    label_rotate_right_90: Ruota a destra 90°
+  image_source:
+    desc_disk: Immagine da un percorso su disco locale
+    desc_field: Dati immagine da una risorsa campo
+    desc_url: Immagine da un URL
+    label_disk: Disco
+    label_field: Campo
+    label_url: URL
+  interval:
+    label_day_01: 1 giorno
+    label_hour_01: 1 ora
+    label_hour_03: 3 ore
+    label_hour_06: 6 ore
+    label_minute_01: 1 minuto
+    label_minute_02: 2 minuti
+    label_minute_03: 3 minuti
+    label_minute_05: 5 minuti
+    label_minute_10: 10 minuti
+    label_minute_15: 15 minuti
+    label_minute_30: 30 minuti
+    label_never: Mai
+    label_second_01: 1 secondo
+    label_second_05: 5 secondi
+    label_second_10: 10 secondi
+    label_second_15: 15 secondi
+    label_second_30: 30 secondi
+    label_second_45: 45 secondi
+  legend_orientation:
+    desc_horizontal: Posiziona in orizzontale
+    desc_vertical: Posiziona in verticale
+    label_horizontal: Orizzontale
+    label_vertical: Verticale
+  legend_position:
+    desc_bottom_center: Centro in basso
+    desc_bottom_left: Sinistra in basso
+    desc_right: Lato destro
+    desc_top_left: Sinistra in alto
+    label_bottom_center: Centro in basso
+    label_bottom_left: In basso a sinistra
+    label_right: Destra
+    label_top_left: In alto a sinistra
+  light_type:
+    desc_cw_ww: Bianco freddo e bianco caldo
+    desc_rgb: Luce RGB
+    desc_rgb_cw: RGB con bianco freddo
+    desc_rgb_cw_ww: RGB con bianco freddo e bianco caldo
+    desc_single: Singolo, bianco freddo o bianco caldo
+    label_cw_ww: CW WW
+    label_rgb: RGB
+    label_rgb_cw: RGB CW
+    label_rgb_cw_ww: RGB CW WW
+    label_single: Singolo
+  metric_duration:
+    label_day_002: Ultimi 2 giorni
+    label_day_007: Ultimi 7 giorni
+    label_day_030: Ultimi 30 giorni
+    label_day_060: Ultimi 60 giorni
+    label_day_090: Ultimi 90 giorni
+    label_day_180: Ultimi 180 giorni
+    label_day_365: Ultimi 365 giorni
+    label_hour_01: Ultima 1 ora
+    label_hour_02: Ultime 2 ore
+    label_hour_03: Ultime 3 ore
+    label_hour_06: Ultime 6 ore
+    label_hour_12: Ultime 12 ore
+    label_hour_24: Ultime 24 ore
+    label_minute_30: Ultimi 30 minuti
+  metric_function:
+    label_count: Conteggio
+    label_maximum: Massimo
+    label_mean: Media
+    label_median: Mediana
+    label_minimum: Minimo
+    label_percentile_50: 50° percentile
+    label_percentile_75: 75° percentile
+    label_percentile_95: 95° percentile
+    label_percentile_99: 99° percentile
+    label_sum: Somma
+  metric_type:
+    label_binary: Binario
+    label_counter: Contatore
+    label_gauge: Indicatore
+    label_gauge_float: Indicatore (virgola mobile)
+    label_geo: GEO
+    label_none: Nessuno
+    label_string: Stringa
+  rgb_component:
+    desc_color_picker: Colori predefiniti
+    desc_hue_slider: Cursore della tonalità
+    label_color_picker: Selettore colori rapido
+    label_hue_slider: Cursore tonalità
+  schedule_frequency:
+    desc_daily: Viene eseguito ogni giorno
+    desc_monthly: Viene eseguito una volta al mese
+    desc_on_date: Viene eseguito una sola volta alla data e ora specificate
+    desc_weekly: Viene eseguito una volta a settimana
+    label_daily: Giornaliero
+    label_monthly: Mensile
+    label_on_date: In data
+    label_weekly: Settimanale
+  schedule_type:
+    desc_cron: Espressione cron
+    desc_repeat: Si ripete a un intervallo specificato
+    desc_simple: Pianificazione giornaliera, settimanale, mensile
+    desc_sunrise: "In base all'ora dell'alba"
+    desc_sunset: "In base all'ora del tramonto"
+    label_cron: Cron
+    label_repeat: Ripeti
+    label_simple: Semplice
+    label_sunrise: Alba
+    label_sunset: Tramonto
+  theme_color:
+    label_blue: Blu
+    label_cyan: Ciano
+    label_gold: Oro
+    label_green: Verde
+    label_multiple_ordered: Multiplo ordinato
+    label_multiple_unordered: Multiplo non ordinato
+    label_orange: Arancione
+    label_purple: Viola
+  trait_type:
+    label_app_selector: Selettore app
+    label_arm_disarm: Arma Disarma
+    label_brightness: Luminosità
+    label_camera_stream: Stream telecamera
+    label_channel: Canale
+    label_color_setting: Impostazione colore
+    label_cook: Cucina
+    label_dispense: Eroga
+    label_dock: Base
+    label_energy_storage: Accumulo energia
+    label_fan_speed: Velocità ventola
+    label_fill: Riempi
+    label_humidity_setting: Impostazione umidità
+    label_input_selector: Selettore ingresso
+    label_light_effects: Effetti luce
+    label_locator: Localizzatore
+    label_lock_unlock: Blocca Sblocca
+    label_media_state: Stato media
+    label_modes: Modalità
+    label_network_control: Controllo rete
+    label_object_detection: Rilevamento oggetti
+    label_on_off: On/Off
+    label_open_close: Apri Chiudi
+    label_reboot: Riavvia
+    label_rotation: Rotazione
+    label_run_cycle: Ciclo di esecuzione
+    label_scene: Scena
+    label_sensor_state: Stato sensore
+    label_software_update: Aggiornamento software
+    label_start_stop: Avvia Ferma
+    label_status_report: Report di stato
+    label_temperature_control: Controllo temperatura
+    label_temperature_setting: Impostazione temperatura
+    label_timer: Timer
+    label_toggles: Interruttori
+    label_transport_control: Controllo trasporto
+    label_volume: Volume
+  utilization_chart:
+    label_circle_050: Semicerchio
+    label_circle_075: Cerchio 3/4
+    label_circle_100: Cerchio intero
+    label_spark_area: Area spark
+    label_spark_bar: Barre spark
+    label_spark_line: Linea spark
+    label_table: Tabella
+  va_provider:
+    desc_alexa: Amazon Alexa
+    desc_google_assistant: Google Assistant
+    label_alexa: Alexa
+    label_google_assistant: Google Assistant
+  vd_type:
+    label_air_conditioner: Condizionatore
+    label_air_cooler: Raffrescatore
+    label_air_freshener: Deodorante per ambienti
+    label_air_purifier: "Purificatore d'aria"
+    label_audio_video_receiver: Ricevitore audio video
+    label_awning: Tenda da sole
+    label_bathtub: Vasca da bagno
+    label_bed: Letto
+    label_blender: Frullatore
+    label_blinds: Veneziane
+    label_boiler: Caldaia
+    label_camera: Telecamera
+    label_carbon_monoxide_detector: Rilevatore di monossido di carbonio
+    label_charger: Caricabatterie
+    label_closet: Armadio
+    label_coffee_maker: Macchina del caffè
+    label_cooktop: Piano cottura
+    label_curtain: Tendaggio
+    label_dehumidifier: Deumidificatore
+    label_dehydrator: Disidratatore
+    label_dishwasher: Lavastoviglie
+    label_door: Porta
+    label_door_bell: Campanello
+    label_drawer: Cassetto
+    label_dryer: Asciugatrice
+    label_fan: Ventilatore
+    label_faucet: Rubinetto
+    label_fireplace: Camino
+    label_freezer: Congelatore
+    label_fryer: Friggitrice
+    label_garage_door: Porta del garage
+    label_gate: Cancello
+    label_grill: Griglia
+    label_heater: Riscaldatore
+    label_hood: Cappa
+    label_humidifier: Umidificatore
+    label_kettle: Bollitore
+    label_light: Luce
+    label_lock: Serratura
+    label_media_remote: Telecomando media
+    label_microwave: Microonde
+    label_mop: Lavapavimenti
+    label_mower: Tosaerba
+    label_multicooker: Multicooker
+    label_network: Rete
+    label_outlet: Presa
+    label_oven: Forno
+    label_pergola: Pergola
+    label_pet_feeder: Mangiatoia per animali
+    label_pressure_cooker: Pentola a pressione
+    label_radiator: Radiatore
+    label_refrigerator: Frigorifero
+    label_router: Router
+    label_scene: Scena
+    label_security_system: Sistema di sicurezza
+    label_sensor: Sensore
+    label_set_top_box: Decoder
+    label_shower: Doccia
+    label_shutter: Persiana
+    label_smoke_detector: Rilevatore di fumo
+    label_soundbar: Soundbar
+    label_sous_vide: Sous Vide
+    label_speaker: Altoparlante
+    label_sprinkler: Irrigatore
+    label_stand_mixer: Impastatrice
+    label_streaming_box: Box streaming
+    label_streaming_soundbar: Soundbar streaming
+    label_streaming_stick: Chiavetta streaming
+    label_switch: Interruttore
+    label_television: Televisore
+    label_thermostat: Termostato
+    label_vacuum: Aspirapolvere
+    label_valve: Valvola
+    label_washer: Lavatrice
+    label_water_heater: Scaldabagno
+    label_water_purifier: "Purificatore d'acqua"
+    label_water_softener: Addolcitore
+    label_weather_station: Stazione meteorologica
+    label_window: Finestra
+    label_yogurt_maker: Yogurtiera
+  week_day:
+    label_friday: Venerdì
+    label_monday: Lunedì
+    label_saturday: Sabato
+    label_sunday: Domenica
+    label_thursday: Giovedì
+    label_tuesday: Martedì
+    label_wednesday: Mercoledì
+  widget_type:
+    desc_chart_panel: Visualizza i dati nei grafici
+    desc_control_panel: Esegue azioni di controllo sulle risorse
+    desc_empty_panel: Pannello vuoto
+    desc_image_panel: Visualizza immagini da diverse sorgenti
+    desc_light_panel: Controlla una luce
+    desc_utilization_panel: Visualizza lo stato di utilizzo
+    label_chart_panel: Pannello grafici
+    label_control_panel: Pannello di controllo
+    label_empty_panel: Pannello vuoto
+    label_image_panel: Pannello immagine
+    label_light_panel: Pannello luce
+    label_utilization_panel: Pannello di utilizzo
+others: Altri
+padding_bottom_px: Spaziatura inferiore (px)
+padding_left_px: Spaziatura sinistra (px)
+padding_right_px: Spaziatura destra (px)
+padding_top_px: Spaziatura superiore (px)
+panel_title: Titolo del pannello
+parameters_to_handler: Parametri per l'Handler
+parse_mode: Modalità di analisi
+password: Password
+path: Percorso
+payload: Payload
+send: Invia
+payload_off: Payload OFF
+payload_on: Payload ON
+payloads: Payload
+per_cpu_disabled: Per CPU disabilitato
+port: Porta
+port_name: Nome porta
+post_run: Post-esecuzione
+power: Potenza
+pre_delay: Pre-ritardo
+pre_run: Pre-esecuzione
+prefix: Prefisso
+previous_value: Valore precedente
+process: Processo
+processes: Processi
+profile: Profilo
+protocol: Protocollo
+provider: Provider
+provider_type: Tipo di provider
+publish: Pubblica
+qos: QoS
+query_parameters: Parametri di query
+queue_failed_messages: Accoda i messaggi non riusciti
+quick_id: ID rapido
+re_enable: Riabilita
+re_enable_duration: Durata della riabilitazione
+react_version: Versione React
+read_only: Sola lettura
+reboot: Riavvia
+reconnect_delay: Ritardo di riconnessione
+refresh_interval: Intervallo di aggiornamento
+refresh_node_info: Aggiorna info nodo
+reload: Ricarica
+repeat_count: Conteggio ripetizioni
+request_heartbeat: Richiedi heartbeat
+reset: Reimposta
+resetting: Reimpostazione...
+resource: Risorsa
+resource_by_labels: Risorsa per etichette
+resource_by_quick_id: Risorsa per ID rapido
+resource_configuration: Configurazione della risorsa
+resource_filters: Filtri risorsa
+resource_name: Nome risorsa
+resource_type: Tipo di risorsa
+resources: Risorse
+response_code: Codice di risposta
+restore: Ripristina
+retention_count: Conteggio di conservazione
+retry_count: Conteggio tentativi
+rgb: RGB
+rgb_component: Componente RGB
+rotation: Rotazione
+round_decimal: Arrotonda decimale
+rule: Regola
+run_a_backup: Esegui un backup
+run_backup: Esegui backup
+s_no: '#'
+saturation: Saturazione
+save: Salva
+schedule: Pianificazione
+schedule_details: Dettagli della pianificazione
+schedule_type: Tipo di pianificazione
+schedules: Pianificazioni
+script: Script
+select_an_option: "Selezionare un'opzione"
+server: Server
+service_account_not_generated: "Token dell'account di servizio non generato"
+service_account_copy_title: Copia token account di servizio
+service_account_copy_warning_msg: Questo token verrà mostrato una sola volta. Non verrà memorizzato e non potrà essere recuperato. Salvarlo ora.
+service_account_barcode_help: Acquisire questo codice a barre per accedere con il token.
+service_account_details: Dettagli account di servizio
+service_accounts: Account di servizio
+settings: Impostazioni
+show_grid_x: Mostra griglia X
+show_grid_y: Mostra griglia Y
+show_title: Mostra titolo
+since: Da
+size: Dimensione
+sleeping_queue: Coda in sospensione
+sort_order_priority: Priorità di ordinamento
+source: Sorgente
+source_code: Codice sorgente
+source_details: Dettagli della sorgente
+source_field: Campo sorgente
+source_id: ID sorgente
+sources: Sorgenti
+spec: Specifica
+stack_charts: Impila i grafici
+state: Stato
+status: Stato
+status_at: Stato alle
+status_configuration: Configurazione dello stato
+step: Passo
+storage_export_type: Tipo di esportazione archivio
+stream_message_ack: Ack messaggi di stream
+string: Stringa
+stroke_width_px: Spessore tratto (px)
+sub_type: Sottotipo
+subject: Oggetto
+subscribe: Sottoscrivi
+swap_disabled: Swap disabilitato
+sync_interval: Intervallo di sincronizzazione
+system: Sistema
+system_message: Messaggio di sistema
+table_configuration: Configurazione della tabella
+table_view: Vista tabella
+target_directory: Directory di destinazione
+target_location: Percorso di destinazione
+task: Attività
+task_details: "Dettagli dell'attività"
+tasks: Attività
+telegram: Telegram
+temperature: Temperatura
+text: Testo
+the_open_source_controller: The Open Source Controller
+theme_color: Colore del tema
+thickness: Spessore
+threshold_mode: Modalità soglia
+thresholds: Soglie
+thresholds_color: Colore delle soglie
+time_hh_mm_ss: Ora (hh:mm:ss)
+timeout: Timeout
+timestamp: Timestamp
+timestamp_key: Chiave timestamp
+title: Titolo
+to: A
+to_emails: Email destinatari
+token: Token
+topic: Topic
+trait: Trait
+traits: Trait
+transmit_pre_delay: Pre-ritardo di trasmissione
+trigger_on_event: Attiva su evento
+'true': 'True'
+type: Tipo
+unit: Unità
+up: Su
+update: Aggiorna
+update_body: Aggiorna corpo
+update_data: Aggiorna dati
+update_endpoint: Aggiorna Endpoint
+update_firmware: Aggiorna firmware
+update_node: Aggiorna nodo
+update_post_run: Aggiorna post-esecuzione
+update_pre_run: Aggiorna pre-esecuzione
+update_query_parameters: Aggiorna parametri di query
+update_resource: Aggiorna risorsa
+update_script: Aggiorna script
+update_trait: Aggiorna Trait
+update_value: Aggiorna valore
+update_y_axis: Aggiorna asse Y
+upload: Carica
+upload_firmware: Carica firmware
+url: URL
+use_global: Usa valore globale
+use_global_encryption_key: Usa chiave di crittografia globale
+use_global_password: Usa password globale
+use_global_style: Usa stile globale
+user_id: ID utente
+username: Nome utente
+validate_time_everyday: "Convalida l'ora ogni giorno"
+validity: Validità
+value: Valore
+value_formatter: Formattatore del valore
+value_key: Chiave valore
+variable: Variabile
+variable_name: Nome variabile
+variables: Variabili
+version: Versione
+virtual_assistant: Assistente virtuale
+virtual_assistant_details: Dettagli assistente virtuale
+virtual_assistants: Assistenti virtuali
+virtual_device_details: Dettagli dispositivo virtuale
+virtual_devices: Dispositivi virtuali
+web_console: Console web
+webhook: Webhook
+websocket_disconnected: Websocket disconnesso
+welcome_to_mycontroller: Benvenuto in MyController
+width_px: Larghezza (px)
+y_axis: Asse Y
+y_axis_configuration: Configurazione asse Y
+yaml: YAML
+yaml_view: Vista YAML
+users: Utenti
+policies: Policies
+user_details: Dettagli utente
+policy_details: Dettagli della Policy
+statement: Istruzione
+edit_statement: Modifica istruzione
+statements: Istruzioni
+effect: Effetto
+layout: Layout
+layout_tree: Albero
+layout_force: Forza
+refresh: Aggiorna
+include_child_nodes: Includi nodi figlio
+child_nodes: Nodi figlio

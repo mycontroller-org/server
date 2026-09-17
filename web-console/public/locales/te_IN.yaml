@@ -1,0 +1,1020 @@
+---
+about: గురించి
+actions: చర్యలు
+active_duration: సక్రియ వ్యవధి
+add: జోడించు
+add_a_field: Field జోడించు
+add_a_firmware: Firmware జోడించు
+add_a_forward_payload: Forward Payload జోడించు
+add_a_gateway: Gateway జోడించు
+add_a_handler: Handler జోడించు
+add_a_node: Node జోడించు
+add_a_schedule: Schedule జోడించు
+add_a_policy: Policy జోడించు
+add_a_service_account: Service Account జోడించు
+add_a_user: వినియోగదారుని జోడించు
+add_a_source: Source జోడించు
+add_a_task: Task జోడించు
+add_a_virtual_assistant: Virtual Assistant జోడించు
+add_a_virtual_device: Virtual Device జోడించు
+add_an_item: Item జోడించు
+add_widget: Widget జోడించు
+address: చిరునామా
+agent_user_id: Agent User ID
+alerts_empty_message: ప్రస్తుతం ఎలర్ట్‌లు లేవు.
+alerts_empty_title: ఎలర్ట్‌లు కనుగొనబడలేదు
+alive_check_interval: Alive Check విరామం
+all_rights_reserved: అన్ని హక్కులు ప్రత్యేకించబడ్డాయి
+allow_overwrite: Overwriteను అనుమతించు
+apache_license_2: Apache License 2.0
+api: API
+ask_confirmation: నిర్ధారణ అడుగు
+assigned_firmware: కేటాయించిన Firmware
+assigned_nodes: కేటాయించిన Nodeలు
+auto_disable: స్వయంచాలకంగా నిలిపివేయి
+auto_update: స్వయంచాలకంగా నవీకరించు
+axis: అక్షం
+backup: Backup
+backup_and_restore: Backup మరియు Restore
+backup_locations: Backup స్థానాలు
+battery: బ్యాటరీ
+baud_rate: Baud Rate
+body: Body
+bridge: Bridge
+brightness: ప్రకాశం
+broker: Broker
+browse: ఎంచుకోండి
+build_date: Build తేదీ
+button: Button
+button_text: Button వచనం
+cancel: రద్దు చేయి
+chart_configuration: Chart సెట్టింగ్
+chart_type: Chart రకం
+chat_ids: Chat IDలు
+clear: క్లియర్ చేయి
+clear_all: అన్నీ క్లియర్ చేయి
+color: రంగు
+color_temperature: రంగు ఉష్ణోగ్రత
+column_display: Column ప్రదర్శన
+conditions: షరతులు
+configuration: సెట్టింగ్
+configure_via: దీని ద్వారా సెట్ చేయి
+confirm_password: పాస్‌వర్డ్‌ను నిర్ధారించు
+confirmation_message: నిర్ధారణ సందేశం
+connection_timeout: కనెక్షన్ Timeout
+control_configuration: నియంత్రణ సెట్టింగ్
+control_type: నియంత్రణ రకం
+copied: కాపీ అయింది
+copy: కాపీ చేయి
+corner_smoothing: Corner Smoothing
+cpu: CPU
+cpu_disabled: CPU నిలిపివేయబడింది
+create_new: కొత్తది సృష్టించు
+created_on: సృష్టించిన తేదీ
+cron_expression: Cron Expression
+current_password: ప్రస్తుత పాస్‌వర్డ్
+cursor_tooltip: Cursor Tooltip
+custom_data: Custom డేటా
+custom_mapping: Custom Mapping
+custom_variables: Custom Variableలు
+dampening: Dampening
+dashboard: Dashboard
+data: డేటా
+data_repository: Data Repository
+data_repository_add_an_entry: 'Data Repository: ఎంట్రీ జోడించు'
+data_repository_modify_an_entry: 'Data Repository: ఎంట్రీ మార్చు'
+data_retrieved_from_server: Server నుండి డేటా పొందబడింది
+data_type: డేటా రకం
+date_yyyy_mm_dd: తేదీ (yyyy-mm-dd)
+day_of_month: నెలలోని రోజు
+day_of_week: వారంలోని రోజులు
+delete: తొలగించు
+description: వివరణ
+destination_field: గమ్యం Field
+detailed_filter: వివరణాత్మక Filter
+details: వివరం
+device_filter: పరికర Filter
+device_type: పరికర రకం
+dialog:
+  clear_sleeping_queue_heading: "క్యూను క్లియర్ చేయాలా?"
+  clear_sleeping_queue_msg: Sleep Queueలోని అన్ని సందేశాలు తొలగించబడతాయి
+  delete_resource_msg: "ఎంచుకున్న అంశాలను తొలగించాలా?"
+  delete_title_backup: "Backup ఫైళ్లను తొలగించాలా?"
+  delete_title_dashboard: "Dashboardను తొలగించాలా?"
+  delete_title_data_repository: "Data Repositoryను తొలగించాలా?"
+  delete_title_field: "Fieldలను తొలగించాలా?"
+  delete_title_firmware: "Firmwareను తొలగించాలా?"
+  delete_title_forward_payload: "Forward Payloadలను తొలగించాలా?"
+  delete_title_gateway: "Gatewayలను తొలగించాలా?"
+  delete_title_handler: "Handlerలను తొలగించాలా?"
+  delete_title_node: "Nodeలను తొలగించాలా?"
+  delete_title_schedule: "Scheduleలను తొలగించాలా?"
+  delete_title_service_account: "Service Accountను తొలగించాలా?"
+  delete_title_user: "వినియోగదారుని తొలగించాలా?"
+  delete_title_policy: "Policyను తొలగించాలా?"
+  delete_title_source: "Sourceలను తొలగించాలా?"
+  delete_title_task: "Taskలను తొలగించాలా?"
+  delete_title_virtual_assistant: "Virtual Assistantను తొలగించాలా?"
+  delete_title_virtual_device: "Virtual Deviceను తొలగించాలా?"
+  node_reset_heading: "Nodeను Reset చేయాలా?"
+  node_reset_msg: "ఎంచుకున్న Nodeలను Reset చేయాలా?<br/>ఈ చర్య తర్వాత:<3><0>సెట్టింగ్ Factory Settingsకు తిరిగి వస్తుంది.</0><1>ఎంచుకున్న Nodeలకు MyController నుండి ప్రాప్యత కోల్పోవచ్చు!</1></3>"
+  reboot_nodes_heading: "Nodeను Reboot చేయాలా?"
+  reboot_nodes_msg: "ఎంచుకున్న Nodeలను Reboot చేయాలా?"
+  reset_msg_jwt_secret: "JWT Secretను Reset చేయాలా? ఈ చర్య తర్వాత ఈ Serverలోని అన్ని Login సెషన్‌లు చెల్లవు మరియు మీరు లాగ్ అవుట్ అవుతారు."
+  reset_title_jwt_secret: JWT Secret Reset
+  restore_heading: "Restore చేయాలా?"
+  restore_msg: "ఎంచుకున్న Backup ఫైల్ నుండి Restore చేయాలా?<br/>ఈ చర్య తర్వాత:<3><0>Server డేటా <1>{{fileName}}</1> స్థితికి Restore అవుతుంది</0><1>ఈ చర్యను తిరిగి తీసుకోలేరు</1><2>Restore చేయడానికి ముందు Backup తీసుకోండి</2><3>Serverను మాన్యువల్‌గా ప్రారంభించాల్సి రావచ్చు</3></3>"
+disable: నిలిపివేయి
+disable_scrollbar: Scrollbarను నిలిపివేయి
+disabled: నిలిపివేయబడింది
+disabled_all: అన్నీ నిలిపివేయి
+discover_nodes: Nodeలను కనుగొను
+disk: Disk
+disks: Diskలు
+display_name: ప్రదర్శన పేరు
+display_percentage: శాతం చూపించు
+display_text: ప్రదర్శన వచనం
+display_value: ప్రదర్శన విలువ
+do_update: నవీకరించు
+documentation: Documentation
+down: కిందికి
+download: డౌన్‌లోడ్
+drop_down_position: Dropdown స్థానం
+duration: వ్యవధి
+edit: సవరించు
+edit_dashboard_settings: Dashboard సెట్టింగ్ సవరించు
+edit_widget_settings: Widget సెట్టింగ్ సవరించు
+email: Email
+enable: ప్రారంభించు
+enabled: ప్రారంభించబడింది
+encryption_key: Encryption Key
+endpoint: Endpoint
+endpoints: Endpointలు
+entities: Entities
+error:
+  console:
+    invalid_login_credentials: Login వివరాలు చెల్లవు.
+    login_msg_loading_failed: Login సందేశాన్ని పొందలేకపోయాం
+evaluation: Evaluation
+evaluations: Evaluationలు
+event_filters: Event Filterలు
+events: Events
+executed_count: అమలు సంఖ్య
+execution_interval: అమలు విరామం
+execution_interval_0h0m0s: అమలు విరామం (0h0m0s)
+execution_mode: అమలు విధానం
+experimental: Experimental
+expires_on: గడువు తేదీ
+export_type: Export రకం
+'false': 'False'
+favorite: ఇష్టమైనవి
+fetch_info: సమాచారం పొందు
+fetching: పొందుతోంది
+field: Field
+field_details: Field వివరం
+field_id: Field ID
+fields: Fieldలు
+file_details: ఫైల్ వివరం
+file_uploaded_successfully: ఫైల్ Upload అయింది
+filename: ఫైల్ పేరు
+filename_placeholder: ఫైల్‌ను ఇక్కడ లాగండి లేదా ఎంచుకోండి
+fill_opacity_%: Fill Opacity (%)
+filter: Filter
+filter_type: Filter రకం
+filters: Filterలు
+firmware_details: Firmware వివరం
+firmware_file: Firmware ఫైల్
+firmware_update: Firmware నవీకరణ
+firmwares: Firmwareలు
+flush_interval: Flush విరామం
+forgot_username_or_password: "వినియోగదారు పేరు లేదా పాస్‌వర్డ్ మర్చిపోయారా?"
+form_generic_error_message: లోపం లేదా తప్పనిసరి(*) Fieldలను తనిఖీ చేయండి
+form_view: Form వీక్షణ
+forum: Forum
+forward_payload: Forward Payload
+forward_payload_details: Forward Payload వివరం
+frequency: Frequency
+from: పంపినవారు
+from_email: పంపినవారి Email
+full_name: పూర్తి పేరు
+function: Function
+gateway: Gateway
+gateway_details: Gateway వివరం
+gateway_id: Gateway ID
+gateways: Gatewayలు
+all_gateways: అన్ని Gatewayలు
+all_nodes: అన్ని Nodeలు
+show_sources: Sourceలను చూపించు
+show_fields: Fieldలను చూపించు
+select_gateway: Gateway
+no_topology_nodes: ప్రదర్శించడానికి Node లేదు
+no_topology_nodes_for_gateway: ఈ Gatewayలో Node లేదు
+geo_location: GEO స్థానం
+git_commit: Git Commit
+global_configuration: Global సెట్టింగ్
+golang_version: GoLang Version
+handler: Handler
+handler_details: Handler వివరం
+handler_parameters: Handler Parameters
+handler_type: Handler రకం
+handlers: Handlerలు
+header_name: Header పేరు
+headers: Headerలు
+heartbeat_request: Heartbeat అభ్యర్థన
+height_px: ఎత్తు (px)
+helper_text:
+  invalid_address_esphome: 'చెల్లని చిరునామా. ఉదాహరణ: node1.local:6053'
+  invalid_api: చెల్లని API
+  invalid_backup_retention_count: "చెల్లని Retention సంఖ్య. పరిమితి లేకుండా 0"
+  invalid_baud_rate: చెల్లని Baud Rate
+  invalid_broker_url: చెల్లని Broker URL
+  invalid_current_password: ప్రస్తుత పాస్‌వర్డ్‌ను నమోదు చేయండి
+  invalid_data: చెల్లని డేటా
+  invalid_date: చెల్లని తేదీ
+  invalid_day_of_month: చెల్లని రోజు
+  invalid_directory: చెల్లని ఫోల్డర్
+  invalid_duration: చెల్లని వ్యవధి
+  invalid_email: చెల్లని Email
+  invalid_execution_interval_empty: అమలు విరామం ఖాళీగా ఉండకూడదు
+  invalid_field_id: "చెల్లని Field ID. అక్షరం, కనిష్టం=1, గరిష్టం=100"
+  invalid_filters: చెల్లని Filter
+  invalid_height: చెల్లని ఎత్తు
+  invalid_host: చెల్లని Host
+  invalid_id: "చెల్లని ID. అక్షరం, కనిష్టం=4, గరిష్టం=100, స్పేస్ ఉండకూడదు"
+  invalid_interval: చెల్లని విరామం
+  invalid_key: "చెల్లని Key. అక్షరం, కనిష్టం=1, గరిష్టం=100"
+  invalid_key_path: Key మార్గం ఖాళీగా ఉండకూడదు
+  invalid_latitude: చెల్లని Latitude
+  invalid_limit: చెల్లని పరిమితి
+  invalid_location: చెల్లని స్థానం
+  invalid_longitude: చెల్లని Longitude
+  invalid_maximum_backup: "చెల్లని Backup సంఖ్య. పూర్ణాంకం, కనిష్టం=0"
+  invalid_name: "చెల్లని పేరు. అక్షరం, కనిష్టం=2, గరిష్టం=100"
+  invalid_node_id: "చెల్లని Node ID. అక్షరం, కనిష్టం=1, గరిష్టం=100"
+  invalid_offset: చెల్లని Offset
+  invalid_path: చెల్లని మార్గం
+  invalid_payload: చెల్లని Payload
+  invalid_port: చెల్లని Port
+  invalid_prefix: చెల్లని Prefix
+  invalid_profile_confirm_password: నిర్ధారణ పాస్‌వర్డ్ సరిపోలడం లేదు
+  invalid_profile_password: "చెల్లని పాస్‌వర్డ్. అక్షరం, కనిష్టం=3, గరిష్టం=100"
+  invalid_profile_username: "చెల్లని వినియోగదారు పేరు. అక్షరం, కనిష్టం=3, గరిష్టం=100, స్పేస్ ఉండకూడదు"
+  invalid_repeat_count: చెల్లని పునరావృత సంఖ్య
+  invalid_response_code: "చెల్లుబాటు అయ్యే ప్రతిస్పందన కోడ్ నమోదు చేయండి. విస్మరించడానికి 0 నమోదు చేయండి"
+  invalid_retry_count: "చెల్లని మళ్లీ ప్రయత్న సంఖ్య. పూర్ణాంకం, కనిష్టం=0"
+  invalid_script_empty: Script ఖాళీగా ఉండకూడదు
+  invalid_server_url: చెల్లని Server URL
+  invalid_source_id: "చెల్లని Source ID. అక్షరం, కనిష్టం=1, గరిష్టం=100"
+  invalid_text: "చెల్లని వచనం. అక్షరం, కనిష్టం=1, గరిష్టం=100"
+  invalid_time: చెల్లని సమయం
+  invalid_title: చెల్లని శీర్షిక
+  invalid_token: చెల్లని Token
+  invalid_topic: చెల్లని Topic
+  invalid_type: చెల్లని రకం
+  invalid_url: చెల్లని URL
+  invalid_username: చెల్లని వినియోగదారు పేరు
+  invalid_password: చెల్లని పాస్‌వర్డ్
+  password_leave_empty: ప్రస్తుత పాస్‌వర్డ్‌ను ఉంచడానికి ఖాళీగా వదిలేయండి
+  service_account_user: మీ కోసం సృష్టించడానికి ఖాళీగా వదిలేయండి. వేరొకరి కోసం సృష్టించడానికి వినియోగదారుని ఎంచుకోండి.
+  invalid_value: చెల్లని విలువ
+  invalid_width: చెల్లని వెడల్పు
+hide_border: Border దాచు
+hide_header: Header దాచు
+hide_status_column: Status Column దాచు
+hide_value_column: Value Column దాచు
+host: Host
+host_id: Host ID
+host_ids: Host IDలు
+html: HTML
+hue: Hue
+icon_or_image_location: Icon లేదా చిత్రం స్థానం
+id: ID
+ignore_duplicate: నకిలీని విస్మరించు
+image_source: చిత్రం Source
+image_type: చిత్రం రకం
+in_progress: ప్రగతిలో ఉంది
+inactive_duration: నిష్క్రియ వ్యవధి
+include_configuration: సెట్టింగ్ చేర్చు
+include_global_configuration: Global సెట్టింగ్ చేర్చు
+include_insecure_share: అసురక్షిత Share చేర్చు
+include_secure_share: సురక్షిత Share చేర్చు
+insecure: అసురక్షితం
+internal_message_ack: Internal Message Ack
+interpolation: Interpolation
+interval: విరామం
+interval_0h0m0s: విరామం (0h0m0s)
+invalid_file: చెల్లని ఫైల్
+is_sleep_node: Sleep Node
+is_static: Static
+javascript: Javascript
+json: JSON
+jwt_secret: JWT Secret
+keep_me_logged_in_30_days: 30 రోజులు లాగిన్‌లో ఉంచు.
+key: Key
+key_path: Key మార్గం
+label: Label
+labels: Labelలు
+language: భాష
+last_evaluation: చివరి Evaluation
+last_modified: చివరిగా సవరించినది
+last_run: చివరి Run
+last_seen: చివరిగా కనిపించినది
+last_status: చివరి స్థితి
+last_success: చివరి విజయం
+latitude: Latitude
+legend_orientation: Legend దిశ
+legend_position: Legend స్థానం
+library_version: Library Version
+light: లైట్
+limit: పరిమితి
+loading: లోడ్ అవుతోంది
+location: స్థానం
+location_name: స్థానం పేరు
+locations: స్థానాలు
+log_in: లాగిన్
+log_rotate_interval: Log సైకిల్ విరామం
+login: Login
+login_page: Login పేజీ
+login_to_your_account: మీ ఖాతాలోకి లాగిన్ అవ్వండి
+logout: లాగ్అవుట్
+longitude: Longitude
+mapping: Mapping
+mark_all_read: అన్నింటినీ చదివినట్లు గుర్తించు
+markdown: Markdown
+markdown_v2: Markdown v2
+match_all: అన్నీ సరిపోలాలి
+max_y_axis: గరిష్టం (Y అక్షం)
+maximum: గరిష్టం
+maximum_age: గరిష్ట వయస్సు
+maximum_backup: గరిష్ట Backup
+maximum_size: గరిష్ట పరిమాణం
+maximum_value: గరిష్ట విలువ
+memory: Memory
+memory_disabled: Memory నిలిపివేయబడింది
+message: సందేశం
+message_logger: Message Logger
+method: Method
+metric_configuration: Metric సెట్టింగ్
+metric_function: Metric Function
+metric_interval: Metric విరామం
+metric_type: Metric రకం
+metrics: Metrics
+metrics_database_disabled: 'హెచ్చరిక: Metrics Database నిలిపివేయబడింది'
+min_y_axis: కనిష్టం (Y అక్షం)
+minimum: కనిష్టం
+minimum_value: కనిష్ట విలువ
+minimum_width: కనిష్ట వెడల్పు
+mixed_resources: మిశ్రమ Resourceలు
+modified_on: సవరించిన తేదీ
+name: పేరు
+name_key: పేరు Key
+never_expire: గడువు ముగియదు
+new: కొత్తది
+new_password: కొత్త పాస్‌వర్డ్
+no_change_since: మార్పు లేని సమయం
+no_dashboard_message: లోడ్ చేయడానికి Dashboard లేదు.
+no_dashboard_title: Dashboard లేదు
+no_data: డేటా లేదు
+no_labels: Label లేదు
+no_login_message: Login సందేశం సెట్ చేయబడలేదు
+node: Node
+node_configuration: Node సెట్టింగ్
+node_details: Node వివరం
+node_endpoints: Node Endpointలు
+node_id: Node ID
+node_state_updater: Node State Updater
+nodes: Nodeలు
+none: ఏదీ లేదు
+notifications: నోటిఫికేషన్‌లు
+number_of_axis: అక్షాల సంఖ్య
+occurrences: సంఘటనలు
+'off': 'OFF'
+off_text: OFF వచనం
+offset_0h0m0s: Offset (0h0m0s)
+offset_y_%: Offset Y (%)
+'on': 'ON'
+on_button: ON Button
+on_receive: స్వీకరించినప్పుడు
+on_send: పంపినప్పుడు
+on_text: ON వచనం
+operations: కార్యకలాపాలు
+operator: Operator
+options: ఎంపికలు
+opts:
+  backup_provider:
+    desc_disk: డేటాను Diskలో Backup చేస్తుంది
+    label_disk: Disk
+  button_type:
+    label_danger: ప్రమాదం (ఎరుపు)
+    label_primary: ప్రాథమికం (నీలం)
+    label_secondary: ద్వితీయం (నీలం)
+    label_warning: హెచ్చరిక (పసుపు)
+  chart_group_type:
+    desc_group_chart: అనేక Resourceలకు ఒకే అక్షం
+    desc_mixed_chart: అనేక Resourceలకు అనేక అక్షాలు
+    desc_pie_chart: ఒకే Pie Chart
+    label_group_chart: Group Chart
+    label_mixed_chart: Mixed Chart
+    label_pie_chart: Pie Chart
+  chart_interpolation:
+    label_basis: Basis
+    label_cardinal: Cardinal
+    label_catmull_rom: CatmullRom
+    label_linear: Linear
+    label_monotone_x: MonotoneX
+    label_monotone_y: MonotoneY
+    label_natural: Natural
+    label_step: Step
+    label_step_after: StepAfter
+    label_step_before: StepBefore
+  chart_type:
+    desc_area_chart: Area Chart
+    desc_bar_chart: Bar Chart
+    desc_line_chart: Line Chart
+    desc_pie_chart: Pie Chart
+    desc_scatter_chart: Scatter Chart
+    label_area_chart: Area Chart
+    label_bar_chart: Bar Chart
+    label_line_chart: Line Chart
+    label_pie_chart: Pie Chart
+    label_scatter_chart: Scatter Chart
+  code_editor_language:
+    label_html: HTML
+    label_javascript: Javascript
+    label_json: JSON
+    label_plaintext: సాదా వచనం
+    label_xml: XML
+    label_yaml: YAML
+  control_type:
+    label_mixed_control: Mixed Control
+    label_switch_button: Button Switch
+    label_switch_toggle: Switch Toggle
+  control_type_mixed:
+    label_button_push: Push Button
+    label_input: Input
+    label_options_select: ఎంపికలను ఎంచుకోండి
+    label_options_tab: Tab ఎంపికలు
+    label_slider: Slider
+    label_switch_button: Button Switch
+    label_switch_toggle: Toggle Switch
+  dampening:
+    desc_active_duration: Task సక్రియంగా ఉండే వ్యవధి
+    desc_consecutive: వరుస సంఘటనల సంఖ్య
+    desc_evaluation: N Evaluationలో సంఘటనల సంఖ్య
+    desc_none: Dampeningను నిలిపివేయి
+    label_active_duration: సక్రియ వ్యవధి
+    label_consecutive: వరుస
+    label_evaluation: Evaluation
+    label_none: ఏదీ లేదు
+  data_unit:
+    label_bytes: Bytes
+    label_eib: Exbi Bytes (EiB)
+    label_gib: Gibi Bytes (GiB)
+    label_kib: Kibi Bytes (KiB)
+    label_mib: Mibi Bytes (MiB)
+    label_pib: Pebi Bytes (PiB)
+    label_tib: Tebi Bytes (TiB)
+  event_type:
+    label_created: సృష్టించబడింది
+    label_deleted: తొలగించబడింది
+    label_requested: అభ్యర్థించబడింది
+    label_updated: నవీకరించబడింది
+  gw_msg_logger:
+    desc_file_logger: సందేశాలు ఒక ఫైల్‌లో Log చేయబడతాయి
+    desc_none: సందేశాలు Log చేయబడవు
+    label_file_logger: File Logger
+    label_none: ఏదీ లేదు
+  gw_protocol:
+    desc_ethernet: Ethernet Protocol
+    desc_http: HTTP Protocol
+    desc_mqtt: MQTT Protocol
+    desc_serial: Serial Protocol
+    label_ethernet: Ethernet
+    label_http: HTTP
+    label_mqtt: MQTT
+    label_serial: Serial
+  gw_provider:
+    desc_esphome: esphome.io
+    desc_generic: Generic Provider
+    desc_mysensors_v2: MySensors.org version 2.x
+    desc_philips_hue: developers.meethue.com
+    desc_system_monitoring: System Resourceలను సేకరించి Report చేస్తుంది
+    desc_tasmota: tasmota.github.io
+    label_esphome: ESPHome
+    label_generic: Generic
+    label_mysensors_v2: MySensors V2
+    label_philips_hue: PhilipsHue
+    label_system_monitoring: System Monitoring
+    label_tasmota: Tasmota
+  handler_type:
+    desc_backup: Serverను Backup చేస్తుంది
+    desc_email: Email పంపుతుంది
+    desc_noop: ఎలాంటి చర్య చేయని Handler
+    desc_resource: అంతర్గత Resource చర్యలు
+    desc_telegram: Telegramకు వచనం పంపుతుంది
+    desc_webhook: ఒక Webhook URLను కాల్ చేస్తుంది
+    label_backup: Backup
+    label_email: Email
+    label_noop: Noop
+    label_resource: Resource
+    label_telegram: Telegram
+    label_webhook: Webhook
+  http_method:
+    label_delete: DELETE
+    label_get: GET
+    label_post: POST
+    label_put: PUT
+  image_load_type:
+    desc_custom_mapping: Field విలువ నుండి Map చేసిన చిత్రం
+    desc_image: Field విలువ నుండి Base64 చిత్రం
+    label_custom_mapping: Custom Mapping
+    label_image: Raw Image
+  image_rotation:
+    desc_rotate_180: 180° తిప్పు
+    desc_rotate_left_90: ఎడమవైపు 90° తిప్పు
+    desc_rotate_none: తిప్పుడు లేదు
+    desc_rotate_right_90: కుడివైపు 90° తిప్పు
+    label_rotate_180: 180° తిప్పు
+    label_rotate_left_90: ఎడమ 90°
+    label_rotate_none: ఏదీ లేదు
+    label_rotate_right_90: కుడి 90°
+  image_source:
+    desc_disk: స్థానిక Disk మార్గం నుండి చిత్రం
+    desc_field: Field Resource నుండి చిత్ర డేటా
+    desc_url: URL నుండి చిత్రం
+    label_disk: Disk
+    label_field: Field
+    label_url: URL
+  interval:
+    label_day_01: 1 రోజు
+    label_hour_01: 1 గంట
+    label_hour_03: 3 గంటలు
+    label_hour_06: 6 గంటలు
+    label_minute_01: 1 నిమిషం
+    label_minute_02: 2 నిమిషాలు
+    label_minute_03: 3 నిమిషాలు
+    label_minute_05: 5 నిమిషాలు
+    label_minute_10: 10 నిమిషాలు
+    label_minute_15: 15 నిమిషాలు
+    label_minute_30: 30 నిమిషాలు
+    label_never: ఎప్పుడూ కాదు
+    label_second_01: 1 సెకను
+    label_second_05: 5 సెకన్లు
+    label_second_10: 10 సెకన్లు
+    label_second_15: 15 సెకన్లు
+    label_second_30: 30 సెకన్లు
+    label_second_45: 45 సెకన్లు
+  legend_orientation:
+    desc_horizontal: సమాంతరంగా ఉంచుతుంది
+    desc_vertical: నిలువుగా ఉంచుతుంది
+    label_horizontal: సమాంతరం
+    label_vertical: నిలువు
+  legend_position:
+    desc_bottom_center: దిగువ మధ్యలో
+    desc_bottom_left: దిగువ ఎడమవైపు
+    desc_right: కుడి వైపు
+    desc_top_left: పై ఎడమవైపు
+    label_bottom_center: దిగువ మధ్య
+    label_bottom_left: దిగువ ఎడమ
+    label_right: కుడి
+    label_top_left: పై ఎడమ
+  light_type:
+    desc_cw_ww: Cold White మరియు Warm White
+    desc_rgb: RGB లైట్
+    desc_rgb_cw: RGBతో Cold White
+    desc_rgb_cw_ww: RGBతో Cold White మరియు Warm White
+    desc_single: "ఒంటరి, Cold White లేదా Warm White"
+    label_cw_ww: CW WW
+    label_rgb: RGB
+    label_rgb_cw: RGB CW
+    label_rgb_cw_ww: RGB CW WW
+    label_single: ఒంటరి
+  metric_duration:
+    label_day_002: గత 2 రోజులు
+    label_day_007: గత 7 రోజులు
+    label_day_030: గత 30 రోజులు
+    label_day_060: గత 60 రోజులు
+    label_day_090: గత 90 రోజులు
+    label_day_180: గత 180 రోజులు
+    label_day_365: గత 365 రోజులు
+    label_hour_01: గత 1 గంట
+    label_hour_02: గత 2 గంటలు
+    label_hour_03: గత 3 గంటలు
+    label_hour_06: గత 6 గంటలు
+    label_hour_12: గత 12 గంటలు
+    label_hour_24: గత 24 గంటలు
+    label_minute_30: గత 30 నిమిషాలు
+  metric_function:
+    label_count: సంఖ్య
+    label_maximum: గరిష్టం
+    label_mean: Mean
+    label_median: Median
+    label_minimum: కనిష్టం
+    label_percentile_50: 50వ Percentile
+    label_percentile_75: 75వ Percentile
+    label_percentile_95: 95వ Percentile
+    label_percentile_99: 99వ Percentile
+    label_sum: మొత్తం
+  metric_type:
+    label_binary: Binary
+    label_counter: Counter
+    label_gauge: Gauge
+    label_gauge_float: Gauge Float
+    label_geo: GEO
+    label_none: ఏదీ లేదు
+    label_string: String
+  rgb_component:
+    desc_color_picker: ముందుగా నిర్వచించిన రంగులు
+    desc_hue_slider: Hue Slider
+    label_color_picker: త్వరిత రంగు ఎంపిక
+    label_hue_slider: Hue Slider
+  schedule_frequency:
+    desc_daily: ప్రతి రోజు నడుస్తుంది
+    desc_monthly: నెలకు ఒకసారి నడుస్తుంది
+    desc_on_date: "నిర్దిష్ట తేదీ, సమయంలో ఒక్కసారి మాత్రమే నడుస్తుంది"
+    desc_weekly: వారానికి ఒకసారి నడుస్తుంది
+    label_daily: రోజువారీ
+    label_monthly: నెలవారీ
+    label_on_date: తేదీన
+    label_weekly: వారంవారీ
+  schedule_type:
+    desc_cron: Cron Expression
+    desc_repeat: నిర్దిష్ట విరామంలో పునరావృతం అవుతుంది
+    desc_simple: "రోజువారీ, వారంవారీ, నెలవారీ Schedule"
+    desc_sunrise: సూర్యోదయ సమయం ఆధారంగా
+    desc_sunset: సూర్యాస్తమయ సమయం ఆధారంగా
+    label_cron: Cron
+    label_repeat: పునరావృతం
+    label_simple: సరళం
+    label_sunrise: సూర్యోదయం
+    label_sunset: సూర్యాస్తమయం
+  theme_color:
+    label_blue: నీలం
+    label_cyan: Cyan
+    label_gold: బంగారం
+    label_green: ఆకుపచ్చ
+    label_multiple_ordered: క్రమబద్ధమైన అనేకం
+    label_multiple_unordered: క్రమరహిత అనేకం
+    label_orange: నారింజ
+    label_purple: ఊదా
+  trait_type:
+    label_app_selector: App Selector
+    label_arm_disarm: Arm Disarm
+    label_brightness: ప్రకాశం
+    label_camera_stream: Camera Stream
+    label_channel: Channel
+    label_color_setting: రంగు సెట్టింగ్
+    label_cook: Cook
+    label_dispense: Dispense
+    label_dock: Dock
+    label_energy_storage: Energy Storage
+    label_fan_speed: ఫ్యాన్ వేగం
+    label_fill: నింపు
+    label_humidity_setting: తేమ సెట్టింగ్
+    label_input_selector: Input Selector
+    label_light_effects: లైట్ Effectలు
+    label_locator: Locator
+    label_lock_unlock: తాళం / తెరువు
+    label_media_state: Media State
+    label_modes: Modes
+    label_network_control: Network Control
+    label_object_detection: Object Detection
+    label_on_off: On Off
+    label_open_close: తెరువు / మూయు
+    label_reboot: Reboot
+    label_rotation: తిప్పుడు
+    label_run_cycle: Run Cycle
+    label_scene: Scene
+    label_sensor_state: Sensor State
+    label_software_update: Software Update
+    label_start_stop: ప్రారంభించు / ఆపు
+    label_status_report: Status Report
+    label_temperature_control: ఉష్ణోగ్రత నియంత్రణ
+    label_temperature_setting: ఉష్ణోగ్రత సెట్టింగ్
+    label_timer: Timer
+    label_toggles: Toggles
+    label_transport_control: Transport Control
+    label_volume: ధ్వని
+  utilization_chart:
+    label_circle_050: అర్ధ వృత్తం
+    label_circle_075: 3/4 వృత్తం
+    label_circle_100: పూర్తి వృత్తం
+    label_spark_area: Spark Area
+    label_spark_bar: Spark Bar
+    label_spark_line: Spark Line
+    label_table: Table
+  va_provider:
+    desc_alexa: Amazon Alexa
+    desc_google_assistant: Google Assistant
+    label_alexa: Alexa
+    label_google_assistant: Google Assistant
+  vd_type:
+    label_air_conditioner: Air Conditioner
+    label_air_cooler: Air Cooler
+    label_air_freshener: Air Freshener
+    label_air_purifier: Air Purifier
+    label_audio_video_receiver: Audio Video Receiver
+    label_awning: Awning
+    label_bathtub: స్నానపు తొట్టి
+    label_bed: మంచం
+    label_blender: Blender
+    label_blinds: Blinds
+    label_boiler: Boiler
+    label_camera: Camera
+    label_carbon_monoxide_detector: Carbon Monoxide Detector
+    label_charger: Charger
+    label_closet: అల్మారా
+    label_coffee_maker: Coffee Maker
+    label_cooktop: Cooktop
+    label_curtain: తెర
+    label_dehumidifier: Dehumidifier
+    label_dehydrator: Dehydrator
+    label_dishwasher: Dishwasher
+    label_door: తలుపు
+    label_door_bell: తలుపు గంట
+    label_drawer: డ్రాయర్
+    label_dryer: Dryer
+    label_fan: ఫ్యాన్
+    label_faucet: కుళాయి
+    label_fireplace: Fireplace
+    label_freezer: Freezer
+    label_fryer: Fryer
+    label_garage_door: Garage Door
+    label_gate: గేట్
+    label_grill: Grill
+    label_heater: Heater
+    label_hood: Hood
+    label_humidifier: Humidifier
+    label_kettle: Kettle
+    label_light: లైట్
+    label_lock: తాళం
+    label_media_remote: Media Remote
+    label_microwave: Microwave
+    label_mop: Mop
+    label_mower: Mower
+    label_multicooker: Multicooker
+    label_network: Network
+    label_outlet: Outlet
+    label_oven: Oven
+    label_pergola: Pergola
+    label_pet_feeder: Pet Feeder
+    label_pressure_cooker: Pressure Cooker
+    label_radiator: Radiator
+    label_refrigerator: రిఫ్రిజిరేటర్
+    label_router: Router
+    label_scene: Scene
+    label_security_system: Security System
+    label_sensor: Sensor
+    label_set_top_box: Set Top Box
+    label_shower: Shower
+    label_shutter: Shutter
+    label_smoke_detector: Smoke Detector
+    label_soundbar: Soundbar
+    label_sous_vide: Sous Vide
+    label_speaker: Speaker
+    label_sprinkler: Sprinkler
+    label_stand_mixer: Stand Mixer
+    label_streaming_box: Streaming Box
+    label_streaming_soundbar: Streaming Soundbar
+    label_streaming_stick: Streaming Stick
+    label_switch: Switch
+    label_television: Television
+    label_thermostat: Thermostat
+    label_vacuum: Vacuum
+    label_valve: Valve
+    label_washer: Washer
+    label_water_heater: Water Heater
+    label_water_purifier: Water Purifier
+    label_water_softener: Water Softener
+    label_weather_station: Weather Station
+    label_window: కిటికీ
+    label_yogurt_maker: Yogurt Maker
+  week_day:
+    label_friday: శుక్రవారం
+    label_monday: సోమవారం
+    label_saturday: శనివారం
+    label_sunday: ఆదివారం
+    label_thursday: గురువారం
+    label_tuesday: మంగళవారం
+    label_wednesday: బుధవారం
+  widget_type:
+    desc_chart_panel: Chartలలో డేటాను చూపించు
+    desc_control_panel: Resourceలపై నియంత్రణ చర్య చేస్తుంది
+    desc_empty_panel: ఖాళీ Panel
+    desc_image_panel: వివిధ Source నుండి చిత్రాన్ని చూపించు
+    desc_light_panel: ఒక లైట్‌ను నియంత్రిస్తుంది
+    desc_utilization_panel: వినియోగ స్థితిని చూపించు
+    label_chart_panel: Chart Panel
+    label_control_panel: Control Panel
+    label_empty_panel: Empty Panel
+    label_image_panel: Image Panel
+    label_light_panel: Light Panel
+    label_utilization_panel: Utilization Panel
+others: ఇతరాలు
+padding_bottom_px: దిగువ Padding (px)
+padding_left_px: ఎడమ Padding (px)
+padding_right_px: కుడి Padding (px)
+padding_top_px: పై Padding (px)
+panel_title: Panel శీర్షిక
+parameters_to_handler: Handlerకు Parameters
+parse_mode: Parse Mode
+password: పాస్‌వర్డ్
+path: మార్గం
+payload: Payload
+send: పంపు
+payload_off: Payload OFF
+payload_on: Payload ON
+payloads: Payloadలు
+per_cpu_disabled: ప్రతి CPU నిలిపివేయబడింది
+port: Port
+port_name: Port పేరు
+post_run: Post Run
+power: Power
+pre_delay: ముందస్తు ఆలస్యం
+pre_run: Pre Run
+prefix: Prefix
+previous_value: మునుపటి విలువ
+process: Process
+processes: Processలు
+profile: Profile
+protocol: Protocol
+provider: Provider
+provider_type: Provider రకం
+publish: Publish
+qos: QoS
+query_parameters: Query Parameters
+queue_failed_messages: విఫలమైన సందేశాలను Queueలో ఉంచు
+quick_id: Quick ID
+re_enable: మళ్లీ ప్రారంభించు
+re_enable_duration: మళ్లీ ప్రారంభించు వ్యవధి
+react_version: React Version
+read_only: చదవడానికి మాత్రమే
+reboot: Reboot
+reconnect_delay: మళ్లీ కనెక్ట్ ఆలస్యం
+refresh_interval: నవీకరణ విరామం
+refresh_node_info: Node సమాచారాన్ని నవీకరించు
+reload: మళ్లీ లోడ్ చేయి
+repeat_count: పునరావృత సంఖ్య
+request_heartbeat: Heartbeat అభ్యర్థించు
+reset: Reset
+resetting: Reset అవుతోంది...
+resource: Resource
+resource_by_labels: Label ద్వారా Resource
+resource_by_quick_id: Quick ID ద్వారా Resource
+resource_configuration: Resource సెట్టింగ్
+resource_filters: Resource Filterలు
+resource_name: Resource పేరు
+resource_type: Resource రకం
+resources: Resourceలు
+response_code: ప్రతిస్పందన కోడ్
+restore: Restore
+retention_count: Retention సంఖ్య
+retry_count: మళ్లీ ప్రయత్న సంఖ్య
+rgb: RGB
+rgb_component: RGB Component
+rotation: తిప్పుడు
+round_decimal: దశాంశం రౌండ్
+rule: Rule
+run_a_backup: Backup నడుపు
+run_backup: Backup నడుపు
+s_no: '#'
+saturation: Saturation
+save: భద్రపరచు
+schedule: Schedule
+schedule_details: Schedule వివరం
+schedule_type: Schedule రకం
+schedules: Scheduleలు
+script: Script
+select_an_option: ఒక ఎంపికను ఎంచుకోండి
+server: Server
+service_account_not_generated: Service Account Token రూపొందించబడలేదు
+service_account_copy_title: Service Account Tokenను కాపీ చేయి
+service_account_copy_warning_msg: ఈ Token ఒక్కసారి మాత్రమే చూపబడుతుంది. మళ్లీ చూడలేరు. ఇప్పుడే భద్రపరచండి.
+service_account_barcode_help: Tokenతో Login అవ్వడానికి ఈ Barcodeను Scan చేయండి.
+service_account_details: Service Account వివరం
+service_accounts: Service Accountలు
+settings: సెట్టింగ్‌లు
+show_grid_x: X గ్రిడ్ చూపించు
+show_grid_y: Y గ్రిడ్ చూపించు
+show_title: శీర్షిక చూపించు
+since: నుండి
+size: పరిమాణం
+sleeping_queue: Sleep Queue
+sort_order_priority: క్రమ ప్రాధాన్యత
+source: Source
+source_code: Source Code
+source_details: Source వివరం
+source_field: Source Field
+source_id: Source ID
+sources: Sourceలు
+spec: Spec
+stack_charts: Chartలను అమర్చు
+state: స్థితి
+status: స్థితి
+status_at: స్థితి సమయం
+status_configuration: స్థితి సెట్టింగ్
+step: దశ
+storage_export_type: Storage Export రకం
+stream_message_ack: Stream Message Ack
+string: String
+stroke_width_px: Stroke వెడల్పు (px)
+sub_type: ఉప రకం
+subject: Subject
+subscribe: Subscribe
+swap_disabled: Swap నిలిపివేయబడింది
+sync_interval: Sync విరామం
+system: System
+system_message: System సందేశం
+table_configuration: Table సెట్టింగ్
+table_view: Table వీక్షణ
+target_directory: Target ఫోల్డర్
+target_location: Target స్థానం
+task: Task
+task_details: Task వివరం
+tasks: Taskలు
+telegram: Telegram
+temperature: ఉష్ణోగ్రత
+text: వచనం
+the_open_source_controller: The Open Source Controller
+theme_color: Theme రంగు
+thickness: మందం
+threshold_mode: Threshold విధానం
+thresholds: Thresholdలు
+thresholds_color: Threshold రంగు
+time_hh_mm_ss: "సమయం (hh:mm:ss)"
+timeout: Timeout
+timestamp: Timestamp
+timestamp_key: Timestamp Key
+title: శీర్షిక
+to: స్వీకర్త
+to_emails: స్వీకర్త Emailలు
+token: Token
+topic: Topic
+trait: Trait
+traits: Traitలు
+transmit_pre_delay: పంపే ముందు ఆలస్యం
+trigger_on_event: Event వచ్చినప్పుడు ప్రారంభించు
+'true': 'True'
+type: రకం
+unit: యూనిట్
+up: పైకి
+update: నవీకరించు
+update_body: Body నవీకరించు
+update_data: డేటా నవీకరించు
+update_endpoint: Endpoint నవీకరించు
+update_firmware: Firmware నవీకరించు
+update_node: Node నవీకరించు
+update_post_run: Post Run నవీకరించు
+update_pre_run: Pre Run నవీకరించు
+update_query_parameters: Query Parameters నవీకరించు
+update_resource: Resource నవీకరించు
+update_script: Script నవీకరించు
+update_trait: Trait నవీకరించు
+update_value: విలువ నవీకరించు
+update_y_axis: Y అక్షం నవీకరించు
+upload: Upload
+upload_firmware: Firmware Upload
+url: URL
+use_global: Global ఉపయోగించు
+use_global_encryption_key: Global Encryption Key ఉపయోగించు
+use_global_password: Global పాస్‌వర్డ్ ఉపయోగించు
+use_global_style: Global Style ఉపయోగించు
+user_id: User ID
+username: వినియోగదారు పేరు
+validate_time_everyday: ప్రతిరోజూ సమయాన్ని ధృవీకరించు
+validity: చెల్లుబాటు
+value: విలువ
+value_formatter: Value Formatter
+value_key: Value Key
+variable: Variable
+variable_name: Variable పేరు
+variables: Variableలు
+version: Version
+virtual_assistant: Virtual Assistant
+virtual_assistant_details: Virtual Assistant వివరం
+virtual_assistants: Virtual Assistantలు
+virtual_device_details: Virtual Device వివరం
+virtual_devices: Virtual Deviceలు
+web_console: Web Console
+webhook: Webhook
+websocket_disconnected: Websocket డిస్‌కనెక్ట్ అయింది
+welcome_to_mycontroller: MyControllerకు స్వాగతం
+width_px: వెడల్పు (px)
+y_axis: Y అక్షం
+y_axis_configuration: Y అక్షం సెట్టింగ్
+yaml: YAML
+yaml_view: YAML వీక్షణ
+users: వినియోగదారులు
+policies: Policyలు
+user_details: వినియోగదారు వివరం
+policy_details: Policy వివరం
+statement: Statement
+edit_statement: Statement సవరించు
+statements: Statementలు
+effect: Effect
+layout: లేఅవుట్
+layout_tree: Tree
+layout_force: Force
+refresh: నవీకరించు
+include_child_nodes: Child Nodeలను చేర్చు
+child_nodes: Child Nodeలు

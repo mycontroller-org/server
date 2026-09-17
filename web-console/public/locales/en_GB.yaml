@@ -54,7 +54,7 @@ chat_ids: Chat IDs
 clear: Clear
 clear_all: Clear All
 color: Colour
-color_temperature: Color Temperature
+color_temperature: Colour Temperature
 column_display: Column Display
 conditions: Conditions
 configuration: Configuration
@@ -86,7 +86,7 @@ data_repository_modify_an_entry: 'Data Repository: Modify an entry'
 data_retrieved_from_server: Data retrieved from server
 data_type: Data Type
 date_yyyy_mm_dd: Date (yyyy-mm-dd)
-day_of_month: Date of Month
+day_of_month: Day of Month
 day_of_week: Days of Week
 delete: Delete
 description: Description
@@ -98,7 +98,7 @@ device_type: Device Type
 dialog:
   clear_sleeping_queue_heading: "Would you like to clear the queue?"
   clear_sleeping_queue_msg: All the sleeping queued messages will be dropped
-  delete_resource_msg: "Are you sure want to delete the selected items?"
+  delete_resource_msg: "Are you sure you want to delete the selected items?"
   delete_title_backup: "Delete backup files?"
   delete_title_dashboard: "Delete dashboard?"
   delete_title_data_repository: "Delete data repositories?"
@@ -117,13 +117,13 @@ dialog:
   delete_title_virtual_assistant: "Delete virtual assistant?"
   delete_title_virtual_device: "Delete virtual device?"
   node_reset_heading: "Reset Node?"
-  node_reset_msg: "Are you sure want to reset the selected nodes?<br/>After this operation:<3><0>Configuration will be restored to factory settings.</0><1>you may lose access to the selected node(s) from MyController!</1></3>"
+  node_reset_msg: "Are you sure you want to reset the selected nodes?<br/>After this operation:<3><0>Configuration will be restored to factory settings.</0><1>You may lose access to the selected node(s) from MyController!</1></3>"
   reboot_nodes_heading: "Reboot Node?"
-  reboot_nodes_msg: "Are you sure want to reboot the selected nodes?"
-  reset_msg_jwt_secret: "Are you sure want to reset the JWT secret? After this operation, all the existing logged in sessions to this server will be invalid also you will be logged out!"
+  reboot_nodes_msg: "Are you sure you want to reboot the selected nodes?"
+  reset_msg_jwt_secret: "Are you sure you want to reset the JWT secret? After this operation, all existing logged-in sessions on this server will be invalid and you will be logged out."
   reset_title_jwt_secret: Reset JWT secret
   restore_heading: "Confirm to perform a restore operation?"
-  restore_msg: "Are you sure want to restore to selected backup file?<br/>After this operation:<3><0>Server data will be restored to <1>{{fileName}}</1></0><1>You cannot rollback this operation</1><2>Always take a backup before performing a restore operation</2><3>You may need to start the server manually</3></3>"
+  restore_msg: "Are you sure you want to restore from the selected backup file?<br/>After this operation:<3><0>Server data will be restored to <1>{{fileName}}</1></0><1>You cannot roll back this operation</1><2>Always take a backup before performing a restore operation</2><3>You may need to start the server manually</3></3>"
 disable: Disable
 disable_scrollbar: Disable Scrollbar
 disabled: Disabled
@@ -167,7 +167,7 @@ experimental: Experimental
 expires_on: Expires On
 export_type: Export Type
 'false': 'False'
-favorite: Favorite
+favorite: Favourite
 fetch_info: Fetch Info
 fetching: Fetching
 field: Field
@@ -442,7 +442,7 @@ opts:
     label_html: HTML
     label_javascript: Javascript
     label_json: JSON
-    label_plaintext: Plan Text
+    label_plaintext: Plain Text
     label_xml: XML
     label_yaml: YAML
   control_type:
@@ -570,11 +570,11 @@ opts:
     label_horizontal: Horizontal
     label_vertical: Vertical
   legend_position:
-    desc_bottom_center: Center of bottom
+    desc_bottom_center: Centre of bottom
     desc_bottom_left: Left side of bottom
     desc_right: Right side
     desc_top_left: Left side of top
-    label_bottom_center: Bottom Center
+    label_bottom_center: Bottom Centre
     label_bottom_left: Bottom Left
     label_right: Right
     label_top_left: Top Left
@@ -626,7 +626,7 @@ opts:
   rgb_component:
     desc_color_picker: Predefined colors
     desc_hue_slider: Hue color slider
-    label_color_picker: Quick Color Picker
+    label_color_picker: Quick Colour Picker
     label_hue_slider: Hue Slider
   schedule_frequency:
     desc_daily: Runs every day
@@ -663,7 +663,7 @@ opts:
     label_brightness: Brightness
     label_camera_stream: Camera Stream
     label_channel: Channel
-    label_color_setting: Color Setting
+    label_color_setting: Colour Setting
     label_cook: Cook
     label_dispense: Dispense
     label_dock: Dock
@@ -904,7 +904,7 @@ sort_order_priority: Sort Order Priority
 source: Source
 source_code: Source Code
 source_details: Source Details
-source_field: Source Filed
+source_field: Source Field
 source_id: Source ID
 sources: Sources
 spec: Spec
@@ -936,11 +936,11 @@ telegram: Telegram
 temperature: Temperature
 text: Text
 the_open_source_controller: The Open Source Controller
-theme_color: Theme Color
+theme_color: Theme Colour
 thickness: Thickness
 threshold_mode: Threshold Mode
 thresholds: Thresholds
-thresholds_color: Thresholds Color
+thresholds_color: Thresholds Colour
 time_hh_mm_ss: "Time (hh:mm:ss)"
 timeout: Timeout
 timestamp: Timestamp
