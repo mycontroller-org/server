@@ -7,11 +7,14 @@ set -euo pipefail
 
 source ./scripts/version.sh
 
-REGISTRY='quay.io/mycontroller'
-ALT_REGISTRY='docker.io/mycontroller'
 GHCR_REGISTRY="ghcr.io/${GITHUB_REPOSITORY_OWNER:-mycontroller-org}"
 IMAGE_TAG=${VERSION}
 TARGET_BINARY=${TARGET_BUILD:-server}
+
+REGISTRIES=("${GHCR_REGISTRY}")
+if [ "${PUSH_DOCKER_QUAY:-0}" = "1" ]; then
+  REGISTRIES+=("quay.io/mycontroller" "docker.io/mycontroller")
+fi
 
 PLATFORMS=(
   "linux/amd64:linux-amd64"
@@ -29,18 +32,23 @@ for spec in "${PLATFORMS[@]}"; do
     exit 1
   fi
 
+  tags=()
+  for registry in "${REGISTRIES[@]}"; do
+    tags+=(--tag "${registry}/${TARGET_BINARY}:${IMAGE_TAG}-${binary_dir}")
+  done
+
   docker buildx build --push \
     --progress=plain \
+    --provenance=false \
+    --sbom=false \
     --platform "${platform}" \
     --file "docker/${TARGET_BINARY}.Dockerfile" \
     --build-arg "BINARY_PATH=${binary_path}" \
-    --tag "${REGISTRY}/${TARGET_BINARY}:${IMAGE_TAG}-${binary_dir}" \
-    --tag "${ALT_REGISTRY}/${TARGET_BINARY}:${IMAGE_TAG}-${binary_dir}" \
-    --tag "${GHCR_REGISTRY}/${TARGET_BINARY}:${IMAGE_TAG}-${binary_dir}" \
+    "${tags[@]}" \
     .
 done
 
-for registry in "${REGISTRY}" "${ALT_REGISTRY}" "${GHCR_REGISTRY}"; do
+for registry in "${REGISTRIES[@]}"; do
   docker buildx imagetools create \
     --tag "${registry}/${TARGET_BINARY}:${IMAGE_TAG}" \
     "${registry}/${TARGET_BINARY}:${IMAGE_TAG}-linux-amd64" \
