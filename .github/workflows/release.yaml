@@ -69,10 +69,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: web-console
-          path: web-console
+          path: web-console/build
 
       - name: Verify web console
         run: |
+          # upload-artifact v4 stores the contents of web-console/build at the zip root
+          if [ -f web-console/index.html ]; then
+            mkdir -p web-console/build
+            find web-console -mindepth 1 -maxdepth 1 ! -name build -exec mv {} web-console/build/ \;
+          fi
           if [ ! -f web-console/build/index.html ] && [ -f web-console/build/build/index.html ]; then
             mv web-console/build/build/* web-console/build/
             rmdir web-console/build/build
@@ -127,6 +132,10 @@ jobs:
 
       - name: Verify archives
         run: |
+          if [ -f SHA256SUMS.txt ]; then
+            mkdir -p builds
+            mv ./*.tar.gz ./*.zip ./build_timestamp.txt ./SHA256SUMS.txt builds/ 2>/dev/null || true
+          fi
           if [ ! -f builds/SHA256SUMS.txt ] && [ -f builds/builds/SHA256SUMS.txt ]; then
             mv builds/builds/* builds/
             rmdir builds/builds
