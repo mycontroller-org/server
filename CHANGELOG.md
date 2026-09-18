@@ -24,6 +24,7 @@ Draft for **2.3.0** (`versions.txt`). Compared to [v2.2.0](https://github.com/my
 
 ### Changed
 
+- Release workflow builds host binaries (Go 1.27.1 in Actions) and copies only those binaries into Alpine 3.24 images. Images are pushed to Docker Hub, Quay, and GHCR. `main` republishes the `development` pre-release by deleting and recreating it.
 - Policy **Import** uses `storage.Upsert` so `createdOn` / `modifiedOn` come from the backup file (same as other resources). Built-in policies are still skipped.
 - Built-in policies (admin / readwrite / readonly) are no longer rewritten on every start. `ModifiedOn` stays unless the code definition changed. Existing rows without `CreatedOn` are backfilled from `ModifiedOn` once.
 - `make setup-release` now requires both versions: `make setup-release VERSION=x.y.z NEXT_VERSION=x.y.z`. The PR writes `NEXT_VERSION` into `versions.txt`.

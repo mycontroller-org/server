@@ -1,0 +1,316 @@
+name: release
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  GO_VERSION: "1.27.1"
+  NODE_VERSION: "22"
+  YARN_VERSION: "4.18.0"
+
+jobs:
+  build-console:
+    name: Build web console
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Enable yarn
+        run: corepack enable && corepack prepare yarn@${{ env.YARN_VERSION }} --activate
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+          cache-dependency-path: web-console/yarn.lock
+
+      - name: Build web console
+        run: ./scripts/build_web_console.sh
+
+      - name: Upload web console
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-console
+          path: web-console/build
+          if-no-files-found: error
+
+  build-binaries:
+    name: Build binaries
+    needs: build-console
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          check-latest: true
+
+      - name: Download web console
+        uses: actions/download-artifact@v4
+        with:
+          name: web-console
+          path: web-console
+
+      - name: Verify web console
+        run: |
+          if [ ! -f web-console/build/index.html ] && [ -f web-console/build/build/index.html ]; then
+            mv web-console/build/build/* web-console/build/
+            rmdir web-console/build/build
+          fi
+          test -f web-console/build/index.html
+
+      - name: Build binaries
+        run: ./scripts/generate_executables.sh
+
+      - name: Set version and checksums
+        id: meta
+        run: |
+          . ./scripts/version.sh
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          cd builds
+          date -u +'%Y%m%d%H%M%S' > ./build_timestamp.txt
+          date -u +'%Y-%m-%dT%H:%M:%S%:z' >> ./build_timestamp.txt
+          sha256sum *.tar.gz > ./SHA256SUMS.txt
+          sha256sum *.zip >> ./SHA256SUMS.txt
+
+      - name: Upload archives
+        uses: actions/upload-artifact@v4
+        with:
+          name: archives
+          path: |
+            builds/*.tar.gz
+            builds/*.zip
+            builds/build_timestamp.txt
+            builds/SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: Upload container binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-binaries
+          path: builds/binary
+          if-no-files-found: error
+
+  github-release:
+    name: GitHub release
+    needs: build-binaries
+    if: >
+      (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) &&
+      github.repository == 'mycontroller-org/server'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download archives
+        uses: actions/download-artifact@v4
+        with:
+          name: archives
+          path: .
+
+      - name: Verify archives
+        run: |
+          if [ ! -f builds/SHA256SUMS.txt ] && [ -f builds/builds/SHA256SUMS.txt ]; then
+            mv builds/builds/* builds/
+            rmdir builds/builds
+          fi
+          test -f builds/SHA256SUMS.txt
+          ls builds/*.tar.gz builds/*.zip
+
+      - name: Release (tagged version)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+        with:
+          fail_on_unmatched_files: true
+          name: ${{ github.ref_name }}
+          files: |
+            builds/*.tar.gz
+            builds/*.zip
+            builds/build_timestamp.txt
+            builds/SHA256SUMS.txt
+
+      - name: Delete existing development release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+        run: gh release delete development --cleanup-tag --yes || true
+
+      - name: Release (development rolling)
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+        with:
+          fail_on_unmatched_files: true
+          tag_name: development
+          target_commitish: ${{ github.sha }}
+          name: Development Build - Pre Release
+          prerelease: true
+          make_latest: false
+          body: |
+            Rolling build from `main` at ${{ github.sha }}.
+            Not guaranteed to be stable. Use a tagged release for production.
+          files: |
+            builds/*.tar.gz
+            builds/*.zip
+            builds/build_timestamp.txt
+            builds/SHA256SUMS.txt
+
+  container-images:
+    name: Container image
+    needs: build-binaries
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        component: [server, gateway, handler]
+        target:
+          - { platform: linux/amd64, binary_dir: linux-amd64 }
+          - { platform: linux/arm64, binary_dir: linux-arm64 }
+          - { platform: linux/arm/v7, binary_dir: linux-armv7 }
+          - { platform: linux/arm/v6, binary_dir: linux-armv6 }
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download container binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: container-binaries
+          path: builds
+
+      - name: Verify container binary
+        run: |
+          if [ ! -d builds/binary ] && [ -d builds/linux-amd64 ]; then
+            mkdir -p builds/binary
+            mv builds/linux-* builds/binary/
+          fi
+          test -f "builds/binary/${{ matrix.target.binary_dir }}/mycontroller-${{ matrix.component }}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login to Docker Hub
+        if: github.repository == 'mycontroller-org/server'
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Login to Quay
+        if: github.repository == 'mycontroller-org/server'
+        uses: docker/login-action@v4
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_TOKEN }}
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Image tags
+        id: tags
+        env:
+          VERSION: ${{ needs.build-binaries.outputs.version }}
+          COMPONENT: ${{ matrix.component }}
+          BINARY_DIR: ${{ matrix.target.binary_dir }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          {
+            echo 'list<<EOF'
+            echo "ghcr.io/${OWNER}/${COMPONENT}:${VERSION}-${BINARY_DIR}"
+            if [ "${GITHUB_REPOSITORY}" = "mycontroller-org/server" ]; then
+              echo "quay.io/mycontroller/${COMPONENT}:${VERSION}-${BINARY_DIR}"
+              echo "docker.io/mycontroller/${COMPONENT}:${VERSION}-${BINARY_DIR}"
+            fi
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/${{ matrix.component }}.Dockerfile
+          platforms: ${{ matrix.target.platform }}
+          push: true
+          provenance: false
+          sbom: false
+          build-args: |
+            BINARY_PATH=builds/binary/${{ matrix.target.binary_dir }}/mycontroller-${{ matrix.component }}
+          tags: ${{ steps.tags.outputs.list }}
+
+  container-manifests:
+    name: Container manifests
+    needs: [build-binaries, container-images]
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        component: [server, gateway, handler]
+        registry:
+          - quay.io/mycontroller
+          - docker.io/mycontroller
+          - ghcr.io/${{ github.repository_owner }}
+    steps:
+      - name: Login to Docker Hub
+        if: github.repository == 'mycontroller-org/server' && startsWith(matrix.registry, 'docker.io/')
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Login to Quay
+        if: github.repository == 'mycontroller-org/server' && startsWith(matrix.registry, 'quay.io/')
+        uses: docker/login-action@v4
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_TOKEN }}
+
+      - name: Login to GHCR
+        if: startsWith(matrix.registry, 'ghcr.io/')
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Create multi-arch manifest
+        if: github.repository == 'mycontroller-org/server' || startsWith(matrix.registry, 'ghcr.io/')
+        env:
+          IMAGE: ${{ matrix.registry }}/${{ matrix.component }}:${{ needs.build-binaries.outputs.version }}
+        run: |
+          docker buildx imagetools create \
+            --tag "${IMAGE}" \
+            "${IMAGE}-linux-amd64" \
+            "${IMAGE}-linux-arm64" \
+            "${IMAGE}-linux-armv7" \
+            "${IMAGE}-linux-armv6"

@@ -1,41 +1,22 @@
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.26-alpine3.24 AS builder
-RUN mkdir /app
-ADD . /app
-WORKDIR /app
-
-# "tzdata" to print the build date with timezone
-RUN apk add --no-cache tzdata git
-
-ARG GOPROXY
-# download deps before gobuild
-RUN go mod download -x
-ARG TARGETOS
-ARG TARGETARCH
-ENV TARGET_BUILD="server"
-RUN scripts/container_binary.sh
-
 FROM alpine:3.24
 
 LABEL maintainer="Jeeva Kandasamy <jkandasa@gmail.com>"
 
+ARG BINARY_PATH=builds/binary/linux-amd64/mycontroller-server
+
 ENV APP_HOME="/app" \
     DATA_HOME="/mc_home"
 
-EXPOSE 8080
+# sample-docker-server.yaml: http 8080, https_ssl 8443, https_acme 9443
+EXPOSE 8080 8443 9443
 
-# install timzone utils
-RUN apk --no-cache add tzdata
+RUN apk --no-cache add ca-certificates tzdata \
+    && mkdir -p ${APP_HOME} ${DATA_HOME}
 
-# create a user and give permission for the locations
-RUN mkdir -p ${APP_HOME} && mkdir -p ${DATA_HOME}
-
-# copy application bin file (UI is packed in the binary and extracted on first start)
-COPY --from=builder /app/mycontroller-server ${APP_HOME}/mycontroller-server
+COPY ${BINARY_PATH} ${APP_HOME}/mycontroller-server
+COPY ./resources/sample-docker-server.yaml ${APP_HOME}/mycontroller.yaml
 
 RUN chmod +x ${APP_HOME}/mycontroller-server
-
-# copy default files
-COPY ./resources/sample-docker-server.yaml ${APP_HOME}/mycontroller.yaml
 
 WORKDIR ${APP_HOME}
 

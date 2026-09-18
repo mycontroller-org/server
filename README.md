@@ -1,7 +1,6 @@
 # MyController
 ![lint workflow](https://github.com/mycontroller-org/server/actions/workflows/lint.yaml/badge.svg)
-![publish container images](https://github.com/mycontroller-org/server/actions/workflows/publish_container_images.yaml/badge.svg)
-![publish executables](https://github.com/mycontroller-org/server/actions/workflows/publish_executables.yaml/badge.svg)
+![release](https://github.com/mycontroller-org/server/actions/workflows/release.yaml/badge.svg)
 
 MyController is a flexible automation and sensor controller for IoT devices. Whether in the home, at work, or wherever you need it, MyController provides the solution!
 
@@ -27,8 +26,9 @@ Upgrading from a sidecar install (`web_directory: web_console` or `/ui`): either
 
 ## Download
 ### Container images
-  * [Docker Hub](https://hub.docker.com/u/mycontroller)
+  * [GitHub Container Registry](https://github.com/orgs/mycontroller-org/packages)
   * [Quay.io](https://quay.io/organization/mycontroller)
+  * [Docker Hub](https://hub.docker.com/u/mycontroller)
 
 `main` branch images are tagged as `:2.x.x-devel`<br>
 ### Executables

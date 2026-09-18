@@ -1,0 +1,6 @@
+*
+!builds/
+!builds/binary/
+!builds/binary/**
+!resources/
+!resources/sample-docker-*.yaml
