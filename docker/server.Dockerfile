@@ -2,7 +2,9 @@ FROM alpine:3.24
 
 LABEL maintainer="Jeeva Kandasamy <jkandasa@gmail.com>"
 
-ARG BINARY_PATH=builds/binary/linux-amd64/mycontroller-server
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETVARIANT
 
 ENV APP_HOME="/app" \
     DATA_HOME="/mc_home"
@@ -13,7 +15,7 @@ EXPOSE 8080 8443 9443
 RUN apk --no-cache add ca-certificates tzdata \
     && mkdir -p ${APP_HOME} ${DATA_HOME}
 
-COPY ${BINARY_PATH} ${APP_HOME}/mycontroller-server
+COPY builds/binary/${TARGETOS}-${TARGETARCH}${TARGETVARIANT}/mycontroller-server ${APP_HOME}/mycontroller-server
 COPY ./resources/sample-docker-server.yaml ${APP_HOME}/mycontroller.yaml
 
 RUN chmod +x ${APP_HOME}/mycontroller-server

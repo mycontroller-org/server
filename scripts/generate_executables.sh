@@ -116,7 +116,7 @@ copy_docker_binary() {
 }
 
 # platforms to build archives
-PLATFORMS=("linux/arm" "linux/arm64" "linux/386" "linux/amd64" "windows/386" "windows/amd64")
+PLATFORMS=("linux/arm" "linux/arm64" "linux/386" "linux/amd64" "darwin/amd64" "darwin/arm64" "windows/386" "windows/amd64")
 
 # compile
 for platform in "${PLATFORMS[@]}"

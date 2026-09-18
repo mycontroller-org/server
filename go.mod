@@ -32,6 +32,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07
 	github.com/tidwall/sjson v1.2.5
+	go.bug.st/serial v1.8.0
 	go.mongodb.org/mongo-driver v1.17.9
 	go.uber.org/zap v1.28.0
 	golang.org/x/crypto v0.54.0
