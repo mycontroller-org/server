@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/zip"
+	"bytes"
 	"fmt"
 	"io"
 	"io/fs"
@@ -17,8 +18,16 @@ func main() {
 	}
 
 	src := filepath.Join(root, "web-console", "build")
-	if _, err := os.Stat(filepath.Join(src, "index.html")); err != nil {
+	indexPath := filepath.Join(src, "index.html")
+	if _, err := os.Stat(indexPath); err != nil {
 		fatal(fmt.Errorf("web-console/build/index.html not found; run ./scripts/build_web_console.sh first: %w", err))
+	}
+	indexHTML, err := os.ReadFile(indexPath)
+	if err != nil {
+		fatal(err)
+	}
+	if bytes.Contains(indexHTML, []byte("/src/index.js")) {
+		fatal(fmt.Errorf("web-console/build/index.html is the Vite source page, not a production build"))
 	}
 
 	destDir := filepath.Join(root, "pkg", "http_router", "web-console", "assets")
