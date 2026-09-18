@@ -16,7 +16,6 @@ import (
 	busTY "github.com/mycontroller-org/server/v2/plugin/bus/types"
 	msglogger "github.com/mycontroller-org/server/v2/plugin/gateway/protocol/message_logger"
 	gwTY "github.com/mycontroller-org/server/v2/plugin/gateway/types"
-	serialDriver "github.com/tarm/serial"
 	"go.uber.org/zap"
 )
 
@@ -41,8 +40,8 @@ type Config struct {
 type Endpoint struct {
 	GwCfg          *gwTY.Config
 	Config         Config
-	serCfg         *serialDriver.Config
-	Port           *serialDriver.Port
+	serCfg         serialConfig
+	Port           serialPort
 	receiveMsgFunc func(rm *msgTY.RawMessage) error
 	safeClose      *concurrency.Channel
 	messageLogger  msglogger.MessageLogger
@@ -65,10 +64,10 @@ func New(logger *zap.Logger, gwCfg *gwTY.Config, protocol cmap.CustomMap, rxMsgF
 
 	namedLogger.Debug("updated config data", zap.Any("config", cfg))
 
-	serCfg := &serialDriver.Config{Name: cfg.Portname, Baud: cfg.BaudRate}
+	serCfg := serialConfig{Name: cfg.Portname, Baud: cfg.BaudRate}
 
 	namedLogger.Info("opening a serial port", zap.String("gateway", gwCfg.ID), zap.String("port", cfg.Portname))
-	port, err := serialDriver.OpenPort(serCfg)
+	port, err := openSerial(serCfg)
 	if err != nil {
 		// ep.logger.Error("error on opening port", zap.String("gateway", gwCfg.ID), zap.String("port", serCfg.Name), zap.String("error", err.Error()))
 		return nil, err

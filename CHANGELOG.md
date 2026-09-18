@@ -13,6 +13,7 @@ Draft for **2.3.0** (`versions.txt`). Compared to [v2.2.0](https://github.com/my
 
 ### Added
 
+- Release archives for **macOS** (`darwin/amd64` Intel and `darwin/arm64` Apple Silicon).
 - **Created on** timestamp on all stored resources (gateway, node, source, field, firmware, dashboard, data repository, forward payload, schedule, task, handler, virtual device, virtual assistant, user, settings). New records get the current time. Existing records stay at the zero time (shown as empty / never). Policy and service account already had this field.
 - **Service account enable**: edit form, list, details, and bulk list actions (Enable / Disable), using the same `enabled` field as other resources. Accounts that are not enabled cannot log in or keep a session.
 - CLI: `myc disable service-account` / `myc enable sa` (optional `--user`).
@@ -24,7 +25,7 @@ Draft for **2.3.0** (`versions.txt`). Compared to [v2.2.0](https://github.com/my
 
 ### Changed
 
-- Release workflow builds host binaries (Go 1.27.1 in Actions) and copies only those binaries into Alpine 3.24 images on the same runner (no artifact upload/download). Images are pushed to GHCR, Quay, and Docker Hub. `main` republishes the `development` pre-release by deleting and recreating it.
+- Release workflow builds host binaries (Go 1.27.1 in Actions) and copies only those binaries into Alpine 3.24 images on the same runner (no artifact upload/download). Images are pushed to GHCR, Quay, and Docker Hub as a single multi-arch `:${VERSION}` tag (no per-arch tags). `main` republishes the `development` pre-release by deleting and recreating it.
 - Policy **Import** uses `storage.Upsert` so `createdOn` / `modifiedOn` come from the backup file (same as other resources). Built-in policies are still skipped.
 - Built-in policies (admin / readwrite / readonly) are no longer rewritten on every start. `ModifiedOn` stays unless the code definition changed. Existing rows without `CreatedOn` are backfilled from `ModifiedOn` once.
 - `make setup-release` now requires both versions: `make setup-release VERSION=x.y.z NEXT_VERSION=x.y.z`. The PR writes `NEXT_VERSION` into `versions.txt`.
