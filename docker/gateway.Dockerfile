@@ -1,41 +1,19 @@
-FROM --platform=${BUILDPLATFORM} golang:1.26-alpine3.24 AS builder
-RUN mkdir /app
-ADD . /app
-WORKDIR /app
-
-# "tzdata" to print the build date with timezone
-RUN apk add --no-cache tzdata git
-
-ARG GOPROXY
-# download deps before gobuild
-RUN go mod download -x
-ARG TARGETOS
-ARG TARGETARCH
-ENV TARGET_BUILD="gateway"
-RUN scripts/container_binary.sh
-
 FROM alpine:3.24
 
 LABEL maintainer="Jeeva Kandasamy <jkandasa@gmail.com>"
 
+ARG BINARY_PATH=builds/binary/linux-amd64/mycontroller-gateway
+
 ENV APP_HOME="/app" \
     DATA_HOME="/mc_home"
 
-EXPOSE 8080
+RUN apk --no-cache add ca-certificates tzdata \
+    && mkdir -p ${APP_HOME} ${DATA_HOME}
 
-# install timzone utils
-RUN apk --no-cache add tzdata
-
-# create a user and give permission for the locations
-RUN mkdir -p ${APP_HOME} && mkdir -p ${DATA_HOME}
-
-# copy application bin file
-COPY --from=builder /app/mycontroller-gateway ${APP_HOME}/mycontroller-gateway
+COPY ${BINARY_PATH} ${APP_HOME}/mycontroller-gateway
+COPY ./resources/sample-docker-gateway.yaml ${APP_HOME}/gateway.yaml
 
 RUN chmod +x ${APP_HOME}/mycontroller-gateway
-
-# copy default files
-COPY ./resources/sample-docker-gateway.yaml ${APP_HOME}/gateway.yaml
 
 WORKDIR ${APP_HOME}
 
