@@ -424,13 +424,13 @@ opts:
     label_basis: Basis
     label_cardinal: Cardinal
     label_catmull_rom: CatmullRom
-    label_linear: Linear
+    label_linear: Liniowa
     label_monotone_x: MonotoneX
     label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_natural: Naturalna
+    label_step: Krok
+    label_step_after: Krok po
+    label_step_before: Krok przed
   chart_type:
     desc_area_chart: Wykres obszarowy
     desc_bar_chart: Wykres słupkowy

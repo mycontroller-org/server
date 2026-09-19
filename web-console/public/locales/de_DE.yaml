@@ -427,10 +427,10 @@ opts:
     label_linear: Linear
     label_monotone_x: MonotoneX
     label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_natural: Natürlich
+    label_step: Schritt
+    label_step_after: Schritt danach
+    label_step_before: Schritt davor
   chart_type:
     desc_area_chart: Flächendiagramm
     desc_bar_chart: Balkendiagramm

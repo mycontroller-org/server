@@ -424,13 +424,13 @@ opts:
     label_basis: Basis
     label_cardinal: Cardinal
     label_catmull_rom: CatmullRom
-    label_linear: Linear
+    label_linear: ליניארי
     label_monotone_x: MonotoneX
     label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_natural: טבעי
+    label_step: צעד
+    label_step_after: צעד אחרי
+    label_step_before: צעד לפני
   chart_type:
     desc_area_chart: תרשים שטח
     desc_bar_chart: תרשים עמודות

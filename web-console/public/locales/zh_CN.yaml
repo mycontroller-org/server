@@ -424,13 +424,13 @@ opts:
     label_basis: Basis
     label_cardinal: Cardinal
     label_catmull_rom: CatmullRom
-    label_linear: Linear
+    label_linear: 线性
     label_monotone_x: MonotoneX
     label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_natural: 自然
+    label_step: 阶梯
+    label_step_after: 后阶梯
+    label_step_before: 前阶梯
   chart_type:
     desc_area_chart: 面积图
     desc_bar_chart: 柱状图
