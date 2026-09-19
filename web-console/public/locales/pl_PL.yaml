@@ -374,6 +374,8 @@ never_expire: Nigdy nie wygasa
 new: Nowy
 new_password: Nowe hasło
 no_change_since: Bez zmian od
+a_few_seconds_ago: kilka sekund temu
+in_a_few_seconds: za kilka sekund
 no_dashboard_message: Brak pulpitu do wczytania.
 no_dashboard_title: Brak dostępnych pulpitów
 no_data: Brak danych

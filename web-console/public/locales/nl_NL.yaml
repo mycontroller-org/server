@@ -374,6 +374,8 @@ never_expire: Verloopt nooit
 new: Nieuw
 new_password: Nieuw wachtwoord
 no_change_since: Ongewijzigd sinds
+a_few_seconds_ago: een paar seconden geleden
+in_a_few_seconds: over een paar seconden
 no_dashboard_message: Er is geen dashboard beschikbaar om te laden.
 no_dashboard_title: Geen dashboards beschikbaar
 no_data: Geen gegevens

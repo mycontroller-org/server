@@ -3,273 +3,273 @@ about: परिचय
 actions: क्रियाएँ
 active_duration: सक्रिय अवधि
 add: जोड़ें
-add_a_field: Field जोड़ें
-add_a_firmware: Firmware जोड़ें
-add_a_forward_payload: Forward Payload जोड़ें
-add_a_gateway: Gateway जोड़ें
-add_a_handler: Handler जोड़ें
-add_a_node: Node जोड़ें
-add_a_schedule: Schedule जोड़ें
-add_a_policy: Policy जोड़ें
-add_a_service_account: Service Account जोड़ें
+add_a_field: फील्ड जोड़ें
+add_a_firmware: फर्मवेयर जोड़ें
+add_a_forward_payload: फ़ॉरवर्ड पेलोड जोड़ें
+add_a_gateway: गेटवे जोड़ें
+add_a_handler: हैंडलर जोड़ें
+add_a_node: नोड जोड़ें
+add_a_schedule: शेड्यूल जोड़ें
+add_a_policy: नीति जोड़ें
+add_a_service_account: सेवा खाता जोड़ें
 add_a_user: उपयोगकर्ता जोड़ें
-add_a_source: Source जोड़ें
-add_a_task: Task जोड़ें
-add_a_virtual_assistant: Virtual Assistant जोड़ें
-add_a_virtual_device: Virtual Device जोड़ें
-add_an_item: Item जोड़ें
-add_widget: Widget जोड़ें
+add_a_source: सोर्स जोड़ें
+add_a_task: कार्य जोड़ें
+add_a_virtual_assistant: वर्चुअल असिस्टेंट जोड़ें
+add_a_virtual_device: वर्चुअल डिवाइस जोड़ें
+add_an_item: आइटम जोड़ें
+add_widget: विजेट जोड़ें
 address: पता
-agent_user_id: Agent User ID
+agent_user_id: एजेंट उपयोगकर्ता आईडी
 alerts_empty_message: इस समय कोई अलर्ट नहीं है।
 alerts_empty_title: कोई अलर्ट नहीं मिला
-alive_check_interval: Alive Check अंतराल
+alive_check_interval: सक्रियता जाँच अंतराल
 all_rights_reserved: सर्वाधिकार सुरक्षित
-allow_overwrite: Overwrite की अनुमति दें
+allow_overwrite: ओवरराइट की अनुमति दें
 apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: पुष्टि माँगें
-assigned_firmware: नियत Firmware
-assigned_nodes: नियत Node
+assigned_firmware: नियत फर्मवेयर
+assigned_nodes: नियत नोड
 auto_disable: स्वतः अक्षम करें
 auto_update: स्वतः अपडेट
 axis: अक्ष
-backup: Backup
-backup_and_restore: Backup और Restore
-backup_locations: Backup स्थान
+backup: बैकअप
+backup_and_restore: बैकअप और पुनर्स्थापना
+backup_locations: बैकअप स्थान
 battery: बैटरी
-baud_rate: Baud Rate
-body: Body
-bridge: Bridge
+baud_rate: बॉड दर
+body: संदेश भाग
+bridge: ब्रिज
 brightness: चमक
-broker: Broker
+broker: ब्रोकर
 browse: ब्राउज़ करें
-build_date: Build दिनांक
-button: Button
-button_text: Button पाठ
+build_date: बिल्ड दिनांक
+button: बटन
+button_text: बटन पाठ
 cancel: रद्द करें
-chart_configuration: Chart सेटिंग
-chart_type: Chart प्रकार
-chat_ids: Chat ID
+chart_configuration: चार्ट सेटिंग
+chart_type: चार्ट प्रकार
+chat_ids: चैट आईडी
 clear: साफ़ करें
 clear_all: सभी साफ़ करें
 color: रंग
 color_temperature: रंग तापमान
-column_display: Column प्रदर्शन
+column_display: स्तंभ प्रदर्शन
 conditions: शर्तें
 configuration: सेटिंग
 configure_via: इसके माध्यम से सेट करें
 confirm_password: पासवर्ड की पुष्टि करें
 confirmation_message: पुष्टि संदेश
-connection_timeout: कनेक्शन Timeout
+connection_timeout: कनेक्शन समय सीमा
 control_configuration: नियंत्रण सेटिंग
 control_type: नियंत्रण प्रकार
 copied: कॉपी हो गया
 copy: कॉपी करें
-corner_smoothing: Corner Smoothing
+corner_smoothing: कोना स्मूथिंग
 cpu: CPU
 cpu_disabled: CPU अक्षम
 create_new: नया बनाएँ
 created_on: बनाया गया
-cron_expression: Cron Expression
+cron_expression: क्रॉन एक्सप्रेशन
 current_password: वर्तमान पासवर्ड
-cursor_tooltip: Cursor Tooltip
-custom_data: Custom डेटा
-custom_mapping: Custom Mapping
-custom_variables: Custom Variable
-dampening: Dampening
-dashboard: Dashboard
+cursor_tooltip: कर्सर टूलटिप
+custom_data: कस्टम डेटा
+custom_mapping: कस्टम मैपिंग
+custom_variables: कस्टम चर
+dampening: अवमंदन
+dashboard: डैशबोर्ड
 data: डेटा
-data_repository: Data Repository
-data_repository_add_an_entry: 'Data Repository: प्रविष्टि जोड़ें'
-data_repository_modify_an_entry: 'Data Repository: प्रविष्टि बदलें'
-data_retrieved_from_server: Server से डेटा प्राप्त हुआ
+data_repository: डेटा रिपॉजिटरी
+data_repository_add_an_entry: 'डेटा रिपॉजिटरी: प्रविष्टि जोड़ें'
+data_repository_modify_an_entry: 'डेटा रिपॉजिटरी: प्रविष्टि बदलें'
+data_retrieved_from_server: सर्वर से डेटा प्राप्त हुआ
 data_type: डेटा प्रकार
 date_yyyy_mm_dd: दिनांक (yyyy-mm-dd)
 day_of_month: माह का दिन
 day_of_week: सप्ताह के दिन
 delete: हटाएँ
 description: विवरण
-destination_field: गंतव्य Field
-detailed_filter: विस्तृत Filter
+destination_field: गंतव्य फील्ड
+detailed_filter: विस्तृत फ़िल्टर
 details: विवरण
-device_filter: डिवाइस Filter
+device_filter: डिवाइस फ़िल्टर
 device_type: डिवाइस प्रकार
 dialog:
   clear_sleeping_queue_heading: "क्या आप कतार साफ़ करना चाहते हैं?"
-  clear_sleeping_queue_msg: Sleep Queue के सभी संदेश हटा दिए जाएँगे
+  clear_sleeping_queue_msg: स्लीप क्यू के सभी संदेश हटा दिए जाएँगे
   delete_resource_msg: "क्या आप चयनित आइटम हटाना चाहते हैं?"
-  delete_title_backup: "Backup फ़ाइलें हटाएँ?"
-  delete_title_dashboard: "Dashboard हटाएँ?"
-  delete_title_data_repository: "Data Repository हटाएँ?"
-  delete_title_field: "Field हटाएँ?"
-  delete_title_firmware: "Firmware हटाएँ?"
-  delete_title_forward_payload: "Forward Payload हटाएँ?"
-  delete_title_gateway: "Gateway हटाएँ?"
-  delete_title_handler: "Handler हटाएँ?"
-  delete_title_node: "Node हटाएँ?"
-  delete_title_schedule: "Schedule हटाएँ?"
-  delete_title_service_account: "Service Account हटाएँ?"
+  delete_title_backup: "बैकअप फ़ाइलें हटाएँ?"
+  delete_title_dashboard: "डैशबोर्ड हटाएँ?"
+  delete_title_data_repository: "डेटा रिपॉजिटरी हटाएँ?"
+  delete_title_field: "फील्ड हटाएँ?"
+  delete_title_firmware: "फर्मवेयर हटाएँ?"
+  delete_title_forward_payload: "फ़ॉरवर्ड पेलोड हटाएँ?"
+  delete_title_gateway: "गेटवे हटाएँ?"
+  delete_title_handler: "हैंडलर हटाएँ?"
+  delete_title_node: "नोड हटाएँ?"
+  delete_title_schedule: "शेड्यूल हटाएँ?"
+  delete_title_service_account: "सेवा खाता हटाएँ?"
   delete_title_user: "उपयोगकर्ता हटाएँ?"
-  delete_title_policy: "Policy हटाएँ?"
-  delete_title_source: "Source हटाएँ?"
-  delete_title_task: "Task हटाएँ?"
-  delete_title_virtual_assistant: "Virtual Assistant हटाएँ?"
-  delete_title_virtual_device: "Virtual Device हटाएँ?"
-  node_reset_heading: "Node Reset करें?"
-  node_reset_msg: "क्या आप चयनित Node Reset करना चाहते हैं?<br/>इस क्रिया के बाद:<3><0>सेटिंग Factory Settings पर वापस आ जाएगी।</0><1>चयनित Node तक MyController से पहुँच समाप्त हो सकती है!</1></3>"
-  reboot_nodes_heading: "Node Reboot करें?"
-  reboot_nodes_msg: "क्या आप चयनित Node Reboot करना चाहते हैं?"
-  reset_msg_jwt_secret: "क्या आप JWT Secret Reset करना चाहते हैं? इस क्रिया के बाद इस Server पर सभी Login सत्र अमान्य हो जाएँगे और आप लॉग आउट हो जाएँगे।"
-  reset_title_jwt_secret: JWT Secret Reset
-  restore_heading: "Restore करें?"
-  restore_msg: "क्या आप चयनित Backup फ़ाइल से Restore करना चाहते हैं?<br/>इस क्रिया के बाद:<3><0>Server डेटा <1>{{fileName}}</1> पर Restore हो जाएगा</0><1>इस क्रिया को वापस नहीं लिया जा सकता</1><2>Restore से पहले Backup लें</2><3>Server को मैन्युअल रूप से शुरू करना पड़ सकता है</3></3>"
+  delete_title_policy: "नीति हटाएँ?"
+  delete_title_source: "सोर्स हटाएँ?"
+  delete_title_task: "कार्य हटाएँ?"
+  delete_title_virtual_assistant: "वर्चुअल असिस्टेंट हटाएँ?"
+  delete_title_virtual_device: "वर्चुअल डिवाइस हटाएँ?"
+  node_reset_heading: "नोड रीसेट करें?"
+  node_reset_msg: "क्या आप चयनित नोड रीसेट करना चाहते हैं?<br/>इस क्रिया के बाद:<3><0>सेटिंग फ़ैक्टरी सेटिंग पर वापस आ जाएगी।</0><1>चयनित नोड तक MyController से पहुँच समाप्त हो सकती है!</1></3>"
+  reboot_nodes_heading: "नोड रीबूट करें?"
+  reboot_nodes_msg: "क्या आप चयनित नोड रीबूट करना चाहते हैं?"
+  reset_msg_jwt_secret: "क्या आप JWT सीक्रेट रीसेट करना चाहते हैं? इस क्रिया के बाद इस सर्वर पर सभी लॉगिन सत्र अमान्य हो जाएँगे और आप लॉग आउट हो जाएँगे।"
+  reset_title_jwt_secret: JWT सीक्रेट रीसेट
+  restore_heading: "पुनर्स्थापित करें?"
+  restore_msg: "क्या आप चयनित बैकअप फ़ाइल से पुनर्स्थापित करना चाहते हैं?<br/>इस क्रिया के बाद:<3><0>सर्वर डेटा <1>{{fileName}}</1> पर पुनर्स्थापित हो जाएगा</0><1>इस क्रिया को वापस नहीं लिया जा सकता</1><2>पुनर्स्थापना से पहले बैकअप लें</2><3>सर्वर को मैन्युअल रूप से शुरू करना पड़ सकता है</3></3>"
 disable: अक्षम करें
-disable_scrollbar: Scrollbar अक्षम करें
+disable_scrollbar: स्क्रॉलबार अक्षम करें
 disabled: अक्षम
 disabled_all: सभी अक्षम करें
-discover_nodes: Node खोजें
-disk: Disk
-disks: Disk
+discover_nodes: नोड खोजें
+disk: डिस्क
+disks: डिस्क
 display_name: प्रदर्शन नाम
 display_percentage: प्रतिशत दिखाएँ
 display_text: प्रदर्शन पाठ
 display_value: प्रदर्शन मान
 do_update: अपडेट करें
-documentation: Documentation
+documentation: दस्तावेज़
 down: नीचे
 download: डाउनलोड
-drop_down_position: Dropdown स्थान
+drop_down_position: ड्रॉपडाउन स्थान
 duration: अवधि
 edit: संपादित करें
-edit_dashboard_settings: Dashboard सेटिंग संपादित करें
-edit_widget_settings: Widget सेटिंग संपादित करें
-email: Email
+edit_dashboard_settings: डैशबोर्ड सेटिंग संपादित करें
+edit_widget_settings: विजेट सेटिंग संपादित करें
+email: ईमेल
 enable: सक्षम करें
 enabled: सक्षम
-encryption_key: Encryption Key
-endpoint: Endpoint
-endpoints: Endpoint
-entities: Entities
+encryption_key: एन्क्रिप्शन कुंजी
+endpoint: एंडपॉइंट
+endpoints: एंडपॉइंट
+entities: इकाइयाँ
 error:
   console:
-    invalid_login_credentials: Login विवरण अमान्य हैं।
-    login_msg_loading_failed: Login संदेश प्राप्त करने में त्रुटि
-evaluation: Evaluation
-evaluations: Evaluation
-event_filters: Event Filter
-events: Events
+    invalid_login_credentials: लॉगिन विवरण अमान्य हैं।
+    login_msg_loading_failed: लॉगिन संदेश प्राप्त करने में त्रुटि
+evaluation: मूल्यांकन
+evaluations: मूल्यांकन
+event_filters: इवेंट फ़िल्टर
+events: इवेंट
 executed_count: निष्पादन संख्या
 execution_interval: निष्पादन अंतराल
 execution_interval_0h0m0s: निष्पादन अंतराल (0h0m0s)
 execution_mode: निष्पादन मोड
-experimental: Experimental
+experimental: प्रायोगिक
 expires_on: समाप्ति तिथि
-export_type: Export प्रकार
-'false': 'False'
+export_type: निर्यात प्रकार
+'false': 'असत्य'
 favorite: पसंदीदा
 fetch_info: जानकारी प्राप्त करें
 fetching: प्राप्त किया जा रहा है
-field: Field
-field_details: Field विवरण
-field_id: Field ID
-fields: Fields
+field: फील्ड
+field_details: फील्ड विवरण
+field_id: फील्ड आईडी
+fields: फील्ड
 file_details: फ़ाइल विवरण
-file_uploaded_successfully: फ़ाइल Upload हो गई
+file_uploaded_successfully: फ़ाइल अपलोड हो गई
 filename: फ़ाइल नाम
 filename_placeholder: फ़ाइल यहाँ खींचें या अपलोड करने के लिए ब्राउज़ करें
-fill_opacity_%: Fill Opacity (%)
-filter: Filter
-filter_type: Filter प्रकार
-filters: Filters
-firmware_details: Firmware विवरण
-firmware_file: Firmware फ़ाइल
-firmware_update: Firmware अपडेट
-firmwares: Firmwares
-flush_interval: Flush अंतराल
+fill_opacity_%: भराव अपारदर्शिता (%)
+filter: फ़िल्टर
+filter_type: फ़िल्टर प्रकार
+filters: फ़िल्टर
+firmware_details: फर्मवेयर विवरण
+firmware_file: फर्मवेयर फ़ाइल
+firmware_update: फर्मवेयर अपडेट
+firmwares: फर्मवेयर
+flush_interval: फ़्लश अंतराल
 forgot_username_or_password: "उपयोगकर्ता नाम या पासवर्ड भूल गए?"
-form_generic_error_message: त्रुटि और/या अनिवार्य(*) Field जाँचें
-form_view: Form दृश्य
-forum: Forum
-forward_payload: Forward Payload
-forward_payload_details: Forward Payload विवरण
-frequency: Frequency
+form_generic_error_message: त्रुटि और/या अनिवार्य(*) फील्ड जाँचें
+form_view: फ़ॉर्म दृश्य
+forum: फ़ोरम
+forward_payload: फ़ॉरवर्ड पेलोड
+forward_payload_details: फ़ॉरवर्ड पेलोड विवरण
+frequency: आवृत्ति
 from: प्रेषक
-from_email: प्रेषक Email
+from_email: प्रेषक ईमेल
 full_name: पूरा नाम
-function: Function
-gateway: Gateway
-gateway_details: Gateway विवरण
-gateway_id: Gateway ID
-gateways: Gateways
-all_gateways: सभी Gateway
-all_nodes: सभी Node
-show_sources: Source दिखाएँ
-show_fields: Field दिखाएँ
-select_gateway: Gateway
-no_topology_nodes: दिखाने के लिए कोई Node नहीं
-no_topology_nodes_for_gateway: इस Gateway के लिए कोई Node नहीं मिला
+function: फ़ंक्शन
+gateway: गेटवे
+gateway_details: गेटवे विवरण
+gateway_id: गेटवे आईडी
+gateways: गेटवे
+all_gateways: सभी गेटवे
+all_nodes: सभी नोड
+show_sources: सोर्स दिखाएँ
+show_fields: फील्ड दिखाएँ
+select_gateway: गेटवे
+no_topology_nodes: दिखाने के लिए कोई नोड नहीं
+no_topology_nodes_for_gateway: इस गेटवे के लिए कोई नोड नहीं मिला
 geo_location: GEO स्थान
-git_commit: Git Commit
-global_configuration: Global सेटिंग
-golang_version: GoLang Version
-handler: Handler
-handler_details: Handler विवरण
-handler_parameters: Handler Parameters
-handler_type: Handler प्रकार
-handlers: Handlers
-header_name: Header नाम
-headers: Header
-heartbeat_request: Heartbeat अनुरोध
+git_commit: गिट कमिट
+global_configuration: वैश्विक सेटिंग
+golang_version: GoLang संस्करण
+handler: हैंडलर
+handler_details: हैंडलर विवरण
+handler_parameters: हैंडलर पैरामीटर
+handler_type: हैंडलर प्रकार
+handlers: हैंडलर
+header_name: हेडर नाम
+headers: हेडर
+heartbeat_request: हार्टबीट अनुरोध
 height_px: ऊँचाई (px)
 helper_text:
   invalid_address_esphome: 'अमान्य पता। उदाहरण: node1.local:6053'
   invalid_api: अमान्य API
-  invalid_backup_retention_count: "अमान्य Retention संख्या। कोई सीमा नहीं के लिए 0"
-  invalid_baud_rate: अमान्य Baud Rate
-  invalid_broker_url: अमान्य Broker URL
+  invalid_backup_retention_count: "अमान्य प्रतिधारण संख्या। कोई सीमा नहीं के लिए 0"
+  invalid_baud_rate: अमान्य बॉड दर
+  invalid_broker_url: अमान्य ब्रोकर URL
   invalid_current_password: अपना वर्तमान पासवर्ड दर्ज करें
   invalid_data: अमान्य डेटा
   invalid_date: अमान्य दिनांक
   invalid_day_of_month: अमान्य माह का दिन
   invalid_directory: अमान्य फ़ोल्डर
   invalid_duration: अमान्य अवधि
-  invalid_email: अमान्य Email
+  invalid_email: अमान्य ईमेल
   invalid_execution_interval_empty: निष्पादन अंतराल खाली नहीं होना चाहिए
-  invalid_field_id: "अमान्य Field ID. वर्ण, न्यूनतम=1, अधिकतम=100"
-  invalid_filters: अमान्य Filter
+  invalid_field_id: "अमान्य फील्ड आईडी. वर्ण, न्यूनतम=1, अधिकतम=100"
+  invalid_filters: अमान्य फ़िल्टर
   invalid_height: अमान्य ऊँचाई
-  invalid_host: अमान्य Host
-  invalid_id: "अमान्य ID. वर्ण, न्यूनतम=4, अधिकतम=100, स्पेस की अनुमति नहीं"
+  invalid_host: अमान्य होस्ट
+  invalid_id: "अमान्य आईडी. वर्ण, न्यूनतम=4, अधिकतम=100, स्पेस की अनुमति नहीं"
   invalid_interval: अमान्य अंतराल
-  invalid_key: "अमान्य Key. वर्ण, न्यूनतम=1, अधिकतम=100"
-  invalid_key_path: Key पथ खाली नहीं हो सकता
-  invalid_latitude: अमान्य Latitude
+  invalid_key: "अमान्य कुंजी. वर्ण, न्यूनतम=1, अधिकतम=100"
+  invalid_key_path: कुंजी पथ खाली नहीं हो सकता
+  invalid_latitude: अमान्य अक्षांश
   invalid_limit: अमान्य सीमा
   invalid_location: अमान्य स्थान
-  invalid_longitude: अमान्य Longitude
-  invalid_maximum_backup: "अमान्य Backup संख्या. पूर्णांक, न्यूनतम=0"
+  invalid_longitude: अमान्य देशांतर
+  invalid_maximum_backup: "अमान्य बैकअप संख्या. पूर्णांक, न्यूनतम=0"
   invalid_name: "अमान्य नाम. वर्ण, न्यूनतम=2, अधिकतम=100"
-  invalid_node_id: "अमान्य Node ID. वर्ण, न्यूनतम=1, अधिकतम=100"
-  invalid_offset: अमान्य Offset
+  invalid_node_id: "अमान्य नोड आईडी. वर्ण, न्यूनतम=1, अधिकतम=100"
+  invalid_offset: अमान्य ऑफसेट
   invalid_path: अमान्य पथ
-  invalid_payload: अमान्य Payload
-  invalid_port: अमान्य Port
-  invalid_prefix: अमान्य Prefix
+  invalid_payload: अमान्य पेलोड
+  invalid_port: अमान्य पोर्ट
+  invalid_prefix: अमान्य उपसर्ग
   invalid_profile_confirm_password: पुष्टि पासवर्ड मेल नहीं खाता
   invalid_profile_password: "अमान्य पासवर्ड. वर्ण, न्यूनतम=3, अधिकतम=100"
   invalid_profile_username: "अमान्य उपयोगकर्ता नाम. वर्ण, न्यूनतम=3, अधिकतम=100, स्पेस की अनुमति नहीं"
   invalid_repeat_count: अमान्य दोहराव संख्या
   invalid_response_code: "मान्य प्रतिक्रिया कोड दर्ज करें। अनदेखा करने के लिए 0 दर्ज करें"
   invalid_retry_count: "अमान्य पुनः प्रयास संख्या. पूर्णांक, न्यूनतम=0"
-  invalid_script_empty: Script खाली नहीं होनी चाहिए
-  invalid_server_url: अमान्य Server URL
-  invalid_source_id: "अमान्य Source ID. वर्ण, न्यूनतम=1, अधिकतम=100"
+  invalid_script_empty: स्क्रिप्ट खाली नहीं होनी चाहिए
+  invalid_server_url: अमान्य सर्वर URL
+  invalid_source_id: "अमान्य सोर्स आईडी. वर्ण, न्यूनतम=1, अधिकतम=100"
   invalid_text: "अमान्य पाठ. वर्ण, न्यूनतम=1, अधिकतम=100"
   invalid_time: अमान्य समय
   invalid_title: अमान्य शीर्षक
-  invalid_token: अमान्य Token
-  invalid_topic: अमान्य Topic
+  invalid_token: अमान्य टोकन
+  invalid_topic: अमान्य विषय
   invalid_type: अमान्य प्रकार
   invalid_url: अमान्य URL
   invalid_username: अमान्य उपयोगकर्ता नाम
@@ -278,53 +278,53 @@ helper_text:
   service_account_user: अपने लिए बनाने हेतु खाली छोड़ें। किसी अन्य के लिए खाता बनाने हेतु उपयोगकर्ता चुनें।
   invalid_value: अमान्य मान
   invalid_width: अमान्य चौड़ाई
-hide_border: Border छिपाएँ
-hide_header: Header छिपाएँ
-hide_status_column: Status Column छिपाएँ
-hide_value_column: Value Column छिपाएँ
-host: Host
-host_id: Host ID
-host_ids: Host ID
+hide_border: बॉर्डर छिपाएँ
+hide_header: हेडर छिपाएँ
+hide_status_column: स्थिति स्तंभ छिपाएँ
+hide_value_column: मान स्तंभ छिपाएँ
+host: होस्ट
+host_id: होस्ट आईडी
+host_ids: होस्ट आईडी
 html: HTML
-hue: Hue
-icon_or_image_location: Icon या छवि स्थान
-id: ID
+hue: ह्यू
+icon_or_image_location: आइकन या छवि स्थान
+id: आईडी
 ignore_duplicate: डुप्लिकेट अनदेखा करें
-image_source: छवि Source
+image_source: छवि सोर्स
 image_type: छवि प्रकार
 in_progress: प्रगति में
 inactive_duration: निष्क्रिय अवधि
 include_configuration: सेटिंग शामिल करें
-include_global_configuration: Global सेटिंग शामिल करें
-include_insecure_share: असुरक्षित Share शामिल करें
-include_secure_share: सुरक्षित Share शामिल करें
+include_global_configuration: वैश्विक सेटिंग शामिल करें
+include_insecure_share: असुरक्षित शेयर शामिल करें
+include_secure_share: सुरक्षित शेयर शामिल करें
 insecure: असुरक्षित
-internal_message_ack: Internal Message Ack
-interpolation: Interpolation
+internal_message_ack: आंतरिक संदेश पुष्टि
+interpolation: इंटरपोलेशन
 interval: अंतराल
 interval_0h0m0s: अंतराल (0h0m0s)
 invalid_file: अमान्य फ़ाइल
-is_sleep_node: Sleep Node
-is_static: Static
-javascript: Javascript
+is_sleep_node: स्लीप नोड
+is_static: स्थिर
+javascript: जावास्क्रिप्ट
 json: JSON
-jwt_secret: JWT Secret
+jwt_secret: JWT सीक्रेट
 keep_me_logged_in_30_days: 30 दिनों तक लॉग इन रखें।
-key: Key
-key_path: Key पथ
-label: Label
-labels: Label
+key: कुंजी
+key_path: कुंजी पथ
+label: लेबल
+labels: लेबल
 language: भाषा
-last_evaluation: अंतिम Evaluation
+last_evaluation: अंतिम मूल्यांकन
 last_modified: अंतिम संशोधन
-last_run: अंतिम Run
+last_run: अंतिम चलाएँ
 last_seen: अंतिम बार देखा गया
 last_status: अंतिम स्थिति
 last_success: अंतिम सफलता
-latitude: Latitude
-legend_orientation: Legend दिशा
-legend_position: Legend स्थान
-library_version: Library Version
+latitude: अक्षांश
+legend_orientation: लेजेंड दिशा
+legend_position: लेजेंड स्थान
+library_version: लाइब्रेरी संस्करण
 light: लाइट
 limit: सीमा
 loading: लोड हो रहा है
@@ -332,139 +332,141 @@ location: स्थान
 location_name: स्थान का नाम
 locations: स्थान
 log_in: लॉग इन
-log_rotate_interval: Log चक्र अंतराल
-login: Login
-login_page: Login पृष्ठ
+log_rotate_interval: लॉग चक्र अंतराल
+login: लॉगिन
+login_page: लॉगिन पृष्ठ
 login_to_your_account: अपने खाते में लॉग इन करें
 logout: लॉग आउट
-longitude: Longitude
-mapping: Mapping
+longitude: देशांतर
+mapping: मैपिंग
 mark_all_read: सभी को पढ़ा हुआ चिह्नित करें
-markdown: Markdown
-markdown_v2: Markdown v2
+markdown: मार्कडाउन
+markdown_v2: मार्कडाउन v2
 match_all: सभी का मिलान करें
 max_y_axis: अधिकतम (Y अक्ष)
 maximum: अधिकतम
 maximum_age: अधिकतम आयु
-maximum_backup: अधिकतम Backup
+maximum_backup: अधिकतम बैकअप
 maximum_size: अधिकतम आकार
 maximum_value: अधिकतम मान
-memory: Memory
-memory_disabled: Memory अक्षम
+memory: मेमोरी
+memory_disabled: मेमोरी अक्षम
 message: संदेश
-message_logger: Message Logger
-method: Method
-metric_configuration: Metric सेटिंग
-metric_function: Metric Function
-metric_interval: Metric अंतराल
-metric_type: Metric प्रकार
-metrics: Metrics
-metrics_database_disabled: 'चेतावनी: Metrics Database अक्षम है'
+message_logger: संदेश लॉगर
+method: विधि
+metric_configuration: मेट्रिक सेटिंग
+metric_function: मेट्रिक फ़ंक्शन
+metric_interval: मेट्रिक अंतराल
+metric_type: मेट्रिक प्रकार
+metrics: मेट्रिक
+metrics_database_disabled: 'चेतावनी: मेट्रिक डेटाबेस अक्षम है'
 min_y_axis: न्यूनतम (Y अक्ष)
 minimum: न्यूनतम
 minimum_value: न्यूनतम मान
 minimum_width: न्यूनतम चौड़ाई
-mixed_resources: मिश्रित Resource
+mixed_resources: मिश्रित रिसोर्स
 modified_on: संशोधित दिनांक
 name: नाम
-name_key: नाम Key
+name_key: नाम कुंजी
 never_expire: कभी समाप्त न हो
 new: नया
 new_password: नया पासवर्ड
 no_change_since: तब से कोई परिवर्तन नहीं
-no_dashboard_message: लोड करने के लिए कोई Dashboard उपलब्ध नहीं है।
-no_dashboard_title: कोई Dashboard उपलब्ध नहीं
+a_few_seconds_ago: कुछ ही क्षण पहले
+in_a_few_seconds: कुछ ही क्षण में
+no_dashboard_message: लोड करने के लिए कोई डैशबोर्ड उपलब्ध नहीं है।
+no_dashboard_title: कोई डैशबोर्ड उपलब्ध नहीं
 no_data: कोई डेटा नहीं
-no_labels: कोई Label नहीं
-no_login_message: Login के लिए कोई संदेश सेट नहीं है
-node: Node
-node_configuration: Node सेटिंग
-node_details: Node विवरण
-node_endpoints: Node Endpoint
-node_id: Node ID
-node_state_updater: Node State Updater
-nodes: Nodes
+no_labels: कोई लेबल नहीं
+no_login_message: लॉगिन के लिए कोई संदेश सेट नहीं है
+node: नोड
+node_configuration: नोड सेटिंग
+node_details: नोड विवरण
+node_endpoints: नोड एंडपॉइंट
+node_id: नोड आईडी
+node_state_updater: नोड स्थिति अद्यतनकर्ता
+nodes: नोड
 none: कोई नहीं
 notifications: सूचनाएँ
 number_of_axis: अक्षों की संख्या
 occurrences: घटनाएँ
 'off': 'OFF'
 off_text: OFF पाठ
-offset_0h0m0s: Offset (0h0m0s)
-offset_y_%: Offset Y (%)
+offset_0h0m0s: ऑफसेट (0h0m0s)
+offset_y_%: ऑफसेट Y (%)
 'on': 'ON'
-on_button: ON Button
+on_button: ON बटन
 on_receive: प्राप्त होने पर
 on_send: भेजने पर
 on_text: ON पाठ
 operations: संचालन
-operator: Operator
+operator: ऑपरेटर
 options: विकल्प
 opts:
   backup_provider:
-    desc_disk: डेटा को Disk में Backup करें
-    label_disk: Disk
+    desc_disk: डेटा को डिस्क में बैकअप करें
+    label_disk: डिस्क
   button_type:
     label_danger: खतरा (लाल)
     label_primary: प्राथमिक (नीला)
     label_secondary: द्वितीयक (नीला)
     label_warning: चेतावनी (पीला)
   chart_group_type:
-    desc_group_chart: कई Resource के लिए एक अक्ष
-    desc_mixed_chart: कई Resource के लिए कई अक्ष
-    desc_pie_chart: एक Pie Chart
-    label_group_chart: Group Chart
-    label_mixed_chart: Mixed Chart
-    label_pie_chart: Pie Chart
+    desc_group_chart: कई रिसोर्स के लिए एक अक्ष
+    desc_mixed_chart: कई रिसोर्स के लिए कई अक्ष
+    desc_pie_chart: एक पाई चार्ट
+    label_group_chart: समूह चार्ट
+    label_mixed_chart: मिश्रित चार्ट
+    label_pie_chart: पाई चार्ट
   chart_interpolation:
-    label_basis: Basis
-    label_cardinal: Cardinal
-    label_catmull_rom: CatmullRom
-    label_linear: Linear
-    label_monotone_x: MonotoneX
-    label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_basis: बेसिस
+    label_cardinal: कार्डिनल
+    label_catmull_rom: कैटमुलरॉम
+    label_linear: लीनियर
+    label_monotone_x: मोनोटोनएक्स
+    label_monotone_y: मोनोटोनवाई
+    label_natural: नेचुरल
+    label_step: स्टेप
+    label_step_after: स्टेपआफ्टर
+    label_step_before: स्टेपबिफोर
   chart_type:
-    desc_area_chart: Area Chart
-    desc_bar_chart: Bar Chart
-    desc_line_chart: Line Chart
-    desc_pie_chart: Pie Chart
-    desc_scatter_chart: Scatter Chart
-    label_area_chart: Area Chart
-    label_bar_chart: Bar Chart
-    label_line_chart: Line Chart
-    label_pie_chart: Pie Chart
-    label_scatter_chart: Scatter Chart
+    desc_area_chart: फील्ड चार्ट
+    desc_bar_chart: बार चार्ट
+    desc_line_chart: रेखा चार्ट
+    desc_pie_chart: पाई चार्ट
+    desc_scatter_chart: स्कैटर चार्ट
+    label_area_chart: फील्ड चार्ट
+    label_bar_chart: बार चार्ट
+    label_line_chart: रेखा चार्ट
+    label_pie_chart: पाई चार्ट
+    label_scatter_chart: स्कैटर चार्ट
   code_editor_language:
     label_html: HTML
-    label_javascript: Javascript
+    label_javascript: जावास्क्रिप्ट
     label_json: JSON
     label_plaintext: सादा पाठ
     label_xml: XML
     label_yaml: YAML
   control_type:
-    label_mixed_control: Mixed Control
-    label_switch_button: Button Switch
-    label_switch_toggle: Switch Toggle
+    label_mixed_control: मिश्रित नियंत्रण
+    label_switch_button: बटन स्विच
+    label_switch_toggle: स्विच टॉगल
   control_type_mixed:
-    label_button_push: Push Button
-    label_input: Input
+    label_button_push: दबाने वाला बटन
+    label_input: इनपुट
     label_options_select: विकल्प चुनें
-    label_options_tab: Tab विकल्प
-    label_slider: Slider
-    label_switch_button: Button Switch
-    label_switch_toggle: Toggle Switch
+    label_options_tab: टैब विकल्प
+    label_slider: स्लाइडर
+    label_switch_button: बटन स्विच
+    label_switch_toggle: टॉगल स्विच
   dampening:
-    desc_active_duration: Task की सक्रिय अवधि
+    desc_active_duration: कार्य की सक्रिय अवधि
     desc_consecutive: लगातार घटनाओं की संख्या
-    desc_evaluation: N Evaluation में घटनाओं की संख्या
-    desc_none: Dampening अक्षम करें
+    desc_evaluation: N मूल्यांकन में घटनाओं की संख्या
+    desc_none: डैम्पेनिंग अक्षम करें
     label_active_duration: सक्रिय अवधि
     label_consecutive: लगातार
-    label_evaluation: Evaluation
+    label_evaluation: मूल्यांकन
     label_none: कोई नहीं
   data_unit:
     label_bytes: Bytes
@@ -480,55 +482,55 @@ opts:
     label_requested: अनुरोध किया गया
     label_updated: अपडेट किया गया
   gw_msg_logger:
-    desc_file_logger: संदेश एक फ़ाइल में Log किए जाएँगे
-    desc_none: संदेश Log नहीं किए जाएँगे
-    label_file_logger: File Logger
+    desc_file_logger: संदेश एक फ़ाइल में लॉग किए जाएँगे
+    desc_none: संदेश लॉग नहीं किए जाएँगे
+    label_file_logger: फ़ाइल लॉगर
     label_none: कोई नहीं
   gw_protocol:
-    desc_ethernet: Ethernet Protocol
-    desc_http: HTTP Protocol
-    desc_mqtt: MQTT Protocol
-    desc_serial: Serial Protocol
-    label_ethernet: Ethernet
+    desc_ethernet: ईथरनेट प्रोटोकॉल
+    desc_http: HTTP प्रोटोकॉल
+    desc_mqtt: MQTT प्रोटोकॉल
+    desc_serial: सीरियल प्रोटोकॉल
+    label_ethernet: ईथरनेट
     label_http: HTTP
     label_mqtt: MQTT
-    label_serial: Serial
+    label_serial: सीरियल
   gw_provider:
     desc_esphome: esphome.io
-    desc_generic: Generic Provider
+    desc_generic: सामान्य प्रदाता
     desc_mysensors_v2: MySensors.org version 2.x
     desc_philips_hue: developers.meethue.com
-    desc_system_monitoring: System Resource एकत्र कर Report करता है
+    desc_system_monitoring: सिस्टम रिसोर्स एकत्र कर रिपोर्ट करता है
     desc_tasmota: tasmota.github.io
     label_esphome: ESPHome
-    label_generic: Generic
+    label_generic: सामान्य
     label_mysensors_v2: MySensors V2
     label_philips_hue: PhilipsHue
-    label_system_monitoring: System Monitoring
+    label_system_monitoring: सिस्टम निगरानी
     label_tasmota: Tasmota
   handler_type:
-    desc_backup: Server का Backup करता है
-    desc_email: Email भेजता है
-    desc_noop: कोई संचालन नहीं करने वाला Handler
-    desc_resource: आंतरिक Resource क्रियाएँ
+    desc_backup: सर्वर का बैकअप करता है
+    desc_email: ईमेल भेजता है
+    desc_noop: कोई संचालन नहीं करने वाला हैंडलर
+    desc_resource: आंतरिक रिसोर्स क्रियाएँ
     desc_telegram: Telegram पर पाठ भेजता है
-    desc_webhook: एक Webhook URL कॉल करता है
-    label_backup: Backup
-    label_email: Email
-    label_noop: Noop
-    label_resource: Resource
+    desc_webhook: एक वेबहुक URL कॉल करता है
+    label_backup: बैकअप
+    label_email: ईमेल
+    label_noop: नूप
+    label_resource: रिसोर्स
     label_telegram: Telegram
-    label_webhook: Webhook
+    label_webhook: वेबहुक
   http_method:
     label_delete: DELETE
     label_get: GET
     label_post: POST
     label_put: PUT
   image_load_type:
-    desc_custom_mapping: Field मान से मैप की गई छवि दिखाएँ
-    desc_image: Field मान से Base64 छवि
-    label_custom_mapping: Custom Mapping
-    label_image: Raw Image
+    desc_custom_mapping: फील्ड मान से मैप की गई छवि दिखाएँ
+    desc_image: फील्ड मान से Base64 छवि
+    label_custom_mapping: कस्टम मैपिंग
+    label_image: कच्ची छवि
   image_rotation:
     desc_rotate_180: 180° घुमाएँ
     desc_rotate_left_90: बाईं ओर 90° घुमाएँ
@@ -539,11 +541,11 @@ opts:
     label_rotate_none: कोई नहीं
     label_rotate_right_90: दाएँ 90°
   image_source:
-    desc_disk: स्थानीय Disk पथ से छवि
-    desc_field: Field Resource से छवि डेटा
+    desc_disk: स्थानीय डिस्क पथ से छवि
+    desc_field: फील्ड रिसोर्स से छवि डेटा
     desc_url: URL से छवि
-    label_disk: Disk
-    label_field: Field
+    label_disk: डिस्क
+    label_field: फील्ड
     label_url: URL
   interval:
     label_day_01: 1 दिन
@@ -579,11 +581,11 @@ opts:
     label_right: दाएँ
     label_top_left: ऊपर बाएँ
   light_type:
-    desc_cw_ww: Cold White और Warm White
+    desc_cw_ww: ठंडा सफ़ेद और गर्म सफ़ेद
     desc_rgb: RGB लाइट
-    desc_rgb_cw: RGB के साथ Cold White
-    desc_rgb_cw_ww: RGB के साथ Cold White और Warm White
-    desc_single: "एकल, Cold White या Warm White"
+    desc_rgb_cw: RGB के साथ ठंडा सफ़ेद
+    desc_rgb_cw_ww: RGB के साथ ठंडा सफ़ेद और गर्म सफ़ेद
+    desc_single: "एकल, ठंडा सफ़ेद या गर्म सफ़ेद"
     label_cw_ww: CW WW
     label_rgb: RGB
     label_rgb_cw: RGB CW
@@ -607,27 +609,27 @@ opts:
   metric_function:
     label_count: संख्या
     label_maximum: अधिकतम
-    label_mean: Mean
-    label_median: Median
+    label_mean: माध्य
+    label_median: माध्यिका
     label_minimum: न्यूनतम
-    label_percentile_50: 50वाँ Percentile
-    label_percentile_75: 75वाँ Percentile
-    label_percentile_95: 95वाँ Percentile
-    label_percentile_99: 99वाँ Percentile
+    label_percentile_50: 50वाँ प्रतिशतक
+    label_percentile_75: 75वाँ प्रतिशतक
+    label_percentile_95: 95वाँ प्रतिशतक
+    label_percentile_99: 99वाँ प्रतिशतक
     label_sum: योग
   metric_type:
-    label_binary: Binary
-    label_counter: Counter
-    label_gauge: Gauge
-    label_gauge_float: Gauge Float
+    label_binary: बाइनरी
+    label_counter: काउंटर
+    label_gauge: गेज
+    label_gauge_float: गेज फ्लोट
     label_geo: GEO
     label_none: कोई नहीं
-    label_string: String
+    label_string: स्ट्रिंग
   rgb_component:
     desc_color_picker: पूर्वनिर्धारित रंग
-    desc_hue_slider: Hue Slider
+    desc_hue_slider: ह्यू स्लाइडर
     label_color_picker: त्वरित रंग चयन
-    label_hue_slider: Hue Slider
+    label_hue_slider: ह्यू स्लाइडर
   schedule_frequency:
     desc_daily: प्रतिदिन चलता है
     desc_monthly: माह में एक बार चलता है
@@ -638,19 +640,19 @@ opts:
     label_on_date: दिनांक पर
     label_weekly: साप्ताहिक
   schedule_type:
-    desc_cron: Cron Expression
+    desc_cron: क्रॉन एक्सप्रेशन
     desc_repeat: निर्दिष्ट अंतराल पर दोहराता है
-    desc_simple: "दैनिक, साप्ताहिक, मासिक Schedule"
+    desc_simple: "दैनिक, साप्ताहिक, मासिक शेड्यूल"
     desc_sunrise: सूर्योदय समय के आधार पर
     desc_sunset: सूर्यास्त समय के आधार पर
-    label_cron: Cron
+    label_cron: क्रॉन
     label_repeat: दोहराएँ
     label_simple: सरल
     label_sunrise: सूर्योदय
     label_sunset: सूर्यास्त
   theme_color:
     label_blue: नीला
-    label_cyan: Cyan
+    label_cyan: सियान
     label_gold: सुनहरा
     label_green: हरा
     label_multiple_ordered: क्रमबद्ध एकाधिक
@@ -658,51 +660,51 @@ opts:
     label_orange: नारंगी
     label_purple: बैंगनी
   trait_type:
-    label_app_selector: App Selector
-    label_arm_disarm: Arm Disarm
+    label_app_selector: ऐप चयनकर्ता
+    label_arm_disarm: आर्म डिज़ार्म
     label_brightness: चमक
-    label_camera_stream: Camera Stream
-    label_channel: Channel
+    label_camera_stream: कैमरा स्ट्रीम
+    label_channel: चैनल
     label_color_setting: रंग सेटिंग
-    label_cook: Cook
-    label_dispense: Dispense
-    label_dock: Dock
-    label_energy_storage: Energy Storage
+    label_cook: कुक
+    label_dispense: डिस्पेंस
+    label_dock: डॉक
+    label_energy_storage: ऊर्जा भंडारण
     label_fan_speed: पंखे की गति
     label_fill: भरें
     label_humidity_setting: आर्द्रता सेटिंग
-    label_input_selector: Input Selector
-    label_light_effects: लाइट Effect
-    label_locator: Locator
+    label_input_selector: इनपुट चयनकर्ता
+    label_light_effects: लाइट प्रभाव
+    label_locator: लोकेटर
     label_lock_unlock: ताला / खोलें
-    label_media_state: Media State
-    label_modes: Modes
-    label_network_control: Network Control
-    label_object_detection: Object Detection
-    label_on_off: On Off
+    label_media_state: मीडिया स्थिति
+    label_modes: मोड
+    label_network_control: नेटवर्क नियंत्रण
+    label_object_detection: ऑब्जेक्ट पहचान
+    label_on_off: चालू बंद
     label_open_close: खोलें / बंद करें
-    label_reboot: Reboot
+    label_reboot: रीबूट
     label_rotation: घुमाव
-    label_run_cycle: Run Cycle
-    label_scene: Scene
-    label_sensor_state: Sensor State
-    label_software_update: Software Update
+    label_run_cycle: रन साइकिल
+    label_scene: सीन
+    label_sensor_state: सेंसर स्थिति
+    label_software_update: सॉफ़्टवेयर अपडेट
     label_start_stop: शुरू / रोकें
-    label_status_report: Status Report
+    label_status_report: स्थिति रिपोर्ट
     label_temperature_control: तापमान नियंत्रण
     label_temperature_setting: तापमान सेटिंग
-    label_timer: Timer
-    label_toggles: Toggles
-    label_transport_control: Transport Control
+    label_timer: टाइमर
+    label_toggles: टॉगल
+    label_transport_control: परिवहन नियंत्रण
     label_volume: आवाज़
   utilization_chart:
     label_circle_050: अर्ध वृत्त
     label_circle_075: 3/4 वृत्त
     label_circle_100: पूर्ण वृत्त
-    label_spark_area: Spark Area
-    label_spark_bar: Spark Bar
-    label_spark_line: Spark Line
-    label_table: Table
+    label_spark_area: स्पार्क फील्ड
+    label_spark_bar: स्पार्क बार
+    label_spark_line: स्पार्क रेखा
+    label_table: तालिका
   va_provider:
     desc_alexa: Amazon Alexa
     desc_google_assistant: Google Assistant
@@ -799,211 +801,211 @@ opts:
     label_tuesday: मंगलवार
     label_wednesday: बुधवार
   widget_type:
-    desc_chart_panel: Chart में डेटा दिखाएँ
-    desc_control_panel: Resource पर नियंत्रण क्रिया करता है
-    desc_empty_panel: खाली Panel
-    desc_image_panel: विभिन्न Source से छवि दिखाएँ
+    desc_chart_panel: चार्ट में डेटा दिखाएँ
+    desc_control_panel: रिसोर्स पर नियंत्रण क्रिया करता है
+    desc_empty_panel: खाली पैनल
+    desc_image_panel: विभिन्न सोर्स से छवि दिखाएँ
     desc_light_panel: एक लाइट को नियंत्रित करता है
     desc_utilization_panel: उपयोग स्थिति दिखाएँ
-    label_chart_panel: Chart Panel
-    label_control_panel: Control Panel
-    label_empty_panel: Empty Panel
-    label_image_panel: Image Panel
-    label_light_panel: Light Panel
-    label_utilization_panel: Utilization Panel
+    label_chart_panel: चार्ट पैनल
+    label_control_panel: कंट्रोल पैनल
+    label_empty_panel: खाली पैनल
+    label_image_panel: छवि पैनल
+    label_light_panel: लाइट पैनल
+    label_utilization_panel: उपयोग पैनल
 others: अन्य
-padding_bottom_px: निचला Padding (px)
-padding_left_px: बायाँ Padding (px)
-padding_right_px: दायाँ Padding (px)
-padding_top_px: ऊपरी Padding (px)
-panel_title: Panel शीर्षक
-parameters_to_handler: Handler को Parameters
-parse_mode: Parse Mode
+padding_bottom_px: निचला पैडिंग (px)
+padding_left_px: बायाँ पैडिंग (px)
+padding_right_px: दायाँ पैडिंग (px)
+padding_top_px: ऊपरी पैडिंग (px)
+panel_title: पैनल शीर्षक
+parameters_to_handler: हैंडलर को पैरामीटर
+parse_mode: पार्स मोड
 password: पासवर्ड
 path: पथ
-payload: Payload
+payload: पेलोड
 send: भेजें
-payload_off: Payload OFF
-payload_on: Payload ON
-payloads: Payloads
+payload_off: पेलोड OFF
+payload_on: पेलोड ON
+payloads: पेलोड
 per_cpu_disabled: प्रत्येक CPU अक्षम
-port: Port
-port_name: Port नाम
-post_run: Post Run
-power: Power
+port: पोर्ट
+port_name: पोर्ट नाम
+post_run: पोस्ट रन
+power: पावर
 pre_delay: पूर्व विलंब
-pre_run: Pre Run
-prefix: Prefix
+pre_run: प्री रन
+prefix: उपसर्ग
 previous_value: पिछला मान
-process: Process
-processes: Process
-profile: Profile
-protocol: Protocol
-provider: Provider
-provider_type: Provider प्रकार
-publish: Publish
+process: प्रक्रिया
+processes: प्रक्रिया
+profile: प्रोफ़ाइल
+protocol: प्रोटोकॉल
+provider: प्रदाता
+provider_type: प्रदाता प्रकार
+publish: प्रकाशित करें
 qos: QoS
-query_parameters: Query Parameters
-queue_failed_messages: विफल संदेश Queue में रखें
-quick_id: Quick ID
+query_parameters: क्वेरी पैरामीटर
+queue_failed_messages: विफल संदेश कतार में रखें
+quick_id: क्विक आईडी
 re_enable: पुनः सक्षम करें
 re_enable_duration: पुनः सक्षम अवधि
-react_version: React Version
+react_version: React संस्करण
 read_only: केवल पढ़ने योग्य
-reboot: Reboot
+reboot: रीबूट
 reconnect_delay: पुनः कनेक्ट विलंब
 refresh_interval: रिफ़्रेश अंतराल
-refresh_node_info: Node जानकारी अपडेट करें
+refresh_node_info: नोड जानकारी अपडेट करें
 reload: पुनः लोड करें
 repeat_count: दोहराव संख्या
-request_heartbeat: Heartbeat अनुरोध करें
-reset: Reset
-resetting: Reset हो रहा है...
-resource: Resource
-resource_by_labels: Label द्वारा Resource
-resource_by_quick_id: Quick ID द्वारा Resource
-resource_configuration: Resource सेटिंग
-resource_filters: Resource Filter
-resource_name: Resource नाम
-resource_type: Resource प्रकार
-resources: Resources
+request_heartbeat: हार्टबीट अनुरोध करें
+reset: रीसेट
+resetting: रीसेट हो रहा है...
+resource: रिसोर्स
+resource_by_labels: लेबल द्वारा रिसोर्स
+resource_by_quick_id: क्विक आईडी द्वारा रिसोर्स
+resource_configuration: रिसोर्स सेटिंग
+resource_filters: रिसोर्स फ़िल्टर
+resource_name: रिसोर्स नाम
+resource_type: रिसोर्स प्रकार
+resources: रिसोर्स
 response_code: प्रतिक्रिया कोड
-restore: Restore
-retention_count: Retention संख्या
+restore: पुनर्स्थापित करें
+retention_count: प्रतिधारण संख्या
 retry_count: पुनः प्रयास संख्या
 rgb: RGB
-rgb_component: RGB Component
+rgb_component: RGB घटक
 rotation: घुमाव
 round_decimal: दशमलव पूर्णांक
-rule: Rule
-run_a_backup: Backup चलाएँ
-run_backup: Backup चलाएँ
+rule: नियम
+run_a_backup: बैकअप चलाएँ
+run_backup: बैकअप चलाएँ
 s_no: '#'
-saturation: Saturation
+saturation: संतृप्ति
 save: सहेजें
-schedule: Schedule
-schedule_details: Schedule विवरण
-schedule_type: Schedule प्रकार
-schedules: Schedules
-script: Script
+schedule: शेड्यूल
+schedule_details: शेड्यूल विवरण
+schedule_type: शेड्यूल प्रकार
+schedules: शेड्यूल
+script: स्क्रिप्ट
 select_an_option: एक विकल्प चुनें
-server: Server
-service_account_not_generated: Service Account Token उत्पन्न नहीं हुआ
-service_account_copy_title: Service Account Token कॉपी करें
-service_account_copy_warning_msg: यह Token केवल एक बार दिखाया जाएगा। इसे संग्रहीत नहीं किया जाएगा और पुनः प्राप्त नहीं किया जा सकता। कृपया अभी सहेज लें।
-service_account_barcode_help: Token से Login करने के लिए इस Barcode को स्कैन करें।
-service_account_details: Service Account विवरण
-service_accounts: Service Account
+server: सर्वर
+service_account_not_generated: सेवा खाता टोकन उत्पन्न नहीं हुआ
+service_account_copy_title: सेवा खाता टोकन कॉपी करें
+service_account_copy_warning_msg: यह टोकन केवल एक बार दिखाया जाएगा। इसे संग्रहीत नहीं किया जाएगा और पुनः प्राप्त नहीं किया जा सकता। कृपया अभी सहेज लें।
+service_account_barcode_help: टोकन से लॉगिन करने के लिए इस बारकोड को स्कैन करें।
+service_account_details: सेवा खाता विवरण
+service_accounts: सेवा खाता
 settings: सेटिंग
 show_grid_x: X ग्रिड दिखाएँ
 show_grid_y: Y ग्रिड दिखाएँ
 show_title: शीर्षक दिखाएँ
 since: से
 size: आकार
-sleeping_queue: Sleep Queue
+sleeping_queue: स्लीप क्यू
 sort_order_priority: क्रम प्राथमिकता
-source: Source
-source_code: Source Code
-source_details: Source विवरण
-source_field: Source Field
-source_id: Source ID
-sources: Sources
-spec: Spec
-stack_charts: Chart स्टैक करें
+source: सोर्स
+source_code: सोर्स कोड
+source_details: सोर्स विवरण
+source_field: सोर्स फील्ड
+source_id: सोर्स आईडी
+sources: सोर्स
+spec: स्पेक
+stack_charts: चार्ट स्टैक करें
 state: स्थिति
 status: स्थिति
 status_at: स्थिति समय
 status_configuration: स्थिति सेटिंग
 step: चरण
-storage_export_type: Storage Export प्रकार
-stream_message_ack: Stream Message Ack
-string: String
-stroke_width_px: Stroke चौड़ाई (px)
+storage_export_type: स्टोरेज निर्यात प्रकार
+stream_message_ack: स्ट्रीम संदेश पुष्टि
+string: स्ट्रिंग
+stroke_width_px: स्ट्रोक चौड़ाई (px)
 sub_type: उप प्रकार
-subject: Subject
-subscribe: Subscribe
-swap_disabled: Swap अक्षम
-sync_interval: Sync अंतराल
-system: System
-system_message: System संदेश
-table_configuration: Table सेटिंग
-table_view: Table दृश्य
-target_directory: Target फ़ोल्डर
-target_location: Target स्थान
-task: Task
-task_details: Task विवरण
-tasks: Tasks
+subject: विषय
+subscribe: सदस्यता
+swap_disabled: स्वैप अक्षम
+sync_interval: सिंक अंतराल
+system: सिस्टम
+system_message: सिस्टम संदेश
+table_configuration: तालिका सेटिंग
+table_view: तालिका दृश्य
+target_directory: लक्ष्य फ़ोल्डर
+target_location: लक्ष्य स्थान
+task: कार्य
+task_details: कार्य विवरण
+tasks: कार्य
 telegram: Telegram
 temperature: तापमान
 text: पाठ
 the_open_source_controller: The Open Source Controller
 theme: थीम
-theme_color: Theme रंग
+theme_color: थीम रंग
 theme_dark: गहरा
 theme_light: हल्का
 theme_system: सिस्टम
 thickness: मोटाई
-threshold_mode: Threshold मोड
-thresholds: Threshold
-thresholds_color: Threshold रंग
+threshold_mode: सीमा मोड
+thresholds: सीमा
+thresholds_color: सीमा रंग
 time_hh_mm_ss: "समय (hh:mm:ss)"
-timeout: Timeout
-timestamp: Timestamp
-timestamp_key: Timestamp Key
+timeout: समय समाप्ति
+timestamp: समयचिह्न
+timestamp_key: समयचिह्न कुंजी
 title: शीर्षक
 to: प्राप्तकर्ता
-to_emails: प्राप्तकर्ता Email
-token: Token
-topology: Topology
-topic: Topic
-trait: Trait
-traits: Trait
+to_emails: प्राप्तकर्ता ईमेल
+token: टोकन
+topology: टोपोलॉजी
+topic: विषय
+trait: ट्रेट
+traits: ट्रेट
 transmit_pre_delay: भेजने से पहले विलंब
-trigger_on_event: Event पर Trigger करें
-'true': 'True'
+trigger_on_event: इवेंट पर ट्रिगर करें
+'true': 'सत्य'
 type: प्रकार
 unit: इकाई
 up: ऊपर
 update: अपडेट
-update_body: Body अपडेट करें
+update_body: बॉडी अपडेट करें
 update_data: डेटा अपडेट करें
-update_endpoint: Endpoint अपडेट करें
-update_firmware: Firmware अपडेट करें
-update_node: Node अपडेट करें
-update_post_run: Post Run अपडेट करें
-update_pre_run: Pre Run अपडेट करें
-update_query_parameters: Query Parameters अपडेट करें
-update_resource: Resource अपडेट करें
-update_script: Script अपडेट करें
-update_trait: Trait अपडेट करें
+update_endpoint: एंडपॉइंट अपडेट करें
+update_firmware: फर्मवेयर अपडेट करें
+update_node: नोड अपडेट करें
+update_post_run: पोस्ट रन अपडेट करें
+update_pre_run: प्री रन अपडेट करें
+update_query_parameters: क्वेरी पैरामीटर अपडेट करें
+update_resource: रिसोर्स अपडेट करें
+update_script: स्क्रिप्ट अपडेट करें
+update_trait: ट्रेट अपडेट करें
 update_value: मान अपडेट करें
 update_y_axis: Y अक्ष अपडेट करें
-upload: Upload
-upload_firmware: Firmware Upload
+upload: अपलोड
+upload_firmware: फर्मवेयर अपलोड
 url: URL
-use_global: Global उपयोग करें
-use_global_encryption_key: Global Encryption Key उपयोग करें
-use_global_password: Global पासवर्ड उपयोग करें
-use_global_style: Global Style उपयोग करें
-user_id: User ID
+use_global: वैश्विक उपयोग करें
+use_global_encryption_key: वैश्विक एन्क्रिप्शन कुंजी उपयोग करें
+use_global_password: वैश्विक पासवर्ड उपयोग करें
+use_global_style: वैश्विक शैली उपयोग करें
+user_id: उपयोगकर्ता आईडी
 username: उपयोगकर्ता नाम
 validate_time_everyday: प्रतिदिन समय सत्यापित करें
 validity: वैधता
 value: मान
-value_formatter: Value Formatter
-value_key: Value Key
-variable: Variable
-variable_name: Variable नाम
-variables: Variable
-version: Version
-virtual_assistant: Virtual Assistant
-virtual_assistant_details: Virtual Assistant विवरण
-virtual_assistants: Virtual Assistant
-virtual_device_details: Virtual Device विवरण
-virtual_devices: Virtual Device
-web_console: Web Console
-webhook: Webhook
-websocket_disconnected: Websocket डिस्कनेक्ट हो गया
+value_formatter: मान फ़ॉर्मेटर
+value_key: मान कुंजी
+variable: चर
+variable_name: चर नाम
+variables: चर
+version: संस्करण
+virtual_assistant: वर्चुअल असिस्टेंट
+virtual_assistant_details: वर्चुअल असिस्टेंट विवरण
+virtual_assistants: वर्चुअल असिस्टेंट
+virtual_device_details: वर्चुअल डिवाइस विवरण
+virtual_devices: वर्चुअल डिवाइस
+web_console: वेब कंसोल
+webhook: वेबहुक
+websocket_disconnected: वेबसॉकेट डिस्कनेक्ट हो गया
 welcome_to_mycontroller: MyController में आपका स्वागत है
 width_px: चौड़ाई (px)
 y_axis: Y अक्ष
@@ -1011,16 +1013,16 @@ y_axis_configuration: Y अक्ष सेटिंग
 yaml: YAML
 yaml_view: YAML दृश्य
 users: उपयोगकर्ता
-policies: Policies
+policies: नीतियाँ
 user_details: उपयोगकर्ता विवरण
-policy_details: Policy विवरण
-statement: Statement
-edit_statement: Statement संपादित करें
-statements: Statements
-effect: Effect
+policy_details: नीति विवरण
+statement: कथन
+edit_statement: कथन संपादित करें
+statements: कथन
+effect: प्रभाव
 layout: लेआउट
-layout_tree: Tree
-layout_force: Force
+layout_tree: वृक्ष
+layout_force: फ़ोर्स
 refresh: रिफ़्रेश
-include_child_nodes: Child Node शामिल करें
-child_nodes: Child Node
+include_child_nodes: चाइल्ड नोड शामिल करें
+child_nodes: चाइल्ड नोड

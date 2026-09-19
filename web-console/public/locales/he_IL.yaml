@@ -374,6 +374,8 @@ never_expire: ללא תפוגה
 new: חדש
 new_password: סיסמה חדשה
 no_change_since: ללא שינוי מאז
+a_few_seconds_ago: לפני כמה שניות
+in_a_few_seconds: בעוד כמה שניות
 no_dashboard_message: אין לוח מחוונים לטעינה.
 no_dashboard_title: אין לוחות מחוונים זמינים
 no_data: אין נתונים

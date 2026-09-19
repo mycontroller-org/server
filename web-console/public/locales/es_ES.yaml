@@ -372,6 +372,8 @@ never_expire: Nunca caduca
 new: Nuevo
 new_password: Nueva contraseña
 no_change_since: Sin cambios desde
+a_few_seconds_ago: hace unos segundos
+in_a_few_seconds: dentro de unos segundos
 no_dashboard_message: No hay ningún Dashboard disponible para cargar.
 no_dashboard_title: No hay Dashboards disponibles
 no_data: Sin datos

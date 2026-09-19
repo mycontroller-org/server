@@ -374,6 +374,8 @@ never_expire: 永不過期
 new: 新增
 new_password: 新密碼
 no_change_since: 此後無變更
+a_few_seconds_ago: 幾秒前
+in_a_few_seconds: 幾秒後
 no_dashboard_message: 沒有可載入的儀表板。
 no_dashboard_title: 沒有可用的儀表板
 no_data: 無資料

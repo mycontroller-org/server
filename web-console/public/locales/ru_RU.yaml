@@ -374,6 +374,8 @@ never_expire: Никогда не истекает
 new: Новый
 new_password: Новый пароль
 no_change_since: Без изменений с
+a_few_seconds_ago: несколько секунд назад
+in_a_few_seconds: через несколько секунд
 no_dashboard_message: Нет дашборда для загрузки.
 no_dashboard_title: Нет доступных дашбордов
 no_data: Нет данных

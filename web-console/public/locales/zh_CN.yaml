@@ -374,6 +374,8 @@ never_expire: 永不过期
 new: 新建
 new_password: 新密码
 no_change_since: 此后无变化
+a_few_seconds_ago: 几秒前
+in_a_few_seconds: 几秒后
 no_dashboard_message: 没有可加载的仪表盘。
 no_dashboard_title: 没有可用的仪表盘
 no_data: 无数据

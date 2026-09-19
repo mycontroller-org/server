@@ -11,12 +11,15 @@ This document is the standing guide for **web-console translations**: how they l
 | Locale YAML | `web-console/public/locales/<lng>.yaml` |
 | Language picker list | `web-console/src/i18n/languages.js` |
 | i18n init / HTTP load | `web-console/src/i18n/i18n.js` |
+| Relative time (fromNow) | `web-console/src/i18n/relativeTime.js` + `Components/Time/Time.jsx` |
 | Default language | `en_GB` (`DEFAULT_LANGUAGE` in `web-console/src/Constants/Common.js`) |
 | Runtime URL | `/locales/{{lng}}.yaml` (Vite public dir; packed into the server binary at release) |
 
 The UI uses `i18next` + `react-i18next` + `i18next-http-backend`. YAML is parsed with `js-yaml`. Detection order is Redux stored language, then the browser; unknown codes fall back to `en_GB`. Hyphens are normalized to underscores (`en-GB` → `en_GB`).
 
-Every registered language **must** have a YAML file with the **same keys** as `en_GB.yaml`. As of this writing that is **982 keys** (flat count, including nested `dialog.*`, `helper_text.*`, `error.*`, `opts.*`).
+Relative times such as “5 minutes ago” are **not** YAML keys, except the under-45-seconds bucket (`a_few_seconds_ago` / `in_a_few_seconds`). `LastSeen` uses `Intl.RelativeTimeFormat` (`web-console/src/i18n/relativeTime.js`) with the console language (`ta_IN` → `ta-IN`) and the same coarse buckets as the old `fromNow()` (not “12 seconds ago”). Do not use moment locales for this.
+
+Every registered language **must** have a YAML file with the **same keys** as `en_GB.yaml`. As of this writing that is **986 keys** (flat count, including nested `dialog.*`, `helper_text.*`, `error.*`, `opts.*`).
 
 ### Current languages
 
@@ -78,7 +81,7 @@ Leave these **exactly** as in English:
 | Booleans | `'true'` / `'false'` → `True` / `False` |
 | HTTP methods | `opts.http_method.*` → `GET` `POST` `PUT` `DELETE` |
 | Protocols / brands | MQTT, HTTP, Ethernet, Serial, ESPHome, Tasmota, MySensors, Alexa, … |
-| Chart interpolation ids | `Basis`, `Cardinal`, `CatmullRom`, `Linear`, `StepAfter`, … |
+| Chart interpolation ids | English locales keep `Basis`, `Cardinal`, `CatmullRom`, `Linear`, `StepAfter`, …. Indic locales use native-script loanwords (Tamil பேசிஸ், லினியர், நேச்சுரல்), not a Latin mix in the same list. |
 | Light codes | `CW WW`, `RGB`, `RGB CW`, `RGB CW WW` |
 
 Do **not** swap ON and OFF. They are status values, not prose.
@@ -98,13 +101,32 @@ Goals: **easy**, **meaningful**, **professional**.
 ### Two families
 
 **Indic (`ta_IN`, `hi_IN`, `kn_IN`, `ml_IN`, `te_IN`)**  
-Everyday verbs stay native. Product / IoT names stay **ASCII English**:
+Everyday verbs stay native. Named IoT resources use **native-script loanwords**, not Latin English and not calques:
 
-`Field`, `Node`, `Gateway`, `Source`, `Handler`, `Payload`, `Dashboard`, `Backup`, `Restore`, `Firmware`, `Widget`, `Chart`, `Task`, `Policy`, `Schedule`, `Statement`, `Resource`, `Token`, `Login`, `Disk`, `Panel`, `Filter`, `Event`, `Script`, `Server`, `Upload`, `Reboot`, `Reset`.
+| English | ta | hi | kn | ml | te |
+| --- | --- | --- | --- | --- | --- |
+| Gateway | கேட்வே | गेटवे | ಗೇಟ್‌ವೇ | ഗേറ്റ്‌വേ | గేట్‌వే |
+| Node | நோடு | नोड | ನೋಡ್ | നോഡ് | నోడ్ |
+| Source | சோர்ஸ் | सोर्स | ಸೋರ್ಸ್ | സോഴ്‌സ് | సోర్స్ |
+| Field | ஃபீல்டு | फील्ड | ಫೀಲ್ಡ್ | ഫീൽഡ് | ఫీల్డ్ |
+| Firmware | ஃபார்ம்வேர் | फर्मवेयर | ಫರ್ಮ್‌ವೇರ್ | ഫേംവെയർ | ఫర్మ్‌వేర్ |
+| Data repository | டேட்டா ரிப்பாசிட்டரி | डेटा रिपॉजिटरी | ಡೇಟಾ ರಿಪಾಸಿಟರಿ | ഡാറ്റ റിപ്പോസിറ്ററി | డేటా రిపాజిటరీ |
+| Resource | ரிசோர்ஸ் | रिसोर्स | ರಿಸೋರ್ಸ್ | റിസോഴ്‌സ് | రిసోర్స్ |
+| Virtual device | விர்ச்சுவல் டிவைஸ் | वर्चुअल डिवाइस | ವರ್ಚುವಲ್ ಡಿವೈಸ್ | വെർച്വൽ ഡിവൈസ് | వర్చువల్ డివైస్ |
+| Virtual assistant | விர்ச்சுவல் அசிஸ்டண்ட் | वर्चुअल असिस्टेंट | ವರ್ಚುವಲ್ ಅಸಿಸ್ಟೆಂಟ್ | വെർച്വൽ അസിസ്റ്റന്റ് | వర్చువల్ అసిస్టెంట్ |
+| Payload | பேலோடு | पेलोड | ಪೇಲೋಡ್ | പേലോഡ് | పేలోడ్ |
+| Forward payload | ஃபார்வர்ட் பேலோடு | फ़ॉरवर्ड पेलोड | ಫಾರ್ವರ್ಡ್ ಪೇಲೋಡ್ | ഫോർവേഡ് പേലോഡ് | ఫార్వర్డ్ పేలోడ్ |
+| Quick ID | குவிக் ஐடி | क्विक आईडी | ಕ್ವಿಕ್ ಐಡಿ | ക്വിക്ക് ഐഡി | క్విక్ ఐడి |
+| Protocol | புரோட்டோக்கால் | प्रोटोकॉल | ಪ್ರೋಟೋಕಾಲ್ | പ്രോട്ടോക്കോൾ | ప్రోటోకాల్ |
+| Label | லேபிள் | लेबल | ಲೇಬಲ್ | ലേബൽ | లేబుల్ |
+| Library | லைப்ரரி | लाइब्रेरी | ಲೈಬ್ರರಿ | ലൈബ്രറി | లైబ్రరీ |
+| Variable | வேரியபிள் | चर | ವೇರಿಯಬಲ್ | വേരിയബിൾ | వేరియబుల్ |
 
-Example: Tamil `Field சேர்`, Hindi `Field जोड़ें`. Do not transliterate those names (not `फ़ील्ड`, `நோடு`, `గేట్‌వే`).
+Do not use calques such as Tamil நுழைவாயில் / முனை / அடையாளம் / நெறிமுறை / குறிச்சொல் / நூலகம் for those names. Do not write Latin `Gateway` inside a Tamil sentence. Keep product names and protocol abbreviations Latin (MyController, MQTT, HTTP, JSON, API).
 
-List titles: mark plurality (`Fields`, `Policy-கள்`, `Handlerകൾ`). Do not reuse the singular as the list title.
+Plurals attach without a hyphen (`கேட்வேகள்`, not `கேட்வே-கள்`). Kannada/Telugu use ZWNJ before the suffix (`ನೋಡ್‌ಗಳು`, `నోడ్‌లు`); Malayalam uses `-ുകൾ` (`നോഡുകൾ`). Hindi often keeps the same form for singular and plural loanwords (`गेटवे`). Do not reuse a clearly singular form as a list title in ta/kn/ml/te.
+
+Other UI verbs (Save, Backup, Restore, Upload, Reboot, Reset) stay native and distinct.
 
 **European, Hebrew, Chinese**  
 Use the established professional IT term in that language. Keep a loanword when it is clearer than a coined calque (`Payload`, `Gateway`, `Handler`, `Dashboard`, `Widget`, `Firmware`, `Token` are often better than *carga útil*, *Pasarela*, *承載*, *מטען*).

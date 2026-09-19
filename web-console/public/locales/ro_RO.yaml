@@ -372,6 +372,8 @@ never_expire: Nu expiră niciodată
 new: Nou
 new_password: Parolă nouă
 no_change_since: Nicio modificare de la
+a_few_seconds_ago: câteva secunde în urmă
+in_a_few_seconds: în câteva secunde
 no_dashboard_message: Nu există niciun dashboard de încărcat.
 no_dashboard_title: Nu există dashboarduri
 no_data: Fără date
