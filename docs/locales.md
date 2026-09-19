@@ -11,10 +11,13 @@ This document is the standing guide for **web-console translations**: how they l
 | Locale YAML | `web-console/public/locales/<lng>.yaml` |
 | Language picker list | `web-console/src/i18n/languages.js` |
 | i18n init / HTTP load | `web-console/src/i18n/i18n.js` |
+| Relative time (fromNow) | `web-console/src/i18n/momentLocale.js` + `Components/Time/Time.jsx` |
 | Default language | `en_GB` (`DEFAULT_LANGUAGE` in `web-console/src/Constants/Common.js`) |
 | Runtime URL | `/locales/{{lng}}.yaml` (Vite public dir; packed into the server binary at release) |
 
 The UI uses `i18next` + `react-i18next` + `i18next-http-backend`. YAML is parsed with `js-yaml`. Detection order is Redux stored language, then the browser; unknown codes fall back to `en_GB`. Hyphens are normalized to underscores (`en-GB` → `en_GB`).
+
+Relative times such as “5 minutes ago” are **not** YAML keys. `LastSeen` / `fromNow()` use **moment.js locales** (`web-console/src/i18n/momentLocale.js`), switched when the console language changes. Tamil/Hindi/Kannada keep ASCII digits (`5 நிமிடங்கள் முன்`, not `௫`).
 
 Every registered language **must** have a YAML file with the **same keys** as `en_GB.yaml`. As of this writing that is **984 keys** (flat count, including nested `dialog.*`, `helper_text.*`, `error.*`, `opts.*`).
 

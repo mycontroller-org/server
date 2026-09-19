@@ -6,6 +6,7 @@ import { initReactI18next } from "react-i18next"
 import { DEFAULT_LANGUAGE } from "../Constants/Common"
 import { languages } from "./languages"
 import { reduxLanguageDetector } from "./languageDetector"
+import { applyMomentLocale } from "./momentLocale"
 
 const supportedLngs = languages.map((l) => l.lng)
 
@@ -24,6 +25,13 @@ const normalizeLng = (lng) => {
 
 const languageDetector = new LanguageDetector()
 languageDetector.addDetector(reduxLanguageDetector)
+
+i18n.on("languageChanged", (lng) => {
+  applyMomentLocale(lng)
+})
+i18n.on("initialized", () => {
+  applyMomentLocale(i18n.resolvedLanguage || i18n.language)
+})
 
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next
