@@ -11,15 +11,15 @@ This document is the standing guide for **web-console translations**: how they l
 | Locale YAML | `web-console/public/locales/<lng>.yaml` |
 | Language picker list | `web-console/src/i18n/languages.js` |
 | i18n init / HTTP load | `web-console/src/i18n/i18n.js` |
-| Relative time (fromNow) | `web-console/src/i18n/momentLocale.js` + `Components/Time/Time.jsx` |
+| Relative time (fromNow) | `web-console/src/i18n/relativeTime.js` + `Components/Time/Time.jsx` |
 | Default language | `en_GB` (`DEFAULT_LANGUAGE` in `web-console/src/Constants/Common.js`) |
 | Runtime URL | `/locales/{{lng}}.yaml` (Vite public dir; packed into the server binary at release) |
 
 The UI uses `i18next` + `react-i18next` + `i18next-http-backend`. YAML is parsed with `js-yaml`. Detection order is Redux stored language, then the browser; unknown codes fall back to `en_GB`. Hyphens are normalized to underscores (`en-GB` → `en_GB`).
 
-Relative times such as “5 minutes ago” are **not** YAML keys. `LastSeen` / `fromNow()` use **moment.js locales** (`web-console/src/i18n/momentLocale.js`), switched when the console language changes. Tamil/Hindi/Kannada keep ASCII digits (`5 நிமிடங்கள் முன்`, not `௫`).
+Relative times such as “5 minutes ago” are **not** YAML keys, except the under-45-seconds bucket (`a_few_seconds_ago` / `in_a_few_seconds`). `LastSeen` uses `Intl.RelativeTimeFormat` (`web-console/src/i18n/relativeTime.js`) with the console language (`ta_IN` → `ta-IN`) and the same coarse buckets as the old `fromNow()` (not “12 seconds ago”). Do not use moment locales for this.
 
-Every registered language **must** have a YAML file with the **same keys** as `en_GB.yaml`. As of this writing that is **984 keys** (flat count, including nested `dialog.*`, `helper_text.*`, `error.*`, `opts.*`).
+Every registered language **must** have a YAML file with the **same keys** as `en_GB.yaml`. As of this writing that is **986 keys** (flat count, including nested `dialog.*`, `helper_text.*`, `error.*`, `opts.*`).
 
 ### Current languages
 
@@ -81,7 +81,7 @@ Leave these **exactly** as in English:
 | Booleans | `'true'` / `'false'` → `True` / `False` |
 | HTTP methods | `opts.http_method.*` → `GET` `POST` `PUT` `DELETE` |
 | Protocols / brands | MQTT, HTTP, Ethernet, Serial, ESPHome, Tasmota, MySensors, Alexa, … |
-| Chart interpolation ids | `Basis`, `Cardinal`, `CatmullRom`, `Linear`, `StepAfter`, … |
+| Chart interpolation ids | English locales keep `Basis`, `Cardinal`, `CatmullRom`, `Linear`, `StepAfter`, …. Indic locales use native-script loanwords (Tamil பேசிஸ், லினியர், நேச்சுரல்), not a Latin mix in the same list. |
 | Light codes | `CW WW`, `RGB`, `RGB CW`, `RGB CW WW` |
 
 Do **not** swap ON and OFF. They are status values, not prose.
@@ -120,6 +120,7 @@ Everyday verbs stay native. Named IoT resources use **native-script loanwords**,
 | Protocol | புரோட்டோக்கால் | प्रोटोकॉल | ಪ್ರೋಟೋಕಾಲ್ | പ്രോട്ടോക്കോൾ | ప్రోటోకాల్ |
 | Label | லேபிள் | लेबल | ಲೇಬಲ್ | ലേബൽ | లేబుల్ |
 | Library | லைப்ரரி | लाइब्रेरी | ಲೈಬ್ರರಿ | ലൈബ്രറി | లైబ్రరీ |
+| Variable | வேரியபிள் | चर | ವೇರಿಯಬಲ್ | വേരിയബിൾ | వేరియబుల్ |
 
 Do not use calques such as Tamil நுழைவாயில் / முனை / அடையாளம் / நெறிமுறை / குறிச்சொல் / நூலகம் for those names. Do not write Latin `Gateway` inside a Tamil sentence. Keep product names and protocol abbreviations Latin (MyController, MQTT, HTTP, JSON, API).
 

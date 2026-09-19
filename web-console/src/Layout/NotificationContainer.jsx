@@ -16,11 +16,10 @@ import {
   Title,
 } from "@patternfly/react-core"
 import { SearchIcon } from "@patternfly/react-icons"
-import moment from "moment"
 import React from "react"
 import { withTranslation } from "react-i18next"
 import { connect } from "react-redux"
-import { toMomentLocale } from "../i18n/momentLocale"
+import { formatFromNow } from "../i18n/relativeTime"
 import {
   notificationClearAll,
   notificationDrawerToggle,
@@ -54,7 +53,6 @@ class NotificationContainer extends React.Component {
     if (this.props.items.length > 0) {
       for (let index = this.props.items.length - 1; index >= 0; index--) {
         const a = this.props.items[index]
-        const time = moment(a.timestamp).locale(toMomentLocale(this.props.i18n.language))
         elements.push(
           <NotificationDrawerListItem
             key={a.id}
@@ -63,7 +61,7 @@ class NotificationContainer extends React.Component {
             onClick={a.unread ? () => this.props.markAsRead(a.id) : () => {}}
           >
             <NotificationDrawerListItemHeader variant={a.type} title={a.title} />
-            <NotificationDrawerListItemBody timestamp={time.fromNow()}>
+            <NotificationDrawerListItemBody timestamp={formatFromNow(a.timestamp, this.props.i18n.language, t)}>
               {a.description.map((txt, index) => {
                 return <p key={index}>{txt}</p>
               })}

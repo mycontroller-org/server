@@ -374,6 +374,8 @@ never_expire: Läuft nie ab
 new: Neu
 new_password: Neues Passwort
 no_change_since: Unverändert seit
+a_few_seconds_ago: vor ein paar Sekunden
+in_a_few_seconds: in ein paar Sekunden
 no_dashboard_message: Es ist kein Dashboard zum Laden vorhanden.
 no_dashboard_title: Keine Dashboards verfügbar
 no_data: Keine Daten
@@ -425,10 +427,10 @@ opts:
     label_linear: Linear
     label_monotone_x: MonotoneX
     label_monotone_y: MonotoneY
-    label_natural: Natürlich
-    label_step: Schritt
-    label_step_after: Schritt danach
-    label_step_before: Schritt davor
+    label_natural: Natural
+    label_step: Step
+    label_step_after: StepAfter
+    label_step_before: StepBefore
   chart_type:
     desc_area_chart: Flächendiagramm
     desc_bar_chart: Balkendiagramm

@@ -372,6 +372,8 @@ never_expire: గడువు ముగియదు
 new: కొత్తది
 new_password: కొత్త పాస్‌వర్డ్
 no_change_since: మార్పు లేని సమయం
+a_few_seconds_ago: కొన్ని క్షణాలు క్రితం
+in_a_few_seconds: కొన్ని క్షణాల్లో
 no_dashboard_message: లోడ్ చేయడానికి డాష్‌బోర్డ్ లేదు.
 no_dashboard_title: డాష్‌బోర్డ్ లేదు
 no_data: డేటా లేదు
@@ -419,14 +421,14 @@ opts:
   chart_interpolation:
     label_basis: బేసిస్
     label_cardinal: కార్డినల్
-    label_catmull_rom: కాట్‌ముల్ రామ్
-    label_linear: Linear
-    label_monotone_x: MonotoneX
-    label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_catmull_rom: కాట్‌ముల్‌రామ్
+    label_linear: లీనియర్
+    label_monotone_x: మోనోటోన్‌ఎక్స్
+    label_monotone_y: మోనోటోన్‌వై
+    label_natural: నేచురల్
+    label_step: స్టెప్
+    label_step_after: స్టెప్‌ఆఫ్టర్
+    label_step_before: స్టెప్‌బిఫోర్
   chart_type:
     desc_area_chart: ఏరియా చార్ట్
     desc_bar_chart: బార్ చార్ట్

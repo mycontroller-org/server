@@ -374,6 +374,8 @@ never_expire: ללא תפוגה
 new: חדש
 new_password: סיסמה חדשה
 no_change_since: ללא שינוי מאז
+a_few_seconds_ago: לפני כמה שניות
+in_a_few_seconds: בעוד כמה שניות
 no_dashboard_message: אין לוח מחוונים לטעינה.
 no_dashboard_title: אין לוחות מחוונים זמינים
 no_data: אין נתונים
@@ -422,13 +424,13 @@ opts:
     label_basis: Basis
     label_cardinal: Cardinal
     label_catmull_rom: CatmullRom
-    label_linear: ליניארי
+    label_linear: Linear
     label_monotone_x: MonotoneX
     label_monotone_y: MonotoneY
-    label_natural: טבעי
-    label_step: צעד
-    label_step_after: צעד אחרי
-    label_step_before: צעד לפני
+    label_natural: Natural
+    label_step: Step
+    label_step_after: StepAfter
+    label_step_before: StepBefore
   chart_type:
     desc_area_chart: תרשים שטח
     desc_bar_chart: תרשים עמודות

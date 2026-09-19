@@ -2,7 +2,8 @@ import { Tooltip } from "@patternfly/react-core"
 import moment from "moment"
 import React from "react"
 import { useTranslation } from "react-i18next"
-import { toMomentLocale } from "../../i18n/momentLocale"
+import i18nClient from "../../i18n/i18n"
+import { formatAbsolute, formatFromNow } from "../../i18n/relativeTime"
 
 const FROM_NOW_INTERVAL_MS = 30000
 const tickListeners = new Set()
@@ -25,7 +26,7 @@ const subscribeFromNowTick = (fn) => {
 }
 
 export const LastSeen = ({ date = "", tooltipPosition = "left" }) => {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [, setTick] = React.useState(0)
   const hasDate = date !== "" && date !== null
   React.useEffect(() => {
@@ -38,13 +39,14 @@ export const LastSeen = ({ date = "", tooltipPosition = "left" }) => {
   if (!hasDate) {
     return <span></span>
   }
-  const lastSeen = moment(date).locale(toMomentLocale(i18n.language))
+  const lastSeen = moment(date)
   const disabled = lastSeen.year() <= 1 // set "-" of zero year
-  const value = disabled ? <span>-</span> : <span>{lastSeen.fromNow()}</span>
+  const lng = i18n.language
+  const value = disabled ? <span>-</span> : <span>{formatFromNow(lastSeen.toDate(), lng, t)}</span>
   return (
     <Tooltip
       position={tooltipPosition}
-      content={lastSeen.format("DD-MMM-YYYY, hh:mm:ss A")}
+      content={formatAbsolute(lastSeen.toDate(), lng)}
       disabled={disabled}
     >
       {value}
@@ -55,5 +57,5 @@ export const LastSeen = ({ date = "", tooltipPosition = "left" }) => {
 export const getLastSeen = (date) => {
   const lastSeen = moment(date)
   const disabled = lastSeen.year() <= 1 // set "-" of zero year
-  return disabled ? "-" : lastSeen.fromNow()
+  return disabled ? "-" : formatFromNow(lastSeen.toDate(), i18nClient.language, i18nClient.t.bind(i18nClient))
 }

@@ -76,7 +76,7 @@ current_password: தற்போதைய கடவுச்சொல்
 cursor_tooltip: கர்சர் உதவிக்குறிப்பு
 custom_data: தனிப்பயன் தரவு
 custom_mapping: தனிப்பயன் மேப்பிங்
-custom_variables: தனிப்பயன் மாறிகள்
+custom_variables: தனிப்பயன் வேரியபிள்கள்
 dampening: தணிப்பு
 dashboard: டாஷ்போர்டு
 data: தரவு
@@ -374,6 +374,8 @@ never_expire: காலாவதியாகாது
 new: புதிய
 new_password: புதிய கடவுச்சொல்
 no_change_since: மாற்றமின்றி உள்ளது
+a_few_seconds_ago: ஒரு சில விநாடிகள் முன்
+in_a_few_seconds: ஒரு சில விநாடிகளில்
 no_dashboard_message: ஏற்றுவதற்கு டாஷ்போர்டு இல்லை.
 no_dashboard_title: டாஷ்போர்டு இல்லை
 no_data: தரவு இல்லை
@@ -419,16 +421,16 @@ opts:
     label_mixed_chart: கலப்பு விளக்கப்படம்
     label_pie_chart: பை விளக்கப்படம்
   chart_interpolation:
-    label_basis: அடிப்படை
+    label_basis: பேசிஸ்
     label_cardinal: கார்டினல்
-    label_catmull_rom: கேட்முல் ராம்
-    label_linear: Linear
-    label_monotone_x: MonotoneX
-    label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_catmull_rom: கேட்முல்ராம்
+    label_linear: லினியர்
+    label_monotone_x: மோனோடோன்எக்ஸ்
+    label_monotone_y: மோனோடோன்ஒய்
+    label_natural: நேச்சுரல்
+    label_step: ஸ்டெப்
+    label_step_after: ஸ்டெப்பாஃப்டர்
+    label_step_before: ஸ்டெப்பீஃபோர்
   chart_type:
     desc_area_chart: பரப்பு விளக்கப்படம்
     desc_bar_chart: பட்டை விளக்கப்படம்
@@ -996,9 +998,9 @@ validity: செல்லும் காலம்
 value: மதிப்பு
 value_formatter: மதிப்பு வடிவமைப்பான்
 value_key: மதிப்பு விசை
-variable: மாறி
-variable_name: மாறி பெயர்
-variables: மாறிகள்
+variable: வேரியபிள்
+variable_name: வேரியபிள் பெயர்
+variables: வேரியபிள்கள்
 version: பதிப்பு
 virtual_assistant: விர்ச்சுவல் அசிஸ்டண்ட்
 virtual_assistant_details: விர்ச்சுவல் அசிஸ்டண்ட் விவரம்

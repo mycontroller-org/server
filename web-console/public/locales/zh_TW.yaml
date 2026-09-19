@@ -374,6 +374,8 @@ never_expire: 永不過期
 new: 新增
 new_password: 新密碼
 no_change_since: 此後無變更
+a_few_seconds_ago: 幾秒前
+in_a_few_seconds: 幾秒後
 no_dashboard_message: 沒有可載入的儀表板。
 no_dashboard_title: 沒有可用的儀表板
 no_data: 無資料
@@ -422,13 +424,13 @@ opts:
     label_basis: Basis
     label_cardinal: Cardinal
     label_catmull_rom: CatmullRom
-    label_linear: 線性
+    label_linear: Linear
     label_monotone_x: MonotoneX
     label_monotone_y: MonotoneY
-    label_natural: 自然
-    label_step: 階梯
-    label_step_after: 後階梯
-    label_step_before: 前階梯
+    label_natural: Natural
+    label_step: Step
+    label_step_after: StepAfter
+    label_step_before: StepBefore
   chart_type:
     desc_area_chart: 面積圖
     desc_bar_chart: 長條圖

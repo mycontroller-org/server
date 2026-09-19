@@ -372,6 +372,8 @@ never_expire: കാലഹരണപ്പെടില്ല
 new: പുതിയത്
 new_password: പുതിയ പാസ്‌വേഡ്
 no_change_since: മാറ്റമില്ലാത്ത സമയം
+a_few_seconds_ago: അൽപ നിമിഷങ്ങൾ മുൻപ്
+in_a_few_seconds: അൽപ നിമിഷങ്ങൾക്കുള്ളിൽ
 no_dashboard_message: ലോഡ് ചെയ്യാൻ ഡാഷ്‌ബോർഡ് ഇല്ല.
 no_dashboard_title: ഡാഷ്‌ബോർഡ് ഇല്ല
 no_data: ഡാറ്റയില്ല
@@ -419,14 +421,14 @@ opts:
   chart_interpolation:
     label_basis: ബേസിസ്
     label_cardinal: കാർഡിനൽ
-    label_catmull_rom: കാറ്റ്മുൾ റോം
-    label_linear: Linear
-    label_monotone_x: MonotoneX
-    label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_catmull_rom: കാറ്റ്മുൾറോം
+    label_linear: ലീനിയർ
+    label_monotone_x: മോണോടോൺഎക്സ്
+    label_monotone_y: മോണോടോൺവൈ
+    label_natural: നാച്ചുറൽ
+    label_step: സ്റ്റെപ്പ്
+    label_step_after: സ്റ്റെപ്പ്ആഫ്റ്റർ
+    label_step_before: സ്റ്റെപ്പ്ബിഫോർ
   chart_type:
     desc_area_chart: ഏരിയ ചാർട്ട്
     desc_bar_chart: ബാർ ചാർട്ട്

@@ -372,6 +372,8 @@ never_expire: ಅವಧಿ ಮುಗಿಯುವುದಿಲ್ಲ
 new: ಹೊಸ
 new_password: ಹೊಸ ಪಾಸ್‌ವರ್ಡ್
 no_change_since: ಬದಲಾವಣೆ ಇಲ್ಲದ ಅವಧಿ
+a_few_seconds_ago: ಕೆಲವು ಕ್ಷಣಗಳು ಹಿಂದೆ
+in_a_few_seconds: ಕೆಲವು ಕ್ಷಣಗಳಲ್ಲಿ
 no_dashboard_message: ಲೋಡ್ ಮಾಡಲು ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಇಲ್ಲ.
 no_dashboard_title: ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಇಲ್ಲ
 no_data: ಡೇಟಾ ಇಲ್ಲ
@@ -419,14 +421,14 @@ opts:
   chart_interpolation:
     label_basis: ಬೇಸಿಸ್
     label_cardinal: ಕಾರ್ಡಿನಲ್
-    label_catmull_rom: ಕ್ಯಾಟ್ಮುಲ್ ರಾಮ್
-    label_linear: Linear
-    label_monotone_x: MonotoneX
-    label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_catmull_rom: ಕ್ಯಾಟ್ಮುಲ್‌ರಾಮ್
+    label_linear: ಲೀನಿಯರ್
+    label_monotone_x: ಮಾನೋಟೋನ್‌ಎಕ್ಸ್
+    label_monotone_y: ಮಾನೋಟೋನ್‌ವೈ
+    label_natural: ನ್ಯಾಚುರಲ್
+    label_step: ಸ್ಟೆಪ್
+    label_step_after: ಸ್ಟೆಪ್‌ಆಫ್ಟರ್
+    label_step_before: ಸ್ಟೆಪ್‌ಬಿಫೋರ್
   chart_type:
     desc_area_chart: ಪ್ರದೇಶ ಚಾರ್ಟ್
     desc_bar_chart: ಬಾರ್ ಚಾರ್ಟ್

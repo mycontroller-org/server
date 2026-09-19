@@ -372,6 +372,8 @@ never_expire: कभी समाप्त न हो
 new: नया
 new_password: नया पासवर्ड
 no_change_since: तब से कोई परिवर्तन नहीं
+a_few_seconds_ago: कुछ ही क्षण पहले
+in_a_few_seconds: कुछ ही क्षण में
 no_dashboard_message: लोड करने के लिए कोई डैशबोर्ड उपलब्ध नहीं है।
 no_dashboard_title: कोई डैशबोर्ड उपलब्ध नहीं
 no_data: कोई डेटा नहीं
@@ -419,14 +421,14 @@ opts:
   chart_interpolation:
     label_basis: बेसिस
     label_cardinal: कार्डिनल
-    label_catmull_rom: कैटमुल रॉम
-    label_linear: Linear
-    label_monotone_x: MonotoneX
-    label_monotone_y: MonotoneY
-    label_natural: Natural
-    label_step: Step
-    label_step_after: StepAfter
-    label_step_before: StepBefore
+    label_catmull_rom: कैटमुलरॉम
+    label_linear: लीनियर
+    label_monotone_x: मोनोटोनएक्स
+    label_monotone_y: मोनोटोनवाई
+    label_natural: नेचुरल
+    label_step: स्टेप
+    label_step_after: स्टेपआफ्टर
+    label_step_before: स्टेपबिफोर
   chart_type:
     desc_area_chart: फील्ड चार्ट
     desc_bar_chart: बार चार्ट
