@@ -5,7 +5,7 @@
   /* background-color: #f2f7ff; */
   .key {
     display: inline-block;
-    color: #0303038c;
+    color: var(--pf-global--Color--200);
     min-width: 150px;
     padding-right: 5px;
   }
@@ -42,6 +42,7 @@
     --pf-c-label--BorderRadius: 0 2px 2px 0;
     --pf-c-label__content--before--BorderColor: #bee1f4;
     --pf-c-label--BackgroundColor: #bee1f4;
+    --pf-c-label__content--Color: #00659c;
     color: #00659c;
     padding-top: 4px;
     padding-bottom: 4px;
@@ -50,12 +51,21 @@
 
   .label-value {
     --pf-c-label--BorderRadius: 0 2px 2px 0;
-    --pf-c-label__content--before--BorderColor: #7dc3e8;
-    --pf-c-label--BackgroundColor: #7dc3e8;
+    --pf-c-label__content--before--BorderColor: #0066cc;
+    --pf-c-label--BackgroundColor: #0066cc;
+    --pf-c-label__content--Color: #fff;
     color: #fff;
     padding-top: 4px;
 
     padding-bottom: 4px;
     margin-left: 0;
+  }
+
+  .label-key .pf-c-label__content {
+    color: #00659c;
+  }
+
+  .label-value .pf-c-label__content {
+    color: #fff;
   }
 }

@@ -91,8 +91,52 @@ Removes the gray color of bottom page
   margin-top: 3px;
 }
 
-.language_icon {
-  padding: 1px;
+.mc-header-tools {
+  align-items: center;
+  gap: 10px;
+}
+
+.mc-header-tools .pf-c-page__header-tools-item {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.mc-header-tools .pf-c-dropdown__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  line-height: 1;
+  color: #fff;
+}
+
+.header_icon_toggle {
+  padding: 4px 6px;
+}
+
+.header_icon_toggle .pf-c-dropdown__toggle-icon,
+.header_icon_toggle .pf-c-dropdown__toggle-image {
+  margin: 0;
+}
+
+.language_toggle {
+  padding: 0 6px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.language_toggle_current {
+  white-space: nowrap;
+}
+
+.language_dropdown .pf-c-dropdown__menu {
+  min-width: 0;
+  width: max-content;
+  max-width: 14rem;
+  background-color: #fff;
 }
 
 .language_item {
@@ -101,8 +145,95 @@ Removes the gray color of bottom page
   padding-top: 5px;
   padding-bottom: 5px;
 }
-.language_selected {
-  background-color: var(--pf-global--palette--blue-100);
+
+.language_item.pf-c-dropdown__menu-item {
+  color: #151515;
+}
+
+.language_item_row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.language_item .language_flag {
+  margin-right: 8px;
+}
+
+.language_item .language_title {
+  flex: 1 1 auto;
+  color: #151515;
+}
+
+.language_item .language_code {
+  margin-left: 12px;
+  color: #6a6e73;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.language_selected,
+.language_selected.pf-c-dropdown__menu-item {
+  background-color: #06c;
+  color: #fff;
+}
+
+.language_selected .language_title {
+  color: #fff;
+}
+
+.language_selected .language_code {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+:root:where(.pf-theme-dark) {
+  .language_dropdown .pf-c-dropdown__menu {
+    background-color: #1b1d21;
+  }
+
+  .language_item.pf-c-dropdown__menu-item {
+    color: #e0e0e0;
+  }
+
+  .language_item .language_title {
+    color: #e0e0e0;
+  }
+
+  .language_item .language_code {
+    color: #aaabac;
+  }
+
+  .language_selected,
+  .language_selected.pf-c-dropdown__menu-item {
+    background-color: #06c;
+    color: #fff;
+  }
+}
+
+.theme-toggle {
+  margin-right: 0;
+  --pf-c-toggle-group__button--PaddingTop: 0.25rem;
+  --pf-c-toggle-group__button--PaddingBottom: 0.25rem;
+  --pf-c-toggle-group__button--PaddingLeft: 0.4rem;
+  --pf-c-toggle-group__button--PaddingRight: 0.4rem;
+  --pf-c-toggle-group__button--Color: #fff;
+  --pf-c-toggle-group__button--BackgroundColor: transparent;
+  --pf-c-toggle-group__button--before--BorderColor: rgba(255, 255, 255, 0.35);
+  --pf-c-toggle-group__button--hover--BackgroundColor: rgba(255, 255, 255, 0.12);
+  --pf-c-toggle-group__button--hover--before--BorderColor: rgba(255, 255, 255, 0.5);
+  --pf-c-toggle-group__button--focus--BackgroundColor: rgba(255, 255, 255, 0.12);
+  --pf-c-toggle-group__button--focus--before--BorderColor: rgba(255, 255, 255, 0.5);
+  --pf-c-toggle-group__button--m-selected--BackgroundColor: #06c;
+  --pf-c-toggle-group__button--m-selected--before--BorderColor: #06c;
+}
+
+.theme-toggle .pf-c-toggle-group__button {
+  color: #fff;
+}
+
+.theme-toggle .pf-c-toggle-group__button.pf-m-selected {
+  color: #fff;
+  background-color: #06c;
 }
 
 .mc-badge-experimental {

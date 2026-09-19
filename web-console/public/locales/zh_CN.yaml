@@ -941,7 +941,11 @@ telegram: Telegram
 temperature: 温度
 text: 文本
 the_open_source_controller: The Open Source Controller
+theme: 主题
 theme_color: 主题颜色
+theme_dark: 深色
+theme_light: 浅色
+theme_system: 系统
 thickness: 厚度
 threshold_mode: 阈值模式
 thresholds: 阈值

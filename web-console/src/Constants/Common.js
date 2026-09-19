@@ -23,7 +23,34 @@ export const URL_SOURCE_CODE = "https://github.com/mycontroller-org/server"
 
 export const DEFAULT_LANGUAGE = "en_GB"
 
-export const DEFAULT_THEME = "default"
+export const THEME_LIGHT = "light"
+export const THEME_DARK = "dark"
+export const THEME_SYSTEM = "system"
+export const DEFAULT_THEME = THEME_SYSTEM
+
+export const THEME_OPTIONS = [
+  { value: THEME_SYSTEM, label: "theme_system" },
+  { value: THEME_LIGHT, label: "theme_light" },
+  { value: THEME_DARK, label: "theme_dark" },
+]
+
+export const normalizeTheme = (value) => {
+  if (value === THEME_LIGHT || value === THEME_DARK || value === THEME_SYSTEM) {
+    return value
+  }
+  return THEME_SYSTEM
+}
+
+export const resolveTheme = (selection) => {
+  const theme = normalizeTheme(selection)
+  if (theme !== THEME_SYSTEM) {
+    return theme
+  }
+  if (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    return THEME_DARK
+  }
+  return THEME_LIGHT
+}
 
 export const SECURE_SHARE_PREFIX = "/secure_share/"
 export const INSECURE_SHARE_PREFIX = "/insecure_share/"

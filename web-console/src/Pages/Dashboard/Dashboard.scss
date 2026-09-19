@@ -1,10 +1,10 @@
 .react-grid-layout {
-  background: var(--mc-dashboard-background-color);
+  background: none;
 }
 
 .react-grid-item:not(.react-grid-placeholder) {
-  background: #eee;
-  border: 1px solid rgb(235, 235, 235);
+  background: transparent;
+  border: 1px solid var(--pf-global--BorderColor--100);
 }
 
 .react-grid-item.resizing {
@@ -12,7 +12,7 @@
 }
 
 .react-grid-item.static {
-  background: #cce;
+  background: transparent;
 }
 
 .react-grid-item .add {
@@ -26,7 +26,8 @@
 .dashboard {
   .mc-page-content {
     .pf-c-page__main-section {
-      background-color: var(--mc-dashboard-background-color);
+      --pf-c-page__main-section--BackgroundColor: transparent;
+      background-color: transparent;
     }
   }
 }

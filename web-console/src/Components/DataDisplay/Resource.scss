@@ -4,7 +4,7 @@
   overflow: hidden;
   .key {
     display: inline-block;
-    color: #0303038c;
+    color: var(--pf-global--Color--200);
     min-width: 125px;
     padding-right: 5px;
   }

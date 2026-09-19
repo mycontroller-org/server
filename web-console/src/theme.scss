@@ -1,19 +1,15 @@
-// include/update only color scheme
-// for complete details supported variables
-// visit: https://www.patternfly.org/v4/developer-resources/global-css-variables
-
+// PatternFly light is the default. Dark uses html.pf-theme-dark (in base.css).
 :root {
-  --mc-background-color: #fff;
-  --mc-components-background-color: #fff;
-  --mc-dashboard-background-color: #f7f7f7;
-  --mc-widget-background-color: #fff;
-  --mc-widget-title-background-color: #f6f6f6;
-  --mc-widget-title-color: #434343;
-  --mc-timestamp-color: var(--pf-global--palette--black-600);
-  --mc-widget-utilization-title-color: var(--pf-global--palette--black-600);
-  --mc-widget-utilization-value-color: var(--pf-global--palette--black-800);
-  --mc-widget-utilization-unit-color: var(--pf-global--palette--black-600);
-  --mc-widget-utilization-function-color: var(--pf-global--palette--black-400);
+  --mc-background-color: var(--pf-global--BackgroundColor--100);
+  --mc-components-background-color: var(--pf-global--BackgroundColor--100);
+  --mc-widget-background-color: var(--pf-global--BackgroundColor--100);
+  --mc-widget-title-background-color: var(--pf-global--BackgroundColor--200);
+  --mc-widget-title-color: var(--pf-global--Color--100);
+  --mc-timestamp-color: var(--pf-global--Color--200);
+  --mc-widget-utilization-title-color: var(--pf-global--Color--200);
+  --mc-widget-utilization-value-color: var(--pf-global--Color--100);
+  --mc-widget-utilization-unit-color: var(--pf-global--Color--200);
+  --mc-widget-utilization-function-color: var(--pf-global--Color--300);
 }
 
 .pf-c-card {
@@ -34,4 +30,42 @@
 
 .pf-c-modal-box {
   --pf-c-modal-box--BackgroundColor: var(--mc-background-color);
+}
+
+:root:where(.pf-theme-dark) {
+  color: var(--pf-global--Color--100);
+
+  .label-pair .label-key {
+    --pf-c-label__content--before--BorderColor: #004d8a;
+    --pf-c-label--BackgroundColor: #002952;
+    --pf-c-label__content--Color: #73bcf7;
+    color: #73bcf7;
+  }
+
+  .label-pair .label-key .pf-c-label__content {
+    color: #73bcf7;
+  }
+
+  .label-pair .label-value {
+    --pf-c-label__content--before--BorderColor: var(--pf-global--primary-color--100);
+    --pf-c-label--BackgroundColor: var(--pf-global--primary-color--100);
+    --pf-c-label__content--Color: #fff;
+    color: #fff;
+  }
+
+  .label-pair .label-value .pf-c-label__content {
+    color: #fff;
+  }
+
+  .pf-c-description-list__term,
+  .pf-c-description-list__text,
+  .pf-c-content,
+  .pf-c-title,
+  .graph-title {
+    color: var(--pf-global--Color--100);
+  }
+
+  .pf-c-description-list__description {
+    color: var(--pf-global--Color--200);
+  }
 }

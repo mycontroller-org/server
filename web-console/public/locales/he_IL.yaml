@@ -941,7 +941,11 @@ telegram: Telegram
 temperature: טמפרטורה
 text: טקסט
 the_open_source_controller: The Open Source Controller
+theme: ערכת נושא
 theme_color: צבע ערכת נושא
+theme_dark: כהה
+theme_light: בהיר
+theme_system: מערכת
 thickness: עובי
 threshold_mode: מצב סף
 thresholds: ספים

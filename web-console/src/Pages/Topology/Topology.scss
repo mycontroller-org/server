@@ -63,8 +63,12 @@
     font-weight: 600;
   }
   .topology-label-value {
-    fill: #06c;
+    fill: var(--pf-global--primary-color--100);
     font-weight: 500;
+  }
+  .topology-node-caption text,
+  .pf-topology__node__label > text {
+    fill: var(--pf-global--Color--100);
   }
   .pf-topology__node.pf-m-selected {
     .topology-label-id,
@@ -82,7 +86,7 @@
     padding: 8px 12px 0;
   }
   .topology-sidebar-subtitle {
-    color: #6a6e73;
+    color: var(--pf-global--Color--200);
     font-size: 13px;
     margin-top: 2px;
   }
@@ -152,7 +156,7 @@
   .topology-sidebar-id-name,
   .topology-sidebar-payload-time {
     flex-shrink: 0;
-    color: #6a6e73;
+    color: var(--pf-global--Color--200);
     font-size: 12px;
     font-weight: 400;
     white-space: nowrap;

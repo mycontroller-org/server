@@ -1,66 +1,58 @@
 import React from "react"
 import { connect } from "react-redux"
-import { DEFAULT_THEME } from "../Constants/Common"
-import { api } from "../Service/Api"
-import { getValue } from "../Util/Util"
-
-// default Colors
-const defaultTheme = {
-  "--mc-background-color": "#fff",
-  "--mc-components-background-color": "#fff",
-  "--mc-dashboard-background-color": "#f7f7f7",
-  "--mc-widget-background-color": "#fff",
-  "--mc-widget-title-background-color": "#f6f6f6",
-  "--mc-widget-utilization-title-color": "var(--pf-global--palette--black-600)",
-  "--mc-widget-utilization-value-color": "var(--pf-global--palette--black-800)",
-  "--mc-widget-utilization-unit-color": "var(--pf-global--palette--black-600)",
-  "--mc-widget-utilization-function-color": "var(--pf-global--palette--black-400)",
-  "--mc-widget-title-color": "#434343",
-  "--mc-timestamp-color": "var(--pf-global--palette--black-600)",
-}
+import { THEME_SYSTEM, normalizeTheme } from "../Constants/Common"
+import { updateTheme } from "../store/entities/theme"
+import { applyThemeClass, loadStoredTheme, saveStoredTheme } from "./themeStorage"
 
 class Theme extends React.Component {
-  state = {
-    themeSettings: {},
-  }
+  mediaQuery = null
 
   componentDidMount() {
-    this.loadThemeData(this.props.themeSelected)
+    const stored = loadStoredTheme()
+    const normalized = stored || normalizeTheme(this.props.themeSelected)
+    if (normalized !== this.props.themeSelected) {
+      this.props.updateTheme({ theme: normalized })
+    }
+    saveStoredTheme(normalized)
+    this.applySelection(normalized)
+    this.mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+    if (this.mediaQuery.addEventListener) {
+      this.mediaQuery.addEventListener("change", this.onSystemChange)
+    } else if (this.mediaQuery.addListener) {
+      this.mediaQuery.addListener(this.onSystemChange)
+    }
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.themeSelected !== this.props.themeSelected) {
-      this.loadThemeData(this.props.themeSelected)
+      this.applySelection(this.props.themeSelected)
     }
   }
 
-  loadThemeData = (themeSelected = DEFAULT_THEME) => {
-    if (themeSelected === DEFAULT_THEME) {
-      this.setState({ themeSettings: defaultTheme })
-    } else {
-      api.dataRepository
-        .get(themeSelected)
-        .then((res) => {
-          const themeData = getValue(res, "data.data", defaultTheme)
-          this.setState({ themeSettings: themeData })
-        })
-        .catch((_e) => {
-          this.setState({ themeSettings: defaultTheme })
-        })
+  componentWillUnmount() {
+    if (!this.mediaQuery) {
+      return
+    }
+    if (this.mediaQuery.removeEventListener) {
+      this.mediaQuery.removeEventListener("change", this.onSystemChange)
+    } else if (this.mediaQuery.removeListener) {
+      this.mediaQuery.removeListener(this.onSystemChange)
     }
   }
 
-  updateTheme = (themeSettings = {}) => {
-    const settings = { ...defaultTheme, ...themeSettings }
-    const keys = Object.keys(settings)
-    keys.map((key) => {
-      document.documentElement.style.setProperty(key, settings[key])
-    })
+  onSystemChange = () => {
+    if (normalizeTheme(this.props.themeSelected) === THEME_SYSTEM) {
+      applyThemeClass(THEME_SYSTEM)
+    }
+  }
+
+  applySelection = (selection) => {
+    const normalized = normalizeTheme(selection)
+    saveStoredTheme(normalized)
+    applyThemeClass(normalized)
   }
 
   render() {
-    const { themeSettings } = this.state
-    this.updateTheme(themeSettings)
     return null
   }
 }
@@ -69,4 +61,4 @@ const mapStateToProps = (state) => ({
   themeSelected: state.entities.theme.selection,
 })
 
-export default connect(mapStateToProps, null)(Theme)
+export default connect(mapStateToProps, { updateTheme })(Theme)

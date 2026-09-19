@@ -1,14 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { DEFAULT_THEME } from "../../Constants/Common"
+import { normalizeTheme } from "../../Constants/Common"
+import { initialTheme } from "../../Theme/themeStorage"
 
 const slice = createSlice({
   name: "theme",
   initialState: {
-    selection: DEFAULT_THEME,
+    selection: initialTheme(),
   },
   reducers: {
     updateTheme: (theme, action) => {
-      theme.selection = action.payload.theme
+      theme.selection = normalizeTheme(action.payload.theme)
     },
   },
 })

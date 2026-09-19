@@ -10,7 +10,7 @@
   .mc-form-header-label {
     font-size: var(--pf-global--FontSize--lg);
     font-style: normal;
-    color: #000000a0;
+    color: var(--pf-global--Color--200);
   }
 }
 
@@ -41,6 +41,6 @@
     --pf-l-split--m-gutter--MarginRight: 7px;
   }
   .field-title{
-    color: #000000a0;
+    color: var(--pf-global--Color--200);
   }
 }
