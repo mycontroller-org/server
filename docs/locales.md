@@ -114,6 +114,7 @@ Everyday verbs stay native. Named IoT resources use **native-script loanwords**,
 | Payload | பேலோடு | पेलोड | ಪೇಲೋಡ್ | പേലോഡ് | పేలోడ్ |
 | Forward payload | ஃபார்வர்ட் பேலோடு | फ़ॉरवर्ड पेलोड | ಫಾರ್ವರ್ಡ್ ಪೇಲೋಡ್ | ഫോർവേഡ് പേലോഡ് | ఫార్వర్డ్ పేలోడ్ |
 | Quick ID | குவிக் ஐடி | क्विक आईडी | ಕ್ವಿಕ್ ಐಡಿ | ക്വിക്ക് ഐഡി | క్విక్ ఐడి |
+| Protocol | புரோட்டோக்கால் | प्रोटोकॉल | ಪ್ರೋಟೋಕಾಲ್ | പ്രോട്ടോക്കോൾ | ప్రోటోకాల్ |
 
 Do not use calques such as Tamil நுழைவாயில் / முனை / அடையாளம் for those names. Do not write Latin `Gateway` inside a Tamil sentence. Keep product names and protocol abbreviations Latin (MyController, MQTT, HTTP, JSON, API).
 

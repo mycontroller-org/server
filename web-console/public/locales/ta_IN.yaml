@@ -487,10 +487,10 @@ opts:
     label_file_logger: கோப்புப் பதிவர்
     label_none: ஏதுமில்லை
   gw_protocol:
-    desc_ethernet: ஈதர்நெட் நெறிமுறை
-    desc_http: HTTP நெறிமுறை
-    desc_mqtt: MQTT நெறிமுறை
-    desc_serial: சீரியல் நெறிமுறை
+    desc_ethernet: ஈதர்நெட் புரோட்டோக்கால்
+    desc_http: HTTP புரோட்டோக்கால்
+    desc_mqtt: MQTT புரோட்டோக்கால்
+    desc_serial: சீரியல் புரோட்டோக்கால்
     label_ethernet: ஈதர்நெட்
     label_http: HTTP
     label_mqtt: MQTT
@@ -840,7 +840,7 @@ previous_value: முந்தைய மதிப்பு
 process: செயல்முறை
 processes: செயல்முறைகள்
 profile: சுயவிவரம்
-protocol: நெறிமுறை
+protocol: புரோட்டோக்கால்
 provider: வழங்குநர்
 provider_type: வழங்குநர் வகை
 publish: வெளியிடு
