@@ -314,8 +314,8 @@ jwt_secret: JWT ரகசியம்
 keep_me_logged_in_30_days: 30 நாட்கள் உள்நுழைந்த நிலையில் வைத்திருக்கவும்
 key: விசை
 key_path: விசை பாதை
-label: குறிச்சொல்
-labels: குறிச்சொற்கள்
+label: லேபிள்
+labels: லேபிள்கள்
 language: மொழி
 last_evaluation: கடைசி மதிப்பீடு
 last_modified: கடைசியாக மாற்றியது
@@ -326,7 +326,7 @@ last_success: கடைசி வெற்றி
 latitude: அட்சரேகை
 legend_orientation: விளக்கக்குறிப்பு திசை
 legend_position: விளக்கக்குறிப்பு இடம்
-library_version: நூலகம் பதிப்பு
+library_version: லைப்ரரி பதிப்பு
 light: விளக்கு
 limit: வரம்பு
 loading: ஏற்றுகிறது
@@ -373,7 +373,7 @@ name_key: பெயர் விசை
 never_expire: காலாவதியாகாது
 new: புதிய
 new_password: புதிய கடவுச்சொல்
-no_change_since: மாற்றம் இல்லாத நேரம்
+no_change_since: மாற்றமின்றி உள்ளது
 no_dashboard_message: ஏற்றுவதற்கு டாஷ்போர்டு இல்லை.
 no_dashboard_title: டாஷ்போர்டு இல்லை
 no_data: தரவு இல்லை
