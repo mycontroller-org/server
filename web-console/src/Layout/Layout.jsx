@@ -23,6 +23,8 @@ import {
   PageSidebar,
   Popover,
   SkipToContent,
+  ToggleGroup,
+  ToggleGroupItem,
   Text,
   TextContent,
   TextVariants,
@@ -42,8 +44,9 @@ import {
   GithubIcon,
   HelpIcon,
   InfoAltIcon,
-  LanguageIcon,
-  PaletteIcon,
+  DesktopIcon,
+  MoonIcon,
+  OutlinedSunIcon,
   PowerOffIcon,
   UnpluggedIcon,
   UserIcon,
@@ -56,8 +59,16 @@ import { Redirect, Route, Switch } from "react-router-dom"
 import ErrorBoundary from "../Components/ErrorBoundary/ErrorBoundary"
 import { HeaderSpinner } from "../Components/Spinner/Spinner"
 import Toaster from "../Components/Toaster/Toaster"
-import { URL_FORUM, URL_SOURCE_CODE } from "../Constants/Common"
-import { languages } from "../i18n/languages"
+import {
+  THEME_DARK,
+  THEME_LIGHT,
+  THEME_OPTIONS,
+  THEME_SYSTEM,
+  URL_FORUM,
+  URL_SOURCE_CODE,
+  normalizeTheme,
+} from "../Constants/Common"
+import { getLanguageCode, languages } from "../i18n/languages"
 import logoMain from "../Logo/mc-white.svg"
 import AboutPage from "../Pages/About/About"
 import { api } from "../Service/Api"
@@ -68,7 +79,6 @@ import { clearAuth } from "../store/entities/auth"
 import { updateLocale } from "../store/entities/locale"
 import { updateTheme } from "../store/entities/theme"
 import { notificationDrawerToggle } from "../store/entities/notification"
-import Theme from "../Theme/Theme"
 //import imgAvatar from "./imgAvatar.svg";
 import "./Layout.scss"
 import NotificationContainer from "./NotificationContainer"
@@ -78,37 +88,12 @@ class PageLayoutExpandableNav extends React.Component {
     isUserDropdownOpen: false,
     isHelpDropdownOpen: false,
     isLanguageDropdownOpen: false,
-    isThemeDropdownOpen: false,
     activeGroup: "grp-1",
     activeItem: "grp-1_itm-1",
-    themes: [],
   }
 
   componentDidMount() {
     wsConnect()
-    // load themes
-    this.fetchThemes()
-  }
-
-  fetchThemes = () => {
-    const defaultThemes = [{ name: "default", description: "default theme" }]
-    const _page = {
-      limit: 15, // limits 15 entries
-      offset: 0,
-      filter: [{ k: "labels.gui_theme", o: "eq", v: "true" }],
-      // sort: { f: "id", o: "asc" },
-    }
-    api.dataRepository
-      .list(_page)
-      .then((res) => {
-        const themes = res.data.data.map((theme) => {
-          return { name: theme.id, description: theme.description }
-        })
-        this.setState({ themes: [...defaultThemes, ...themes] })
-      })
-      .catch((_e) => {
-        this.setState({ themes: defaultThemes })
-      })
   }
 
   componentWillUnmount() {
@@ -148,18 +133,6 @@ class PageLayoutExpandableNav extends React.Component {
   onLanguageDropdownSelect = (_event) => {
     this.setState({
       isLanguageDropdownOpen: !this.state.isLanguageDropdownOpen,
-    })
-  }
-
-  onThemeDropdownToggle = (isThemeDropdownOpen) => {
-    this.setState({
-      isThemeDropdownOpen,
-    })
-  }
-
-  onThemeDropdownSelect = (_event) => {
-    this.setState({
-      isThemeDropdownOpen: !this.state.isThemeDropdownOpen,
     })
   }
 
@@ -218,7 +191,7 @@ class PageLayoutExpandableNav extends React.Component {
       websocketMessage,
       metricsDBDisabled,
     } = this.props
-    const { themes } = this.state
+    const selectedTheme = normalizeTheme(themeSelected)
 
     // selected menu
     let menuSelection = ""
@@ -327,35 +300,29 @@ class PageLayoutExpandableNav extends React.Component {
       </DropdownItem>,
     ]
 
+    const currentLanguage = languages.find((l) => l.lng === languageSelected) || languages[0]
     const languageItems = languages.map((l) => {
-      const lngSelected = l.lng === languageSelected ? "language_selected" : ""
+      const lngSelected = l.lng === currentLanguage.lng ? "language_selected" : ""
       return (
         <DropdownItem
           key={`lang_${l.lng}`}
           className={`language_item ${lngSelected}`}
           onClick={() => this.props.updateLocale({ language: l.lng })}
         >
-          <Tooltip position="left" content={l.country_code}>
-            <span>{l.flag} </span>
-          </Tooltip>
-          {l.title}
+          <span className="language_item_row">
+            <span className="language_flag">{l.flag}</span>
+            <span className="language_title">{l.title}</span>
+            <span className="language_code">{getLanguageCode(l.lng)}</span>
+          </span>
         </DropdownItem>
       )
     })
 
-    const themeDropdownItems = themes.map((theme) => {
-      const thSelected = theme.name === themeSelected ? "language_selected" : ""
-      return (
-        <DropdownItem
-          key={`theme_${theme.name}`}
-          className={`language_item ${thSelected}`}
-          onClick={() => this.props.updateTheme({ theme: theme.name })}
-          description={theme.description}
-        >
-          {theme.name}
-        </DropdownItem>
-      )
-    })
+    const themeIcons = {
+      [THEME_SYSTEM]: <DesktopIcon />,
+      [THEME_LIGHT]: <OutlinedSunIcon />,
+      [THEME_DARK]: <MoonIcon />,
+    }
 
     const userDropdownItems = [
       <DropdownGroup key="group2">
@@ -399,8 +366,43 @@ class PageLayoutExpandableNav extends React.Component {
           {this.props.showGlobalSpinner ? <HeaderSpinner size="lg" /> : null}
         </PageHeaderToolsGroup>
 
-        <PageHeaderToolsGroup key="others">
+        <PageHeaderToolsGroup key="others" className="mc-header-tools">
           <PageHeaderToolsItem key="web_socket">{websocketStatus}</PageHeaderToolsItem>
+          <PageHeaderToolsItem key="theme">
+            <ToggleGroup isCompact aria-label={t("theme")} className="theme-toggle">
+              {THEME_OPTIONS.map((theme) => (
+                <ToggleGroupItem
+                  key={theme.value}
+                  buttonId={theme.value}
+                  icon={
+                    <Tooltip content={t(theme.label)} position="bottom">
+                      <span>{themeIcons[theme.value]}</span>
+                    </Tooltip>
+                  }
+                  aria-label={t(theme.label)}
+                  isSelected={selectedTheme === theme.value}
+                  onChange={() => this.props.updateTheme({ theme: theme.value })}
+                />
+              ))}
+            </ToggleGroup>
+          </PageHeaderToolsItem>
+          <PageHeaderToolsItem>
+            <Dropdown
+              className="language_dropdown"
+              isPlain
+              position="right"
+              onSelect={this.onLanguageDropdownSelect}
+              isOpen={this.state.isLanguageDropdownOpen}
+              toggle={
+                <DropdownToggle className="language_toggle" onToggle={this.onLanguageDropdownToggle}>
+                  <span className="language_toggle_current">
+                    {currentLanguage.flag} {getLanguageCode(currentLanguage.lng)}
+                  </span>
+                </DropdownToggle>
+              }
+              dropdownItems={languageItems}
+            />
+          </PageHeaderToolsItem>
           <PageHeaderToolsItem visibility={{ default: "visible" }} isSelected={this.props.isDrawerExpanded}>
             <NotificationBadge
               variant={this.props.notificationDisplayVariant}
@@ -418,6 +420,7 @@ class PageLayoutExpandableNav extends React.Component {
               onSelect={this.onHelpDropdownSelect}
               toggle={
                 <DropdownToggle
+                  className="header_icon_toggle"
                   toggleIndicator={null}
                   onToggle={this.onHelpDropdownToggle}
                   icon={<HelpIcon />}
@@ -427,41 +430,6 @@ class PageLayoutExpandableNav extends React.Component {
               dropdownItems={helpDropdownItems}
             />
           </PageHeaderToolsItem>
-          <PageHeaderToolsItem>
-            <Dropdown
-              isPlain
-              position="right"
-              onSelect={this.onLanguageDropdownSelect}
-              isOpen={this.state.isLanguageDropdownOpen}
-              toggle={
-                <DropdownToggle
-                  className="language_icon"
-                  toggleIndicator={null}
-                  onToggle={this.onLanguageDropdownToggle}
-                  icon={<LanguageIcon size="md" />}
-                />
-              }
-              dropdownItems={languageItems}
-            />
-          </PageHeaderToolsItem>
-
-          <PageHeaderToolsItem>
-            <Dropdown
-              isPlain
-              position="right"
-              onSelect={this.onThemeDropdownSelect}
-              isOpen={this.state.isThemeDropdownOpen}
-              toggle={
-                <DropdownToggle
-                  toggleIndicator={null}
-                  onToggle={this.onThemeDropdownToggle}
-                  icon={<PaletteIcon size="sm" />}
-                />
-              }
-              dropdownItems={themeDropdownItems}
-            />
-          </PageHeaderToolsItem>
-
           <PageHeaderToolsItem>
             <Dropdown
               isPlain
@@ -520,7 +488,6 @@ class PageLayoutExpandableNav extends React.Component {
 
     return (
       <React.Fragment>
-        <Theme />
         <AboutPage />
         <Toaster />
         <Page

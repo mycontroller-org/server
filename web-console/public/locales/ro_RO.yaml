@@ -937,7 +937,11 @@ telegram: Telegram
 temperature: Temperatură
 text: Text
 the_open_source_controller: The Open Source Controller
+theme: Temă
 theme_color: Culoare temă
+theme_dark: Întunecat
+theme_light: Deschis
+theme_system: Sistem
 thickness: Grosime
 threshold_mode: Mod prag
 thresholds: Praguri

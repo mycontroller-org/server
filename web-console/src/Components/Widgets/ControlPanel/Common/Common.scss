@@ -1,5 +1,5 @@
 .mc-control-panel {
-  background-color: var(--mc-widget-background-color);
+  background-color: transparent;
   .text {
     float: left;
     cursor: pointer;
@@ -29,10 +29,10 @@
 }
 
 .mixed-ctl-input-field {
-  --pf-c-popover__content--BackgroundColor: #fff;
-  --pf-c-popover__arrow--BackgroundColor: #fff;
-  border: 1px solid #2124276e;
+  --pf-c-popover__content--BackgroundColor: var(--pf-global--BackgroundColor--100);
+  --pf-c-popover__arrow--BackgroundColor: var(--pf-global--BackgroundColor--100);
+  border: 1px solid var(--pf-global--BorderColor--100);
   .pf-c-popover__arrow {
-    border: 1px solid #2124276e;
+    border: 1px solid var(--pf-global--BorderColor--100);
   }
 }

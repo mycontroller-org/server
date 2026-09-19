@@ -937,7 +937,11 @@ telegram: Telegram
 temperature: താപനില
 text: വാചകം
 the_open_source_controller: The Open Source Controller
+theme: തീം
 theme_color: Theme നിറം
+theme_dark: ഇരുണ്ടത്
+theme_light: ഇളം
+theme_system: സിസ്റ്റം
 thickness: കനം
 threshold_mode: Threshold രീതി
 thresholds: Thresholdകൾ

@@ -2,6 +2,10 @@
   background-color: var(--pf-global--palette--blue-50);
 }
 
+:root:where(.pf-theme-dark) .table-row-selected {
+  background-color: var(--pf-global--BackgroundColor--300);
+}
+
 .mc-table [type="checkbox"] {
   cursor: pointer;
 }

@@ -937,7 +937,11 @@ telegram: Telegram
 temperature: Temperatura
 text: Texto
 the_open_source_controller: The Open Source Controller
+theme: Tema
 theme_color: Cor do tema
+theme_dark: Escuro
+theme_light: Claro
+theme_system: Sistema
 thickness: Espessura
 threshold_mode: Modo de limiar
 thresholds: Limiares

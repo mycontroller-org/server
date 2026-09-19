@@ -132,3 +132,12 @@ export const getLanguage = (lng = DEFAULT_LANGUAGE) => {
     }
   }
 }
+
+export const getLanguageCode = (lng = DEFAULT_LANGUAGE) => {
+  if (lng === "en_GB") {
+    return "EN-UK"
+  }
+  return String(lng || DEFAULT_LANGUAGE)
+    .replace("_", "-")
+    .toUpperCase()
+}

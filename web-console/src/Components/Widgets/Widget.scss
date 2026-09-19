@@ -15,7 +15,8 @@
 .dashboard-widget {
   height: 100%;
   width: 100%;
-  background-color: var(--mc-widget-background-color);
+  background-color: transparent;
+  --pf-c-card--BackgroundColor: transparent;
   border-radius: 0px;
   position: relative;
   overflow: auto;
@@ -41,7 +42,7 @@
     }
     .dashboard-widget-title {
       padding: 5px 0px 5px 10px;
-      background-color: var(--mc-widget-title-background-color);
+      background-color: transparent;
       color: var(--mc-widget-title-color);
     }
     .dashboard-widget-title-edit {

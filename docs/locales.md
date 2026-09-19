@@ -16,7 +16,7 @@ This document is the standing guide for **web-console translations**: how they l
 
 The UI uses `i18next` + `react-i18next` + `i18next-http-backend`. YAML is parsed with `js-yaml`. Detection order is Redux stored language, then the browser; unknown codes fall back to `en_GB`. Hyphens are normalized to underscores (`en-GB` → `en_GB`).
 
-Every registered language **must** have a YAML file with the **same keys** as `en_GB.yaml`. As of this writing that is **978 keys** (flat count, including nested `dialog.*`, `helper_text.*`, `error.*`, `opts.*`).
+Every registered language **must** have a YAML file with the **same keys** as `en_GB.yaml`. As of this writing that is **982 keys** (flat count, including nested `dialog.*`, `helper_text.*`, `error.*`, `opts.*`).
 
 ### Current languages
 

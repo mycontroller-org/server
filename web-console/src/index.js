@@ -9,6 +9,9 @@ import App from "./App"
 import "./i18n/i18n"
 import "./index.scss"
 import * as serviceWorker from "./serviceWorker"
+import { applyThemeClass, initialTheme } from "./Theme/themeStorage"
+
+applyThemeClass(initialTheme())
 
 ReactDOM.render(
   //<React.StrictMode>
