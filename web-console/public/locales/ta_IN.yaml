@@ -1,277 +1,277 @@
 ---
-about: பற்றி
+about: அறிமுகம்
 actions: செயல்கள்
 active_duration: செயலில் இருக்கும் நேரம்
 add: சேர்
-add_a_field: Field சேர்
-add_a_firmware: Firmware சேர்
-add_a_forward_payload: Forward Payload சேர்
-add_a_gateway: Gateway சேர்
-add_a_handler: Handler சேர்
-add_a_node: Node சேர்
-add_a_schedule: Schedule சேர்
-add_a_policy: Policy சேர்
-add_a_service_account: Service Account சேர்
-add_a_source: Source சேர்
-add_a_task: Task சேர்
+add_a_field: புலம் சேர்
+add_a_firmware: நிலைபொருள் சேர்
+add_a_forward_payload: முன்னனுப்பும் தரவுச்சுமை சேர்
+add_a_gateway: நுழைவாயில் சேர்
+add_a_handler: கையாளுநர் சேர்
+add_a_node: முனை சேர்
+add_a_schedule: அட்டவணை சேர்
+add_a_policy: கொள்கை சேர்
+add_a_service_account: சேவைக் கணக்கு சேர்
+add_a_source: மூலம் சேர்
+add_a_task: பணி சேர்
 add_a_user: பயனர் சேர்
-add_a_virtual_assistant: Virtual Assistant சேர்
-add_a_virtual_device: Virtual Device சேர்
-add_an_item: Item சேர்
-add_widget: Widget சேர்
+add_a_virtual_assistant: மெய்நிகர் உதவியாளர் சேர்
+add_a_virtual_device: மெய்நிகர் சாதனம் சேர்
+add_an_item: உருப்படி சேர்
+add_widget: சிறுகருவி சேர்
 address: முகவரி
-agent_user_id: Agent User ID
+agent_user_id: முகவர் பயனர் அடையாளம்
 alerts_empty_message: தற்போது எச்சரிக்கைகள் இல்லை.
 alerts_empty_title: எச்சரிக்கைகள் இல்லை
-alive_check_interval: Alive Check இடைவெளி
+alive_check_interval: இயக்கநிலை சோதனை இடைவெளி
 all_rights_reserved: அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை
-allow_overwrite: Overwrite அனுமதிக்கவும்
+allow_overwrite: மேலெழுது அனுமதிக்கவும்
 apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: உறுதி கேட்கவும்
-assigned_firmware: ஒதுக்கிய Firmware
-assigned_nodes: ஒதுக்கிய Node-கள்
+assigned_firmware: ஒதுக்கிய நிலைபொருள்
+assigned_nodes: ஒதுக்கிய முனைகள்
 auto_disable: தானாக முடக்கு
 auto_update: தானாக புதுப்பி
 axis: அச்சு
-backup: Backup
-backup_and_restore: Backup மற்றும் Restore
-backup_locations: Backup இடங்கள்
+backup: காப்பு
+backup_and_restore: காப்பு மற்றும் மீட்டெடுப்பு
+backup_locations: காப்பு இடங்கள்
 battery: பேட்டரி
-baud_rate: Baud Rate
-body: Body
-bridge: Bridge
+baud_rate: பாட் வீதம்
+body: உள்ளடக்கம்
+bridge: பிரிட்ஜ்
 brightness: பிரகாசம்
-broker: Broker
-browse: தேர்ந்தெடு
-build_date: Build தேதி
-button: Button
-button_text: Button உரை
+broker: இடைநிலை
+browse: உலாவு
+build_date: உருவாக்கம் தேதி
+button: பொத்தான்
+button_text: பொத்தான் உரை
 cancel: ரத்து
-chart_configuration: Chart அமைப்பு
-chart_type: Chart வகை
-chat_ids: Chat ID-கள்
+chart_configuration: விளக்கப்படம் அமைப்பு
+chart_type: விளக்கப்படம் வகை
+chat_ids: அரட்டை அடையாளங்கள்
 clear: அழி
 clear_all: அனைத்தையும் அழி
 color: நிறம்
 color_temperature: நிற வெப்பநிலை
-column_display: Column காட்சி
+column_display: நெடுவரிசை காட்சி
 conditions: நிபந்தனைகள்
 configuration: அமைப்பு
 configure_via: இதன் மூலம் அமை
 confirm_password: கடவுச்சொல்லை உறுதி செய்
 confirmation_message: உறுதி செய்தி
-connection_timeout: இணைப்பு Timeout
+connection_timeout: இணைப்பு காலாவதி நேரம்
 control_configuration: கட்டுப்பாட்டு அமைப்பு
 control_type: கட்டுப்பாட்டு வகை
 copied: நகலெடுக்கப்பட்டது
 copy: நகலெடு
-corner_smoothing: Corner Smoothing
+corner_smoothing: மூலை மென்மையாக்கம்
 cpu: CPU
 cpu_disabled: CPU முடக்கப்பட்டது
 create_new: புதிதாக உருவாக்கு
 created_on: உருவாக்கிய தேதி
-cron_expression: Cron Expression
+cron_expression: க்ரான் வெளிப்பாடு
 current_password: தற்போதைய கடவுச்சொல்
-cursor_tooltip: Cursor Tooltip
-custom_data: Custom தரவு
-custom_mapping: Custom Mapping
-custom_variables: Custom Variable-கள்
-dampening: Dampening
-dashboard: Dashboard
+cursor_tooltip: கர்சர் உதவிக்குறிப்பு
+custom_data: தனிப்பயன் தரவு
+custom_mapping: தனிப்பயன் மேப்பிங்
+custom_variables: தனிப்பயன் மாறிகள்
+dampening: தணிப்பு
+dashboard: கட்டுப்பாட்டுப் பலகை
 data: தரவு
-data_repository: Data Repository
-data_repository_add_an_entry: 'Data Repository: உள்ளீடு சேர்'
-data_repository_modify_an_entry: 'Data Repository: உள்ளீடு மாற்று'
-data_retrieved_from_server: Server-இலிருந்து தரவு பெறப்பட்டது
+data_repository: தரவுக் களஞ்சியம்
+data_repository_add_an_entry: 'தரவுக் களஞ்சியம்: உள்ளீடு சேர்'
+data_repository_modify_an_entry: 'தரவுக் களஞ்சியம்: உள்ளீடு மாற்று'
+data_retrieved_from_server: சேவையகத்திலிருந்து தரவு பெறப்பட்டது
 data_type: தரவு வகை
 date_yyyy_mm_dd: தேதி (yyyy-mm-dd)
 day_of_month: மாதத்தின் நாள்
 day_of_week: வார நாட்கள்
 delete: நீக்கு
 description: விளக்கம்
-destination_field: இலக்கு Field
-detailed_filter: விரிவான Filter
+destination_field: இலக்கு புலம்
+detailed_filter: விரிவான வடிகட்டி
 details: விவரம்
-device_filter: சாதன Filter
+device_filter: சாதன வடிகட்டி
 device_type: சாதன வகை
 dialog:
   clear_sleeping_queue_heading: வரிசையை அழிக்கவா?
-  clear_sleeping_queue_msg: Sleep queue-இல் உள்ள அனைத்து செய்திகளும் நீக்கப்படும்
+  clear_sleeping_queue_msg: ஸ்லீப் வரிசையில் உள்ள அனைத்து செய்திகளும் நீக்கப்படும்
   delete_resource_msg: "தேர்ந்தெடுத்த உருப்படிகளை நீக்கவா?"
-  delete_title_backup: "Backup கோப்புகளை நீக்கவா?"
-  delete_title_dashboard: "Dashboard நீக்கவா?"
-  delete_title_data_repository: "Data Repository நீக்கவா?"
-  delete_title_field: "Field-களை நீக்கவா?"
-  delete_title_firmware: "Firmware நீக்கவா?"
-  delete_title_forward_payload: "Forward Payload-களை நீக்கவா?"
-  delete_title_gateway: "Gateway-களை நீக்கவா?"
-  delete_title_handler: "Handler-களை நீக்கவா?"
-  delete_title_node: "Node-களை நீக்கவா?"
-  delete_title_schedule: "Schedule-களை நீக்கவா?"
-  delete_title_service_account: "Service Account நீக்கவா?"
+  delete_title_backup: "காப்பு கோப்புகளை நீக்கவா?"
+  delete_title_dashboard: "கட்டுப்பாட்டுப் பலகை நீக்கவா?"
+  delete_title_data_repository: "தரவுக் களஞ்சியம் நீக்கவா?"
+  delete_title_field: "புலங்களை நீக்கவா?"
+  delete_title_firmware: "நிலைபொருள் நீக்கவா?"
+  delete_title_forward_payload: "முன்னனுப்பும் தரவுச்சுமைகளை நீக்கவா?"
+  delete_title_gateway: "நுழைவாயில்களை நீக்கவா?"
+  delete_title_handler: "கையாளுநர்களை நீக்கவா?"
+  delete_title_node: "முனைகளை நீக்கவா?"
+  delete_title_schedule: "அட்டவணைகளை நீக்கவா?"
+  delete_title_service_account: "சேவைக் கணக்கு நீக்கவா?"
   delete_title_user: "பயனரை நீக்கவா?"
-  delete_title_policy: "Policy நீக்கவா?"
-  delete_title_source: "Source-களை நீக்கவா?"
-  delete_title_task: "Task-களை நீக்கவா?"
-  delete_title_virtual_assistant: "Virtual Assistant நீக்கவா?"
-  delete_title_virtual_device: "Virtual Device நீக்கவா?"
-  node_reset_heading: "Node Reset செய்யவா?"
-  node_reset_msg: "தேர்ந்தெடுத்த Node-களை Reset செய்யவா?<br/>இந்த செயல்பாட்டிற்குப் பிறகு:<3><0>அமைப்பு Factory Settings-க்கு திரும்பும்.</0><1>தேர்ந்தெடுத்த Node-களுக்கான அணுகல் MyController-இல் இழக்கப்படலாம்!</1></3>"
-  reboot_nodes_heading: "Node-ஐ Reboot செய்யவா?"
-  reboot_nodes_msg: "தேர்ந்தெடுத்த Node-களை Reboot செய்யவா?"
-  reset_msg_jwt_secret: "JWT Secret-ஐ Reset செய்யவா? இந்த செயல்பாட்டிற்குப் பிறகு இந்த Server-இல் உள்ள அனைத்து Login அமர்வுகளும் செல்லாது. நீங்களும் வெளியேற்றப்படுவீர்கள்."
-  reset_title_jwt_secret: JWT Secret Reset
-  restore_heading: "Restore செய்யவா?"
-  restore_msg: "தேர்ந்தெடுத்த Backup கோப்பிலிருந்து Restore செய்யவா?<br/>இந்த செயல்பாட்டிற்குப் பிறகு:<3><0>Server தரவு <1>{{fileName}}</1> நிலைக்கு Restore செய்யப்படும்</0><1>இந்த செயலை மாற்றியமைக்க முடியாது</1><2>Restore செய்வதற்கு முன் Backup எடுக்கவும்</2><3>Server-ஐ கைமுறையாக தொடங்க வேண்டியிருக்கலாம்</3></3>"
+  delete_title_policy: "கொள்கை நீக்கவா?"
+  delete_title_source: "மூலங்களை நீக்கவா?"
+  delete_title_task: "பணிகளை நீக்கவா?"
+  delete_title_virtual_assistant: "மெய்நிகர் உதவியாளர் நீக்கவா?"
+  delete_title_virtual_device: "மெய்நிகர் சாதனம் நீக்கவா?"
+  node_reset_heading: "முனை மீட்டமை செய்யவா?"
+  node_reset_msg: "தேர்ந்தெடுத்த முனைகளை மீட்டமை செய்யவா?<br/>இந்த செயல்பாட்டிற்குப் பிறகு:<3><0>அமைப்பு தொழிற்சாலை அமைப்புகளுக்கு திரும்பும்.</0><1>தேர்ந்தெடுத்த முனைகளுக்கான அணுகல் MyController இல் இழக்கப்படலாம்!</1></3>"
+  reboot_nodes_heading: "நோடை மறுதொடக்கம் செய்யவா?"
+  reboot_nodes_msg: "தேர்ந்தெடுத்த முனைகளை மறுதொடக்கம் செய்யவா?"
+  reset_msg_jwt_secret: "JWT ரகசியத்தை மீட்டமை செய்யவா? இந்த செயல்பாட்டிற்குப் பிறகு இந்த சேவையகத்தில் உள்ள அனைத்து உள்நுழைவு அமர்வுகளும் செல்லாது. நீங்களும் வெளியேற்றப்படுவீர்கள்."
+  reset_title_jwt_secret: JWT ரகசியம் மீட்டமை
+  restore_heading: "மீட்டெடுக்கவா?"
+  restore_msg: "தேர்ந்தெடுத்த காப்பு கோப்பிலிருந்து மீட்டெடுக்கவா?<br/>இந்த செயல்பாட்டிற்குப் பிறகு:<3><0>சேவையகம் தரவு <1>{{fileName}}</1> நிலைக்கு மீட்டெடுக்கப்படும்</0><1>இந்த செயலை மாற்றியமைக்க முடியாது</1><2>மீட்டெடுப்பதற்கு முன் காப்பு எடுக்கவும்</2><3>சேவையகத்தை கைமுறையாக தொடங்க வேண்டியிருக்கலாம்</3></3>"
 disable: முடக்கு
-disable_scrollbar: Scrollbar முடக்கு
+disable_scrollbar: சுருள் பட்டை முடக்கு
 disabled: முடக்கப்பட்டது
 disabled_all: அனைத்தையும் முடக்கு
-discover_nodes: Node-களைக் கண்டறி
-disk: Disk
-disks: Disk-கள்
+discover_nodes: முனைகளைக் கண்டறி
+disk: வட்டு
+disks: வட்டுகள்
 display_name: காட்டும் பெயர்
 display_percentage: சதவீதத்தைக் காண்பி
 display_text: காட்டும் உரை
 display_value: காட்டும் மதிப்பு
 do_update: புதுப்பி
-documentation: Documentation
+documentation: ஆவணம்
 down: கீழ்
 download: பதிவிறக்கு
-drop_down_position: Dropdown இடம்
+drop_down_position: கீழ்விரி இடம்
 duration: காலம்
 edit: திருத்து
-edit_dashboard_settings: Dashboard அமைப்புகளை திருத்து
-edit_widget_settings: Widget அமைப்புகளை திருத்து
-email: Email
-edit_statement: Statement திருத்து
-effect: Effect
+edit_dashboard_settings: கட்டுப்பாட்டுப் பலகை அமைப்புகளை திருத்து
+edit_widget_settings: சிறுகருவி அமைப்புகளை திருத்து
+email: மின்னஞ்சல்
+edit_statement: அறிக்கை திருத்து
+effect: விளைவு
 enable: இயக்கு
 enabled: இயக்கத்தில்
-encryption_key: Encryption Key
-endpoint: Endpoint
-endpoints: Endpoint-கள்
-entities: Entities
+encryption_key: மறைகுறியாக்க விசை
+endpoint: முனையம்
+endpoints: முனையங்கள்
+entities: அமைப்புகள்
 error:
   console:
-    invalid_login_credentials: Login விவரங்கள் தவறானவை.
-    login_msg_loading_failed: Login செய்தியைப் பெற முடியவில்லை
-evaluation: Evaluation
-evaluations: Evaluation-கள்
-event_filters: Event Filter-கள்
-events: Events
+    invalid_login_credentials: உள்நுழைவு விவரங்கள் தவறானவை.
+    login_msg_loading_failed: உள்நுழைவு செய்தியைப் பெற முடியவில்லை
+evaluation: மதிப்பீடு
+evaluations: மதிப்பீடுகள்
+event_filters: நிகழ்வு வடிகட்டிகள்
+events: நிகழ்வுகள்
 executed_count: இயக்கிய எண்ணிக்கை
 execution_interval: இயக்க இடைவெளி
 execution_interval_0h0m0s: இயக்க இடைவெளி (0h0m0s)
 execution_mode: இயக்க முறை
-experimental: Experimental
+experimental: சோதனைமுறை
 expires_on: காலாவதி தேதி
-export_type: Export வகை
-'false': 'False'
+export_type: ஏற்றுமதி வகை
+'false': 'பொய்'
 favorite: விருப்பமானவை
 fetch_info: தகவலைப் பெறு
 fetching: பெறுகிறது
-field: Field
-field_details: Field விவரம்
-field_id: Field ID
-fields: Field-கள்
+field: புலம்
+field_details: புலம் விவரம்
+field_id: புல அடையாளம்
+fields: புலங்கள்
 file_details: கோப்பு விவரம்
-file_uploaded_successfully: கோப்பு Upload செய்யப்பட்டது
+file_uploaded_successfully: கோப்பு பதிவேற்றம் செய்யப்பட்டது
 filename: கோப்பு பெயர்
 filename_placeholder: கோப்பை இங்கு இழுக்கவும் அல்லது தேர்ந்தெடுக்கவும்
-fill_opacity_%: Fill Opacity (%)
-filter: Filter
-filter_type: Filter வகை
-filters: Filter-கள்
-firmware_details: Firmware விவரம்
-firmware_file: Firmware கோப்பு
-firmware_update: Firmware புதுப்பிப்பு
-firmwares: Firmware-கள்
-flush_interval: Flush இடைவெளி
+fill_opacity_%: நிரப்பு ஒளிபுகாமை (%)
+filter: வடிகட்டி
+filter_type: வடிகட்டி வகை
+filters: வடிகட்டிகள்
+firmware_details: நிலைபொருள் விவரம்
+firmware_file: நிலைபொருள் கோப்பு
+firmware_update: நிலைபொருள் புதுப்பிப்பு
+firmwares: நிலைபொருள்கள்
+flush_interval: வெளியேற்று இடைவெளி
 forgot_username_or_password: "பயனர் பெயர் அல்லது கடவுச்சொல்லை மறந்துவிட்டீர்களா?"
-form_generic_error_message: பிழை அல்லது கட்டாய (*) Field-களை சரிபார்க்கவும்
-form_view: Form பார்வை
-forum: Forum
-forward_payload: Forward Payload
-forward_payload_details: Forward Payload விவரம்
-frequency: Frequency
+form_generic_error_message: பிழை அல்லது கட்டாய (*) புலங்களை சரிபார்க்கவும்
+form_view: படிவம் பார்வை
+forum: மன்றம்
+forward_payload: முன்னனுப்பும் தரவுச்சுமை
+forward_payload_details: முன்னனுப்பும் தரவுச்சுமை விவரம்
+frequency: அலைவெண்
 from: அனுப்புநர்
-from_email: அனுப்புநர் Email
+from_email: அனுப்புநர் மின்னஞ்சல்
 full_name: முழு பெயர்
-function: Function
-gateway: Gateway
-gateway_details: Gateway விவரம்
-gateway_id: Gateway ID
-gateways: Gateway-கள்
-all_gateways: அனைத்து Gateway-களும்
-all_nodes: அனைத்து Node-களும்
-show_sources: Source-களைக் காண்பி
-show_fields: Field-களைக் காண்பி
-select_gateway: Gateway
-no_topology_nodes: காண்பிக்க Node இல்லை
-no_topology_nodes_for_gateway: இந்த Gateway-இல் Node இல்லை
+function: செயல்பாடு
+gateway: நுழைவாயில்
+gateway_details: நுழைவாயில் விவரம்
+gateway_id: நுழைவாயில் அடையாளம்
+gateways: நுழைவாயில்கள்
+all_gateways: அனைத்து நுழைவாயில்களும்
+all_nodes: அனைத்து முனைகளும்
+show_sources: மூலங்களைக் காண்பி
+show_fields: புலங்களைக் காண்பி
+select_gateway: நுழைவாயில்
+no_topology_nodes: காண்பிக்க முனை இல்லை
+no_topology_nodes_for_gateway: இந்த நுழைவாயிலில் முனை இல்லை
 geo_location: GEO இடம்
-git_commit: Git Commit
-global_configuration: Global அமைப்பு
-golang_version: GoLang Version
-handler: Handler
-handler_details: Handler விவரம்
-handler_parameters: Handler Parameters
-handler_type: Handler வகை
-handlers: Handler-கள்
-header_name: Header பெயர்
-headers: Header-கள்
-heartbeat_request: Heartbeat கோரிக்கை
+git_commit: கிட் கமிட்
+global_configuration: உலகளாவிய அமைப்பு
+golang_version: GoLang பதிப்பு
+handler: கையாளுநர்
+handler_details: கையாளுநர் விவரம்
+handler_parameters: கையாளுநர் அளவுருக்கள்
+handler_type: கையாளுநர் வகை
+handlers: கையாளுநர்கள்
+header_name: தலைப்புப் பட்டி பெயர்
+headers: தலைப்புப் பட்டிகள்
+heartbeat_request: இதயத்துடிப்பு கோரிக்கை
 height_px: உயரம் (px)
 helper_text:
   invalid_address_esphome: 'தவறான முகவரி. உதாரணம்: node1.local:6053'
   invalid_api: தவறான API
-  invalid_backup_retention_count: தவறான Retention எண்ணிக்கை. வரம்பு இல்லாமல் 0
-  invalid_baud_rate: தவறான Baud Rate
-  invalid_broker_url: தவறான Broker URL
+  invalid_backup_retention_count: தவறான வைத்திருப்பு எண்ணிக்கை. வரம்பு இல்லாமல் 0
+  invalid_baud_rate: தவறான பாட் வீதம்
+  invalid_broker_url: தவறான தரகர் URL
   invalid_current_password: தற்போதைய கடவுச்சொல்லை உள்ளிடவும்
   invalid_data: தவறான தரவு
   invalid_date: தவறான தேதி
   invalid_day_of_month: தவறான நாள்
   invalid_directory: தவறான கோப்புறை
   invalid_duration: தவறான காலம்
-  invalid_email: தவறான Email
+  invalid_email: தவறான மின்னஞ்சல்
   invalid_execution_interval_empty: இயக்க இடைவெளி காலியாக இருக்கக்கூடாது
-  invalid_field_id: "தவறான Field ID. எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
-  invalid_filters: தவறான Filter
+  invalid_field_id: "தவறான புல அடையாளம். எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
+  invalid_filters: தவறான வடிகட்டி
   invalid_height: தவறான உயரம்
-  invalid_host: தவறான Host
-  invalid_id: "தவறான ID. எழுத்து, குறைந்தது=4, அதிகபட்சம்=100, இடைவெளி இருக்கக்கூடாது"
+  invalid_host: தவறான வழங்கி
+  invalid_id: "தவறான அடையாளம். எழுத்து, குறைந்தது=4, அதிகபட்சம்=100, இடைவெளி இருக்கக்கூடாது"
   invalid_interval: தவறான இடைவெளி
-  invalid_key: "தவறான Key. எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
-  invalid_key_path: Key பாதை காலியாக இருக்கக்கூடாது
-  invalid_latitude: தவறான Latitude
+  invalid_key: "தவறான விசை. எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
+  invalid_key_path: விசை பாதை காலியாக இருக்கக்கூடாது
+  invalid_latitude: தவறான அட்சரேகை
   invalid_limit: தவறான வரம்பு
   invalid_location: தவறான இடம்
-  invalid_longitude: தவறான Longitude
-  invalid_maximum_backup: "தவறான Backup எண்ணிக்கை. முழு எண், குறைந்தது=0"
+  invalid_longitude: தவறான தீர்க்கரேகை
+  invalid_maximum_backup: "தவறான காப்பு எண்ணிக்கை. முழு எண், குறைந்தது=0"
   invalid_name: "தவறான பெயர். எழுத்து, குறைந்தது=2, அதிகபட்சம்=100"
-  invalid_node_id: "தவறான Node ID. எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
-  invalid_offset: தவறான Offset
+  invalid_node_id: "தவறான முனை அடையாளம். எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
+  invalid_offset: தவறான ஆஃப்செட்
   invalid_path: தவறான பாதை
-  invalid_payload: தவறான Payload
-  invalid_port: தவறான Port
-  invalid_prefix: தவறான Prefix
+  invalid_payload: தவறான தரவுச்சுமை
+  invalid_port: தவறான துறை
+  invalid_prefix: தவறான முன்னொட்டு
   invalid_profile_confirm_password: உறுதி கடவுச்சொல் பொருந்தவில்லை
   invalid_profile_password: "தவறான கடவுச்சொல். எழுத்து, குறைந்தது=3, அதிகபட்சம்=100"
   invalid_profile_username: "தவறான பயனர் பெயர். எழுத்து, குறைந்தது=3, அதிகபட்சம்=100, இடைவெளி இருக்கக்கூடாது"
   invalid_repeat_count: தவறான திரும்ப எண்ணிக்கை
   invalid_response_code: "சரியான பதில் குறியீட்டை உள்ளிடவும். புறக்கணிக்க 0 உள்ளிடவும்"
   invalid_retry_count: "தவறான மீண்டும் முயற்சி எண்ணிக்கை. முழு எண், குறைந்தது=0"
-  invalid_script_empty: Script காலியாக இருக்கக்கூடாது
-  invalid_server_url: தவறான Server URL
-  invalid_source_id: "தவறான Source ID. எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
+  invalid_script_empty: ஸ்கிரிப்ட் காலியாக இருக்கக்கூடாது
+  invalid_server_url: தவறான சேவையகம் URL
+  invalid_source_id: "தவறான மூல அடையாளம். எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
   invalid_text: "தவறான உரை. எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
   invalid_time: தவறான நேரம்
   invalid_title: தவறான தலைப்பு
-  invalid_token: தவறான Token
-  invalid_topic: தவறான Topic
+  invalid_token: தவறான அடையாளக்குறி
+  invalid_topic: தவறான தலைப்பு
   invalid_type: தவறான வகை
   invalid_url: தவறான URL
   invalid_username: தவறான பயனர் பெயர்
@@ -280,53 +280,53 @@ helper_text:
   service_account_user: உங்களுக்காக உருவாக்க காலியாக விடவும். வேறு பயனருக்கு உருவாக்க அவரைத் தேர்ந்தெடுக்கவும்.
   invalid_value: தவறான மதிப்பு
   invalid_width: தவறான அகலம்
-hide_border: Border-ஐ மறைக்க
-hide_header: Header-ஐ மறைக்க
-hide_status_column: Status Column-ஐ மறைக்க
-hide_value_column: Value Column-ஐ மறைக்க
-host: Host
-host_id: Host ID
-host_ids: Host ID-கள்
+hide_border: எல்லையை மறைக்க
+hide_header: தலைப்புப்பட்டியை மறைக்க
+hide_status_column: நிலை நெடுவரிசையை மறைக்க
+hide_value_column: மதிப்பு நெடுவரிசையை மறைக்க
+host: வழங்கி
+host_id: வழங்கி அடையாளம்
+host_ids: வழங்கி அடையாளங்கள்
 html: HTML
-hue: Hue
-icon_or_image_location: Icon அல்லது பட இடம்
-id: ID
+hue: ஹ்யூ
+icon_or_image_location: சின்னம் அல்லது பட இடம்
+id: அடையாளம்
 ignore_duplicate: நகலைத் தவிர்க்கவும்
-image_source: பட Source
+image_source: பட மூலம்
 image_type: பட வகை
 in_progress: செயல்பாட்டில்
 inactive_duration: செயலில் இல்லாத நேரம்
 include_configuration: அமைப்பை சேர்
-include_global_configuration: Global அமைப்பை சேர்
-include_insecure_share: பாதுகாப்பற்ற Share சேர்
-include_secure_share: பாதுகாப்பான Share சேர்
+include_global_configuration: உலகளாவிய அமைப்பை சேர்
+include_insecure_share: பாதுகாப்பற்ற பகிர்வு சேர்
+include_secure_share: பாதுகாப்பான பகிர்வு சேர்
 insecure: பாதுகாப்பற்றது
-internal_message_ack: Internal Message Ack
-interpolation: Interpolation
+internal_message_ack: உள் செய்தி உறுதி
+interpolation: இடைச்செருகல்
 interval: இடைவெளி
 interval_0h0m0s: இடைவெளி (0h0m0s)
 invalid_file: தவறான கோப்பு
-is_sleep_node: Sleep Node
-is_static: Static
-javascript: Javascript
+is_sleep_node: உறக்க முனை
+is_static: நிலையான
+javascript: ஜாவாஸ்கிரிப்ட்
 json: JSON
-jwt_secret: JWT Secret
+jwt_secret: JWT ரகசியம்
 keep_me_logged_in_30_days: 30 நாட்கள் உள்நுழைந்த நிலையில் வைத்திருக்கவும்
-key: Key
-key_path: Key பாதை
-label: Label
-labels: Label-கள்
+key: விசை
+key_path: விசை பாதை
+label: குறிச்சொல்
+labels: குறிச்சொற்கள்
 language: மொழி
-last_evaluation: கடைசி Evaluation
+last_evaluation: கடைசி மதிப்பீடு
 last_modified: கடைசியாக மாற்றியது
-last_run: கடைசி Run
+last_run: கடைசி இயக்கு
 last_seen: கடைசியாக பார்த்தது
 last_status: கடைசி நிலை
 last_success: கடைசி வெற்றி
-latitude: Latitude
-legend_orientation: Legend திசை
-legend_position: Legend இடம்
-library_version: Library Version
+latitude: அட்சரேகை
+legend_orientation: விளக்கக்குறிப்பு திசை
+legend_position: விளக்கக்குறிப்பு இடம்
+library_version: நூலகம் பதிப்பு
 light: விளக்கு
 limit: வரம்பு
 loading: ஏற்றுகிறது
@@ -334,94 +334,94 @@ location: இடம்
 location_name: இடத்தின் பெயர்
 locations: இடங்கள்
 log_in: உள்நுழை
-log_rotate_interval: Log சுழற்சி இடைவெளி
-login: Login
-login_page: Login பக்கம்
+log_rotate_interval: பதிவு சுழற்சி இடைவெளி
+login: உள்நுழைவு
+login_page: உள்நுழைவு பக்கம்
 login_to_your_account: உங்கள் கணக்கில் உள்நுழையுங்கள்
 logout: வெளியேறு
-longitude: Longitude
-mapping: Mapping
+longitude: தீர்க்கரேகை
+mapping: மேப்பிங்
 mark_all_read: அனைத்தையும் படித்ததாகக் குறியிடு
-markdown: Markdown
-markdown_v2: Markdown v2
+markdown: மார்க்‌டவுன்
+markdown_v2: மார்க்‌டவுன் v2
 match_all: அனைத்தும் பொருந்த வேண்டும்
 max_y_axis: அதிகபட்சம் (Y அச்சு)
 maximum: அதிகபட்சம்
 maximum_age: அதிகபட்ச வயது
-maximum_backup: அதிகபட்ச Backup
+maximum_backup: அதிகபட்ச காப்பு
 maximum_size: அதிகபட்ச அளவு
 maximum_value: அதிகபட்ச மதிப்பு
-memory: Memory
-memory_disabled: Memory முடக்கப்பட்டது
+memory: நினைவகம்
+memory_disabled: நினைவகம் முடக்கப்பட்டது
 message: செய்தி
-message_logger: Message Logger
-method: Method
-metric_configuration: Metric அமைப்பு
-metric_function: Metric Function
-metric_interval: Metric இடைவெளி
-metric_type: Metric வகை
-metrics: Metrics
-metrics_database_disabled: 'எச்சரிக்கை: Metrics Database முடக்கப்பட்டுள்ளது'
+message_logger: செய்திப் பதிவர்
+method: முறை
+metric_configuration: மெட்ரிக் அமைப்பு
+metric_function: மெட்ரிக் செயல்பாடு
+metric_interval: மெட்ரிக் இடைவெளி
+metric_type: மெட்ரிக் வகை
+metrics: மெட்ரிக்குகள்
+metrics_database_disabled: 'எச்சரிக்கை: மெட்ரிக்குகள் தரவுத்தளம் முடக்கப்பட்டுள்ளது'
 min_y_axis: குறைந்தபட்சம் (Y அச்சு)
 minimum: குறைந்தபட்சம்
 minimum_value: குறைந்தபட்ச மதிப்பு
 minimum_width: குறைந்தபட்ச அகலம்
-mixed_resources: கலப்பு Resource-கள்
+mixed_resources: கலப்பு வளங்கள்
 modified_on: மாற்றிய தேதி
 name: பெயர்
-name_key: பெயர் Key
+name_key: பெயர் விசை
 never_expire: காலாவதியாகாது
 new: புதிய
 new_password: புதிய கடவுச்சொல்
 no_change_since: மாற்றம் இல்லாத நேரம்
-no_dashboard_message: ஏற்றுவதற்கு Dashboard இல்லை.
-no_dashboard_title: Dashboard இல்லை
+no_dashboard_message: ஏற்றுவதற்கு கட்டுப்பாட்டுப் பலகை இல்லை.
+no_dashboard_title: கட்டுப்பாட்டுப் பலகை இல்லை
 no_data: தரவு இல்லை
-no_labels: Label இல்லை
-no_login_message: Login செய்தி அமைக்கப்படவில்லை
-node: Node
-node_configuration: Node அமைப்பு
-node_details: Node விவரம்
-node_endpoints: Node Endpoint-கள்
-node_id: Node ID
-node_state_updater: Node State Updater
-nodes: Node-கள்
+no_labels: சிட்டை இல்லை
+no_login_message: உள்நுழைவு செய்தி அமைக்கப்படவில்லை
+node: முனை
+node_configuration: முனை அமைப்பு
+node_details: முனை விவரம்
+node_endpoints: முனை முனையங்கள்
+node_id: முனை அடையாளம்
+node_state_updater: முனை நிலை புதுப்பிப்பான்
+nodes: முனைகள்
 none: ஏதுமில்லை
 notifications: அறிவிப்புகள்
 number_of_axis: அச்சு எண்ணிக்கை
 occurrences: நிகழ்வுகள்
 'off': 'OFF'
 off_text: OFF உரை
-offset_0h0m0s: Offset (0h0m0s)
-offset_y_%: Offset Y (%)
+offset_0h0m0s: ஆஃப்செட் (0h0m0s)
+offset_y_%: ஆஃப்செட் Y (%)
 'on': 'ON'
-on_button: ON Button
+on_button: ON பொத்தான்
 on_receive: வரும்போது
 on_send: அனுப்பும்போது
 on_text: ON உரை
 operations: செயல்பாடுகள்
-operator: Operator
+operator: செயலி
 options: விருப்பங்கள்
 opts:
   backup_provider:
-    desc_disk: தரவை Disk-இல் Backup செய்யும்
-    label_disk: Disk
+    desc_disk: தரவை வட்டில் காப்பு செய்யும்
+    label_disk: வட்டு
   button_type:
     label_danger: ஆபத்து (சிவப்பு)
     label_primary: முதன்மை (நீலம்)
     label_secondary: இரண்டாம் நிலை (நீலம்)
     label_warning: எச்சரிக்கை (மஞ்சள்)
   chart_group_type:
-    desc_group_chart: பல Resource-களுக்கு ஒரே அச்சு
-    desc_mixed_chart: பல Resource-களுக்கு பல அச்சுகள்
-    desc_pie_chart: ஒரே Pie Chart
-    label_group_chart: Group Chart
-    label_mixed_chart: Mixed Chart
-    label_pie_chart: Pie Chart
+    desc_group_chart: பல வளம்-களுக்கு ஒரே அச்சு
+    desc_mixed_chart: பல வளம்-களுக்கு பல அச்சுகள்
+    desc_pie_chart: ஒரே பை விளக்கப்படம்
+    label_group_chart: குழு விளக்கப்படம்
+    label_mixed_chart: கலப்பு விளக்கப்படம்
+    label_pie_chart: பை விளக்கப்படம்
   chart_interpolation:
-    label_basis: Basis
-    label_cardinal: Cardinal
-    label_catmull_rom: CatmullRom
+    label_basis: அடிப்படை
+    label_cardinal: கார்டினல்
+    label_catmull_rom: கேட்முல் ராம்
     label_linear: Linear
     label_monotone_x: MonotoneX
     label_monotone_y: MonotoneY
@@ -430,43 +430,43 @@ opts:
     label_step_after: StepAfter
     label_step_before: StepBefore
   chart_type:
-    desc_area_chart: Area Chart
-    desc_bar_chart: Bar Chart
-    desc_line_chart: Line Chart
-    desc_pie_chart: Pie Chart
-    desc_scatter_chart: Scatter Chart
-    label_area_chart: Area Chart
-    label_bar_chart: Bar Chart
-    label_line_chart: Line Chart
-    label_pie_chart: Pie Chart
-    label_scatter_chart: Scatter Chart
+    desc_area_chart: பரப்பு விளக்கப்படம்
+    desc_bar_chart: பட்டை விளக்கப்படம்
+    desc_line_chart: கோட்டு விளக்கப்படம்
+    desc_pie_chart: பை விளக்கப்படம்
+    desc_scatter_chart: சிதறல் விளக்கப்படம்
+    label_area_chart: பரப்பு விளக்கப்படம்
+    label_bar_chart: பட்டை விளக்கப்படம்
+    label_line_chart: கோட்டு விளக்கப்படம்
+    label_pie_chart: பை விளக்கப்படம்
+    label_scatter_chart: சிதறல் விளக்கப்படம்
   code_editor_language:
     label_html: HTML
-    label_javascript: Javascript
+    label_javascript: ஜாவாஸ்கிரிப்ட்
     label_json: JSON
     label_plaintext: சாதாரண உரை
     label_xml: XML
     label_yaml: YAML
   control_type:
-    label_mixed_control: Mixed Control
-    label_switch_button: Button Switch
-    label_switch_toggle: Switch Toggle
+    label_mixed_control: கலப்பு கட்டுப்பாடு
+    label_switch_button: பொத்தான் சுவிட்ச்
+    label_switch_toggle: சுவிட்ச் மாற்றி
   control_type_mixed:
-    label_button_push: Push Button
-    label_input: Input
+    label_button_push: அழுத்தும் பொத்தான்
+    label_input: உள்ளீடு
     label_options_select: விருப்பங்களைத் தேர்ந்தெடு
-    label_options_tab: Tab விருப்பங்கள்
-    label_slider: Slider
-    label_switch_button: Button Switch
-    label_switch_toggle: Toggle Switch
+    label_options_tab: தாவல் விருப்பங்கள்
+    label_slider: நெகிழி
+    label_switch_button: பொத்தான் சுவிட்ச்
+    label_switch_toggle: மாற்றி சுவிட்ச்
   dampening:
-    desc_active_duration: Task செயலில் இருக்கும் நேரம்
+    desc_active_duration: பணி செயலில் இருக்கும் நேரம்
     desc_consecutive: தொடர்ந்து வரும் நிகழ்வுகளின் எண்ணிக்கை
-    desc_evaluation: N Evaluation-இல் நிகழ்வுகளின் எண்ணிக்கை
-    desc_none: Dampening-ஐ முடக்கு
+    desc_evaluation: N மதிப்பீட்டில் நிகழ்வுகளின் எண்ணிக்கை
+    desc_none: தணிப்பை முடக்கு
     label_active_duration: செயலில் இருக்கும் நேரம்
     label_consecutive: தொடர்ச்சியான
-    label_evaluation: Evaluation
+    label_evaluation: மதிப்பீடு
     label_none: ஏதுமில்லை
   data_unit:
     label_bytes: Bytes
@@ -482,55 +482,55 @@ opts:
     label_requested: கோரப்பட்டது
     label_updated: புதுப்பிக்கப்பட்டது
   gw_msg_logger:
-    desc_file_logger: செய்திகள் ஒரு கோப்பில் Log செய்யப்படும்
-    desc_none: செய்திகள் Log செய்யப்படாது
-    label_file_logger: File Logger
+    desc_file_logger: செய்திகள் ஒரு கோப்பில் பதிவு செய்யப்படும்
+    desc_none: செய்திகள் பதிவு செய்யப்படாது
+    label_file_logger: கோப்புப் பதிவர்
     label_none: ஏதுமில்லை
   gw_protocol:
-    desc_ethernet: Ethernet Protocol
-    desc_http: HTTP Protocol
-    desc_mqtt: MQTT Protocol
-    desc_serial: Serial Protocol
-    label_ethernet: Ethernet
+    desc_ethernet: ஈதர்நெட் நெறிமுறை
+    desc_http: HTTP நெறிமுறை
+    desc_mqtt: MQTT நெறிமுறை
+    desc_serial: சீரியல் நெறிமுறை
+    label_ethernet: ஈதர்நெட்
     label_http: HTTP
     label_mqtt: MQTT
-    label_serial: Serial
+    label_serial: சீரியல்
   gw_provider:
     desc_esphome: esphome.io
-    desc_generic: Generic Provider
+    desc_generic: பொது வழங்குநர்
     desc_mysensors_v2: MySensors.org version 2.x
     desc_philips_hue: developers.meethue.com
-    desc_system_monitoring: System Resource-களைச் சேகரித்து Report செய்யும்
+    desc_system_monitoring: கணினி வளம்களைச் சேகரித்து அறிக்கை செய்யும்
     desc_tasmota: tasmota.github.io
     label_esphome: ESPHome
-    label_generic: Generic
+    label_generic: பொதுவான
     label_mysensors_v2: MySensors V2
     label_philips_hue: PhilipsHue
-    label_system_monitoring: System Monitoring
+    label_system_monitoring: கணினி கண்காணிப்பு
     label_tasmota: Tasmota
   handler_type:
-    desc_backup: Server-ஐ Backup செய்யும்
-    desc_email: Email அனுப்பும்
-    desc_noop: எந்த செயலும் செய்யாத Handler
-    desc_resource: உள் Resource செயல்கள்
-    desc_telegram: Telegram-க்கு உரை அனுப்பும்
-    desc_webhook: ஒரு Webhook URL-ஐ அழைக்கும்
-    label_backup: Backup
-    label_email: Email
-    label_noop: Noop
-    label_resource: Resource
+    desc_backup: சேவையகத்தை காப்பு செய்யும்
+    desc_email: மின்னஞ்சல் அனுப்பும்
+    desc_noop: எந்த செயலும் செய்யாத கையாளுநர்
+    desc_resource: உள் வளம் செயல்கள்
+    desc_telegram: Telegramக்கு உரை அனுப்பும்
+    desc_webhook: ஒரு வெப்ஹுக் URL ஐ அழைக்கும்
+    label_backup: காப்பு
+    label_email: மின்னஞ்சல்
+    label_noop: நூப்
+    label_resource: வளம்
     label_telegram: Telegram
-    label_webhook: Webhook
+    label_webhook: வெப்ஹுக்
   http_method:
     label_delete: DELETE
     label_get: GET
     label_post: POST
     label_put: PUT
   image_load_type:
-    desc_custom_mapping: Field மதிப்பிலிருந்து Map செய்த படம்
-    desc_image: Field மதிப்பிலிருந்து Base64 படம்
-    label_custom_mapping: Custom Mapping
-    label_image: Raw Image
+    desc_custom_mapping: புலம் மதிப்பிலிருந்து மேப் செய்த படம்
+    desc_image: புலம் மதிப்பிலிருந்து Base64 படம்
+    label_custom_mapping: தனிப்பயன் மேப்பிங்
+    label_image: மூலப் படம்
   image_rotation:
     desc_rotate_180: 180° சுழற்று
     desc_rotate_left_90: இடதுபுறம் 90° சுழற்று
@@ -541,11 +541,11 @@ opts:
     label_rotate_none: ஏதுமில்லை
     label_rotate_right_90: வலது 90°
   image_source:
-    desc_disk: உள்ளூர் Disk பாதையிலிருந்து படம்
-    desc_field: Field Resource-இலிருந்து படத் தரவு
-    desc_url: URL-இலிருந்து படம்
-    label_disk: Disk
-    label_field: Field
+    desc_disk: உள்ளூர் வட்டு பாதையிலிருந்து படம்
+    desc_field: புலம் வளத்திலிருந்து படத் தரவு
+    desc_url: URL இலிருந்து படம்
+    label_disk: வட்டு
+    label_field: புலம்
     label_url: URL
   interval:
     label_day_01: 1 நாள்
@@ -581,11 +581,11 @@ opts:
     label_right: வலது
     label_top_left: மேல் இடது
   light_type:
-    desc_cw_ww: Cold White மற்றும் Warm White
+    desc_cw_ww: குளிர் வெள்ளை மற்றும் சூடு வெள்ளை
     desc_rgb: RGB விளக்கு
-    desc_rgb_cw: RGB உடன் Cold White
-    desc_rgb_cw_ww: RGB உடன் Cold White மற்றும் Warm White
-    desc_single: "ஒற்றை, Cold White அல்லது Warm White"
+    desc_rgb_cw: RGB உடன் குளிர் வெள்ளை
+    desc_rgb_cw_ww: RGB உடன் குளிர் வெள்ளை மற்றும் சூடு வெள்ளை
+    desc_single: "ஒற்றை, குளிர் வெள்ளை அல்லது சூடு வெள்ளை"
     label_cw_ww: CW WW
     label_rgb: RGB
     label_rgb_cw: RGB CW
@@ -609,27 +609,27 @@ opts:
   metric_function:
     label_count: எண்ணிக்கை
     label_maximum: அதிகபட்சம்
-    label_mean: Mean
-    label_median: Median
+    label_mean: சராசரி
+    label_median: இடைநிலை
     label_minimum: குறைந்தபட்சம்
-    label_percentile_50: 50வது Percentile
-    label_percentile_75: 75வது Percentile
-    label_percentile_95: 95வது Percentile
-    label_percentile_99: 99வது Percentile
+    label_percentile_50: 50வது சதவீதநிலை
+    label_percentile_75: 75வது சதவீதநிலை
+    label_percentile_95: 95வது சதவீதநிலை
+    label_percentile_99: 99வது சதவீதநிலை
     label_sum: மொத்தம்
   metric_type:
-    label_binary: Binary
-    label_counter: Counter
-    label_gauge: Gauge
-    label_gauge_float: Gauge Float
+    label_binary: இருமம்
+    label_counter: எண்ணி
+    label_gauge: அளவி
+    label_gauge_float: அளவி மிதவை
     label_geo: GEO
     label_none: ஏதுமில்லை
-    label_string: String
+    label_string: சரம்
   rgb_component:
     desc_color_picker: முன்வரையறுக்கப்பட்ட நிறங்கள்
-    desc_hue_slider: Hue Slider
+    desc_hue_slider: ஹ்யூ ஸ்லைடர்
     label_color_picker: விரைவு நிறத் தேர்வி
-    label_hue_slider: Hue Slider
+    label_hue_slider: ஹ்யூ ஸ்லைடர்
   schedule_frequency:
     desc_daily: ஒவ்வொரு நாளும் இயங்கும்
     desc_monthly: மாதம் ஒருமுறை இயங்கும்
@@ -640,19 +640,19 @@ opts:
     label_on_date: குறித்த நாளில்
     label_weekly: வாரந்தோறும்
   schedule_type:
-    desc_cron: Cron Expression
+    desc_cron: க்ரான் வெளிப்பாடு
     desc_repeat: ஒரு குறிப்பிட்ட இடைவெளியில் திரும்ப செய்யும்
-    desc_simple: "தினசரி, வாராந்திர, மாதாந்திர Schedule"
+    desc_simple: "தினசரி, வாராந்திர, மாதாந்திர அட்டவணை"
     desc_sunrise: சூரிய உதய நேரத்தை அடிப்படையாகக் கொண்டது
     desc_sunset: சூரிய அஸ்தமன நேரத்தை அடிப்படையாகக் கொண்டது
-    label_cron: Cron
+    label_cron: க்ரான்
     label_repeat: திரும்பச் செய்
     label_simple: எளிய முறை
     label_sunrise: சூரிய உதயம்
     label_sunset: சூரிய அஸ்தமனம்
   theme_color:
     label_blue: நீலம்
-    label_cyan: Cyan
+    label_cyan: சியான்
     label_gold: பொன்னிறம்
     label_green: பச்சை
     label_multiple_ordered: வரிசைப்படுத்தப்பட்ட பல
@@ -660,51 +660,51 @@ opts:
     label_orange: ஆரஞ்சு
     label_purple: ஊதா
   trait_type:
-    label_app_selector: App Selector
-    label_arm_disarm: Arm Disarm
+    label_app_selector: செயலித் தேர்வி
+    label_arm_disarm: ஆர்ம் டிசார்ம்
     label_brightness: பிரகாசம்
-    label_camera_stream: Camera Stream
-    label_channel: Channel
+    label_camera_stream: கேமரா ஸ்ட்ரீம்
+    label_channel: சேனல்
     label_color_setting: நிற அமைப்பு
-    label_cook: Cook
-    label_dispense: Dispense
-    label_dock: Dock
-    label_energy_storage: Energy Storage
+    label_cook: சமையல்
+    label_dispense: வெளியிடு
+    label_dock: டாக்
+    label_energy_storage: ஆற்றல் சேமிப்பு
     label_fan_speed: விசிறி வேகம்
     label_fill: நிரப்பு
     label_humidity_setting: ஈரப்பத அமைப்பு
-    label_input_selector: Input Selector
-    label_light_effects: விளக்கு Effect-கள்
-    label_locator: Locator
+    label_input_selector: உள்ளீட்டுத் தேர்வி
+    label_light_effects: விளக்கு விளைவுகள்
+    label_locator: இருப்பிடங்காட்டி
     label_lock_unlock: பூட்டு / திற
-    label_media_state: Media State
-    label_modes: Modes
-    label_network_control: Network Control
-    label_object_detection: Object Detection
-    label_on_off: On Off
+    label_media_state: ஊடக நிலை
+    label_modes: முறைகள்
+    label_network_control: பிணையக் கட்டுப்பாடு
+    label_object_detection: பொருள் கண்டறிதல்
+    label_on_off: ஆன் ஆஃப்
     label_open_close: திற / மூடு
-    label_reboot: Reboot
+    label_reboot: மறுதொடக்கம்
     label_rotation: சுழற்சி
-    label_run_cycle: Run Cycle
-    label_scene: Scene
-    label_sensor_state: Sensor State
-    label_software_update: Software Update
+    label_run_cycle: இயக்கச் சுழற்சி
+    label_scene: காட்சி
+    label_sensor_state: சென்சார் நிலை
+    label_software_update: மென்பொருள் புதுப்பிப்பு
     label_start_stop: தொடங்கு / நிறுத்து
-    label_status_report: Status Report
+    label_status_report: நிலை அறிக்கை
     label_temperature_control: வெப்பநிலை கட்டுப்பாடு
     label_temperature_setting: வெப்பநிலை அமைப்பு
-    label_timer: Timer
-    label_toggles: Toggles
-    label_transport_control: Transport Control
+    label_timer: நேரங்காட்டி
+    label_toggles: மாற்றிகள்
+    label_transport_control: போக்குவரத்துக் கட்டுப்பாடு
     label_volume: ஒலி அளவு
   utilization_chart:
     label_circle_050: அரை வட்டம்
     label_circle_075: 3/4 வட்டம்
     label_circle_100: முழு வட்டம்
-    label_spark_area: Spark Area
-    label_spark_bar: Spark Bar
-    label_spark_line: Spark Line
-    label_table: Table
+    label_spark_area: ஸ்பார்க் பரப்பு
+    label_spark_bar: ஸ்பார்க் பட்டை
+    label_spark_line: ஸ்பார்க் கோடு
+    label_table: அட்டவணை
   va_provider:
     desc_alexa: Amazon Alexa
     desc_google_assistant: Google Assistant
@@ -801,226 +801,226 @@ opts:
     label_tuesday: செவ்வாய்க்கிழமை
     label_wednesday: புதன்கிழமை
   widget_type:
-    desc_chart_panel: Chart-களில் தரவைக் காண்பி
-    desc_control_panel: Resource-களில் கட்டுப்பாட்டு செயல் செய்யும்
-    desc_empty_panel: வெற்று Panel
-    desc_image_panel: வெவ்வேறு Source-இலிருந்து படத்தைக் காண்பி
+    desc_chart_panel: விளக்கப்படங்களில் தரவைக் காண்பி
+    desc_control_panel: வளங்களில் கட்டுப்பாட்டு செயல் செய்யும்
+    desc_empty_panel: வெற்று பலகம்
+    desc_image_panel: வெவ்வேறு மூலத்திலிருந்து படத்தைக் காண்பி
     desc_light_panel: ஒரு விளக்கை கட்டுப்படுத்தும்
     desc_utilization_panel: பயன்பாட்டு நிலையைக் காண்பி
-    label_chart_panel: Chart Panel
-    label_control_panel: Control Panel
-    label_empty_panel: Empty Panel
-    label_image_panel: Image Panel
-    label_light_panel: Light Panel
-    label_utilization_panel: Utilization Panel
+    label_chart_panel: விளக்கப்படப் பலகம்
+    label_control_panel: கட்டுப்பாட்டுப் பலகம்
+    label_empty_panel: வெற்றுப் பலகம்
+    label_image_panel: படப் பலகம்
+    label_light_panel: விளக்குப் பலகம்
+    label_utilization_panel: பயன்பாட்டுப் பலகம்
 others: மற்றவை
-padding_bottom_px: கீழ் Padding (px)
-padding_left_px: இடது Padding (px)
-padding_right_px: வலது Padding (px)
-padding_top_px: மேல் Padding (px)
-panel_title: Panel தலைப்பு
-parameters_to_handler: Handler-க்கு Parameters
-parse_mode: Parse Mode
+padding_bottom_px: கீழ் உள்வெளி (px)
+padding_left_px: இடது உள்வெளி (px)
+padding_right_px: வலது உள்வெளி (px)
+padding_top_px: மேல் உள்வெளி (px)
+panel_title: பலகம் தலைப்பு
+parameters_to_handler: கையாளுநருக்கு அளவுருக்கள்
+parse_mode: பார்ஸ் முறை
 password: கடவுச்சொல்
 path: பாதை
-payload: Payload
+payload: தரவுச்சுமை
 send: அனுப்பு
-payload_off: Payload OFF
-payload_on: Payload ON
-payloads: Payload-கள்
+payload_off: தரவுச்சுமை OFF
+payload_on: தரவுச்சுமை ON
+payloads: தரவுச்சுமைகள்
 per_cpu_disabled: ஒவ்வொரு CPU-ம் முடக்கப்பட்டது
-port: Port
-port_name: Port பெயர்
-post_run: Post Run
-power: Power
+port: துறை
+port_name: துறை பெயர்
+post_run: பிந்தைய இயக்கம்
+power: ஆற்றல்
 pre_delay: முன் தாமதம்
-pre_run: Pre Run
-prefix: Prefix
+pre_run: முன் இயக்கம்
+prefix: முன்னொட்டு
 previous_value: முந்தைய மதிப்பு
-process: Process
-processes: Process-கள்
-profile: Profile
-protocol: Protocol
-provider: Provider
-provider_type: Provider வகை
-publish: Publish
+process: செயல்முறை
+processes: செயல்முறைகள்
+profile: சுயவிவரம்
+protocol: நெறிமுறை
+provider: வழங்குநர்
+provider_type: வழங்குநர் வகை
+publish: வெளியிடு
 qos: QoS
-query_parameters: Query Parameters
-queue_failed_messages: தோல்வியுற்ற செய்திகளை Queue-இல் வைக்கவும்
-quick_id: Quick ID
+query_parameters: வினவல் அளவுருக்கள்
+queue_failed_messages: தோல்வியுற்ற செய்திகளை வரிசையில் வைக்கவும்
+quick_id: விரைவு அடையாளம்
 re_enable: மீண்டும் இயக்கு
 re_enable_duration: மீண்டும் இயக்கும் நேரம்
-react_version: React Version
+react_version: React பதிப்பு
 read_only: படித்தல் மட்டும்
-reboot: Reboot
+reboot: மறுதொடக்கம்
 reconnect_delay: மீண்டும் இணைக்கும் தாமதம்
 refresh_interval: புதுப்பிப்பு இடைவெளி
-refresh_node_info: Node தகவலை புதுப்பி
+refresh_node_info: முனை தகவலை புதுப்பி
 reload: மீண்டும் ஏற்று
 repeat_count: திரும்ப எண்ணிக்கை
-request_heartbeat: Heartbeat கோரு
-reset: Reset
-resetting: Reset செய்யப்படுகிறது...
-resource: Resource
-resource_by_labels: Label மூலம் Resource
-resource_by_quick_id: Quick ID மூலம் Resource
-resource_configuration: Resource அமைப்பு
-resource_filters: Resource Filter-கள்
-resource_name: Resource பெயர்
-resource_type: Resource வகை
-resources: Resource-கள்
+request_heartbeat: இதயத்துடிப்பு கோரு
+reset: மீட்டமை
+resetting: மீட்டமை செய்யப்படுகிறது...
+resource: வளம்
+resource_by_labels: சிட்டை மூலம் வளம்
+resource_by_quick_id: விரைவு அடையாளம் மூலம் வளம்
+resource_configuration: வளம் அமைப்பு
+resource_filters: வளம் வடிகட்டிகள்
+resource_name: வளம் பெயர்
+resource_type: வளம் வகை
+resources: வளங்கள்
 response_code: பதில் குறியீடு
-restore: Restore
-retention_count: Retention எண்ணிக்கை
+restore: மீட்டெடு
+retention_count: வைத்திருப்பு எண்ணிக்கை
 retry_count: மீண்டும் முயற்சி எண்ணிக்கை
 rgb: RGB
-rgb_component: RGB Component
+rgb_component: RGB பகுதி
 rotation: சுழற்சி
 round_decimal: தசமத்தைச் சுற்று
-rule: Rule
-run_a_backup: Backup இயக்கு
-run_backup: Backup இயக்கு
+rule: விதி
+run_a_backup: காப்பு இயக்கு
+run_backup: காப்பு இயக்கு
 s_no: '#'
-saturation: Saturation
+saturation: நிறநிறைவு
 save: சேமி
-schedule: Schedule
-schedule_details: Schedule விவரம்
-schedule_type: Schedule வகை
-schedules: Schedule-கள்
-script: Script
+schedule: அட்டவணை
+schedule_details: அட்டவணை விவரம்
+schedule_type: அட்டவணை வகை
+schedules: அட்டவணைகள்
+script: ஸ்கிரிப்ட்
 select_an_option: ஒரு விருப்பத்தைத் தேர்ந்தெடுக்கவும்
-server: Server
-service_account_not_generated: Service Account Token உருவாக்கப்படவில்லை
-service_account_copy_title: Service Account Token-ஐ நகலெடு
-service_account_copy_warning_msg: "இந்த Token ஒருமுறை மட்டுமே காட்டப்படும். மீண்டும் பார்க்க முடியாது. உடனே சேமிக்கவும்."
-service_account_barcode_help: Token மூலம் Login செய்ய இந்த Barcode-ஐ Scan செய்யுங்கள்.
-service_account_details: Service Account விவரம்
-service_accounts: Service Account-கள்
-policies: Policy-கள்
-policy_details: Policy விவரம்
+server: சேவையகம்
+service_account_not_generated: சேவைக் கணக்கு அடையாளக்குறி உருவாக்கப்படவில்லை
+service_account_copy_title: சேவைக் கணக்கு டோக்கனை நகலெடு
+service_account_copy_warning_msg: "இந்த அடையாளக்குறி ஒருமுறை மட்டுமே காட்டப்படும். மீண்டும் பார்க்க முடியாது. உடனே சேமிக்கவும்."
+service_account_barcode_help: அடையாளக்குறி மூலம் உள்நுழைவு செய்ய இந்த பார்கோடை ஸ்கேன் செய்யுங்கள்.
+service_account_details: சேவைக் கணக்கு விவரம்
+service_accounts: சேவைக் கணக்குகள்
+policies: கொள்கைகள்
+policy_details: கொள்கை விவரம்
 settings: அமைப்புகள்
 show_grid_x: X கட்டத்தைக் காண்பி
 show_grid_y: Y கட்டத்தைக் காண்பி
 show_title: தலைப்பைக் காண்பி
 since: இருந்து
 size: அளவு
-sleeping_queue: Sleep Queue
+sleeping_queue: ஸ்லீப் வரிசை
 sort_order_priority: வரிசை முன்னுரிமை
-source: Source
-source_code: Source Code
-source_details: Source விவரம்
-source_field: Source Field
-source_id: Source ID
-sources: Source-கள்
-spec: Spec
-stack_charts: Chart-களை அடுக்கவும்
+source: மூலம்
+source_code: மூலக் குறியீடு
+source_details: மூலம் விவரம்
+source_field: மூலம் புலம்
+source_id: மூல அடையாளம்
+sources: மூலங்கள்
+spec: விவரம்
+stack_charts: விளக்கப்படங்களை அடுக்கவும்
 state: நிலை
 status: நிலை
 status_at: நிலை நேரம்
 status_configuration: நிலை அமைப்பு
 step: படி
-storage_export_type: Storage Export வகை
-stream_message_ack: Stream Message Ack
-string: String
-stroke_width_px: Stroke அகலம் (px)
+storage_export_type: சேமிப்பக ஏற்றுமதி வகை
+stream_message_ack: ஸ்ட்ரீம் செய்தி உறுதி
+string: சரம்
+stroke_width_px: கோடு அகலம் (px)
 sub_type: துணை வகை
-subject: Subject
-subscribe: Subscribe
-swap_disabled: Swap முடக்கப்பட்டது
-sync_interval: Sync இடைவெளி
-system: System
-system_message: System செய்தி
-table_configuration: Table அமைப்பு
-table_view: Table பார்வை
-target_directory: Target கோப்புறை
-target_location: Target இடம்
-task: Task
-task_details: Task விவரம்
-tasks: Task-கள்
+subject: தலைப்பு
+subscribe: சந்தா
+swap_disabled: இடமாற்று முடக்கப்பட்டது
+sync_interval: ஒத்திசைவு இடைவெளி
+system: கணினி
+system_message: கணினி செய்தி
+table_configuration: அட்டவணை அமைப்பு
+table_view: அட்டவணை பார்வை
+target_directory: இலக்கு கோப்புறை
+target_location: இலக்கு இடம்
+task: பணி
+task_details: பணி விவரம்
+tasks: பணிகள்
 telegram: Telegram
 temperature: வெப்பநிலை
 text: உரை
 the_open_source_controller: The Open Source Controller
 theme: தீம்
-theme_color: Theme நிறம்
+theme_color: தீம் நிறம்
 theme_dark: இருள்
 theme_light: வெளிர்
 theme_system: சிஸ்டம்
 thickness: தடிமன்
-threshold_mode: Threshold முறை
-thresholds: Threshold-கள்
-thresholds_color: Threshold நிறம்
+threshold_mode: வாசல் மதிப்பு முறை
+thresholds: வாசல் மதிப்புகள்
+thresholds_color: வாசல் மதிப்பு நிறம்
 time_hh_mm_ss: "நேரம் (hh:mm:ss)"
-timeout: Timeout
-timestamp: Timestamp
-timestamp_key: Timestamp Key
+timeout: காலமுடிவு
+timestamp: நேரமுத்திரை
+timestamp_key: நேரமுத்திரை விசை
 title: தலைப்பு
 to: பெறுநர்
-to_emails: பெறுநர் Email-கள்
-token: Token
-topology: Topology
-topic: Topic
-trait: Trait
-traits: Trait-கள்
+to_emails: பெறுநர் மின்னஞ்சல்கள்
+token: அடையாளக்குறி
+topology: இணைப்பு வரைபடம்
+topic: தலைப்பு
+trait: பண்பு
+traits: பண்புகள்
 transmit_pre_delay: அனுப்பும் முன் தாமதம்
-trigger_on_event: Event நிகழும்போது இயக்கு
-'true': 'True'
+trigger_on_event: நிகழ்வு நிகழும்போது இயக்கு
+'true': 'உண்மை'
 type: வகை
 unit: அலகு
 up: மேலே
 update: புதுப்பி
-update_body: Body புதுப்பி
+update_body: உடல்பகுதி புதுப்பி
 update_data: தரவு புதுப்பி
-update_endpoint: Endpoint புதுப்பி
-update_firmware: Firmware புதுப்பி
-update_node: Node புதுப்பி
-update_post_run: Post Run புதுப்பி
-update_pre_run: Pre Run புதுப்பி
-update_query_parameters: Query Parameters புதுப்பி
-update_resource: Resource புதுப்பி
-update_script: Script புதுப்பி
-update_trait: Trait புதுப்பி
+update_endpoint: முனையம் புதுப்பி
+update_firmware: நிலைபொருள் புதுப்பி
+update_node: முனை புதுப்பி
+update_post_run: பிந்தைய இயக்கம் புதுப்பி
+update_pre_run: முன் இயக்கம் புதுப்பி
+update_query_parameters: வினவல் அளவுருக்கள் புதுப்பி
+update_resource: வளம் புதுப்பி
+update_script: ஸ்கிரிப்ட் புதுப்பி
+update_trait: பண்பு புதுப்பி
 update_value: மதிப்பு புதுப்பி
 update_y_axis: Y அச்சு புதுப்பி
-upload: Upload
-upload_firmware: Firmware Upload
+upload: பதிவேற்றம்
+upload_firmware: நிலைபொருள் பதிவேற்றம்
 url: URL
-use_global: Global பயன்படுத்தவும்
-use_global_encryption_key: Global Encryption Key பயன்படுத்தவும்
-use_global_password: Global கடவுச்சொல்லைப் பயன்படுத்தவும்
-use_global_style: Global Style பயன்படுத்தவும்
-user_id: User ID
+use_global: உலகளாவிய பயன்படுத்தவும்
+use_global_encryption_key: உலகளாவிய மறைகுறியாக்க விசை பயன்படுத்தவும்
+use_global_password: உலகளாவிய கடவுச்சொல்லைப் பயன்படுத்தவும்
+use_global_style: உலகளாவிய பாணி பயன்படுத்தவும்
+user_id: பயனர் அடையாளம்
 username: பயனர் பெயர்
 validate_time_everyday: தினமும் நேரத்தைச் சரிபார்க்கவும்
 validity: செல்லும் காலம்
 value: மதிப்பு
-value_formatter: Value Formatter
-value_key: Value Key
-variable: Variable
-variable_name: Variable பெயர்
-variables: Variable-கள்
-version: Version
-virtual_assistant: Virtual Assistant
-virtual_assistant_details: Virtual Assistant விவரம்
-virtual_assistants: Virtual Assistant-கள்
-virtual_device_details: Virtual Device விவரம்
-virtual_devices: Virtual Device-கள்
-web_console: Web Console
-webhook: Webhook
-websocket_disconnected: Websocket துண்டிக்கப்பட்டது
-welcome_to_mycontroller: MyController-க்கு வரவேற்கிறோம்
+value_formatter: மதிப்பு வடிவமைப்பான்
+value_key: மதிப்பு விசை
+variable: மாறி
+variable_name: மாறி பெயர்
+variables: மாறிகள்
+version: பதிப்பு
+virtual_assistant: மெய்நிகர் உதவியாளர்
+virtual_assistant_details: மெய்நிகர் உதவியாளர் விவரம்
+virtual_assistants: மெய்நிகர் உதவியாளர்கள்
+virtual_device_details: மெய்நிகர் சாதனம் விவரம்
+virtual_devices: மெய்நிகர் சாதனங்கள்
+web_console: இணைய முனையம்
+webhook: வெப்ஹுக்
+websocket_disconnected: வெப்சாக்கெட் துண்டிக்கப்பட்டது
+welcome_to_mycontroller: MyControllerக்கு வரவேற்கிறோம்
 width_px: அகலம் (px)
 y_axis: Y அச்சு
 y_axis_configuration: Y அச்சு அமைப்பு
 yaml: YAML
 yaml_view: YAML பார்வை
-statement: Statement
-statements: Statement-கள்
+statement: அறிக்கை
+statements: அறிக்கைகள்
 user_details: பயனர் விவரம்
 users: பயனர்கள்
 layout: அமைப்பு
-layout_tree: Tree
-layout_force: Force
+layout_tree: மரம்
+layout_force: விசை
 refresh: புதுப்பி
-include_child_nodes: Child Node-களை சேர்
-child_nodes: Child Node-கள்
+include_child_nodes: இணை முனைகளை சேர்
+child_nodes: இணை முனைகள்

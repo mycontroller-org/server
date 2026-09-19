@@ -25,6 +25,7 @@ Draft for **2.3.0** (`versions.txt`). Compared to [v2.2.0](https://github.com/my
 
 ### Changed
 
+- Indic console locales (Hindi, Kannada, Malayalam, Tamil, Telugu): resource names such as gateway, node, field, source, resource, data repository, and ID use native words (Tamil நுழைவாயில் / முனை / அடையாளம்), not Latin English mixed into the script. Product names and protocol abbreviations stay as-is.
 - Console colour scheme is PatternFly **light**, **dark**, or **system** (follows the OS). Custom themes from the data repository (`labels.gui_theme`) are removed. The choice is stored in the browser (`localStorage` `mc-theme`). The header has a compact joined theme control and a locale dropdown (`🇬🇧 EN-UK`). Dark mode uses PatternFly tokens for labels, forms, topology, and widgets. Dashboard tiles no longer use a grey fill.
 - Release workflow builds host binaries (Go 1.27.1 in Actions) and copies only those binaries into Alpine 3.24 images on the same runner (no artifact upload/download). Images are pushed to GHCR, Quay, and Docker Hub as a single multi-arch `:${VERSION}` tag (no per-arch tags). `main` republishes the `development` pre-release by deleting and recreating it.
 - Policy **Import** uses `storage.Upsert` so `createdOn` / `modifiedOn` come from the backup file (same as other resources). Built-in policies are still skipped.
