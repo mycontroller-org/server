@@ -3,24 +3,24 @@ about: परिचय
 actions: क्रियाएँ
 active_duration: सक्रिय अवधि
 add: जोड़ें
-add_a_field: क्षेत्र जोड़ें
+add_a_field: फील्ड जोड़ें
 add_a_firmware: फर्मवेयर जोड़ें
-add_a_forward_payload: फ़ॉरवर्ड डेटा भार जोड़ें
-add_a_gateway: प्रवेश द्वार जोड़ें
-add_a_handler: संचालक जोड़ें
-add_a_node: संयोजन बिंदु जोड़ें
+add_a_forward_payload: फ़ॉरवर्ड पेलोड जोड़ें
+add_a_gateway: गेटवे जोड़ें
+add_a_handler: हैंडलर जोड़ें
+add_a_node: नोड जोड़ें
 add_a_schedule: शेड्यूल जोड़ें
 add_a_policy: नीति जोड़ें
 add_a_service_account: सेवा खाता जोड़ें
 add_a_user: उपयोगकर्ता जोड़ें
-add_a_source: स्रोत जोड़ें
+add_a_source: सोर्स जोड़ें
 add_a_task: कार्य जोड़ें
 add_a_virtual_assistant: वर्चुअल असिस्टेंट जोड़ें
 add_a_virtual_device: वर्चुअल डिवाइस जोड़ें
 add_an_item: आइटम जोड़ें
 add_widget: विजेट जोड़ें
 address: पता
-agent_user_id: एजेंट उपयोगकर्ता पहचान
+agent_user_id: एजेंट उपयोगकर्ता आईडी
 alerts_empty_message: इस समय कोई अलर्ट नहीं है।
 alerts_empty_title: कोई अलर्ट नहीं मिला
 alive_check_interval: सक्रियता जाँच अंतराल
@@ -30,7 +30,7 @@ apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: पुष्टि माँगें
 assigned_firmware: नियत फर्मवेयर
-assigned_nodes: नियत संयोजन बिंदु
+assigned_nodes: नियत नोड
 auto_disable: स्वतः अक्षम करें
 auto_update: स्वतः अपडेट
 axis: अक्ष
@@ -50,7 +50,7 @@ button_text: बटन पाठ
 cancel: रद्द करें
 chart_configuration: चार्ट सेटिंग
 chart_type: चार्ट प्रकार
-chat_ids: चैट पहचान
+chat_ids: चैट आईडी
 clear: साफ़ करें
 clear_all: सभी साफ़ करें
 color: रंग
@@ -78,19 +78,19 @@ custom_data: कस्टम डेटा
 custom_mapping: कस्टम मैपिंग
 custom_variables: कस्टम चर
 dampening: अवमंदन
-dashboard: नियंत्रण पटल
+dashboard: डैशबोर्ड
 data: डेटा
-data_repository: डेटा भंडार
-data_repository_add_an_entry: 'डेटा भंडार: प्रविष्टि जोड़ें'
-data_repository_modify_an_entry: 'डेटा भंडार: प्रविष्टि बदलें'
-data_retrieved_from_server: सेवा यंत्र से डेटा प्राप्त हुआ
+data_repository: डेटा रिपॉजिटरी
+data_repository_add_an_entry: 'डेटा रिपॉजिटरी: प्रविष्टि जोड़ें'
+data_repository_modify_an_entry: 'डेटा रिपॉजिटरी: प्रविष्टि बदलें'
+data_retrieved_from_server: सर्वर से डेटा प्राप्त हुआ
 data_type: डेटा प्रकार
 date_yyyy_mm_dd: दिनांक (yyyy-mm-dd)
 day_of_month: माह का दिन
 day_of_week: सप्ताह के दिन
 delete: हटाएँ
 description: विवरण
-destination_field: गंतव्य क्षेत्र
+destination_field: गंतव्य फील्ड
 detailed_filter: विस्तृत फ़िल्टर
 details: विवरण
 device_filter: डिवाइस फ़िल्टर
@@ -100,35 +100,35 @@ dialog:
   clear_sleeping_queue_msg: स्लीप क्यू के सभी संदेश हटा दिए जाएँगे
   delete_resource_msg: "क्या आप चयनित आइटम हटाना चाहते हैं?"
   delete_title_backup: "बैकअप फ़ाइलें हटाएँ?"
-  delete_title_dashboard: "नियंत्रण पटल हटाएँ?"
-  delete_title_data_repository: "डेटा भंडार हटाएँ?"
-  delete_title_field: "क्षेत्र हटाएँ?"
+  delete_title_dashboard: "डैशबोर्ड हटाएँ?"
+  delete_title_data_repository: "डेटा रिपॉजिटरी हटाएँ?"
+  delete_title_field: "फील्ड हटाएँ?"
   delete_title_firmware: "फर्मवेयर हटाएँ?"
-  delete_title_forward_payload: "फ़ॉरवर्ड डेटा भार हटाएँ?"
-  delete_title_gateway: "प्रवेश द्वार हटाएँ?"
-  delete_title_handler: "संचालक हटाएँ?"
-  delete_title_node: "संयोजन बिंदु हटाएँ?"
+  delete_title_forward_payload: "फ़ॉरवर्ड पेलोड हटाएँ?"
+  delete_title_gateway: "गेटवे हटाएँ?"
+  delete_title_handler: "हैंडलर हटाएँ?"
+  delete_title_node: "नोड हटाएँ?"
   delete_title_schedule: "शेड्यूल हटाएँ?"
   delete_title_service_account: "सेवा खाता हटाएँ?"
   delete_title_user: "उपयोगकर्ता हटाएँ?"
   delete_title_policy: "नीति हटाएँ?"
-  delete_title_source: "स्रोत हटाएँ?"
+  delete_title_source: "सोर्स हटाएँ?"
   delete_title_task: "कार्य हटाएँ?"
   delete_title_virtual_assistant: "वर्चुअल असिस्टेंट हटाएँ?"
   delete_title_virtual_device: "वर्चुअल डिवाइस हटाएँ?"
-  node_reset_heading: "संयोजन बिंदु रीसेट करें?"
-  node_reset_msg: "क्या आप चयनित संयोजन बिंदु रीसेट करना चाहते हैं?<br/>इस क्रिया के बाद:<3><0>सेटिंग फ़ैक्टरी सेटिंग पर वापस आ जाएगी।</0><1>चयनित संयोजन बिंदु तक MyController से पहुँच समाप्त हो सकती है!</1></3>"
-  reboot_nodes_heading: "संयोजन बिंदु रीबूट करें?"
-  reboot_nodes_msg: "क्या आप चयनित संयोजन बिंदु रीबूट करना चाहते हैं?"
-  reset_msg_jwt_secret: "क्या आप JWT सीक्रेट रीसेट करना चाहते हैं? इस क्रिया के बाद इस सेवा यंत्र पर सभी लॉगिन सत्र अमान्य हो जाएँगे और आप लॉग आउट हो जाएँगे।"
+  node_reset_heading: "नोड रीसेट करें?"
+  node_reset_msg: "क्या आप चयनित नोड रीसेट करना चाहते हैं?<br/>इस क्रिया के बाद:<3><0>सेटिंग फ़ैक्टरी सेटिंग पर वापस आ जाएगी।</0><1>चयनित नोड तक MyController से पहुँच समाप्त हो सकती है!</1></3>"
+  reboot_nodes_heading: "नोड रीबूट करें?"
+  reboot_nodes_msg: "क्या आप चयनित नोड रीबूट करना चाहते हैं?"
+  reset_msg_jwt_secret: "क्या आप JWT सीक्रेट रीसेट करना चाहते हैं? इस क्रिया के बाद इस सर्वर पर सभी लॉगिन सत्र अमान्य हो जाएँगे और आप लॉग आउट हो जाएँगे।"
   reset_title_jwt_secret: JWT सीक्रेट रीसेट
   restore_heading: "पुनर्स्थापित करें?"
-  restore_msg: "क्या आप चयनित बैकअप फ़ाइल से पुनर्स्थापित करना चाहते हैं?<br/>इस क्रिया के बाद:<3><0>सेवा यंत्र डेटा <1>{{fileName}}</1> पर पुनर्स्थापित हो जाएगा</0><1>इस क्रिया को वापस नहीं लिया जा सकता</1><2>पुनर्स्थापना से पहले बैकअप लें</2><3>सेवा यंत्र को मैन्युअल रूप से शुरू करना पड़ सकता है</3></3>"
+  restore_msg: "क्या आप चयनित बैकअप फ़ाइल से पुनर्स्थापित करना चाहते हैं?<br/>इस क्रिया के बाद:<3><0>सर्वर डेटा <1>{{fileName}}</1> पर पुनर्स्थापित हो जाएगा</0><1>इस क्रिया को वापस नहीं लिया जा सकता</1><2>पुनर्स्थापना से पहले बैकअप लें</2><3>सर्वर को मैन्युअल रूप से शुरू करना पड़ सकता है</3></3>"
 disable: अक्षम करें
 disable_scrollbar: स्क्रॉलबार अक्षम करें
 disabled: अक्षम
 disabled_all: सभी अक्षम करें
-discover_nodes: संयोजन बिंदु खोजें
+discover_nodes: नोड खोजें
 disk: डिस्क
 disks: डिस्क
 display_name: प्रदर्शन नाम
@@ -142,7 +142,7 @@ download: डाउनलोड
 drop_down_position: ड्रॉपडाउन स्थान
 duration: अवधि
 edit: संपादित करें
-edit_dashboard_settings: नियंत्रण पटल सेटिंग संपादित करें
+edit_dashboard_settings: डैशबोर्ड सेटिंग संपादित करें
 edit_widget_settings: विजेट सेटिंग संपादित करें
 email: ईमेल
 enable: सक्षम करें
@@ -170,10 +170,10 @@ export_type: निर्यात प्रकार
 favorite: पसंदीदा
 fetch_info: जानकारी प्राप्त करें
 fetching: प्राप्त किया जा रहा है
-field: क्षेत्र
-field_details: क्षेत्र विवरण
-field_id: क्षेत्र पहचान
-fields: क्षेत्र
+field: फील्ड
+field_details: फील्ड विवरण
+field_id: फील्ड आईडी
+fields: फील्ड
 file_details: फ़ाइल विवरण
 file_uploaded_successfully: फ़ाइल अपलोड हो गई
 filename: फ़ाइल नाम
@@ -188,36 +188,36 @@ firmware_update: फर्मवेयर अपडेट
 firmwares: फर्मवेयर
 flush_interval: फ़्लश अंतराल
 forgot_username_or_password: "उपयोगकर्ता नाम या पासवर्ड भूल गए?"
-form_generic_error_message: त्रुटि और/या अनिवार्य(*) क्षेत्र जाँचें
+form_generic_error_message: त्रुटि और/या अनिवार्य(*) फील्ड जाँचें
 form_view: फ़ॉर्म दृश्य
 forum: फ़ोरम
-forward_payload: फ़ॉरवर्ड डेटा भार
-forward_payload_details: फ़ॉरवर्ड डेटा भार विवरण
+forward_payload: फ़ॉरवर्ड पेलोड
+forward_payload_details: फ़ॉरवर्ड पेलोड विवरण
 frequency: आवृत्ति
 from: प्रेषक
 from_email: प्रेषक ईमेल
 full_name: पूरा नाम
 function: फ़ंक्शन
-gateway: प्रवेश द्वार
-gateway_details: प्रवेश द्वार विवरण
-gateway_id: प्रवेश द्वार पहचान
-gateways: प्रवेश द्वार
-all_gateways: सभी प्रवेश द्वार
-all_nodes: सभी संयोजन बिंदु
-show_sources: स्रोत दिखाएँ
-show_fields: क्षेत्र दिखाएँ
-select_gateway: प्रवेश द्वार
-no_topology_nodes: दिखाने के लिए कोई संयोजन बिंदु नहीं
-no_topology_nodes_for_gateway: इस प्रवेश द्वार के लिए कोई संयोजन बिंदु नहीं मिला
+gateway: गेटवे
+gateway_details: गेटवे विवरण
+gateway_id: गेटवे आईडी
+gateways: गेटवे
+all_gateways: सभी गेटवे
+all_nodes: सभी नोड
+show_sources: सोर्स दिखाएँ
+show_fields: फील्ड दिखाएँ
+select_gateway: गेटवे
+no_topology_nodes: दिखाने के लिए कोई नोड नहीं
+no_topology_nodes_for_gateway: इस गेटवे के लिए कोई नोड नहीं मिला
 geo_location: GEO स्थान
 git_commit: गिट कमिट
 global_configuration: वैश्विक सेटिंग
 golang_version: GoLang संस्करण
-handler: संचालक
-handler_details: संचालक विवरण
-handler_parameters: संचालक पैरामीटर
-handler_type: संचालक प्रकार
-handlers: संचालक
+handler: हैंडलर
+handler_details: हैंडलर विवरण
+handler_parameters: हैंडलर पैरामीटर
+handler_type: हैंडलर प्रकार
+handlers: हैंडलर
 header_name: हेडर नाम
 headers: हेडर
 heartbeat_request: हार्टबीट अनुरोध
@@ -236,11 +236,11 @@ helper_text:
   invalid_duration: अमान्य अवधि
   invalid_email: अमान्य ईमेल
   invalid_execution_interval_empty: निष्पादन अंतराल खाली नहीं होना चाहिए
-  invalid_field_id: "अमान्य क्षेत्र पहचान. वर्ण, न्यूनतम=1, अधिकतम=100"
+  invalid_field_id: "अमान्य फील्ड आईडी. वर्ण, न्यूनतम=1, अधिकतम=100"
   invalid_filters: अमान्य फ़िल्टर
   invalid_height: अमान्य ऊँचाई
   invalid_host: अमान्य होस्ट
-  invalid_id: "अमान्य पहचान. वर्ण, न्यूनतम=4, अधिकतम=100, स्पेस की अनुमति नहीं"
+  invalid_id: "अमान्य आईडी. वर्ण, न्यूनतम=4, अधिकतम=100, स्पेस की अनुमति नहीं"
   invalid_interval: अमान्य अंतराल
   invalid_key: "अमान्य कुंजी. वर्ण, न्यूनतम=1, अधिकतम=100"
   invalid_key_path: कुंजी पथ खाली नहीं हो सकता
@@ -250,10 +250,10 @@ helper_text:
   invalid_longitude: अमान्य देशांतर
   invalid_maximum_backup: "अमान्य बैकअप संख्या. पूर्णांक, न्यूनतम=0"
   invalid_name: "अमान्य नाम. वर्ण, न्यूनतम=2, अधिकतम=100"
-  invalid_node_id: "अमान्य संयोजन बिंदु पहचान. वर्ण, न्यूनतम=1, अधिकतम=100"
+  invalid_node_id: "अमान्य नोड आईडी. वर्ण, न्यूनतम=1, अधिकतम=100"
   invalid_offset: अमान्य ऑफसेट
   invalid_path: अमान्य पथ
-  invalid_payload: अमान्य डेटा भार
+  invalid_payload: अमान्य पेलोड
   invalid_port: अमान्य पोर्ट
   invalid_prefix: अमान्य उपसर्ग
   invalid_profile_confirm_password: पुष्टि पासवर्ड मेल नहीं खाता
@@ -263,12 +263,12 @@ helper_text:
   invalid_response_code: "मान्य प्रतिक्रिया कोड दर्ज करें। अनदेखा करने के लिए 0 दर्ज करें"
   invalid_retry_count: "अमान्य पुनः प्रयास संख्या. पूर्णांक, न्यूनतम=0"
   invalid_script_empty: स्क्रिप्ट खाली नहीं होनी चाहिए
-  invalid_server_url: अमान्य सेवा यंत्र URL
-  invalid_source_id: "अमान्य स्रोत पहचान. वर्ण, न्यूनतम=1, अधिकतम=100"
+  invalid_server_url: अमान्य सर्वर URL
+  invalid_source_id: "अमान्य सोर्स आईडी. वर्ण, न्यूनतम=1, अधिकतम=100"
   invalid_text: "अमान्य पाठ. वर्ण, न्यूनतम=1, अधिकतम=100"
   invalid_time: अमान्य समय
   invalid_title: अमान्य शीर्षक
-  invalid_token: अमान्य अभिज्ञान चिह्न
+  invalid_token: अमान्य टोकन
   invalid_topic: अमान्य विषय
   invalid_type: अमान्य प्रकार
   invalid_url: अमान्य URL
@@ -283,14 +283,14 @@ hide_header: हेडर छिपाएँ
 hide_status_column: स्थिति स्तंभ छिपाएँ
 hide_value_column: मान स्तंभ छिपाएँ
 host: होस्ट
-host_id: होस्ट पहचान
-host_ids: होस्ट पहचान
+host_id: होस्ट आईडी
+host_ids: होस्ट आईडी
 html: HTML
 hue: ह्यू
 icon_or_image_location: आइकन या छवि स्थान
-id: पहचान
+id: आईडी
 ignore_duplicate: डुप्लिकेट अनदेखा करें
-image_source: छवि स्रोत
+image_source: छवि सोर्स
 image_type: छवि प्रकार
 in_progress: प्रगति में
 inactive_duration: निष्क्रिय अवधि
@@ -304,7 +304,7 @@ interpolation: इंटरपोलेशन
 interval: अंतराल
 interval_0h0m0s: अंतराल (0h0m0s)
 invalid_file: अमान्य फ़ाइल
-is_sleep_node: स्लीप संयोजन बिंदु
+is_sleep_node: स्लीप नोड
 is_static: स्थिर
 javascript: जावास्क्रिप्ट
 json: JSON
@@ -364,7 +364,7 @@ min_y_axis: न्यूनतम (Y अक्ष)
 minimum: न्यूनतम
 minimum_value: न्यूनतम मान
 minimum_width: न्यूनतम चौड़ाई
-mixed_resources: मिश्रित संसाधन
+mixed_resources: मिश्रित रिसोर्स
 modified_on: संशोधित दिनांक
 name: नाम
 name_key: नाम कुंजी
@@ -372,18 +372,18 @@ never_expire: कभी समाप्त न हो
 new: नया
 new_password: नया पासवर्ड
 no_change_since: तब से कोई परिवर्तन नहीं
-no_dashboard_message: लोड करने के लिए कोई नियंत्रण पटल उपलब्ध नहीं है।
-no_dashboard_title: कोई नियंत्रण पटल उपलब्ध नहीं
+no_dashboard_message: लोड करने के लिए कोई डैशबोर्ड उपलब्ध नहीं है।
+no_dashboard_title: कोई डैशबोर्ड उपलब्ध नहीं
 no_data: कोई डेटा नहीं
 no_labels: कोई लेबल नहीं
 no_login_message: लॉगिन के लिए कोई संदेश सेट नहीं है
-node: संयोजन बिंदु
-node_configuration: संयोजन बिंदु सेटिंग
-node_details: संयोजन बिंदु विवरण
-node_endpoints: संयोजन बिंदु एंडपॉइंट
-node_id: संयोजन बिंदु पहचान
-node_state_updater: संयोजन बिंदु स्थिति अद्यतनकर्ता
-nodes: संयोजन बिंदु
+node: नोड
+node_configuration: नोड सेटिंग
+node_details: नोड विवरण
+node_endpoints: नोड एंडपॉइंट
+node_id: नोड आईडी
+node_state_updater: नोड स्थिति अद्यतनकर्ता
+nodes: नोड
 none: कोई नहीं
 notifications: सूचनाएँ
 number_of_axis: अक्षों की संख्या
@@ -410,8 +410,8 @@ opts:
     label_secondary: द्वितीयक (नीला)
     label_warning: चेतावनी (पीला)
   chart_group_type:
-    desc_group_chart: कई संसाधन के लिए एक अक्ष
-    desc_mixed_chart: कई संसाधन के लिए कई अक्ष
+    desc_group_chart: कई रिसोर्स के लिए एक अक्ष
+    desc_mixed_chart: कई रिसोर्स के लिए कई अक्ष
     desc_pie_chart: एक पाई चार्ट
     label_group_chart: समूह चार्ट
     label_mixed_chart: मिश्रित चार्ट
@@ -428,12 +428,12 @@ opts:
     label_step_after: StepAfter
     label_step_before: StepBefore
   chart_type:
-    desc_area_chart: क्षेत्र चार्ट
+    desc_area_chart: फील्ड चार्ट
     desc_bar_chart: बार चार्ट
     desc_line_chart: रेखा चार्ट
     desc_pie_chart: पाई चार्ट
     desc_scatter_chart: स्कैटर चार्ट
-    label_area_chart: क्षेत्र चार्ट
+    label_area_chart: फील्ड चार्ट
     label_bar_chart: बार चार्ट
     label_line_chart: रेखा चार्ट
     label_pie_chart: पाई चार्ट
@@ -498,7 +498,7 @@ opts:
     desc_generic: सामान्य प्रदाता
     desc_mysensors_v2: MySensors.org version 2.x
     desc_philips_hue: developers.meethue.com
-    desc_system_monitoring: सिस्टम संसाधन एकत्र कर रिपोर्ट करता है
+    desc_system_monitoring: सिस्टम रिसोर्स एकत्र कर रिपोर्ट करता है
     desc_tasmota: tasmota.github.io
     label_esphome: ESPHome
     label_generic: सामान्य
@@ -507,16 +507,16 @@ opts:
     label_system_monitoring: सिस्टम निगरानी
     label_tasmota: Tasmota
   handler_type:
-    desc_backup: सेवा यंत्र का बैकअप करता है
+    desc_backup: सर्वर का बैकअप करता है
     desc_email: ईमेल भेजता है
-    desc_noop: कोई संचालन नहीं करने वाला संचालक
-    desc_resource: आंतरिक संसाधन क्रियाएँ
+    desc_noop: कोई संचालन नहीं करने वाला हैंडलर
+    desc_resource: आंतरिक रिसोर्स क्रियाएँ
     desc_telegram: Telegram पर पाठ भेजता है
     desc_webhook: एक वेबहुक URL कॉल करता है
     label_backup: बैकअप
     label_email: ईमेल
     label_noop: नूप
-    label_resource: संसाधन
+    label_resource: रिसोर्स
     label_telegram: Telegram
     label_webhook: वेबहुक
   http_method:
@@ -525,8 +525,8 @@ opts:
     label_post: POST
     label_put: PUT
   image_load_type:
-    desc_custom_mapping: क्षेत्र मान से मैप की गई छवि दिखाएँ
-    desc_image: क्षेत्र मान से Base64 छवि
+    desc_custom_mapping: फील्ड मान से मैप की गई छवि दिखाएँ
+    desc_image: फील्ड मान से Base64 छवि
     label_custom_mapping: कस्टम मैपिंग
     label_image: कच्ची छवि
   image_rotation:
@@ -540,10 +540,10 @@ opts:
     label_rotate_right_90: दाएँ 90°
   image_source:
     desc_disk: स्थानीय डिस्क पथ से छवि
-    desc_field: क्षेत्र संसाधन से छवि डेटा
+    desc_field: फील्ड रिसोर्स से छवि डेटा
     desc_url: URL से छवि
     label_disk: डिस्क
-    label_field: क्षेत्र
+    label_field: फील्ड
     label_url: URL
   interval:
     label_day_01: 1 दिन
@@ -699,7 +699,7 @@ opts:
     label_circle_050: अर्ध वृत्त
     label_circle_075: 3/4 वृत्त
     label_circle_100: पूर्ण वृत्त
-    label_spark_area: स्पार्क क्षेत्र
+    label_spark_area: स्पार्क फील्ड
     label_spark_bar: स्पार्क बार
     label_spark_line: स्पार्क रेखा
     label_table: तालिका
@@ -800,9 +800,9 @@ opts:
     label_wednesday: बुधवार
   widget_type:
     desc_chart_panel: चार्ट में डेटा दिखाएँ
-    desc_control_panel: संसाधन पर नियंत्रण क्रिया करता है
+    desc_control_panel: रिसोर्स पर नियंत्रण क्रिया करता है
     desc_empty_panel: खाली पैनल
-    desc_image_panel: विभिन्न स्रोत से छवि दिखाएँ
+    desc_image_panel: विभिन्न सोर्स से छवि दिखाएँ
     desc_light_panel: एक लाइट को नियंत्रित करता है
     desc_utilization_panel: उपयोग स्थिति दिखाएँ
     label_chart_panel: चार्ट पैनल
@@ -817,15 +817,15 @@ padding_left_px: बायाँ पैडिंग (px)
 padding_right_px: दायाँ पैडिंग (px)
 padding_top_px: ऊपरी पैडिंग (px)
 panel_title: पैनल शीर्षक
-parameters_to_handler: संचालक को पैरामीटर
+parameters_to_handler: हैंडलर को पैरामीटर
 parse_mode: पार्स मोड
 password: पासवर्ड
 path: पथ
-payload: डेटा भार
+payload: पेलोड
 send: भेजें
-payload_off: डेटा भार OFF
-payload_on: डेटा भार ON
-payloads: डेटा भार
+payload_off: पेलोड OFF
+payload_on: पेलोड ON
+payloads: पेलोड
 per_cpu_disabled: प्रत्येक CPU अक्षम
 port: पोर्ट
 port_name: पोर्ट नाम
@@ -845,7 +845,7 @@ publish: प्रकाशित करें
 qos: QoS
 query_parameters: क्वेरी पैरामीटर
 queue_failed_messages: विफल संदेश कतार में रखें
-quick_id: त्वरित पहचान
+quick_id: क्विक आईडी
 re_enable: पुनः सक्षम करें
 re_enable_duration: पुनः सक्षम अवधि
 react_version: React संस्करण
@@ -853,20 +853,20 @@ read_only: केवल पढ़ने योग्य
 reboot: रीबूट
 reconnect_delay: पुनः कनेक्ट विलंब
 refresh_interval: रिफ़्रेश अंतराल
-refresh_node_info: संयोजन बिंदु जानकारी अपडेट करें
+refresh_node_info: नोड जानकारी अपडेट करें
 reload: पुनः लोड करें
 repeat_count: दोहराव संख्या
 request_heartbeat: हार्टबीट अनुरोध करें
 reset: रीसेट
 resetting: रीसेट हो रहा है...
-resource: संसाधन
-resource_by_labels: लेबल द्वारा संसाधन
-resource_by_quick_id: त्वरित पहचान द्वारा संसाधन
-resource_configuration: संसाधन सेटिंग
-resource_filters: संसाधन फ़िल्टर
-resource_name: संसाधन नाम
-resource_type: संसाधन प्रकार
-resources: संसाधन
+resource: रिसोर्स
+resource_by_labels: लेबल द्वारा रिसोर्स
+resource_by_quick_id: क्विक आईडी द्वारा रिसोर्स
+resource_configuration: रिसोर्स सेटिंग
+resource_filters: रिसोर्स फ़िल्टर
+resource_name: रिसोर्स नाम
+resource_type: रिसोर्स प्रकार
+resources: रिसोर्स
 response_code: प्रतिक्रिया कोड
 restore: पुनर्स्थापित करें
 retention_count: प्रतिधारण संख्या
@@ -887,11 +887,11 @@ schedule_type: शेड्यूल प्रकार
 schedules: शेड्यूल
 script: स्क्रिप्ट
 select_an_option: एक विकल्प चुनें
-server: सेवा यंत्र
-service_account_not_generated: सेवा खाता अभिज्ञान चिह्न उत्पन्न नहीं हुआ
-service_account_copy_title: सेवा खाता अभिज्ञान चिह्न कॉपी करें
-service_account_copy_warning_msg: यह अभिज्ञान चिह्न केवल एक बार दिखाया जाएगा। इसे संग्रहीत नहीं किया जाएगा और पुनः प्राप्त नहीं किया जा सकता। कृपया अभी सहेज लें।
-service_account_barcode_help: अभिज्ञान चिह्न से लॉगिन करने के लिए इस बारकोड को स्कैन करें।
+server: सर्वर
+service_account_not_generated: सेवा खाता टोकन उत्पन्न नहीं हुआ
+service_account_copy_title: सेवा खाता टोकन कॉपी करें
+service_account_copy_warning_msg: यह टोकन केवल एक बार दिखाया जाएगा। इसे संग्रहीत नहीं किया जाएगा और पुनः प्राप्त नहीं किया जा सकता। कृपया अभी सहेज लें।
+service_account_barcode_help: टोकन से लॉगिन करने के लिए इस बारकोड को स्कैन करें।
 service_account_details: सेवा खाता विवरण
 service_accounts: सेवा खाता
 settings: सेटिंग
@@ -902,12 +902,12 @@ since: से
 size: आकार
 sleeping_queue: स्लीप क्यू
 sort_order_priority: क्रम प्राथमिकता
-source: स्रोत
-source_code: स्रोत कोड
-source_details: स्रोत विवरण
-source_field: स्रोत क्षेत्र
-source_id: स्रोत पहचान
-sources: स्रोत
+source: सोर्स
+source_code: सोर्स कोड
+source_details: सोर्स विवरण
+source_field: सोर्स फील्ड
+source_id: सोर्स आईडी
+sources: सोर्स
 spec: स्पेक
 stack_charts: चार्ट स्टैक करें
 state: स्थिति
@@ -953,7 +953,7 @@ timestamp_key: समयचिह्न कुंजी
 title: शीर्षक
 to: प्राप्तकर्ता
 to_emails: प्राप्तकर्ता ईमेल
-token: अभिज्ञान चिह्न
+token: टोकन
 topology: टोपोलॉजी
 topic: विषय
 trait: ट्रेट
@@ -969,11 +969,11 @@ update_body: बॉडी अपडेट करें
 update_data: डेटा अपडेट करें
 update_endpoint: एंडपॉइंट अपडेट करें
 update_firmware: फर्मवेयर अपडेट करें
-update_node: संयोजन बिंदु अपडेट करें
+update_node: नोड अपडेट करें
 update_post_run: पोस्ट रन अपडेट करें
 update_pre_run: प्री रन अपडेट करें
 update_query_parameters: क्वेरी पैरामीटर अपडेट करें
-update_resource: संसाधन अपडेट करें
+update_resource: रिसोर्स अपडेट करें
 update_script: स्क्रिप्ट अपडेट करें
 update_trait: ट्रेट अपडेट करें
 update_value: मान अपडेट करें
@@ -985,7 +985,7 @@ use_global: वैश्विक उपयोग करें
 use_global_encryption_key: वैश्विक एन्क्रिप्शन कुंजी उपयोग करें
 use_global_password: वैश्विक पासवर्ड उपयोग करें
 use_global_style: वैश्विक शैली उपयोग करें
-user_id: उपयोगकर्ता पहचान
+user_id: उपयोगकर्ता आईडी
 username: उपयोगकर्ता नाम
 validate_time_everyday: प्रतिदिन समय सत्यापित करें
 validity: वैधता
@@ -1022,5 +1022,5 @@ layout: लेआउट
 layout_tree: वृक्ष
 layout_force: फ़ोर्स
 refresh: रिफ़्रेश
-include_child_nodes: चाइल्ड संयोजन बिंदु शामिल करें
-child_nodes: चाइल्ड संयोजन बिंदु
+include_child_nodes: चाइल्ड नोड शामिल करें
+child_nodes: चाइल्ड नोड

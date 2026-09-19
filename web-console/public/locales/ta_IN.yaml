@@ -3,24 +3,24 @@ about: அறிமுகம்
 actions: செயல்கள்
 active_duration: செயலில் இருக்கும் நேரம்
 add: சேர்
-add_a_field: புலம் சேர்
-add_a_firmware: நிலைபொருள் சேர்
-add_a_forward_payload: முன்னனுப்பும் தரவுச்சுமை சேர்
-add_a_gateway: நுழைவாயில் சேர்
-add_a_handler: கையாளுநர் சேர்
-add_a_node: முனை சேர்
+add_a_field: ஃபீல்டு சேர்
+add_a_firmware: ஃபார்ம்வேர் சேர்
+add_a_forward_payload: ஃபார்வர்ட் பேலோடு சேர்
+add_a_gateway: கேட்வே சேர்
+add_a_handler: ஹேண்ட்லர் சேர்
+add_a_node: நோடு சேர்
 add_a_schedule: அட்டவணை சேர்
 add_a_policy: கொள்கை சேர்
 add_a_service_account: சேவைக் கணக்கு சேர்
-add_a_source: மூலம் சேர்
+add_a_source: சோர்ஸ் சேர்
 add_a_task: பணி சேர்
 add_a_user: பயனர் சேர்
-add_a_virtual_assistant: மெய்நிகர் உதவியாளர் சேர்
-add_a_virtual_device: மெய்நிகர் சாதனம் சேர்
+add_a_virtual_assistant: விர்ச்சுவல் அசிஸ்டண்ட் சேர்
+add_a_virtual_device: விர்ச்சுவல் டிவைஸ் சேர்
 add_an_item: உருப்படி சேர்
-add_widget: சிறுகருவி சேர்
+add_widget: விட்ஜெட் சேர்
 address: முகவரி
-agent_user_id: முகவர் பயனர் அடையாளம்
+agent_user_id: முகவர் பயனர் ஐடி
 alerts_empty_message: தற்போது எச்சரிக்கைகள் இல்லை.
 alerts_empty_title: எச்சரிக்கைகள் இல்லை
 alive_check_interval: இயக்கநிலை சோதனை இடைவெளி
@@ -29,8 +29,8 @@ allow_overwrite: மேலெழுது அனுமதிக்கவும�
 apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: உறுதி கேட்கவும்
-assigned_firmware: ஒதுக்கிய நிலைபொருள்
-assigned_nodes: ஒதுக்கிய முனைகள்
+assigned_firmware: ஒதுக்கிய ஃபார்ம்வேர்
+assigned_nodes: ஒதுக்கிய நோடுகள்
 auto_disable: தானாக முடக்கு
 auto_update: தானாக புதுப்பி
 axis: அச்சு
@@ -50,7 +50,7 @@ button_text: பொத்தான் உரை
 cancel: ரத்து
 chart_configuration: விளக்கப்படம் அமைப்பு
 chart_type: விளக்கப்படம் வகை
-chat_ids: அரட்டை அடையாளங்கள்
+chat_ids: அரட்டை ஐடிகள்
 clear: அழி
 clear_all: அனைத்தையும் அழி
 color: நிறம்
@@ -78,19 +78,19 @@ custom_data: தனிப்பயன் தரவு
 custom_mapping: தனிப்பயன் மேப்பிங்
 custom_variables: தனிப்பயன் மாறிகள்
 dampening: தணிப்பு
-dashboard: கட்டுப்பாட்டுப் பலகை
+dashboard: டாஷ்போர்டு
 data: தரவு
-data_repository: தரவுக் களஞ்சியம்
-data_repository_add_an_entry: 'தரவுக் களஞ்சியம்: உள்ளீடு சேர்'
-data_repository_modify_an_entry: 'தரவுக் களஞ்சியம்: உள்ளீடு மாற்று'
-data_retrieved_from_server: சேவையகத்திலிருந்து தரவு பெறப்பட்டது
+data_repository: டேட்டா ரிப்பாசிட்டரி
+data_repository_add_an_entry: 'டேட்டா ரிப்பாசிட்டரி: உள்ளீடு சேர்'
+data_repository_modify_an_entry: 'டேட்டா ரிப்பாசிட்டரி: உள்ளீடு மாற்று'
+data_retrieved_from_server: சர்வரிலிருந்து தரவு பெறப்பட்டது
 data_type: தரவு வகை
 date_yyyy_mm_dd: தேதி (yyyy-mm-dd)
 day_of_month: மாதத்தின் நாள்
 day_of_week: வார நாட்கள்
 delete: நீக்கு
 description: விளக்கம்
-destination_field: இலக்கு புலம்
+destination_field: இலக்கு ஃபீல்டு
 detailed_filter: விரிவான வடிகட்டி
 details: விவரம்
 device_filter: சாதன வடிகட்டி
@@ -100,35 +100,35 @@ dialog:
   clear_sleeping_queue_msg: ஸ்லீப் வரிசையில் உள்ள அனைத்து செய்திகளும் நீக்கப்படும்
   delete_resource_msg: "தேர்ந்தெடுத்த உருப்படிகளை நீக்கவா?"
   delete_title_backup: "காப்பு கோப்புகளை நீக்கவா?"
-  delete_title_dashboard: "கட்டுப்பாட்டுப் பலகை நீக்கவா?"
-  delete_title_data_repository: "தரவுக் களஞ்சியம் நீக்கவா?"
-  delete_title_field: "புலங்களை நீக்கவா?"
-  delete_title_firmware: "நிலைபொருள் நீக்கவா?"
-  delete_title_forward_payload: "முன்னனுப்பும் தரவுச்சுமைகளை நீக்கவா?"
-  delete_title_gateway: "நுழைவாயில்களை நீக்கவா?"
-  delete_title_handler: "கையாளுநர்களை நீக்கவா?"
-  delete_title_node: "முனைகளை நீக்கவா?"
+  delete_title_dashboard: "டாஷ்போர்டு நீக்கவா?"
+  delete_title_data_repository: "டேட்டா ரிப்பாசிட்டரி நீக்கவா?"
+  delete_title_field: "ஃபீல்டுகளை நீக்கவா?"
+  delete_title_firmware: "ஃபார்ம்வேர் நீக்கவா?"
+  delete_title_forward_payload: "ஃபார்வர்ட் பேலோடுகளை நீக்கவா?"
+  delete_title_gateway: "கேட்வேகளை நீக்கவா?"
+  delete_title_handler: "ஹேண்ட்லர்களை நீக்கவா?"
+  delete_title_node: "நோடுகளை நீக்கவா?"
   delete_title_schedule: "அட்டவணைகளை நீக்கவா?"
   delete_title_service_account: "சேவைக் கணக்கு நீக்கவா?"
   delete_title_user: "பயனரை நீக்கவா?"
   delete_title_policy: "கொள்கை நீக்கவா?"
-  delete_title_source: "மூலங்களை நீக்கவா?"
+  delete_title_source: "சோர்ஸ்களை நீக்கவா?"
   delete_title_task: "பணிகளை நீக்கவா?"
-  delete_title_virtual_assistant: "மெய்நிகர் உதவியாளர் நீக்கவா?"
-  delete_title_virtual_device: "மெய்நிகர் சாதனம் நீக்கவா?"
-  node_reset_heading: "முனை மீட்டமை செய்யவா?"
-  node_reset_msg: "தேர்ந்தெடுத்த முனைகளை மீட்டமை செய்யவா?<br/>இந்த செயல்பாட்டிற்குப் பிறகு:<3><0>அமைப்பு தொழிற்சாலை அமைப்புகளுக்கு திரும்பும்.</0><1>தேர்ந்தெடுத்த முனைகளுக்கான அணுகல் MyController இல் இழக்கப்படலாம்!</1></3>"
+  delete_title_virtual_assistant: "விர்ச்சுவல் அசிஸ்டண்ட் நீக்கவா?"
+  delete_title_virtual_device: "விர்ச்சுவல் டிவைஸ் நீக்கவா?"
+  node_reset_heading: "நோடு மீட்டமை செய்யவா?"
+  node_reset_msg: "தேர்ந்தெடுத்த நோடுகளை மீட்டமை செய்யவா?<br/>இந்த செயல்பாட்டிற்குப் பிறகு:<3><0>அமைப்பு தொழிற்சாலை அமைப்புகளுக்கு திரும்பும்.</0><1>தேர்ந்தெடுத்த நோடுகளுக்கான அணுகல் MyController இல் இழக்கப்படலாம்!</1></3>"
   reboot_nodes_heading: "நோடை மறுதொடக்கம் செய்யவா?"
-  reboot_nodes_msg: "தேர்ந்தெடுத்த முனைகளை மறுதொடக்கம் செய்யவா?"
-  reset_msg_jwt_secret: "JWT ரகசியத்தை மீட்டமை செய்யவா? இந்த செயல்பாட்டிற்குப் பிறகு இந்த சேவையகத்தில் உள்ள அனைத்து உள்நுழைவு அமர்வுகளும் செல்லாது. நீங்களும் வெளியேற்றப்படுவீர்கள்."
+  reboot_nodes_msg: "தேர்ந்தெடுத்த நோடுகளை மறுதொடக்கம் செய்யவா?"
+  reset_msg_jwt_secret: "JWT ரகசியத்தை மீட்டமை செய்யவா? இந்த செயல்பாட்டிற்குப் பிறகு இந்த சர்வரில் உள்ள அனைத்து உள்நுழைவு அமர்வுகளும் செல்லாது. நீங்களும் வெளியேற்றப்படுவீர்கள்."
   reset_title_jwt_secret: JWT ரகசியம் மீட்டமை
   restore_heading: "மீட்டெடுக்கவா?"
-  restore_msg: "தேர்ந்தெடுத்த காப்பு கோப்பிலிருந்து மீட்டெடுக்கவா?<br/>இந்த செயல்பாட்டிற்குப் பிறகு:<3><0>சேவையகம் தரவு <1>{{fileName}}</1> நிலைக்கு மீட்டெடுக்கப்படும்</0><1>இந்த செயலை மாற்றியமைக்க முடியாது</1><2>மீட்டெடுப்பதற்கு முன் காப்பு எடுக்கவும்</2><3>சேவையகத்தை கைமுறையாக தொடங்க வேண்டியிருக்கலாம்</3></3>"
+  restore_msg: "தேர்ந்தெடுத்த காப்பு கோப்பிலிருந்து மீட்டெடுக்கவா?<br/>இந்த செயல்பாட்டிற்குப் பிறகு:<3><0>சர்வர் தரவு <1>{{fileName}}</1> நிலைக்கு மீட்டெடுக்கப்படும்</0><1>இந்த செயலை மாற்றியமைக்க முடியாது</1><2>மீட்டெடுப்பதற்கு முன் காப்பு எடுக்கவும்</2><3>சர்வரை கைமுறையாக தொடங்க வேண்டியிருக்கலாம்</3></3>"
 disable: முடக்கு
 disable_scrollbar: சுருள் பட்டை முடக்கு
 disabled: முடக்கப்பட்டது
 disabled_all: அனைத்தையும் முடக்கு
-discover_nodes: முனைகளைக் கண்டறி
+discover_nodes: நோடுகளைக் கண்டறி
 disk: வட்டு
 disks: வட்டுகள்
 display_name: காட்டும் பெயர்
@@ -142,16 +142,16 @@ download: பதிவிறக்கு
 drop_down_position: கீழ்விரி இடம்
 duration: காலம்
 edit: திருத்து
-edit_dashboard_settings: கட்டுப்பாட்டுப் பலகை அமைப்புகளை திருத்து
-edit_widget_settings: சிறுகருவி அமைப்புகளை திருத்து
+edit_dashboard_settings: டாஷ்போர்டு அமைப்புகளை திருத்து
+edit_widget_settings: விட்ஜெட் அமைப்புகளை திருத்து
 email: மின்னஞ்சல்
 edit_statement: அறிக்கை திருத்து
 effect: விளைவு
 enable: இயக்கு
 enabled: இயக்கத்தில்
 encryption_key: மறைகுறியாக்க விசை
-endpoint: முனையம்
-endpoints: முனையங்கள்
+endpoint: எண்ட்பாயிண்ட்
+endpoints: எண்ட்பாயிண்ட்கள்
 entities: அமைப்புகள்
 error:
   console:
@@ -172,10 +172,10 @@ export_type: ஏற்றுமதி வகை
 favorite: விருப்பமானவை
 fetch_info: தகவலைப் பெறு
 fetching: பெறுகிறது
-field: புலம்
-field_details: புலம் விவரம்
-field_id: புல அடையாளம்
-fields: புலங்கள்
+field: ஃபீல்டு
+field_details: ஃபீல்டு விவரம்
+field_id: ஃபீல்டு ஐடி
+fields: ஃபீல்டுகள்
 file_details: கோப்பு விவரம்
 file_uploaded_successfully: கோப்பு பதிவேற்றம் செய்யப்பட்டது
 filename: கோப்பு பெயர்
@@ -184,42 +184,42 @@ fill_opacity_%: நிரப்பு ஒளிபுகாமை (%)
 filter: வடிகட்டி
 filter_type: வடிகட்டி வகை
 filters: வடிகட்டிகள்
-firmware_details: நிலைபொருள் விவரம்
-firmware_file: நிலைபொருள் கோப்பு
-firmware_update: நிலைபொருள் புதுப்பிப்பு
-firmwares: நிலைபொருள்கள்
+firmware_details: ஃபார்ம்வேர் விவரம்
+firmware_file: ஃபார்ம்வேர் கோப்பு
+firmware_update: ஃபார்ம்வேர் புதுப்பிப்பு
+firmwares: ஃபார்ம்வேர்கள்
 flush_interval: வெளியேற்று இடைவெளி
 forgot_username_or_password: "பயனர் பெயர் அல்லது கடவுச்சொல்லை மறந்துவிட்டீர்களா?"
-form_generic_error_message: பிழை அல்லது கட்டாய (*) புலங்களை சரிபார்க்கவும்
+form_generic_error_message: பிழை அல்லது கட்டாய (*) ஃபீல்டுகளை சரிபார்க்கவும்
 form_view: படிவம் பார்வை
 forum: மன்றம்
-forward_payload: முன்னனுப்பும் தரவுச்சுமை
-forward_payload_details: முன்னனுப்பும் தரவுச்சுமை விவரம்
+forward_payload: ஃபார்வர்ட் பேலோடு
+forward_payload_details: ஃபார்வர்ட் பேலோடு விவரம்
 frequency: அலைவெண்
 from: அனுப்புநர்
 from_email: அனுப்புநர் மின்னஞ்சல்
 full_name: முழு பெயர்
 function: செயல்பாடு
-gateway: நுழைவாயில்
-gateway_details: நுழைவாயில் விவரம்
-gateway_id: நுழைவாயில் அடையாளம்
-gateways: நுழைவாயில்கள்
-all_gateways: அனைத்து நுழைவாயில்களும்
-all_nodes: அனைத்து முனைகளும்
-show_sources: மூலங்களைக் காண்பி
-show_fields: புலங்களைக் காண்பி
-select_gateway: நுழைவாயில்
-no_topology_nodes: காண்பிக்க முனை இல்லை
-no_topology_nodes_for_gateway: இந்த நுழைவாயிலில் முனை இல்லை
+gateway: கேட்வே
+gateway_details: கேட்வே விவரம்
+gateway_id: கேட்வே ஐடி
+gateways: கேட்வேகள்
+all_gateways: அனைத்து கேட்வேகளும்
+all_nodes: அனைத்து நோடுகளும்
+show_sources: சோர்ஸ்களைக் காண்பி
+show_fields: ஃபீல்டுகளைக் காண்பி
+select_gateway: கேட்வே
+no_topology_nodes: காண்பிக்க நோடு இல்லை
+no_topology_nodes_for_gateway: இந்த கேட்வேயில் நோடு இல்லை
 geo_location: GEO இடம்
 git_commit: கிட் கமிட்
 global_configuration: உலகளாவிய அமைப்பு
 golang_version: GoLang பதிப்பு
-handler: கையாளுநர்
-handler_details: கையாளுநர் விவரம்
-handler_parameters: கையாளுநர் அளவுருக்கள்
-handler_type: கையாளுநர் வகை
-handlers: கையாளுநர்கள்
+handler: ஹேண்ட்லர்
+handler_details: ஹேண்ட்லர் விவரம்
+handler_parameters: ஹேண்ட்லர் அளவுருக்கள்
+handler_type: ஹேண்ட்லர் வகை
+handlers: ஹேண்ட்லர்கள்
 header_name: தலைப்புப் பட்டி பெயர்
 headers: தலைப்புப் பட்டிகள்
 heartbeat_request: இதயத்துடிப்பு கோரிக்கை
@@ -238,11 +238,11 @@ helper_text:
   invalid_duration: தவறான காலம்
   invalid_email: தவறான மின்னஞ்சல்
   invalid_execution_interval_empty: இயக்க இடைவெளி காலியாக இருக்கக்கூடாது
-  invalid_field_id: "தவறான புல அடையாளம். எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
+  invalid_field_id: "தவறான ஃபீல்டு ஐடி. எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
   invalid_filters: தவறான வடிகட்டி
   invalid_height: தவறான உயரம்
   invalid_host: தவறான வழங்கி
-  invalid_id: "தவறான அடையாளம். எழுத்து, குறைந்தது=4, அதிகபட்சம்=100, இடைவெளி இருக்கக்கூடாது"
+  invalid_id: "தவறான ஐடி. எழுத்து, குறைந்தது=4, அதிகபட்சம்=100, இடைவெளி இருக்கக்கூடாது"
   invalid_interval: தவறான இடைவெளி
   invalid_key: "தவறான விசை. எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
   invalid_key_path: விசை பாதை காலியாக இருக்கக்கூடாது
@@ -252,10 +252,10 @@ helper_text:
   invalid_longitude: தவறான தீர்க்கரேகை
   invalid_maximum_backup: "தவறான காப்பு எண்ணிக்கை. முழு எண், குறைந்தது=0"
   invalid_name: "தவறான பெயர். எழுத்து, குறைந்தது=2, அதிகபட்சம்=100"
-  invalid_node_id: "தவறான முனை அடையாளம். எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
+  invalid_node_id: "தவறான நோடு ஐடி. எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
   invalid_offset: தவறான ஆஃப்செட்
   invalid_path: தவறான பாதை
-  invalid_payload: தவறான தரவுச்சுமை
+  invalid_payload: தவறான பேலோடு
   invalid_port: தவறான துறை
   invalid_prefix: தவறான முன்னொட்டு
   invalid_profile_confirm_password: உறுதி கடவுச்சொல் பொருந்தவில்லை
@@ -265,12 +265,12 @@ helper_text:
   invalid_response_code: "சரியான பதில் குறியீட்டை உள்ளிடவும். புறக்கணிக்க 0 உள்ளிடவும்"
   invalid_retry_count: "தவறான மீண்டும் முயற்சி எண்ணிக்கை. முழு எண், குறைந்தது=0"
   invalid_script_empty: ஸ்கிரிப்ட் காலியாக இருக்கக்கூடாது
-  invalid_server_url: தவறான சேவையகம் URL
-  invalid_source_id: "தவறான மூல அடையாளம். எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
+  invalid_server_url: தவறான சர்வர் URL
+  invalid_source_id: "தவறான சோர்ஸ் ஐடி. எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
   invalid_text: "தவறான உரை. எழுத்து, குறைந்தது=1, அதிகபட்சம்=100"
   invalid_time: தவறான நேரம்
   invalid_title: தவறான தலைப்பு
-  invalid_token: தவறான அடையாளக்குறி
+  invalid_token: தவறான டோக்கன்
   invalid_topic: தவறான தலைப்பு
   invalid_type: தவறான வகை
   invalid_url: தவறான URL
@@ -285,14 +285,14 @@ hide_header: தலைப்புப்பட்டியை மறைக்க
 hide_status_column: நிலை நெடுவரிசையை மறைக்க
 hide_value_column: மதிப்பு நெடுவரிசையை மறைக்க
 host: வழங்கி
-host_id: வழங்கி அடையாளம்
-host_ids: வழங்கி அடையாளங்கள்
+host_id: ஹோஸ்ட் ஐடி
+host_ids: ஹோஸ்ட் ஐடிகள்
 html: HTML
 hue: ஹ்யூ
 icon_or_image_location: சின்னம் அல்லது பட இடம்
-id: அடையாளம்
+id: ஐடி
 ignore_duplicate: நகலைத் தவிர்க்கவும்
-image_source: பட மூலம்
+image_source: பட சோர்ஸ்
 image_type: பட வகை
 in_progress: செயல்பாட்டில்
 inactive_duration: செயலில் இல்லாத நேரம்
@@ -306,7 +306,7 @@ interpolation: இடைச்செருகல்
 interval: இடைவெளி
 interval_0h0m0s: இடைவெளி (0h0m0s)
 invalid_file: தவறான கோப்பு
-is_sleep_node: உறக்க முனை
+is_sleep_node: ஸ்லீப் நோடு
 is_static: நிலையான
 javascript: ஜாவாஸ்கிரிப்ட்
 json: JSON
@@ -366,7 +366,7 @@ min_y_axis: குறைந்தபட்சம் (Y அச்சு)
 minimum: குறைந்தபட்சம்
 minimum_value: குறைந்தபட்ச மதிப்பு
 minimum_width: குறைந்தபட்ச அகலம்
-mixed_resources: கலப்பு வளங்கள்
+mixed_resources: கலப்பு ரிசோர்ஸ்கள்
 modified_on: மாற்றிய தேதி
 name: பெயர்
 name_key: பெயர் விசை
@@ -374,18 +374,18 @@ never_expire: காலாவதியாகாது
 new: புதிய
 new_password: புதிய கடவுச்சொல்
 no_change_since: மாற்றம் இல்லாத நேரம்
-no_dashboard_message: ஏற்றுவதற்கு கட்டுப்பாட்டுப் பலகை இல்லை.
-no_dashboard_title: கட்டுப்பாட்டுப் பலகை இல்லை
+no_dashboard_message: ஏற்றுவதற்கு டாஷ்போர்டு இல்லை.
+no_dashboard_title: டாஷ்போர்டு இல்லை
 no_data: தரவு இல்லை
-no_labels: சிட்டை இல்லை
+no_labels: லேபிள் இல்லை
 no_login_message: உள்நுழைவு செய்தி அமைக்கப்படவில்லை
-node: முனை
-node_configuration: முனை அமைப்பு
-node_details: முனை விவரம்
-node_endpoints: முனை முனையங்கள்
-node_id: முனை அடையாளம்
-node_state_updater: முனை நிலை புதுப்பிப்பான்
-nodes: முனைகள்
+node: நோடு
+node_configuration: நோடு அமைப்பு
+node_details: நோடு விவரம்
+node_endpoints: நோடு எண்ட்பாயிண்ட்கள்
+node_id: நோடு ஐடி
+node_state_updater: நோடு நிலை புதுப்பிப்பான்
+nodes: நோடுகள்
 none: ஏதுமில்லை
 notifications: அறிவிப்புகள்
 number_of_axis: அச்சு எண்ணிக்கை
@@ -412,8 +412,8 @@ opts:
     label_secondary: இரண்டாம் நிலை (நீலம்)
     label_warning: எச்சரிக்கை (மஞ்சள்)
   chart_group_type:
-    desc_group_chart: பல வளம்-களுக்கு ஒரே அச்சு
-    desc_mixed_chart: பல வளம்-களுக்கு பல அச்சுகள்
+    desc_group_chart: பல ரிசோர்ஸ்களுக்கு ஒரே அச்சு
+    desc_mixed_chart: பல ரிசோர்ஸ்களுக்கு பல அச்சுகள்
     desc_pie_chart: ஒரே பை விளக்கப்படம்
     label_group_chart: குழு விளக்கப்படம்
     label_mixed_chart: கலப்பு விளக்கப்படம்
@@ -500,7 +500,7 @@ opts:
     desc_generic: பொது வழங்குநர்
     desc_mysensors_v2: MySensors.org version 2.x
     desc_philips_hue: developers.meethue.com
-    desc_system_monitoring: கணினி வளம்களைச் சேகரித்து அறிக்கை செய்யும்
+    desc_system_monitoring: கணினி ரிசோர்ஸ்களைச் சேகரித்து அறிக்கை செய்யும்
     desc_tasmota: tasmota.github.io
     label_esphome: ESPHome
     label_generic: பொதுவான
@@ -509,16 +509,16 @@ opts:
     label_system_monitoring: கணினி கண்காணிப்பு
     label_tasmota: Tasmota
   handler_type:
-    desc_backup: சேவையகத்தை காப்பு செய்யும்
+    desc_backup: சர்வரை காப்பு செய்யும்
     desc_email: மின்னஞ்சல் அனுப்பும்
-    desc_noop: எந்த செயலும் செய்யாத கையாளுநர்
-    desc_resource: உள் வளம் செயல்கள்
+    desc_noop: எந்த செயலும் செய்யாத ஹேண்ட்லர்
+    desc_resource: உள் ரிசோர்ஸ் செயல்கள்
     desc_telegram: Telegramக்கு உரை அனுப்பும்
     desc_webhook: ஒரு வெப்ஹுக் URL ஐ அழைக்கும்
     label_backup: காப்பு
     label_email: மின்னஞ்சல்
     label_noop: நூப்
-    label_resource: வளம்
+    label_resource: ரிசோர்ஸ்
     label_telegram: Telegram
     label_webhook: வெப்ஹுக்
   http_method:
@@ -527,8 +527,8 @@ opts:
     label_post: POST
     label_put: PUT
   image_load_type:
-    desc_custom_mapping: புலம் மதிப்பிலிருந்து மேப் செய்த படம்
-    desc_image: புலம் மதிப்பிலிருந்து Base64 படம்
+    desc_custom_mapping: ஃபீல்டு மதிப்பிலிருந்து மேப் செய்த படம்
+    desc_image: ஃபீல்டு மதிப்பிலிருந்து Base64 படம்
     label_custom_mapping: தனிப்பயன் மேப்பிங்
     label_image: மூலப் படம்
   image_rotation:
@@ -542,10 +542,10 @@ opts:
     label_rotate_right_90: வலது 90°
   image_source:
     desc_disk: உள்ளூர் வட்டு பாதையிலிருந்து படம்
-    desc_field: புலம் வளத்திலிருந்து படத் தரவு
+    desc_field: ஃபீல்டு ரிசோர்ஸிலிருந்து படத் தரவு
     desc_url: URL இலிருந்து படம்
     label_disk: வட்டு
-    label_field: புலம்
+    label_field: ஃபீல்டு
     label_url: URL
   interval:
     label_day_01: 1 நாள்
@@ -802,9 +802,9 @@ opts:
     label_wednesday: புதன்கிழமை
   widget_type:
     desc_chart_panel: விளக்கப்படங்களில் தரவைக் காண்பி
-    desc_control_panel: வளங்களில் கட்டுப்பாட்டு செயல் செய்யும்
+    desc_control_panel: ரிசோர்ஸ்களில் கட்டுப்பாட்டு செயல் செய்யும்
     desc_empty_panel: வெற்று பலகம்
-    desc_image_panel: வெவ்வேறு மூலத்திலிருந்து படத்தைக் காண்பி
+    desc_image_panel: வெவ்வேறு சோர்ஸிலிருந்து படத்தைக் காண்பி
     desc_light_panel: ஒரு விளக்கை கட்டுப்படுத்தும்
     desc_utilization_panel: பயன்பாட்டு நிலையைக் காண்பி
     label_chart_panel: விளக்கப்படப் பலகம்
@@ -819,15 +819,15 @@ padding_left_px: இடது உள்வெளி (px)
 padding_right_px: வலது உள்வெளி (px)
 padding_top_px: மேல் உள்வெளி (px)
 panel_title: பலகம் தலைப்பு
-parameters_to_handler: கையாளுநருக்கு அளவுருக்கள்
+parameters_to_handler: ஹேண்ட்லருக்கு அளவுருக்கள்
 parse_mode: பார்ஸ் முறை
 password: கடவுச்சொல்
 path: பாதை
-payload: தரவுச்சுமை
+payload: பேலோடு
 send: அனுப்பு
-payload_off: தரவுச்சுமை OFF
-payload_on: தரவுச்சுமை ON
-payloads: தரவுச்சுமைகள்
+payload_off: பேலோடு OFF
+payload_on: பேலோடு ON
+payloads: பேலோடுகள்
 per_cpu_disabled: ஒவ்வொரு CPU-ம் முடக்கப்பட்டது
 port: துறை
 port_name: துறை பெயர்
@@ -847,7 +847,7 @@ publish: வெளியிடு
 qos: QoS
 query_parameters: வினவல் அளவுருக்கள்
 queue_failed_messages: தோல்வியுற்ற செய்திகளை வரிசையில் வைக்கவும்
-quick_id: விரைவு அடையாளம்
+quick_id: குவிக் ஐடி
 re_enable: மீண்டும் இயக்கு
 re_enable_duration: மீண்டும் இயக்கும் நேரம்
 react_version: React பதிப்பு
@@ -855,20 +855,20 @@ read_only: படித்தல் மட்டும்
 reboot: மறுதொடக்கம்
 reconnect_delay: மீண்டும் இணைக்கும் தாமதம்
 refresh_interval: புதுப்பிப்பு இடைவெளி
-refresh_node_info: முனை தகவலை புதுப்பி
+refresh_node_info: நோடு தகவலை புதுப்பி
 reload: மீண்டும் ஏற்று
 repeat_count: திரும்ப எண்ணிக்கை
 request_heartbeat: இதயத்துடிப்பு கோரு
 reset: மீட்டமை
 resetting: மீட்டமை செய்யப்படுகிறது...
-resource: வளம்
-resource_by_labels: சிட்டை மூலம் வளம்
-resource_by_quick_id: விரைவு அடையாளம் மூலம் வளம்
-resource_configuration: வளம் அமைப்பு
-resource_filters: வளம் வடிகட்டிகள்
-resource_name: வளம் பெயர்
-resource_type: வளம் வகை
-resources: வளங்கள்
+resource: ரிசோர்ஸ்
+resource_by_labels: லேபிள் மூலம் ரிசோர்ஸ்
+resource_by_quick_id: குவிக் ஐடி மூலம் ரிசோர்ஸ்
+resource_configuration: ரிசோர்ஸ் அமைப்பு
+resource_filters: ரிசோர்ஸ் வடிகட்டிகள்
+resource_name: ரிசோர்ஸ் பெயர்
+resource_type: ரிசோர்ஸ் வகை
+resources: ரிசோர்ஸ்கள்
 response_code: பதில் குறியீடு
 restore: மீட்டெடு
 retention_count: வைத்திருப்பு எண்ணிக்கை
@@ -889,11 +889,11 @@ schedule_type: அட்டவணை வகை
 schedules: அட்டவணைகள்
 script: ஸ்கிரிப்ட்
 select_an_option: ஒரு விருப்பத்தைத் தேர்ந்தெடுக்கவும்
-server: சேவையகம்
-service_account_not_generated: சேவைக் கணக்கு அடையாளக்குறி உருவாக்கப்படவில்லை
+server: சர்வர்
+service_account_not_generated: சேவைக் கணக்கு டோக்கன் உருவாக்கப்படவில்லை
 service_account_copy_title: சேவைக் கணக்கு டோக்கனை நகலெடு
-service_account_copy_warning_msg: "இந்த அடையாளக்குறி ஒருமுறை மட்டுமே காட்டப்படும். மீண்டும் பார்க்க முடியாது. உடனே சேமிக்கவும்."
-service_account_barcode_help: அடையாளக்குறி மூலம் உள்நுழைவு செய்ய இந்த பார்கோடை ஸ்கேன் செய்யுங்கள்.
+service_account_copy_warning_msg: "இந்த டோக்கன் ஒருமுறை மட்டுமே காட்டப்படும். மீண்டும் பார்க்க முடியாது. உடனே சேமிக்கவும்."
+service_account_barcode_help: டோக்கன் மூலம் உள்நுழைவு செய்ய இந்த பார்கோடை ஸ்கேன் செய்யுங்கள்.
 service_account_details: சேவைக் கணக்கு விவரம்
 service_accounts: சேவைக் கணக்குகள்
 policies: கொள்கைகள்
@@ -906,12 +906,12 @@ since: இருந்து
 size: அளவு
 sleeping_queue: ஸ்லீப் வரிசை
 sort_order_priority: வரிசை முன்னுரிமை
-source: மூலம்
-source_code: மூலக் குறியீடு
-source_details: மூலம் விவரம்
-source_field: மூலம் புலம்
-source_id: மூல அடையாளம்
-sources: மூலங்கள்
+source: சோர்ஸ்
+source_code: சோர்ஸ் கோடு
+source_details: சோர்ஸ் விவரம்
+source_field: சோர்ஸ் ஃபீல்டு
+source_id: சோர்ஸ் ஐடி
+sources: சோர்ஸ்கள்
 spec: விவரம்
 stack_charts: விளக்கப்படங்களை அடுக்கவும்
 state: நிலை
@@ -957,7 +957,7 @@ timestamp_key: நேரமுத்திரை விசை
 title: தலைப்பு
 to: பெறுநர்
 to_emails: பெறுநர் மின்னஞ்சல்கள்
-token: அடையாளக்குறி
+token: டோக்கன்
 topology: இணைப்பு வரைபடம்
 topic: தலைப்பு
 trait: பண்பு
@@ -971,25 +971,25 @@ up: மேலே
 update: புதுப்பி
 update_body: உடல்பகுதி புதுப்பி
 update_data: தரவு புதுப்பி
-update_endpoint: முனையம் புதுப்பி
-update_firmware: நிலைபொருள் புதுப்பி
-update_node: முனை புதுப்பி
+update_endpoint: எண்ட்பாயிண்ட் புதுப்பி
+update_firmware: ஃபார்ம்வேர் புதுப்பி
+update_node: நோடு புதுப்பி
 update_post_run: பிந்தைய இயக்கம் புதுப்பி
 update_pre_run: முன் இயக்கம் புதுப்பி
 update_query_parameters: வினவல் அளவுருக்கள் புதுப்பி
-update_resource: வளம் புதுப்பி
+update_resource: ரிசோர்ஸ் புதுப்பி
 update_script: ஸ்கிரிப்ட் புதுப்பி
 update_trait: பண்பு புதுப்பி
 update_value: மதிப்பு புதுப்பி
 update_y_axis: Y அச்சு புதுப்பி
 upload: பதிவேற்றம்
-upload_firmware: நிலைபொருள் பதிவேற்றம்
+upload_firmware: ஃபார்ம்வேர் பதிவேற்றம்
 url: URL
 use_global: உலகளாவிய பயன்படுத்தவும்
 use_global_encryption_key: உலகளாவிய மறைகுறியாக்க விசை பயன்படுத்தவும்
 use_global_password: உலகளாவிய கடவுச்சொல்லைப் பயன்படுத்தவும்
 use_global_style: உலகளாவிய பாணி பயன்படுத்தவும்
-user_id: பயனர் அடையாளம்
+user_id: பயனர் ஐடி
 username: பயனர் பெயர்
 validate_time_everyday: தினமும் நேரத்தைச் சரிபார்க்கவும்
 validity: செல்லும் காலம்
@@ -1000,12 +1000,12 @@ variable: மாறி
 variable_name: மாறி பெயர்
 variables: மாறிகள்
 version: பதிப்பு
-virtual_assistant: மெய்நிகர் உதவியாளர்
-virtual_assistant_details: மெய்நிகர் உதவியாளர் விவரம்
-virtual_assistants: மெய்நிகர் உதவியாளர்கள்
-virtual_device_details: மெய்நிகர் சாதனம் விவரம்
-virtual_devices: மெய்நிகர் சாதனங்கள்
-web_console: இணைய முனையம்
+virtual_assistant: விர்ச்சுவல் அசிஸ்டண்ட்
+virtual_assistant_details: விர்ச்சுவல் அசிஸ்டண்ட் விவரம்
+virtual_assistants: விர்ச்சுவல் அசிஸ்டண்ட்கள்
+virtual_device_details: விர்ச்சுவல் டிவைஸ் விவரம்
+virtual_devices: விர்ச்சுவல் டிவைஸ்கள்
+web_console: இணைய கன்சோல்
 webhook: வெப்ஹுக்
 websocket_disconnected: வெப்சாக்கெட் துண்டிக்கப்பட்டது
 welcome_to_mycontroller: MyControllerக்கு வரவேற்கிறோம்
@@ -1022,5 +1022,5 @@ layout: அமைப்பு
 layout_tree: மரம்
 layout_force: விசை
 refresh: புதுப்பி
-include_child_nodes: இணை முனைகளை சேர்
-child_nodes: இணை முனைகள்
+include_child_nodes: இணை நோடுகளை சேர்
+child_nodes: இணை நோடுகள்

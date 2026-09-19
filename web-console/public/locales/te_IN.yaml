@@ -3,24 +3,24 @@ about: గురించి
 actions: చర్యలు
 active_duration: సక్రియ వ్యవధి
 add: జోడించు
-add_a_field: క్షేత్రం జోడించు
+add_a_field: ఫీల్డ్ జోడించు
 add_a_firmware: ఫర్మ్‌వేర్ జోడించు
-add_a_forward_payload: ఫార్వర్డ్ డేటా భారం జోడించు
-add_a_gateway: ప్రవేశద్వారం జోడించు
-add_a_handler: నిర్వాహకుడు జోడించు
-add_a_node: సంధి బిందువు జోడించు
+add_a_forward_payload: ఫార్వర్డ్ పేలోడ్ జోడించు
+add_a_gateway: గేట్‌వే జోడించు
+add_a_handler: హ్యాండ్లర్ జోడించు
+add_a_node: నోడ్ జోడించు
 add_a_schedule: షెడ్యూల్ జోడించు
 add_a_policy: పాలసీ జోడించు
 add_a_service_account: సర్వీస్ అకౌంట్ జోడించు
 add_a_user: వినియోగదారుని జోడించు
-add_a_source: మూలం జోడించు
+add_a_source: సోర్స్ జోడించు
 add_a_task: టాస్క్ జోడించు
 add_a_virtual_assistant: వర్చువల్ అసిస్టెంట్ జోడించు
 add_a_virtual_device: వర్చువల్ డివైస్ జోడించు
 add_an_item: ఐటమ్ జోడించు
 add_widget: విడ్జెట్ జోడించు
 address: చిరునామా
-agent_user_id: ఏజెంట్ వినియోగదారు గుర్తింపు
+agent_user_id: ఏజెంట్ వినియోగదారు ఐడి
 alerts_empty_message: ప్రస్తుతం ఎలర్ట్‌లు లేవు.
 alerts_empty_title: ఎలర్ట్‌లు కనుగొనబడలేదు
 alive_check_interval: యాక్టివ్ చెక్ విరామం
@@ -30,7 +30,7 @@ apache_license_2: Apache License 2.0
 api: API
 ask_confirmation: నిర్ధారణ అడుగు
 assigned_firmware: కేటాయించిన ఫర్మ్‌వేర్
-assigned_nodes: కేటాయించిన సంధి బిందువులు
+assigned_nodes: కేటాయించిన నోడ్‌లు
 auto_disable: స్వయంచాలకంగా నిలిపివేయి
 auto_update: స్వయంచాలకంగా నవీకరించు
 axis: అక్షం
@@ -50,7 +50,7 @@ button_text: బటన్ వచనం
 cancel: రద్దు చేయి
 chart_configuration: చార్ట్ సెట్టింగ్
 chart_type: చార్ట్ రకం
-chat_ids: చాట్ గుర్తింపులు
+chat_ids: చాట్ ఐడిలు
 clear: క్లియర్ చేయి
 clear_all: అన్నీ క్లియర్ చేయి
 color: రంగు
@@ -78,19 +78,19 @@ custom_data: కస్టమ్ డేటా
 custom_mapping: కస్టమ్ మ్యాపింగ్
 custom_variables: కస్టమ్ వేరియబుల్లు
 dampening: డ్యాంపనింగ్
-dashboard: నియంత్రణ పలక
+dashboard: డాష్‌బోర్డ్
 data: డేటా
-data_repository: డేటా నిధి
-data_repository_add_an_entry: 'డేటా నిధి: ఎంట్రీ జోడించు'
-data_repository_modify_an_entry: 'డేటా నిధి: ఎంట్రీ మార్చు'
-data_retrieved_from_server: సేవా యంత్రం నుండి డేటా పొందబడింది
+data_repository: డేటా రిపాజిటరీ
+data_repository_add_an_entry: 'డేటా రిపాజిటరీ: ఎంట్రీ జోడించు'
+data_repository_modify_an_entry: 'డేటా రిపాజిటరీ: ఎంట్రీ మార్చు'
+data_retrieved_from_server: సర్వర్ నుండి డేటా పొందబడింది
 data_type: డేటా రకం
 date_yyyy_mm_dd: తేదీ (yyyy-mm-dd)
 day_of_month: నెలలోని రోజు
 day_of_week: వారంలోని రోజులు
 delete: తొలగించు
 description: వివరణ
-destination_field: గమ్యం క్షేత్రం
+destination_field: గమ్యం ఫీల్డ్
 detailed_filter: వివరణాత్మక ఫిల్టర్
 details: వివరం
 device_filter: పరికర ఫిల్టర్
@@ -100,35 +100,35 @@ dialog:
   clear_sleeping_queue_msg: స్లీప్ క్యూలోని అన్ని సందేశాలు తొలగించబడతాయి
   delete_resource_msg: "ఎంచుకున్న అంశాలను తొలగించాలా?"
   delete_title_backup: "బ్యాకప్ ఫైళ్లను తొలగించాలా?"
-  delete_title_dashboard: "నియంత్రణ పలకను తొలగించాలా?"
-  delete_title_data_repository: "డేటా నిధిను తొలగించాలా?"
-  delete_title_field: "క్షేత్రంలను తొలగించాలా?"
-  delete_title_firmware: "ఫర్మ్‌వేర్ను తొలగించాలా?"
-  delete_title_forward_payload: "ఫార్వర్డ్ డేటా భారంలను తొలగించాలా?"
-  delete_title_gateway: "ప్రవేశద్వారంలను తొలగించాలా?"
-  delete_title_handler: "నిర్వాహకుడులను తొలగించాలా?"
-  delete_title_node: "సంధి బిందువులను తొలగించాలా?"
+  delete_title_dashboard: "డాష్‌బోర్డ్ను తొలగించాలా?"
+  delete_title_data_repository: "డేటా రిపాజిటరీను తొలగించాలా?"
+  delete_title_field: "ఫీల్డ్‌లను తొలగించాలా?"
+  delete_title_firmware: "ఫర్మ్‌వేర్‌ను తొలగించాలా?"
+  delete_title_forward_payload: "ఫార్వర్డ్ పేలోడ్‌లను తొలగించాలా?"
+  delete_title_gateway: "గేట్‌వేలను తొలగించాలా?"
+  delete_title_handler: "హ్యాండ్లర్లను తొలగించాలా?"
+  delete_title_node: "నోడ్‌లను తొలగించాలా?"
   delete_title_schedule: "షెడ్యూల్లను తొలగించాలా?"
   delete_title_service_account: "సర్వీస్ అకౌంట్ను తొలగించాలా?"
   delete_title_user: "వినియోగదారుని తొలగించాలా?"
   delete_title_policy: "పాలసీను తొలగించాలా?"
-  delete_title_source: "మూలంలను తొలగించాలా?"
+  delete_title_source: "సోర్స్‌లను తొలగించాలా?"
   delete_title_task: "టాస్క్లను తొలగించాలా?"
-  delete_title_virtual_assistant: "వర్చువల్ అసిస్టెంట్ను తొలగించాలా?"
-  delete_title_virtual_device: "వర్చువల్ డివైస్ను తొలగించాలా?"
-  node_reset_heading: "సంధి బిందువును రీసెట్ చేయాలా?"
-  node_reset_msg: "ఎంచుకున్న సంధి బిందువులను రీసెట్ చేయాలా?<br/>ఈ చర్య తర్వాత:<3><0>సెట్టింగ్ ఫ్యాక్టరీ సెట్టింగ్కు తిరిగి వస్తుంది.</0><1>ఎంచుకున్న సంధి బిందువులకు MyController నుండి ప్రాప్యత కోల్పోవచ్చు!</1></3>"
-  reboot_nodes_heading: "సంధి బిందువును రీబూట్ చేయాలా?"
-  reboot_nodes_msg: "ఎంచుకున్న సంధి బిందువులను రీబూట్ చేయాలా?"
-  reset_msg_jwt_secret: "JWT సీక్రెట్ను రీసెట్ చేయాలా? ఈ చర్య తర్వాత ఈ సేవా యంత్రంలోని అన్ని లాగిన్ సెషన్‌లు చెల్లవు మరియు మీరు లాగ్ అవుట్ అవుతారు."
+  delete_title_virtual_assistant: "వర్చువల్ అసిస్టెంట్‌ను తొలగించాలా?"
+  delete_title_virtual_device: "వర్చువల్ డివైస్‌ను తొలగించాలా?"
+  node_reset_heading: "నోడ్‌ను రీసెట్ చేయాలా?"
+  node_reset_msg: "ఎంచుకున్న నోడ్‌లను రీసెట్ చేయాలా?<br/>ఈ చర్య తర్వాత:<3><0>సెట్టింగ్ ఫ్యాక్టరీ సెట్టింగ్కు తిరిగి వస్తుంది.</0><1>ఎంచుకున్న నోడ్‌లకు MyController నుండి ప్రాప్యత కోల్పోవచ్చు!</1></3>"
+  reboot_nodes_heading: "నోడ్‌ను రీబూట్ చేయాలా?"
+  reboot_nodes_msg: "ఎంచుకున్న నోడ్‌లను రీబూట్ చేయాలా?"
+  reset_msg_jwt_secret: "JWT సీక్రెట్ను రీసెట్ చేయాలా? ఈ చర్య తర్వాత ఈ సర్వర్లోని అన్ని లాగిన్ సెషన్‌లు చెల్లవు మరియు మీరు లాగ్ అవుట్ అవుతారు."
   reset_title_jwt_secret: JWT సీక్రెట్ రీసెట్
   restore_heading: "పునరుద్ధరించాలా?"
-  restore_msg: "ఎంచుకున్న బ్యాకప్ ఫైల్ నుండి రిస్టోర్ చేయాలా?<br/>ఈ చర్య తర్వాత:<3><0>సేవా యంత్రం డేటా <1>{{fileName}}</1> స్థితికి రిస్టోర్ అవుతుంది</0><1>ఈ చర్యను తిరిగి తీసుకోలేరు</1><2>రిస్టోర్ చేయడానికి ముందు బ్యాకప్ తీసుకోండి</2><3>సేవా యంత్రంను మాన్యువల్‌గా ప్రారంభించాల్సి రావచ్చు</3></3>"
+  restore_msg: "ఎంచుకున్న బ్యాకప్ ఫైల్ నుండి రిస్టోర్ చేయాలా?<br/>ఈ చర్య తర్వాత:<3><0>సర్వర్ డేటా <1>{{fileName}}</1> స్థితికి రిస్టోర్ అవుతుంది</0><1>ఈ చర్యను తిరిగి తీసుకోలేరు</1><2>రిస్టోర్ చేయడానికి ముందు బ్యాకప్ తీసుకోండి</2><3>సర్వర్ను మాన్యువల్‌గా ప్రారంభించాల్సి రావచ్చు</3></3>"
 disable: నిలిపివేయి
 disable_scrollbar: స్క్రోల్‌బార్ను నిలిపివేయి
 disabled: నిలిపివేయబడింది
 disabled_all: అన్నీ నిలిపివేయి
-discover_nodes: సంధి బిందువులను కనుగొను
+discover_nodes: నోడ్‌లను కనుగొను
 disk: డిస్క్
 disks: డిస్క్లు
 display_name: ప్రదర్శన పేరు
@@ -142,14 +142,14 @@ download: డౌన్‌లోడ్
 drop_down_position: డ్రాప్‌డౌన్ స్థానం
 duration: వ్యవధి
 edit: సవరించు
-edit_dashboard_settings: నియంత్రణ పలక సెట్టింగ్ సవరించు
+edit_dashboard_settings: డాష్‌బోర్డ్ సెట్టింగ్ సవరించు
 edit_widget_settings: విడ్జెట్ సెట్టింగ్ సవరించు
 email: ఇమెయిల్
 enable: ప్రారంభించు
 enabled: ప్రారంభించబడింది
 encryption_key: ఎన్‌క్రిప్షన్ కీ
 endpoint: ఎండ్‌పాయింట్
-endpoints: ఎండ్‌పాయింట్లు
+endpoints: ఎండ్‌పాయింట్‌లు
 entities: ఎంటిటీలు
 error:
   console:
@@ -170,10 +170,10 @@ export_type: ఎక్స్‌పోర్ట్ రకం
 favorite: ఇష్టమైనవి
 fetch_info: సమాచారం పొందు
 fetching: పొందుతోంది
-field: క్షేత్రం
-field_details: క్షేత్రం వివరం
-field_id: క్షేత్రం గుర్తింపు
-fields: క్షేత్రాలు
+field: ఫీల్డ్
+field_details: ఫీల్డ్ వివరం
+field_id: ఫీల్డ్ ఐడి
+fields: ఫీల్డ్‌లు
 file_details: ఫైల్ వివరం
 file_uploaded_successfully: ఫైల్ అప్‌లోడ్ అయింది
 filename: ఫైల్ పేరు
@@ -185,39 +185,39 @@ filters: ఫిల్టర్లు
 firmware_details: ఫర్మ్‌వేర్ వివరం
 firmware_file: ఫర్మ్‌వేర్ ఫైల్
 firmware_update: ఫర్మ్‌వేర్ నవీకరణ
-firmwares: ఫర్మ్‌వేర్లు
+firmwares: ఫర్మ్‌వేర్‌లు
 flush_interval: ఫ్లష్ విరామం
 forgot_username_or_password: "వినియోగదారు పేరు లేదా పాస్‌వర్డ్ మర్చిపోయారా?"
-form_generic_error_message: లోపం లేదా తప్పనిసరి(*) క్షేత్రంలను తనిఖీ చేయండి
+form_generic_error_message: లోపం లేదా తప్పనిసరి(*) ఫీల్డ్‌లను తనిఖీ చేయండి
 form_view: ఫారమ్ వీక్షణ
 forum: ఫోరం
-forward_payload: ఫార్వర్డ్ డేటా భారం
-forward_payload_details: ఫార్వర్డ్ డేటా భారం వివరం
+forward_payload: ఫార్వర్డ్ పేలోడ్
+forward_payload_details: ఫార్వర్డ్ పేలోడ్ వివరం
 frequency: ఫ్రీక్వెన్సీ
 from: పంపినవారు
 from_email: పంపినవారి ఇమెయిల్
 full_name: పూర్తి పేరు
 function: ఫంక్షన్
-gateway: ప్రవేశద్వారం
-gateway_details: ప్రవేశద్వారం వివరం
-gateway_id: ప్రవేశద్వారం గుర్తింపు
-gateways: ప్రవేశద్వారాలు
-all_gateways: అన్ని ప్రవేశద్వారాలు
-all_nodes: అన్ని సంధి బిందువులు
-show_sources: మూలంలను చూపించు
-show_fields: క్షేత్రంలను చూపించు
-select_gateway: ప్రవేశద్వారం
-no_topology_nodes: ప్రదర్శించడానికి సంధి బిందువు లేదు
-no_topology_nodes_for_gateway: ఈ ప్రవేశద్వారంలో సంధి బిందువు లేదు
+gateway: గేట్‌వే
+gateway_details: గేట్‌వే వివరం
+gateway_id: గేట్‌వే ఐడి
+gateways: గేట్‌వేలు
+all_gateways: అన్ని గేట్‌వేలు
+all_nodes: అన్ని నోడ్‌లు
+show_sources: సోర్స్‌లను చూపించు
+show_fields: ఫీల్డ్‌లను చూపించు
+select_gateway: గేట్‌వే
+no_topology_nodes: ప్రదర్శించడానికి నోడ్ లేదు
+no_topology_nodes_for_gateway: ఈ గేట్‌వేలో నోడ్ లేదు
 geo_location: GEO స్థానం
 git_commit: గిట్ కమిట్
 global_configuration: గ్లోబల్ సెట్టింగ్
 golang_version: GoLang వెర్షన్
-handler: నిర్వాహకుడు
-handler_details: నిర్వాహకుడు వివరం
-handler_parameters: నిర్వాహకుడు పారామీటర్లు
-handler_type: నిర్వాహకుడు రకం
-handlers: నిర్వాహకుడులు
+handler: హ్యాండ్లర్
+handler_details: హ్యాండ్లర్ వివరం
+handler_parameters: హ్యాండ్లర్ పారామీటర్లు
+handler_type: హ్యాండ్లర్ రకం
+handlers: హ్యాండ్లర్‌లు
 header_name: హెడర్ పేరు
 headers: హెడర్లు
 heartbeat_request: హార్ట్‌బీట్ అభ్యర్థన
@@ -236,11 +236,11 @@ helper_text:
   invalid_duration: చెల్లని వ్యవధి
   invalid_email: చెల్లని ఇమెయిల్
   invalid_execution_interval_empty: అమలు విరామం ఖాళీగా ఉండకూడదు
-  invalid_field_id: "చెల్లని క్షేత్రం గుర్తింపు. అక్షరం, కనిష్టం=1, గరిష్టం=100"
+  invalid_field_id: "చెల్లని ఫీల్డ్ ఐడి. అక్షరం, కనిష్టం=1, గరిష్టం=100"
   invalid_filters: చెల్లని ఫిల్టర్
   invalid_height: చెల్లని ఎత్తు
   invalid_host: చెల్లని హోస్ట్
-  invalid_id: "చెల్లని గుర్తింపు. అక్షరం, కనిష్టం=4, గరిష్టం=100, స్పేస్ ఉండకూడదు"
+  invalid_id: "చెల్లని ఐడి. అక్షరం, కనిష్టం=4, గరిష్టం=100, స్పేస్ ఉండకూడదు"
   invalid_interval: చెల్లని విరామం
   invalid_key: "చెల్లని కీ. అక్షరం, కనిష్టం=1, గరిష్టం=100"
   invalid_key_path: కీ మార్గం ఖాళీగా ఉండకూడదు
@@ -250,10 +250,10 @@ helper_text:
   invalid_longitude: చెల్లని రేఖాంశం
   invalid_maximum_backup: "చెల్లని బ్యాకప్ సంఖ్య. పూర్ణాంకం, కనిష్టం=0"
   invalid_name: "చెల్లని పేరు. అక్షరం, కనిష్టం=2, గరిష్టం=100"
-  invalid_node_id: "చెల్లని సంధి బిందువు గుర్తింపు. అక్షరం, కనిష్టం=1, గరిష్టం=100"
+  invalid_node_id: "చెల్లని నోడ్ ఐడి. అక్షరం, కనిష్టం=1, గరిష్టం=100"
   invalid_offset: చెల్లని ఆఫ్‌సెట్
   invalid_path: చెల్లని మార్గం
-  invalid_payload: చెల్లని డేటా భారం
+  invalid_payload: చెల్లని పేలోడ్
   invalid_port: చెల్లని పోర్ట్
   invalid_prefix: చెల్లని ప్రిఫిక్స్
   invalid_profile_confirm_password: నిర్ధారణ పాస్‌వర్డ్ సరిపోలడం లేదు
@@ -263,12 +263,12 @@ helper_text:
   invalid_response_code: "చెల్లుబాటు అయ్యే ప్రతిస్పందన కోడ్ నమోదు చేయండి. విస్మరించడానికి 0 నమోదు చేయండి"
   invalid_retry_count: "చెల్లని మళ్లీ ప్రయత్న సంఖ్య. పూర్ణాంకం, కనిష్టం=0"
   invalid_script_empty: స్క్రిప్ట్ ఖాళీగా ఉండకూడదు
-  invalid_server_url: చెల్లని సేవా యంత్రం URL
-  invalid_source_id: "చెల్లని మూలం గుర్తింపు. అక్షరం, కనిష్టం=1, గరిష్టం=100"
+  invalid_server_url: చెల్లని సర్వర్ URL
+  invalid_source_id: "చెల్లని సోర్స్ ఐడి. అక్షరం, కనిష్టం=1, గరిష్టం=100"
   invalid_text: "చెల్లని వచనం. అక్షరం, కనిష్టం=1, గరిష్టం=100"
   invalid_time: చెల్లని సమయం
   invalid_title: చెల్లని శీర్షిక
-  invalid_token: చెల్లని గుర్తింపు చిహ్నం
+  invalid_token: చెల్లని టోకెన్
   invalid_topic: చెల్లని టాపిక్
   invalid_type: చెల్లని రకం
   invalid_url: చెల్లని URL
@@ -283,14 +283,14 @@ hide_header: హెడర్ దాచు
 hide_status_column: స్టేటస్ కాలమ్ దాచు
 hide_value_column: విలువ కాలమ్ దాచు
 host: హోస్ట్
-host_id: హోస్ట్ గుర్తింపు
-host_ids: హోస్ట్ గుర్తింపులు
+host_id: హోస్ట్ ఐడి
+host_ids: హోస్ట్ ఐడిలు
 html: HTML
 hue: హ్యూ
 icon_or_image_location: ఐకాన్ లేదా చిత్రం స్థానం
-id: గుర్తింపు
+id: ఐడి
 ignore_duplicate: నకిలీని విస్మరించు
-image_source: చిత్రం మూలం
+image_source: చిత్రం సోర్స్
 image_type: చిత్రం రకం
 in_progress: ప్రగతిలో ఉంది
 inactive_duration: నిష్క్రియ వ్యవధి
@@ -304,7 +304,7 @@ interpolation: ఇంటర్‌పోలేషన్
 interval: విరామం
 interval_0h0m0s: విరామం (0h0m0s)
 invalid_file: చెల్లని ఫైల్
-is_sleep_node: స్లీప్ సంధి బిందువు
+is_sleep_node: స్లీప్ నోడ్
 is_static: స్టాటిక్
 javascript: జావాస్క్రిప్ట్
 json: JSON
@@ -364,7 +364,7 @@ min_y_axis: కనిష్టం (Y అక్షం)
 minimum: కనిష్టం
 minimum_value: కనిష్ట విలువ
 minimum_width: కనిష్ట వెడల్పు
-mixed_resources: మిశ్రమ వనరులు
+mixed_resources: మిశ్రమ రిసోర్స్‌లు
 modified_on: సవరించిన తేదీ
 name: పేరు
 name_key: పేరు కీ
@@ -372,18 +372,18 @@ never_expire: గడువు ముగియదు
 new: కొత్తది
 new_password: కొత్త పాస్‌వర్డ్
 no_change_since: మార్పు లేని సమయం
-no_dashboard_message: లోడ్ చేయడానికి నియంత్రణ పలక లేదు.
-no_dashboard_title: నియంత్రణ పలక లేదు
+no_dashboard_message: లోడ్ చేయడానికి డాష్‌బోర్డ్ లేదు.
+no_dashboard_title: డాష్‌బోర్డ్ లేదు
 no_data: డేటా లేదు
 no_labels: లేబుల్ లేదు
 no_login_message: లాగిన్ సందేశం సెట్ చేయబడలేదు
-node: సంధి బిందువు
-node_configuration: సంధి బిందువు సెట్టింగ్
-node_details: సంధి బిందువు వివరం
-node_endpoints: సంధి బిందువు ఎండ్‌పాయింట్లు
-node_id: సంధి బిందువు గుర్తింపు
-node_state_updater: సంధి బిందువు స్టేట్ అప్‌డేటర్
-nodes: సంధి బిందువులు
+node: నోడ్
+node_configuration: నోడ్ సెట్టింగ్
+node_details: నోడ్ వివరం
+node_endpoints: నోడ్ ఎండ్‌పాయింట్‌లు
+node_id: నోడ్ ఐడి
+node_state_updater: నోడ్ స్టేట్ అప్‌డేటర్
+nodes: నోడ్‌లు
 none: ఏదీ లేదు
 notifications: నోటిఫికేషన్‌లు
 number_of_axis: అక్షాల సంఖ్య
@@ -410,8 +410,8 @@ opts:
     label_secondary: ద్వితీయం (నీలం)
     label_warning: హెచ్చరిక (పసుపు)
   chart_group_type:
-    desc_group_chart: అనేక వనరులకు ఒకే అక్షం
-    desc_mixed_chart: అనేక వనరులకు అనేక అక్షాలు
+    desc_group_chart: అనేక రిసోర్స్‌లకు ఒకే అక్షం
+    desc_mixed_chart: అనేక రిసోర్స్‌లకు అనేక అక్షాలు
     desc_pie_chart: ఒకే పై చార్ట్
     label_group_chart: గ్రూప్ చార్ట్
     label_mixed_chart: మిక్సడ్ చార్ట్
@@ -498,7 +498,7 @@ opts:
     desc_generic: జనరిక్ ప్రొవైడర్
     desc_mysensors_v2: MySensors.org version 2.x
     desc_philips_hue: developers.meethue.com
-    desc_system_monitoring: సిస్టమ్ వనరులను సేకరించి రిపోర్ట్ చేస్తుంది
+    desc_system_monitoring: సిస్టమ్ రిసోర్స్‌లను సేకరించి రిపోర్ట్ చేస్తుంది
     desc_tasmota: tasmota.github.io
     label_esphome: ESPHome
     label_generic: జనరిక్
@@ -507,16 +507,16 @@ opts:
     label_system_monitoring: సిస్టమ్ మానిటరింగ్
     label_tasmota: Tasmota
   handler_type:
-    desc_backup: సేవా యంత్రంను బ్యాకప్ చేస్తుంది
+    desc_backup: సర్వర్ను బ్యాకప్ చేస్తుంది
     desc_email: ఇమెయిల్ పంపుతుంది
-    desc_noop: ఎలాంటి చర్య చేయని నిర్వాహకుడు
-    desc_resource: అంతర్గత వనరు చర్యలు
+    desc_noop: ఎలాంటి చర్య చేయని హ్యాండ్లర్
+    desc_resource: అంతర్గత రిసోర్స్ చర్యలు
     desc_telegram: Telegramకు వచనం పంపుతుంది
     desc_webhook: ఒక వెబ్‌హుక్ URLను కాల్ చేస్తుంది
     label_backup: బ్యాకప్
     label_email: ఇమెయిల్
     label_noop: నూప్
-    label_resource: వనరు
+    label_resource: రిసోర్స్
     label_telegram: Telegram
     label_webhook: వెబ్‌హుక్
   http_method:
@@ -525,8 +525,8 @@ opts:
     label_post: POST
     label_put: PUT
   image_load_type:
-    desc_custom_mapping: క్షేత్రం విలువ నుండి మ్యాప్ చేసిన చిత్రం
-    desc_image: క్షేత్రం విలువ నుండి Base64 చిత్రం
+    desc_custom_mapping: ఫీల్డ్ విలువ నుండి మ్యాప్ చేసిన చిత్రం
+    desc_image: ఫీల్డ్ విలువ నుండి Base64 చిత్రం
     label_custom_mapping: కస్టమ్ మ్యాపింగ్
     label_image: ముడి చిత్రం
   image_rotation:
@@ -540,10 +540,10 @@ opts:
     label_rotate_right_90: కుడి 90°
   image_source:
     desc_disk: స్థానిక డిస్క్ మార్గం నుండి చిత్రం
-    desc_field: క్షేత్రం వనరు నుండి చిత్ర డేటా
+    desc_field: ఫీల్డ్ రిసోర్స్ నుండి చిత్ర డేటా
     desc_url: URL నుండి చిత్రం
     label_disk: డిస్క్
-    label_field: క్షేత్రం
+    label_field: ఫీల్డ్
     label_url: URL
   interval:
     label_day_01: 1 రోజు
@@ -800,9 +800,9 @@ opts:
     label_wednesday: బుధవారం
   widget_type:
     desc_chart_panel: చార్ట్లలో డేటాను చూపించు
-    desc_control_panel: వనరులపై నియంత్రణ చర్య చేస్తుంది
+    desc_control_panel: రిసోర్స్‌లపై నియంత్రణ చర్య చేస్తుంది
     desc_empty_panel: ఖాళీ ప్యానెల్
-    desc_image_panel: వివిధ మూలం నుండి చిత్రాన్ని చూపించు
+    desc_image_panel: వివిధ సోర్స్ నుండి చిత్రాన్ని చూపించు
     desc_light_panel: ఒక లైట్‌ను నియంత్రిస్తుంది
     desc_utilization_panel: వినియోగ స్థితిని చూపించు
     label_chart_panel: చార్ట్ ప్యానెల్
@@ -817,15 +817,15 @@ padding_left_px: ఎడమ ప్యాడింగ్ (px)
 padding_right_px: కుడి ప్యాడింగ్ (px)
 padding_top_px: పై ప్యాడింగ్ (px)
 panel_title: ప్యానెల్ శీర్షిక
-parameters_to_handler: నిర్వాహకుడుకు పారామీటర్లు
+parameters_to_handler: హ్యాండ్లర్‌కు పారామీటర్లు
 parse_mode: పార్స్ మోడ్
 password: పాస్‌వర్డ్
 path: మార్గం
-payload: డేటా భారం
+payload: పేలోడ్
 send: పంపు
-payload_off: డేటా భారం OFF
-payload_on: డేటా భారం ON
-payloads: డేటా భారంలు
+payload_off: పేలోడ్ OFF
+payload_on: పేలోడ్ ON
+payloads: పేలోడ్‌లు
 per_cpu_disabled: ప్రతి CPU నిలిపివేయబడింది
 port: పోర్ట్
 port_name: పోర్ట్ పేరు
@@ -845,7 +845,7 @@ publish: ప్రచురించు
 qos: QoS
 query_parameters: క్వెరీ పారామీటర్లు
 queue_failed_messages: విఫలమైన సందేశాలను క్యూలో ఉంచు
-quick_id: త్వరిత గుర్తింపు
+quick_id: క్విక్ ఐడి
 re_enable: మళ్లీ ప్రారంభించు
 re_enable_duration: మళ్లీ ప్రారంభించు వ్యవధి
 react_version: React వెర్షన్
@@ -853,20 +853,20 @@ read_only: చదవడానికి మాత్రమే
 reboot: రీబూట్
 reconnect_delay: మళ్లీ కనెక్ట్ ఆలస్యం
 refresh_interval: నవీకరణ విరామం
-refresh_node_info: సంధి బిందువు సమాచారాన్ని నవీకరించు
+refresh_node_info: నోడ్ సమాచారాన్ని నవీకరించు
 reload: మళ్లీ లోడ్ చేయి
 repeat_count: పునరావృత సంఖ్య
 request_heartbeat: హార్ట్‌బీట్ అభ్యర్థించు
 reset: రీసెట్
 resetting: రీసెట్ అవుతోంది...
-resource: వనరు
-resource_by_labels: లేబుల్ ద్వారా వనరు
-resource_by_quick_id: త్వరిత గుర్తింపు ద్వారా వనరు
-resource_configuration: వనరు సెట్టింగ్
-resource_filters: వనరు ఫిల్టర్లు
-resource_name: వనరు పేరు
-resource_type: వనరు రకం
-resources: వనరులు
+resource: రిసోర్స్
+resource_by_labels: లేబుల్ ద్వారా రిసోర్స్
+resource_by_quick_id: క్విక్ ఐడి ద్వారా రిసోర్స్
+resource_configuration: రిసోర్స్ సెట్టింగ్
+resource_filters: రిసోర్స్ ఫిల్టర్లు
+resource_name: రిసోర్స్ పేరు
+resource_type: రిసోర్స్ రకం
+resources: రిసోర్స్‌లు
 response_code: ప్రతిస్పందన కోడ్
 restore: పునరుద్ధరించు
 retention_count: రిటెన్షన్ సంఖ్య
@@ -887,11 +887,11 @@ schedule_type: షెడ్యూల్ రకం
 schedules: షెడ్యూల్లు
 script: స్క్రిప్ట్
 select_an_option: ఒక ఎంపికను ఎంచుకోండి
-server: సేవా యంత్రం
-service_account_not_generated: సర్వీస్ అకౌంట్ గుర్తింపు చిహ్నం రూపొందించబడలేదు
-service_account_copy_title: సర్వీస్ అకౌంట్ గుర్తింపు చిహ్నంను కాపీ చేయి
-service_account_copy_warning_msg: ఈ గుర్తింపు చిహ్నం ఒక్కసారి మాత్రమే చూపబడుతుంది. మళ్లీ చూడలేరు. ఇప్పుడే భద్రపరచండి.
-service_account_barcode_help: గుర్తింపు చిహ్నంతో లాగిన్ అవ్వడానికి ఈ బార్‌కోడ్ను స్కాన్ చేయండి.
+server: సర్వర్
+service_account_not_generated: సర్వీస్ అకౌంట్ టోకెన్ రూపొందించబడలేదు
+service_account_copy_title: సర్వీస్ అకౌంట్ టోకెన్ను కాపీ చేయి
+service_account_copy_warning_msg: ఈ టోకెన్ ఒక్కసారి మాత్రమే చూపబడుతుంది. మళ్లీ చూడలేరు. ఇప్పుడే భద్రపరచండి.
+service_account_barcode_help: టోకెన్తో లాగిన్ అవ్వడానికి ఈ బార్‌కోడ్ను స్కాన్ చేయండి.
 service_account_details: సర్వీస్ అకౌంట్ వివరం
 service_accounts: సర్వీస్ అకౌంట్లు
 settings: సెట్టింగ్‌లు
@@ -902,12 +902,12 @@ since: నుండి
 size: పరిమాణం
 sleeping_queue: స్లీప్ క్యూ
 sort_order_priority: క్రమ ప్రాధాన్యత
-source: మూలం
-source_code: మూలం కోడ్
-source_details: మూలం వివరం
-source_field: మూలం క్షేత్రం
-source_id: మూలం గుర్తింపు
-sources: మూలాలు
+source: సోర్స్
+source_code: సోర్స్ కోడ్
+source_details: సోర్స్ వివరం
+source_field: సోర్స్ ఫీల్డ్
+source_id: సోర్స్ ఐడి
+sources: సోర్స్‌లు
 spec: స్పెక్
 stack_charts: చార్ట్లను అమర్చు
 state: స్థితి
@@ -953,7 +953,7 @@ timestamp_key: టైమ్‌స్టాంప్ కీ
 title: శీర్షిక
 to: స్వీకర్త
 to_emails: స్వీకర్త ఇమెయిల్లు
-token: గుర్తింపు చిహ్నం
+token: టోకెన్
 topology: టోపాలజీ
 topic: టాపిక్
 trait: ట్రైట్
@@ -969,11 +969,11 @@ update_body: బాడీ నవీకరించు
 update_data: డేటా నవీకరించు
 update_endpoint: ఎండ్‌పాయింట్ నవీకరించు
 update_firmware: ఫర్మ్‌వేర్ నవీకరించు
-update_node: సంధి బిందువు నవీకరించు
+update_node: నోడ్ నవీకరించు
 update_post_run: పోస్ట్ రన్ నవీకరించు
 update_pre_run: ప్రీ రన్ నవీకరించు
 update_query_parameters: క్వెరీ పారామీటర్లు నవీకరించు
-update_resource: వనరు నవీకరించు
+update_resource: రిసోర్స్ నవీకరించు
 update_script: స్క్రిప్ట్ నవీకరించు
 update_trait: ట్రైట్ నవీకరించు
 update_value: విలువ నవీకరించు
@@ -985,7 +985,7 @@ use_global: గ్లోబల్ ఉపయోగించు
 use_global_encryption_key: గ్లోబల్ ఎన్‌క్రిప్షన్ కీ ఉపయోగించు
 use_global_password: గ్లోబల్ పాస్‌వర్డ్ ఉపయోగించు
 use_global_style: గ్లోబల్ స్టైల్ ఉపయోగించు
-user_id: వినియోగదారు గుర్తింపు
+user_id: వినియోగదారు ఐడి
 username: వినియోగదారు పేరు
 validate_time_everyday: ప్రతిరోజూ సమయాన్ని ధృవీకరించు
 validity: చెల్లుబాటు
@@ -998,9 +998,9 @@ variables: వేరియబుల్లు
 version: వెర్షన్
 virtual_assistant: వర్చువల్ అసిస్టెంట్
 virtual_assistant_details: వర్చువల్ అసిస్టెంట్ వివరం
-virtual_assistants: వర్చువల్ అసిస్టెంట్లు
+virtual_assistants: వర్చువల్ అసిస్టెంట్‌లు
 virtual_device_details: వర్చువల్ డివైస్ వివరం
-virtual_devices: వర్చువల్ డివైస్లు
+virtual_devices: వర్చువల్ డివైస్‌లు
 web_console: వెబ్ కన్సోల్
 webhook: వెబ్‌హుక్
 websocket_disconnected: వెబ్‌సాకెట్ డిస్‌కనెక్ట్ అయింది
@@ -1022,5 +1022,5 @@ layout: లేఅవుట్
 layout_tree: ట్రీ
 layout_force: ఫోర్స్
 refresh: నవీకరించు
-include_child_nodes: చైల్డ్ సంధి బిందువులను చేర్చు
-child_nodes: చైల్డ్ సంధి బిందువులు
+include_child_nodes: చైల్డ్ నోడ్‌లను చేర్చు
+child_nodes: చైల్డ్ నోడ్‌లు
