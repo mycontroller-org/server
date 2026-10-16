@@ -15,6 +15,7 @@ const (
 	ActionRefreshNodeInfo  = "refresh_node_info"
 	ActionReset            = "reset"
 	ActionAwake            = "awake"
+	ActionSetSleepDuration = "SetSleepDuration"
 )
 
 // Node struct

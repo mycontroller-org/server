@@ -40,6 +40,11 @@ func (p *Provider) executeFirmwareConfigRequest(msg *msgTY.Message) (string, err
 		return "", err
 	}
 
+	// Detect and persist bootloader kind
+	if rxPL != "" {
+		p.rememberBootloaderKind(node, rxPL)
+	}
+
 	fromReq := otaBlockSizeFromRequest(rxPL)
 	if fromReq > 0 {
 		p.rememberOtaBlockSize(node, fromReq)
