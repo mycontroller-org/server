@@ -83,3 +83,54 @@ func TestMaxSleepDuration(t *testing.T) {
 		t.Fatalf("2h clamp: %v", got)
 	}
 }
+
+func TestMaybeSendRebootDecision(t *testing.T) {
+	tests := []struct {
+		name          string
+		labels        cmap.CustomStringMap
+		wantNeedsBoot bool
+	}{
+		{
+			name:          "no labels, no detection",
+			labels:        cmap.CustomStringMap{},
+			wantNeedsBoot: false,
+		},
+		{
+			name:          "explicit opt-in",
+			labels:        cmap.CustomStringMap{LabelBootloaderOtaReboot: "true"},
+			wantNeedsBoot: true,
+		},
+		{
+			name:          "detected MYSBootloader 1.4",
+			labels:        cmap.CustomStringMap{LabelBootloaderKind: BootloaderKindMYSBootloader14},
+			wantNeedsBoot: true,
+		},
+		{
+			name:          "detected MYSBootloader 1.0",
+			labels:        cmap.CustomStringMap{LabelBootloaderKind: BootloaderKindMYSBootloader10},
+			wantNeedsBoot: true,
+		},
+		{
+			name:          "detected protocol 3.1, no opt-in",
+			labels:        cmap.CustomStringMap{LabelBootloaderKind: BootloaderKindProtocol31},
+			wantNeedsBoot: false,
+		},
+		{
+			name: "protocol 3.1 with explicit opt-in",
+			labels: cmap.CustomStringMap{
+				LabelBootloaderKind:      BootloaderKindProtocol31,
+				LabelBootloaderOtaReboot: "true",
+			},
+			wantNeedsBoot: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			n := &nodeTY.Node{Labels: tt.labels}
+			got := shouldRebootForOta(n) || isMYSBootloaderKind(bootloaderKindForNode(n))
+			if got != tt.wantNeedsBoot {
+				t.Errorf("needsReboot = %v, want %v", got, tt.wantNeedsBoot)
+			}
+		})
+	}
+}

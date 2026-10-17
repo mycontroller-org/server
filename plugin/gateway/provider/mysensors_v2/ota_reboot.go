@@ -60,32 +60,47 @@ func maxSleepDuration(node *nodeTY.Node) time.Duration {
 
 // maybeSendRebootForOta is called before serving a firmware-update action.
 // It sends I_REBOOT to awake nodes, or queues it for sleeping ones.
+//
+// A reboot is needed when either:
+//   - the user explicitly opted in with bootloader_ota_reboot=true, or
+//   - the detected bootloader is a MYSBootloader variant (any 1.x).
+//
+// Protocol 3.1 / DualOptiboot nodes do not need a reboot: they enter OTA on
+// their own when they receive the firmware config request.
 func (p *Provider) maybeSendRebootForOta(msg *msgTY.Message) error {
 	node, err := p.getNode(msg.GatewayID, msg.NodeID)
 	if err != nil {
 		return fmt.Errorf("load node for OTA reboot check: %w", err)
 	}
-	if !shouldRebootForOta(node) {
-		p.logger.Debug("bootloader_ota_reboot disabled, skipping reboot",
+
+	explicitOptIn := shouldRebootForOta(node)
+	detectedMYSBootloader := isMYSBootloaderKind(bootloaderKindForNode(node))
+
+	if !explicitOptIn && !detectedMYSBootloader {
+		p.logger.Debug("no pre-OTA reboot needed",
 			zap.String("nodeId", node.NodeID),
 			zap.String("gatewayId", node.GatewayID),
+			zap.String("bootloaderKind", bootloaderKindForNode(node)),
+			zap.Bool("explicitOptIn", explicitOptIn),
 		)
 		return nil
 	}
 
-	// Case 1: sleeping node (smart sleep) not seen recently -> queue the reboot
+	// A reboot is needed. Queue it if the node is a smart-sleep node that is
+	// currently asleep; otherwise send it immediately.
 	if isSleepingNode(node) && !isRecentlySeen(node, smartSleepRecentlySeen) {
 		p.queueRebootForNode(node)
 		p.logger.Info("node is sleeping, I_REBOOT queued until next wake",
 			zap.String("nodeId", node.NodeID),
 			zap.String("gatewayId", node.GatewayID),
+			zap.String("bootloaderKind", bootloaderKindForNode(node)),
+			zap.Bool("explicitOptIn", explicitOptIn),
 			zap.String("sleepDuration", node.Labels.Get(FieldSleepDuration)),
 			zap.Duration("maxWait", maxSleepDuration(node)),
 		)
 		return nil
 	}
 
-	// Case 2: awake node, or non smart-sleep node -> send immediately
 	return p.sendRebootNow(node)
 }
 
