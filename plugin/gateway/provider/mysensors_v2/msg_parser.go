@@ -89,7 +89,10 @@ func (p *Provider) toRawMessage(msg *msgTY.Message) (*msgTY.RawMessage, error) {
 		}
 		if msMsg.Type == "" {
 			switch payload.Key {
-			case nodeTY.ActionFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST", "ST_FIRMWARE_REQUEST":
+			case nodeTY.ActionFirmwareUpdate,
+				"ST_FIRMWARE_CONFIG_REQUEST",
+				"ST_FIRMWARE_REQUEST",
+				nodeTY.ActionSetSleepDuration:
 				p.logger.Debug("firmware action produced no message", zap.String("action", payload.Key))
 				return nil, nil
 			}
@@ -241,7 +244,7 @@ func (p *Provider) ConvertToMessages(rawMsg *msgTY.RawMessage) ([]*msgTY.Message
 			// else: return?
 
 		case cmdInternal:
-			proceedFurther, extraMessages, err := updateNodeInternalMessages(msg, &msgPL, msMsg)
+			proceedFurther, extraMessages, err := p.updateNodeInternalMessages(msg, &msgPL, msMsg)
 			if err != nil || !proceedFurther {
 				return nil, err
 			}
@@ -378,7 +381,7 @@ func (p *Provider) updateFieldAndUnit(msMsg *message, msgPL *msgTY.Payload) erro
 
 // updates node internal message data, return true, if further actions required
 // returns false, if the message can be dropped
-func updateNodeInternalMessages(msg *msgTY.Message, msgPL *msgTY.Payload, msMsg *message) (bool, []*msgTY.Message, error) {
+func (p *Provider) updateNodeInternalMessages(msg *msgTY.Message, msgPL *msgTY.Payload, msMsg *message) (bool, []*msgTY.Message, error) {
 	if msMsg.Ack == "1" { // do not care about internal ack messages
 		return false, nil, nil
 	}
@@ -436,10 +439,19 @@ func updateNodeInternalMessages(msg *msgTY.Message, msgPL *msgTY.Payload, msMsg 
 					}
 					extraMessages = append(extraMessages, awakeActionMsg)
 
+					// Deliver any pending reboot, then any pending sleep command.
+					// Sequential to guarantee the reboot lands before the new
+					// sleep duration is pushed to the node.
+					go func(gwID, nodeID string) {
+						p.deliverQueuedRebootIfAny(gwID, nodeID)
+						p.deliverQueuedSleepCommandIfAny(gwID, nodeID)
+					}(msg.GatewayID, msMsg.NodeID)
+
 				case "I_POST_SLEEP_NOTIFICATION":
 					msgPL.Others.Set(FieldSleepDuration, msMsg.Payload, nil)
 
 				}
+
 			default:
 				// noop
 			}

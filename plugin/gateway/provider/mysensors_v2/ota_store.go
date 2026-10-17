@@ -15,12 +15,23 @@ import (
 )
 
 var (
-	nodeStore        = concurrency.NewStore()
-	fwStore          = concurrency.NewStore()
-	fwRawStore       = concurrency.NewStore()
-	fotaScriptStore  = concurrency.NewStore() // data_repository id → *fotaScriptBundle
-	fotaSessionStore = concurrency.NewStore() // gateway_node → *fotaSession
+	nodeStore             = concurrency.NewStore()
+	fwStore               = concurrency.NewStore()
+	fwRawStore            = concurrency.NewStore()
+	fotaScriptStore       = concurrency.NewStore() // data_repository id -> *fotaScriptBundle
+	fotaSessionStore      = concurrency.NewStore() // gateway_node -> *fotaSession
+	otaPendingRebootStore = concurrency.NewStore() // gateway_node -> time.Time
+	pendingSleepStore     = concurrency.NewStore() // gateway_node -> pendingSleepCommand
 )
+
+// pendingSleepCommand is a sleep-duration change command queued for a sleeping
+// smart_sleep node.
+type pendingSleepCommand struct {
+	SensorID  string    // child sensor id that receives the V_PERCENTAGE
+	Percent   uint8     // V_PERCENTAGE value to send (0-100)
+	QueuedAt  time.Time // for TTL / purge
+	RequestID string    // optional: correlation with the caller
+}
 
 // fotaSession is the firmware + slice size advertised in onConfig, reused for every block.
 type fotaSession struct {
@@ -68,7 +79,7 @@ func (p *Provider) getNode(gatewayID, nodeID string) (*nodeTY.Node, error) {
 	return nil, fmt.Errorf("node not available. gatewayID:%s, nodeID:%s", gatewayID, nodeID)
 }
 
-// getNode returns the node
+// getFirmware returns the firmware
 func (p *Provider) getFirmware(id string) (*firmwareTY.Firmware, error) {
 	toFirmware := func(item interface{}) (*firmwareTY.Firmware, error) {
 		if fw, ok := item.(*firmwareTY.Firmware); ok {
