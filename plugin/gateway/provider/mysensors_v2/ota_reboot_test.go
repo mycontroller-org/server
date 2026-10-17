@@ -134,3 +134,38 @@ func TestMaybeSendRebootDecision(t *testing.T) {
 		})
 	}
 }
+
+func TestPendingRebootCount(t *testing.T) {
+	// Nettoyer l'état entre les tests (le store est global au package).
+	for _, k := range otaPendingRebootStore.Keys() {
+		otaPendingRebootStore.Remove(k)
+	}
+	defer func() {
+		for _, k := range otaPendingRebootStore.Keys() {
+			otaPendingRebootStore.Remove(k)
+		}
+	}()
+
+	if n := pendingRebootCount(); n != 0 {
+		t.Fatalf("expected 0 pending reboots, got %d", n)
+	}
+
+	otaPendingRebootStore.Add("gw1.node1", time.Now())
+	otaPendingRebootStore.Add("gw1.node2", time.Now())
+
+	if n := pendingRebootCount(); n != 2 {
+		t.Fatalf("expected 2 pending reboots, got %d", n)
+	}
+
+	otaPendingRebootStore.Remove("gw1.node1")
+
+	if n := pendingRebootCount(); n != 1 {
+		t.Fatalf("expected 1 pending reboot, got %d", n)
+	}
+
+	otaPendingRebootStore.Remove("gw1.node2")
+
+	if n := pendingRebootCount(); n != 0 {
+		t.Fatalf("expected 0 pending reboots after cleanup, got %d", n)
+	}
+}
