@@ -10,19 +10,47 @@ import "./TableUtilization.scss"
 
 const TableUtilization = ({ widgetId = "", config = {}, resources = [], history = null }) => {
   const isMixedResources = getValue(config, "resource.isMixedResources", false)
-  const hideValueColumn = getValue(config, "table.hideValueColumn", false)
-  const hideStatusColumn = getValue(config, "table.hideStatusColumn", false)
+  const globalTable = getValue(config, "table", {})
   const { t } = useTranslation()
+
+  // Mixed rows store "use global" on table.useGlobal. When it is on, the widget
+  // table settings apply, including hide status/value. A row that opts out keeps
+  // its own table settings. The column is rendered only when some row shows it.
+  const resolveResourceConfig = (resource) => {
+    const resourceConfig = resource.resourceConfig || {}
+    if (!isMixedResources) {
+      return {
+        ...resourceConfig,
+        table: resourceConfig.table || globalTable,
+      }
+    }
+    const useGlobal = getValue(resourceConfig, "table.useGlobal", true)
+    const table = useGlobal ? globalTable : resourceConfig.table || globalTable
+    return { ...resourceConfig, table }
+  }
+
+  // sort by ascending order, by name
+  resources.sort((a, b) => (a.sortOrderPriority > b.sortOrderPriority ? 1 : -1))
+
+  const resolvedResources = resources.map((resource) => ({
+    resource,
+    resourceConfig: resolveResourceConfig(resource),
+  }))
+
+  const showValueColumn = resolvedResources.some(
+    ({ resourceConfig }) => !getValue(resourceConfig, "table.hideValueColumn", false)
+  )
+  const showStatusColumn = resolvedResources.some(
+    ({ resourceConfig }) => !getValue(resourceConfig, "table.hideStatusColumn", false)
+  )
 
   const columns = [{ title: t("name") }, { title: t("last_seen") }]
 
-  // value column
-  if (!hideValueColumn || isMixedResources) {
+  if (showValueColumn) {
     columns.push({ title: t("value") })
   }
 
-  // status column
-  if (!hideStatusColumn || isMixedResources) {
+  if (showStatusColumn) {
     columns.push({ title: t("status"), transforms: [cellWidth(35), fitContent] })
   }
 
@@ -65,17 +93,7 @@ const TableUtilization = ({ widgetId = "", config = {}, resources = [], history 
     )
   }
 
-  // sort by ascending order, by name
-  resources.sort((a, b) => (a.sortOrderPriority > b.sortOrderPriority ? 1 : -1))
-
-  resources.forEach((resource) => {
-    let _resourceConfig = resource.resourceConfig
-
-    // if asked to use custom table data take it
-    if (isMixedResources && !resource.resourceConfig.useGlobal) {
-      _resourceConfig.table = { ...resource.resourceConfig.table }
-    }
-
+  resolvedResources.forEach(({ resource, resourceConfig }) => {
     const rowItems = [
       {
         title: (
@@ -97,15 +115,15 @@ const TableUtilization = ({ widgetId = "", config = {}, resources = [], history 
       },
     ]
 
-    if (!_resourceConfig.table.hideValueColumn) {
-      rowItems.push({ title: getResourceValue(resource, _resourceConfig) })
-    } else if (isMixedResources) {
+    if (!getValue(resourceConfig, "table.hideValueColumn", false)) {
+      rowItems.push({ title: getResourceValue(resource, resourceConfig) })
+    } else if (showValueColumn) {
       rowItems.push(null)
     }
 
-    if (!_resourceConfig.table.hideStatusColumn) {
-      rowItems.push({ title: getStatus(resource, _resourceConfig) })
-    } else if (isMixedResources) {
+    if (!getValue(resourceConfig, "table.hideStatusColumn", false)) {
+      rowItems.push({ title: getStatus(resource, resourceConfig) })
+    } else if (showStatusColumn) {
       rowItems.push(null)
     }
 
