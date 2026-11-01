@@ -39,6 +39,7 @@ Draft for **2.3.0** (`versions.txt`). Compared to [v2.2.0](https://github.com/my
 
 ### Fixed
 
+- Dashboard utilization table with mixed resources honors the global **Hide Status Column** and **Hide Value Column** settings. A resource that turns off **Use Global** can still show its own columns.
 - Source `Save` looks up `createdOn` by storage id, so renaming gateway/node/source id does not reset the timestamp.
 - Settings live `update()` path preserves `createdOn`.
 - Select multi-select used by Task / Schedule / User / Policy forms still uses typeahead chips; checkbox style is only for Topology filters.
