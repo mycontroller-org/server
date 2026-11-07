@@ -42,7 +42,7 @@ export const DurationOptions = [
   { value: Duration.Last3Hours, tsFormat: "HH:mm", label: "opts.metric_duration.label_hour_03" },
   { value: Duration.Last6Hours, tsFormat: "HH:mm", label: "opts.metric_duration.label_hour_06" },
   { value: Duration.Last12Hours, tsFormat: "HH:mm", label: "opts.metric_duration.label_hour_12" },
-  { value: Duration.Last24Hours, tsFormat: "HH:mm", label: "opts.metric_duration.label_hour_24" },
+  { value: Duration.Last24Hours, tsFormat: "Do HH:mm", label: "opts.metric_duration.label_hour_24" },
   { value: Duration.Last2Days, tsFormat: "Do HH:mm", label: "opts.metric_duration.label_day_002" },
   { value: Duration.Last7Days, tsFormat: "Do HH:mm", label: "opts.metric_duration.label_day_007" },
   { value: Duration.Last30Days, tsFormat: "MMM Do HH:mm", label: "opts.metric_duration.label_day_030" },
