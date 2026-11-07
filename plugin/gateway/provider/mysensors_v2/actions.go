@@ -75,7 +75,30 @@ func (p *Provider) handleActions(gwCfg *gwTY.Config, fn string, msg *msgTY.Messa
 		msMsg.Payload = p.getTimestamp(gwCfg)
 		msMsg.Type = actionTime
 
-	case nodeTY.ActionFirmwareUpdate, "ST_FIRMWARE_CONFIG_REQUEST":
+	case nodeTY.ActionFirmwareUpdate:
+		// User-triggered action: optionally reboot the node before serving
+		// the OTA config. Required for MYSBootloader-based nodes.
+		if err := p.maybeSendRebootForOta(msg); err != nil {
+			p.logger.Error("firmware-update: pre-OTA reboot failed",
+				zap.String("nodeId", msg.NodeID),
+				zap.Error(err),
+			)
+			// Continue: the config will be served anyway.
+		}
+		pl, err := p.executeFirmwareConfigRequest(msg)
+		if err != nil {
+			return err
+		}
+		if pl == "" {
+			return nil
+		}
+		msMsg.Command = cmdStream
+		msMsg.Type = actionFirmwareConfigResponse
+		msMsg.Payload = strings.ToUpper(pl)
+
+	case "ST_FIRMWARE_CONFIG_REQUEST":
+		// The node already asked for its config (it is in bootloader mode).
+		// No reboot needed.
 		pl, err := p.executeFirmwareConfigRequest(msg)
 		if err != nil {
 			return err
@@ -99,13 +122,36 @@ func (p *Provider) handleActions(gwCfg *gwTY.Config, fn string, msg *msgTY.Messa
 		msMsg.Type = actionFirmwareResponse
 		msMsg.Payload = strings.ToUpper(pl)
 
+	case nodeTY.ActionSetSleepDuration:
+		raw := strings.TrimSpace(msg.Payloads[0].Value.String())
+		sensorID, pct, err := parseSleepDurationPayload(raw)
+		if err != nil {
+			return err
+		}
+		node, err := p.getNode(msg.GatewayID, msg.NodeID)
+		if err != nil {
+			return err
+		}
+		if sensorID == "" {
+			sensorID = node.Labels.Get(LabelSleepCommandSensorID)
+		}
+		if sensorID == "" {
+			return fmt.Errorf("no sleep command sensor configured for node %s; run once: myc action node set-sleep-duration:<sensor_id>:%d %s",
+				node.NodeID, pct, msg.GatewayID+"."+msg.NodeID)
+		}
+		if sensorID != node.Labels.Get(LabelSleepCommandSensorID) {
+			node.Labels.Set(LabelSleepCommandSensorID, sensorID)
+			p.setNodeLabels(node)
+		}
+		return p.sendSleepCommand(node, sensorID, pct, "")
+
 	default:
 		return fmt.Errorf("this function is not implemented: %s", fn)
 	}
 	return nil
 }
 
-// geTimestamp returns timestamp in seconds from 1970
+// getTimestamp returns timestamp in seconds from 1970
 // adds zone offset to the actual timestamp
 // user can specify different timezone as a gateway label
 // if non set, take system timezone

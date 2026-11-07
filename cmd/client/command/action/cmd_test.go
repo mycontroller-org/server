@@ -11,15 +11,16 @@ import (
 
 func TestNormalizeNodeAction(t *testing.T) {
 	cases := map[string]string{
-		"reboot":            nodeTY.ActionReboot,
-		"reset":             nodeTY.ActionReset,
-		"firmware-update":   nodeTY.ActionFirmwareUpdate,
-		"firmware_update":   nodeTY.ActionFirmwareUpdate,
-		"heartbeat":         nodeTY.ActionHeartbeatRequest,
-		"heartbeat-request": nodeTY.ActionHeartbeatRequest,
-		"refresh":           nodeTY.ActionRefreshNodeInfo,
-		"refresh-node-info": nodeTY.ActionRefreshNodeInfo,
-		"refresh_node_info": nodeTY.ActionRefreshNodeInfo,
+		"reboot":             nodeTY.ActionReboot,
+		"reset":              nodeTY.ActionReset,
+		"firmware-update":    nodeTY.ActionFirmwareUpdate,
+		"firmware_update":    nodeTY.ActionFirmwareUpdate,
+		"heartbeat":          nodeTY.ActionHeartbeatRequest,
+		"heartbeat-request":  nodeTY.ActionHeartbeatRequest,
+		"refresh":            nodeTY.ActionRefreshNodeInfo,
+		"refresh-node-info":  nodeTY.ActionRefreshNodeInfo,
+		"refresh_node_info":  nodeTY.ActionRefreshNodeInfo,
+		"set-sleep-duration": nodeTY.ActionSetSleepDuration,
 	}
 	for in, want := range cases {
 		got, err := normalizeNodeAction(in)

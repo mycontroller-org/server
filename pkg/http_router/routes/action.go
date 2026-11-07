@@ -38,7 +38,13 @@ func (h *Routes) executeNodeAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.action.ExecuteNodeAction(actionArr[0], idsArr)
+	// Optional payload for actions that require one (e.g. SetSleepDuration)
+	payload := ""
+	if payloadArr := query[keyPayload]; len(payloadArr) > 0 {
+		payload = payloadArr[0]
+	}
+
+	err = h.action.ExecuteNodeAction(actionArr[0], payload, idsArr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

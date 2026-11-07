@@ -21,10 +21,12 @@ var actionCmd = &cobra.Command{
 	Short: "Send an action to a node or gateway",
 	Long: `Send a server action to a node or gateway.
 
-Node actions: reboot, reset, firmware-update, heartbeat, refresh-node-info
+Node actions: reboot, reset, firmware-update, heartbeat, refresh-node-info, set-sleep-duration:SENSOR_ID:PERCENT, set-sleep-duration:PERCENT
 Gateway actions: discover-nodes
 
   myc action node <alias> reboot mysensor.1
+  myc action node <alias> set-sleep-duration:206:32 mysensor.1
+  myc action node <alias> set-sleep-duration:32 mysensor.1
   myc action gateway <alias> discover-nodes mysensor
 `,
 	SilenceUsage:  true,
@@ -42,7 +44,9 @@ var nodeActionCmd = &cobra.Command{
   myc action node <alias> reset mysensor.1
   myc action node <alias> firmware-update mysensor.1
   myc action node <alias> heartbeat mysensor.1
-  myc action node <alias> refresh-node-info mysensor.1`,
+  myc action node <alias> refresh-node-info mysensor.1
+  myc action node <alias> set-sleep-duration:206:32 mysensor.1
+  myc action node <alias> set-sleep-duration:32 mysensor.1`,
 	Args:          cobra.MinimumNArgs(3),
 	SilenceUsage:  true,
 	SilenceErrors: true,
@@ -51,14 +55,36 @@ var nodeActionCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		client, rest := rootCmd.TakeAlias(args)
-		action, err := normalizeNodeAction(rest[0])
+
+		// Support "action" and "action:payload"
+		raw := rest[0]
+		actionStr := raw
+		payload := ""
+		if idx := strings.Index(raw, ":"); idx >= 0 {
+			actionStr = raw[:idx]
+			payload = raw[idx+1:]
+		}
+
+		action, err := normalizeNodeAction(actionStr)
 		if err != nil {
 			return err
 		}
+
+		// Payload is required for some actions
+		if action == nodeTY.ActionSetSleepDuration && payload == "" {
+			return fmt.Errorf("action %q requires a payload (e.g. set-sleep-duration:32 or set-sleep-duration:206:32)", actionStr)
+		}
+
 		ids, resolveErr := client.ResolveNodeIDs(rest[1:])
 		if len(ids) > 0 {
-			if err := client.ExecuteNodeAction(action, ids); err != nil {
-				return err
+			if payload != "" {
+				if err := client.ExecuteNodeAction(action, ids, payload); err != nil {
+					return err
+				}
+			} else {
+				if err := client.ExecuteNodeAction(action, ids); err != nil {
+					return err
+				}
 			}
 			_, _ = fmt.Fprintf(rootCmd.IOStreams.Out, "sent %s to %d node(s)\n", action, len(ids))
 		}
@@ -106,8 +132,10 @@ func normalizeNodeAction(action string) (string, error) {
 		return nodeTY.ActionHeartbeatRequest, nil
 	case "refresh-node-info", "refresh":
 		return nodeTY.ActionRefreshNodeInfo, nil
+	case "set-sleep-duration":
+		return nodeTY.ActionSetSleepDuration, nil
 	default:
-		return "", fmt.Errorf("unsupported node action %q (supported: reboot, reset, firmware-update, heartbeat, refresh-node-info)", action)
+		return "", fmt.Errorf("unsupported node action %q (supported: reboot, reset, firmware-update, heartbeat, refresh-node-info, set-sleep-duration)", action)
 	}
 }
 

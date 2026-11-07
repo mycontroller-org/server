@@ -10,14 +10,15 @@ import (
 )
 
 // ExecuteNodeAction for a node
-func (a *ActionAPI) ExecuteNodeAction(action string, nodeIDs []string) error {
+func (a *ActionAPI) ExecuteNodeAction(action, payload string, nodeIDs []string) error {
 	// verify is a valid action?
 	switch action {
 	case nodeTY.ActionFirmwareUpdate,
 		nodeTY.ActionHeartbeatRequest,
 		nodeTY.ActionReboot,
 		nodeTY.ActionRefreshNodeInfo,
-		nodeTY.ActionReset:
+		nodeTY.ActionReset,
+		nodeTY.ActionSetSleepDuration:
 		// nothing to do, just continue
 	default:
 		return fmt.Errorf("invalid node action:%s", action)
@@ -29,15 +30,18 @@ func (a *ActionAPI) ExecuteNodeAction(action string, nodeIDs []string) error {
 	}
 	for index := 0; index < len(nodes); index++ {
 		node := nodes[index]
-		err = a.toNode(&node, node.GatewayID, node.NodeID, action)
+		err = a.toNode(&node, node.GatewayID, node.NodeID, action, payload)
 		if err != nil {
-			a.logger.Error("error on sending an action to a node", zap.Error(err), zap.String("gateway", node.GatewayID), zap.String("node", node.NodeID))
+			a.logger.Error("error on sending an action to a node",
+				zap.Error(err),
+				zap.String("gateway", node.GatewayID),
+				zap.String("node", node.NodeID))
 		}
 	}
 	return nil
 }
 
-func (a *ActionAPI) toNode(node *nodeTY.Node, gatewayID, nodeID, action string) error {
+func (a *ActionAPI) toNode(node *nodeTY.Node, gatewayID, nodeID, action, payload string) error {
 	msg := msgTY.NewMessage(false)
 	msg.GatewayID = gatewayID
 	msg.NodeID = nodeID
@@ -58,6 +62,9 @@ func (a *ActionAPI) toNode(node *nodeTY.Node, gatewayID, nodeID, action string) 
 	}
 	pl := msgTY.NewPayload()
 	pl.Key = action
+	if payload != "" {
+		pl.SetValue(payload)
+	}
 	msg.Payloads = append(msg.Payloads, pl)
 	msg.Type = msgTY.TypeAction
 	return a.Post(&msg)

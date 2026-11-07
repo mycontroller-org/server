@@ -113,19 +113,26 @@ func (p *Provider) Start(receivedMessageHandler func(rawMsg *msgTY.RawMessage) e
 		protocol, _err := ethernet.New(p.logger, p.GatewayConfig, p.Config.Protocol, receivedMessageHandler, p.bus, p.logRootDirectory)
 		err = _err
 		p.Protocol = protocol
-
 	}
 
 	if err != nil {
 		return err
 	}
 
-	// load firmware purge job
-	firmwarePurgeJobName := fmt.Sprintf("%s_%s", firmwarePurgeJobName, p.GatewayConfig.ID)
-	err = p.scheduler.AddFunc(firmwarePurgeJobName, firmwarePurgeJobCron, firmwareRawPurge)
+	// load firmware purge job (per gateway, suffix with gateway id)
+	fwPurgeJobName := fmt.Sprintf("%s_%s", firmwarePurgeJobName, p.GatewayConfig.ID)
+	err = p.scheduler.AddFunc(fwPurgeJobName, firmwarePurgeJobCron, firmwareRawPurge)
 	if err != nil {
 		return err
 	}
+
+	// load sleep command purge job (per gateway, suffix with gateway id)
+	sleepJobName := fmt.Sprintf("%s_%s", sleepPurgeJobName, p.GatewayConfig.ID)
+	err = p.scheduler.AddFunc(sleepJobName, sleepPurgeJobCron, purgeExpiredSleepCommands)
+	if err != nil {
+		return err
+	}
+
 	err = p.initEventListener(p.GatewayConfig.ID)
 	if err != nil {
 		return err
@@ -145,6 +152,11 @@ func (p *Provider) Close() error {
 	// remove firmware purge job
 	fwPurgeJobName := fmt.Sprintf("%s_%s", firmwarePurgeJobName, p.GatewayConfig.ID)
 	p.scheduler.RemoveFunc(fwPurgeJobName)
+
+	// remove sleep command purge job
+	sleepJobName := fmt.Sprintf("%s_%s", sleepPurgeJobName, p.GatewayConfig.ID)
+	p.scheduler.RemoveFunc(sleepJobName)
+
 	// close gateway
 	return p.Protocol.Close()
 }
