@@ -93,6 +93,11 @@ func IsMatching(entity interface{}, filters []storageTY.Filter) bool {
 			}
 			match = CompareTime(timeValue, filter.Operator, filter.Value)
 
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+			reflect.Float32, reflect.Float64:
+			match = CompareFloat(value, filter.Operator, filter.Value)
+
 		default:
 			match = false
 		}
