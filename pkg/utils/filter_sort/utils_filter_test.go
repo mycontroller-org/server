@@ -217,6 +217,38 @@ func TestCompareTime(t *testing.T) {
 	}
 }
 
+func TestIsMatchingNumberField(t *testing.T) {
+	type row struct {
+		ID    string
+		Count int
+		Rate  float64
+	}
+	entity := &row{ID: "a", Count: 4, Rate: 1.5}
+	assert.True(t, IsMatching(entity, []storageTY.Filter{
+		{Key: "count", Operator: storageTY.OperatorEqual, Value: 4},
+	}))
+	assert.False(t, IsMatching(entity, []storageTY.Filter{
+		{Key: "count", Operator: storageTY.OperatorEqual, Value: 3},
+	}))
+	assert.True(t, IsMatching(entity, []storageTY.Filter{
+		{Key: "count", Operator: storageTY.OperatorGreaterThan, Value: 1},
+	}))
+	assert.True(t, IsMatching(entity, []storageTY.Filter{
+		{Key: "count", Operator: storageTY.OperatorLessThan, Value: 5},
+	}))
+	assert.False(t, IsMatching(entity, []storageTY.Filter{
+		{Key: "count", Operator: storageTY.OperatorLessThan, Value: 4},
+	}))
+	assert.True(t, IsMatching(entity, []storageTY.Filter{
+		{Key: "rate", Operator: storageTY.OperatorGreaterThan, Value: 1},
+	}))
+
+	matched := Filter([]interface{}{entity, &row{ID: "b", Count: 1}}, []storageTY.Filter{
+		{Key: "count", Operator: storageTY.OperatorEqual, Value: 4},
+	}, false)
+	require.Len(t, matched, 1)
+}
+
 func TestIsMatchingStringSliceContains(t *testing.T) {
 	type user struct {
 		ID       string
