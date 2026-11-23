@@ -57,7 +57,7 @@ func (a *ActionAPI) ExecuteActionOnResourceByQuickID(data *handlerTY.ResourceDat
 	case quickIdUtils.QuickIdNode:
 		gatewayID := kvMap[types.KeyGatewayID]
 		nodeID := kvMap[types.KeyNodeID]
-		return a.toNode(nil, gatewayID, nodeID, data.Payload)
+		return a.toNode(nil, gatewayID, nodeID, data.Payload, "")
 
 	case quickIdUtils.QuickIdSource:
 		// no action needed
@@ -120,7 +120,7 @@ func (a *ActionAPI) ExecuteActionOnResourceByLabels(data *handlerTY.ResourceData
 		items := result.Data.(*[]nodeTY.Node)
 		for index := 0; index < len(*items); index++ {
 			item := (*items)[index]
-			err = a.toNode(&item, item.GatewayID, item.NodeID, data.Payload)
+			err = a.toNode(&item, item.GatewayID, item.NodeID, data.Payload, "")
 			if err != nil {
 				a.logger.Error("error on sending data", zap.Error(err), zap.String("nodeID", item.ID), zap.String("payload", data.Payload))
 			}

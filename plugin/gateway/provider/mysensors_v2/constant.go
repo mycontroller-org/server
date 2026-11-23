@@ -5,22 +5,24 @@ import (
 
 	"github.com/mycontroller-org/server/v2/pkg/types"
 	msgTY "github.com/mycontroller-org/server/v2/pkg/types/message"
+	nodeTY "github.com/mycontroller-org/server/v2/pkg/types/node"
 	metricTY "github.com/mycontroller-org/server/v2/plugin/database/metric/types"
 )
 
 // Labels and fields used in this provider
 const (
-	LabelImperialSystem    = "ms_imperial_system"  // this is bool label, used to configure about the system metric or imperial
-	LabelNodeID            = "ms_node_id"          // MySensors node id
-	LabelSensorID          = "ms_sensor_id"        // MySensors sensor id
-	LabelType              = "ms_type"             // MySensors type reference, can be used for sensor fields
-	LabelTypeString        = "ms_type_string"      // MySensors type in string format
-	LabelNodeType          = "ms_node_type"        // MySensors node type
-	LabelLockedReason      = "ms_locked_reason"    // If the the node is locked, reason will be in this label
-	LabelEraseEEPROM       = "ms_erase_eeprom"     // Supports only for MYSBootloader, on a reboot of node, the node eeprom will be erased
-	LabelFirmwareTypeID    = "ms_type_id"          // MySensors firmware type id
-	LabelFirmwareVersionID = "ms_version_id"       // MySensors firmware version id
-	LabelSmartSleepNode    = "ms_smart_sleep_node" // set true, if it is a smart sleeping node
+	LabelImperialSystem       = "ms_imperial_system"  // this is bool label, used to configure about the system metric or imperial
+	LabelNodeID               = "ms_node_id"          // MySensors node id
+	LabelSensorID             = "ms_sensor_id"        // MySensors sensor id
+	LabelType                 = "ms_type"             // MySensors type reference, can be used for sensor fields
+	LabelTypeString           = "ms_type_string"      // MySensors type in string format
+	LabelNodeType             = "ms_node_type"        // MySensors node type
+	LabelLockedReason         = "ms_locked_reason"    // If the the node is locked, reason will be in this label
+	LabelEraseEEPROM          = "ms_erase_eeprom"     // Supports only for MYSBootloader, on a reboot of node, the node eeprom will be erased
+	LabelFirmwareTypeID       = "ms_type_id"          // MySensors firmware type id
+	LabelFirmwareVersionID    = "ms_version_id"       // MySensors firmware version id
+	LabelSmartSleepNode       = "ms_smart_sleep_node" // set true, if it is a smart sleeping node
+	LabelSleepCommandSensorID = "ms_sleep_command_sensor_id"
 
 	// LabelFotaScript is the data_repository id that holds custom FOTA policy scripts
 	// (data.onConfig required, data.onBlock optional). When set (non-empty after trim),
@@ -34,6 +36,22 @@ const (
 
 	FieldAwakeDuration = "awake_duration" // smart sleep node awake duration
 	FieldSleepDuration = "sleep_duration" // smart sleep node sleep duration
+
+	// LabelBootloaderOtaReboot: when set to "true" on a node, MyController sends
+	// an I_REBOOT right before serving a firmware update. Mimics MYSController
+	// and is required for MYSBootloader-based nodes.
+	//
+	// Values:
+	//   "true"  -> auto-reboot (recommended for MYSBootloader nodes)
+	//   "false" -> no automatic reboot
+	//   absent  -> same as "false"
+	//
+	// Sleeping nodes (smart_sleep + not seen recently) are queued: the reboot is
+	// sent when the node next reports itself awake.
+	LabelBootloaderOtaReboot = "bootloader_ota_reboot"
+
+	sleepPurgeJobName = "mysensors_sleep_command_store"
+	sleepPurgeJobCron = "0 */5 * * * *" // every 5 minutes, same as firmware purge
 )
 
 // internal references
@@ -269,10 +287,9 @@ var customValidActions = []string{
 	"I_CONFIG",
 	"I_ID_REQUEST",
 	"I_TIME",
-
-	// stream message type requests
 	"ST_FIRMWARE_CONFIG_REQUEST",
 	"ST_FIRMWARE_REQUEST",
+	nodeTY.ActionSetSleepDuration,
 }
 
 // this struct used to construct payload metric type and unit
